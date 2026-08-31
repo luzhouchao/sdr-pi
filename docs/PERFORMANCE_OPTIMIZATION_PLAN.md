@@ -100,6 +100,57 @@ NFFT 2048 was the best measured general point for this workload: one-core capaci
 
 Do not switch libraries based on upstream benchmark claims. Run RustFFT, ordered PFFFT, and single-precision FFTW with identical input, window, output reduction, planner reuse, CPU affinity, governor, and 1024/2048/4096 sizes on this Pi.
 
+## Raspberry Pi GPU track
+
+The Pi GPU is a third compute tier; it does not replace either CPU NEON or SDR-side FPGA:
+
+```text
+CPU/NEON:       small batches and lowest FFT latency
+Pi GPU/Vulkan:  batched FFT/PSD after IQ has already reached the Pi
+SDR FPGA:       reduction before Ethernet, removing both network and Pi work
+```
+
+The current Pi cannot run a GPU benchmark yet. Read-only inspection found no `/dev/dri`, no loaded `v3d`/`vc4` module, no Vulkan/OpenCL tools or driver packages, and no `vc4-kms-v3d` overlay in `/boot/firmware/config.txt`; the headless configuration reserves only 16 MiB legacy GPU memory. Enabling the modern V3D/KMS path requires a separately approved boot-configuration/package change and reboot with a recorded rollback.
+
+Use [VkFFT 1.3.4](https://github.com/DTolm/VkFFT/tree/v1.3.4) over Vulkan as the first GPU candidate. Its official project supports the Raspberry Pi 4 GPU, complex transforms, batches, and custom command-buffer integration under the MIT license. A thin C ABI should hide the Vulkan/VkFFT implementation from Rust.
+
+OpenCL is not the primary route. Mesa [Rusticl](https://docs.mesa3d.org/rusticl) advertises no device by default and requires explicit driver opt-in while its documentation warns that premature default enablement can affect stability; Mesa's documented support/default-enable information does not establish V3D as a supported Rusticl target. Vulkan/V3DV has the clear Pi 4 path.
+
+The GPU benchmark must include the complete path:
+
+```text
+interleaved i16 IQ
+  -> GPU-visible input
+  -> i16-to-f32 + Hann
+  -> batched complex FFT
+  -> power/PSD + accumulation + top-k/bandpower
+  -> compact result readback
+```
+
+Uploading `Complex32`, running only FFT, and reading a complete spectrum back is not an acceptable performance comparison. It shifts conversion and reduction back to the CPU and can double memory traffic. Prefer a persistently mapped ring, explicit sequence ownership, pre-recorded command buffers where supported, and compact result readback. Unified physical memory does not remove Vulkan synchronization or cache-ownership costs.
+
+For NFFT 2048 and 50% overlap at 10 MS/s, batching itself adds at least:
+
+| Batch | Input accumulation time |
+| ---: | ---: |
+| 1 | 0.1024 ms |
+| 8 | 0.8192 ms |
+| 32 | 3.2768 ms |
+| 64 | 6.5536 ms |
+| 128 | 13.1072 ms |
+
+Compare batch sizes `1/8/32/64/128`, FFT sizes `1024/2048/4096/8192`, and single/dual RX. Record CPU preparation, Vulkan submission, GPU execution timestamp, synchronization/readback, end-to-end p50/p95/p99, CPU cores freed, temperature/throttle flags, and total application latency. Compare against the existing RustFFT checksum/tolerance and full-pipeline measurement.
+
+GPU GO requires all of the following:
+
+- the complete GPU pipeline is correct against the Rust reference;
+- it reduces end-to-end core time or raises sustainable throughput by a meaningful measured margin, not just a faster isolated FFT kernel;
+- the selected batch latency fits the product deadline;
+- long-duration queue, driver, suspend/restart, and thermal behavior are stable;
+- CPU capacity released by GPU is actually needed for dual RX, high overlap, classification, rendering, or recording.
+
+Keep CPU NEON when one RX at 10 MS/s/50% overlap is the target: its p99 FFT pipeline uses only about 0.502 core and avoids GPU batching latency. Evaluate GPU first for dual RX, 20–25 MS/s with substantial downstream classification, larger transforms, or a waterfall/PSD path that can remain GPU-resident. If Ethernet/IIOD is the bottleneck, skip Pi GPU tuning and move reduction to the SDR FPGA instead.
+
 ## Measurement and optimization phases
 
 ### Phase A — lossless Rust pipeline
@@ -138,14 +189,21 @@ Test one change per benchmark and restore it before the next comparison:
 
 Avoid overclocking until the normal 1.5 GHz pipeline has been profiled. Active cooling is cheaper and safer than relying on an overclock for correctness.
 
-### Phase D — SDR system
+### Phase D — Pi GPU evaluation
+
+- Requires a separately approved, recoverable V3D/KMS and Mesa Vulkan setup with reboot.
+- Verify the renderer and Vulkan device before building VkFFT; never accept a software Vulkan renderer as a GPU result.
+- Run the complete VkFFT batch matrix above and retain RustFFT as the correctness and rollback backend.
+- Promote GPU only after end-to-end and long-duration gates pass.
+
+### Phase E — SDR system
 
 - Keep IIOD context and DMA buffer persistent; historical SDR-local measurements show about 28–31 ms context creation and 2–3 ms buffer creation, while refill/copy itself was sub-millisecond.
 - Profile the two Zynq cores, Ethernet IRQ, IIOD worker tasks, TCP send blocking, and DMA interrupts during the Phase B sweep.
 - Compare IIOD task/IRQ affinity only with before/after counters.
 - Do not upgrade the old Buildroot/libiio image merely because it is old; upgrade only if a source-level change addresses a measured bottleneck and has a bootable rollback image.
 
-### Phase E — FPGA offload decision
+### Phase F — FPGA offload decision
 
 FPGA is justified when at least one of these is true:
 
@@ -163,6 +221,7 @@ Start from an identified, hardware-validated V8L1-compatible boot baseline and r
 - First stable target: one RX, 10 MS/s, NFFT 2048, 50% overlap, continuous Rust FFT/PSD.
 - Next target: one RX, 20 MS/s, NFFT 2048, 50% overlap, two FFT workers.
 - Stretch target: one RX, 25 MS/s, NFFT 2048, 50% overlap, only if the network ceiling and full classifier budget pass.
+- Pi GPU candidate: dual RX at 10 MS/s, or one RX at 20–25 MS/s when batched spectrum/classification needs to release ARM cores and can accept measured batch latency.
 - FPGA-required candidate: dual RX at 20–25 MS/s with 50% overlap, or one RX at 20–25 MS/s with 75% overlap and substantial downstream recognition.
 
 Raw recording at 20–25 MS/s requires sustained 80–100 MB/s plus headroom; use a USB 3 SSD and a separate bounded writer queue. Do not treat a microSD card as a guaranteed lossless sink at those rates.
