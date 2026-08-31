@@ -101,6 +101,24 @@ cargo fmt -- --check
 cargo test --all-targets
 ```
 
+After deployment, an operator starts the lightweight terminal with no flags:
+
+```bash
+sdr-agent
+```
+
+One-shot input is also supported:
+
+```bash
+sdr-agent "查看当前 SDR 状态"
+```
+
+The terminal connects to `/run/sdr-agent/session.sock`; the existing
+`planner.sock` remains the stateless fallback. `/pause`, `/resume` and `/stop`
+advance the Controller session generation so prior proposals become stale.
+`/approve` records a human decision but does not execute hardware until the
+separate `SdrActionExecutor` is enabled.
+
 The recognition interface and its fixed IQ contract are documented in
 [`../../docs/LOCAL_RECOGNIZER_INTERFACE.md`](../../docs/LOCAL_RECOGNIZER_INTERFACE.md).
 

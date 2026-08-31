@@ -54,6 +54,24 @@ export class SessionRuntime {
     }
   }
 
+  async dispose() {
+    if (this.agent === undefined) return;
+    this.agent.clearAllQueues();
+    this.queued = 0;
+    this.agent.abort();
+    await this.agent.waitForIdle?.();
+    this.releaseRun?.();
+    this.releaseRun = undefined;
+    this.unsubscribe?.();
+    this.agent.reset();
+    this.agent = undefined;
+    this.unsubscribe = undefined;
+    this.sessionGeneration = undefined;
+    this.currentContext = undefined;
+    this.planSubmittedForRequest = undefined;
+    this.active = false;
+  }
+
   #open(command) {
     if (this.agent !== undefined) throw new Error("a session is already open");
     this.sessionGeneration = command.session_generation;
