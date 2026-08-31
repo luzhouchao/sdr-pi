@@ -1,0 +1,20 @@
+{
+  "protocol_version": 1,
+  "request_id": 1,
+  "session_generation": 1,
+  "candidate_id": "candidate-1",
+  "iq": {
+    "storage": {
+      "path": "/run/sdr-agent/iq/candidate-1.f32",
+      "offset_bytes": 0,
+      "length_bytes": 16384
+    },
+    "sample_format": "f32_le",
+    "layout": "planar_iq",
+    "normalization": "unit_rms",
+    "samples_per_channel": 2048,
+    "sample_rate_hz": 1000000,
+    "center_hz": 433920000
+  },
+  "max_latency_ms": 500
+}

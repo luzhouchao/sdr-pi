@@ -1,6 +1,7 @@
 pub mod planner;
 pub mod policy;
 pub mod protocol;
+pub mod recognizer;
 pub mod sdr;
 
 use planner::{Planner, PlannerError};

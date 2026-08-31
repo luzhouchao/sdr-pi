@@ -17,6 +17,9 @@
 - Move per-sample DSP out of the acquisition thread.
 - Use preallocated bounded IQ blocks and explicit overload policy.
 - Add long-duration 2.1/5/10 MS/s tests and reconnect tests.
+- Feed only triggered, bounded, model-ready IQ windows through the implemented
+  `LocalRecognizer` seam; keep the production C++ worker disabled until a
+  pinned model and replay corpus pass the admission gates.
 
 ## Phase 2: SDR-system transport baseline
 

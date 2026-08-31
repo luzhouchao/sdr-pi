@@ -60,13 +60,24 @@ It has an SDRD/1 shadow Adapter and a replay Adapter. Protocol framing,
 correlation, server identity, capability reduction and fail-closed behavior are
 hidden behind the interface.
 
-### Future execution seams
+### Recognition seam
 
-Mutation and recognition remain future, separate interfaces:
+The provider-neutral recognition boundary is now implemented:
+
+```text
+LocalRecognizer.classify(BoundedIqRef) -> RecognitionOutput
+```
+
+Its Unix Adapter passes only bounded file metadata to a future persistent C++
+worker; IQ remains outside JSON and Qwen. A replay Adapter covers protocol and
+policy tests. See [`LOCAL_RECOGNIZER_INTERFACE.md`](LOCAL_RECOGNIZER_INTERFACE.md).
+
+### Future execution seam
+
+SDR mutation remains a future, separate interface:
 
 ```text
 SdrActionExecutor.execute(ValidatedSdrAction) -> Observation
-LocalRecognizer.classify(BoundedIqRef) -> RecognitionSummary
 ```
 
 The existing direct-libiio acquisition executable remains separate until only

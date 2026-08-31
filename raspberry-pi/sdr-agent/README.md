@@ -13,7 +13,7 @@ Rust Controller -- JSONL over Unix socket --> Pi Agent Planner Worker
       v
 SDRD/1 adapter -> SDR Linux C sdrd -> IIO/FPGA
       |
-      +-> future C++ LocalRecognizer adapter
+      +-> LocalRecognizer adapter -> future C++ inference worker
 ```
 
 The Planner Worker proposes one action. The Rust Controller is the only module
@@ -28,6 +28,9 @@ SSH, IIO, FPGA-register or SDR tools.
   can be built as a static ARM64 binary.
 - `planner-worker/`: headless `pi-agent-core` worker using one `submit_plan`
   tool and the existing 4090 llama.cpp OpenAI-compatible endpoint.
+- `controller/src/recognizer.rs`: bounded local-recognition protocol with replay
+  and Unix-socket Adapters. The production C++ worker and model are not yet
+  deployed, so availability remains false.
 - `../p201pro-rust/`: current direct libiio acquisition and spectrum
   aggregation executable. It is intentionally not merged into the Controller
   until the ownership seam is implemented.
@@ -86,6 +89,9 @@ cd raspberry-pi/sdr-agent/controller
 cargo fmt -- --check
 cargo test --all-targets
 ```
+
+The recognition interface and its fixed IQ contract are documented in
+[`../../docs/LOCAL_RECOGNIZER_INTERFACE.md`](../../docs/LOCAL_RECOGNIZER_INTERFACE.md).
 
 For a development smoke test, a natural-language instruction can replace the
 instruction in a bounded context file without changing its health or limits:
