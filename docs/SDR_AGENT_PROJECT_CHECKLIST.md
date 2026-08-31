@@ -53,6 +53,7 @@ Evidence:
 - [`SDR_AGENT_RUNTIME_DESIGN.md`](SDR_AGENT_RUNTIME_DESIGN.md)
 - [`TERMINAL_AGENT_CLI_RESEARCH.md`](TERMINAL_AGENT_CLI_RESEARCH.md)
 - [`SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md)
+- [`SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md)
 
 ## 2. Planning policy and autonomous loop
 
@@ -64,8 +65,9 @@ Evidence:
       approval.
 - [x] Record terminal approval and rejection decisions without claiming an
       action executed.
-- [ ] Implement the Rust `SdrActionExecutor` interface and production Adapter.
-- [ ] Execute a validated, approved SDR action and return a correlated
+- [x] Implement the Rust `SdrActionExecutor` interface, replay Adapter, and
+      production SDRD/1 Adapter for bounded IQ execution.
+- [x] Execute a validated, operator-approved SDR action and return a correlated
       observation.
 - [ ] Make `/stop` cancel active hardware execution directly without waiting for
       Qwen.

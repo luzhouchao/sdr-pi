@@ -1,5 +1,8 @@
 #![cfg(unix)]
 
+use sdr_agent_controller::execution::{
+    ExecutionAuthorization, SdrActionExecutor, SdrdActionAdapter,
+};
 use sdr_agent_controller::policy::ControllerPolicy;
 use sdr_agent_controller::protocol::{
     ControllerState, PlanRequest, PlanResponse, ValidatedPlan, MAX_FRAME_BYTES,
@@ -10,8 +13,10 @@ use std::env;
 use std::error::Error;
 use std::fs;
 use std::io::{self, BufRead, BufReader, Read, Write};
+use std::net::SocketAddr;
 use std::os::unix::net::UnixStream;
 use std::path::PathBuf;
+use std::time::Duration;
 
 type AppResult<T> = Result<T, Box<dyn Error>>;
 const HISTORY_LIMIT: usize = 32;
@@ -28,14 +33,24 @@ fn run() -> AppResult<()> {
     let bytes = read_bounded(fs::File::open(&options.request_path)?)?;
     let template: PlanRequest = serde_json::from_slice(&bytes)?;
     ControllerPolicy.validate_request(&template)?;
-    let mut app = ConsoleApp::connect(options.socket_path, template)?;
+    let executor = options.sdrd_address.map(|address| {
+        SdrdActionAdapter::new(address, Duration::from_millis(options.sdrd_timeout_ms))
+    });
+    let mut app = ConsoleApp::connect(options.socket_path, template, executor)?;
 
     if let Some(instruction) = options.instruction {
         app.submit(instruction)?;
         return Ok(());
     }
 
-    println!("SDR Agent 已连接。输入 /help 查看命令。当前版本不会直接执行硬件动作。");
+    println!(
+        "SDR Agent 已连接。输入 /help 查看命令。硬件执行={}。",
+        if app.executor.is_some() {
+            "已启用"
+        } else {
+            "未配置"
+        }
+    );
     let stdin = io::stdin();
     loop {
         print!("SDR Agent> ");
@@ -54,7 +69,7 @@ fn run() -> AppResult<()> {
             "/help" | "/帮助" => print_help(),
             "/status" | "/状态" => app.status()?,
             "/history" | "/历史" => app.print_history(),
-            "/approve" | "/批准" => app.approve(),
+            "/approve" | "/批准" => app.approve()?,
             "/reject" | "/拒绝" => app.reject(),
             "/pause" | "/暂停" => app.renew(ControllerState::Holding, "会话已暂停")?,
             "/resume" | "/继续" => app.renew(ControllerState::Idle, "会话已恢复")?,
@@ -78,10 +93,15 @@ struct ConsoleApp {
     requests: HashMap<u64, PlanRequest>,
     history: VecDeque<String>,
     agent_cycle_ended: bool,
+    executor: Option<SdrdActionAdapter>,
 }
 
 impl ConsoleApp {
-    fn connect(socket_path: PathBuf, template: PlanRequest) -> AppResult<Self> {
+    fn connect(
+        socket_path: PathBuf,
+        template: PlanRequest,
+        executor: Option<SdrdActionAdapter>,
+    ) -> AppResult<Self> {
         let generation = template.session_generation;
         let next_request_id = template.request_id;
         let mut app = Self {
@@ -93,6 +113,7 @@ impl ConsoleApp {
             requests: HashMap::new(),
             history: VecDeque::with_capacity(HISTORY_LIMIT),
             agent_cycle_ended: false,
+            executor,
         };
         app.command("open_session", None)?;
         Ok(app)
@@ -150,16 +171,35 @@ impl ConsoleApp {
         Ok(())
     }
 
-    fn approve(&mut self) {
+    fn approve(&mut self) -> AppResult<()> {
         if let Some(plan) = self.pending.take() {
             self.record(format!("approved request {}", plan.request_id));
-            println!(
-                "已记录批准 request={}；SdrActionExecutor 尚未启用，因此没有操作硬件。",
-                plan.request_id
-            );
+            let Some(executor) = self.executor.as_mut() else {
+                println!(
+                    "已记录批准 request={}；未配置 --sdrd，因此没有操作硬件。",
+                    plan.request_id
+                );
+                return Ok(());
+            };
+            let authorization = ExecutionAuthorization::operator_approved(&plan);
+            match executor.execute(&plan, &authorization) {
+                Ok(observation) => {
+                    self.record(format!("executed request {}", plan.request_id));
+                    println!("Execution> {}", serde_json::to_string(&observation)?);
+                }
+                Err(error) => {
+                    self.record(format!(
+                        "execution failed request {}: {}",
+                        plan.request_id, error
+                    ));
+                    println!("执行失败：{error}");
+                    self.renew(ControllerState::Faulted, "硬件执行失败，会话已进入故障状态")?;
+                }
+            }
         } else {
             println!("没有等待批准的计划。")
         }
+        Ok(())
     }
 
     fn reject(&mut self) {
@@ -339,6 +379,8 @@ struct Options {
     socket_path: PathBuf,
     request_path: PathBuf,
     instruction: Option<String>,
+    sdrd_address: Option<SocketAddr>,
+    sdrd_timeout_ms: u64,
 }
 
 impl Options {
@@ -346,6 +388,8 @@ impl Options {
         let mut socket_path = PathBuf::from("/run/sdr-agent/session.sock");
         let mut request_path = PathBuf::from("/etc/sdr-agent/request.json");
         let mut instruction = Vec::new();
+        let mut sdrd_address = None;
+        let mut sdrd_timeout_ms = 5_000_u64;
         let mut args = env::args().skip(1);
         while let Some(arg) = args.next() {
             match arg.as_str() {
@@ -361,16 +405,34 @@ impl Options {
                             .ok_or_else(|| invalid_input("missing --request value"))?,
                     )
                 }
+                "--sdrd" => {
+                    sdrd_address = Some(
+                        args.next()
+                            .ok_or_else(|| invalid_input("missing --sdrd value"))?
+                            .parse()?,
+                    )
+                }
+                "--sdrd-timeout-ms" => {
+                    sdrd_timeout_ms = args
+                        .next()
+                        .ok_or_else(|| invalid_input("missing --sdrd-timeout-ms value"))?
+                        .parse()?;
+                }
                 _ if arg.starts_with('-') => {
                     return Err(invalid_input(format!("unknown option {arg}")).into())
                 }
                 _ => instruction.push(arg),
             }
         }
+        if !(100..=60_000).contains(&sdrd_timeout_ms) {
+            return Err(invalid_input("--sdrd-timeout-ms must be between 100 and 60000").into());
+        }
         Ok(Self {
             socket_path,
             request_path,
             instruction: (!instruction.is_empty()).then(|| instruction.join(" ")),
+            sdrd_address,
+            sdrd_timeout_ms,
         })
     }
 }

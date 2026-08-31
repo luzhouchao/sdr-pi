@@ -22,10 +22,11 @@ SSH, IIO, FPGA-register or SDR tools.
 
 ## Current implementation
 
-- `controller/`: pure-Rust protocol, policy validation, Unix-socket Planner
-  Adapter, and read-only `SdrEngine` interface. The two current SDR adapters are
-  replay and SDRD/1 shadow observation. It has no libiio or Node dependency and
-  can be built as a static ARM64 binary.
+- `controller/`: pure-Rust protocol and policy validation, Unix-socket Planner
+  Adapter, read-only `SdrEngine`, and bounded-IQ `SdrActionExecutor`. Observation
+  accepts consistent shadow or controlled SDRD/1 endpoints; execution has replay
+  and production SDRD Adapters. It has no libiio or Node dependency and builds
+  as a static ARM64 binary.
 - `planner-worker/`: headless `pi-agent-core` worker using one `submit_plan`
   tool and the existing 4090 llama.cpp OpenAI-compatible endpoint.
   Its tested, not-yet-deployed `SessionRuntime` reuses Pi Agent's public
@@ -41,10 +42,12 @@ SSH, IIO, FPGA-register or SDR tools.
   aggregation executable. It is intentionally not merged into the Controller
   until the ownership seam is implemented.
 
-The current original SDR `BOOT.bin` and shadow-only `sdrd` do not permit
-retuning or bounded IQ capture through SDRD/1. Example contexts therefore set
-`can_retune=false` and `can_capture_iq=false`; the Rust policy rejects any
-model proposal that contradicts those capabilities.
+The deployed SDR still uses its original `BOOT.bin`, so FPGA aggregation remains
+disabled. The local-IIO controlled `sdrd` development mode can retune and perform
+bounded IQ capture without FPGA support, but it is not installed as a service.
+The normal request template therefore remains capability-false; Rust accepts
+execution only from live controlled capabilities or an explicitly validated
+development envelope.
 
 Safe live health observation:
 
@@ -56,7 +59,7 @@ sdr-agent-controller \
 ```
 
 Adding `--sdrd 192.168.1.10:43110` to plan mode replaces template health with
-the live shadow snapshot before the request reaches the Planner. Connection,
+the live shadow or controlled snapshot before the request reaches the Planner. Connection,
 schema or correlation failure aborts the plan instead of falling back.
 
 ## Protocol
@@ -77,7 +80,9 @@ The Planner Worker can return only:
 
 Rust validates current capabilities, state, observation age, candidate
 identity, frequency, bandwidth, dwell time and IQ byte count. Large but bounded
-IQ requests are marked `approval_required` instead of being executed.
+IQ requests are marked `approval_required`. The Rust `SdrActionExecutor` can
+execute an approved `capture_bounded_iq` plan through a controlled SDRD/1
+endpoint; all other action kinds still fail closed in this executor slice.
 
 ## Development checks
 
@@ -116,8 +121,28 @@ sdr-agent "查看当前 SDR 状态"
 The terminal connects to `/run/sdr-agent/session.sock`; the existing
 `planner.sock` remains the stateless fallback. `/pause`, `/resume` and `/stop`
 advance the Controller session generation so prior proposals become stale.
-`/approve` records a human decision but does not execute hardware until the
-separate `SdrActionExecutor` is enabled.
+`/approve` executes the pending bounded-IQ plan only when the terminal was
+started with an explicit controlled endpoint:
+
+```bash
+sdr-agent --sdrd 192.168.1.10:43110
+```
+
+Without `--sdrd`, approval is recorded but no hardware command is sent. An
+execution failure advances the session generation and puts the terminal into
+`faulted` state so the stale approval cannot be retried accidentally.
+
+For a deterministic development or recovery check, `execute` mode accepts an
+envelope containing the original `PlanRequest` and `PlanResponse`, reruns Rust
+policy validation, then requires explicit operator approval when needed:
+
+```bash
+sdr-agent-controller \
+  --mode execute \
+  --request controller/config/execution.development.example.json \
+  --sdrd 192.168.1.10:43110 \
+  --approval operator
+```
 
 The recognition interface and its fixed IQ contract are documented in
 [`../../docs/LOCAL_RECOGNIZER_INTERFACE.md`](../../docs/LOCAL_RECOGNIZER_INTERFACE.md).
@@ -163,6 +188,7 @@ see
 [`../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md).
 The interactive `sdr-agent` terminal was then deployed and validated; see
 [`../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md).
-The Controller currently validates plans and prints the result; it does not yet
-execute SDR actions. That is the safe first slice before adding a mutating
-`SdrActionExecutor` and the `LocalRecognizer` adapters.
+The Controller now has a live-validated bounded-IQ execution slice. It does not
+yet execute surveys, candidate-inspection dwell loops, recognition, automatic
+Runner cycles, or in-flight `/stop` cancellation. Controlled `sdrd` is still a
+temporary development process rather than an enabled SDR service.

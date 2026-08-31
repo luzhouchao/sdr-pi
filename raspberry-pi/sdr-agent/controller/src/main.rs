@@ -1,13 +1,18 @@
 #[cfg(not(unix))]
 compile_error!("sdr-agent-controller currently targets Linux/Unix only");
 
+use sdr_agent_controller::execution::{
+    ExecutionAuthorization, SdrActionExecutor, SdrdActionAdapter,
+};
 use sdr_agent_controller::planner::UnixPlannerAdapter;
-use sdr_agent_controller::protocol::{PlanRequest, MAX_FRAME_BYTES};
+use sdr_agent_controller::policy::ControllerPolicy;
+use sdr_agent_controller::protocol::{PlanRequest, PlanResponse, ValidatedPlan, MAX_FRAME_BYTES};
 use sdr_agent_controller::recognizer::{
     LocalRecognizer, RecognitionRequest, UnixRecognizerAdapter, RECOGNIZER_MAX_FRAME_BYTES,
 };
 use sdr_agent_controller::sdr::{SdrEngine, SdrdAdapter};
 use sdr_agent_controller::Controller;
+use serde::Deserialize;
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -35,6 +40,7 @@ fn run() -> AppResult<()> {
     let mut timeout_ms = 30_000_u64;
     let mut sdrd_timeout_ms = 5_000_u64;
     let mut recognizer_timeout_ms = 5_000_u64;
+    let mut execution_approval = None;
     let mut args = env::args().skip(1);
     while let Some(flag) = args.next() {
         let value = args
@@ -51,6 +57,7 @@ fn run() -> AppResult<()> {
             "--timeout-ms" => timeout_ms = value.parse()?,
             "--sdrd-timeout-ms" => sdrd_timeout_ms = value.parse()?,
             "--recognizer-timeout-ms" => recognizer_timeout_ms = value.parse()?,
+            "--approval" => execution_approval = Some(value),
             _ => return Err(invalid_input(format!("unknown option {flag}")).into()),
         }
     }
@@ -63,8 +70,8 @@ fn run() -> AppResult<()> {
     if !(1..=5_000).contains(&recognizer_timeout_ms) {
         return Err(invalid_input("--recognizer-timeout-ms must be between 1 and 5000").into());
     }
-    if mode != "plan" && mode != "observe" && mode != "recognize" {
-        return Err(invalid_input("--mode must be plan, observe, or recognize").into());
+    if !matches!(mode.as_str(), "plan" | "observe" | "recognize" | "execute") {
+        return Err(invalid_input("--mode must be plan, observe, recognize, or execute").into());
     }
 
     if mode == "observe" {
@@ -93,6 +100,30 @@ fn run() -> AppResult<()> {
         return Ok(());
     }
 
+    if mode == "execute" {
+        if instruction.is_some() {
+            return Err(invalid_input("--instruction is valid only in plan mode").into());
+        }
+        let address = sdrd_address
+            .ok_or_else(|| invalid_input("--mode execute requires --sdrd HOST:PORT"))?;
+        let bytes = read_request(&request_path, MAX_FRAME_BYTES)?;
+        let input: ExecutionInput = serde_json::from_slice(&bytes)?;
+        ControllerPolicy.validate_request(&input.request)?;
+        let plan: ValidatedPlan =
+            ControllerPolicy.validate_response(&input.request, input.response)?;
+        let authorization = if execution_approval.as_deref() == Some("operator") {
+            ExecutionAuthorization::operator_approved(&plan)
+        } else {
+            ExecutionAuthorization::automatic(&plan)?
+        };
+        let mut executor = SdrdActionAdapter::new(address, Duration::from_millis(sdrd_timeout_ms));
+        println!(
+            "{}",
+            serde_json::to_string(&executor.execute(&plan, &authorization)?)?
+        );
+        return Ok(());
+    }
+
     let bytes = read_request(&request_path, MAX_FRAME_BYTES)?;
     let mut request: PlanRequest = serde_json::from_slice(&bytes)?;
     if let Some(instruction) = instruction {
@@ -111,6 +142,13 @@ fn run() -> AppResult<()> {
     let plan = controller.decide(&request)?;
     println!("{}", serde_json::to_string(&plan)?);
     Ok(())
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ExecutionInput {
+    request: PlanRequest,
+    response: PlanResponse,
 }
 
 fn read_request(path: &str, max_bytes: usize) -> AppResult<Vec<u8>> {

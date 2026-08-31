@@ -71,40 +71,64 @@ impl SdrEngine for ReplaySdrAdapter {
 pub struct SdrdAdapter {
     address: SocketAddr,
     timeout: Duration,
-    next_request_id: u64,
 }
 
 impl SdrdAdapter {
     pub fn new(address: SocketAddr, timeout: Duration) -> Self {
-        Self {
-            address,
-            timeout,
-            next_request_id: 1,
-        }
+        Self { address, timeout }
     }
+}
 
-    fn request_id(&mut self) -> u64 {
-        let request_id = self.next_request_id;
-        self.next_request_id = self.next_request_id.checked_add(1).unwrap_or(1);
-        request_id
-    }
+pub(crate) struct SdrdWire {
+    stream: TcpStream,
+    reader: BufReader<TcpStream>,
+    next_request_id: u64,
+}
 
-    fn exchange<T: DeserializeOwned>(
-        stream: &mut TcpStream,
-        reader: &mut BufReader<TcpStream>,
-        command: &str,
-        request_id: u64,
-    ) -> Result<T, SdrError> {
-        let request = format!("SDRD/1 {command} {request_id}\n");
+impl SdrdWire {
+    pub(crate) fn connect(address: SocketAddr, timeout: Duration) -> Result<Self, SdrError> {
+        let stream = TcpStream::connect_timeout(&address, timeout)
+            .map_err(|error| SdrError::io("connect", error))?;
         stream
+            .set_read_timeout(Some(timeout))
+            .map_err(|error| SdrError::io("set_read_timeout", error))?;
+        stream
+            .set_write_timeout(Some(timeout))
+            .map_err(|error| SdrError::io("set_write_timeout", error))?;
+        let read_stream = stream
+            .try_clone()
+            .map_err(|error| SdrError::io("clone_stream", error))?;
+        Ok(Self {
+            stream,
+            reader: BufReader::new(read_stream),
+            next_request_id: 1,
+        })
+    }
+
+    pub(crate) fn request<T: DeserializeOwned>(
+        &mut self,
+        command: &str,
+        arguments: &str,
+    ) -> Result<T, SdrError> {
+        let request_id = self.next_request_id;
+        self.next_request_id = self
+            .next_request_id
+            .checked_add(1)
+            .ok_or_else(|| SdrError::new("request_id_exhausted", "SDRD request id exhausted"))?;
+        let request = if arguments.is_empty() {
+            format!("SDRD/1 {command} {request_id}\n")
+        } else {
+            format!("SDRD/1 {command} {request_id} {arguments}\n")
+        };
+        self.stream
             .write_all(request.as_bytes())
             .map_err(|error| SdrError::io("write_request", error))?;
-        stream
+        self.stream
             .flush()
             .map_err(|error| SdrError::io("flush_request", error))?;
 
         let mut frame = Vec::new();
-        reader
+        self.reader
             .by_ref()
             .take((SDRD_MAX_RESPONSE_BYTES + 1) as u64)
             .read_until(b'\n', &mut frame)
@@ -153,47 +177,30 @@ impl SdrdAdapter {
 
 impl SdrEngine for SdrdAdapter {
     fn observe(&mut self) -> Result<SdrSnapshot, SdrError> {
-        let mut stream = TcpStream::connect_timeout(&self.address, self.timeout)
-            .map_err(|error| SdrError::io("connect", error))?;
-        stream
-            .set_read_timeout(Some(self.timeout))
-            .map_err(|error| SdrError::io("set_read_timeout", error))?;
-        stream
-            .set_write_timeout(Some(self.timeout))
-            .map_err(|error| SdrError::io("set_write_timeout", error))?;
-        let read_stream = stream
-            .try_clone()
-            .map_err(|error| SdrError::io("clone_stream", error))?;
-        let mut reader = BufReader::new(read_stream);
-
-        let hello_id = self.request_id();
-        let hello: HelloResponse = Self::exchange(&mut stream, &mut reader, "HELLO", hello_id)?;
+        let mut wire = SdrdWire::connect(self.address, self.timeout)?;
+        let hello: HelloResponse = wire.request("HELLO", "")?;
         if hello.server != "p201-sdrd"
             || hello.protocol != "SDRD/1"
-            || hello.mode != "shadow"
-            || hello.mutating_commands
+            || !matches!(hello.mode.as_str(), "shadow" | "controlled")
+            || (hello.mode == "shadow" && hello.mutating_commands)
         {
             return Err(SdrError::new(
                 "unexpected_server",
-                "SDRD endpoint is not the expected read-only shadow server",
+                "SDRD endpoint identity or mode is inconsistent",
             ));
         }
 
-        let capabilities_id = self.request_id();
-        let capabilities: CapabilitiesResponse =
-            Self::exchange(&mut stream, &mut reader, "CAPABILITIES", capabilities_id)?;
-        if capabilities.mode != "shadow" {
+        let capabilities: CapabilitiesResponse = wire.request("CAPABILITIES", "")?;
+        if capabilities.mode != hello.mode {
             return Err(SdrError::new(
                 "unexpected_mode",
-                "SDRD capabilities are not in shadow mode",
+                "SDRD hello and capability modes do not match",
             ));
         }
 
-        let health_id = self.request_id();
-        let health: HealthResponse = Self::exchange(&mut stream, &mut reader, "HEALTH", health_id)?;
+        let health: HealthResponse = wire.request("HEALTH", "")?;
 
-        let quit_id = self.request_id();
-        let quit: QuitResponse = Self::exchange(&mut stream, &mut reader, "QUIT", quit_id)?;
+        let quit: QuitResponse = wire.request("QUIT", "")?;
         if !quit.closing {
             return Err(SdrError::new(
                 "quit_rejected",
@@ -210,11 +217,14 @@ impl SdrEngine for SdrdAdapter {
             && health.fpga_identity_valid;
         Ok(SdrSnapshot {
             online: true,
-            healthy: health.healthy && health.health_flags == 0 && iio_visible,
+            healthy: health.healthy
+                && health.health_flags == 0
+                && iio_visible
+                && !health.session_faulted,
             health_flags: health.health_flags,
             iio_visible,
             can_retune: capabilities.radio_control,
-            can_capture_iq: capabilities.raw_iq_capture,
+            can_capture_iq: capabilities.raw_iq_capture && capabilities.max_capture_bytes > 0,
             fpga_available,
             fpga_backend: capabilities.fpga_backend,
             fpga_summary_version: capabilities.fpga_summary_version,
@@ -261,6 +271,8 @@ struct CapabilitiesResponse {
     iio_visible: bool,
     radio_control: bool,
     raw_iq_capture: bool,
+    #[serde(default)]
+    max_capture_bytes: u64,
     fpga_backend: String,
     fpga_identity_valid: bool,
     fpga_summary_version: u32,
@@ -285,6 +297,8 @@ struct HealthResponse {
     fpga_configured: bool,
     fpga_mapped: bool,
     fpga_identity_valid: bool,
+    #[serde(default)]
+    session_faulted: bool,
 }
 
 #[derive(Deserialize)]
@@ -306,18 +320,18 @@ pub struct SdrError {
 }
 
 impl SdrError {
-    fn new(code: &'static str, message: impl Into<String>) -> Self {
+    pub(crate) fn new(code: &'static str, message: impl Into<String>) -> Self {
         Self {
             code,
             message: message.into(),
         }
     }
 
-    fn io(operation: &'static str, error: std::io::Error) -> Self {
+    pub(crate) fn io(operation: &'static str, error: std::io::Error) -> Self {
         Self::new(operation, error.to_string())
     }
 
-    fn protocol(operation: &'static str, error: serde_json::Error) -> Self {
+    pub(crate) fn protocol(operation: &'static str, error: serde_json::Error) -> Self {
         Self::new(operation, error.to_string())
     }
 }
