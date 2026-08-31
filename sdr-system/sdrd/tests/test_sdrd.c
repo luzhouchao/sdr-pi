@@ -187,6 +187,26 @@ static void test_devmem_requires_explicit_gate(void) {
   assert(strstr(error, "allow_devmem=true") != NULL);
 }
 
+static void test_iio_control_limits(void) {
+  sdrd_config_t config;
+  char error[256];
+  sdrd_config_defaults(&config);
+  assert(config.iio_timeout_ms == 2000u);
+  assert(config.iio_buffer_samples == 4096u);
+  assert(config.retune_settle_ms == 5u);
+  config.iio_buffer_samples = 128u;
+  assert(sdrd_config_validate(&config, error, sizeof(error)) == -ERANGE);
+  config.iio_buffer_samples = 4096u;
+  config.retune_settle_ms = 1001u;
+  assert(sdrd_config_validate(&config, error, sizeof(error)) == -ERANGE);
+  config.retune_settle_ms = 5u;
+  assert(snprintf(
+             config.development_data_root,
+             sizeof(config.development_data_root),
+             "/tmp/sdr-agent-development") > 0);
+  assert(sdrd_config_validate(&config, error, sizeof(error)) == -EINVAL);
+}
+
 static void test_controlled_allowlist_and_restore(void) {
   sdrd_config_t config;
   sdrd_session_t session;
@@ -402,6 +422,7 @@ int main(void) {
   test_shadow_config_and_protocol(root);
   test_fake_uio_identity(root);
   test_devmem_requires_explicit_gate();
+  test_iio_control_limits();
   test_controlled_allowlist_and_restore();
   test_disconnect_and_failure_restore();
   remove_test_tree(root);

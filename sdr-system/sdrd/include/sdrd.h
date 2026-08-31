@@ -49,6 +49,9 @@ typedef struct sdrd_config {
   int require_iomem_region;
   int allow_devmem;
   char development_data_root[SDRD_MAX_PATH];
+  uint32_t iio_timeout_ms;
+  uint32_t iio_buffer_samples;
+  uint32_t retune_settle_ms;
   uint64_t min_center_hz;
   uint64_t max_center_hz;
   uint32_t min_sample_rate_hz;
@@ -63,7 +66,9 @@ typedef struct sdrd_radio_state {
   uint32_t sample_rate_hz;
   uint32_t rf_bandwidth_hz;
   char gain_mode[32];
+  char hardware_gain[32];
   uint32_t enabled_channels;
+  uint32_t scan_channel_mask;
 } sdrd_radio_state_t;
 
 typedef struct sdrd_capture_request {

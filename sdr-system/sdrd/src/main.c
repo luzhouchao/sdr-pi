@@ -1,9 +1,11 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include "sdrd.h"
+#include "sdrd_iio.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
+#include <inttypes.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,7 +22,10 @@ static void handle_signal(int signal_number) {
 }
 
 static void usage(const char *program) {
-  fprintf(stderr, "Usage: %s --config PATH --check-config|--probe|--serve\n", program);
+  fprintf(
+      stderr,
+      "Usage: %s --config PATH --check-config|--probe|--probe-radio|--serve\n",
+      program);
 }
 
 static int send_all(int fd, const char *data, size_t length) {
@@ -67,7 +72,10 @@ static int receive_line(int fd, char *line, size_t line_size) {
   return -EMSGSIZE;
 }
 
-static int serve_client(int fd, const sdrd_config_t *config) {
+static int serve_client(
+    int fd,
+    const sdrd_config_t *config,
+    const sdrd_radio_ops_t *radio) {
   char line[SDRD_MAX_LINE];
   char response[SDRD_MAX_RESPONSE];
   sdrd_session_t session;
@@ -85,7 +93,7 @@ static int serve_client(int fd, const sdrd_config_t *config) {
       break;
     }
     response_rc = sdrd_handle_request(
-        config, &session, NULL, line, response, sizeof(response));
+        config, &session, radio, line, response, sizeof(response));
     if (response_rc != 0) {
       result = response_rc;
       break;
@@ -99,13 +107,13 @@ static int serve_client(int fd, const sdrd_config_t *config) {
       break;
     }
   }
-  if (sdrd_session_close(&session, NULL) != 0 && result == 0) {
+  if (sdrd_session_close(&session, radio) != 0 && result == 0) {
     result = -EIO;
   }
   return result;
 }
 
-static int run_server(const sdrd_config_t *config) {
+static int run_server(const sdrd_config_t *config, const sdrd_radio_ops_t *radio) {
   int server_fd;
   int reuse = 1;
   struct sockaddr_in address;
@@ -143,7 +151,7 @@ static int run_server(const sdrd_config_t *config) {
       (void)close(server_fd);
       return -errno;
     }
-    (void)serve_client(client_fd, config);
+    (void)serve_client(client_fd, config, radio);
     (void)close(client_fd);
   }
   (void)close(server_fd);
@@ -152,11 +160,14 @@ static int run_server(const sdrd_config_t *config) {
 
 int main(int argc, char **argv) {
   const char *config_path = NULL;
-  enum { ACTION_NONE, ACTION_CHECK, ACTION_PROBE, ACTION_SERVE } action = ACTION_NONE;
+  enum { ACTION_NONE, ACTION_CHECK, ACTION_PROBE, ACTION_RADIO_PROBE, ACTION_SERVE } action = ACTION_NONE;
   sdrd_config_t config;
+  sdrd_iio_adapter_t *iio_adapter = NULL;
+  sdrd_radio_ops_t radio;
   char error[256];
   int index;
   int rc;
+  memset(&radio, 0, sizeof(radio));
   for (index = 1; index < argc; ++index) {
     if (strcmp(argv[index], "--config") == 0 && index + 1 < argc) {
       config_path = argv[++index];
@@ -164,6 +175,8 @@ int main(int argc, char **argv) {
       action = ACTION_CHECK;
     } else if (strcmp(argv[index], "--probe") == 0) {
       action = ACTION_PROBE;
+    } else if (strcmp(argv[index], "--probe-radio") == 0) {
+      action = ACTION_RADIO_PROBE;
     } else if (strcmp(argv[index], "--serve") == 0) {
       action = ACTION_SERVE;
     } else {
@@ -201,9 +214,47 @@ int main(int argc, char **argv) {
     }
     return rc == 0 ? 0 : 1;
   }
+  if (action == ACTION_RADIO_PROBE) {
+    sdrd_radio_state_t state;
+    if (config.mode != SDRD_MODE_CONTROLLED) {
+      fprintf(stderr, "radio_probe_requires=mode=controlled\n");
+      return 1;
+    }
+    rc = sdrd_iio_adapter_create(&config, &iio_adapter, error, sizeof(error));
+    if (rc == 0) {
+      sdrd_iio_adapter_ops(iio_adapter, &radio);
+      rc = radio.snapshot(radio.context, &state);
+      if (rc != 0) {
+        (void)snprintf(error, sizeof(error), "radio state snapshot failed");
+      }
+    }
+    if (rc != 0) {
+      fprintf(stderr, "radio_probe_error=%s rc=%d\n", error, rc);
+      sdrd_iio_adapter_destroy(iio_adapter);
+      return 1;
+    }
+    printf(
+        "{\"radio_probe\":\"ok\",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"scan_channel_mask\":%u}\n",
+        state.center_hz,
+        state.sample_rate_hz,
+        state.rf_bandwidth_hz,
+        state.gain_mode,
+        state.scan_channel_mask);
+    sdrd_iio_adapter_destroy(iio_adapter);
+    return 0;
+  }
   (void)signal(SIGINT, handle_signal);
   (void)signal(SIGTERM, handle_signal);
-  rc = run_server(&config);
+  if (config.mode == SDRD_MODE_CONTROLLED) {
+    rc = sdrd_iio_adapter_create(&config, &iio_adapter, error, sizeof(error));
+    if (rc != 0) {
+      fprintf(stderr, "iio_adapter_error=%s rc=%d\n", error, rc);
+      return 1;
+    }
+    sdrd_iio_adapter_ops(iio_adapter, &radio);
+  }
+  rc = run_server(&config, iio_adapter != NULL ? &radio : NULL);
+  sdrd_iio_adapter_destroy(iio_adapter);
   if (rc != 0) {
     fprintf(stderr, "server_error=%s rc=%d\n", strerror(-rc), rc);
     return 1;

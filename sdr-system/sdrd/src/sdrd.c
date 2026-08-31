@@ -103,6 +103,9 @@ void sdrd_config_defaults(sdrd_config_t *config) {
       config->development_data_root,
       sizeof(config->development_data_root),
       "/tmp/sdr-agent-dev");
+  config->iio_timeout_ms = 2000u;
+  config->iio_buffer_samples = 4096u;
+  config->retune_settle_ms = 5u;
   config->min_center_hz = 70000000u;
   config->max_center_hz = 6000000000u;
   config->min_sample_rate_hz = 2083333u;
@@ -227,6 +230,27 @@ static int set_config_value(
         sizeof(config->development_data_root),
         value);
   }
+  if (strcmp(key, "iio_timeout_ms") == 0) {
+    if (parse_u32(value, &config->iio_timeout_ms) != 0) {
+      set_error(error, error_size, "invalid iio_timeout_ms");
+      return -EINVAL;
+    }
+    return 0;
+  }
+  if (strcmp(key, "iio_buffer_samples") == 0) {
+    if (parse_u32(value, &config->iio_buffer_samples) != 0) {
+      set_error(error, error_size, "invalid iio_buffer_samples");
+      return -EINVAL;
+    }
+    return 0;
+  }
+  if (strcmp(key, "retune_settle_ms") == 0) {
+    if (parse_u32(value, &config->retune_settle_ms) != 0) {
+      set_error(error, error_size, "invalid retune_settle_ms");
+      return -EINVAL;
+    }
+    return 0;
+  }
   if (strcmp(key, "min_center_hz") == 0) {
     return parse_u64(value, &config->min_center_hz);
   }
@@ -343,6 +367,18 @@ int sdrd_config_validate(
       strstr(config->development_data_root, "..") != NULL) {
     set_error(error, error_size, "development_data_root must stay under /tmp/sdr-agent-dev");
     return -EINVAL;
+  }
+  if (config->iio_timeout_ms < 100u || config->iio_timeout_ms > 10000u) {
+    set_error(error, error_size, "iio_timeout_ms must be between 100 and 10000");
+    return -ERANGE;
+  }
+  if (config->iio_buffer_samples < 256u || config->iio_buffer_samples > 65536u) {
+    set_error(error, error_size, "iio_buffer_samples must be between 256 and 65536");
+    return -ERANGE;
+  }
+  if (config->retune_settle_ms > 1000u) {
+    set_error(error, error_size, "retune_settle_ms must not exceed 1000");
+    return -ERANGE;
   }
   if (config->min_center_hz < 70000000u || config->max_center_hz > 6000000000u ||
       config->min_center_hz > config->max_center_hz) {

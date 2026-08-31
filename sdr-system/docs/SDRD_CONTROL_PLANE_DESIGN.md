@@ -11,7 +11,7 @@ Pi Harness and the AD9361/FPGA data path:
 Pi Rust Harness
   -> persistent SDRD/1 control connection
 SDR Linux C sdrd
-  -> local IIO adapter for AD9361 and bounded IQ capture (future)
+  -> local IIO adapter for AD9361 and bounded IQ capture
   -> local UIO/mmap adapter for validated FPGA pages (future)
 FPGA
   -> fixed-shape streaming primitives
@@ -42,7 +42,7 @@ with `fpga_backend=disabled` and does not touch MMIO.
 | Module | Version 1 | Later controlled mode |
 |---|---|---|
 | Configuration | strict `key=value`, shadow default | signed/versioned profile allowlist |
-| Linux health | IIO sysfs visibility | temperature, network, drops, IIOD ownership |
+| Linux/IIO Adapter | IIO visibility, local context, state restore, bounded IQ | temperature, drops, long-run ownership |
 | FPGA adapter | disabled, optional read-only identity | UIO mapping and atomic profile generation |
 | Wire server | HELLO/CAPABILITIES/HEALTH plus tested controlled schema | binary observation stream |
 
@@ -87,10 +87,11 @@ Only one process may own the RX buffer. Migration is staged:
 
 1. Current IIOD remains the only acquisition owner; `sdrd` is health-only.
 2. Pi implements a `RemoteSdrAdapter` against SDRD/1 and tests mock/replay.
-3. A later `sdrd` version adds local IIO in shadow mode without concurrent RX
-   buffer creation.
-4. After state snapshot/restore and fallback tests, `sdrd` may become the sole
-   session owner and provide raw-IQ passthrough plus compact observations.
+3. The development-controlled `sdrd` now opens one local IIO context and creates
+   one session buffer only after ownership, with live-tested snapshot/restore.
+4. After disconnect, timeout, in-flight cancel, reconnect, and repeated-session
+   tests, `sdrd` may become the enabled sole session owner and provide bounded
+   raw-IQ references plus compact observations.
 5. FPGA capability is enabled only after the loaded image, address page, UIO or
    `/proc/iomem` resource, ABI, build ID, and rollback image are verified.
 

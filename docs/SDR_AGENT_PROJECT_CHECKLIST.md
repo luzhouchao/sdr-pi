@@ -95,12 +95,18 @@ Evidence:
 - [x] Implement the Adapter-backed connection ownership state machine and prove
       stop plus restore on explicit stop, disconnect, apply failure, and capture
       failure with a fake radio backend.
-- [ ] Implement one persistent SDR-local IIO context and RX buffer owner.
+- [x] Implement and live-validate one persistent SDR-local IIO context and one
+      session-owned RX buffer in the C Adapter.
 - [ ] Save and restore LO, sample rate, RF bandwidth, gain mode, and enabled
       channels on success, error, timeout, cancellation, and disconnect.
-- [ ] Implement bounded retune and settle handling in `sdrd`.
-- [ ] Implement bounded IQ capture in `sdrd`.
+- [x] Live-validate restoration of LO, sample rate, RF bandwidth, gain mode, and
+      scan-channel mask after success and an apply/readback error.
+- [x] Implement and live-validate bounded retune, explicit settle delay, and
+      quantized LO readback tolerance in `sdrd`.
+- [x] Implement and live-validate bounded complex-int16 IQ capture in `sdrd`.
 - [ ] Implement direct stop/cancel in `sdrd`.
+- [x] Implement and live-validate explicit post-action stop, buffer teardown,
+      and state restoration; in-flight cancellation remains open above.
 - [ ] Add sequence, overflow, dropped-sample, timeout, and health metadata to all
       execution results.
 - [ ] Deploy executable `sdrd` as an enabled service on the SDR with a tested
@@ -113,6 +119,7 @@ Evidence:
 - [`../sdr-system/docs/BASELINE_2026-08-31.md`](../sdr-system/docs/BASELINE_2026-08-31.md)
 - [`../sdr-system/docs/SDRD_SHADOW_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_SHADOW_VALIDATION_2026-08-31.md)
 - [`../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md)
+- [`../sdr-system/docs/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md)
 - [`SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md)
 
 ## 4. Raspberry Pi acquisition, aggregation, and sweep

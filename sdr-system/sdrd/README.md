@@ -18,9 +18,11 @@ That image does not expose the later SUM8 page at `0x43c00000`, so
 `fpga_backend=disabled`.
 
 The library now also contains the controlled-mode command parser, ownership
-state machine, bounded-capture contract, and radio Adapter interface. These are
-unit-tested with a fake Adapter but are not enabled on the SDR: the production
-IIO Adapter does not exist yet, and capability reporting therefore fails closed.
+state machine, bounded-capture contract, and a local libiio 0.21 Adapter. The
+Adapter keeps one process-local IIO context, snapshots all controlled state,
+uses one session buffer, writes bounded complex-int16 files, and restores state
+on stop or failure. It is development-validated but is not installed as an SDR
+service; the deployed SDR remains in shadow mode.
 [`config/sdrd-controlled-interface.conf`](config/sdrd-controlled-interface.conf)
 documents the accepted limits but is explicitly not a deployment configuration.
 
@@ -78,7 +80,11 @@ sdr-system/sdrd/build/sdrd \
   --config sdr-system/sdrd/config/sdrd-shadow.conf --check-config
 ```
 
-## Static ARMv7 cross-build
+## ARMv7 builds
+
+The static Docker build remains valid for shadow-only probes. Do not use that
+artifact for controlled mode: a static glibc 2.36 executable cannot safely
+`dlopen` the SDR's glibc 2.28 libiio and fails before opening an IIO context.
 
 ```bash
 docker build -t p201-sdrd-cross -f sdr-system/sdrd/Dockerfile.cross \
@@ -90,9 +96,19 @@ file sdr-system/sdrd/build-armhf/sdrd
 sha256sum sdr-system/sdrd/build-armhf/sdrd
 ```
 
-Do not start `--serve` on the SDR until `--check-config` and `--probe` pass.
-Version 1 should be run manually from a temporary directory; it must not replace
-IIOD or be added to boot.
+Controlled mode uses the Xilinx 2019.1 hard-float toolchain, whose dynamic
+artifact requires only GLIBC 2.17 while the SDR provides GLIBC 2.28:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File `
+  sdr-system/sdrd/scripts/build-armhf-xilinx.ps1
+```
+
+Always inspect the emitted GLIBC requirements and artifact hash before staging.
+
+Do not start controlled `--serve` until `--check-config`, `--probe`, and the
+read-only `--probe-radio` pass. Run it manually from a unique directory below
+`/tmp/sdr-agent-dev`; it must not replace IIOD or be added to boot.
 
 For a host-only socket smoke test, use
 `config/sdrd-loopback-test.conf`; it binds only to `127.0.0.1` and must not be
