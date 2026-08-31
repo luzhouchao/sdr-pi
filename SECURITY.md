@@ -7,6 +7,8 @@ agent dumps, or configuration files with embedded credentials.
 
 - Pass credentials through an interactive prompt, SSH agent, or a local
   untracked environment file.
+- Keep P201 Pro credentials under `sdr-system/private/`; only that directory's
+  policy files may be tracked.
 - CLI password options must default to an empty value.
 - Keep local environment files under ignored paths such as `.env` or
   `secrets/`.
