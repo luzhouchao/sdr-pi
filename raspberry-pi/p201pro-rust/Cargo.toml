@@ -8,6 +8,11 @@ license = "MIT"
 
 [dependencies]
 industrial-io = "=0.6.1"
+rustfft = "=6.4.1"
+
+[[bin]]
+name = "p201pro-fft-bench"
+path = "src/bin/fft_bench.rs"
 
 [profile.release]
 lto = "thin"
