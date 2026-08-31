@@ -11,9 +11,10 @@ import {
 } from "./session-protocol.mjs";
 
 export class SessionRuntime {
-  constructor({ createAgent, plannerMeta }) {
+  constructor({ createAgent, plannerMeta, runLease }) {
     this.createAgent = createAgent;
     this.plannerMeta = plannerMeta;
+    this.runLease = runLease;
     this.agent = undefined;
     this.unsubscribe = undefined;
     this.sessionGeneration = undefined;
@@ -22,6 +23,7 @@ export class SessionRuntime {
     this.currentContext = undefined;
     this.planSubmittedForRequest = undefined;
     this.emit = () => {};
+    this.releaseRun = undefined;
   }
 
   async dispatch(command, emit) {
@@ -68,6 +70,10 @@ export class SessionRuntime {
   #prompt(command) {
     this.#requireSession(command);
     if (this.active) throw new Error("Agent is busy; use steer or follow_up");
+    this.releaseRun = this.runLease?.acquire("interactive_session");
+    if (this.runLease !== undefined && this.releaseRun === undefined) {
+      throw new Error("Planner Worker is busy with another inference run");
+    }
     this.active = true;
     this.#runPrompt(command.context);
     return makeSessionResponse(command, true, { accepted: true });
@@ -149,6 +155,8 @@ export class SessionRuntime {
         );
       })
       .finally(() => {
+        this.releaseRun?.();
+        this.releaseRun = undefined;
         if (this.active) {
           this.active = false;
           this.queued = 0;

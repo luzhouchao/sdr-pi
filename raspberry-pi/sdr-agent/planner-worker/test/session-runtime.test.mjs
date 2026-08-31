@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { normalizeAction } from "../src/protocol.mjs";
+import { RunLease } from "../src/run-lease.mjs";
 import { parseSessionCommand } from "../src/session-protocol.mjs";
 import { SessionRuntime } from "../src/session-runtime.mjs";
 
@@ -106,11 +107,12 @@ function command(type, id, extra = {}) {
   );
 }
 
-function runtime(blocking = false) {
+function runtime(blocking = false, runLease = new RunLease()) {
   let fake;
   const instance = new SessionRuntime({
     plannerMeta: { provider: "test", model: "test" },
     createAgent: ({ onPlan }) => (fake = new FakeAgent(onPlan, blocking)),
+    runLease,
   });
   return { instance, getFake: () => fake };
 }
@@ -168,4 +170,20 @@ test("rejects stale generation and active close", async () => {
   assert.match(close.error, /abort/);
   await instance.dispatch(command("abort", 5), sink);
   await new Promise((resolve) => setImmediate(resolve));
+});
+
+test("shares one inference lease with the one-shot planner", async () => {
+  const lease = new RunLease();
+  const releasePlanner = lease.acquire("one_shot_planner");
+  const { instance } = runtime(false, lease);
+  const sink = () => {};
+  await instance.dispatch(command("open_session", 1), sink);
+  const blocked = await instance.dispatch(command("prompt", 2, { context: context() }), sink);
+  assert.equal(blocked.success, false);
+  assert.match(blocked.error, /busy/);
+  releasePlanner();
+  const accepted = await instance.dispatch(command("prompt", 3, { context: context() }), sink);
+  assert.equal(accepted.success, true);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(lease.state().busy, false);
 });
