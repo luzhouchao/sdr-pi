@@ -1,5 +1,16 @@
 # Cross-layer roadmap
 
+## Phase 0: plan-only SDR Agent runtime
+
+- Run a stateless `pi-agent-core` Planner Worker on the Raspberry Pi while
+  llama.cpp/Qwen inference remains on the 4090.
+- Correlate every proposal by request ID and Controller session generation.
+- Validate all proposals in Rust against state, capability and numeric limits.
+- Read live shadow health through the read-only SDRD/1 Adapter and abort plans
+  on connection, schema or correlation failure.
+- Exercise mock/replay contexts before any plan can reach a hardware adapter.
+- Keep the current original-BOOT/shadow-SDRD path read-only.
+
 ## Phase 1: stable Raspberry Pi acquisition
 
 - Keep a session-owned libiio context and RX buffer.

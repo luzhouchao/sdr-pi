@@ -13,6 +13,8 @@ IIOD:  ip:192.168.1.10
 Contents:
 
 - `p201pro-rust/`: Rust/libiio probe and capture benchmark.
+- `sdr-agent/`: deterministic Rust Controller and lightweight Pi Agent Planner
+  Worker.
 - `config/`: network/device configuration examples and read-only checks.
 - `docs/`: design research and measured results.
 
