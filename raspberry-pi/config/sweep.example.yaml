@@ -1,0 +1,43 @@
+schema_version: 1
+profile_id: wifi_24g_demo
+
+device:
+  uri: ip:192.168.1.10
+  rx_channels: [voltage0, voltage1]
+
+sweep:
+  mode: range
+  start_hz: 2400000000
+  stop_hz: 2500000000
+  step_hz: 8000000
+  settle_ms: 5
+  captures_per_step: 4
+  restore_original_tuning: true
+  continuous_coverage: true
+  max_points: 4096
+
+capture:
+  sample_rate_hz: 10000000
+  rf_bandwidth_hz: 8000000
+  buffer_samples: 65536
+  gain_mode: slow_attack
+
+processing:
+  backend: auto
+  fft_size: 2048
+  overlap_percent: 50
+  window: hann
+  psd_averages: 4
+  coarse_bins: 96
+  top_k: 4
+
+trigger:
+  enabled: true
+  peak_above_noise_db: 12.0
+  raw_capture_ms: 20
+  cooldown_ms: 500
+
+output:
+  format: jsonl
+  include_coarse_psd: true
+  include_raw_iq: triggered_only

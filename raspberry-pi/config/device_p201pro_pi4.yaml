@@ -26,7 +26,8 @@ capture:
   sample_rate_hz: 2100000
   rf_bandwidth_hz: 2000000
   buffer_size: 65536
-  nfft: 8192
+  nfft: 2048
+  fft_overlap_percent: 50
   compute_backend: cpu
   use_iq: true
 

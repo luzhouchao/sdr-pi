@@ -1,0 +1,17 @@
+FROM debian:trixie-slim
+
+RUN dpkg --add-architecture arm64 \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        ca-certificates \
+        cmake \
+        file \
+        g++-aarch64-linux-gnu \
+        gcc-aarch64-linux-gnu \
+        git \
+        libc6-dev-arm64-cross \
+        libvulkan-dev:arm64 \
+        ninja-build \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
