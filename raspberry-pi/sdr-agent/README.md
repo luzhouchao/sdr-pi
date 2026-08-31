@@ -28,6 +28,9 @@ SSH, IIO, FPGA-register or SDR tools.
   can be built as a static ARM64 binary.
 - `planner-worker/`: headless `pi-agent-core` worker using one `submit_plan`
   tool and the existing 4090 llama.cpp OpenAI-compatible endpoint.
+  Its tested, not-yet-deployed `SessionRuntime` reuses Pi Agent's public
+  prompt/steer/follow-up/abort/event interface for a future thin terminal while
+  retaining the one-shot Planner as the stable path.
 - `controller/src/recognizer.rs`: bounded local-recognition protocol with replay
   and Unix-socket Adapters. The production C++ worker and model are not yet
   deployed, so availability remains false.
@@ -84,6 +87,11 @@ Planner protocol tests do not call a model:
 cd raspberry-pi/sdr-agent/planner-worker
 npm test
 ```
+
+These tests also cover the Pi-inspired session command subset, persistent
+Agent Adapter, queue bound, abort and stale-generation behavior. The session
+socket and terminal are not enabled until one-shot and interactive runs share
+one global inference lease.
 
 Rust checks:
 
