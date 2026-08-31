@@ -587,6 +587,11 @@ static int radio_ops_available(const sdrd_radio_ops_t *radio) {
          radio->stop != NULL && radio->restore != NULL;
 }
 
+static int summary_ops_available(const sdrd_radio_ops_t *radio) {
+  return radio != NULL && radio->summary_context != NULL && radio->begin_summary != NULL &&
+         radio->capture_summary != NULL && radio->cancel_summary != NULL;
+}
+
 static int valid_feature_id(const char *feature_id) {
   size_t index;
   const size_t length = feature_id == NULL ? 0u : strlen(feature_id);
@@ -697,6 +702,12 @@ static int handle_start_session(
   rc = radio->begin_session(radio->context);
   if (rc != 0) {
     return format_error(request->request_id, "session_begin_failed", response, response_size);
+  }
+  if (summary_ops_available(radio) != 0) {
+    rc = radio->begin_summary(radio->summary_context);
+    if (rc != 0) {
+      return format_error(request->request_id, "summary_begin_failed", response, response_size);
+    }
   }
   session->generation = generation;
   session->active = 1;
@@ -832,6 +843,67 @@ static int handle_capture_iq(
       result.dropped_samples,
       result.overflow != 0 ? "true" : "false",
       result.relative_path);
+  return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
+}
+
+static int handle_capture_summary(
+    const parsed_request_t *request,
+    sdrd_session_t *session,
+    const sdrd_radio_ops_t *radio,
+    char *response,
+    size_t response_size) {
+  sdrd_summary_request_t summary;
+  sdrd_summary_result_t result;
+  int rc;
+  int written;
+  memset(&summary, 0, sizeof(summary));
+  memset(&result, 0, sizeof(result));
+  if (request_has_fields(request, 7u) != 0 ||
+      parse_u64(request->fields[3], &summary.generation) != 0 ||
+      parse_u32(request->fields[4], &summary.frame_samples) != 0 ||
+      parse_u32(request->fields[5], &summary.aggregate_frames) != 0 ||
+      parse_u32(request->fields[6], &summary.timeout_ms) != 0) {
+    return format_error(request->request_id, "invalid_arguments", response, response_size);
+  }
+  if (session->active == 0 || session->profile_applied == 0 ||
+      summary.generation != session->generation) {
+    return format_error(request->request_id, "stale_or_missing_session", response, response_size);
+  }
+  if (summary.frame_samples < 64u || summary.frame_samples > 65535u ||
+      summary.aggregate_frames == 0u || summary.aggregate_frames > 65535u ||
+      summary.timeout_ms == 0u || summary.timeout_ms > 5000u) {
+    return format_error(request->request_id, "summary_out_of_bounds", response, response_size);
+  }
+  if (summary_ops_available(radio) == 0) {
+    return format_error(request->request_id, "fpga_aggregate_unavailable", response, response_size);
+  }
+  rc = radio->capture_summary(radio->summary_context, &summary, &result);
+  if (rc != 0) {
+    const int restore_rc = sdrd_session_close(session, radio);
+    const char *code = rc == -ETIMEDOUT ? "summary_timeout_restored" : "summary_failed_restored";
+    if (restore_rc != 0) {
+      code = "summary_failed_restore_fault";
+    }
+    return format_error(request->request_id, code, response, response_size);
+  }
+  written = snprintf(
+      response,
+      response_size,
+      "{\"schema_version\":1,\"request_id\":%" PRIu64
+      ",\"status\":\"ok\",\"generation\":%" PRIu64
+      ",\"sequence\":%" PRIu64 ",\"aggregate_samples\":%" PRIu64
+      ",\"rx0_power_lo\":%u,\"rx0_power_mid\":%u,\"rx0_power_hi\":%u"
+      ",\"rx0_clip_count\":%" PRIu64 ",\"status_flags\":%u,\"elapsed_us\":%" PRIu64 "}\n",
+      request->request_id,
+      summary.generation,
+      result.sequence,
+      result.aggregate_samples,
+      result.rx0_power_lo,
+      result.rx0_power_mid,
+      result.rx0_power_hi,
+      result.rx0_clip_count,
+      result.status_flags,
+      result.elapsed_us);
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
 
@@ -988,6 +1060,7 @@ int sdrd_handle_request(
   } else if (strcmp(request.command, "START_SESSION") == 0 ||
              strcmp(request.command, "APPLY_PROFILE") == 0 ||
              strcmp(request.command, "CAPTURE_IQ") == 0 ||
+             strcmp(request.command, "CAPTURE_SUMMARY") == 0 ||
              strcmp(request.command, "EXECUTION_STATUS") == 0 ||
              strcmp(request.command, "STOP_SESSION") == 0) {
     if (config->mode != SDRD_MODE_CONTROLLED) {
@@ -1004,6 +1077,9 @@ int sdrd_handle_request(
     }
     if (strcmp(request.command, "CAPTURE_IQ") == 0) {
       return handle_capture_iq(config, &request, session, radio, response, response_size);
+    }
+    if (strcmp(request.command, "CAPTURE_SUMMARY") == 0) {
+      return handle_capture_summary(&request, session, radio, response, response_size);
     }
     if (strcmp(request.command, "EXECUTION_STATUS") == 0) {
       return handle_execution_status(&request, session, response, response_size);

@@ -52,6 +52,14 @@ adjacent-candidate merge needed to validate this result shape before the fixed
 work is moved into the SDR. It deliberately leaves raw-IQ trigger capture and
 FPGA activation for later verified slices.
 
+The Harness now implements the production `SweepEngine.run(plan)` seam and the
+SDRD FPGA-summary Adapter. It validates and expands range/center plans, keeps one
+SDRD session across all points, validates fixed summary results, merges
+cross-point activity, and emits existing Agent candidate observations. Replay
+tests cover the complete report path. On the real original image the Adapter
+fails before session ownership because `fpga_aggregate=false`; a compatible
+FPGA summary page is now the next required implementation input.
+
 ## Validation before touching the radio
 
 The plan is rejected before the first LO write unless all rules pass:

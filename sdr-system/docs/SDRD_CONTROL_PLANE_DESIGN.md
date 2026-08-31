@@ -75,6 +75,14 @@ where its worker has not completed `START_SESSION`; `sdrd` itself never accepts
 a stale or not-yet-active generation. The IIO Adapter latches cancellation once
 the session begins and calls `iio_buffer_cancel()` when a refill is active.
 
+The optional FPGA-summary seam is attached only after the configured UIO or
+guarded `/dev/mem` page passes identity probing. `CAPTURE_SUMMARY` keeps that
+mapping persistent, bounds frame count and timeout, checks the same cancellation
+generation while polling, and returns fixed power/quality metadata. Capability
+probing remains independent of configuration claims: the current original
+image continues to report the seam unavailable, so the Harness exits before
+radio ownership.
+
 Development capture files are namespaced below
 `/tmp/sdr-agent-dev/<feature-id>/`, capped at 64 MiB by default, excluded from
 Git, and removed after the feature validation. Source interfaces, tests,

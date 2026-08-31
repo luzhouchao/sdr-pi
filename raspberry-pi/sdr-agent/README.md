@@ -86,6 +86,14 @@ endpoint; all other action kinds still fail closed in this executor slice.
 The same Adapter exposes a generation-correlated cancel operation on an
 independent SDRD/1 connection.
 
+`SweepEngine.run(plan)` now validates a bounded range or explicit center list,
+executes all points through one SDRD ownership session, consumes fixed FPGA
+aggregate summaries, validates sequence/shape/quality, derives a cross-point
+noise floor, merges adjacent active points, and converts compact candidates to
+the existing Planner observation. Replay and production SDRD Adapters exercise
+the same seam. The production Adapter fails before `START_SESSION` while the
+loaded image reports `fpga_aggregate=false`.
+
 ## Development checks
 
 Planner protocol tests do not call a model:
@@ -158,6 +166,16 @@ without a Planner call:
 sdr-agent-controller \
   --mode cancel \
   --session-generation 77 \
+  --sdrd 192.168.1.10:43110
+```
+
+The FPGA-summary sweep entry point uses the same validated plan file in tests
+and operations:
+
+```bash
+sdr-agent-controller \
+  --mode sweep \
+  --request controller/config/sweep.fpga-summary.example.json \
   --sdrd 192.168.1.10:43110
 ```
 

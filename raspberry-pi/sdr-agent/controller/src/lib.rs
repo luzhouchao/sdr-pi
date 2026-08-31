@@ -4,6 +4,7 @@ pub mod policy;
 pub mod protocol;
 pub mod recognizer;
 pub mod sdr;
+pub mod sweep;
 
 use planner::{Planner, PlannerError};
 use policy::{ControllerPolicy, PolicyError};

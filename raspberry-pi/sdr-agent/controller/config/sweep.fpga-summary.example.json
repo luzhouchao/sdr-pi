@@ -1,0 +1,17 @@
+{
+  "sweep_id": "survey-2440-2444",
+  "session_generation": 1,
+  "frequencies": {
+    "kind": "range",
+    "start_hz": 2440000000,
+    "stop_hz": 2444000000,
+    "step_hz": 2000000
+  },
+  "sample_rate_hz": 3000000,
+  "rf_bandwidth_hz": 2500000,
+  "settle_ms": 5,
+  "frame_samples": 2048,
+  "aggregate_frames": 16,
+  "point_timeout_ms": 500,
+  "detection_threshold_db": 6.0
+}

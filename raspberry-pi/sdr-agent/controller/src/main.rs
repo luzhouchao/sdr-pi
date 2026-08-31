@@ -11,6 +11,7 @@ use sdr_agent_controller::recognizer::{
     LocalRecognizer, RecognitionRequest, UnixRecognizerAdapter, RECOGNIZER_MAX_FRAME_BYTES,
 };
 use sdr_agent_controller::sdr::{SdrEngine, SdrdAdapter};
+use sdr_agent_controller::sweep::{SdrdFpgaSweepAdapter, SweepEngine, SweepPlan};
 use sdr_agent_controller::Controller;
 use serde::Deserialize;
 use std::env;
@@ -74,11 +75,28 @@ fn run() -> AppResult<()> {
     }
     if !matches!(
         mode.as_str(),
-        "plan" | "observe" | "recognize" | "execute" | "cancel"
+        "plan" | "observe" | "recognize" | "execute" | "cancel" | "sweep"
     ) {
-        return Err(
-            invalid_input("--mode must be plan, observe, recognize, execute, or cancel").into(),
+        return Err(invalid_input(
+            "--mode must be plan, observe, recognize, execute, cancel, or sweep",
+        )
+        .into());
+    }
+
+    if mode == "sweep" {
+        if instruction.is_some() {
+            return Err(invalid_input("--instruction is valid only in plan mode").into());
+        }
+        let address =
+            sdrd_address.ok_or_else(|| invalid_input("--mode sweep requires --sdrd HOST:PORT"))?;
+        let bytes = read_request(&request_path, MAX_FRAME_BYTES)?;
+        let plan: SweepPlan = serde_json::from_slice(&bytes)?;
+        let adapter = SdrdFpgaSweepAdapter::new(address, Duration::from_millis(sdrd_timeout_ms));
+        println!(
+            "{}",
+            serde_json::to_string(&SweepEngine::new(adapter).run(&plan)?)?
         );
+        return Ok(());
     }
 
     if mode == "cancel" {

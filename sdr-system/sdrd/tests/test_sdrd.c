@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include "sdrd.h"
+#include "sdrd_fpga.h"
 
 #include <assert.h>
 #include <errno.h>
@@ -47,11 +48,13 @@ typedef struct fake_radio {
   unsigned int begin_session_calls;
   unsigned int apply_calls;
   unsigned int capture_calls;
+  unsigned int summary_calls;
   unsigned int cancel_calls;
   unsigned int stop_calls;
   unsigned int restore_calls;
   int apply_result;
   int capture_result;
+  int summary_result;
   int restore_result;
 } fake_radio_t;
 
@@ -97,6 +100,34 @@ static int fake_capture(
   return 0;
 }
 
+static int fake_capture_summary(
+    void *context,
+    const sdrd_summary_request_t *request,
+    sdrd_summary_result_t *result) {
+  fake_radio_t *fake = context;
+  ++fake->summary_calls;
+  if (fake->summary_result != 0) {
+    return fake->summary_result;
+  }
+  result->sequence = 21u;
+  result->aggregate_samples =
+      (uint64_t)request->frame_samples * (uint64_t)request->aggregate_frames;
+  result->rx0_power_lo = 123u;
+  result->rx0_power_mid = 456u;
+  result->rx0_power_hi = 0u;
+  result->rx0_clip_count = 2u;
+  result->elapsed_us = 900u;
+  return 0;
+}
+
+static int fake_begin_summary(void *context) {
+  return context == NULL ? -EINVAL : 0;
+}
+
+static int fake_cancel_summary(void *context) {
+  return context == NULL ? -EINVAL : 0;
+}
+
 static int fake_stop(void *context) {
   fake_radio_t *fake = context;
   ++fake->stop_calls;
@@ -127,6 +158,10 @@ static sdrd_radio_ops_t fake_ops(fake_radio_t *fake) {
   ops.snapshot = fake_snapshot;
   ops.apply_profile = fake_apply;
   ops.capture_iq = fake_capture;
+  ops.summary_context = fake;
+  ops.begin_summary = fake_begin_summary;
+  ops.capture_summary = fake_capture_summary;
+  ops.cancel_summary = fake_cancel_summary;
   ops.cancel = fake_cancel;
   ops.stop = fake_stop;
   ops.restore = fake_restore;
@@ -168,6 +203,8 @@ static void test_fake_uio_identity(const char *root) {
   char response[SDRD_MAX_RESPONSE];
   char error[256];
   sdrd_config_t config;
+  sdrd_fpga_adapter_t *adapter = NULL;
+  sdrd_radio_ops_t ops;
   int fd;
   (void)snprintf(iio_root, sizeof(iio_root), "%s/iio-fpga", root);
   must_mkdir(iio_root);
@@ -192,6 +229,12 @@ static void test_fake_uio_identity(const char *root) {
   assert(sdrd_format_response(&config, "SDRD/1 CAPABILITIES 9", response, sizeof(response)) == 0);
   assert(strstr(response, "\"fpga_identity_valid\":true") != NULL);
   assert(strstr(response, "\"fpga_aggregate\":true") != NULL);
+  assert(sdrd_fpga_adapter_create(&config, &adapter, error, sizeof(error)) == 0);
+  memset(&ops, 0, sizeof(ops));
+  sdrd_fpga_adapter_attach(adapter, &ops);
+  assert(ops.summary_context != NULL && ops.begin_summary != NULL &&
+         ops.capture_summary != NULL && ops.cancel_summary != NULL);
+  sdrd_fpga_adapter_destroy(adapter);
 }
 
 static void test_devmem_requires_explicit_gate(void) {
@@ -293,7 +336,17 @@ static void test_controlled_allowlist_and_restore(void) {
              &config,
              &session,
              &ops,
-             "SDRD/1 EXECUTION_STATUS 6 1001",
+             "SDRD/1 CAPTURE_SUMMARY 6 1001 2048 16 500",
+             response,
+             sizeof(response)) == 0);
+  assert(strstr(response, "\"aggregate_samples\":32768") != NULL);
+  assert(strstr(response, "\"rx0_power_mid\":456") != NULL);
+  assert(fake.summary_calls == 1u);
+  assert(sdrd_handle_request(
+             &config,
+             &session,
+             &ops,
+             "SDRD/1 EXECUTION_STATUS 7 1001",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"active\":true") != NULL);
@@ -301,7 +354,7 @@ static void test_controlled_allowlist_and_restore(void) {
              &config,
              &session,
              &ops,
-             "SDRD/1 STOP_SESSION 7 1001",
+             "SDRD/1 STOP_SESSION 8 1001",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"restored\":true") != NULL);
@@ -373,6 +426,33 @@ static void test_disconnect_and_failure_restore(void) {
   assert(session.active == 0 && session.restore_required == 0);
   fake.capture_result = 0;
 
+  fake.summary_result = -ETIMEDOUT;
+  sdrd_session_init(&session);
+  assert(sdrd_handle_request(
+             &config,
+             &session,
+             &ops,
+             "SDRD/1 START_SESSION 18 2600",
+             response,
+             sizeof(response)) == 0);
+  assert(sdrd_handle_request(
+             &config,
+             &session,
+             &ops,
+             "SDRD/1 APPLY_PROFILE 19 2600 2450000000 5000000 4000000 fast_attack 1",
+             response,
+             sizeof(response)) == 0);
+  assert(sdrd_handle_request(
+             &config,
+             &session,
+             &ops,
+             "SDRD/1 CAPTURE_SUMMARY 20 2600 2048 16 500",
+             response,
+             sizeof(response)) == 0);
+  assert(strstr(response, "summary_timeout_restored") != NULL);
+  assert(session.active == 0 && session.restore_required == 0);
+  fake.summary_result = 0;
+
   fake.apply_result = -EIO;
   fake.restore_result = -EIO;
   sdrd_session_init(&session);
@@ -380,14 +460,14 @@ static void test_disconnect_and_failure_restore(void) {
              &config,
              &session,
              &ops,
-             "SDRD/1 START_SESSION 20 3003",
+             "SDRD/1 START_SESSION 30 3003",
              response,
              sizeof(response)) == 0);
   assert(sdrd_handle_request(
              &config,
              &session,
              &ops,
-             "SDRD/1 APPLY_PROFILE 21 3003 1000000000 4000000 3000000 manual 1",
+             "SDRD/1 APPLY_PROFILE 31 3003 1000000000 4000000 3000000 manual 1",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "apply_failed_restore_fault") != NULL);
@@ -397,7 +477,7 @@ static void test_disconnect_and_failure_restore(void) {
              &config,
              &session,
              &ops,
-             "SDRD/1 START_SESSION 22 4004",
+             "SDRD/1 START_SESSION 32 4004",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "restore_fault") != NULL);

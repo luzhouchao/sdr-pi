@@ -87,6 +87,24 @@ typedef struct sdrd_capture_result {
   char relative_path[SDRD_MAX_PATH];
 } sdrd_capture_result_t;
 
+typedef struct sdrd_summary_request {
+  uint64_t generation;
+  uint32_t frame_samples;
+  uint32_t aggregate_frames;
+  uint32_t timeout_ms;
+} sdrd_summary_request_t;
+
+typedef struct sdrd_summary_result {
+  uint64_t sequence;
+  uint64_t aggregate_samples;
+  uint32_t rx0_power_lo;
+  uint32_t rx0_power_mid;
+  uint32_t rx0_power_hi;
+  uint64_t rx0_clip_count;
+  uint32_t status_flags;
+  uint64_t elapsed_us;
+} sdrd_summary_result_t;
+
 typedef struct sdrd_radio_ops {
   void *context;
   int (*begin_session)(void *context);
@@ -96,6 +114,13 @@ typedef struct sdrd_radio_ops {
       void *context,
       const sdrd_capture_request_t *request,
       sdrd_capture_result_t *result);
+  void *summary_context;
+  int (*begin_summary)(void *context);
+  int (*capture_summary)(
+      void *context,
+      const sdrd_summary_request_t *request,
+      sdrd_summary_result_t *result);
+  int (*cancel_summary)(void *context);
   int (*cancel)(void *context);
   int (*stop)(void *context);
   int (*restore)(void *context, const sdrd_radio_state_t *state);

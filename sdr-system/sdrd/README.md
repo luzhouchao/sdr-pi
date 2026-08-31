@@ -43,6 +43,7 @@ Controlled mode adds only these allowlisted messages:
 SDRD/1 START_SESSION <request_id> <generation>
 SDRD/1 APPLY_PROFILE <request_id> <generation> <center_hz> <sample_rate_hz> <rf_bandwidth_hz> <gain_mode> <enabled_channels>
 SDRD/1 CAPTURE_IQ <request_id> <generation> <sample_count> <max_bytes> <feature_id>
+SDRD/1 CAPTURE_SUMMARY <request_id> <generation> <frame_samples> <aggregate_frames> <timeout_ms>
 SDRD/1 EXECUTION_STATUS <request_id> <generation>
 SDRD/1 STOP_SESSION <request_id> <generation>
 SDRD/1 CANCEL_SESSION <request_id> <generation>
@@ -58,6 +59,13 @@ name the active generation; an early or stale generation fails closed. The
 acknowledgement means that cancellation was requested. The owner connection's
 `capture_failed_restored` response proves that capture stopped, the partial file
 was removed, and restoration ran.
+
+`CAPTURE_SUMMARY` is capability-gated by the validated SUM8/AGG8 identity and a
+writable UIO or guarded `/dev/mem` Adapter. It arms one bounded aggregate,
+polls with timeout and cancellation checks, and returns fixed-size power,
+quality, sequence and timing metadata. The current original FPGA image reports
+`fpga_aggregate=false`, so this command cannot run until a compatible image and
+register resource are installed and verified.
 
 `APPLY_PROFILE` accepts only the configured subset of the verified project
 limits: 70 MHz..6 GHz center frequency, 2.083333..30.72 MS/s sample rate,

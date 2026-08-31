@@ -137,12 +137,13 @@ Evidence:
       the real SDR.
 - [x] Define the `SweepPlan` inputs, validation requirements, backend choices,
       result contract, and restoration requirements.
-- [ ] Implement the production `SweepEngine.run(plan)` module.
+- [x] Implement the production `SweepEngine.run(plan)` module with replay and
+      capability-gated SDRD FPGA-summary Adapters.
 - [ ] Ensure one process owns and reuses the IIO context, RX buffer, FFT plan,
       and preallocated sample blocks throughout a sweep.
 - [ ] Execute a bounded multi-frequency sweep with readback and guaranteed state
       restoration.
-- [ ] Feed compact aggregate candidates into the Agent observation contract.
+- [x] Feed compact aggregate candidates into the Agent observation contract.
 - [ ] Feed only selected, bounded IQ windows into local recognition.
 - [ ] Validate aggregate mode at sustained 5 MS/s and 10 MS/s with CPU, dropped
       sample, latency, and thermal measurements.
@@ -153,6 +154,7 @@ Evidence:
 
 - [`SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md`](SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md)
 - [`../raspberry-pi/p201pro-rust/TEST_RESULTS.md`](../raspberry-pi/p201pro-rust/TEST_RESULTS.md)
+- [`SDR_AGENT_FPGA_SWEEP_GATE_2026-09-01.md`](SDR_AGENT_FPGA_SWEEP_GATE_2026-09-01.md)
 
 ## 5. SDR FPGA aggregation
 
@@ -164,6 +166,8 @@ Evidence:
       rollback path.
 - [x] Implement SDRD-side probing for the documented aggregate registers and
       magic value.
+- [x] Implement the bounded SDRD/1 aggregate-summary command, persistent MMIO
+      Adapter, timeout/cancel seam, and fail-closed Harness capability gate.
 - [ ] Recover or create a hardware-validated FPGA base matching the real board
       and documented interfaces.
 - [ ] Implement the first FPGA shadow kernel for frame quality, I/Q sums, power,
@@ -265,7 +269,8 @@ Evidence:
 
 ## Current next milestone
 
-The next milestone is a bounded production sweep slice: implement
-`SweepEngine.run(plan)`, reuse one IIO/session ownership path across multiple
-frequencies, return compact aggregate candidates to Agent observations, and
-prove direct cancellation plus state restoration on the real SDR.
+The Harness has reached the FPGA-image gate. Resume sweep work only after a
+hardware-validated image exposes the documented summary identity, writable
+aggregate control, sequence/quality fields, and a rollback path. Meanwhile the
+active software milestone is the Pi model-package loading interface for the
+future ultra-light recognizer model trained on the 4090.
