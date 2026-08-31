@@ -90,8 +90,11 @@ Evidence:
 - [x] Cross-build and temporarily validate shadow `sdrd` on the real SDR without
       changing IIO, FPGA, boot, or radio state.
 - [x] Implement the Pi Rust `SdrdAdapter` for read-only shadow observation.
-- [ ] Define the allowlisted SDRD/1 mutation command schema for ownership,
+- [x] Define and unit-test the allowlisted SDRD/1 mutation command schema for ownership,
       retune, bounded capture, stop, restore, and execution status.
+- [x] Implement the Adapter-backed connection ownership state machine and prove
+      stop plus restore on explicit stop, disconnect, apply failure, and capture
+      failure with a fake radio backend.
 - [ ] Implement one persistent SDR-local IIO context and RX buffer owner.
 - [ ] Save and restore LO, sample rate, RF bandwidth, gain mode, and enabled
       channels on success, error, timeout, cancellation, and disconnect.
@@ -109,6 +112,7 @@ Evidence:
 
 - [`../sdr-system/docs/BASELINE_2026-08-31.md`](../sdr-system/docs/BASELINE_2026-08-31.md)
 - [`../sdr-system/docs/SDRD_SHADOW_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_SHADOW_VALIDATION_2026-08-31.md)
+- [`../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md)
 - [`SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md)
 
 ## 4. Raspberry Pi acquisition, aggregation, and sweep
@@ -235,6 +239,11 @@ Evidence:
       dependency directories, and deployment staging files out of Git.
 - [x] Remove local build intermediates and temporary upstream research clones
       after the verified deployment.
+- [x] Record the user's development-only authorization for bounded receive
+      sweeps, isolated per-feature data directories, hard data caps, and
+      mandatory cleanup before feature completion.
+- [x] Add and validate a versioned `connect-p201-sdr` skill that selects a
+      healthy direct or SSH-relay route instead of assuming a fixed Pi relay.
 - [ ] Add automated protocol fuzzing for malformed, oversized, stale, duplicate,
       truncated, and reordered frames across all sockets.
 - [ ] Add repeatable fault injection for 4090 loss, Pi Worker restart, SDRD loss,

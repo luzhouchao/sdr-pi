@@ -1,0 +1,4 @@
+interface:
+  display_name: "Connect P201 SDR"
+  short_description: "Connect to the P201 SDR through a dynamically selected route"
+  default_prompt: "Connect to the P201 SDR using the safest currently reachable direct or relay path."

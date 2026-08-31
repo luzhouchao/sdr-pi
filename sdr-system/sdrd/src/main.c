@@ -70,7 +70,10 @@ static int receive_line(int fd, char *line, size_t line_size) {
 static int serve_client(int fd, const sdrd_config_t *config) {
   char line[SDRD_MAX_LINE];
   char response[SDRD_MAX_RESPONSE];
+  sdrd_session_t session;
   struct timeval timeout;
+  int result = 0;
+  sdrd_session_init(&session);
   timeout.tv_sec = (time_t)(config->client_timeout_ms / 1000u);
   timeout.tv_usec = (suseconds_t)(config->client_timeout_ms % 1000u) * 1000;
   (void)setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
@@ -78,21 +81,28 @@ static int serve_client(int fd, const sdrd_config_t *config) {
     const int read_rc = receive_line(fd, line, sizeof(line));
     int response_rc;
     if (read_rc <= 0) {
-      return read_rc;
+      result = read_rc;
+      break;
     }
-    response_rc = sdrd_format_response(config, line, response, sizeof(response));
+    response_rc = sdrd_handle_request(
+        config, &session, NULL, line, response, sizeof(response));
     if (response_rc != 0) {
-      return response_rc;
+      result = response_rc;
+      break;
     }
     response_rc = send_all(fd, response, strlen(response));
     if (response_rc != 0) {
-      return response_rc;
+      result = response_rc;
+      break;
     }
     if (strstr(response, "\"closing\":true") != NULL) {
-      return 0;
+      break;
     }
   }
-  return 0;
+  if (sdrd_session_close(&session, NULL) != 0 && result == 0) {
+    result = -EIO;
+  }
+  return result;
 }
 
 static int run_server(const sdrd_config_t *config) {
@@ -118,9 +128,10 @@ static int run_server(const sdrd_config_t *config) {
     return -saved;
   }
   printf(
-      "sdrd_listening=%s:%u mode=shadow fpga_backend=%s\n",
+      "sdrd_listening=%s:%u mode=%s fpga_backend=%s\n",
       config->listen_address,
       (unsigned int)config->listen_port,
+      sdrd_mode_name(config->mode),
       sdrd_fpga_backend_name(config->fpga_backend));
   fflush(stdout);
   while (stop_requested == 0) {
@@ -171,9 +182,10 @@ int main(int argc, char **argv) {
   }
   if (action == ACTION_CHECK) {
     printf(
-        "config_result=ok listen=%s:%u mode=shadow fpga_backend=%s\n",
+        "config_result=ok listen=%s:%u mode=%s fpga_backend=%s\n",
         config.listen_address,
         (unsigned int)config.listen_port,
+        sdrd_mode_name(config.mode),
         sdrd_fpga_backend_name(config.fpga_backend));
     return 0;
   }

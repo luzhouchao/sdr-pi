@@ -28,5 +28,35 @@ All agents working in this repository must follow these rules:
 8. Before finishing a project change, review `git diff` and confirm the
    checklist accurately describes the resulting repository and deployed state.
 
+## Development sweep authorization and data hygiene
+
+The user authorizes the agent to approve receive-only, bounded sweep operations
+during development without asking again, subject to all of these constraints:
+
+1. The sweep must stay inside repository safety limits, use one RX path by
+   default, have explicit frequency/sample-rate/bandwidth/dwell/point limits,
+   and include a direct stop plus verified radio-state restoration.
+2. This authorization does not cover transmission, arbitrary IIO writes,
+   unbounded capture, persistent radio changes, FPGA/`BOOT.bin` replacement, or
+   disabling a safety check. Those require separate explicit authority.
+3. Before a live sweep, print or record the validated plan, estimated duration,
+   maximum bytes, free-space check, and the exact temporary data directory.
+4. Put Pi development data only under
+   `/var/tmp/sdr-agent-dev/<feature-id>/` and SDR-local development data only
+   under `/tmp/sdr-agent-dev/<feature-id>/`. Use a unique feature ID and a hard
+   byte cap; default to no more than 64 MiB unless the user sets another limit.
+5. Keep raw IQ and intermediate sweep outputs out of Git. Retain the feature's
+   source code, public and internal interfaces, tests, configuration examples,
+   design documents, bounded summaries, hashes, metrics, and validation
+   documentation.
+6. At the end of each feature, stop all feature processes, verify the exact
+   resolved feature-directory paths, delete those directories and workstation
+   staging artifacts, and report what was removed. A feature is not complete
+   and its checklist item must not be checked until cleanup is verified.
+7. Treat each completed feature as its own delivery unit: after tests pass,
+   temporary data cleanup is verified, and the checklist is updated, create a
+   focused commit and push it to the configured Git remote promptly. Do not
+   defer several completed features into one unrelated batch.
+
 Nested `AGENTS.md` files may add subsystem-specific instructions. The nearest
 file to the changed code takes precedence when instructions differ.

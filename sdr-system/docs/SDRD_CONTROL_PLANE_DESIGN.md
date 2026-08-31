@@ -41,15 +41,35 @@ with `fpga_backend=disabled` and does not touch MMIO.
 
 | Module | Version 1 | Later controlled mode |
 |---|---|---|
-| Configuration | strict `key=value`, shadow only | signed/versioned profile allowlist |
+| Configuration | strict `key=value`, shadow default | signed/versioned profile allowlist |
 | Linux health | IIO sysfs visibility | temperature, network, drops, IIOD ownership |
 | FPGA adapter | disabled, optional read-only identity | UIO mapping and atomic profile generation |
-| Wire server | HELLO/CAPABILITIES/HEALTH | session, profile and bounded capture messages |
+| Wire server | HELLO/CAPABILITIES/HEALTH plus tested controlled schema | binary observation stream |
 
 The external interface remains small: discover capabilities, apply one validated
 profile, receive observations, request bounded IQ, obtain health, stop session.
 Register offsets, IIO attribute ordering, state restoration, stale detection,
 and backend selection stay inside the SDR Linux implementation.
+
+## Controlled execution seam
+
+The implemented `sdrd_radio_ops_t` Adapter is the only code allowed to touch a
+radio backend. The protocol/session layer validates request ordering, generation,
+frequency, rate, bandwidth, channel count, byte budget, feature ID, and returned
+relative path before or after calling it. The Adapter owns five operations:
+snapshot, atomic profile apply, bounded IQ capture, direct stop, and restore.
+
+`sdrd_session_t` is connection-owned. It arms restoration immediately after a
+successful snapshot and restores on explicit stop, quit, disconnect, profile or
+capture failure, and Adapter contract violation. Restore failure enters a
+fail-closed fault state. Unit tests use a fake Adapter; controlled mode cannot
+advertise `radio_control=true` until a complete production Adapter is injected.
+
+Development capture files are namespaced below
+`/tmp/sdr-agent-dev/<feature-id>/`, capped at 64 MiB by default, excluded from
+Git, and removed after the feature validation. Source interfaces, tests,
+configuration examples, design decisions, compact metrics, and validation
+evidence are retained and pushed with the feature.
 
 ## Performance rules
 

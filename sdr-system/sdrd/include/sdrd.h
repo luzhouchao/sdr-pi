@@ -13,8 +13,14 @@ extern "C" {
 #define SDRD_DEFAULT_PORT 43110u
 #define SDRD_MAX_PATH 256u
 #define SDRD_MAX_ADDRESS 64u
-#define SDRD_MAX_LINE 256u
+#define SDRD_MAX_LINE 512u
 #define SDRD_MAX_RESPONSE 2048u
+#define SDRD_MAX_FEATURE_ID 64u
+
+typedef enum sdrd_mode {
+  SDRD_MODE_SHADOW = 0,
+  SDRD_MODE_CONTROLLED = 1
+} sdrd_mode_t;
 
 typedef enum sdrd_fpga_backend {
   SDRD_FPGA_DISABLED = 0,
@@ -31,6 +37,7 @@ enum sdrd_health_flag {
 };
 
 typedef struct sdrd_config {
+  sdrd_mode_t mode;
   char listen_address[SDRD_MAX_ADDRESS];
   uint16_t listen_port;
   uint32_t client_timeout_ms;
@@ -41,7 +48,62 @@ typedef struct sdrd_config {
   uint32_t fpga_span;
   int require_iomem_region;
   int allow_devmem;
+  char development_data_root[SDRD_MAX_PATH];
+  uint64_t min_center_hz;
+  uint64_t max_center_hz;
+  uint32_t min_sample_rate_hz;
+  uint32_t max_sample_rate_hz;
+  uint32_t min_rf_bandwidth_hz;
+  uint32_t max_rf_bandwidth_hz;
+  uint64_t max_capture_bytes;
 } sdrd_config_t;
+
+typedef struct sdrd_radio_state {
+  uint64_t center_hz;
+  uint32_t sample_rate_hz;
+  uint32_t rf_bandwidth_hz;
+  char gain_mode[32];
+  uint32_t enabled_channels;
+} sdrd_radio_state_t;
+
+typedef struct sdrd_capture_request {
+  uint64_t generation;
+  uint64_t sample_count;
+  uint64_t max_bytes;
+  char feature_id[SDRD_MAX_FEATURE_ID];
+} sdrd_capture_request_t;
+
+typedef struct sdrd_capture_result {
+  uint64_t samples_captured;
+  uint64_t bytes_written;
+  uint64_t sequence;
+  uint64_t dropped_samples;
+  int overflow;
+  char relative_path[SDRD_MAX_PATH];
+} sdrd_capture_result_t;
+
+typedef struct sdrd_radio_ops {
+  void *context;
+  int (*snapshot)(void *context, sdrd_radio_state_t *state);
+  int (*apply_profile)(void *context, const sdrd_radio_state_t *state);
+  int (*capture_iq)(
+      void *context,
+      const sdrd_capture_request_t *request,
+      sdrd_capture_result_t *result);
+  int (*stop)(void *context);
+  int (*restore)(void *context, const sdrd_radio_state_t *state);
+} sdrd_radio_ops_t;
+
+typedef struct sdrd_session {
+  uint64_t generation;
+  uint64_t last_request_id;
+  int active;
+  int profile_applied;
+  int restore_required;
+  int faulted;
+  sdrd_radio_state_t saved_state;
+  sdrd_radio_state_t current_state;
+} sdrd_session_t;
 
 typedef struct sdrd_status {
   uint32_t health_flags;
@@ -70,6 +132,7 @@ int sdrd_config_validate(
     char *error,
     size_t error_size);
 const char *sdrd_fpga_backend_name(sdrd_fpga_backend_t backend);
+const char *sdrd_mode_name(sdrd_mode_t mode);
 
 int sdrd_probe_status(
     const sdrd_config_t *config,
@@ -82,6 +145,16 @@ int sdrd_format_response(
     const char *request_line,
     char *response,
     size_t response_size);
+
+void sdrd_session_init(sdrd_session_t *session);
+int sdrd_handle_request(
+    const sdrd_config_t *config,
+    sdrd_session_t *session,
+    const sdrd_radio_ops_t *radio,
+    const char *request_line,
+    char *response,
+    size_t response_size);
+int sdrd_session_close(sdrd_session_t *session, const sdrd_radio_ops_t *radio);
 
 #ifdef __cplusplus
 }
