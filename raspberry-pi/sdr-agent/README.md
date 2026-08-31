@@ -31,6 +31,9 @@ SSH, IIO, FPGA-register or SDR tools.
 - `controller/src/recognizer.rs`: bounded local-recognition protocol with replay
   and Unix-socket Adapters. The production C++ worker and model are not yet
   deployed, so availability remains false.
+- `recognizer-worker/`: dependency-free C++20 model-backend interface and replay
+  validation. Socket framing and ONNX/ncnn backends remain intentionally
+  disabled until their dependencies and model artifacts are pinned.
 - `../p201pro-rust/`: current direct libiio acquisition and spectrum
   aggregation executable. It is intentionally not merged into the Controller
   until the ownership seam is implemented.
