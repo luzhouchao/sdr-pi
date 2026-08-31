@@ -44,8 +44,10 @@ typedef struct fake_radio {
   sdrd_radio_state_t state;
   sdrd_radio_state_t restored_state;
   unsigned int snapshot_calls;
+  unsigned int begin_session_calls;
   unsigned int apply_calls;
   unsigned int capture_calls;
+  unsigned int cancel_calls;
   unsigned int stop_calls;
   unsigned int restore_calls;
   int apply_result;
@@ -57,6 +59,12 @@ static int fake_snapshot(void *context, sdrd_radio_state_t *state) {
   fake_radio_t *fake = context;
   ++fake->snapshot_calls;
   *state = fake->state;
+  return 0;
+}
+
+static int fake_begin_session(void *context) {
+  fake_radio_t *fake = context;
+  ++fake->begin_session_calls;
   return 0;
 }
 
@@ -95,6 +103,12 @@ static int fake_stop(void *context) {
   return 0;
 }
 
+static int fake_cancel(void *context) {
+  fake_radio_t *fake = context;
+  ++fake->cancel_calls;
+  return 0;
+}
+
 static int fake_restore(void *context, const sdrd_radio_state_t *state) {
   fake_radio_t *fake = context;
   ++fake->restore_calls;
@@ -109,9 +123,11 @@ static sdrd_radio_ops_t fake_ops(fake_radio_t *fake) {
   sdrd_radio_ops_t ops;
   memset(&ops, 0, sizeof(ops));
   ops.context = fake;
+  ops.begin_session = fake_begin_session;
   ops.snapshot = fake_snapshot;
   ops.apply_profile = fake_apply;
   ops.capture_iq = fake_capture;
+  ops.cancel = fake_cancel;
   ops.stop = fake_stop;
   ops.restore = fake_restore;
   return ops;

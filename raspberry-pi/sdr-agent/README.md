@@ -83,6 +83,8 @@ identity, frequency, bandwidth, dwell time and IQ byte count. Large but bounded
 IQ requests are marked `approval_required`. The Rust `SdrActionExecutor` can
 execute an approved `capture_bounded_iq` plan through a controlled SDRD/1
 endpoint; all other action kinds still fail closed in this executor slice.
+The same Adapter exposes a generation-correlated cancel operation on an
+independent SDRD/1 connection.
 
 ## Development checks
 
@@ -131,6 +133,11 @@ sdr-agent --sdrd 192.168.1.10:43110
 Without `--sdrd`, approval is recorded but no hardware command is sent. An
 execution failure advances the session generation and puts the terminal into
 `faulted` state so the stale approval cannot be retried accidentally.
+With `--sdrd`, `/approve` moves execution to a bounded background worker so the
+line interface remains available. `/stop` sends cancellation directly without
+calling Qwen, waits for the owner response that confirms restoration, and then
+advances the session generation. It retries only the bounded startup window in
+which `START_SESSION` has not yet completed.
 
 For a deterministic development or recovery check, `execute` mode accepts an
 envelope containing the original `PlanRequest` and `PlanResponse`, reruns Rust
@@ -142,6 +149,16 @@ sdr-agent-controller \
   --request controller/config/execution.development.example.json \
   --sdrd 192.168.1.10:43110 \
   --approval operator
+```
+
+Recovery tooling can request the same generation-correlated cancellation
+without a Planner call:
+
+```bash
+sdr-agent-controller \
+  --mode cancel \
+  --session-generation 77 \
+  --sdrd 192.168.1.10:43110
 ```
 
 The recognition interface and its fixed IQ contract are documented in
@@ -188,7 +205,7 @@ see
 [`../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md).
 The interactive `sdr-agent` terminal was then deployed and validated; see
 [`../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md).
-The Controller now has a live-validated bounded-IQ execution slice. It does not
-yet execute surveys, candidate-inspection dwell loops, recognition, automatic
-Runner cycles, or in-flight `/stop` cancellation. Controlled `sdrd` is still a
-temporary development process rather than an enabled SDR service.
+The Controller now has live-validated bounded-IQ execution and in-flight
+`/stop` cancellation. It does not yet execute surveys, candidate-inspection
+dwell loops, recognition, or automatic Runner cycles. Controlled `sdrd` is
+still a temporary development process rather than an enabled SDR service.

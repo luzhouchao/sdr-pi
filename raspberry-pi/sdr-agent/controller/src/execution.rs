@@ -3,6 +3,7 @@ use crate::sdr::{SdrEngine, SdrError, SdrSnapshot, SdrdAdapter, SdrdWire};
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::net::SocketAddr;
+use std::thread;
 use std::time::Duration;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -42,6 +43,8 @@ pub trait SdrActionExecutor {
         plan: &ValidatedPlan,
         authorization: &ExecutionAuthorization,
     ) -> Result<ExecutionObservation, SdrError>;
+
+    fn cancel(&mut self, session_generation: u64) -> Result<CancelObservation, SdrError>;
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -64,6 +67,13 @@ pub struct ExecutionObservation {
     pub session_generation: u64,
     pub capture: CaptureObservation,
     pub post_execution_sdr: SdrSnapshot,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CancelObservation {
+    pub session_generation: u64,
+    pub cancel_requested: bool,
 }
 
 pub struct ReplayActionExecutor {
@@ -101,8 +111,22 @@ impl SdrActionExecutor for ReplayActionExecutor {
         }
         Ok(observation)
     }
+
+    fn cancel(&mut self, session_generation: u64) -> Result<CancelObservation, SdrError> {
+        if session_generation == 0 {
+            return Err(SdrError::new(
+                "cancel_generation",
+                "cancel generation must be non-zero",
+            ));
+        }
+        Ok(CancelObservation {
+            session_generation,
+            cancel_requested: true,
+        })
+    }
 }
 
+#[derive(Clone)]
 pub struct SdrdActionAdapter {
     address: SocketAddr,
     timeout: Duration,
@@ -248,8 +272,7 @@ impl SdrdActionAdapter {
             }
         };
 
-        let mut observer = SdrdAdapter::new(self.address, self.timeout);
-        let post_execution_sdr = observer.observe()?;
+        let post_execution_sdr = observe_after_worker_release(self.address, self.timeout)?;
         if !post_execution_sdr.online || !post_execution_sdr.healthy {
             return Err(SdrError::new(
                 "post_execution_health",
@@ -263,6 +286,28 @@ impl SdrdActionAdapter {
             post_execution_sdr,
         })
     }
+}
+
+fn observe_after_worker_release(
+    address: SocketAddr,
+    timeout: Duration,
+) -> Result<SdrSnapshot, SdrError> {
+    const MAX_BUSY_RETRIES: usize = 20;
+    for attempt in 0..=MAX_BUSY_RETRIES {
+        let mut observer = SdrdAdapter::new(address, timeout);
+        match observer.observe() {
+            Ok(snapshot) => return Ok(snapshot),
+            Err(error)
+                if error.code == "remote_error"
+                    && error.message == "server_busy"
+                    && attempt < MAX_BUSY_RETRIES =>
+            {
+                thread::sleep(Duration::from_millis(10));
+            }
+            Err(error) => return Err(error),
+        }
+    }
+    unreachable!("bounded observe retry loop always returns")
 }
 
 impl SdrActionExecutor for SdrdActionAdapter {
@@ -292,6 +337,28 @@ impl SdrActionExecutor for SdrdActionAdapter {
                 "this executor slice supports only capture_bounded_iq",
             )),
         }
+    }
+
+    fn cancel(&mut self, session_generation: u64) -> Result<CancelObservation, SdrError> {
+        if session_generation == 0 {
+            return Err(SdrError::new(
+                "cancel_generation",
+                "cancel generation must be non-zero",
+            ));
+        }
+        let mut wire = SdrdWire::connect(self.address, self.timeout)?;
+        let response: CancelResponse =
+            wire.request("CANCEL_SESSION", &session_generation.to_string())?;
+        if response.generation != session_generation || !response.cancel_requested {
+            return Err(SdrError::new(
+                "cancel_response",
+                "SDRD did not acknowledge the requested generation cancellation",
+            ));
+        }
+        Ok(CancelObservation {
+            session_generation,
+            cancel_requested: true,
+        })
     }
 }
 
@@ -479,6 +546,19 @@ struct QuitResponse {
     closing: bool,
 }
 
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct CancelResponse {
+    #[serde(rename = "schema_version")]
+    _schema_version: u16,
+    #[serde(rename = "request_id")]
+    _request_id: u64,
+    #[serde(rename = "status")]
+    _status: String,
+    generation: u64,
+    cancel_requested: bool,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -609,6 +689,34 @@ mod tests {
         assert_eq!(
             executor.execute(&plan, &authorization).unwrap(),
             observation()
+        );
+        server.join().unwrap();
+    }
+
+    #[test]
+    fn production_adapter_cancels_on_an_independent_connection() {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = thread::spawn(move || {
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut reader = BufReader::new(stream.try_clone().unwrap());
+            let mut request = String::new();
+            reader.read_line(&mut request).unwrap();
+            assert_eq!(request, "SDRD/1 CANCEL_SESSION 1 3\n");
+            stream
+                .write_all(
+                    b"{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"generation\":3,\"cancel_requested\":true}\n",
+                )
+                .unwrap();
+            stream.flush().unwrap();
+        });
+        let mut executor = SdrdActionAdapter::new(address, Duration::from_secs(1));
+        assert_eq!(
+            executor.cancel(3).unwrap(),
+            CancelObservation {
+                session_generation: 3,
+                cancel_requested: true,
+            }
         );
         server.join().unwrap();
     }

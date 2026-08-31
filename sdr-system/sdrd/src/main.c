@@ -6,15 +6,32 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <inttypes.h>
+#include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
 
 static volatile sig_atomic_t stop_requested = 0;
+
+typedef struct server_runtime {
+  pthread_mutex_t mutex;
+  int worker_active;
+  uint64_t active_generation;
+  const sdrd_radio_ops_t *radio;
+} server_runtime_t;
+
+typedef struct client_worker_args {
+  int fd;
+  const sdrd_config_t *config;
+  const sdrd_radio_ops_t *radio;
+  server_runtime_t *runtime;
+  char first_line[SDRD_MAX_LINE];
+} client_worker_args_t;
 
 static void handle_signal(int signal_number) {
   (void)signal_number;
@@ -75,19 +92,29 @@ static int receive_line(int fd, char *line, size_t line_size) {
 static int serve_client(
     int fd,
     const sdrd_config_t *config,
-    const sdrd_radio_ops_t *radio) {
+    const sdrd_radio_ops_t *radio,
+    server_runtime_t *runtime,
+    const char *first_line) {
   char line[SDRD_MAX_LINE];
   char response[SDRD_MAX_RESPONSE];
   sdrd_session_t session;
   struct timeval timeout;
   int result = 0;
+  int use_first_line = first_line != NULL;
   sdrd_session_init(&session);
   timeout.tv_sec = (time_t)(config->client_timeout_ms / 1000u);
   timeout.tv_usec = (suseconds_t)(config->client_timeout_ms % 1000u) * 1000;
   (void)setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
   while (stop_requested == 0) {
-    const int read_rc = receive_line(fd, line, sizeof(line));
+    int read_rc;
     int response_rc;
+    if (use_first_line != 0) {
+      (void)snprintf(line, sizeof(line), "%s", first_line);
+      use_first_line = 0;
+      read_rc = 1;
+    } else {
+      read_rc = receive_line(fd, line, sizeof(line));
+    }
     if (read_rc <= 0) {
       result = read_rc;
       break;
@@ -97,6 +124,24 @@ static int serve_client(
     if (response_rc != 0) {
       result = response_rc;
       break;
+    }
+    if (strncmp(line, "SDRD/1 START_SESSION ", 21u) == 0 &&
+        strstr(response, "\"session_state\":\"owned\"") != NULL) {
+      char protocol[16];
+      char command[32];
+      uint64_t request_id;
+      uint64_t generation;
+      if (sscanf(
+              line,
+              "%15s %31s %" SCNu64 " %" SCNu64,
+              protocol,
+              command,
+              &request_id,
+              &generation) == 4) {
+        (void)pthread_mutex_lock(&runtime->mutex);
+        runtime->active_generation = generation;
+        (void)pthread_mutex_unlock(&runtime->mutex);
+      }
     }
     response_rc = send_all(fd, response, strlen(response));
     if (response_rc != 0) {
@@ -110,15 +155,138 @@ static int serve_client(
   if (sdrd_session_close(&session, radio) != 0 && result == 0) {
     result = -EIO;
   }
+  (void)pthread_mutex_lock(&runtime->mutex);
+  runtime->active_generation = 0u;
+  (void)pthread_mutex_unlock(&runtime->mutex);
   return result;
+}
+
+static int parse_control_request(
+    const char *line,
+    const char *expected_command,
+    uint64_t *request_id,
+    uint64_t *generation) {
+  char protocol[16];
+  char command[32];
+  char extra[2];
+  const int fields = sscanf(
+      line,
+      "%15s %31s %" SCNu64 " %" SCNu64 " %1s",
+      protocol,
+      command,
+      request_id,
+      generation,
+      extra);
+  return fields == 4 && strcmp(protocol, "SDRD/1") == 0 &&
+                 strcmp(command, expected_command) == 0
+             ? 0
+             : -EINVAL;
+}
+
+static int send_control_error(int fd, uint64_t request_id, const char *error) {
+  char response[256];
+  const int written = snprintf(
+      response,
+      sizeof(response),
+      "{\"schema_version\":1,\"request_id\":%" PRIu64
+      ",\"status\":\"error\",\"error\":\"%s\"}\n",
+      request_id,
+      error);
+  if (written < 0 || (size_t)written >= sizeof(response)) {
+    return -ENOSPC;
+  }
+  return send_all(fd, response, (size_t)written);
+}
+
+static int handle_cancel_client(
+    int fd,
+    server_runtime_t *runtime,
+    const char *line) {
+  uint64_t request_id = 0u;
+  uint64_t generation = 0u;
+  uint64_t active_generation;
+  int rc;
+  char response[256];
+  int written;
+  if (parse_control_request(line, "CANCEL_SESSION", &request_id, &generation) != 0 ||
+      request_id == 0u || generation == 0u) {
+    return send_control_error(fd, request_id, "invalid_cancel_request");
+  }
+  (void)pthread_mutex_lock(&runtime->mutex);
+  active_generation = runtime->active_generation;
+  if (runtime->radio == NULL) {
+    (void)pthread_mutex_unlock(&runtime->mutex);
+    return send_control_error(fd, request_id, "stale_or_missing_session");
+  }
+  if (active_generation != generation) {
+    (void)pthread_mutex_unlock(&runtime->mutex);
+    return send_control_error(fd, request_id, "stale_or_missing_session");
+  }
+  rc = runtime->radio->cancel(runtime->radio->context);
+  (void)pthread_mutex_unlock(&runtime->mutex);
+  if (rc != 0) {
+    return send_control_error(fd, request_id, "cancel_failed");
+  }
+  written = snprintf(
+      response,
+      sizeof(response),
+      "{\"schema_version\":1,\"request_id\":%" PRIu64
+      ",\"status\":\"ok\",\"generation\":%" PRIu64
+      ",\"cancel_requested\":true}\n",
+      request_id,
+      generation);
+  if (written < 0 || (size_t)written >= sizeof(response)) {
+    return -ENOSPC;
+  }
+  return send_all(fd, response, (size_t)written);
+}
+
+static void *client_worker(void *opaque) {
+  client_worker_args_t *args = opaque;
+  (void)serve_client(
+      args->fd,
+      args->config,
+      args->radio,
+      args->runtime,
+      args->first_line);
+  (void)close(args->fd);
+  (void)pthread_mutex_lock(&args->runtime->mutex);
+  args->runtime->active_generation = 0u;
+  args->runtime->worker_active = 0;
+  (void)pthread_mutex_unlock(&args->runtime->mutex);
+  free(args);
+  return NULL;
+}
+
+static void wait_for_worker(server_runtime_t *runtime) {
+  for (;;) {
+    int active;
+    struct timespec wait = {0, 10000000L};
+    (void)pthread_mutex_lock(&runtime->mutex);
+    active = runtime->worker_active;
+    (void)pthread_mutex_unlock(&runtime->mutex);
+    if (active == 0) {
+      return;
+    }
+    (void)nanosleep(&wait, NULL);
+  }
 }
 
 static int run_server(const sdrd_config_t *config, const sdrd_radio_ops_t *radio) {
   int server_fd;
   int reuse = 1;
   struct sockaddr_in address;
+  server_runtime_t runtime;
+  int runtime_rc;
+  memset(&runtime, 0, sizeof(runtime));
+  runtime.radio = radio;
+  runtime_rc = pthread_mutex_init(&runtime.mutex, NULL);
+  if (runtime_rc != 0) {
+    return -runtime_rc;
+  }
   server_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (server_fd < 0) {
+    (void)pthread_mutex_destroy(&runtime.mutex);
     return -errno;
   }
   (void)setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
@@ -133,6 +301,7 @@ static int run_server(const sdrd_config_t *config, const sdrd_radio_ops_t *radio
       listen(server_fd, 2) != 0) {
     const int saved = errno;
     (void)close(server_fd);
+    (void)pthread_mutex_destroy(&runtime.mutex);
     return -saved;
   }
   printf(
@@ -144,17 +313,82 @@ static int run_server(const sdrd_config_t *config, const sdrd_radio_ops_t *radio
   fflush(stdout);
   while (stop_requested == 0) {
     int client_fd = accept(server_fd, NULL, NULL);
+    char first_line[SDRD_MAX_LINE];
+    int read_rc;
     if (client_fd < 0) {
       if (errno == EINTR) {
         continue;
       }
-      (void)close(server_fd);
-      return -errno;
+      {
+        const int saved = errno;
+        (void)close(server_fd);
+        wait_for_worker(&runtime);
+        (void)pthread_mutex_destroy(&runtime.mutex);
+        return -saved;
+      }
     }
-    (void)serve_client(client_fd, config, radio);
-    (void)close(client_fd);
+    {
+      struct timeval timeout;
+      timeout.tv_sec = (time_t)(config->client_timeout_ms / 1000u);
+      timeout.tv_usec = (suseconds_t)(config->client_timeout_ms % 1000u) * 1000;
+      (void)setsockopt(client_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+    }
+    read_rc = receive_line(client_fd, first_line, sizeof(first_line));
+    if (read_rc <= 0) {
+      (void)close(client_fd);
+      continue;
+    }
+    if (strncmp(first_line, "SDRD/1 CANCEL_SESSION ", 22u) == 0) {
+      (void)handle_cancel_client(client_fd, &runtime, first_line);
+      (void)close(client_fd);
+      continue;
+    }
+    (void)pthread_mutex_lock(&runtime.mutex);
+    if (runtime.worker_active != 0) {
+      uint64_t request_id = 0u;
+      char protocol[16];
+      char command[32];
+      (void)sscanf(first_line, "%15s %31s %" SCNu64, protocol, command, &request_id);
+      (void)pthread_mutex_unlock(&runtime.mutex);
+      (void)send_control_error(client_fd, request_id, "server_busy");
+      (void)close(client_fd);
+      continue;
+    }
+    runtime.worker_active = 1;
+    (void)pthread_mutex_unlock(&runtime.mutex);
+    {
+      client_worker_args_t *args = calloc(1u, sizeof(*args));
+      pthread_t thread;
+      int thread_rc;
+      if (args == NULL) {
+        (void)pthread_mutex_lock(&runtime.mutex);
+        runtime.worker_active = 0;
+        (void)pthread_mutex_unlock(&runtime.mutex);
+        (void)send_control_error(client_fd, 0u, "server_resource_exhausted");
+        (void)close(client_fd);
+        continue;
+      }
+      args->fd = client_fd;
+      args->config = config;
+      args->radio = radio;
+      args->runtime = &runtime;
+      (void)snprintf(args->first_line, sizeof(args->first_line), "%s", first_line);
+      thread_rc = pthread_create(&thread, NULL, client_worker, args);
+      if (thread_rc != 0) {
+        free(args);
+        (void)pthread_mutex_lock(&runtime.mutex);
+        runtime.worker_active = 0;
+        (void)pthread_mutex_unlock(&runtime.mutex);
+        (void)send_control_error(client_fd, 0u, "server_thread_failed");
+        (void)close(client_fd);
+        continue;
+      }
+      (void)pthread_detach(thread);
+    }
   }
   (void)close(server_fd);
+  wait_for_worker(&runtime);
+  (void)pthread_mutex_destroy(&runtime.mutex);
   return 0;
 }
 

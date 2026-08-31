@@ -9,7 +9,7 @@ Pi Harness and the AD9361/FPGA data path:
 
 ```text
 Pi Rust Harness
-  -> persistent SDRD/1 control connection
+  -> one SDRD/1 execution connection + independent cancellation connection
 SDR Linux C sdrd
   -> local IIO adapter for AD9361 and bounded IQ capture
   -> local UIO/mmap adapter for validated FPGA pages (future)
@@ -47,7 +47,8 @@ with `fpga_backend=disabled` and does not touch MMIO.
 | Wire server | HELLO/CAPABILITIES/HEALTH plus tested controlled schema | binary observation stream |
 
 The external interface remains small: discover capabilities, apply one validated
-profile, receive observations, request bounded IQ, obtain health, stop session.
+profile, receive observations, request bounded IQ, obtain health, stop or cancel
+a session.
 Register offsets, IIO attribute ordering, state restoration, stale detection,
 and backend selection stay inside the SDR Linux implementation.
 
@@ -56,14 +57,23 @@ and backend selection stay inside the SDR Linux implementation.
 The implemented `sdrd_radio_ops_t` Adapter is the only code allowed to touch a
 radio backend. The protocol/session layer validates request ordering, generation,
 frequency, rate, bandwidth, channel count, byte budget, feature ID, and returned
-relative path before or after calling it. The Adapter owns five operations:
-snapshot, atomic profile apply, bounded IQ capture, direct stop, and restore.
+relative path before or after calling it. The Adapter owns seven operations:
+begin session, snapshot, atomic profile apply, bounded IQ capture, in-flight
+cancel, direct stop, and restore.
 
 `sdrd_session_t` is connection-owned. It arms restoration immediately after a
 successful snapshot and restores on explicit stop, quit, disconnect, profile or
 capture failure, and Adapter contract violation. Restore failure enters a
 fail-closed fault state. Unit tests use a fake Adapter; controlled mode cannot
 advertise `radio_control=true` until a complete production Adapter is injected.
+
+The wire server assigns exactly one normal connection as the execution owner.
+While it is active, other normal requests receive `server_busy`; only an
+independent `CANCEL_SESSION` connection may cross that boundary. Cancellation
+requires the exact active generation. Pi retries only the narrow startup race
+where its worker has not completed `START_SESSION`; `sdrd` itself never accepts
+a stale or not-yet-active generation. The IIO Adapter latches cancellation once
+the session begins and calls `iio_buffer_cancel()` when a refill is active.
 
 Development capture files are namespaced below
 `/tmp/sdr-agent-dev/<feature-id>/`, capped at 64 MiB by default, excluded from

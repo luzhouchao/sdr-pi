@@ -582,8 +582,9 @@ static int request_has_fields(const parsed_request_t *request, size_t count) {
 }
 
 static int radio_ops_available(const sdrd_radio_ops_t *radio) {
-  return radio != NULL && radio->snapshot != NULL && radio->apply_profile != NULL &&
-         radio->capture_iq != NULL && radio->stop != NULL && radio->restore != NULL;
+  return radio != NULL && radio->begin_session != NULL && radio->snapshot != NULL &&
+         radio->apply_profile != NULL && radio->capture_iq != NULL && radio->cancel != NULL &&
+         radio->stop != NULL && radio->restore != NULL;
 }
 
 static int valid_feature_id(const char *feature_id) {
@@ -692,6 +693,10 @@ static int handle_start_session(
   rc = radio->snapshot(radio->context, &session->saved_state);
   if (rc != 0) {
     return format_error(request->request_id, "snapshot_failed", response, response_size);
+  }
+  rc = radio->begin_session(radio->context);
+  if (rc != 0) {
+    return format_error(request->request_id, "session_begin_failed", response, response_size);
   }
   session->generation = generation;
   session->active = 1;

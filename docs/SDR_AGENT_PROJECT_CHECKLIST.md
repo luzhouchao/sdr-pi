@@ -1,6 +1,6 @@
 # SDR Agent project checklist
 
-Last reviewed: 2026-08-31
+Last reviewed: 2026-09-01
 
 This is the living source of truth for implementation status. Check an item only
 after the exact wording is implemented and verified. Split partial work into a
@@ -69,7 +69,7 @@ Evidence:
       production SDRD/1 Adapter for bounded IQ execution.
 - [x] Execute a validated, operator-approved SDR action and return a correlated
       observation.
-- [ ] Make `/stop` cancel active hardware execution directly without waiting for
+- [x] Make `/stop` cancel active hardware execution directly without waiting for
       Qwen.
 - [ ] Implement the bounded observe-plan-validate-approve-execute-observe Runner.
 - [ ] Add an automatic mode that repeats the Runner within a fixed session plan,
@@ -99,16 +99,17 @@ Evidence:
       failure with a fake radio backend.
 - [x] Implement and live-validate one persistent SDR-local IIO context and one
       session-owned RX buffer in the C Adapter.
-- [ ] Save and restore LO, sample rate, RF bandwidth, gain mode, and enabled
-      channels on success, error, timeout, cancellation, and disconnect.
+- [x] Save and restore LO, sample rate, RF bandwidth, gain mode, and enabled
+      channels on success, error, cancellation, and disconnect.
+- [ ] Live-validate the same state restoration path after an IIO timeout.
 - [x] Live-validate restoration of LO, sample rate, RF bandwidth, gain mode, and
       scan-channel mask after success and an apply/readback error.
 - [x] Implement and live-validate bounded retune, explicit settle delay, and
       quantized LO readback tolerance in `sdrd`.
 - [x] Implement and live-validate bounded complex-int16 IQ capture in `sdrd`.
-- [ ] Implement direct stop/cancel in `sdrd`.
+- [x] Implement and live-validate direct in-flight cancel in `sdrd`.
 - [x] Implement and live-validate explicit post-action stop, buffer teardown,
-      and state restoration; in-flight cancellation remains open above.
+      and state restoration.
 - [ ] Add sequence, overflow, dropped-sample, timeout, and health metadata to all
       execution results.
 - [ ] Deploy executable `sdrd` as an enabled service on the SDR with a tested
@@ -123,6 +124,7 @@ Evidence:
 - [`../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md)
 - [`../sdr-system/docs/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md)
 - [`SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md)
+- [`SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md`](SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md)
 
 ## 4. Raspberry Pi acquisition, aggregation, and sweep
 
@@ -263,13 +265,7 @@ Evidence:
 
 ## Current next milestone
 
-The next milestone is complete only when all of these existing unchecked items
-are checked in their sections above:
-
-1. allowlisted executable SDRD/1 commands;
-2. persistent SDR-local IIO ownership and guaranteed state restoration;
-3. Rust `SdrActionExecutor`;
-4. bounded real-SDR retune and capture;
-5. Pi software aggregation connected to Agent observations;
-6. one manually approved observe-plan-execute-observe cycle;
-7. direct `/stop` cancellation and rollback validation.
+The next milestone is a bounded production sweep slice: implement
+`SweepEngine.run(plan)`, reuse one IIO/session ownership path across multiple
+frequencies, return compact aggregate candidates to Agent observations, and
+prove direct cancellation plus state restoration on the real SDR.

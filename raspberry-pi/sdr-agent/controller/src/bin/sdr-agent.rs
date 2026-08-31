@@ -1,12 +1,13 @@
 #![cfg(unix)]
 
 use sdr_agent_controller::execution::{
-    ExecutionAuthorization, SdrActionExecutor, SdrdActionAdapter,
+    ExecutionAuthorization, ExecutionObservation, SdrActionExecutor, SdrdActionAdapter,
 };
 use sdr_agent_controller::policy::ControllerPolicy;
 use sdr_agent_controller::protocol::{
     ControllerState, PlanRequest, PlanResponse, ValidatedPlan, MAX_FRAME_BYTES,
 };
+use sdr_agent_controller::sdr::SdrError;
 use serde_json::{json, Value};
 use std::collections::{HashMap, VecDeque};
 use std::env;
@@ -16,10 +17,12 @@ use std::io::{self, BufRead, BufReader, Read, Write};
 use std::net::SocketAddr;
 use std::os::unix::net::UnixStream;
 use std::path::PathBuf;
+use std::thread::{self, JoinHandle};
 use std::time::Duration;
 
 type AppResult<T> = Result<T, Box<dyn Error>>;
 const HISTORY_LIMIT: usize = 32;
+const CANCEL_START_RETRIES: usize = 50;
 
 fn main() {
     if let Err(error) = run() {
@@ -53,6 +56,7 @@ fn run() -> AppResult<()> {
     );
     let stdin = io::stdin();
     loop {
+        app.poll_execution()?;
         print!("SDR Agent> ");
         io::stdout().flush()?;
         let mut line = String::new();
@@ -71,9 +75,9 @@ fn run() -> AppResult<()> {
             "/history" | "/历史" => app.print_history(),
             "/approve" | "/批准" => app.approve()?,
             "/reject" | "/拒绝" => app.reject(),
-            "/pause" | "/暂停" => app.renew(ControllerState::Holding, "会话已暂停")?,
+            "/pause" | "/暂停" => app.stop("会话已暂停")?,
             "/resume" | "/继续" => app.renew(ControllerState::Idle, "会话已恢复")?,
-            "/stop" | "/停止" => app.renew(ControllerState::Holding, "会话已停止")?,
+            "/stop" | "/停止" => app.stop("会话已停止")?,
             _ if input.starts_with('/') => {
                 println!("未知命令；输入 /help 查看可用命令。")
             }
@@ -94,6 +98,14 @@ struct ConsoleApp {
     history: VecDeque<String>,
     agent_cycle_ended: bool,
     executor: Option<SdrdActionAdapter>,
+    active_execution: Option<ActiveExecution>,
+}
+
+struct ActiveExecution {
+    request_id: u64,
+    session_generation: u64,
+    canceller: SdrdActionAdapter,
+    worker: JoinHandle<(SdrdActionAdapter, Result<ExecutionObservation, SdrError>)>,
 }
 
 impl ConsoleApp {
@@ -114,12 +126,17 @@ impl ConsoleApp {
             history: VecDeque::with_capacity(HISTORY_LIMIT),
             agent_cycle_ended: false,
             executor,
+            active_execution: None,
         };
         app.command("open_session", None)?;
         Ok(app)
     }
 
     fn submit(&mut self, instruction: String) -> AppResult<()> {
+        if self.active_execution.is_some() {
+            println!("硬件动作仍在执行；请先输入 /stop，或等待动作完成后再提交新指令。");
+            return Ok(());
+        }
         let request_id = self.next_request_id;
         self.next_request_id = self
             .next_request_id
@@ -155,6 +172,12 @@ impl ConsoleApp {
     }
 
     fn renew(&mut self, state: ControllerState, message: &str) -> AppResult<()> {
+        if self.active_execution.is_some() {
+            return Err(invalid_input(
+                "cannot renew the session while hardware execution is active",
+            )
+            .into());
+        }
         self.command("close_session", None)?;
         self.session_generation = self
             .session_generation
@@ -172,9 +195,13 @@ impl ConsoleApp {
     }
 
     fn approve(&mut self) -> AppResult<()> {
+        if self.active_execution.is_some() {
+            println!("已有硬件动作正在执行。");
+            return Ok(());
+        }
         if let Some(plan) = self.pending.take() {
             self.record(format!("approved request {}", plan.request_id));
-            let Some(executor) = self.executor.as_mut() else {
+            let Some(mut executor) = self.executor.take() else {
                 println!(
                     "已记录批准 request={}；未配置 --sdrd，因此没有操作硬件。",
                     plan.request_id
@@ -182,20 +209,20 @@ impl ConsoleApp {
                 return Ok(());
             };
             let authorization = ExecutionAuthorization::operator_approved(&plan);
-            match executor.execute(&plan, &authorization) {
-                Ok(observation) => {
-                    self.record(format!("executed request {}", plan.request_id));
-                    println!("Execution> {}", serde_json::to_string(&observation)?);
-                }
-                Err(error) => {
-                    self.record(format!(
-                        "execution failed request {}: {}",
-                        plan.request_id, error
-                    ));
-                    println!("执行失败：{error}");
-                    self.renew(ControllerState::Faulted, "硬件执行失败，会话已进入故障状态")?;
-                }
-            }
+            let request_id = plan.request_id;
+            let session_generation = plan.session_generation;
+            let canceller = executor.clone();
+            let worker = thread::spawn(move || {
+                let result = executor.execute(&plan, &authorization);
+                (executor, result)
+            });
+            self.active_execution = Some(ActiveExecution {
+                request_id,
+                session_generation,
+                canceller,
+                worker,
+            });
+            println!("硬件动作 request={request_id} 已开始；执行期间可输入 /stop 直接取消。");
         } else {
             println!("没有等待批准的计划。")
         }
@@ -211,7 +238,108 @@ impl ConsoleApp {
         }
     }
 
+    fn poll_execution(&mut self) -> AppResult<()> {
+        let finished = self
+            .active_execution
+            .as_ref()
+            .is_some_and(|active| active.worker.is_finished());
+        if !finished {
+            return Ok(());
+        }
+        let active = self
+            .active_execution
+            .take()
+            .ok_or_else(|| invalid_input("missing active execution"))?;
+        let request_id = active.request_id;
+        let (executor, result) = active
+            .worker
+            .join()
+            .map_err(|_| invalid_input("hardware execution worker panicked"))?;
+        self.executor = Some(executor);
+        match result {
+            Ok(observation) => {
+                self.record(format!("executed request {request_id}"));
+                println!("Execution> {}", serde_json::to_string(&observation)?);
+            }
+            Err(error) => {
+                self.record(format!("execution failed request {request_id}: {error}"));
+                println!("执行失败：{error}");
+                self.renew(ControllerState::Faulted, "硬件执行失败，会话已进入故障状态")?;
+            }
+        }
+        Ok(())
+    }
+
+    fn stop(&mut self, message: &str) -> AppResult<()> {
+        if self.active_execution.is_none() {
+            return self.renew(ControllerState::Holding, message);
+        }
+
+        let mut attempts = 0_usize;
+        let cancel_result = loop {
+            let result = {
+                let active = self
+                    .active_execution
+                    .as_mut()
+                    .ok_or_else(|| invalid_input("missing active execution"))?;
+                active.canceller.cancel(active.session_generation)
+            };
+            let retry = matches!(
+                &result,
+                Err(error)
+                    if error.code == "remote_error"
+                        && error.message == "stale_or_missing_session"
+            ) && self
+                .active_execution
+                .as_ref()
+                .is_some_and(|active| !active.worker.is_finished());
+            if !retry {
+                break result;
+            }
+            if attempts >= CANCEL_START_RETRIES {
+                break result;
+            }
+            attempts += 1;
+            thread::sleep(Duration::from_millis(10));
+        };
+        if let Err(error) = cancel_result {
+            let already_finished = self
+                .active_execution
+                .as_ref()
+                .is_some_and(|active| active.worker.is_finished());
+            if already_finished {
+                self.poll_execution()?;
+                return self.renew(ControllerState::Holding, message);
+            }
+            println!("取消请求失败，硬件动作仍由当前会话持有：{error}");
+            return Ok(());
+        }
+
+        let active = self
+            .active_execution
+            .take()
+            .ok_or_else(|| invalid_input("missing active execution"))?;
+        let request_id = active.request_id;
+        let (executor, execution_result) = active
+            .worker
+            .join()
+            .map_err(|_| invalid_input("hardware execution worker panicked after cancellation"))?;
+        self.executor = Some(executor);
+        self.record(format!("cancelled request {request_id}"));
+        match execution_result {
+            Ok(observation) => println!(
+                "取消请求到达时动作已完成：{}",
+                serde_json::to_string(&observation)?
+            ),
+            Err(error) => println!("硬件动作已取消并完成恢复：{error}"),
+        }
+        self.renew(ControllerState::Holding, message)
+    }
+
     fn close(&mut self) -> AppResult<()> {
+        if self.active_execution.is_some() {
+            self.stop("终端关闭，硬件动作已停止")?;
+        }
         let _ = self.command("close_session", None);
         Ok(())
     }

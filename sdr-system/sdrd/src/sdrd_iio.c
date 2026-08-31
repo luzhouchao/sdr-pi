@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
+#include <pthread.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -90,7 +91,10 @@ struct sdrd_iio_adapter {
   struct iio_channel *phy_rx0;
   struct iio_channel *scan[4];
   struct iio_buffer *buffer;
+  pthread_mutex_t cancel_mutex;
+  int cancel_mutex_initialized;
   int capture_active;
+  int cancel_requested;
   uint32_t buffer_samples;
   uint32_t retune_settle_ms;
   uint64_t sequence;
@@ -492,7 +496,14 @@ static int adapter_capture_iq(
     }
   }
   remaining = request->sample_count * 4u;
+  (void)pthread_mutex_lock(&adapter->cancel_mutex);
+  if (adapter->cancel_requested != 0) {
+    (void)pthread_mutex_unlock(&adapter->cancel_mutex);
+    rc = -ECANCELED;
+    goto failed;
+  }
   adapter->capture_active = 1;
+  (void)pthread_mutex_unlock(&adapter->cancel_mutex);
   while (remaining > 0u) {
     const ssize_t refill = adapter->api.buffer_refill(adapter->buffer);
     unsigned char *start;
@@ -526,19 +537,49 @@ static int adapter_capture_iq(
     goto failed;
   }
   fd = -1;
+  (void)pthread_mutex_lock(&adapter->cancel_mutex);
   adapter->capture_active = 0;
+  (void)pthread_mutex_unlock(&adapter->cancel_mutex);
   result->samples_captured = request->sample_count;
   result->bytes_written = request->sample_count * 4u;
   result->sequence = adapter->sequence;
   return 0;
 
 failed:
+  (void)pthread_mutex_lock(&adapter->cancel_mutex);
   adapter->capture_active = 0;
+  (void)pthread_mutex_unlock(&adapter->cancel_mutex);
   if (fd >= 0) {
     (void)close(fd);
   }
   (void)unlink(full_path);
   return rc;
+}
+
+static int adapter_cancel(void *context) {
+  sdrd_iio_adapter_t *adapter = context;
+  if (adapter == NULL) {
+    return -EINVAL;
+  }
+  (void)pthread_mutex_lock(&adapter->cancel_mutex);
+  adapter->cancel_requested = 1;
+  if (adapter->capture_active != 0 && adapter->buffer != NULL) {
+    adapter->api.buffer_cancel(adapter->buffer);
+  }
+  (void)pthread_mutex_unlock(&adapter->cancel_mutex);
+  return 0;
+}
+
+static int adapter_begin_session(void *context) {
+  sdrd_iio_adapter_t *adapter = context;
+  if (adapter == NULL) {
+    return -EINVAL;
+  }
+  (void)pthread_mutex_lock(&adapter->cancel_mutex);
+  adapter->cancel_requested = 0;
+  adapter->capture_active = 0;
+  (void)pthread_mutex_unlock(&adapter->cancel_mutex);
+  return 0;
 }
 
 static int adapter_stop(void *context) {
@@ -601,6 +642,13 @@ int sdrd_iio_adapter_create(
     set_error(error, error_size, "IIO adapter allocation failed");
     return -ENOMEM;
   }
+  rc = pthread_mutex_init(&adapter->cancel_mutex, NULL);
+  if (rc != 0) {
+    set_error(error, error_size, "IIO cancel mutex initialization failed");
+    free(adapter);
+    return -rc;
+  }
+  adapter->cancel_mutex_initialized = 1;
   adapter->buffer_samples = config->iio_buffer_samples;
   adapter->retune_settle_ms = config->retune_settle_ms;
   if (copy_text(adapter->data_root, sizeof(adapter->data_root), config->development_data_root) != 0) {
@@ -661,6 +709,9 @@ void sdrd_iio_adapter_destroy(sdrd_iio_adapter_t *adapter) {
   if (adapter->library != NULL) {
     (void)dlclose(adapter->library);
   }
+  if (adapter->cancel_mutex_initialized != 0) {
+    (void)pthread_mutex_destroy(&adapter->cancel_mutex);
+  }
   free(adapter);
 }
 
@@ -673,9 +724,11 @@ void sdrd_iio_adapter_ops(sdrd_iio_adapter_t *adapter, sdrd_radio_ops_t *ops) {
     return;
   }
   ops->context = adapter;
+  ops->begin_session = adapter_begin_session;
   ops->snapshot = adapter_snapshot;
   ops->apply_profile = adapter_apply_profile;
   ops->capture_iq = adapter_capture_iq;
+  ops->cancel = adapter_cancel;
   ops->stop = adapter_stop;
   ops->restore = adapter_restore;
 }

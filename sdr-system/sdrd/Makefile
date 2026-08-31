@@ -7,7 +7,7 @@ FPGA_NATIVE_DIR ?= ../../fpga/nx_experiments/sdr_fpga_offload_test/native
 
 CPPFLAGS += -Iinclude -I$(FPGA_NATIVE_DIR)
 COMMON_SOURCES := src/sdrd.c src/sdrd_iio.c $(FPGA_NATIVE_DIR)/p201_native_mmio.c
-LDLIBS += -ldl
+LDLIBS += -ldl -pthread
 DAEMON := $(BUILD_DIR)/sdrd
 TEST := $(BUILD_DIR)/test_sdrd
 

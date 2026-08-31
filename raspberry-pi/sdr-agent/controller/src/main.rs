@@ -41,6 +41,7 @@ fn run() -> AppResult<()> {
     let mut sdrd_timeout_ms = 5_000_u64;
     let mut recognizer_timeout_ms = 5_000_u64;
     let mut execution_approval = None;
+    let mut session_generation = None;
     let mut args = env::args().skip(1);
     while let Some(flag) = args.next() {
         let value = args
@@ -58,6 +59,7 @@ fn run() -> AppResult<()> {
             "--sdrd-timeout-ms" => sdrd_timeout_ms = value.parse()?,
             "--recognizer-timeout-ms" => recognizer_timeout_ms = value.parse()?,
             "--approval" => execution_approval = Some(value),
+            "--session-generation" => session_generation = Some(value.parse::<u64>()?),
             _ => return Err(invalid_input(format!("unknown option {flag}")).into()),
         }
     }
@@ -70,8 +72,23 @@ fn run() -> AppResult<()> {
     if !(1..=5_000).contains(&recognizer_timeout_ms) {
         return Err(invalid_input("--recognizer-timeout-ms must be between 1 and 5000").into());
     }
-    if !matches!(mode.as_str(), "plan" | "observe" | "recognize" | "execute") {
-        return Err(invalid_input("--mode must be plan, observe, recognize, or execute").into());
+    if !matches!(
+        mode.as_str(),
+        "plan" | "observe" | "recognize" | "execute" | "cancel"
+    ) {
+        return Err(
+            invalid_input("--mode must be plan, observe, recognize, execute, or cancel").into(),
+        );
+    }
+
+    if mode == "cancel" {
+        let address =
+            sdrd_address.ok_or_else(|| invalid_input("--mode cancel requires --sdrd HOST:PORT"))?;
+        let generation = session_generation
+            .ok_or_else(|| invalid_input("--mode cancel requires --session-generation N"))?;
+        let mut executor = SdrdActionAdapter::new(address, Duration::from_millis(sdrd_timeout_ms));
+        println!("{}", serde_json::to_string(&executor.cancel(generation)?)?);
+        return Ok(());
     }
 
     if mode == "observe" {

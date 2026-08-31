@@ -45,11 +45,19 @@ SDRD/1 APPLY_PROFILE <request_id> <generation> <center_hz> <sample_rate_hz> <rf_
 SDRD/1 CAPTURE_IQ <request_id> <generation> <sample_count> <max_bytes> <feature_id>
 SDRD/1 EXECUTION_STATUS <request_id> <generation>
 SDRD/1 STOP_SESSION <request_id> <generation>
+SDRD/1 CANCEL_SESSION <request_id> <generation>
 ```
 
 Each response is one JSON line carrying the same strictly increasing, nonzero
 request ID. Generations reject stale session actions. `RETUNE` is deliberately
 not allowlisted; `APPLY_PROFILE` is the atomic tuning operation.
+
+One normal connection exclusively owns execution. `CANCEL_SESSION` is the only
+command accepted on a second connection while that owner is active. It must
+name the active generation; an early or stale generation fails closed. The
+acknowledgement means that cancellation was requested. The owner connection's
+`capture_failed_restored` response proves that capture stopped, the partial file
+was removed, and restoration ran.
 
 `APPLY_PROFILE` accepts only the configured subset of the verified project
 limits: 70 MHz..6 GHz center frequency, 2.083333..30.72 MS/s sample rate,
@@ -59,11 +67,14 @@ uses four bytes per complex int16 sample, and cannot exceed the configured hard
 cap (64 MiB by default). Adapter results use paths relative to
 `/tmp/sdr-agent-dev`; clients cannot submit an arbitrary output path.
 
-The session snapshots radio state before ownership and arms restoration before
-any mutation. Stop, quit, disconnect, apply failure, capture failure, or an
-Adapter contract violation calls stop and restore. A failed restore faults the
-session and prevents new ownership. The future real Adapter must snapshot and
-restore LO, sample rate, bandwidth, gain mode, and enabled channels.
+The session snapshots radio state before ownership, resets its cancellation
+latch, and arms restoration before any mutation. Stop, quit, disconnect, apply
+failure, capture failure, or an Adapter contract violation calls stop and
+restore. A failed restore faults the session and prevents new ownership.
+Cancellation interrupts an active libiio buffer refill, or remains latched
+until capture begins, then follows the same capture-failure restoration path.
+The Adapter snapshots and restores LO, sample rate, bandwidth, gain mode, and
+enabled channels.
 
 Raw IQ is not transported inside the JSON control response. The Adapter returns
 only bounded metadata and a safe path relative to the configured development

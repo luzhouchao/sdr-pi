@@ -27,7 +27,7 @@ $Arguments = @(
     (Join-Path $SdrdRoot 'src\sdrd.c'),
     (Join-Path $SdrdRoot 'src\sdrd_iio.c'),
     (Join-Path $RepoRoot 'fpga\nx_experiments\sdr_fpga_offload_test\native\p201_native_mmio.c'),
-    '-ldl'
+    '-ldl', '-pthread'
 )
 
 & $Compiler @Arguments

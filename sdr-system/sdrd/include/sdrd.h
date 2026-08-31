@@ -89,12 +89,14 @@ typedef struct sdrd_capture_result {
 
 typedef struct sdrd_radio_ops {
   void *context;
+  int (*begin_session)(void *context);
   int (*snapshot)(void *context, sdrd_radio_state_t *state);
   int (*apply_profile)(void *context, const sdrd_radio_state_t *state);
   int (*capture_iq)(
       void *context,
       const sdrd_capture_request_t *request,
       sdrd_capture_result_t *result);
+  int (*cancel)(void *context);
   int (*stop)(void *context);
   int (*restore)(void *context, const sdrd_radio_state_t *state);
 } sdrd_radio_ops_t;
