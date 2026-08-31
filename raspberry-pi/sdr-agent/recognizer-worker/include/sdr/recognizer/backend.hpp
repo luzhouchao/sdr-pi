@@ -18,6 +18,8 @@ enum class ErrorCode {
   kInvalidOutput,
   kUnavailable,
   kReplayExhausted,
+  kIo,
+  kHashMismatch,
 };
 
 struct Status {

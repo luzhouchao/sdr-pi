@@ -1,0 +1,16 @@
+# Replace hashes and model_bytes after exporting the real artifact.
+schema_version=1
+model_id=amr-tiny-v1
+runtime=onnxruntime
+model_file=model.onnx
+model_sha256=0000000000000000000000000000000000000000000000000000000000000000
+model_bytes=1
+labels_file=labels.txt
+labels_sha256=0000000000000000000000000000000000000000000000000000000000000000
+preprocessing=planar_f32_unit_rms_v1
+input_name=iq
+output_name=logits
+samples_per_channel=1024
+sample_rate_hz=2100000
+class_count=2
+threads=1

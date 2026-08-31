@@ -82,3 +82,17 @@ The C++ worker should start with one inference thread and a bounded queue of
 one, then pass numerical comparison, confusion-matrix, replay throughput,
 p50/p99 latency, RSS, CPU and 30-minute thermal gates before its health can set
 `recognizer_available=true`.
+
+## Implemented model-package loader
+
+The Pi C++ module now has a `ModelPackageLoader` interface with filesystem and
+replay Adapters. Loading returns canonical model/label paths plus validated
+metadata; it deliberately does not construct an inference session. The
+filesystem implementation requires direct child files under one package root,
+rejects symlinks and traversal, caps the model at 32 MiB, checks exact byte
+length and streaming SHA-256, and validates label count and uniqueness.
+
+The version-one manifest is strict `key=value` text with no unknown or duplicate
+keys. It fixes ONNX Runtime, `planar_f32_unit_rms_v1`, tensor names, sample
+count/rate, class count and thread limit. This means a model trained on the 4090
+can be admitted without changing the Rust Controller or filesystem interface.

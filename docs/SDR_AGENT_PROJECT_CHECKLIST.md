@@ -203,6 +203,9 @@ Evidence:
       generation, and candidate ID.
 - [x] Implement the dependency-free C++20 model-backend interface and
       `ReplayBackend` tests.
+- [x] Implement the strict Pi `ModelPackageLoader` interface, filesystem and
+      replay Adapters, manifest/path/size/SHA-256/label validation, and package
+      inspection command.
 - [ ] Select and version a real modulation-recognition label set, training
       corpus, preprocessing profile, and acceptance thresholds.
 - [ ] Train or import a compact model and export a pinned ONNX artifact.
@@ -222,6 +225,7 @@ Evidence:
 
 - [`PI4_LIGHTWEIGHT_AMR_RUNTIME_RESEARCH.md`](PI4_LIGHTWEIGHT_AMR_RUNTIME_RESEARCH.md)
 - [`LOCAL_RECOGNIZER_INTERFACE.md`](LOCAL_RECOGNIZER_INTERFACE.md)
+- [`PI_ULTRALIGHT_MODEL_TRAINING_HANDOFF.md`](PI_ULTRALIGHT_MODEL_TRAINING_HANDOFF.md)
 
 ## 7. Emitter/radiation-source identification
 
@@ -271,6 +275,6 @@ Evidence:
 
 The Harness has reached the FPGA-image gate. Resume sweep work only after a
 hardware-validated image exposes the documented summary identity, writable
-aggregate control, sequence/quality fields, and a rollback path. Meanwhile the
-active software milestone is the Pi model-package loading interface for the
-future ultra-light recognizer model trained on the 4090.
+aggregate control, sequence/quality fields, and a rollback path. The Pi model
+package seam is also ready. Recognition work now waits for the ultra-light ONNX
+model, labels, manifest and reference corpus trained on the 4090.
