@@ -1,0 +1,15 @@
+[package]
+name = "p201pro-test"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+description = "Minimal Rust/libiio probe and capture test for the PUZHI P201 Pro"
+license = "MIT"
+
+[dependencies]
+industrial-io = "=0.6.1"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

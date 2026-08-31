@@ -1,0 +1,57 @@
+# Credentials and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+.ssh/
+secrets/
+
+# Rust
+**/target/
+
+# Python caches used by offline FPGA validation helpers
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+
+# Vivado generated state and large build artifacts
+**/.Xil/
+**/vivado_out/
+**/*.cache/
+**/*.runs/
+**/*.sim/
+**/*.gen/
+**/*.ip_user_files/
+*.jou
+*.log
+*.pb
+*.str
+*.wdb
+*.bit
+*.bin
+*.ltx
+*.hdf
+*.xsa
+
+# Generated FPGA/SD payloads are published as gated release artifacts
+**/sd_payload/
+**/BOOT.bin
+**/BOOT_*.bin
+
+# Curated FPGA evidence: keep concise top-level Markdown conclusions, not raw
+# Vivado dumps, CSV inventories, JSON captures, or copied experiment boot trees.
+fpga/reports/**
+!fpga/reports/*.md
+fpga/experiments/**/boot/
+fpga/boot_experiments/**/*.json
+fpga/nx_experiments/**/logs/
+fpga/nx_experiments/**/build/
+fpga/nx_experiments/**/staged_robot_control_integration/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

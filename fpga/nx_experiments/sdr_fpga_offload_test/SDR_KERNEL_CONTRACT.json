@@ -1,0 +1,2906 @@
+{
+  "fft_shadow_registers": {
+    "fft_shadow_abi_version": {
+      "address": 1136657416,
+      "description": "0x00020000 for fpga_fft_shadow v1",
+      "offset": 1032,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_band_power_dbfs_x100": {
+      "address": 1136657496,
+      "description": "",
+      "offset": 1112,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_build_id": {
+      "address": 1136657412,
+      "description": "0x46505331 draft build ID for FPS1",
+      "offset": 1028,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_capability": {
+      "address": 1136657420,
+      "description": "FFT/PSD shadow capability bitmap",
+      "offset": 1036,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_bin_count": {
+      "address": 1136657452,
+      "description": "64..128, preferred 96",
+      "offset": 1068,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_bin_step_q16": {
+      "address": 1136657456,
+      "description": "FFT bins per coarse bin in Q16.16",
+      "offset": 1072,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_000_dbfs_x100": {
+      "address": 1136657664,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1280,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_001_dbfs_x100": {
+      "address": 1136657668,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1284,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_002_dbfs_x100": {
+      "address": 1136657672,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1288,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_003_dbfs_x100": {
+      "address": 1136657676,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1292,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_004_dbfs_x100": {
+      "address": 1136657680,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1296,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_005_dbfs_x100": {
+      "address": 1136657684,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1300,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_006_dbfs_x100": {
+      "address": 1136657688,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1304,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_007_dbfs_x100": {
+      "address": 1136657692,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1308,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_008_dbfs_x100": {
+      "address": 1136657696,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1312,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_009_dbfs_x100": {
+      "address": 1136657700,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1316,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_010_dbfs_x100": {
+      "address": 1136657704,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1320,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_011_dbfs_x100": {
+      "address": 1136657708,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1324,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_012_dbfs_x100": {
+      "address": 1136657712,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1328,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_013_dbfs_x100": {
+      "address": 1136657716,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1332,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_014_dbfs_x100": {
+      "address": 1136657720,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1336,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_015_dbfs_x100": {
+      "address": 1136657724,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1340,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_016_dbfs_x100": {
+      "address": 1136657728,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1344,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_017_dbfs_x100": {
+      "address": 1136657732,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1348,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_018_dbfs_x100": {
+      "address": 1136657736,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1352,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_019_dbfs_x100": {
+      "address": 1136657740,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1356,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_020_dbfs_x100": {
+      "address": 1136657744,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1360,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_021_dbfs_x100": {
+      "address": 1136657748,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1364,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_022_dbfs_x100": {
+      "address": 1136657752,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1368,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_023_dbfs_x100": {
+      "address": 1136657756,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1372,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_024_dbfs_x100": {
+      "address": 1136657760,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1376,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_025_dbfs_x100": {
+      "address": 1136657764,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1380,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_026_dbfs_x100": {
+      "address": 1136657768,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1384,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_027_dbfs_x100": {
+      "address": 1136657772,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1388,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_028_dbfs_x100": {
+      "address": 1136657776,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1392,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_029_dbfs_x100": {
+      "address": 1136657780,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1396,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_030_dbfs_x100": {
+      "address": 1136657784,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1400,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_031_dbfs_x100": {
+      "address": 1136657788,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1404,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_032_dbfs_x100": {
+      "address": 1136657792,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1408,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_033_dbfs_x100": {
+      "address": 1136657796,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1412,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_034_dbfs_x100": {
+      "address": 1136657800,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1416,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_035_dbfs_x100": {
+      "address": 1136657804,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1420,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_036_dbfs_x100": {
+      "address": 1136657808,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1424,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_037_dbfs_x100": {
+      "address": 1136657812,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1428,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_038_dbfs_x100": {
+      "address": 1136657816,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1432,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_039_dbfs_x100": {
+      "address": 1136657820,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1436,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_040_dbfs_x100": {
+      "address": 1136657824,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1440,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_041_dbfs_x100": {
+      "address": 1136657828,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1444,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_042_dbfs_x100": {
+      "address": 1136657832,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1448,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_043_dbfs_x100": {
+      "address": 1136657836,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1452,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_044_dbfs_x100": {
+      "address": 1136657840,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1456,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_045_dbfs_x100": {
+      "address": 1136657844,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1460,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_046_dbfs_x100": {
+      "address": 1136657848,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1464,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_047_dbfs_x100": {
+      "address": 1136657852,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1468,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_048_dbfs_x100": {
+      "address": 1136657856,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1472,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_049_dbfs_x100": {
+      "address": 1136657860,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1476,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_050_dbfs_x100": {
+      "address": 1136657864,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1480,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_051_dbfs_x100": {
+      "address": 1136657868,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1484,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_052_dbfs_x100": {
+      "address": 1136657872,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1488,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_053_dbfs_x100": {
+      "address": 1136657876,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1492,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_054_dbfs_x100": {
+      "address": 1136657880,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1496,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_055_dbfs_x100": {
+      "address": 1136657884,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1500,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_056_dbfs_x100": {
+      "address": 1136657888,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1504,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_057_dbfs_x100": {
+      "address": 1136657892,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1508,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_058_dbfs_x100": {
+      "address": 1136657896,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1512,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_059_dbfs_x100": {
+      "address": 1136657900,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1516,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_060_dbfs_x100": {
+      "address": 1136657904,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1520,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_061_dbfs_x100": {
+      "address": 1136657908,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1524,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_062_dbfs_x100": {
+      "address": 1136657912,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1528,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_063_dbfs_x100": {
+      "address": 1136657916,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1532,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_064_dbfs_x100": {
+      "address": 1136657920,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1536,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_065_dbfs_x100": {
+      "address": 1136657924,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1540,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_066_dbfs_x100": {
+      "address": 1136657928,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1544,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_067_dbfs_x100": {
+      "address": 1136657932,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1548,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_068_dbfs_x100": {
+      "address": 1136657936,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1552,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_069_dbfs_x100": {
+      "address": 1136657940,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1556,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_070_dbfs_x100": {
+      "address": 1136657944,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1560,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_071_dbfs_x100": {
+      "address": 1136657948,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1564,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_072_dbfs_x100": {
+      "address": 1136657952,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1568,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_073_dbfs_x100": {
+      "address": 1136657956,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1572,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_074_dbfs_x100": {
+      "address": 1136657960,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1576,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_075_dbfs_x100": {
+      "address": 1136657964,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1580,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_076_dbfs_x100": {
+      "address": 1136657968,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1584,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_077_dbfs_x100": {
+      "address": 1136657972,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1588,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_078_dbfs_x100": {
+      "address": 1136657976,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1592,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_079_dbfs_x100": {
+      "address": 1136657980,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1596,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_080_dbfs_x100": {
+      "address": 1136657984,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1600,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_081_dbfs_x100": {
+      "address": 1136657988,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1604,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_082_dbfs_x100": {
+      "address": 1136657992,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1608,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_083_dbfs_x100": {
+      "address": 1136657996,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1612,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_084_dbfs_x100": {
+      "address": 1136658000,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1616,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_085_dbfs_x100": {
+      "address": 1136658004,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1620,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_086_dbfs_x100": {
+      "address": 1136658008,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1624,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_087_dbfs_x100": {
+      "address": 1136658012,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1628,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_088_dbfs_x100": {
+      "address": 1136658016,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1632,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_089_dbfs_x100": {
+      "address": 1136658020,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1636,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_090_dbfs_x100": {
+      "address": 1136658024,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1640,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_091_dbfs_x100": {
+      "address": 1136658028,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1644,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_092_dbfs_x100": {
+      "address": 1136658032,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1648,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_093_dbfs_x100": {
+      "address": 1136658036,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1652,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_094_dbfs_x100": {
+      "address": 1136658040,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1656,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_095_dbfs_x100": {
+      "address": 1136658044,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1660,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_096_dbfs_x100": {
+      "address": 1136658048,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1664,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_097_dbfs_x100": {
+      "address": 1136658052,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1668,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_098_dbfs_x100": {
+      "address": 1136658056,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1672,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_099_dbfs_x100": {
+      "address": 1136658060,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1676,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_100_dbfs_x100": {
+      "address": 1136658064,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1680,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_101_dbfs_x100": {
+      "address": 1136658068,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1684,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_102_dbfs_x100": {
+      "address": 1136658072,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1688,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_103_dbfs_x100": {
+      "address": 1136658076,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1692,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_104_dbfs_x100": {
+      "address": 1136658080,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1696,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_105_dbfs_x100": {
+      "address": 1136658084,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1700,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_106_dbfs_x100": {
+      "address": 1136658088,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1704,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_107_dbfs_x100": {
+      "address": 1136658092,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1708,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_108_dbfs_x100": {
+      "address": 1136658096,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1712,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_109_dbfs_x100": {
+      "address": 1136658100,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1716,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_110_dbfs_x100": {
+      "address": 1136658104,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1720,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_111_dbfs_x100": {
+      "address": 1136658108,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1724,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_112_dbfs_x100": {
+      "address": 1136658112,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1728,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_113_dbfs_x100": {
+      "address": 1136658116,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1732,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_114_dbfs_x100": {
+      "address": 1136658120,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1736,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_115_dbfs_x100": {
+      "address": 1136658124,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1740,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_116_dbfs_x100": {
+      "address": 1136658128,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1744,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_117_dbfs_x100": {
+      "address": 1136658132,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1748,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_118_dbfs_x100": {
+      "address": 1136658136,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1752,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_119_dbfs_x100": {
+      "address": 1136658140,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1756,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_120_dbfs_x100": {
+      "address": 1136658144,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1760,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_121_dbfs_x100": {
+      "address": 1136658148,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1764,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_122_dbfs_x100": {
+      "address": 1136658152,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1768,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_123_dbfs_x100": {
+      "address": 1136658156,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1772,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_124_dbfs_x100": {
+      "address": 1136658160,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1776,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_125_dbfs_x100": {
+      "address": 1136658164,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1780,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_126_dbfs_x100": {
+      "address": 1136658168,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1784,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_coarse_psd_127_dbfs_x100": {
+      "address": 1136658172,
+      "description": "coarse PSD bin in dBFS x100; bins above coarse_bin_count are reserved",
+      "offset": 1788,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_magic": {
+      "address": 1136657408,
+      "description": "0x46465431 for FFT1",
+      "offset": 1024,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_nfft": {
+      "address": 1136657436,
+      "description": "FFT length, fixed first but register-visible",
+      "offset": 1052,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_noise_floor_dbfs_x100": {
+      "address": 1136657488,
+      "description": "",
+      "offset": 1104,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_peak_bin": {
+      "address": 1136657476,
+      "description": "",
+      "offset": 1092,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_peak_offset_hz": {
+      "address": 1136657480,
+      "description": "",
+      "offset": 1096,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_peak_power_dbfs_x100": {
+      "address": 1136657484,
+      "description": "",
+      "offset": 1100,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_peak_prominence_db_x100": {
+      "address": 1136657492,
+      "description": "",
+      "offset": 1108,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_reserved_43c": {
+      "address": 1136657468,
+      "description": "reserved, read zero until assigned",
+      "offset": 1084,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_rssi_dbfs_x100": {
+      "address": 1136657472,
+      "description": "",
+      "offset": 1088,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_rx_mask": {
+      "address": 1136657460,
+      "description": "bit0 RX0, bit1 RX1 reserved for later",
+      "offset": 1076,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_sample_count": {
+      "address": 1136657432,
+      "description": "sample count used for this spectral result",
+      "offset": 1048,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_sample_rate_hz": {
+      "address": 1136657440,
+      "description": "sample rate used by the kernel",
+      "offset": 1056,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_scale_exponent": {
+      "address": 1136657448,
+      "description": "kernel scale exponent",
+      "offset": 1064,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_sequence": {
+      "address": 1136657424,
+      "description": "monotonic result sequence",
+      "offset": 1040,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_source_frame": {
+      "address": 1136657464,
+      "description": "source frame counter or aggregate frame ID",
+      "offset": 1080,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_status": {
+      "address": 1136657428,
+      "description": "valid/busy/stale/overflow/low-confidence/sample-mismatch flags",
+      "offset": 1044,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_summary_flags": {
+      "address": 1136657500,
+      "description": "summary-specific flags, reserved initially",
+      "offset": 1116,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_top0_bin": {
+      "address": 1136657512,
+      "description": "",
+      "offset": 1128,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_top0_power_dbfs_x100": {
+      "address": 1136657516,
+      "description": "",
+      "offset": 1132,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_top1_bin": {
+      "address": 1136657520,
+      "description": "",
+      "offset": 1136,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_top1_power_dbfs_x100": {
+      "address": 1136657524,
+      "description": "",
+      "offset": 1140,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_top2_bin": {
+      "address": 1136657528,
+      "description": "",
+      "offset": 1144,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_top2_power_dbfs_x100": {
+      "address": 1136657532,
+      "description": "",
+      "offset": 1148,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_top3_bin": {
+      "address": 1136657536,
+      "description": "",
+      "offset": 1152,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_top3_power_dbfs_x100": {
+      "address": 1136657540,
+      "description": "",
+      "offset": 1156,
+      "signed": true,
+      "width_bits": 32
+    },
+    "fft_shadow_top_peak_count": {
+      "address": 1136657504,
+      "description": "0..4",
+      "offset": 1120,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_top_peak_valid_mask": {
+      "address": 1136657508,
+      "description": "bit per top peak entry",
+      "offset": 1124,
+      "signed": false,
+      "width_bits": 32
+    },
+    "fft_shadow_window_id": {
+      "address": 1136657444,
+      "description": "0 rectangular, 1 Hann, others reserved",
+      "offset": 1060,
+      "signed": false,
+      "width_bits": 32
+    }
+  },
+  "future_kernel_route": {
+    "FFT_PSD_PLANNED": {
+      "fpga_role": "fixed-shape FFT/window/PSD/noise/peak/coarse-bin kernel",
+      "nx_role": "configure kernel, read summary/coarse bins, compute absolute frequency, policy, fallback, logging",
+      "payload_shape": "summary plus four top peaks plus 64..128 coarse PSD bins, preferred 96",
+      "status": "phase1-fpga-fft-shadow-abi-draft-no-hardware-yet",
+      "transport": "axi-lite summary page with local mmap/uio transport first"
+    },
+    "SUM5": {
+      "fpga_role": "dual-rx reductions and corrected numerators",
+      "nx_role": "math composition, calibration, aggregation, frontend publication",
+      "payload_shape": "constant register set",
+      "status": "pc-built-burnable-pending-hardware-validation",
+      "transport": "axi-lite-register-summary",
+      "version": 1398099253
+    },
+    "SUM6": {
+      "fpga_role": "dual-rx reductions, widened corrected numerator path, ABI/status metadata",
+      "nx_role": "versioned Python/C++ API, CPU/GPU backend selection, validation and aggregation",
+      "payload_shape": "sum5-compatible registers plus abi capability limit build metadata",
+      "status": "pc-built-burnable-pending-hardware-validation-after-sum5",
+      "transport": "axi-lite-register-summary",
+      "version": 1398099254
+    },
+    "SUM7": {
+      "fpga_role": "dual-rx reductions, ABI metadata, light clip/zero-cross/sign quality counters",
+      "nx_role": "read quality primitives, compare against existing SDR math, compose higher-level algorithms",
+      "payload_shape": "sum6-compatible registers plus 0x100 quality diagnostics page",
+      "status": "hardware-validated-quality-page-rollback",
+      "transport": "axi-lite-register-summary",
+      "version": 1398099255
+    },
+    "SUM8": {
+      "fpga_role": "multi-frame aggregation for corrected power, corrected cross, raw power, and quality counts",
+      "nx_role": "arm aggregate window, read one stable page, compute divide/sqrt/atan2/calibration/AoA/publication later",
+      "payload_shape": "sum7-compatible registers plus 0x180 aggregate page",
+      "status": "hardware-validated-first-rollback-behind-v8l1",
+      "transport": "axi-lite-register-summary",
+      "version": 1398099256
+    },
+    "SUM8_V8D0": {
+      "fpga_role": "validated live AD9361 passive tap base for isolated V10 self-test images and NX shadow comparison",
+      "nx_role": "read passive aggregate pages, run independent shadow comparisons, and avoid active robot_control replacement",
+      "payload_shape": "V8L1-like SUM8/QUA8/AGG8 pages with V8D0 build IDs",
+      "status": "hardware-validated-diagnostic-layout-probe-and-current-v10s0-live-tap-base",
+      "transport": "axi-lite-register-summary",
+      "version": 1398099256
+    },
+    "SUM8_V8L1": {
+      "fpga_role": "auto-roll multi-frame aggregate windows for lower NX polling and fewer re-arm writes",
+      "nx_role": "configure once, poll sequence or read latest aggregate page, compute divide/sqrt/atan2/calibration/publication later",
+      "payload_shape": "sum8 aggregate page plus 0x17c sequence and agg_control bit2 auto-roll",
+      "status": "hardware-validated-auto-aggregate-current-baseline",
+      "transport": "axi-lite-register-summary",
+      "version": 1398099256
+    },
+    "SUM8_V8L2": {
+      "fpga_role": "keep auto-roll running after each aggregate target window instead of stalling after the first latched page",
+      "nx_role": "configure once, monitor AGG_SEQUENCE, read latest aggregate page, and fall back to V8L1/V8 if validation fails",
+      "payload_shape": "V8L1-compatible summary registers with V8L2 build IDs and continuous auto-roll sequence",
+      "status": "planned-v8l1-auto-roll-continuity-fix-not-hardware-validated",
+      "transport": "axi-lite-register-summary",
+      "version": 1398099256
+    }
+  },
+  "max_v5_corrected_frame_len": 256,
+  "max_v6_corrected_frame_len": 65535,
+  "max_v7_corrected_frame_len": 65535,
+  "max_v8_agg_frames": 65535,
+  "sum5_registers": {
+    "corr_cross_im_num_hi": {
+      "address": 1136656616,
+      "description": "sign extension of bit 63",
+      "offset": 232,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_im_num_lo": {
+      "address": 1136656608,
+      "description": "",
+      "offset": 224,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_im_num_mid": {
+      "address": 1136656612,
+      "description": "",
+      "offset": 228,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_re_num_hi": {
+      "address": 1136656604,
+      "description": "sign extension of bit 63",
+      "offset": 220,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_re_num_lo": {
+      "address": 1136656596,
+      "description": "",
+      "offset": 212,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_re_num_mid": {
+      "address": 1136656600,
+      "description": "",
+      "offset": 216,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_im_hi": {
+      "address": 1136656528,
+      "description": "",
+      "offset": 144,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_im_lo": {
+      "address": 1136656524,
+      "description": "",
+      "offset": 140,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_re_hi": {
+      "address": 1136656520,
+      "description": "",
+      "offset": 136,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_re_lo": {
+      "address": 1136656516,
+      "description": "",
+      "offset": 132,
+      "signed": true,
+      "width_bits": 32
+    },
+    "dual_samples": {
+      "address": 1136656496,
+      "description": "",
+      "offset": 112,
+      "signed": false,
+      "width_bits": 32
+    },
+    "frame_counter": {
+      "address": 1136656456,
+      "description": "",
+      "offset": 72,
+      "signed": false,
+      "width_bits": 32
+    },
+    "i0_sum_hi": {
+      "address": 1136656544,
+      "description": "",
+      "offset": 160,
+      "signed": true,
+      "width_bits": 32
+    },
+    "i0_sum_lo": {
+      "address": 1136656540,
+      "description": "",
+      "offset": 156,
+      "signed": true,
+      "width_bits": 32
+    },
+    "i1_sum_hi": {
+      "address": 1136656560,
+      "description": "",
+      "offset": 176,
+      "signed": true,
+      "width_bits": 32
+    },
+    "i1_sum_lo": {
+      "address": 1136656556,
+      "description": "",
+      "offset": 172,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q0_sum_hi": {
+      "address": 1136656552,
+      "description": "",
+      "offset": 168,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q0_sum_lo": {
+      "address": 1136656548,
+      "description": "",
+      "offset": 164,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q1_sum_hi": {
+      "address": 1136656568,
+      "description": "",
+      "offset": 184,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q1_sum_lo": {
+      "address": 1136656564,
+      "description": "",
+      "offset": 180,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_corr_power_num_hi": {
+      "address": 1136656580,
+      "description": "sign extension of bit 63",
+      "offset": 196,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_corr_power_num_lo": {
+      "address": 1136656572,
+      "description": "",
+      "offset": 188,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_corr_power_num_mid": {
+      "address": 1136656576,
+      "description": "",
+      "offset": 192,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_peak_index": {
+      "address": 1136656476,
+      "description": "",
+      "offset": 92,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_peak_power": {
+      "address": 1136656472,
+      "description": "",
+      "offset": 88,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_power_hi": {
+      "address": 1136656504,
+      "description": "",
+      "offset": 120,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_power_lo": {
+      "address": 1136656500,
+      "description": "",
+      "offset": 116,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_corr_power_num_hi": {
+      "address": 1136656592,
+      "description": "sign extension of bit 63",
+      "offset": 208,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx1_corr_power_num_lo": {
+      "address": 1136656584,
+      "description": "",
+      "offset": 200,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx1_corr_power_num_mid": {
+      "address": 1136656588,
+      "description": "",
+      "offset": 204,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx1_peak_index": {
+      "address": 1136656536,
+      "description": "",
+      "offset": 152,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_peak_power": {
+      "address": 1136656532,
+      "description": "",
+      "offset": 148,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_power_hi": {
+      "address": 1136656512,
+      "description": "",
+      "offset": 128,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_power_lo": {
+      "address": 1136656508,
+      "description": "",
+      "offset": 124,
+      "signed": false,
+      "width_bits": 32
+    },
+    "sample_count": {
+      "address": 1136656460,
+      "description": "",
+      "offset": 76,
+      "signed": false,
+      "width_bits": 32
+    },
+    "snapshot_count": {
+      "address": 1136656480,
+      "description": "0 in SUM5 production",
+      "offset": 96,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_flags": {
+      "address": 1136656452,
+      "description": "",
+      "offset": 68,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_sum_power_hi": {
+      "address": 1136656468,
+      "description": "",
+      "offset": 84,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_sum_power_lo": {
+      "address": 1136656464,
+      "description": "",
+      "offset": 80,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_version": {
+      "address": 1136656448,
+      "description": "0x53554D35 for SUM5",
+      "offset": 64,
+      "signed": false,
+      "width_bits": 32
+    }
+  },
+  "sum6_registers": {
+    "abi_version": {
+      "address": 1136656620,
+      "description": "0x00010000, major 1 minor 0",
+      "offset": 236,
+      "signed": false,
+      "width_bits": 32
+    },
+    "build_id": {
+      "address": 1136656636,
+      "description": "0x56360001",
+      "offset": 252,
+      "signed": false,
+      "width_bits": 32
+    },
+    "capability_bitmap": {
+      "address": 1136656624,
+      "description": "bits: dual_rx raw_power peaks cross iq_sums corrected_numerators snapshot_disabled wide_corrected_path",
+      "offset": 240,
+      "signed": false,
+      "width_bits": 32
+    },
+    "corr_cross_im_num_hi": {
+      "address": 1136656616,
+      "description": "sign extension of bit 63",
+      "offset": 232,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_im_num_lo": {
+      "address": 1136656608,
+      "description": "",
+      "offset": 224,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_im_num_mid": {
+      "address": 1136656612,
+      "description": "",
+      "offset": 228,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_re_num_hi": {
+      "address": 1136656604,
+      "description": "sign extension of bit 63",
+      "offset": 220,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_re_num_lo": {
+      "address": 1136656596,
+      "description": "",
+      "offset": 212,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_re_num_mid": {
+      "address": 1136656600,
+      "description": "",
+      "offset": 216,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_im_hi": {
+      "address": 1136656528,
+      "description": "",
+      "offset": 144,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_im_lo": {
+      "address": 1136656524,
+      "description": "",
+      "offset": 140,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_re_hi": {
+      "address": 1136656520,
+      "description": "",
+      "offset": 136,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_re_lo": {
+      "address": 1136656516,
+      "description": "",
+      "offset": 132,
+      "signed": true,
+      "width_bits": 32
+    },
+    "dual_samples": {
+      "address": 1136656496,
+      "description": "",
+      "offset": 112,
+      "signed": false,
+      "width_bits": 32
+    },
+    "frame_counter": {
+      "address": 1136656456,
+      "description": "",
+      "offset": 72,
+      "signed": false,
+      "width_bits": 32
+    },
+    "i0_sum_hi": {
+      "address": 1136656544,
+      "description": "",
+      "offset": 160,
+      "signed": true,
+      "width_bits": 32
+    },
+    "i0_sum_lo": {
+      "address": 1136656540,
+      "description": "",
+      "offset": 156,
+      "signed": true,
+      "width_bits": 32
+    },
+    "i1_sum_hi": {
+      "address": 1136656560,
+      "description": "",
+      "offset": 176,
+      "signed": true,
+      "width_bits": 32
+    },
+    "i1_sum_lo": {
+      "address": 1136656556,
+      "description": "",
+      "offset": 172,
+      "signed": true,
+      "width_bits": 32
+    },
+    "limit_flags": {
+      "address": 1136656628,
+      "description": "bit0 frame_len_limited, bit1 arithmetic_overflow, bit2 corrected_valid, bit3 snapshot_disabled",
+      "offset": 244,
+      "signed": false,
+      "width_bits": 32
+    },
+    "max_corr_frame_len": {
+      "address": 1136656632,
+      "description": "65535 for SUM6",
+      "offset": 248,
+      "signed": false,
+      "width_bits": 32
+    },
+    "q0_sum_hi": {
+      "address": 1136656552,
+      "description": "",
+      "offset": 168,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q0_sum_lo": {
+      "address": 1136656548,
+      "description": "",
+      "offset": 164,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q1_sum_hi": {
+      "address": 1136656568,
+      "description": "",
+      "offset": 184,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q1_sum_lo": {
+      "address": 1136656564,
+      "description": "",
+      "offset": 180,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_corr_power_num_hi": {
+      "address": 1136656580,
+      "description": "sign extension of bit 63",
+      "offset": 196,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_corr_power_num_lo": {
+      "address": 1136656572,
+      "description": "",
+      "offset": 188,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_corr_power_num_mid": {
+      "address": 1136656576,
+      "description": "",
+      "offset": 192,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_peak_index": {
+      "address": 1136656476,
+      "description": "",
+      "offset": 92,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_peak_power": {
+      "address": 1136656472,
+      "description": "",
+      "offset": 88,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_power_hi": {
+      "address": 1136656504,
+      "description": "",
+      "offset": 120,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_power_lo": {
+      "address": 1136656500,
+      "description": "",
+      "offset": 116,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_corr_power_num_hi": {
+      "address": 1136656592,
+      "description": "sign extension of bit 63",
+      "offset": 208,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx1_corr_power_num_lo": {
+      "address": 1136656584,
+      "description": "",
+      "offset": 200,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx1_corr_power_num_mid": {
+      "address": 1136656588,
+      "description": "",
+      "offset": 204,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx1_peak_index": {
+      "address": 1136656536,
+      "description": "",
+      "offset": 152,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_peak_power": {
+      "address": 1136656532,
+      "description": "",
+      "offset": 148,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_power_hi": {
+      "address": 1136656512,
+      "description": "",
+      "offset": 128,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_power_lo": {
+      "address": 1136656508,
+      "description": "",
+      "offset": 124,
+      "signed": false,
+      "width_bits": 32
+    },
+    "sample_count": {
+      "address": 1136656460,
+      "description": "",
+      "offset": 76,
+      "signed": false,
+      "width_bits": 32
+    },
+    "snapshot_count": {
+      "address": 1136656480,
+      "description": "0 in SUM5 production",
+      "offset": 96,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_flags": {
+      "address": 1136656452,
+      "description": "",
+      "offset": 68,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_sum_power_hi": {
+      "address": 1136656468,
+      "description": "",
+      "offset": 84,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_sum_power_lo": {
+      "address": 1136656464,
+      "description": "",
+      "offset": 80,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_version": {
+      "address": 1136656448,
+      "description": "0x53554D36 for SUM6",
+      "offset": 64,
+      "signed": false,
+      "width_bits": 32
+    }
+  },
+  "sum7_registers": {
+    "abi_version": {
+      "address": 1136656620,
+      "description": "0x00010001, major 1 minor 1",
+      "offset": 236,
+      "signed": false,
+      "width_bits": 32
+    },
+    "build_id": {
+      "address": 1136656636,
+      "description": "0x56370001",
+      "offset": 252,
+      "signed": false,
+      "width_bits": 32
+    },
+    "capability_bitmap": {
+      "address": 1136656624,
+      "description": "SUM6 bits plus bit8 quality_page",
+      "offset": 240,
+      "signed": false,
+      "width_bits": 32
+    },
+    "corr_cross_im_num_hi": {
+      "address": 1136656616,
+      "description": "sign extension of bit 63",
+      "offset": 232,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_im_num_lo": {
+      "address": 1136656608,
+      "description": "",
+      "offset": 224,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_im_num_mid": {
+      "address": 1136656612,
+      "description": "",
+      "offset": 228,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_re_num_hi": {
+      "address": 1136656604,
+      "description": "sign extension of bit 63",
+      "offset": 220,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_re_num_lo": {
+      "address": 1136656596,
+      "description": "",
+      "offset": 212,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_re_num_mid": {
+      "address": 1136656600,
+      "description": "",
+      "offset": 216,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_im_hi": {
+      "address": 1136656528,
+      "description": "",
+      "offset": 144,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_im_lo": {
+      "address": 1136656524,
+      "description": "",
+      "offset": 140,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_re_hi": {
+      "address": 1136656520,
+      "description": "",
+      "offset": 136,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_re_lo": {
+      "address": 1136656516,
+      "description": "",
+      "offset": 132,
+      "signed": true,
+      "width_bits": 32
+    },
+    "dual_samples": {
+      "address": 1136656496,
+      "description": "",
+      "offset": 112,
+      "signed": false,
+      "width_bits": 32
+    },
+    "frame_counter": {
+      "address": 1136656456,
+      "description": "",
+      "offset": 72,
+      "signed": false,
+      "width_bits": 32
+    },
+    "i0_sum_hi": {
+      "address": 1136656544,
+      "description": "",
+      "offset": 160,
+      "signed": true,
+      "width_bits": 32
+    },
+    "i0_sum_lo": {
+      "address": 1136656540,
+      "description": "",
+      "offset": 156,
+      "signed": true,
+      "width_bits": 32
+    },
+    "i1_sum_hi": {
+      "address": 1136656560,
+      "description": "",
+      "offset": 176,
+      "signed": true,
+      "width_bits": 32
+    },
+    "i1_sum_lo": {
+      "address": 1136656556,
+      "description": "",
+      "offset": 172,
+      "signed": true,
+      "width_bits": 32
+    },
+    "limit_flags": {
+      "address": 1136656628,
+      "description": "bit0 frame_len_limited, bit1 arithmetic_overflow, bit2 corrected_valid, bit3 snapshot_disabled",
+      "offset": 244,
+      "signed": false,
+      "width_bits": 32
+    },
+    "max_corr_frame_len": {
+      "address": 1136656632,
+      "description": "65535 for SUM7",
+      "offset": 248,
+      "signed": false,
+      "width_bits": 32
+    },
+    "q0_sum_hi": {
+      "address": 1136656552,
+      "description": "",
+      "offset": 168,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q0_sum_lo": {
+      "address": 1136656548,
+      "description": "",
+      "offset": 164,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q1_sum_hi": {
+      "address": 1136656568,
+      "description": "",
+      "offset": 184,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q1_sum_lo": {
+      "address": 1136656564,
+      "description": "",
+      "offset": 180,
+      "signed": true,
+      "width_bits": 32
+    },
+    "quadrature_same_sign_counts": {
+      "address": 1136656676,
+      "description": "upper16 RX1 I/Q same-sign count, lower16 RX0 I/Q same-sign count",
+      "offset": 292,
+      "signed": false,
+      "width_bits": 32
+    },
+    "quality_build_id": {
+      "address": 1136656700,
+      "description": "0x51370001",
+      "offset": 316,
+      "signed": false,
+      "width_bits": 32
+    },
+    "quality_capability": {
+      "address": 1136656696,
+      "description": "0x0000000F: clip, zero-cross, sign-same, abs-reserved-zero",
+      "offset": 312,
+      "signed": false,
+      "width_bits": 32
+    },
+    "quality_flags": {
+      "address": 1136656644,
+      "description": "reserved/status flags",
+      "offset": 260,
+      "signed": false,
+      "width_bits": 32
+    },
+    "quality_frame": {
+      "address": 1136656648,
+      "description": "latched frame counter",
+      "offset": 264,
+      "signed": false,
+      "width_bits": 32
+    },
+    "quality_samples": {
+      "address": 1136656652,
+      "description": "latched sample count",
+      "offset": 268,
+      "signed": false,
+      "width_bits": 32
+    },
+    "quality_version": {
+      "address": 1136656640,
+      "description": "0x51554137 for QUA7",
+      "offset": 256,
+      "signed": false,
+      "width_bits": 32
+    },
+    "reserved_rx0_abs_i_sum": {
+      "address": 1136656680,
+      "description": "reserved, reads 0 in timing-clean SUM7A",
+      "offset": 296,
+      "signed": false,
+      "width_bits": 32
+    },
+    "reserved_rx0_abs_q_sum": {
+      "address": 1136656684,
+      "description": "reserved, reads 0 in timing-clean SUM7A",
+      "offset": 300,
+      "signed": false,
+      "width_bits": 32
+    },
+    "reserved_rx1_abs_i_sum": {
+      "address": 1136656688,
+      "description": "reserved, reads 0 in timing-clean SUM7A",
+      "offset": 304,
+      "signed": false,
+      "width_bits": 32
+    },
+    "reserved_rx1_abs_q_sum": {
+      "address": 1136656692,
+      "description": "reserved, reads 0 in timing-clean SUM7A",
+      "offset": 308,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_clip_counts": {
+      "address": 1136656656,
+      "description": "upper16 Q clip count, lower16 I clip count",
+      "offset": 272,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_corr_power_num_hi": {
+      "address": 1136656580,
+      "description": "sign extension of bit 63",
+      "offset": 196,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_corr_power_num_lo": {
+      "address": 1136656572,
+      "description": "",
+      "offset": 188,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_corr_power_num_mid": {
+      "address": 1136656576,
+      "description": "",
+      "offset": 192,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_peak_index": {
+      "address": 1136656476,
+      "description": "",
+      "offset": 92,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_peak_power": {
+      "address": 1136656472,
+      "description": "",
+      "offset": 88,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_power_hi": {
+      "address": 1136656504,
+      "description": "",
+      "offset": 120,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_power_lo": {
+      "address": 1136656500,
+      "description": "",
+      "offset": 116,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_zero_cross_counts": {
+      "address": 1136656664,
+      "description": "upper16 Q zero-cross count, lower16 I zero-cross count",
+      "offset": 280,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_clip_counts": {
+      "address": 1136656660,
+      "description": "upper16 Q clip count, lower16 I clip count",
+      "offset": 276,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_corr_power_num_hi": {
+      "address": 1136656592,
+      "description": "sign extension of bit 63",
+      "offset": 208,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx1_corr_power_num_lo": {
+      "address": 1136656584,
+      "description": "",
+      "offset": 200,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx1_corr_power_num_mid": {
+      "address": 1136656588,
+      "description": "",
+      "offset": 204,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx1_peak_index": {
+      "address": 1136656536,
+      "description": "",
+      "offset": 152,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_peak_power": {
+      "address": 1136656532,
+      "description": "",
+      "offset": 148,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_power_hi": {
+      "address": 1136656512,
+      "description": "",
+      "offset": 128,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_power_lo": {
+      "address": 1136656508,
+      "description": "",
+      "offset": 124,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_zero_cross_counts": {
+      "address": 1136656668,
+      "description": "upper16 Q zero-cross count, lower16 I zero-cross count",
+      "offset": 284,
+      "signed": false,
+      "width_bits": 32
+    },
+    "sample_count": {
+      "address": 1136656460,
+      "description": "",
+      "offset": 76,
+      "signed": false,
+      "width_bits": 32
+    },
+    "sign_same_counts": {
+      "address": 1136656672,
+      "description": "upper16 Q0/Q1 same-sign count, lower16 I0/I1 same-sign count",
+      "offset": 288,
+      "signed": false,
+      "width_bits": 32
+    },
+    "snapshot_count": {
+      "address": 1136656480,
+      "description": "0 in SUM5 production",
+      "offset": 96,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_flags": {
+      "address": 1136656452,
+      "description": "",
+      "offset": 68,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_sum_power_hi": {
+      "address": 1136656468,
+      "description": "",
+      "offset": 84,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_sum_power_lo": {
+      "address": 1136656464,
+      "description": "",
+      "offset": 80,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_version": {
+      "address": 1136656448,
+      "description": "0x53554D37 for SUM7",
+      "offset": 64,
+      "signed": false,
+      "width_bits": 32
+    }
+  },
+  "sum8_registers": {
+    "abi_version": {
+      "address": 1136656620,
+      "description": "0x00010002, major 1 minor 2",
+      "offset": 236,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_build_id": {
+      "address": 1136656888,
+      "description": "0x41380001",
+      "offset": 504,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_capability": {
+      "address": 1136656884,
+      "description": "0x0000001F",
+      "offset": 500,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_control": {
+      "address": 1136656772,
+      "description": "bit0 enable, bit1 clear/arm write, bit2 auto-roll in V8L1, bit4 done, bit5 overflow",
+      "offset": 388,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_corr_cross_im_num_hi": {
+      "address": 1136656832,
+      "description": "",
+      "offset": 448,
+      "signed": true,
+      "width_bits": 32
+    },
+    "agg_corr_cross_im_num_lo": {
+      "address": 1136656824,
+      "description": "",
+      "offset": 440,
+      "signed": true,
+      "width_bits": 32
+    },
+    "agg_corr_cross_im_num_mid": {
+      "address": 1136656828,
+      "description": "",
+      "offset": 444,
+      "signed": true,
+      "width_bits": 32
+    },
+    "agg_corr_cross_re_num_hi": {
+      "address": 1136656820,
+      "description": "",
+      "offset": 436,
+      "signed": true,
+      "width_bits": 32
+    },
+    "agg_corr_cross_re_num_lo": {
+      "address": 1136656812,
+      "description": "",
+      "offset": 428,
+      "signed": true,
+      "width_bits": 32
+    },
+    "agg_corr_cross_re_num_mid": {
+      "address": 1136656816,
+      "description": "",
+      "offset": 432,
+      "signed": true,
+      "width_bits": 32
+    },
+    "agg_frames": {
+      "address": 1136656780,
+      "description": "latched aggregate frame count",
+      "offset": 396,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_last_frame": {
+      "address": 1136656880,
+      "description": "",
+      "offset": 496,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_limit": {
+      "address": 1136656892,
+      "description": "65535",
+      "offset": 508,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_rx0_clip_count": {
+      "address": 1136656860,
+      "description": "",
+      "offset": 476,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_rx0_corr_power_num_hi": {
+      "address": 1136656796,
+      "description": "",
+      "offset": 412,
+      "signed": true,
+      "width_bits": 32
+    },
+    "agg_rx0_corr_power_num_lo": {
+      "address": 1136656788,
+      "description": "",
+      "offset": 404,
+      "signed": true,
+      "width_bits": 32
+    },
+    "agg_rx0_corr_power_num_mid": {
+      "address": 1136656792,
+      "description": "",
+      "offset": 408,
+      "signed": true,
+      "width_bits": 32
+    },
+    "agg_rx0_raw_power_hi": {
+      "address": 1136656844,
+      "description": "",
+      "offset": 460,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_rx0_raw_power_lo": {
+      "address": 1136656836,
+      "description": "",
+      "offset": 452,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_rx0_raw_power_mid": {
+      "address": 1136656840,
+      "description": "",
+      "offset": 456,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_rx0_zero_cross_count": {
+      "address": 1136656868,
+      "description": "",
+      "offset": 484,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_rx1_clip_count": {
+      "address": 1136656864,
+      "description": "",
+      "offset": 480,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_rx1_corr_power_num_hi": {
+      "address": 1136656808,
+      "description": "",
+      "offset": 424,
+      "signed": true,
+      "width_bits": 32
+    },
+    "agg_rx1_corr_power_num_lo": {
+      "address": 1136656800,
+      "description": "",
+      "offset": 416,
+      "signed": true,
+      "width_bits": 32
+    },
+    "agg_rx1_corr_power_num_mid": {
+      "address": 1136656804,
+      "description": "",
+      "offset": 420,
+      "signed": true,
+      "width_bits": 32
+    },
+    "agg_rx1_raw_power_hi": {
+      "address": 1136656856,
+      "description": "",
+      "offset": 472,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_rx1_raw_power_lo": {
+      "address": 1136656848,
+      "description": "",
+      "offset": 464,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_rx1_raw_power_mid": {
+      "address": 1136656852,
+      "description": "",
+      "offset": 468,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_rx1_zero_cross_count": {
+      "address": 1136656872,
+      "description": "",
+      "offset": 488,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_same_sign_count": {
+      "address": 1136656876,
+      "description": "",
+      "offset": 492,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_samples": {
+      "address": 1136656784,
+      "description": "latched aggregate sample count",
+      "offset": 400,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_sequence": {
+      "address": 1136656764,
+      "description": "V8L1 auto-roll sequence; 0 in classic V8 until auto-roll build",
+      "offset": 380,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_target": {
+      "address": 1136656776,
+      "description": "target aggregate frame count, 1..65535",
+      "offset": 392,
+      "signed": false,
+      "width_bits": 32
+    },
+    "agg_version": {
+      "address": 1136656768,
+      "description": "0x41474738 for AGG8",
+      "offset": 384,
+      "signed": false,
+      "width_bits": 32
+    },
+    "build_id": {
+      "address": 1136656636,
+      "description": "0x56380001",
+      "offset": 252,
+      "signed": false,
+      "width_bits": 32
+    },
+    "capability_bitmap": {
+      "address": 1136656624,
+      "description": "SUM7 bits plus bit9 aggregate_page",
+      "offset": 240,
+      "signed": false,
+      "width_bits": 32
+    },
+    "corr_cross_im_num_hi": {
+      "address": 1136656616,
+      "description": "sign extension of bit 63",
+      "offset": 232,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_im_num_lo": {
+      "address": 1136656608,
+      "description": "",
+      "offset": 224,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_im_num_mid": {
+      "address": 1136656612,
+      "description": "",
+      "offset": 228,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_re_num_hi": {
+      "address": 1136656604,
+      "description": "sign extension of bit 63",
+      "offset": 220,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_re_num_lo": {
+      "address": 1136656596,
+      "description": "",
+      "offset": 212,
+      "signed": true,
+      "width_bits": 32
+    },
+    "corr_cross_re_num_mid": {
+      "address": 1136656600,
+      "description": "",
+      "offset": 216,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_im_hi": {
+      "address": 1136656528,
+      "description": "",
+      "offset": 144,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_im_lo": {
+      "address": 1136656524,
+      "description": "",
+      "offset": 140,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_re_hi": {
+      "address": 1136656520,
+      "description": "",
+      "offset": 136,
+      "signed": true,
+      "width_bits": 32
+    },
+    "cross_re_lo": {
+      "address": 1136656516,
+      "description": "",
+      "offset": 132,
+      "signed": true,
+      "width_bits": 32
+    },
+    "dual_samples": {
+      "address": 1136656496,
+      "description": "",
+      "offset": 112,
+      "signed": false,
+      "width_bits": 32
+    },
+    "frame_counter": {
+      "address": 1136656456,
+      "description": "",
+      "offset": 72,
+      "signed": false,
+      "width_bits": 32
+    },
+    "i0_sum_hi": {
+      "address": 1136656544,
+      "description": "",
+      "offset": 160,
+      "signed": true,
+      "width_bits": 32
+    },
+    "i0_sum_lo": {
+      "address": 1136656540,
+      "description": "",
+      "offset": 156,
+      "signed": true,
+      "width_bits": 32
+    },
+    "i1_sum_hi": {
+      "address": 1136656560,
+      "description": "",
+      "offset": 176,
+      "signed": true,
+      "width_bits": 32
+    },
+    "i1_sum_lo": {
+      "address": 1136656556,
+      "description": "",
+      "offset": 172,
+      "signed": true,
+      "width_bits": 32
+    },
+    "limit_flags": {
+      "address": 1136656628,
+      "description": "bit0 frame_len_limited, bit1 arithmetic_overflow, bit2 corrected_valid, bit3 snapshot_disabled",
+      "offset": 244,
+      "signed": false,
+      "width_bits": 32
+    },
+    "max_corr_frame_len": {
+      "address": 1136656632,
+      "description": "65535 for SUM8",
+      "offset": 248,
+      "signed": false,
+      "width_bits": 32
+    },
+    "q0_sum_hi": {
+      "address": 1136656552,
+      "description": "",
+      "offset": 168,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q0_sum_lo": {
+      "address": 1136656548,
+      "description": "",
+      "offset": 164,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q1_sum_hi": {
+      "address": 1136656568,
+      "description": "",
+      "offset": 184,
+      "signed": true,
+      "width_bits": 32
+    },
+    "q1_sum_lo": {
+      "address": 1136656564,
+      "description": "",
+      "offset": 180,
+      "signed": true,
+      "width_bits": 32
+    },
+    "quadrature_same_sign_counts": {
+      "address": 1136656676,
+      "description": "upper16 RX1 I/Q same-sign count, lower16 RX0 I/Q same-sign count",
+      "offset": 292,
+      "signed": false,
+      "width_bits": 32
+    },
+    "quality_build_id": {
+      "address": 1136656700,
+      "description": "0x51380001",
+      "offset": 316,
+      "signed": false,
+      "width_bits": 32
+    },
+    "quality_capability": {
+      "address": 1136656696,
+      "description": "0x0000000F: clip, zero-cross, sign-same, abs-reserved-zero",
+      "offset": 312,
+      "signed": false,
+      "width_bits": 32
+    },
+    "quality_flags": {
+      "address": 1136656644,
+      "description": "reserved/status flags",
+      "offset": 260,
+      "signed": false,
+      "width_bits": 32
+    },
+    "quality_frame": {
+      "address": 1136656648,
+      "description": "latched frame counter",
+      "offset": 264,
+      "signed": false,
+      "width_bits": 32
+    },
+    "quality_samples": {
+      "address": 1136656652,
+      "description": "latched sample count",
+      "offset": 268,
+      "signed": false,
+      "width_bits": 32
+    },
+    "quality_version": {
+      "address": 1136656640,
+      "description": "0x51554138 for QUA8",
+      "offset": 256,
+      "signed": false,
+      "width_bits": 32
+    },
+    "reserved_rx0_abs_i_sum": {
+      "address": 1136656680,
+      "description": "reserved, reads 0 in timing-clean SUM8",
+      "offset": 296,
+      "signed": false,
+      "width_bits": 32
+    },
+    "reserved_rx0_abs_q_sum": {
+      "address": 1136656684,
+      "description": "reserved, reads 0 in timing-clean SUM8",
+      "offset": 300,
+      "signed": false,
+      "width_bits": 32
+    },
+    "reserved_rx1_abs_i_sum": {
+      "address": 1136656688,
+      "description": "reserved, reads 0 in timing-clean SUM8",
+      "offset": 304,
+      "signed": false,
+      "width_bits": 32
+    },
+    "reserved_rx1_abs_q_sum": {
+      "address": 1136656692,
+      "description": "reserved, reads 0 in timing-clean SUM8",
+      "offset": 308,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_clip_counts": {
+      "address": 1136656656,
+      "description": "upper16 Q clip count, lower16 I clip count",
+      "offset": 272,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_corr_power_num_hi": {
+      "address": 1136656580,
+      "description": "sign extension of bit 63",
+      "offset": 196,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_corr_power_num_lo": {
+      "address": 1136656572,
+      "description": "",
+      "offset": 188,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_corr_power_num_mid": {
+      "address": 1136656576,
+      "description": "",
+      "offset": 192,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx0_peak_index": {
+      "address": 1136656476,
+      "description": "",
+      "offset": 92,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_peak_power": {
+      "address": 1136656472,
+      "description": "",
+      "offset": 88,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_power_hi": {
+      "address": 1136656504,
+      "description": "",
+      "offset": 120,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_power_lo": {
+      "address": 1136656500,
+      "description": "",
+      "offset": 116,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx0_zero_cross_counts": {
+      "address": 1136656664,
+      "description": "upper16 Q zero-cross count, lower16 I zero-cross count",
+      "offset": 280,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_clip_counts": {
+      "address": 1136656660,
+      "description": "upper16 Q clip count, lower16 I clip count",
+      "offset": 276,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_corr_power_num_hi": {
+      "address": 1136656592,
+      "description": "sign extension of bit 63",
+      "offset": 208,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx1_corr_power_num_lo": {
+      "address": 1136656584,
+      "description": "",
+      "offset": 200,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx1_corr_power_num_mid": {
+      "address": 1136656588,
+      "description": "",
+      "offset": 204,
+      "signed": true,
+      "width_bits": 32
+    },
+    "rx1_peak_index": {
+      "address": 1136656536,
+      "description": "",
+      "offset": 152,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_peak_power": {
+      "address": 1136656532,
+      "description": "",
+      "offset": 148,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_power_hi": {
+      "address": 1136656512,
+      "description": "",
+      "offset": 128,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_power_lo": {
+      "address": 1136656508,
+      "description": "",
+      "offset": 124,
+      "signed": false,
+      "width_bits": 32
+    },
+    "rx1_zero_cross_counts": {
+      "address": 1136656668,
+      "description": "upper16 Q zero-cross count, lower16 I zero-cross count",
+      "offset": 284,
+      "signed": false,
+      "width_bits": 32
+    },
+    "sample_count": {
+      "address": 1136656460,
+      "description": "",
+      "offset": 76,
+      "signed": false,
+      "width_bits": 32
+    },
+    "sign_same_counts": {
+      "address": 1136656672,
+      "description": "upper16 Q0/Q1 same-sign count, lower16 I0/I1 same-sign count",
+      "offset": 288,
+      "signed": false,
+      "width_bits": 32
+    },
+    "snapshot_count": {
+      "address": 1136656480,
+      "description": "0 in SUM5 production",
+      "offset": 96,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_flags": {
+      "address": 1136656452,
+      "description": "",
+      "offset": 68,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_sum_power_hi": {
+      "address": 1136656468,
+      "description": "",
+      "offset": 84,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_sum_power_lo": {
+      "address": 1136656464,
+      "description": "",
+      "offset": 80,
+      "signed": false,
+      "width_bits": 32
+    },
+    "summary_version": {
+      "address": 1136656448,
+      "description": "0x53554D38 for SUM8",
+      "offset": 64,
+      "signed": false,
+      "width_bits": 32
+    }
+  },
+  "summary_versions": {
+    "SUM1": "0x53554D31",
+    "SUM2": "0x53554D32",
+    "SUM3": "0x53554D33",
+    "SUM4": "0x53554D34",
+    "SUM5": "0x53554D35",
+    "SUM6": "0x53554D36",
+    "SUM7": "0x53554D37",
+    "SUM8": "0x53554D38"
+  },
+  "tap_base_hex": "0x43C00000"
+}

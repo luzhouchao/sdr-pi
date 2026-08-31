@@ -1,0 +1,40 @@
+device_id: p201pro_pi4_001
+device_type: p201pro
+driver: libiio
+
+network:
+  sdr_uri: ip:192.168.1.10
+  sdr_ip: 192.168.1.10
+  host_direct_eth_interface: eth0
+  host_direct_eth_address: 192.168.1.20/24
+  default_route: false
+
+iio:
+  phy_device: ad9361-phy
+  rx_device: cf-ad9361-lpc
+  rx_auto_candidates:
+    - cf-ad9361-lpc
+    - axi-ad9361-rx-hpc
+    - axi-ad9361-rx-lpc
+    - cf-ad9361-A
+  rx_channels:
+    - voltage0
+    - voltage1
+
+capture:
+  center_freq_hz: 2452000000
+  sample_rate_hz: 2100000
+  rf_bandwidth_hz: 2000000
+  buffer_size: 65536
+  nfft: 8192
+  compute_backend: cpu
+  use_iq: true
+
+limits:
+  freq_min_mhz: 70
+  freq_max_mhz: 6000
+  rf_bandwidth_min_mhz: 0.2
+  rf_bandwidth_max_mhz: 56
+  sample_rate_min_msps: 2.083333
+  sample_rate_max_msps: 30.72
+  rule: sample_rate_hz must be greater than or equal to rf_bandwidth_hz
