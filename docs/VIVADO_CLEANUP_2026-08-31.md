@@ -35,7 +35,7 @@ The original SD-card backup at `C:\Users\20642\Desktop\开发\SDR\2r2t`, the ori
 - Vivado 2019.1 executable verified at `E:\Xilinx\Vivado\2019.1\bin\vivado.bat` before cleanup.
 - The mainline worktree remained clean after generated-output removal.
 - The dirty V10S5 worktree status was unchanged.
-- All four registered Git worktrees remained present after cleanup.
+- All five registered Git worktrees remained present after cleanup (the base tree, mainline, and three candidate worktrees).
 
 ## Recovery and permanent space release
 
