@@ -45,6 +45,13 @@ p201pro scan --start-freq 2400000000 --stop-freq 2500000000 \
   --settle-ms 5 --captures-per-step 4 --fft-size 2048 --overlap 50
 ```
 
+The first software aggregation slice is now available through
+`p201pro-test capture --analysis aggregate`. It provides the streaming
+Hann/RustFFT, linear-power averaging, median noise estimation, coarse PSD and
+adjacent-candidate merge needed to validate this result shape before the fixed
+work is moved into the SDR. It deliberately leaves raw-IQ trigger capture and
+FPGA activation for later verified slices.
+
 ## Validation before touching the radio
 
 The plan is rejected before the first LO write unless all rules pass:

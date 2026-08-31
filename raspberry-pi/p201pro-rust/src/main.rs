@@ -1,3 +1,6 @@
+mod aggregation;
+
+use aggregation::{SpectrumAggregator, SpectrumConfig};
 use industrial_io as iio;
 use std::env;
 use std::error::Error;
@@ -21,11 +24,12 @@ enum Command {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum Analysis {
+    Aggregate,
     Full,
     None,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 struct Config {
     command: Command,
     uri: String,
@@ -35,6 +39,12 @@ struct Config {
     buffer_samples: usize,
     seconds: u64,
     analysis: Analysis,
+    fft_size: usize,
+    overlap_percent: usize,
+    report_hz: usize,
+    coarse_bins: usize,
+    threshold_db: f32,
+    merge_gap_bins: usize,
 }
 
 impl Default for Config {
@@ -48,6 +58,12 @@ impl Default for Config {
             buffer_samples: 65_536,
             seconds: 3,
             analysis: Analysis::Full,
+            fft_size: 2_048,
+            overlap_percent: 50,
+            report_hz: 10,
+            coarse_bins: 96,
+            threshold_db: 12.0,
+            merge_gap_bins: 1,
         }
     }
 }
@@ -85,11 +101,23 @@ impl Config {
                 "--seconds" => cfg.seconds = parse_value(&flag, &value)?,
                 "--analysis" => {
                     cfg.analysis = match value.as_str() {
+                        "aggregate" => Analysis::Aggregate,
                         "full" => Analysis::Full,
                         "none" => Analysis::None,
-                        _ => return Err(invalid_input("--analysis must be full or none").into()),
+                        _ => {
+                            return Err(invalid_input(
+                                "--analysis must be aggregate, full, or none",
+                            )
+                            .into())
+                        }
                     }
                 }
+                "--fft-size" => cfg.fft_size = parse_value(&flag, &value)?,
+                "--overlap-percent" => cfg.overlap_percent = parse_value(&flag, &value)?,
+                "--report-hz" => cfg.report_hz = parse_value(&flag, &value)?,
+                "--coarse-bins" => cfg.coarse_bins = parse_value(&flag, &value)?,
+                "--threshold-db" => cfg.threshold_db = parse_value(&flag, &value)?,
+                "--merge-gap-bins" => cfg.merge_gap_bins = parse_value(&flag, &value)?,
                 other => return Err(invalid_input(format!("unknown option {other:?}")).into()),
             }
         }
@@ -122,6 +150,23 @@ impl Config {
         if !(1..=60).contains(&self.seconds) {
             return Err(invalid_input("--seconds must be between 1 and 60").into());
         }
+        if self.analysis == Analysis::Aggregate {
+            if self.fft_size < 64 || !self.fft_size.is_power_of_two() {
+                return Err(invalid_input("--fft-size must be a power of two >= 64").into());
+            }
+            if self.overlap_percent > 75 {
+                return Err(invalid_input("--overlap-percent must be between 0 and 75").into());
+            }
+            if !(1..=100).contains(&self.report_hz) {
+                return Err(invalid_input("--report-hz must be between 1 and 100").into());
+            }
+            if self.coarse_bins == 0 || self.coarse_bins > self.fft_size {
+                return Err(invalid_input("--coarse-bins must be between 1 and FFT size").into());
+            }
+            if !self.threshold_db.is_finite() || self.threshold_db <= 0.0 {
+                return Err(invalid_input("--threshold-db must be a positive finite value").into());
+            }
+        }
         Ok(())
     }
 }
@@ -145,9 +190,8 @@ fn not_found(message: impl Into<String>) -> io::Error {
 }
 
 fn usage() -> String {
-    format!(
-        "Usage:\n  p201pro-test probe [options]\n  p201pro-test capture [options]\n\nOptions:\n  --uri URI                 default ip:192.168.1.10\n  --center-freq HZ          default 2452000000\n  --sample-rate HZ          default 2100000\n  --rf-bandwidth HZ         default 2000000\n  --buffer-samples COUNT    default 65536\n  --seconds N               default 3 (capture only)\n  --analysis full|none      default full; none benchmarks refill only"
-    )
+    "Usage:\n  p201pro-test probe [options]\n  p201pro-test capture [options]\n\nOptions:\n  --uri URI                      default ip:192.168.1.10\n  --center-freq HZ               default 2452000000\n  --sample-rate HZ               default 2100000\n  --rf-bandwidth HZ              default 2000000\n  --buffer-samples COUNT         default 65536\n  --seconds N                    default 3 (capture only)\n  --analysis aggregate|full|none default full; aggregate emits compact spectrum JSON\n  --fft-size N                   default 2048\n  --overlap-percent N            default 50\n  --report-hz N                  default 10 aggregate snapshots/second\n  --coarse-bins N                default 96\n  --threshold-db DB              default 12 dB above median noise\n  --merge-gap-bins N             default 1"
+        .to_owned()
 }
 
 fn main() {
@@ -282,6 +326,35 @@ fn capture(ctx: &iio::Context, cfg: &Config) -> AppResult<()> {
     println!("requested_seconds={}", cfg.seconds);
     println!("analysis={:?}", cfg.analysis);
 
+    let mut aggregator = match cfg.analysis {
+        Analysis::Aggregate => {
+            let hop_samples = (cfg.fft_size * (100 - cfg.overlap_percent) / 100).max(1);
+            let frames_per_snapshot = (actual_sample_rate_hz as usize)
+                .div_ceil(hop_samples.saturating_mul(cfg.report_hz));
+            println!("aggregate_fft_size={}", cfg.fft_size);
+            println!("aggregate_hop_samples={hop_samples}");
+            println!("aggregate_frames_per_snapshot={frames_per_snapshot}");
+            println!("aggregate_coarse_bins={}", cfg.coarse_bins);
+            println!("aggregate_threshold_db={}", cfg.threshold_db);
+            Some(
+                SpectrumAggregator::new(SpectrumConfig {
+                    center_freq_hz: cfg.center_freq_hz,
+                    sample_rate_hz: actual_sample_rate_hz,
+                    fft_size: cfg.fft_size,
+                    overlap_percent: cfg.overlap_percent,
+                    frames_per_snapshot,
+                    coarse_bins: cfg.coarse_bins,
+                    threshold_above_noise_db: cfg.threshold_db,
+                    merge_gap_bins: cfg.merge_gap_bins,
+                    dc_exclusion_bins: 1,
+                })
+                .map_err(invalid_input)?,
+            )
+        }
+        Analysis::Full | Analysis::None => None,
+    };
+    let mut aggregate_snapshots = 0_u64;
+
     let mut buffer = rx.create_buffer(cfg.buffer_samples, false)?;
     let started = Instant::now();
     let deadline = Duration::from_secs(cfg.seconds);
@@ -293,6 +366,22 @@ fn capture(ctx: &iio::Context, cfg: &Config) -> AppResult<()> {
         let refill_elapsed = refill_started.elapsed();
         stats.observe_refill(bytes, refill_elapsed);
         match cfg.analysis {
+            Analysis::Aggregate => {
+                stats.observe_sample_count(bytes / sample_size);
+                let snapshots = aggregator
+                    .as_mut()
+                    .expect("aggregate analysis constructs an aggregator")
+                    .push_iq(
+                        buffer
+                            .channel_iter::<i16>(&i_channel)
+                            .zip(buffer.channel_iter::<i16>(&q_channel))
+                            .map(|(&i, &q)| (i, q)),
+                    );
+                for snapshot in snapshots {
+                    println!("spectrum_json={}", serde_json::to_string(&snapshot)?);
+                    aggregate_snapshots += 1;
+                }
+            }
             Analysis::Full => stats.observe_iq(
                 buffer.channel_iter::<i16>(&i_channel),
                 buffer.channel_iter::<i16>(&q_channel),
@@ -308,6 +397,9 @@ fn capture(ctx: &iio::Context, cfg: &Config) -> AppResult<()> {
         actual_sample_rate_hz,
         cfg.analysis,
     );
+    if cfg.analysis == Analysis::Aggregate {
+        println!("aggregate_snapshots={aggregate_snapshots}");
+    }
     if stats.samples == 0 {
         return Err(io::Error::new(
             io::ErrorKind::UnexpectedEof,
@@ -507,5 +599,34 @@ mod tests {
         assert_eq!(stats.min_i, -2_048);
         assert_eq!(stats.max_i, 3);
         assert_eq!(stats.clipped, 1);
+    }
+
+    #[test]
+    fn parses_aggregate_options() {
+        let cfg = Config::parse([
+            "capture",
+            "--analysis",
+            "aggregate",
+            "--fft-size",
+            "4096",
+            "--overlap-percent",
+            "75",
+            "--report-hz",
+            "5",
+            "--coarse-bins",
+            "128",
+            "--threshold-db",
+            "9.5",
+            "--merge-gap-bins",
+            "2",
+        ])
+        .unwrap();
+        assert_eq!(cfg.analysis, Analysis::Aggregate);
+        assert_eq!(cfg.fft_size, 4_096);
+        assert_eq!(cfg.overlap_percent, 75);
+        assert_eq!(cfg.report_hz, 5);
+        assert_eq!(cfg.coarse_bins, 128);
+        assert!((cfg.threshold_db - 9.5).abs() < f32::EPSILON);
+        assert_eq!(cfg.merge_gap_bins, 2);
     }
 }

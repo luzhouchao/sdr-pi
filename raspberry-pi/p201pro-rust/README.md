@@ -1,10 +1,12 @@
 # P201 Pro Rust/libiio test client
 
 This is a minimal test client for the PUZHI PZSDR P201PRO connected through
-IIOD at `ip:192.168.1.10`. It deliberately has two modes:
+IIOD at `ip:192.168.1.10`. It deliberately has three analysis modes:
 
 - `probe`: read-only context, device, channel, and sample-format validation.
 - `capture`: configure the existing safe profile and collect a short IQ stream.
+- `capture --analysis aggregate`: reduce the stream to averaged spectrum
+  snapshots and merged candidate bands.
 
 The default capture profile matches the staged Raspberry Pi configuration:
 
@@ -21,11 +23,41 @@ Examples:
 ./p201pro-test capture
 ./p201pro-test capture --seconds 5 --sample-rate 5000000 --rf-bandwidth 4000000
 ./p201pro-test capture --seconds 3 --sample-rate 10000000 --rf-bandwidth 8000000 --analysis none
+./p201pro-test capture --seconds 3 --analysis aggregate --report-hz 10 \
+  --fft-size 2048 --overlap-percent 50 --coarse-bins 96 --threshold-db 12
 ```
 
 `--analysis full` scans every IQ sample and reports signal statistics.
 `--analysis none` performs a pure refill benchmark and derives the sample count
 from the returned byte count, which isolates the libiio/TCP data path.
+
+`--analysis aggregate` runs a streaming Hann-windowed RustFFT pipeline. It
+averages linear power over enough overlapping frames to meet `--report-hz`,
+estimates the median noise floor, detects bins above `--threshold-db`, bridges
+up to `--merge-gap-bins`, and emits compact records prefixed by
+`spectrum_json=`. Each record contains:
+
+- sequence and input-sample position;
+- tuning, sample rate, FFT and averaging metadata;
+- median noise floor and total band power;
+- `--coarse-bins` display/agent PSD values rather than the full FFT;
+- merged candidate start/stop/peak frequencies and power;
+- a `contains_dc` warning for candidates crossing the direct-conversion DC bin.
+
+The averaging is performed in linear power, not by averaging dB values. FFT
+power is normalized against the 12-bit ADC full-scale code and Hann window
+energy. Values are therefore internally comparable, but they are not calibrated
+dBm until an RF gain/path calibration is added.
+
+This software path validates the result contract and reduces output sent to an
+agent. It does not reduce SDR-to-Pi IQ traffic. That requires moving the same
+fixed FFT/power/averaging interface into the SDR programmable logic after the
+loaded bitstream identity and rollback path are verified.
+
+For future modulation or emitter-specific recognition, treat candidates as
+triggers for bounded IQ capture. Coarse PSD is useful for discovery, but it does
+not preserve carrier offset, IQ imbalance, amplifier non-linearity, transients,
+or other features needed for RF fingerprinting.
 
 The program expects the system libiio v0.x shared library. It does not install a
 service, write files, or persist SDR settings.

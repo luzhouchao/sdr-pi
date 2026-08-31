@@ -28,8 +28,10 @@ processing:
   overlap_percent: 50
   window: hann
   psd_averages: 4
+  report_hz: 10
   coarse_bins: 96
   top_k: 4
+  candidate_merge_gap_bins: 1
 
 trigger:
   enabled: true
