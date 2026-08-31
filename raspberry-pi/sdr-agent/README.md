@@ -161,6 +161,8 @@ was manually deployed and enabled on the project Pi on 2026-08-31; see
 The read-only SDRD observation slice was subsequently deployed and validated;
 see
 [`../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md).
+The interactive `sdr-agent` terminal was then deployed and validated; see
+[`../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md).
 The Controller currently validates plans and prints the result; it does not yet
 execute SDR actions. That is the safe first slice before adding a mutating
 `SdrActionExecutor` and the `LocalRecognizer` adapters.
