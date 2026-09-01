@@ -9,6 +9,35 @@ validate an exported package but does not yet include ONNX Runtime, create an
 inference session, or advertise recognition availability. Training remains on
 the 4090 as requested.
 
+## Version-one datasets
+
+Use only these two source corpora for the first model:
+
+- `HisarMod2019.01`;
+- `RadioML2018.01A`.
+
+Do not add a RadioML 2016 corpus to version one. Implement one explicit dataset
+Adapter per corpus and make each Adapter report the observed source shape,
+dtype, class vocabulary, SNR vocabulary and sample count before training. Do
+not silently reshape, concatenate independent examples, repeat samples or infer
+an absolute sample rate from normalized simulated baseband data.
+
+The first label vocabulary is the intersection of modulation classes whose
+semantics match exactly across both corpora. Preserve the raw-to-canonical label
+mapping in the training report. Balance batches across source corpus, canonical
+class and SNR bucket so that the model cannot use corpus identity as a shortcut
+for a label. Split train, validation and test sets by the strongest available
+generation-group identity before sampling windows; a random row split alone is
+not accepted when related examples can cross the split.
+
+Both Adapters must produce one contiguous complex window as planar float32
+`[2, 1024]`. If an inspected source example is not a genuine contiguous 1024
+sample window, stop and report the mismatch instead of padding, repeating or
+joining unrelated rows. RadioML/HisarMod accuracy is a simulation benchmark,
+not proof of operation at the project's physical 2.1 MS/s input. Retain an
+Adapter for a later P201 capture corpus and report that corpus separately as
+the real-radio domain test.
+
 Deliver one directory containing exactly:
 
 ```text
@@ -72,6 +101,31 @@ Before handing the package to Pi integration, provide:
 - workstation reference logits for a bounded IQ corpus;
 - confusion matrix, total accuracy and per-class recall;
 - parameter count, ONNX bytes and estimated multiply-accumulate count.
+
+## Task text for the 4090 Codex
+
+The following is the executable handoff, not optional guidance:
+
+1. Audit `HisarMod2019.01` and `RadioML2018.01A`; emit a machine-readable report
+   of their actual tensor shapes, dtypes, labels, SNRs, counts and source hashes.
+2. Implement separate source Adapters that return planar float32 `[2, 1024]`
+   contiguous IQ windows and provenance. Fail on incompatible samples.
+3. Build a versioned canonical label map from only the exact semantic class
+   intersection. Balance source, class and SNR and use leakage-resistant grouped
+   train/validation/test splits.
+4. Train a 100k--500k parameter 1-D CNN or depthwise-separable CNN. Record seeds,
+   environment, commit, parameter count, MAC estimate, training curves and
+   per-SNR metrics. Prefer the smallest model within two percentage points of
+   the best validation macro recall.
+5. Export fixed-shape float32 ONNX with input `iq` `[1,2,1024]` and output
+   `logits` `[1,class_count]`. Run ONNX checker and compare PyTorch/ONNX Runtime
+   logits on a bounded reference corpus with maximum absolute error reported.
+6. Deliver `model.onnx`, `labels.txt`, `model.manifest`, source audit, canonical
+   label map, split manifest, confusion matrices, per-class/per-SNR recall,
+   reference IQ windows plus logits, and SHA-256 for every deliverable.
+7. Do not claim 2.1 MS/s real-radio readiness from simulated datasets. Leave a
+   documented P201 fine-tune/domain-test entry point and report any missing real
+   capture data as the remaining limitation.
 
 ## What happens when the model arrives
 
