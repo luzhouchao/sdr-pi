@@ -1,6 +1,7 @@
 param(
     [string]$ToolchainBin = 'E:\Xilinx\SDK\2019.1\gnu\aarch32\nt\gcc-arm-linux-gnueabi\bin',
-    [switch]$Clean
+    [switch]$Clean,
+    [switch]$EnableFpga
 )
 
 $ErrorActionPreference = 'Stop'
@@ -35,16 +36,24 @@ foreach ($Tool in @($Compiler, $Strip, $Readelf)) {
 New-Item -ItemType Directory -Force -Path $BuildRoot | Out-Null
 $Arguments = @(
     "-I$(Join-Path $SdrdRoot 'include')",
-    "-I$(Join-Path $RepoRoot 'fpga\nx_experiments\sdr_fpga_offload_test\native')",
     '-std=c11', '-O2', '-Wall', '-Wextra', '-Wpedantic', '-Werror',
     '-o', $Output,
     (Join-Path $SdrdRoot 'src\main.c'),
     (Join-Path $SdrdRoot 'src\sdrd.c'),
-    (Join-Path $SdrdRoot 'src\sdrd_iio.c'),
-    (Join-Path $SdrdRoot 'src\sdrd_fpga.c'),
-    (Join-Path $RepoRoot 'fpga\nx_experiments\sdr_fpga_offload_test\native\p201_native_mmio.c'),
-    '-ldl', '-pthread'
+    (Join-Path $SdrdRoot 'src\sdrd_iio.c')
 )
+if ($EnableFpga) {
+    $FpgaNative = Join-Path $RepoRoot 'fpga\nx_experiments\sdr_fpga_offload_test\native'
+    $Arguments += @(
+        '-DSDRD_ENABLE_FPGA=1',
+        "-I$FpgaNative",
+        (Join-Path $SdrdRoot 'src\sdrd_fpga.c'),
+        (Join-Path $FpgaNative 'p201_native_mmio.c')
+    )
+} else {
+    $Arguments += (Join-Path $SdrdRoot 'src\sdrd_fpga_disabled.c')
+}
+$Arguments += @('-ldl', '-pthread')
 
 & $Compiler @Arguments
 if ($LASTEXITCODE -ne 0) { throw "ARM compilation failed: $LASTEXITCODE" }
@@ -59,3 +68,4 @@ $Hash = (Get-FileHash -LiteralPath $Output -Algorithm SHA256).Hash.ToLowerInvari
 Write-Output "artifact=$Output"
 Write-Output "sha256=$Hash"
 Write-Output "required_glibc=$($Versions -join ',')"
+Write-Output "fpga_compiled=$($EnableFpga.IsPresent.ToString().ToLowerInvariant())"

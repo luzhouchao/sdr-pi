@@ -46,6 +46,7 @@ Controlled mode adds only these allowlisted messages:
 SDRD/1 START_SESSION <request_id> <generation>
 SDRD/1 APPLY_PROFILE <request_id> <generation> <center_hz> <sample_rate_hz> <rf_bandwidth_hz> <gain_mode> [hardware_gain_db] <enabled_channels>
 SDRD/1 CAPTURE_IQ <request_id> <generation> <sample_count> <max_bytes> <feature_id>
+SDRD/1 CAPTURE_IQ_INLINE <request_id> <generation> <sample_count> <exact_bytes> <feature_id>
 SDRD/1 CAPTURE_POWER <request_id> <generation> <frame_samples> <aggregate_frames> <timeout_ms>
 SDRD/1 CAPTURE_SUMMARY <request_id> <generation> <frame_samples> <aggregate_frames> <timeout_ms>
 SDRD/1 EXECUTION_STATUS <request_id> <generation>
@@ -64,7 +65,13 @@ acknowledgement means that cancellation was requested. The owner connection's
 `capture_failed_restored` response proves that capture stopped, the partial file
 was removed, and restoration ran.
 
-`CAPTURE_POWER` uses the controlled IIO RX buffer to return a bounded scalar
+`CAPTURE_IQ_INLINE` is the AGX software-aggregation transport. It captures at
+most 256 KiB of complex-int16 IQ, returns it as base64 in the correlated JSON
+response, and removes the SDR-local transient file before acknowledging
+success. The client must aggregate or store the decoded IQ on AGX.
+
+`CAPTURE_POWER` is retained only as a legacy compatibility command and is not
+the production AGX software-sweep backend. It uses the controlled IIO RX buffer to return a bounded scalar
 power/clip summary without writing raw IQ to disk. It accepts at most 1,048,576
 complex samples, enforces the request timeout, remains cancelable, and stays
 inside the same session ownership and restoration path as `CAPTURE_IQ`.
@@ -115,6 +122,12 @@ sdr-system/sdrd/build/sdrd \
 ```
 
 ## ARMv7 builds
+
+The production build defaults to `ENABLE_FPGA=0`: it links only the Linux/IIO
+capture path plus a fail-closed FPGA stub and does not compile or link the MMIO
+implementation. The optional historical FPGA backend is built only with an
+explicit `ENABLE_FPGA=1`; normal unit tests still compile that opt-in path to
+preserve rollback coverage.
 
 The static Docker build remains valid for shadow-only probes. Do not use that
 artifact for controlled mode: a static glibc 2.36 executable cannot safely

@@ -208,7 +208,7 @@ function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) 
     initialState: {
       systemPrompt: PLANNER_SYSTEM_PROMPT,
       model,
-      thinkingLevel: "off",
+      thinkingLevel: model.reasoning ? "low" : "off",
       tools: [submitPlan],
       messages: [],
     },

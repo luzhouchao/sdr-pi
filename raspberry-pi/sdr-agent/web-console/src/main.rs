@@ -5,6 +5,7 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use rusqlite::{params, Connection, OptionalExtension};
 use sdr_agent_controller::{
     policy::ControllerPolicy,
     protocol::{
@@ -62,6 +63,8 @@ struct Config {
     session_socket: PathBuf,
     sdrd_address: String,
     provider_config_path: PathBuf,
+    result_db_path: PathBuf,
+    capture_root: PathBuf,
 }
 
 #[derive(Clone)]
@@ -104,7 +107,83 @@ struct Session {
     initial_survey_status: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     observation: Option<ObservationSummary>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sweep_plot: Option<SweepPlot>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    model_input: Option<serde_json::Value>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    thinking: Option<ThinkingTrace>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    decision_basis: Option<String>,
+    #[serde(default)]
+    save_iq: bool,
     events: VecDeque<TerminalEvent>,
+}
+
+#[derive(Debug, Clone, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+struct SweepPlot {
+    schema_version: u8,
+    sweep_id: String,
+    kind: String,
+    elapsed_ms: u64,
+    gain_db: i16,
+    noise_floor_dbfs: f32,
+    points: Vec<(u64, f32)>,
+    candidates: Vec<SweepPlotCandidate>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    dataset: Option<SweepDatasetView>,
+}
+
+#[derive(Debug, Clone, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+struct SweepDatasetView {
+    format: String,
+    datatype: String,
+    data_path: String,
+    metadata_path: String,
+    bytes: u64,
+}
+
+#[derive(Debug, Clone, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+struct SweepPlotCandidate {
+    id: String,
+    start_hz: u64,
+    stop_hz: u64,
+    center_hz: u64,
+    bandwidth_hz: u64,
+    peak_dbfs: f32,
+    snr_db: f32,
+    point_count: usize,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+struct ThinkingTrace {
+    request_id: u64,
+    active: bool,
+    text: String,
+}
+
+#[derive(Debug, Serialize)]
+struct CaptureResultSummary {
+    id: i64,
+    session_id: String,
+    sweep_id: String,
+    kind: String,
+    created_at_ms: u64,
+    point_count: usize,
+    candidate_count: usize,
+    elapsed_ms: u64,
+    gain_db: i16,
+    noise_floor_dbfs: f32,
+    iq_bytes: u64,
+}
+
+#[derive(Debug, Serialize)]
+struct CaptureResultDetail {
+    summary: CaptureResultSummary,
+    sweep_plot: SweepPlot,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -158,6 +237,8 @@ struct ProviderConfigFile {
     compression_threshold_percent: u8,
     #[serde(default = "default_initial_survey")]
     initial_survey: InitialSurveyConfig,
+    #[serde(default)]
+    result_storage: ResultStorageConfig,
 }
 
 #[derive(Deserialize)]
@@ -171,6 +252,7 @@ struct ProviderConfigRequest {
     context_window: u64,
     compression_threshold_percent: u8,
     initial_survey: InitialSurveyConfig,
+    result_storage: ResultStorageConfig,
 }
 
 #[derive(Debug, Serialize)]
@@ -183,6 +265,14 @@ struct ProviderConfigView {
     context_window: u64,
     compression_threshold_percent: u8,
     initial_survey: InitialSurveyConfig,
+    result_storage: ResultStorageConfig,
+}
+
+#[derive(Debug, Clone, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+struct ResultStorageConfig {
+    #[serde(default)]
+    save_iq: bool,
 }
 
 #[derive(Debug, Clone, Deserialize, Eq, PartialEq, Serialize)]
@@ -219,6 +309,14 @@ struct ProviderModelView {
 #[derive(Debug)]
 struct ApiError(StatusCode, String);
 
+impl std::fmt::Display for ApiError {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(formatter, "{}: {}", self.0, self.1)
+    }
+}
+
+impl std::error::Error for ApiError {}
+
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         (self.0, Json(serde_json::json!({ "error": self.1 }))).into_response()
@@ -237,6 +335,8 @@ async fn main() {
 
 async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::from_env()?;
+    initialize_result_database(&config.result_db_path)?;
+    initialize_capture_root(&config.capture_root)?;
     let persisted = load_state(&config.state_path)?;
     let (updates, _) = broadcast::channel(512);
     let (shutdown, _) = broadcast::channel(4);
@@ -265,6 +365,11 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 .delete(delete_provider_config),
         )
         .route("/api/provider/models", post(discover_provider_models))
+        .route("/api/results", get(list_capture_results))
+        .route(
+            "/api/results/{id}",
+            get(get_capture_result).delete(delete_capture_result),
+        )
         .route("/api/events", get(events))
         .route("/api/sessions", post(create_session))
         .route("/api/sessions/{id}/activate", post(activate_session))
@@ -305,6 +410,14 @@ impl Config {
                 "SDR_WEB_PROVIDER_CONFIG_PATH",
                 "/var/lib/sdrharness/web-console/provider.json",
             ),
+            result_db_path: env_path(
+                "SDR_WEB_RESULT_DB_PATH",
+                "/var/lib/sdrharness/web-console/capture-results.sqlite3",
+            ),
+            capture_root: env_path(
+                "SDR_WEB_CAPTURE_ROOT",
+                "/var/lib/sdrharness/web-console/captures",
+            ),
         })
     }
 }
@@ -333,6 +446,424 @@ async fn styles_css() -> impl IntoResponse {
 
 async fn get_state(State(state): State<AppState>) -> Json<PersistedState> {
     Json(state.inner.lock().await.persisted.clone())
+}
+
+async fn list_capture_results(
+    State(state): State<AppState>,
+) -> ApiResult<Json<Vec<CaptureResultSummary>>> {
+    Ok(Json(load_capture_result_summaries(
+        &state.config.result_db_path,
+    )?))
+}
+
+async fn get_capture_result(
+    State(state): State<AppState>,
+    Path(id): Path<i64>,
+) -> ApiResult<Json<CaptureResultDetail>> {
+    if id <= 0 {
+        return Err(ApiError(StatusCode::BAD_REQUEST, "采集结果 ID 无效".into()));
+    }
+    Ok(Json(load_capture_result(&state.config.result_db_path, id)?))
+}
+
+async fn delete_capture_result(
+    State(state): State<AppState>,
+    Path(id): Path<i64>,
+) -> ApiResult<Json<serde_json::Value>> {
+    if id <= 0 {
+        return Err(ApiError(StatusCode::BAD_REQUEST, "采集结果 ID 无效".into()));
+    }
+    let mut connection = open_result_database(&state.config.result_db_path)?;
+    let transaction = connection.transaction().map_err(internal_error)?;
+    let payload: Option<String> = transaction
+        .query_row(
+            "SELECT payload_json FROM capture_results WHERE id = ?1",
+            params![id],
+            |row| row.get(0),
+        )
+        .optional()
+        .map_err(internal_error)?;
+    let payload =
+        payload.ok_or_else(|| ApiError(StatusCode::NOT_FOUND, "采集结果不存在".into()))?;
+    let plot: SweepPlot = serde_json::from_str(&payload).map_err(internal_error)?;
+    let (files_deleted, bytes_deleted) = if let Some(dataset) = plot.dataset.as_ref() {
+        delete_managed_dataset(dataset, &state.config.capture_root)?
+    } else {
+        (0_u64, 0_u64)
+    };
+    transaction
+        .execute("DELETE FROM capture_results WHERE id = ?1", params![id])
+        .map_err(internal_error)?;
+    transaction.commit().map_err(internal_error)?;
+    Ok(Json(serde_json::json!({
+        "deleted": id,
+        "files_deleted": files_deleted,
+        "bytes_deleted": bytes_deleted,
+    })))
+}
+
+fn initialize_result_database(path: &FsPath) -> Result<(), Box<dyn std::error::Error>> {
+    let connection = open_result_database(path)?;
+    connection.execute_batch(
+        "PRAGMA journal_mode = WAL;
+         PRAGMA synchronous = FULL;
+         CREATE TABLE IF NOT EXISTS capture_results (
+           id INTEGER PRIMARY KEY AUTOINCREMENT,
+           session_id TEXT NOT NULL,
+           sweep_id TEXT NOT NULL,
+           kind TEXT NOT NULL,
+           created_at_ms INTEGER NOT NULL,
+           point_count INTEGER NOT NULL,
+           candidate_count INTEGER NOT NULL,
+           elapsed_ms INTEGER NOT NULL,
+           gain_db INTEGER NOT NULL,
+           noise_floor_dbfs REAL NOT NULL,
+           iq_bytes INTEGER NOT NULL,
+           payload_json TEXT NOT NULL,
+           UNIQUE(session_id, sweep_id)
+         );
+         CREATE INDEX IF NOT EXISTS capture_results_created
+           ON capture_results(created_at_ms DESC);",
+    )?;
+    fs::set_permissions(path, fs::Permissions::from_mode(0o600))?;
+    Ok(())
+}
+
+fn initialize_capture_root(path: &FsPath) -> Result<(), Box<dyn std::error::Error>> {
+    ensure_real_directory(path)?;
+    fs::set_permissions(path, fs::Permissions::from_mode(0o700))?;
+    Ok(())
+}
+
+fn ensure_real_directory(path: &FsPath) -> ApiResult<()> {
+    if !path.exists() {
+        fs::create_dir_all(path).map_err(internal_error)?;
+    }
+    let metadata = fs::symlink_metadata(path).map_err(internal_error)?;
+    if !metadata.file_type().is_dir() || metadata.file_type().is_symlink() {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("受管目录必须是真实目录：{}", path.display()),
+        ));
+    }
+    Ok(())
+}
+
+fn open_result_database(path: &FsPath) -> ApiResult<Connection> {
+    let parent = path.parent().ok_or_else(|| {
+        ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "结果数据库路径无父目录".into(),
+        )
+    })?;
+    ensure_real_directory(parent)?;
+    if path.exists() {
+        let metadata = fs::symlink_metadata(path).map_err(internal_error)?;
+        if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
+            return Err(ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "结果数据库必须是普通文件".into(),
+            ));
+        }
+    }
+    Connection::open(path).map_err(internal_error)
+}
+
+fn load_capture_result_summaries(path: &FsPath) -> ApiResult<Vec<CaptureResultSummary>> {
+    let connection = open_result_database(path)?;
+    let mut statement = connection
+        .prepare(
+            "SELECT id, session_id, sweep_id, kind, created_at_ms, point_count,
+                    candidate_count, elapsed_ms, gain_db, noise_floor_dbfs, iq_bytes
+             FROM capture_results ORDER BY created_at_ms DESC, id DESC",
+        )
+        .map_err(internal_error)?;
+    let rows = statement
+        .query_map([], capture_result_summary_from_row)
+        .map_err(internal_error)?;
+    rows.collect::<Result<Vec<_>, _>>().map_err(internal_error)
+}
+
+fn load_capture_result(path: &FsPath, id: i64) -> ApiResult<CaptureResultDetail> {
+    let connection = open_result_database(path)?;
+    let result = connection
+        .query_row(
+            "SELECT id, session_id, sweep_id, kind, created_at_ms, point_count,
+                    candidate_count, elapsed_ms, gain_db, noise_floor_dbfs, iq_bytes,
+                    payload_json
+             FROM capture_results WHERE id = ?1",
+            params![id],
+            |row| {
+                let summary = capture_result_summary_from_row(row)?;
+                let payload: String = row.get(11)?;
+                Ok((summary, payload))
+            },
+        )
+        .optional()
+        .map_err(internal_error)?;
+    let (summary, payload) =
+        result.ok_or_else(|| ApiError(StatusCode::NOT_FOUND, "采集结果不存在".into()))?;
+    let sweep_plot = serde_json::from_str(&payload).map_err(internal_error)?;
+    Ok(CaptureResultDetail {
+        summary,
+        sweep_plot,
+    })
+}
+
+fn capture_result_summary_from_row(
+    row: &rusqlite::Row<'_>,
+) -> rusqlite::Result<CaptureResultSummary> {
+    Ok(CaptureResultSummary {
+        id: row.get(0)?,
+        session_id: row.get(1)?,
+        sweep_id: row.get(2)?,
+        kind: row.get(3)?,
+        created_at_ms: row.get::<_, i64>(4)?.max(0) as u64,
+        point_count: row.get::<_, i64>(5)?.max(0) as usize,
+        candidate_count: row.get::<_, i64>(6)?.max(0) as usize,
+        elapsed_ms: row.get::<_, i64>(7)?.max(0) as u64,
+        gain_db: row
+            .get::<_, i64>(8)?
+            .clamp(i16::MIN as i64, i16::MAX as i64) as i16,
+        noise_floor_dbfs: row.get::<_, f64>(9)? as f32,
+        iq_bytes: row.get::<_, i64>(10)?.max(0) as u64,
+    })
+}
+
+fn persist_capture_result(path: &FsPath, session_id: &str, plot: &SweepPlot) -> ApiResult<()> {
+    let connection = open_result_database(path)?;
+    let payload = serde_json::to_string(plot).map_err(internal_error)?;
+    let iq_bytes = plot.dataset.as_ref().map_or(0, |dataset| dataset.bytes);
+    connection
+        .execute(
+            "INSERT INTO capture_results (
+               session_id, sweep_id, kind, created_at_ms, point_count, candidate_count,
+               elapsed_ms, gain_db, noise_floor_dbfs, iq_bytes, payload_json
+             ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
+             ON CONFLICT(session_id, sweep_id) DO UPDATE SET
+               kind = excluded.kind,
+               point_count = excluded.point_count,
+               candidate_count = excluded.candidate_count,
+               elapsed_ms = excluded.elapsed_ms,
+               gain_db = excluded.gain_db,
+               noise_floor_dbfs = excluded.noise_floor_dbfs,
+               iq_bytes = excluded.iq_bytes,
+               payload_json = excluded.payload_json",
+            params![
+                session_id,
+                plot.sweep_id,
+                plot.kind,
+                i64::try_from(now_ms()).map_err(internal_error)?,
+                i64::try_from(plot.points.len()).map_err(internal_error)?,
+                i64::try_from(plot.candidates.len()).map_err(internal_error)?,
+                i64::try_from(plot.elapsed_ms).map_err(internal_error)?,
+                i64::from(plot.gain_db),
+                f64::from(plot.noise_floor_dbfs),
+                i64::try_from(iq_bytes).map_err(internal_error)?,
+                payload,
+            ],
+        )
+        .map_err(internal_error)?;
+    Ok(())
+}
+
+fn validate_sweep_plot(plot: &SweepPlot, capture_root: &FsPath) -> ApiResult<()> {
+    if plot.schema_version != 1
+        || !matches!(plot.kind.as_str(), "initial" | "planned")
+        || plot.sweep_id.is_empty()
+        || plot.sweep_id.len() > 128
+        || plot.sweep_id.chars().any(char::is_control)
+        || plot.points.is_empty()
+        || plot.points.len() > MAX_SURVEY_POINTS as usize
+        || plot.candidates.len() > MAX_CANDIDATES
+        || plot.elapsed_ms > 300_000
+        || !(0..=60).contains(&plot.gain_db)
+        || !valid_dbfs(plot.noise_floor_dbfs)
+    {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "扫频结果头部或数量超出受支持范围".into(),
+        ));
+    }
+    let mut prior_frequency = None;
+    for &(frequency, power) in &plot.points {
+        if !(DEFAULT_SURVEY_START_HZ..=DEFAULT_SURVEY_STOP_HZ).contains(&frequency)
+            || prior_frequency.is_some_and(|prior| frequency <= prior)
+            || !valid_dbfs(power)
+        {
+            return Err(ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "扫频频点必须严格递增，且频率和功率必须有效".into(),
+            ));
+        }
+        prior_frequency = Some(frequency);
+    }
+    let mut ids = HashSet::new();
+    for candidate in &plot.candidates {
+        if candidate.id.is_empty()
+            || candidate.id.len() > 128
+            || candidate.id.chars().any(char::is_control)
+            || !ids.insert(candidate.id.as_str())
+            || candidate.start_hz > candidate.center_hz
+            || candidate.center_hz > candidate.stop_hz
+            || candidate.stop_hz.saturating_sub(candidate.start_hz) != candidate.bandwidth_hz
+            || candidate.stop_hz > DEFAULT_SURVEY_STOP_HZ.saturating_add(56_000_000)
+            || candidate.point_count == 0
+            || candidate.point_count > plot.points.len()
+            || !valid_dbfs(candidate.peak_dbfs)
+            || !candidate.snr_db.is_finite()
+            || !(0.0..=360.0).contains(&candidate.snr_db)
+        {
+            return Err(ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "扫频候选边界、标识或数值无效".into(),
+            ));
+        }
+    }
+    if let Some(dataset) = plot.dataset.as_ref() {
+        validate_managed_dataset(dataset, capture_root, plot.points.len(), true)?;
+    }
+    Ok(())
+}
+
+fn valid_dbfs(value: f32) -> bool {
+    value.is_finite() && (-360.0..=6.1).contains(&value)
+}
+
+fn validate_managed_dataset(
+    dataset: &SweepDatasetView,
+    capture_root: &FsPath,
+    expected_captures: usize,
+    require_files: bool,
+) -> ApiResult<(PathBuf, PathBuf)> {
+    if dataset.format != "sigmf" || dataset.datatype != "ci16_le" || dataset.bytes % 4 != 0 {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "只接受 ci16_le SigMF 扫频数据集".into(),
+        ));
+    }
+    let data_path = managed_capture_path(
+        capture_root,
+        FsPath::new(&dataset.data_path),
+        "sigmf-data",
+        require_files,
+    )?;
+    let metadata_path = managed_capture_path(
+        capture_root,
+        FsPath::new(&dataset.metadata_path),
+        "sigmf-meta",
+        require_files,
+    )?;
+    if data_path == metadata_path || data_path.parent() != metadata_path.parent() {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "SigMF 数据和元数据必须位于同一受管目录".into(),
+        ));
+    }
+    if data_path.exists() {
+        let bytes = fs::metadata(&data_path).map_err(internal_error)?.len();
+        if bytes != dataset.bytes {
+            return Err(ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "SigMF 数据文件大小与结果索引不一致".into(),
+            ));
+        }
+    }
+    if require_files {
+        let metadata_bytes = fs::read(&metadata_path).map_err(internal_error)?;
+        if metadata_bytes.len() > 8 * 1024 * 1024 {
+            return Err(ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "SigMF 元数据超过 8 MiB 安全边界".into(),
+            ));
+        }
+        let metadata: serde_json::Value =
+            serde_json::from_slice(&metadata_bytes).map_err(internal_error)?;
+        let datatype = metadata
+            .pointer("/global/core:datatype")
+            .and_then(serde_json::Value::as_str);
+        let captures = metadata
+            .get("captures")
+            .and_then(serde_json::Value::as_array);
+        if datatype != Some("ci16_le") || captures.map(Vec::len) != Some(expected_captures) {
+            return Err(ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "SigMF 元数据与扫频窗口数量不一致".into(),
+            ));
+        }
+    }
+    Ok((data_path, metadata_path))
+}
+
+fn managed_capture_path(
+    capture_root: &FsPath,
+    path: &FsPath,
+    extension: &str,
+    require_file: bool,
+) -> ApiResult<PathBuf> {
+    ensure_real_directory(capture_root)?;
+    if !path.is_absolute() || path.extension().and_then(|value| value.to_str()) != Some(extension) {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "采集文件路径或扩展名无效".into(),
+        ));
+    }
+    let root = fs::canonicalize(capture_root).map_err(internal_error)?;
+    if path.exists() {
+        let metadata = fs::symlink_metadata(path).map_err(internal_error)?;
+        if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
+            return Err(ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "采集文件必须是普通文件且不能是符号链接".into(),
+            ));
+        }
+        let canonical = fs::canonicalize(path).map_err(internal_error)?;
+        if !canonical.starts_with(&root) {
+            return Err(ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "采集文件不属于 AGX 受管目录".into(),
+            ));
+        }
+        Ok(canonical)
+    } else if require_file {
+        Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "采集文件不存在".into(),
+        ))
+    } else {
+        let parent = path.parent().ok_or_else(|| {
+            ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "采集文件路径无父目录".into(),
+            )
+        })?;
+        let canonical_parent = fs::canonicalize(parent).map_err(internal_error)?;
+        if !canonical_parent.starts_with(&root) {
+            return Err(ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "采集文件不属于 AGX 受管目录".into(),
+            ));
+        }
+        Ok(path.to_path_buf())
+    }
+}
+
+fn delete_managed_dataset(
+    dataset: &SweepDatasetView,
+    capture_root: &FsPath,
+) -> ApiResult<(u64, u64)> {
+    let (data_path, metadata_path) = validate_managed_dataset(dataset, capture_root, 0, false)?;
+    let mut files_deleted = 0_u64;
+    let mut bytes_deleted = 0_u64;
+    for path in [data_path, metadata_path] {
+        if path.exists() {
+            bytes_deleted =
+                bytes_deleted.saturating_add(fs::metadata(&path).map_err(internal_error)?.len());
+            fs::remove_file(&path).map_err(internal_error)?;
+            files_deleted += 1;
+        }
+    }
+    Ok((files_deleted, bytes_deleted))
 }
 
 async fn get_provider_config(State(state): State<AppState>) -> ApiResult<Json<ProviderConfigView>> {
@@ -385,6 +916,7 @@ async fn delete_provider_config(
         context_window: DEFAULT_CONTEXT_WINDOW,
         compression_threshold_percent: DEFAULT_COMPRESSION_THRESHOLD_PERCENT,
         initial_survey: default_initial_survey(),
+        result_storage: ResultStorageConfig::default(),
     }))
 }
 
@@ -444,9 +976,14 @@ async fn create_session(
     let now = now_ms();
     let id = format!("session-{now}");
     let title = bounded_title(request.title.as_deref(), now);
-    let initial_survey = load_provider_config_file(&state.config.provider_config_path)?
-        .map(|config| config.initial_survey)
+    let saved_config = load_provider_config_file(&state.config.provider_config_path)?;
+    let initial_survey = saved_config
+        .as_ref()
+        .map(|config| config.initial_survey.clone())
         .unwrap_or_else(default_initial_survey);
+    let save_iq = saved_config
+        .as_ref()
+        .is_some_and(|config| config.result_storage.save_iq);
     let initial_survey_status = if initial_survey.mode == "disabled" {
         "skipped"
     } else {
@@ -477,6 +1014,11 @@ async fn create_session(
         initial_survey: Some(initial_survey),
         initial_survey_status: initial_survey_status.into(),
         observation: None,
+        sweep_plot: None,
+        model_input: None,
+        thinking: None,
+        decision_basis: None,
+        save_iq,
         events: VecDeque::new(),
     });
     inner.persisted.active_session_id = Some(id.clone());
@@ -680,7 +1222,7 @@ async fn process_actor(
     // Holding this gate for the complete child lifetime makes a replacement
     // wait until the previous terminal has stopped and released session.sock.
     let _process_guard = state.process_gate.lock().await;
-    let (survey_gain_db, persisted_observation) = {
+    let (survey_gain_db, persisted_observation, save_iq) = {
         let inner = state.inner.lock().await;
         let session = inner
             .persisted
@@ -692,6 +1234,7 @@ async fn process_actor(
                 .and_then(|session| session.initial_survey.as_ref())
                 .map_or(DEFAULT_SURVEY_GAIN_DB, |survey| survey.gain_db),
             session.and_then(|session| session.observation.clone()),
+            session.is_some_and(|session| session.save_iq),
         )
     };
     let initial_survey = claim_initial_survey(&state, &session_id).await;
@@ -740,6 +1283,22 @@ async fn process_actor(
         .arg(&state.config.sdrd_address)
         .arg("--survey-gain-db")
         .arg(survey_gain_db.to_string());
+    if save_iq {
+        if !valid_session_id(&session_id) {
+            cleanup_runtime_request(temporary_request.as_deref());
+            record_process_output(
+                &state,
+                &session_id,
+                "system",
+                "对话 ID 无法安全映射到采集目录，终端没有启动。".into(),
+            )
+            .await;
+            return;
+        }
+        command
+            .arg("--sigmf-directory")
+            .arg(state.config.capture_root.join(&session_id));
+    }
     if let Some(survey) = initial_survey {
         command
             .arg("--initial-survey-start-hz")
@@ -967,6 +1526,8 @@ fn classify_output(line: &str, stderr: bool) -> &'static str {
         "qwen"
     } else if line.starts_with("Validated plan>") || line.starts_with("已验证计划：") {
         "plan"
+    } else if line.starts_with("决策依据> ") {
+        "decision"
     } else if line.starts_with("巡航状态：")
         || line.starts_with("SDR 连通性重试：")
         || line.starts_with("上游下一步重试：")
@@ -994,6 +1555,116 @@ async fn record_process_output(state: &AppState, session_id: &str, kind: &str, t
         .map(|runtime| runtime.session_id.as_str())
         == Some(session_id);
     if let Some(session) = find_session_mut(&mut inner.persisted, session_id) {
+        if let Some(payload) = text.strip_prefix("SweepPlot> ") {
+            match serde_json::from_str::<SweepPlot>(payload)
+                .map_err(internal_error)
+                .and_then(|plot| {
+                    validate_sweep_plot(&plot, &state.config.capture_root)?;
+                    persist_capture_result(&state.config.result_db_path, session_id, &plot)?;
+                    Ok(plot)
+                }) {
+                Ok(plot) => {
+                    session.sweep_plot = Some(plot);
+                    let _ = persist_locked(&state.config, &inner.persisted);
+                    drop(inner);
+                    publish_state(state);
+                    return;
+                }
+                Err(error) => {
+                    if let Some(event) = push_event(
+                        session,
+                        "error",
+                        format!("拒绝保存无效的扫频结果：{}", error.1),
+                    ) {
+                        let _ = state.updates.send(UiUpdate {
+                            update_type: "terminal".into(),
+                            session_id: Some(session_id.to_owned()),
+                            event: Some(event),
+                        });
+                    }
+                    let _ = persist_locked(&state.config, &inner.persisted);
+                    return;
+                }
+            }
+        }
+        if let Some(payload) = text.strip_prefix("模型输入> ") {
+            match serde_json::from_str::<serde_json::Value>(payload) {
+                Ok(value) if value.is_object() => session.model_input = Some(value),
+                _ => {
+                    if let Some(event) =
+                        push_event(session, "error", "拒绝无效的模型输入记录".into())
+                    {
+                        let _ = state.updates.send(UiUpdate {
+                            update_type: "terminal".into(),
+                            session_id: Some(session_id.to_owned()),
+                            event: Some(event),
+                        });
+                    }
+                }
+            }
+            let _ = persist_locked(&state.config, &inner.persisted);
+            drop(inner);
+            publish_state(state);
+            return;
+        }
+        if let Some(payload) = text.strip_prefix("ThinkingStart> ") {
+            if let Ok(value) = serde_json::from_str::<serde_json::Value>(payload) {
+                if let Some(request_id) =
+                    value.get("request_id").and_then(serde_json::Value::as_u64)
+                {
+                    session.thinking = Some(ThinkingTrace {
+                        request_id,
+                        active: true,
+                        text: String::new(),
+                    });
+                }
+            }
+            let _ = persist_locked(&state.config, &inner.persisted);
+            drop(inner);
+            publish_state(state);
+            return;
+        }
+        if let Some(payload) = text.strip_prefix("ThinkingDelta> ") {
+            if let Ok(value) = serde_json::from_str::<serde_json::Value>(payload) {
+                let request_id = value.get("request_id").and_then(serde_json::Value::as_u64);
+                let delta = value.get("delta").and_then(serde_json::Value::as_str);
+                if let (Some(request_id), Some(delta), Some(thinking)) =
+                    (request_id, delta, session.thinking.as_mut())
+                {
+                    if thinking.request_id == request_id {
+                        thinking.text.push_str(delta);
+                    }
+                }
+            }
+            let _ = persist_locked(&state.config, &inner.persisted);
+            drop(inner);
+            publish_state(state);
+            return;
+        }
+        if let Some(payload) = text.strip_prefix("ThinkingEnd> ") {
+            if let Ok(value) = serde_json::from_str::<serde_json::Value>(payload) {
+                let request_id = value.get("request_id").and_then(serde_json::Value::as_u64);
+                if session
+                    .thinking
+                    .as_ref()
+                    .is_some_and(|thinking| Some(thinking.request_id) == request_id)
+                {
+                    if session
+                        .thinking
+                        .as_ref()
+                        .is_some_and(|thinking| thinking.text.is_empty())
+                    {
+                        session.thinking = None;
+                    } else if let Some(thinking) = session.thinking.as_mut() {
+                        thinking.active = false;
+                    }
+                }
+            }
+            let _ = persist_locked(&state.config, &inner.persisted);
+            drop(inner);
+            publish_state(state);
+            return;
+        }
         if let Some(payload) = text.strip_prefix("Observation> ") {
             match serde_json::from_str::<ObservationSummary>(payload)
                 .map_err(internal_error)
@@ -1025,6 +1696,9 @@ async fn record_process_output(state: &AppState, session_id: &str, kind: &str, t
             } else {
                 "connected".into()
             };
+        }
+        if let Some(basis) = text.strip_prefix("决策依据> ") {
+            session.decision_basis = Some(basis.to_owned());
         }
         update_initial_survey_status(session, &text);
         if let Some(event) = push_event(session, kind, text) {
@@ -1156,6 +1830,14 @@ fn find_session_mut<'a>(state: &'a mut PersistedState, id: &str) -> Option<&'a m
     state.sessions.iter_mut().find(|session| session.id == id)
 }
 
+fn valid_session_id(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 64
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
+}
+
 fn bounded_title(title: Option<&str>, now: u64) -> String {
     let cleaned = title.unwrap_or("").trim();
     if cleaned.is_empty() {
@@ -1205,6 +1887,7 @@ fn validate_provider_request(request: ProviderConfigRequest) -> ApiResult<Provid
         context_window: request.context_window,
         compression_threshold_percent: request.compression_threshold_percent,
         initial_survey: request.initial_survey,
+        result_storage: request.result_storage,
     })
 }
 
@@ -1388,6 +2071,7 @@ fn provider_config_view(config: &ProviderConfigFile) -> ProviderConfigView {
         context_window: config.context_window,
         compression_threshold_percent: config.compression_threshold_percent,
         initial_survey: config.initial_survey.clone(),
+        result_storage: config.result_storage.clone(),
     }
 }
 
@@ -1402,6 +2086,7 @@ fn load_provider_config_view(path: &FsPath) -> ApiResult<ProviderConfigView> {
             context_window: DEFAULT_CONTEXT_WINDOW,
             compression_threshold_percent: DEFAULT_COMPRESSION_THRESHOLD_PERCENT,
             initial_survey: default_initial_survey(),
+            result_storage: ResultStorageConfig::default(),
         });
     };
     Ok(provider_config_view(&config))
@@ -1750,6 +2435,40 @@ async fn begin_runtime_shutdown(state: &AppState) {
 mod tests {
     use super::*;
 
+    fn temporary_test_directory(label: &str) -> PathBuf {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos();
+        std::env::temp_dir().join(format!(
+            "sdrharness-web-{label}-{}-{nonce}",
+            std::process::id()
+        ))
+    }
+
+    fn sweep_plot() -> SweepPlot {
+        SweepPlot {
+            schema_version: 1,
+            sweep_id: "initial-1".into(),
+            kind: "initial".into(),
+            elapsed_ms: 1_200,
+            gain_db: 20,
+            noise_floor_dbfs: -53.0,
+            points: vec![(100_000_000, -52.0), (108_000_000, -35.0)],
+            candidates: vec![SweepPlotCandidate {
+                id: "initial-1-1".into(),
+                start_hz: 103_000_000,
+                stop_hz: 113_000_000,
+                center_hz: 108_000_000,
+                bandwidth_hz: 10_000_000,
+                peak_dbfs: -35.0,
+                snr_db: 18.0,
+                point_count: 1,
+            }],
+            dataset: None,
+        }
+    }
+
     fn session(id: &str, last_used_at_ms: u64) -> Session {
         Session {
             id: id.into(),
@@ -1765,6 +2484,11 @@ mod tests {
             initial_survey: None,
             initial_survey_status: "skipped".into(),
             observation: None,
+            sweep_plot: None,
+            model_input: None,
+            thinking: None,
+            decision_basis: None,
+            save_iq: false,
             events: VecDeque::new(),
         }
     }
@@ -1855,6 +2579,71 @@ mod tests {
     }
 
     #[test]
+    fn processed_sweep_results_round_trip_through_sqlite() {
+        let root = temporary_test_directory("result-db");
+        let capture_root = root.join("captures");
+        let database = root.join("results.sqlite3");
+        fs::create_dir_all(&root).unwrap();
+        initialize_capture_root(&capture_root).unwrap();
+        initialize_result_database(&database).unwrap();
+        let plot = sweep_plot();
+        validate_sweep_plot(&plot, &capture_root).unwrap();
+        persist_capture_result(&database, "session-1", &plot).unwrap();
+        let summaries = load_capture_result_summaries(&database).unwrap();
+        assert_eq!(summaries.len(), 1);
+        assert_eq!(summaries[0].point_count, 2);
+        assert_eq!(summaries[0].iq_bytes, 0);
+        let detail = load_capture_result(&database, summaries[0].id).unwrap();
+        assert_eq!(detail.sweep_plot, plot);
+        fs::remove_file(&database).unwrap();
+        let _ = fs::remove_file(database.with_extension("sqlite3-shm"));
+        let _ = fs::remove_file(database.with_extension("sqlite3-wal"));
+        fs::remove_dir(capture_root).unwrap();
+        fs::remove_dir(root).unwrap();
+    }
+
+    #[test]
+    fn managed_sigmf_validation_and_delete_stay_inside_capture_root() {
+        let root = temporary_test_directory("managed-dataset");
+        let capture_root = root.join("captures");
+        let session_root = capture_root.join("session-1");
+        fs::create_dir_all(&session_root).unwrap();
+        let data_path = session_root.join("scan.sigmf-data");
+        let metadata_path = session_root.join("scan.sigmf-meta");
+        fs::write(&data_path, [1_u8, 0, 2, 0, 3, 0, 4, 0]).unwrap();
+        fs::write(
+            &metadata_path,
+            br#"{"global":{"core:datatype":"ci16_le"},"captures":[{},{}]}"#,
+        )
+        .unwrap();
+        let dataset = SweepDatasetView {
+            format: "sigmf".into(),
+            datatype: "ci16_le".into(),
+            data_path: data_path.to_string_lossy().into_owned(),
+            metadata_path: metadata_path.to_string_lossy().into_owned(),
+            bytes: 8,
+        };
+        validate_managed_dataset(&dataset, &capture_root, 2, true).unwrap();
+
+        let outside = root.join("outside.sigmf-data");
+        fs::write(&outside, [0_u8; 8]).unwrap();
+        let mut escaped = dataset.clone();
+        escaped.data_path = outside.to_string_lossy().into_owned();
+        assert!(validate_managed_dataset(&escaped, &capture_root, 2, true).is_err());
+
+        assert_eq!(
+            delete_managed_dataset(&dataset, &capture_root).unwrap().0,
+            2
+        );
+        assert!(!data_path.exists());
+        assert!(!metadata_path.exists());
+        fs::remove_file(outside).unwrap();
+        fs::remove_dir(session_root).unwrap();
+        fs::remove_dir(capture_root).unwrap();
+        fs::remove_dir(root).unwrap();
+    }
+
+    #[test]
     fn output_classification_exposes_control_plane_events() {
         assert!(is_empty_agent_line("Agent> "));
         assert!(!is_empty_agent_line("Agent> hello"));
@@ -1926,6 +2715,7 @@ mod tests {
             context_window: 200_000,
             compression_threshold_percent: 90,
             initial_survey: default_initial_survey(),
+            result_storage: ResultStorageConfig::default(),
         })
         .unwrap();
         let public = serde_json::to_string(&provider_config_view(&config)).unwrap();
@@ -1945,6 +2735,7 @@ mod tests {
             context_window: 196_608,
             compression_threshold_percent: 90,
             initial_survey: default_initial_survey(),
+            result_storage: ResultStorageConfig::default(),
         })
         .unwrap();
         let mut request = ProviderConfigRequest {
@@ -1956,6 +2747,7 @@ mod tests {
             context_window: 200_000,
             compression_threshold_percent: 90,
             initial_survey: default_initial_survey(),
+            result_storage: ResultStorageConfig::default(),
         };
         reuse_saved_provider_key(&mut request, Some(&saved)).unwrap();
         assert_eq!(request.api_key, "test-secret");

@@ -151,6 +151,82 @@ test("reports an upstream turn that ends without a next plan", async () => {
   assert.equal(events.some((event) => event.event === "plan_proposed"), false);
 });
 
+test("forwards only real upstream thinking events and preserves streaming whitespace", async () => {
+  const { instance, getFake } = runtime(true);
+  const events = [];
+  await instance.dispatch(command("open_session", 1), (event) => events.push(event));
+  await instance.dispatch(
+    command("prompt", 2, { context: context() }),
+    (event) => events.push(event),
+  );
+  await new Promise((resolve) => setImmediate(resolve));
+  const fake = getFake();
+  const assistant = { role: "assistant", content: [] };
+  fake.emit({
+    type: "message_update",
+    message: assistant,
+    assistantMessageEvent: { type: "thinking_start", contentIndex: 0 },
+  });
+  fake.emit({
+    type: "message_update",
+    message: assistant,
+    assistantMessageEvent: {
+      type: "thinking_delta",
+      contentIndex: 0,
+      delta: "先核对候选。\n再检查字节上限。",
+    },
+  });
+  fake.emit({
+    type: "message_update",
+    message: assistant,
+    assistantMessageEvent: {
+      type: "thinking_end",
+      contentIndex: 0,
+      content: "先核对候选。\n再检查字节上限。",
+    },
+  });
+  assert.deepEqual(
+    events.filter((event) => event.event.startsWith("thinking_")),
+    [
+      {
+        protocol_version: 1,
+        session_generation: 3,
+        type: "event",
+        event: "thinking_start",
+        data: { request_id: 9 },
+      },
+      {
+        protocol_version: 1,
+        session_generation: 3,
+        type: "event",
+        event: "thinking_delta",
+        data: { request_id: 9, delta: "先核对候选。\n再检查字节上限。" },
+      },
+      {
+        protocol_version: 1,
+        session_generation: 3,
+        type: "event",
+        event: "thinking_end",
+        data: { request_id: 9 },
+      },
+    ],
+  );
+  await instance.dispatch(command("abort", 3), (event) => events.push(event));
+  await new Promise((resolve) => setImmediate(resolve));
+});
+
+test("does not invent thinking events when the upstream emits none", async () => {
+  const { instance } = runtime();
+  const events = [];
+  await instance.dispatch(command("open_session", 1), (event) => events.push(event));
+  await instance.dispatch(
+    command("prompt", 2, { context: context() }),
+    (event) => events.push(event),
+  );
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(events.some((event) => event.event.startsWith("thinking_")), false);
+});
+
 test("uses Pi steering and follow-up queues with a hard limit", async () => {
   const { instance, getFake } = runtime(true);
   const events = [];

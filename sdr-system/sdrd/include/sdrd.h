@@ -14,7 +14,8 @@ extern "C" {
 #define SDRD_MAX_PATH 256u
 #define SDRD_MAX_ADDRESS 64u
 #define SDRD_MAX_LINE 512u
-#define SDRD_MAX_RESPONSE 2048u
+#define SDRD_MAX_INLINE_CAPTURE_BYTES (256u * 1024u)
+#define SDRD_MAX_RESPONSE (384u * 1024u)
 #define SDRD_MAX_FEATURE_ID 64u
 
 typedef enum sdrd_mode {

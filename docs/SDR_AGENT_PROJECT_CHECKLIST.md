@@ -88,6 +88,22 @@ state.
       keep edits local until explicit save, warn on unsaved navigation, write
       the private file atomically as mode `0600`, and live-validate the deployed
       browser form and upstream settings readback.
+- [x] Implement and unit-test AGX result persistence with SQLite summary/index
+      rows, one optional per-scan `ci16_le` SigMF dataset pair, a manually saved
+      raw-IQ switch, strict capture-root validation, and an operator delete path
+      that removes only the indexed result and its managed files.
+- [x] Implement the top-level current-sweep card as an entry to a dedicated
+      aggregate-results view with saved history, a real-data SVG power trace,
+      noise baseline, candidate markers/table, scan metrics and raw-IQ state;
+      keep charts out of the terminal workspace and cover the backing result
+      store with unit tests.
+- [x] Surface the actual PlanningContext, real upstream reasoning deltas and
+      Rust validation basis in the Web session state; keep reasoning collapsed
+      by default, omit the whole reasoning control when no text was supplied,
+      and never expose the fixed system prompt.
+- [x] Deploy and live-validate the AGX result database, aggregate-results page,
+      optional SigMF storage and manual deletion with a real P201 scan; see
+      [`SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md`](SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md).
 - [x] Track automatic compaction separately from session-generation changes and
       persist one-shot initial-survey state so switching or restarting a
       completed conversation neither increments `compaction_count` nor repeats
@@ -155,6 +171,10 @@ Evidence:
       operator stop. Isolated end-to-end fake Planner/SDRD tests covered both
       retry exhaustions and stop during an active upstream run; the AGX
       Web/terminal deployment was live-validated.
+- [x] Remove the project-level fixed 64 MiB cruise ceiling while retaining a
+      positive finite per-run byte budget: omitted `--mib` now derives the
+      budget from step count times the PlanningContext per-action IQ limit, and
+      an explicit positive MiB value is checked for integer overflow.
 - [x] Supply the Planner system prompt with explicit semantics for the current
       SDR health and candidate-signal observation, total tunable frequency band,
       per-survey maximum span, per-action bandwidth, dwell, sample, byte,
@@ -219,6 +239,16 @@ Evidence:
 - [x] Implement and live-validate bounded retune, explicit settle delay, and
       quantized LO readback tolerance in `sdrd`.
 - [x] Implement and live-validate bounded complex-int16 IQ capture in `sdrd`.
+- [x] Implement and unit-test bounded SDRD/1 inline complex-int16 IQ transport
+      for AGX aggregation, including exact shape validation and immediate
+      SDR-local temporary-file cleanup after successful transfer.
+- [x] Make the production `sdrd` build Linux/IIO-only by default: FPGA/MMIO
+      sources are excluded unless `ENABLE_FPGA=1` is explicit, the disabled
+      build fails closed if an FPGA backend is configured, and both the
+      no-FPGA binary and opt-in rollback tests pass.
+- [x] Deploy and live-validate the inline IQ transport on P201 without changing
+      BOOT, FPGA registers or persistent radio state; see
+      [`SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md`](SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md).
 - [x] Implement and live-validate bounded no-file `CAPTURE_POWER` summaries and
       fixed manual-gain profiles with per-point numeric gain readback, clipping
       metadata, cancellation, and saved AGC/gain restoration.
@@ -250,6 +280,10 @@ Evidence:
 
 ## 4. Raspberry Pi acquisition, aggregation, and sweep
 
+The completed Pi software-aggregation items below are retained as historical
+rollback evidence. New production software aggregation is being cut over to
+AGX while P201 remains responsible only for bounded RX capture and transport.
+
 - [x] Implement direct Pi libiio probe and capture utilities in Rust.
 - [x] Implement streaming Hann-windowed RustFFT aggregation.
 - [x] Implement linear-power averaging and bounded report cadence.
@@ -266,6 +300,19 @@ Evidence:
 - [x] Execute a bounded Pi software multi-frequency sweep with per-point LO
       readback, compact candidates and verified state restoration.
 - [x] Feed compact aggregate candidates into the Agent observation contract.
+- [x] Implement and unit-test the AGX software-sweep Adapter that requests
+      bounded inline IQ from P201, decodes and aggregates complex-int16 windows
+      on AGX, computes power/clipping/noise/candidates, and reports backend
+      identity `agx_iq_software_aggregate` without using `CAPTURE_POWER`.
+- [x] Implement and unit-test optional one-dataset-per-scan SigMF output on AGX,
+      with a single `.sigmf-data` file, a single `.sigmf-meta` file, per-window
+      sample offsets/frequency/bandwidth/gain metadata, pre-write free-space
+      checking, and partial-file cleanup on failure.
+- [x] Live-validate a complete P201 capture → AGX aggregate → SQLite/Web result
+      flow with both raw-IQ storage disabled and enabled, including exact byte
+      accounting, AGX free-space evidence, SVG result readback, manual deletion,
+      cancellation and verified radio-state restoration; see
+      [`SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md`](SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md).
 - [x] Run a configurable one-shot receive-only initial survey for each new Web
       conversation, defaulting to a 743-point 70 MHz–6 GHz plan at fixed 20 dB;
       fail on clipping or gain-readback mismatch, restore radio state, persist
@@ -409,12 +456,15 @@ Evidence:
 ## Current next milestone
 
 Keep the receive-only bounded software sweep isolated from any Spectrum
-collector and preserve the Raspberry Pi rollback path before a broader
-acquisition-ownership cutover. The AGX clone, native build, runtime baseline,
-Planner/Web runtime gate, bounded-IQ executor, fixed-gain initial survey,
-automatic `survey_band` feedback loop and step-approved candidate inspection
-are live-validated with the real SDR and OpenCode Go model. CUDA/Mamba
-recognition remains explicitly deferred by the current scope until separately
-authorized after the Agent framework is stable.
+collector and preserve the Raspberry Pi rollback path while validating the
+P201-capture/AGX-aggregate cutover. The AGX clone, native build, runtime
+baseline, Planner/Web runtime gate, prior bounded-IQ executor, fixed-gain
+initial survey, automatic `survey_band` feedback loop and step-approved
+candidate inspection are live-validated with the real SDR and OpenCode Go
+model. Inline-IQ AGX aggregation, persistent Web results and optional SigMF are
+deployed and live-validated with both storage modes, model feedback, browser
+readback, cancellation, cleanup and radio restoration. CUDA/Mamba recognition remains
+explicitly deferred by the current scope until separately authorized after the
+Agent framework is stable.
 FPGA-image work remains independently gated by hardware identity,
 sequence/quality fields and rollback evidence.

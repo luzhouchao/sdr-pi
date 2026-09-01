@@ -3,8 +3,12 @@ const view = {
   active: null,
   provider: null,
   providerModels: [],
+  results: [],
+  selectedResultId: null,
+  selectedResult: null,
   settingsDirty: false,
   settingsOpen: false,
+  resultsOpen: false,
   reloadTimer: null,
   terminal: document.querySelector('#terminal'),
   sessions: document.querySelector('#sessions'),
@@ -33,6 +37,7 @@ function render() {
   renderSessions();
   renderTerminal();
   renderOverview();
+  renderModelTrace();
   const enabled = Boolean(view.active);
   document.querySelectorAll('[data-command], #command-input, #command-form button, #auto-form input, #auto-form button').forEach((element) => { element.disabled = !enabled; });
 }
@@ -64,6 +69,7 @@ function renderProvider() {
   document.querySelector('#survey-step-mhz').value = hzToMhz(survey.step_hz);
   document.querySelector('#survey-dwell-ms').value = survey.dwell_ms;
   document.querySelector('#survey-gain-db').value = survey.gain_db ?? 20;
+  document.querySelector('#save-iq').checked = Boolean(view.provider.result_storage?.save_iq);
   document.querySelector('#provider-api-key').value = '';
   updateSurveyControls();
   markSettingsDirty(false);
@@ -149,7 +155,9 @@ function markSettingsDirty(dirty = true) {
 
 function showSettings() {
   view.settingsOpen = true;
+  view.resultsOpen = false;
   document.querySelector('#console-view').hidden = true;
+  document.querySelector('#results-view').hidden = true;
   document.querySelector('#settings-view').hidden = false;
   document.querySelector('#settings-entry').setAttribute('aria-expanded', 'true');
   document.querySelector('#settings-entry').classList.add('active');
@@ -160,10 +168,23 @@ function showConsole() {
   if (view.settingsDirty && !window.confirm('设置尚未保存，放弃修改并返回运行台？')) return;
   if (view.settingsDirty) renderProvider();
   view.settingsOpen = false;
+  view.resultsOpen = false;
   document.querySelector('#settings-view').hidden = true;
+  document.querySelector('#results-view').hidden = true;
   document.querySelector('#console-view').hidden = false;
   document.querySelector('#settings-entry').setAttribute('aria-expanded', 'false');
   document.querySelector('#settings-entry').classList.remove('active');
+}
+
+async function showResults() {
+  view.settingsOpen = false;
+  view.resultsOpen = true;
+  document.querySelector('#console-view').hidden = true;
+  document.querySelector('#settings-view').hidden = true;
+  document.querySelector('#results-view').hidden = false;
+  document.querySelector('#settings-entry').setAttribute('aria-expanded', 'false');
+  document.querySelector('#settings-entry').classList.remove('active');
+  try { await loadResults({ selectLatest: true }); } catch (error) { toast(error.message); }
 }
 
 function toggleSettings() {
@@ -189,6 +210,7 @@ async function saveProvider(event) {
     context_window: Number(document.querySelector('#provider-context-window').value),
     compression_threshold_percent: Number(document.querySelector('#provider-compression-threshold').value),
     initial_survey: surveyPayload(),
+    result_storage: { save_iq: document.querySelector('#save-iq').checked },
   };
   try {
     view.provider = await api('/api/provider', { method: 'PUT', body: JSON.stringify(payload) });
@@ -351,11 +373,250 @@ function renderTerminal() {
   }
 }
 
+function renderModelTrace() {
+  const trace = document.querySelector('#model-trace');
+  const inputPanel = document.querySelector('#model-input-panel');
+  const thinkingPanel = document.querySelector('#thinking-panel');
+  const decisionPanel = document.querySelector('#decision-panel');
+  const modelInput = view.active?.model_input;
+  const thinking = view.active?.thinking;
+  const decision = view.active?.decision_basis;
+  const hasThinking = Boolean(thinking?.text);
+  trace.hidden = !modelInput && !hasThinking && !decision;
+  inputPanel.hidden = !modelInput;
+  if (modelInput) document.querySelector('#model-input-content').textContent = JSON.stringify(modelInput, null, 2);
+  thinkingPanel.hidden = !hasThinking;
+  if (hasThinking) document.querySelector('#thinking-content').textContent = thinking.text;
+  const live = document.querySelector('#thinking-live');
+  live.hidden = !hasThinking || !thinking.active;
+  decisionPanel.hidden = !decision;
+  if (decision) document.querySelector('#decision-content').textContent = decision;
+}
+
 function renderOverview() {
   setText('#controller-status', view.active ? `${statusLabel(view.active.status)} · ${view.active.title}` : '等待活动对话');
-  setText('#sweep-status', latestText('sweep') || initialSurveyLabel(view.active?.initial_survey_status));
+  const plot = view.active?.sweep_plot;
+  setText('#sweep-status', plot
+    ? `${plot.sweep_id} · ${plot.points.length} 点 · ${plot.candidates.length} 个候选`
+    : latestText('sweep') || initialSurveyLabel(view.active?.initial_survey_status));
   setText('#qwen-status', latestText('qwen') || '尚无模型输出');
   setText('#cruise-status', latestText('cruise') || '逐步批准模式');
+}
+
+async function loadResults({ selectLatest = false } = {}) {
+  view.results = await api('/api/results');
+  document.querySelector('#results-count').textContent = `${view.results.length} 次已保存采集`;
+  renderResultsList();
+  if (!view.results.length) {
+    view.selectedResultId = null;
+    view.selectedResult = null;
+    renderResultDetail();
+    return;
+  }
+  const selectedStillExists = view.results.some((result) => result.id === view.selectedResultId);
+  if (selectLatest || !selectedStillExists) view.selectedResultId = view.results[0].id;
+  await selectResult(view.selectedResultId, { rerenderList: true });
+}
+
+function renderResultsList() {
+  const list = document.querySelector('#results-list');
+  list.replaceChildren();
+  if (!view.results.length) {
+    const empty = document.createElement('p');
+    empty.className = 'result-list-empty';
+    empty.textContent = '完成一次扫频后，结果会自动出现在这里。';
+    list.append(empty);
+    return;
+  }
+  for (const result of view.results) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `result-list-item${result.id === view.selectedResultId ? ' active' : ''}`;
+    const kind = document.createElement('small');
+    kind.textContent = result.kind === 'initial' ? 'INITIAL SURVEY' : 'PLANNED SWEEP';
+    const title = document.createElement('strong');
+    title.textContent = result.sweep_id;
+    const meta = document.createElement('span');
+    meta.textContent = `${formatDate(result.created_at_ms)} · ${result.point_count} 点 · ${result.candidate_count} 候选`;
+    button.append(kind, title, meta);
+    button.addEventListener('click', () => selectResult(result.id));
+    list.append(button);
+  }
+}
+
+async function selectResult(id, { rerenderList = true } = {}) {
+  view.selectedResultId = id;
+  if (rerenderList) renderResultsList();
+  const result = await api(`/api/results/${id}`);
+  if (view.selectedResultId !== id) return;
+  view.selectedResult = result;
+  renderResultDetail();
+}
+
+function renderResultDetail() {
+  const empty = document.querySelector('#results-empty');
+  const content = document.querySelector('#result-content');
+  if (!view.selectedResult) {
+    empty.hidden = false;
+    content.hidden = true;
+    return;
+  }
+  empty.hidden = true;
+  content.hidden = false;
+  const { summary, sweep_plot: plot } = view.selectedResult;
+  const firstHz = plot.points[0][0];
+  const lastHz = plot.points[plot.points.length - 1][0];
+  setText('#result-kind', plot.kind === 'initial' ? 'INITIAL SURVEY' : 'PLANNED SWEEP');
+  setText('#result-title', plot.sweep_id);
+  setText('#result-time', `${formatDate(summary.created_at_ms)} · AGX 处理后结果`);
+  setText('#result-band', `${formatFrequency(firstHz)}–${formatFrequency(lastHz)}`);
+  setText('#result-points', `${plot.points.length}`);
+  setText('#result-gain', `${plot.gain_db} dB`);
+  setText('#result-noise', `${plot.noise_floor_dbfs.toFixed(1)} dBFS`);
+  setText('#result-candidates', `${plot.candidates.length}`);
+  setText('#result-elapsed', formatDuration(plot.elapsed_ms));
+  const dataset = plot.dataset;
+  setText('#dataset-state', dataset
+    ? `已保存 ${formatBytes(dataset.bytes)} 原始 IQ · ${dataset.datatype}`
+    : '本次未保存原始 IQ');
+  setText('#dataset-detail', dataset
+    ? '一次扫描对应一组 SigMF data/meta 文件；删除这次采集会同时删除这组文件。'
+    : '频率、功率、噪声基线和候选仍已保存在 AGX SQLite。');
+  renderCandidateTable(plot.candidates);
+  renderSpectrum(plot);
+}
+
+function renderCandidateTable(candidates) {
+  setText('#candidate-count', `${candidates.length} 个`);
+  const body = document.querySelector('#candidate-table');
+  body.replaceChildren();
+  if (!candidates.length) {
+    const row = document.createElement('tr');
+    row.className = 'candidate-empty';
+    const cell = document.createElement('td');
+    cell.colSpan = 6;
+    cell.textContent = '本次扫频没有超过检测阈值的候选。';
+    row.append(cell);
+    body.append(row);
+    return;
+  }
+  for (const candidate of candidates) {
+    const row = document.createElement('tr');
+    for (const value of [
+      candidate.id,
+      formatFrequency(candidate.center_hz),
+      formatFrequencySpan(candidate.bandwidth_hz),
+      `${candidate.peak_dbfs.toFixed(1)} dBFS`,
+      `${candidate.snr_db.toFixed(1)} dB`,
+      String(candidate.point_count),
+    ]) {
+      const cell = document.createElement('td');
+      cell.textContent = value;
+      row.append(cell);
+    }
+    body.append(row);
+  }
+}
+
+function renderSpectrum(plot) {
+  const svg = document.querySelector('#spectrum-plot');
+  svg.replaceChildren();
+  const title = svgNode('title');
+  title.textContent = `${plot.sweep_id} 扫频功率图`;
+  const desc = svgNode('desc');
+  desc.textContent = `${plot.points.length} 个真实频点，噪声基线 ${plot.noise_floor_dbfs.toFixed(1)} dBFS，${plot.candidates.length} 个候选。`;
+  svg.append(title, desc);
+  const defs = svgNode('defs');
+  const gradient = svgNode('linearGradient', { id: 'trace-gradient', x1: '0', y1: '0', x2: '0', y2: '1' });
+  gradient.append(
+    svgNode('stop', { offset: '0%', 'stop-color': '#51d5e6', 'stop-opacity': '.25' }),
+    svgNode('stop', { offset: '100%', 'stop-color': '#51d5e6', 'stop-opacity': '0' }),
+  );
+  defs.append(gradient);
+  svg.append(defs);
+  const left = 72, right = 970, top = 22, bottom = 310;
+  const frequencies = plot.points.map((point) => point[0]);
+  const powers = plot.points.map((point) => point[1]);
+  const minHz = frequencies[0], maxHz = frequencies[frequencies.length - 1];
+  let minPower = Math.floor(Math.min(plot.noise_floor_dbfs, ...powers) / 10) * 10 - 5;
+  let maxPower = Math.ceil(Math.max(plot.noise_floor_dbfs, ...powers) / 10) * 10 + 5;
+  if (maxPower - minPower < 20) { minPower -= 10; maxPower += 10; }
+  const x = (hz) => left + ((hz - minHz) / Math.max(1, maxHz - minHz)) * (right - left);
+  const y = (dbfs) => bottom - ((dbfs - minPower) / (maxPower - minPower)) * (bottom - top);
+  for (let index = 0; index <= 5; index += 1) {
+    const ratio = index / 5;
+    const py = top + ratio * (bottom - top);
+    svg.append(svgNode('line', { x1: left, y1: py, x2: right, y2: py, class: 'grid' }));
+    const label = svgNode('text', { x: left - 10, y: py + 3, class: 'axis-label', 'text-anchor': 'end' });
+    label.textContent = `${(maxPower - ratio * (maxPower - minPower)).toFixed(0)}`;
+    svg.append(label);
+  }
+  for (let index = 0; index <= 6; index += 1) {
+    const ratio = index / 6;
+    const px = left + ratio * (right - left);
+    svg.append(svgNode('line', { x1: px, y1: top, x2: px, y2: bottom, class: 'grid' }));
+    const label = svgNode('text', { x: px, y: bottom + 24, class: 'axis-label', 'text-anchor': index === 0 ? 'start' : index === 6 ? 'end' : 'middle' });
+    label.textContent = formatAxisFrequency(minHz + ratio * (maxHz - minHz));
+    svg.append(label);
+  }
+  const points = plot.points.map(([hz, power]) => `${x(hz).toFixed(2)},${y(power).toFixed(2)}`);
+  const area = `M ${left},${bottom} L ${points.join(' L ')} L ${right},${bottom} Z`;
+  const line = `M ${points.join(' L ')}`;
+  svg.append(svgNode('path', { d: area, class: 'trace-fill' }));
+  svg.append(svgNode('line', { x1: left, y1: y(plot.noise_floor_dbfs), x2: right, y2: y(plot.noise_floor_dbfs), class: 'noise-line' }));
+  svg.append(svgNode('path', { d: line, class: 'trace-line' }));
+  for (const candidate of plot.candidates) {
+    const cx = x(candidate.center_hz);
+    const cy = y(candidate.peak_dbfs);
+    svg.append(svgNode('circle', { cx, cy, r: 4.5, class: 'candidate-dot' }));
+    const label = svgNode('text', { x: cx, y: Math.max(top + 10, cy - 9), class: 'candidate-label', 'text-anchor': 'middle' });
+    label.textContent = candidate.id;
+    svg.append(label);
+  }
+}
+
+function svgNode(name, attributes = {}) {
+  const node = document.createElementNS('http://www.w3.org/2000/svg', name);
+  for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, String(value));
+  return node;
+}
+
+async function deleteSelectedResult() {
+  if (!view.selectedResult) return;
+  const { id, sweep_id: sweepId, iq_bytes: iqBytes } = view.selectedResult.summary;
+  const suffix = iqBytes ? `，并删除 ${formatBytes(iqBytes)} 原始 IQ` : '';
+  if (!window.confirm(`删除扫频结果 ${sweepId}${suffix}？此操作无法撤销。`)) return;
+  try {
+    await api(`/api/results/${id}`, { method: 'DELETE' });
+    view.selectedResult = null;
+    view.selectedResultId = null;
+    await loadResults({ selectLatest: true });
+    toast('采集结果已删除');
+  } catch (error) { toast(error.message); }
+}
+
+function formatDate(value) {
+  return new Date(value).toLocaleString('zh-CN', { hour12: false });
+}
+
+function formatDuration(value) {
+  if (value < 1000) return `${value} ms`;
+  return `${(value / 1000).toFixed(value < 10000 ? 1 : 0)} s`;
+}
+
+function formatFrequency(value) {
+  if (value >= 1000000000) return `${(value / 1000000000).toFixed(3)} GHz`;
+  if (value >= 1000000) return `${(value / 1000000).toFixed(3)} MHz`;
+  return `${Math.round(value / 1000)} kHz`;
+}
+
+function formatFrequencySpan(value) {
+  if (value >= 1000000) return `${(value / 1000000).toFixed(2)} MHz`;
+  return `${(value / 1000).toFixed(1)} kHz`;
+}
+
+function formatAxisFrequency(value) {
+  return value >= 1000000000 ? `${(value / 1000000000).toFixed(2)}G` : `${(value / 1000000).toFixed(0)}M`;
 }
 
 function latestText(kind) {
@@ -408,7 +669,12 @@ function connectEvents() {
   source.onerror = () => setConnection(false, '正在重新连接');
   source.onmessage = () => {
     clearTimeout(view.reloadTimer);
-    view.reloadTimer = setTimeout(() => loadState().catch((error) => toast(error.message)), 80);
+    view.reloadTimer = setTimeout(async () => {
+      try {
+        await loadState();
+        if (view.resultsOpen) await loadResults();
+      } catch (error) { toast(error.message); }
+    }, 80);
   };
 }
 
@@ -429,7 +695,7 @@ function scrollBottom() { view.terminal.scrollTop = view.terminal.scrollHeight; 
 function setText(selector, text) { document.querySelector(selector).textContent = text; }
 function safeKind(value) { return /^[a-z]+$/.test(value) ? value : 'system'; }
 function kindLabel(kind) {
-  return ({ system: '系统', prompt: '提示', operator: '操作员', qwen: '上游模型', plan: '已验证计划', execution: '执行', sweep: '扫频', cruise: '巡航', error: '错误' })[kind] || '系统';
+  return ({ system: '系统', prompt: '提示', operator: '操作员', qwen: '上游模型', plan: '已验证计划', decision: '校验依据', execution: '执行', sweep: '扫频', cruise: '巡航', error: '错误' })[kind] || '系统';
 }
 function formatTokens(value) {
   return `${new Intl.NumberFormat('zh-CN').format(value)} tokens`;
@@ -468,6 +734,9 @@ document.querySelector('#preset-opencode').addEventListener('click', presetOpenC
 document.querySelector('#preset-custom').addEventListener('click', clearProviderFields);
 document.querySelector('#settings-entry').addEventListener('click', toggleSettings);
 document.querySelector('#settings-back').addEventListener('click', showConsole);
+document.querySelector('#sweep-results-entry').addEventListener('click', showResults);
+document.querySelector('#results-back').addEventListener('click', showConsole);
+document.querySelector('#delete-result').addEventListener('click', deleteSelectedResult);
 document.querySelector('#discard-settings').addEventListener('click', discardSettings);
 document.querySelector('#provider-form').addEventListener('input', (event) => {
   if (event.target.closest('#survey-fields') || event.target.name === 'survey-mode') updateSurveyBudget();

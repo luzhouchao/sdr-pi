@@ -151,7 +151,7 @@ impl CruiseControl {
         now: Instant,
     ) -> Result<(), &'static str> {
         if max_iq_bytes == 0 {
-            return Err("automatic cruise requires a non-zero IQ byte budget");
+            return Err("automatic cruise IQ byte budget must be a positive finite value");
         }
         if !(1..=HARD_AUTO_MAX_STEPS).contains(&max_steps) {
             return Err("automatic cruise steps must be between 1 and 128");
@@ -373,9 +373,10 @@ mod tests {
     }
 
     #[test]
-    fn operator_budget_is_bounded_and_reflected_in_status() {
+    fn operator_budget_is_finite_and_reflected_in_status() {
         let now = Instant::now();
         let mut cruise = CruiseControl::default();
+        assert!(cruise.start(0, 8, 120, now).is_err());
         assert!(cruise.start(100, 0, 120, now).is_err());
         assert!(cruise.start(100, 129, 120, now).is_err());
         assert!(cruise.start(100, 8, 9, now).is_err());
@@ -384,5 +385,16 @@ mod tests {
         let snapshot = cruise.snapshot(now);
         assert_eq!(snapshot.max_steps, 128);
         assert_eq!(snapshot.max_duration_ms, 1_800_000);
+
+        let large_finite_budget = 2_u64 * 1024 * 1024 * 1024;
+        cruise
+            .start(
+                large_finite_budget,
+                DEFAULT_AUTO_MAX_STEPS,
+                DEFAULT_AUTO_DURATION_SECS,
+                now,
+            )
+            .unwrap();
+        assert_eq!(cruise.snapshot(now).max_iq_bytes, large_finite_budget);
     }
 }

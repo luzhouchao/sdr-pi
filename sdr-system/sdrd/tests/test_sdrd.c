@@ -57,6 +57,7 @@ typedef struct fake_radio {
   int capture_result;
   int summary_result;
   int restore_result;
+  char data_root[SDRD_MAX_PATH];
 } fake_radio_t;
 
 static int fake_snapshot(void *context, sdrd_radio_state_t *state) {
@@ -98,6 +99,26 @@ static int fake_capture(
              sizeof(result->relative_path),
              "%s/capture-17.iq",
              request->feature_id) > 0);
+  if (fake->data_root[0] != '\0') {
+    char directory[SDRD_MAX_PATH * 2u];
+    char path[SDRD_MAX_PATH * 2u];
+    unsigned char zeros[256] = {0};
+    uint64_t remaining = request->sample_count * 4u;
+    FILE *stream;
+    assert(snprintf(directory, sizeof(directory), "%s/%s", fake->data_root,
+                    request->feature_id) > 0);
+    assert(mkdir(directory, 0700) == 0);
+    assert(snprintf(path, sizeof(path), "%s/%s", fake->data_root,
+                    result->relative_path) > 0);
+    stream = fopen(path, "wb");
+    assert(stream != NULL);
+    while (remaining > 0u) {
+      const size_t chunk = remaining < sizeof(zeros) ? (size_t)remaining : sizeof(zeros);
+      assert(fwrite(zeros, 1u, chunk, stream) == chunk);
+      remaining -= chunk;
+    }
+    assert(fclose(stream) == 0);
+  }
   return 0;
 }
 
@@ -539,6 +560,49 @@ static void test_disconnect_and_failure_restore(void) {
   assert(strstr(response, "restore_fault") != NULL);
 }
 
+static void test_inline_iq_transport_and_cleanup(const char *root) {
+  sdrd_config_t config;
+  sdrd_session_t session;
+  fake_radio_t fake;
+  sdrd_radio_ops_t ops;
+  char response[SDRD_MAX_RESPONSE];
+  char data_root[512];
+  char path[512];
+  memset(&fake, 0, sizeof(fake));
+  fake.state.center_hz = 915000000u;
+  fake.state.sample_rate_hz = 4000000u;
+  fake.state.rf_bandwidth_hz = 3000000u;
+  fake.state.enabled_channels = 1u;
+  assert(snprintf(fake.state.gain_mode, sizeof(fake.state.gain_mode), "slow_attack") > 0);
+  assert(snprintf(data_root, sizeof(data_root), "%s/inline-data", root) > 0);
+  must_mkdir(data_root);
+  assert(snprintf(fake.data_root, sizeof(fake.data_root), "%s", data_root) > 0);
+  ops = fake_ops(&fake);
+  sdrd_config_defaults(&config);
+  config.mode = SDRD_MODE_CONTROLLED;
+  assert(snprintf(config.development_data_root, sizeof(config.development_data_root), "%s",
+                  data_root) > 0);
+  sdrd_session_init(&session);
+  assert(sdrd_handle_request(&config, &session, &ops, "SDRD/1 START_SESSION 1 7007",
+                             response, sizeof(response)) == 0);
+  assert(sdrd_handle_request(
+             &config, &session, &ops,
+             "SDRD/1 APPLY_PROFILE 2 7007 2400000000 10000000 8000000 manual 20 1",
+             response, sizeof(response)) == 0);
+  assert(sdrd_handle_request(
+             &config, &session, &ops,
+             "SDRD/1 CAPTURE_IQ_INLINE 3 7007 2 8 inline-test", response,
+             sizeof(response)) == 0);
+  assert(strstr(response, "\"bytes_transferred\":8") != NULL);
+  assert(strstr(response, "\"iq_base64\":\"AAAAAAAAAAA=\"") != NULL);
+  assert(snprintf(path, sizeof(path), "%s/inline-test/capture-17.iq", data_root) > 0);
+  assert(access(path, F_OK) != 0);
+  assert(snprintf(path, sizeof(path), "%s/inline-test", data_root) > 0);
+  assert(access(path, F_OK) != 0);
+  assert(sdrd_session_close(&session, &ops) == 0);
+  assert(rmdir(data_root) == 0);
+}
+
 static void remove_test_tree(const char *root) {
   char path[512];
   (void)snprintf(path, sizeof(path), "%s/iio/iio:device0/name", root);
@@ -577,6 +641,7 @@ int main(void) {
   test_iio_control_limits();
   test_controlled_allowlist_and_restore();
   test_disconnect_and_failure_restore();
+  test_inline_iq_transport_and_cleanup(root);
   remove_test_tree(root);
   puts("sdrd_tests=pass");
   return 0;

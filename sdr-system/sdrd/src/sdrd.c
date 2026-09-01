@@ -1,22 +1,28 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include "sdrd.h"
+#ifdef SDRD_ENABLE_FPGA
 #include "p201_native_mmio.h"
+#endif
 
 #include <arpa/inet.h>
 #include <ctype.h>
 #include <dirent.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #define SDRD_SUM8_MAGIC 0x53554D38u
 #define SDRD_SUM8_ABI 0x00010002u
 #define SDRD_AGG8_MAGIC 0x41474738u
 #define SDRD_AGGREGATE_CAPABILITY_BIT (1u << 9)
+#define SDRD_DEFAULT_FPGA_BASE 0x43c00000u
+#define SDRD_DEFAULT_FPGA_SPAN 0x10000u
 
 static void set_error(char *error, size_t error_size, const char *message) {
   if (error != NULL && error_size > 0u) {
@@ -95,8 +101,8 @@ void sdrd_config_defaults(sdrd_config_t *config) {
   (void)copy_text(config->iio_sysfs_root, sizeof(config->iio_sysfs_root), "/sys/bus/iio/devices");
   config->fpga_backend = SDRD_FPGA_DISABLED;
   (void)copy_text(config->fpga_device, sizeof(config->fpga_device), "/dev/mem");
-  config->fpga_base = P201_TAP_BASE;
-  config->fpga_span = P201_TAP_SPAN_BYTES;
+  config->fpga_base = SDRD_DEFAULT_FPGA_BASE;
+  config->fpga_span = SDRD_DEFAULT_FPGA_SPAN;
   config->require_iomem_region = 1;
   config->allow_devmem = 0;
   (void)copy_text(
@@ -452,6 +458,7 @@ static void probe_iio(const sdrd_config_t *config, sdrd_status_t *status) {
   }
 }
 
+#ifdef SDRD_ENABLE_FPGA
 static int iomem_contains(uint64_t base, uint32_t span) {
   FILE *stream = fopen("/proc/iomem", "r");
   char line[256];
@@ -524,6 +531,14 @@ static void probe_fpga(const sdrd_config_t *config, sdrd_status_t *status) {
   }
   p201_mmio_destroy(mmio);
 }
+#else
+static void probe_fpga(const sdrd_config_t *config, sdrd_status_t *status) {
+  if (config->fpga_backend != SDRD_FPGA_DISABLED) {
+    status->fpga_configured = 1;
+    status->health_flags |= SDRD_HEALTH_FPGA_UNAVAILABLE;
+  }
+}
+#endif
 
 int sdrd_probe_status(
     const sdrd_config_t *config,
@@ -876,6 +891,186 @@ static int handle_capture_iq(
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
 
+static int append_base64_file(
+    const char *path,
+    uint64_t expected_bytes,
+    char *response,
+    size_t response_size,
+    size_t *offset) {
+  static const char alphabet[] =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  unsigned char *bytes;
+  struct stat status;
+  size_t input_size;
+  size_t encoded_size;
+  size_t input = 0u;
+  size_t output;
+  int fd;
+  if (expected_bytes == 0u || expected_bytes > SDRD_MAX_INLINE_CAPTURE_BYTES ||
+      expected_bytes > SIZE_MAX) {
+    return -ERANGE;
+  }
+  input_size = (size_t)expected_bytes;
+  encoded_size = ((input_size + 2u) / 3u) * 4u;
+  if (*offset > response_size || encoded_size > response_size - *offset) {
+    return -ENOSPC;
+  }
+  fd = open(path, O_RDONLY | O_CLOEXEC | O_NOFOLLOW);
+  if (fd < 0) {
+    return -errno;
+  }
+  if (fstat(fd, &status) != 0 || !S_ISREG(status.st_mode) || status.st_size < 0 ||
+      (uint64_t)status.st_size != expected_bytes) {
+    (void)close(fd);
+    return -EPROTO;
+  }
+  bytes = malloc(input_size);
+  if (bytes == NULL) {
+    (void)close(fd);
+    return -ENOMEM;
+  }
+  while (input < input_size) {
+    const ssize_t count = read(fd, bytes + input, input_size - input);
+    if (count < 0 && errno == EINTR) {
+      continue;
+    }
+    if (count <= 0) {
+      free(bytes);
+      (void)close(fd);
+      return count == 0 ? -EPROTO : -errno;
+    }
+    input += (size_t)count;
+  }
+  if (close(fd) != 0) {
+    free(bytes);
+    return -errno;
+  }
+  output = *offset;
+  for (input = 0u; input < input_size; input += 3u) {
+    const uint32_t first = bytes[input];
+    const uint32_t second = input + 1u < input_size ? bytes[input + 1u] : 0u;
+    const uint32_t third = input + 2u < input_size ? bytes[input + 2u] : 0u;
+    const uint32_t packed = (first << 16u) | (second << 8u) | third;
+    response[output++] = alphabet[(packed >> 18u) & 0x3fu];
+    response[output++] = alphabet[(packed >> 12u) & 0x3fu];
+    response[output++] = input + 1u < input_size ? alphabet[(packed >> 6u) & 0x3fu] : '=';
+    response[output++] = input + 2u < input_size ? alphabet[packed & 0x3fu] : '=';
+  }
+  free(bytes);
+  *offset = output;
+  return 0;
+}
+
+static int handle_capture_iq_inline(
+    const sdrd_config_t *config,
+    const parsed_request_t *request,
+    sdrd_session_t *session,
+    const sdrd_radio_ops_t *radio,
+    char *response,
+    size_t response_size) {
+  sdrd_capture_request_t capture;
+  sdrd_capture_result_t result;
+  char full_path[SDRD_MAX_PATH * 2u];
+  char feature_path[SDRD_MAX_PATH * 2u];
+  uint64_t required_bytes;
+  size_t offset;
+  int rc;
+  int written;
+  memset(&capture, 0, sizeof(capture));
+  memset(&result, 0, sizeof(result));
+  if (request_has_fields(request, 7u) != 0 ||
+      parse_u64(request->fields[3], &capture.generation) != 0 ||
+      parse_u64(request->fields[4], &capture.sample_count) != 0 ||
+      parse_u64(request->fields[5], &capture.max_bytes) != 0 ||
+      valid_feature_id(request->fields[6]) == 0) {
+    return format_error(request->request_id, "invalid_arguments", response, response_size);
+  }
+  if (session->active == 0 || session->profile_applied == 0 ||
+      capture.generation != session->generation) {
+    return format_error(request->request_id, "stale_or_missing_session", response, response_size);
+  }
+  if (capture.sample_count == 0u || capture.sample_count > UINT64_MAX / 4u) {
+    return format_error(request->request_id, "capture_out_of_bounds", response, response_size);
+  }
+  required_bytes = capture.sample_count * 4u;
+  if (capture.max_bytes != required_bytes || required_bytes > SDRD_MAX_INLINE_CAPTURE_BYTES ||
+      required_bytes > config->max_capture_bytes) {
+    return format_error(request->request_id, "inline_capture_out_of_bounds", response, response_size);
+  }
+  (void)copy_text(capture.feature_id, sizeof(capture.feature_id), request->fields[6]);
+  rc = radio->capture_iq(radio->context, &capture, &result);
+  if (rc != 0) {
+    const int restore_rc = sdrd_session_close(session, radio);
+    return format_error(
+        request->request_id,
+        restore_rc == 0 ? "capture_failed_restored" : "capture_failed_restore_fault",
+        response,
+        response_size);
+  }
+  if (result.samples_captured != capture.sample_count || result.bytes_written != required_bytes ||
+      result.dropped_samples != 0u || result.overflow != 0 ||
+      valid_relative_path(result.relative_path) == 0) {
+    (void)sdrd_session_close(session, radio);
+    return format_error(request->request_id, "adapter_contract_violation", response, response_size);
+  }
+  written = snprintf(full_path, sizeof(full_path), "%s/%s", config->development_data_root,
+                     result.relative_path);
+  if (written < 0 || (size_t)written >= sizeof(full_path)) {
+    (void)sdrd_session_close(session, radio);
+    return format_error(request->request_id, "inline_path_invalid", response, response_size);
+  }
+  written = snprintf(feature_path, sizeof(feature_path), "%s/%s", config->development_data_root,
+                     capture.feature_id);
+  if (written < 0 || (size_t)written >= sizeof(feature_path)) {
+    (void)unlink(full_path);
+    (void)sdrd_session_close(session, radio);
+    return format_error(request->request_id, "inline_path_invalid", response, response_size);
+  }
+  written = snprintf(
+      response,
+      response_size,
+      "{\"schema_version\":1,\"request_id\":%" PRIu64
+      ",\"status\":\"ok\",\"generation\":%" PRIu64
+      ",\"samples_captured\":%" PRIu64 ",\"bytes_transferred\":%" PRIu64
+      ",\"sequence\":%" PRIu64 ",\"iq_base64\":\"",
+      request->request_id,
+      capture.generation,
+      result.samples_captured,
+      result.bytes_written,
+      result.sequence);
+  if (written < 0 || (size_t)written >= response_size) {
+    rc = -ENOSPC;
+  } else {
+    offset = (size_t)written;
+    rc = append_base64_file(full_path, result.bytes_written, response, response_size, &offset);
+    if (rc == 0) {
+      if (response_size - offset < 4u) {
+        rc = -ENOSPC;
+      } else {
+        response[offset++] = '"';
+        response[offset++] = '}';
+        response[offset++] = '\n';
+        response[offset] = '\0';
+      }
+    }
+  }
+  if (unlink(full_path) != 0 && rc == 0) {
+    rc = -errno;
+  }
+  if (rmdir(feature_path) != 0 && errno != ENOENT && rc == 0) {
+    rc = -errno;
+  }
+  if (rc != 0) {
+    const int restore_rc = sdrd_session_close(session, radio);
+    return format_error(
+        request->request_id,
+        restore_rc == 0 ? "inline_transfer_failed_restored" : "inline_transfer_restore_fault",
+        response,
+        response_size);
+  }
+  return 0;
+}
+
 static int handle_capture_summary(
     const parsed_request_t *request,
     sdrd_session_t *session,
@@ -1153,6 +1348,7 @@ int sdrd_handle_request(
   } else if (strcmp(request.command, "START_SESSION") == 0 ||
              strcmp(request.command, "APPLY_PROFILE") == 0 ||
              strcmp(request.command, "CAPTURE_IQ") == 0 ||
+             strcmp(request.command, "CAPTURE_IQ_INLINE") == 0 ||
              strcmp(request.command, "CAPTURE_POWER") == 0 ||
              strcmp(request.command, "CAPTURE_SUMMARY") == 0 ||
              strcmp(request.command, "EXECUTION_STATUS") == 0 ||
@@ -1171,6 +1367,9 @@ int sdrd_handle_request(
     }
     if (strcmp(request.command, "CAPTURE_IQ") == 0) {
       return handle_capture_iq(config, &request, session, radio, response, response_size);
+    }
+    if (strcmp(request.command, "CAPTURE_IQ_INLINE") == 0) {
+      return handle_capture_iq_inline(config, &request, session, radio, response, response_size);
     }
     if (strcmp(request.command, "CAPTURE_POWER") == 0) {
       return handle_capture_power(&request, session, radio, response, response_size);

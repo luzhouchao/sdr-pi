@@ -218,6 +218,9 @@ export class SessionRuntime {
           this.planSubmittedForRequest = undefined;
         }
         break;
+      case "message_update":
+        this.#handleAssistantMessageUpdate(event);
+        break;
       case "message_end":
         if (event.message?.role === "assistant") {
           const text = extractText(event.message);
@@ -250,6 +253,35 @@ export class SessionRuntime {
         this.queued = 0;
         this.emit(makeSessionEvent(this.sessionGeneration, "queue_update", { queued: 0 }));
         this.emit(makeSessionEvent(this.sessionGeneration, "agent_end"));
+        break;
+      default:
+        break;
+    }
+  }
+
+  #handleAssistantMessageUpdate(event) {
+    const update = event.assistantMessageEvent;
+    if (event.message?.role !== "assistant" || update === undefined) return;
+    const requestId = this.currentContext?.request_id;
+    if (!Number.isSafeInteger(requestId)) return;
+    switch (update.type) {
+      case "thinking_start":
+        this.emit(makeSessionEvent(this.sessionGeneration, "thinking_start", {
+          request_id: requestId,
+        }));
+        break;
+      case "thinking_delta": {
+        if (typeof update.delta !== "string" || update.delta.length === 0) break;
+        this.emit(makeSessionEvent(this.sessionGeneration, "thinking_delta", {
+          request_id: requestId,
+          delta: update.delta,
+        }));
+        break;
+      }
+      case "thinking_end":
+        this.emit(makeSessionEvent(this.sessionGeneration, "thinking_end", {
+          request_id: requestId,
+        }));
         break;
       default:
         break;

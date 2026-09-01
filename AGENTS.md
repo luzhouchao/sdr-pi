@@ -37,24 +37,39 @@ during development without asking again, subject to all of these constraints:
    default, have explicit frequency/sample-rate/bandwidth/dwell/point limits,
    and include a direct stop plus verified radio-state restoration.
 2. This authorization does not cover transmission, arbitrary IIO writes,
-   unbounded capture, persistent radio changes, FPGA/`BOOT.bin` replacement, or
-   disabling a safety check. Those require separate explicit authority.
+   capture without a plan-derived finite byte count, persistent radio changes,
+   FPGA/`BOOT.bin` replacement, or disabling a safety check. Those require
+   separate explicit authority.
 3. Before a live sweep, print or record the validated plan, estimated duration,
    maximum bytes, free-space check, and the exact temporary data directory.
-4. Put AGX development data only under
+4. In the software path, the SDR is responsible only for bounded RX acquisition
+   and transport. AGX owns raw-IQ storage, software aggregation, power/noise
+   estimation, candidate merging, and model-facing summaries. Do not move
+   software aggregation back onto the SDR merely to reduce transport unless the
+   user explicitly changes this architecture. A capability-gated FPGA summary
+   path remains a separate optional backend.
+5. Put AGX development data only under
    `/var/tmp/sdrharness-dev/<feature-id>/`, legacy Pi development data only under
-   `/var/tmp/sdr-agent-dev/<feature-id>/`, and SDR-local development data only
-   under `/tmp/sdr-agent-dev/<feature-id>/`. Use a unique feature ID and a hard
-   byte cap; default to no more than 64 MiB unless the user sets another limit.
-5. Keep raw IQ and intermediate sweep outputs out of Git. Retain the feature's
+   `/var/tmp/sdr-agent-dev/<feature-id>/`, and SDR-local transient data only
+   under `/tmp/sdr-agent-dev/<feature-id>/`. Use a unique feature ID. There is no
+   project-wide fixed 64 MiB ceiling: derive and record a finite maximum byte
+   count from the validated frequency/point/sample plan, verify AGX free space
+   before capture, and fail closed if the exact bound or space check is absent.
+   SDR-local data must be transient and removed after confirmed AGX receipt.
+6. Keep raw IQ and intermediate sweep outputs out of Git. Retain the feature's
    source code, public and internal interfaces, tests, configuration examples,
    design documents, bounded summaries, hashes, metrics, and validation
    documentation.
-6. At the end of each feature, stop all feature processes, verify the exact
+7. User-visible acquisition results are not development temporary data. The AGX
+   may persist processed sweep points, candidates, recognition output, or
+   explicitly selected IQ in an application-owned result store outside Git.
+   Such results must have a visible manual-delete path and must not be removed
+   by development cleanup unless the user selected them for deletion.
+8. At the end of each feature, stop all feature processes, verify the exact
    resolved feature-directory paths, delete those directories and workstation
    staging artifacts, and report what was removed. A feature is not complete
    and its checklist item must not be checked until cleanup is verified.
-7. Treat each completed feature as its own delivery unit: after tests pass,
+9. Treat each completed feature as its own delivery unit: after tests pass,
    temporary data cleanup is verified, and the checklist is updated, create a
    focused commit and push it to the configured Git remote promptly. Do not
    defer several completed features into one unrelated batch.

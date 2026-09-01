@@ -9,7 +9,7 @@ use std::net::{SocketAddr, TcpStream};
 use std::time::Duration;
 
 const SDRD_SCHEMA_VERSION: u16 = 1;
-const SDRD_MAX_RESPONSE_BYTES: usize = 2048;
+const SDRD_MAX_RESPONSE_BYTES: usize = 384 * 1024;
 
 pub trait SdrEngine {
     fn observe(&mut self) -> Result<SdrSnapshot, SdrError>;

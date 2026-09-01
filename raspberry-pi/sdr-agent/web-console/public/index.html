@@ -21,7 +21,7 @@
   <main>
     <section id="console-view" class="page-view">
       <section class="overview" aria-label="系统状态">
-        <article class="status-card accent-cyan"><span>当前扫频</span><strong id="sweep-status">尚无扫频输出</strong></article>
+        <button id="sweep-results-entry" class="status-card status-entry accent-cyan" type="button" aria-controls="results-view"><span>当前扫频 <i>查看聚合结果 →</i></span><strong id="sweep-status">尚无扫频输出</strong></button>
         <article class="status-card accent-violet"><span>上游模型最近返回</span><strong id="qwen-status">尚无模型输出</strong></article>
         <article class="status-card accent-amber"><span>控制器</span><strong id="controller-status">等待活动对话</strong></article>
         <article class="status-card accent-green"><span>运行授权</span><strong id="cruise-status">逐步批准模式</strong></article>
@@ -37,14 +37,50 @@
           <section class="authorization-rail" aria-labelledby="authorization-title">
             <div class="rail-copy"><small>RUN AUTHORIZATION</small><strong id="authorization-title">选择谁决定下一步</strong><p>两种模式都经过 Rust 安全校验；不会放宽频段、时长、字节或独占限制。</p></div>
             <button type="button" data-command="/mode manual" class="mode-card manual-mode"><span>逐步批准</span><small>每个可执行动作都停在人工批准门前</small></button>
-            <form id="auto-form" class="mode-card auto-mode"><label for="auto-mission">受限自动巡航</label><div class="auto-mission-row"><input id="auto-mission" maxlength="700" placeholder="例如：在允许频段内寻找活动并根据结果继续" required><button type="submit">启动巡航</button></div><div class="auto-budget-row"><label for="auto-steps"><span>最多步数</span><input id="auto-steps" type="number" min="1" max="128" step="1" value="8" required></label><label for="auto-seconds"><span>总时长（秒）</span><input id="auto-seconds" type="number" min="10" max="1800" step="1" value="120" required></label><small>硬上限 128 步 / 30 分钟；两类失败各重试 5 次</small></div></form>
+            <form id="auto-form" class="mode-card auto-mode"><label for="auto-mission">受限自动巡航</label><div class="auto-mission-row"><input id="auto-mission" maxlength="700" placeholder="例如：在允许频段内寻找活动并根据结果继续" required><button type="submit">启动巡航</button></div><div class="auto-budget-row"><label for="auto-steps"><span>最多步数</span><input id="auto-steps" type="number" min="1" max="128" step="1" value="8" required></label><label for="auto-seconds"><span>总时长（秒）</span><input id="auto-seconds" type="number" min="10" max="1800" step="1" value="120" required></label><small>IQ 预算按步数 × 单动作上限自动推导；两类失败各重试 5 次</small></div></form>
             <button type="button" data-command="/stop" class="emergency-stop">■ 立即停止</button>
+          </section>
+          <section id="model-trace" class="model-trace" hidden aria-label="模型透明度">
+            <div class="trace-heading"><div><small>MODEL TRACE</small><strong>本轮模型上下文与决策</strong></div><span id="thinking-live" hidden>生成中</span></div>
+            <div class="trace-grid">
+              <details id="model-input-panel"><summary>实际注入模型的上下文</summary><pre id="model-input-content"></pre></details>
+              <details id="thinking-panel" hidden><summary>上游模型 reasoning</summary><pre id="thinking-content"></pre></details>
+              <div id="decision-panel" class="decision-panel" hidden><small>RUST VALIDATION BASIS</small><p id="decision-content"></p></div>
+            </div>
           </section>
           <div id="terminal" class="terminal" role="log" aria-live="polite"></div>
           <div class="controls" aria-label="快捷控制"><button type="button" data-command="/approve">✓ 批准</button><button type="button" data-command="/reject">× 拒绝</button><button type="button" data-command="/pause">Ⅱ 暂停</button><button type="button" data-command="/resume">▶ 恢复</button><button type="button" data-command="/status">● 状态</button></div>
           <form id="command-form" class="command-form"><label for="command-input">终端输入</label><div><textarea id="command-input" rows="2" maxlength="2048" placeholder="输入自然语言指令或 /help；Ctrl+Enter 发送"></textarea><button type="submit">发送</button></div><small>按钮和手动输入都会以 <code>Operator&gt;</code> 记录在上方终端中。</small></form>
         </section>
       </section>
+    </section>
+
+    <section id="results-view" class="page-view results-view" hidden aria-labelledby="results-title">
+      <div class="results-heading">
+        <div><p class="eyebrow">AGX AGGREGATE ARCHIVE</p><h2 id="results-title">聚合结果</h2><p>每条曲线都来自一次真实 RX 扫频；AGX 保存功率、噪声基线与候选，原始 IQ 仅在设置开启时保留。</p></div>
+        <button id="results-back" class="ghost-button" type="button">返回运行台</button>
+      </div>
+      <div class="results-workspace">
+        <aside class="results-list-panel">
+          <div class="panel-title"><div><span>采集历史</span><small id="results-count">正在载入</small></div></div>
+          <div id="results-list" class="results-list"></div>
+        </aside>
+        <section class="result-detail">
+          <div id="results-empty" class="results-empty"><strong>还没有聚合结果</strong><p>完成首次扫频或计划扫频后，AGX 会在这里保存曲线与候选。</p></div>
+          <div id="result-content" hidden>
+            <header class="result-titlebar"><div><small id="result-kind">SWEEP</small><h3 id="result-title">—</h3><p id="result-time">—</p></div><button id="delete-result" class="delete-result" type="button">删除这次采集</button></header>
+            <div class="result-metrics" aria-label="扫频指标">
+              <div><span>频段</span><strong id="result-band">—</strong></div><div><span>频点</span><strong id="result-points">—</strong></div><div><span>固定增益</span><strong id="result-gain">—</strong></div><div><span>噪声基线</span><strong id="result-noise">—</strong></div><div><span>候选</span><strong id="result-candidates">—</strong></div><div><span>耗时</span><strong id="result-elapsed">—</strong></div>
+            </div>
+            <figure class="spectrum-card">
+              <figcaption><div><small>AGX SOFTWARE AGGREGATE</small><strong>频点功率 / dBFS</strong></div><span><i class="legend-trace"></i>功率轨迹 <i class="legend-noise"></i>噪声基线 <i class="legend-candidate"></i>候选</span></figcaption>
+              <svg id="spectrum-plot" viewBox="0 0 1000 360" role="img" aria-labelledby="spectrum-title spectrum-desc"><title id="spectrum-title">扫频功率图</title><desc id="spectrum-desc">横轴为频率，纵轴为 dBFS 功率，包含噪声基线和候选标记。</desc></svg>
+            </figure>
+            <section class="dataset-strip"><div><small>RAW IQ DATASET</small><strong id="dataset-state">本次未保存原始 IQ</strong><p id="dataset-detail">聚合结果仍已保存在 AGX。</p></div></section>
+            <section class="candidate-section"><div class="section-heading"><h3>候选信号</h3><span id="candidate-count">0 个</span></div><div class="candidate-table-wrap"><table><thead><tr><th>候选</th><th>中心频率</th><th>带宽</th><th>峰值</th><th>信噪比</th><th>覆盖点数</th></tr></thead><tbody id="candidate-table"></tbody></table></div></section>
+          </div>
+        </section>
+      </div>
     </section>
 
     <section id="settings-view" class="page-view settings-view" hidden aria-labelledby="settings-title">
@@ -79,6 +115,12 @@
           </div>
           <div id="survey-fields" class="settings-grid survey-fields"><label><span>起始频率（MHz）</span><input id="survey-start-mhz" type="number" min="70" max="6000" step="0.001" value="70" required></label><label><span>终止频率（MHz）</span><input id="survey-stop-mhz" type="number" min="70" max="6000" step="0.001" value="6000" required></label><label><span>步进（MHz）</span><input id="survey-step-mhz" type="number" min="0.001" max="8" step="0.001" value="8" required></label><label><span>每点停留（ms）</span><input id="survey-dwell-ms" type="number" min="0" max="1000" step="1" value="5" required></label><label><span>固定接收增益（dB）</span><input id="survey-gain-db" type="number" min="0" max="60" step="1" value="20" required><small>全频扫描建议先用 20；若出现削顶请降低。</small></label></div>
           <div id="survey-budget" class="survey-budget" aria-live="polite"><span class="scan-line" aria-hidden="true"><i></i></span><div><small>扫描预算预览</small><strong id="survey-budget-summary">743 点 · 约 189 秒 · 约 11.6 MiB</strong></div><p id="survey-budget-detail">仅 RX，固定 20 dB 增益，10 MHz 采样率，4096 samples/点；可随时停止并恢复射频状态。</p></div>
+        </section>
+
+        <section class="settings-card storage-settings">
+          <div class="settings-card-title"><span class="card-index">STORAGE</span><div><h3>采集结果存储</h3><p>聚合曲线和候选始终保存在 AGX；可选地把一次扫描的所有原始窗口保存为一组 SigMF 文件。</p></div></div>
+          <label class="storage-toggle" for="save-iq"><span><strong>保存原始 IQ（SigMF）</strong><small>关闭时只保存处理后的频率、功率、噪声基线和候选；开启后仅影响下一个新对话。</small></span><input id="save-iq" type="checkbox"><i aria-hidden="true"></i></label>
+          <div class="storage-format"><small>DATASET LAYOUT</small><strong>一次扫描 = 1 × .sigmf-data + 1 × .sigmf-meta</strong><p><code>ci16_le</code> 交错 IQ；元数据记录每个窗口的 sample start、中心频率、采样率、带宽和固定增益，方便后续识别模型读取。</p></div>
         </section>
 
         <div class="settings-actions"><p>设置写入 AGX 上 mode <code>0600</code> 的私密文件，Git 不跟踪。</p><button id="discard-settings" class="ghost-button" type="button">放弃修改</button><button id="save-settings" type="submit">保存设置</button></div>

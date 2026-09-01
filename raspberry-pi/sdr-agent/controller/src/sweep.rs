@@ -1,13 +1,19 @@
 use crate::protocol::{CandidateSummary, HealthSummary, ObservationSummary};
 use crate::sdr::{SdrError, SdrdWire};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use std::cmp::Ordering;
 use std::collections::VecDeque;
 use std::error::Error;
 use std::fmt;
+use std::fs::{self, File, OpenOptions};
+use std::io::Write;
 use std::net::SocketAddr;
+use std::os::unix::ffi::OsStrExt;
+use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
+use std::path::{Path, PathBuf};
 use std::thread;
-use std::time::{Duration, Instant};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 pub const MAX_POINTS: usize = 768;
 const MAX_DURATION_MS: u64 = 300_000;
@@ -103,6 +109,17 @@ pub struct SweepReport {
     pub noise_floor_dbfs: f32,
     pub points: Vec<SweepPoint>,
     pub candidates: Vec<SweepCandidate>,
+    pub dataset: Option<SweepDataset>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SweepDataset {
+    pub format: String,
+    pub datatype: String,
+    pub data_path: String,
+    pub metadata_path: String,
+    pub bytes: u64,
 }
 
 impl SweepReport {
@@ -182,6 +199,7 @@ pub struct BackendSweep {
     pub backend: String,
     pub backend_version: u32,
     pub points: Vec<SweepPoint>,
+    pub dataset: Option<SweepDataset>,
 }
 
 pub struct SweepEngine<B> {
@@ -210,6 +228,7 @@ impl<B: SweepBackend> SweepEngine<B> {
             noise_floor_dbfs,
             points: backend.points,
             candidates,
+            dataset: backend.dataset,
         })
     }
 }
@@ -248,7 +267,7 @@ impl SdrdFpgaSweepAdapter {
 
 impl SweepBackend for SdrdFpgaSweepAdapter {
     fn run_points(&mut self, plan: &ValidatedSweepPlan) -> Result<BackendSweep, SweepError> {
-        run_sdrd_points(self.address, self.timeout, plan, SummarySource::Fpga)
+        run_sdrd_points(self.address, self.timeout, plan, SummarySource::Fpga, None)
     }
 }
 
@@ -256,17 +275,33 @@ impl SweepBackend for SdrdFpgaSweepAdapter {
 pub struct SdrdSoftwareSweepAdapter {
     address: SocketAddr,
     timeout: Duration,
+    sigmf_directory: Option<PathBuf>,
 }
 
 impl SdrdSoftwareSweepAdapter {
     pub fn new(address: SocketAddr, timeout: Duration) -> Self {
-        Self { address, timeout }
+        Self {
+            address,
+            timeout,
+            sigmf_directory: None,
+        }
+    }
+
+    pub fn with_sigmf_directory(mut self, directory: impl Into<PathBuf>) -> Self {
+        self.sigmf_directory = Some(directory.into());
+        self
     }
 }
 
 impl SweepBackend for SdrdSoftwareSweepAdapter {
     fn run_points(&mut self, plan: &ValidatedSweepPlan) -> Result<BackendSweep, SweepError> {
-        run_sdrd_points(self.address, self.timeout, plan, SummarySource::Software)
+        run_sdrd_points(
+            self.address,
+            self.timeout,
+            plan,
+            SummarySource::Software,
+            self.sigmf_directory.as_deref(),
+        )
     }
 }
 
@@ -281,6 +316,7 @@ fn run_sdrd_points(
     timeout: Duration,
     plan: &ValidatedSweepPlan,
     source: SummarySource,
+    sigmf_directory: Option<&Path>,
 ) -> Result<BackendSweep, SweepError> {
     let mut wire = SdrdWire::connect(address, timeout)?;
     let hello: HelloResponse = wire.request("HELLO", "")?;
@@ -310,11 +346,11 @@ fn run_sdrd_points(
             "the loaded FPGA image does not expose a validated aggregate summary",
         ));
     }
-    if matches!(source, SummarySource::Software) && !capabilities.software_summary {
+    if matches!(source, SummarySource::Software) && !capabilities.raw_iq_capture {
         let _: Result<QuitResponse, _> = wire.request("QUIT", "");
         return Err(SweepError::new(
-            "software_summary_unavailable",
-            "SDRD does not expose the bounded receive-only software power summary",
+            "raw_iq_transport_unavailable",
+            "SDRD does not expose bounded raw-IQ acquisition for AGX aggregation",
         ));
     }
 
@@ -330,6 +366,13 @@ fn run_sdrd_points(
         }
         session_started = true;
         let mut points = Vec::with_capacity(plan.centers_hz.len());
+        let mut sigmf = if matches!(source, SummarySource::Software) {
+            sigmf_directory
+                .map(|directory| SigmfWriter::create(directory, plan))
+                .transpose()?
+        } else {
+            None
+        };
         for (point_index, center_hz) in plan.centers_hz.iter().copied().enumerate() {
             let profile_args = if let Some(gain_db) = plan.gain_db {
                 format!(
@@ -361,34 +404,97 @@ fn run_sdrd_points(
                 ));
             }
             thread::sleep(Duration::from_millis(plan.settle_ms));
-            let summary_args = format!(
-                "{generation} {} {} {}",
-                plan.frame_samples, plan.aggregate_frames, plan.point_timeout_ms
-            );
-            let command = match source {
-                SummarySource::Fpga => "CAPTURE_SUMMARY",
-                SummarySource::Software => "CAPTURE_POWER",
+            let captured_samples = u64::from(plan.frame_samples)
+                .checked_mul(u64::from(plan.aggregate_frames))
+                .ok_or_else(|| SweepError::new("sample_count", "sample count overflow"))?;
+            let (
+                response_generation,
+                sequence,
+                aggregate_samples,
+                power_lo,
+                power_mid,
+                power_hi,
+                clipped,
+                status_flags,
+                elapsed_us,
+            ) = match source {
+                SummarySource::Fpga => {
+                    let summary_args = format!(
+                        "{generation} {} {} {}",
+                        plan.frame_samples, plan.aggregate_frames, plan.point_timeout_ms
+                    );
+                    let summary: SummaryResponse =
+                        wire.request("CAPTURE_SUMMARY", &summary_args)?;
+                    (
+                        summary.generation,
+                        summary.sequence,
+                        summary.aggregate_samples,
+                        summary.rx0_power_lo,
+                        summary.rx0_power_mid,
+                        summary.rx0_power_hi,
+                        summary.rx0_clip_count,
+                        summary.status_flags,
+                        summary.elapsed_us,
+                    )
+                }
+                SummarySource::Software => {
+                    let bytes = captured_samples
+                        .checked_mul(4)
+                        .ok_or_else(|| SweepError::new("sample_count", "IQ byte count overflow"))?;
+                    if bytes > 256 * 1024 {
+                        return Err(SweepError::new(
+                            "agx_capture_size",
+                            "one AGX software-aggregate point exceeds the 256 KiB transport frame",
+                        ));
+                    }
+                    let feature_id = format!("agx-sweep-{generation}-{point_index}");
+                    let capture_args =
+                        format!("{generation} {captured_samples} {bytes} {feature_id}");
+                    let capture: InlineCaptureResponse =
+                        wire.request("CAPTURE_IQ_INLINE", &capture_args)?;
+                    if capture.generation != generation
+                        || capture.samples_captured != captured_samples
+                        || capture.bytes_transferred != bytes
+                    {
+                        return Err(SweepError::new(
+                            "agx_capture_shape",
+                            "inline IQ response does not match the validated AGX aggregation plan",
+                        ));
+                    }
+                    let iq = decode_base64(&capture.iq_base64)?;
+                    if let Some(writer) = sigmf.as_mut() {
+                        writer.append(point_index, center_hz, &iq)?;
+                    }
+                    let (power, clip_count) = aggregate_ci16_power(&iq, captured_samples)?;
+                    (
+                        capture.generation,
+                        capture.sequence,
+                        captured_samples,
+                        power as u32,
+                        (power >> 32) as u32,
+                        0,
+                        clip_count,
+                        0,
+                        0,
+                    )
+                }
             };
-            let summary: SummaryResponse = wire.request(command, &summary_args)?;
-            if summary.generation != generation || summary.status_flags != 0 {
+            if response_generation != generation || status_flags != 0 {
                 return Err(SweepError::new(
                     "summary_quality",
                     "SDR summary reported invalid, stale, overflow, or shape flags",
                 ));
             }
-            if summary.rx0_clip_count != 0 {
+            if clipped != 0 {
                 return Err(SweepError::new(
                     "summary_clipped",
                     "SDR summary clipped at the configured fixed gain; lower survey gain and retry",
                 ));
             }
-            let captured_samples = u64::from(plan.frame_samples)
-                .checked_mul(u64::from(plan.aggregate_frames))
-                .ok_or_else(|| SweepError::new("sample_count", "sample count overflow"))?;
-            if summary.aggregate_samples != captured_samples {
+            if aggregate_samples != captured_samples {
                 return Err(SweepError::new(
                     "summary_shape",
-                    "FPGA summary sample count does not match the plan",
+                    "aggregate sample count does not match the plan",
                 ));
             }
             points.push(SweepPoint {
@@ -397,17 +503,12 @@ fn run_sdrd_points(
                 actual_center_hz: profile.center_hz,
                 sample_rate_hz: profile.sample_rate_hz,
                 rf_bandwidth_hz: profile.rf_bandwidth_hz,
-                sequence: summary.sequence,
+                sequence,
                 captured_samples,
-                band_power_dbfs: u96_power_dbfs(
-                    summary.rx0_power_lo,
-                    summary.rx0_power_mid,
-                    summary.rx0_power_hi,
-                    captured_samples,
-                )?,
-                clipped_samples: summary.rx0_clip_count,
-                status_flags: summary.status_flags,
-                elapsed_us: summary.elapsed_us,
+                band_power_dbfs: u96_power_dbfs(power_lo, power_mid, power_hi, captured_samples)?,
+                clipped_samples: clipped,
+                status_flags,
+                elapsed_us,
             });
         }
         let stop: StopResponse = wire.request("STOP_SESSION", &generation.to_string())?;
@@ -422,10 +523,11 @@ fn run_sdrd_points(
         if !quit.closing {
             return Err(SweepError::new("quit_rejected", "SDRD did not close"));
         }
+        let dataset = sigmf.map(|writer| writer.finish()).transpose()?;
         Ok(BackendSweep {
             backend: match source {
                 SummarySource::Fpga => "sdr_fpga_summary",
-                SummarySource::Software => "sdr_iio_power_summary",
+                SummarySource::Software => "agx_iq_software_aggregate",
             }
             .to_owned(),
             backend_version: match source {
@@ -433,6 +535,7 @@ fn run_sdrd_points(
                 SummarySource::Software => 1,
             },
             points,
+            dataset,
         })
     })();
 
@@ -443,6 +546,258 @@ fn run_sdrd_points(
         let _: Result<QuitResponse, _> = wire.request("QUIT", "");
     }
     execution
+}
+
+struct SigmfWriter {
+    data: File,
+    data_path: PathBuf,
+    metadata_path: PathBuf,
+    captures: Vec<serde_json::Value>,
+    samples_written: u64,
+    sample_rate_hz: u64,
+    rf_bandwidth_hz: u64,
+    gain_db: Option<i16>,
+    created_at_ms: u64,
+    committed: bool,
+}
+
+impl SigmfWriter {
+    fn create(directory: &Path, plan: &ValidatedSweepPlan) -> Result<Self, SweepError> {
+        if directory.exists() {
+            let metadata = fs::symlink_metadata(directory)
+                .map_err(|error| SweepError::new("sigmf_directory", error.to_string()))?;
+            if !metadata.file_type().is_dir() || metadata.file_type().is_symlink() {
+                return Err(SweepError::new(
+                    "sigmf_directory",
+                    "SigMF output path must be a real directory",
+                ));
+            }
+        } else {
+            fs::create_dir_all(directory)
+                .map_err(|error| SweepError::new("sigmf_directory", error.to_string()))?;
+        }
+        fs::set_permissions(directory, fs::Permissions::from_mode(0o700))
+            .map_err(|error| SweepError::new("sigmf_directory", error.to_string()))?;
+        let required_data_bytes = (plan.centers_hz.len() as u64)
+            .checked_mul(u64::from(plan.frame_samples))
+            .and_then(|value| value.checked_mul(u64::from(plan.aggregate_frames)))
+            .and_then(|value| value.checked_mul(4))
+            .ok_or_else(|| SweepError::new("sigmf_size", "SigMF byte count overflow"))?;
+        let required_with_metadata = required_data_bytes
+            .checked_add(1024 * 1024)
+            .ok_or_else(|| SweepError::new("sigmf_size", "SigMF space check overflow"))?;
+        let available = available_storage_bytes(directory)?;
+        if available < required_with_metadata {
+            return Err(SweepError::new(
+                "sigmf_space",
+                format!(
+                    "AGX capture directory has {available} free bytes but this finite scan requires {required_with_metadata} bytes"
+                ),
+            ));
+        }
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos();
+        let stem = format!("{}-{}-{nonce}", plan.sweep_id, plan.session_generation);
+        let data_path = directory.join(format!("{stem}.sigmf-data"));
+        let metadata_path = directory.join(format!("{stem}.sigmf-meta"));
+        let data = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(&data_path)
+            .map_err(|error| SweepError::new("sigmf_create", error.to_string()))?;
+        Ok(Self {
+            data,
+            data_path,
+            metadata_path,
+            captures: Vec::with_capacity(plan.centers_hz.len()),
+            samples_written: 0,
+            sample_rate_hz: plan.sample_rate_hz,
+            rf_bandwidth_hz: plan.rf_bandwidth_hz,
+            gain_db: plan.gain_db,
+            created_at_ms: SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_millis()
+                .try_into()
+                .unwrap_or(u64::MAX),
+            committed: false,
+        })
+    }
+
+    fn append(&mut self, point_index: usize, center_hz: u64, iq: &[u8]) -> Result<(), SweepError> {
+        if iq.is_empty() || iq.len() % 4 != 0 {
+            return Err(SweepError::new(
+                "sigmf_iq_shape",
+                "SigMF IQ block must contain complete complex-int16 samples",
+            ));
+        }
+        self.captures.push(json!({
+            "core:sample_start": self.samples_written,
+            "core:frequency": center_hz,
+            "sdrharness:point_index": point_index,
+            "sdrharness:rf_bandwidth_hz": self.rf_bandwidth_hz,
+            "sdrharness:gain_db": self.gain_db,
+        }));
+        self.data
+            .write_all(iq)
+            .map_err(|error| SweepError::new("sigmf_write", error.to_string()))?;
+        self.samples_written = self
+            .samples_written
+            .checked_add((iq.len() / 4) as u64)
+            .ok_or_else(|| SweepError::new("sigmf_size", "SigMF sample count overflow"))?;
+        Ok(())
+    }
+
+    fn finish(mut self) -> Result<SweepDataset, SweepError> {
+        self.data
+            .sync_all()
+            .map_err(|error| SweepError::new("sigmf_sync", error.to_string()))?;
+        let metadata = json!({
+            "global": {
+                "core:datatype": "ci16_le",
+                "core:sample_rate": self.sample_rate_hz,
+                "core:version": "1.2.5",
+                "core:recorder": "sdrharness-agx",
+                "sdrharness:created_at_unix_ms": self.created_at_ms,
+                "sdrharness:sample_layout": "interleaved_iq",
+            },
+            "captures": self.captures,
+            "annotations": [],
+        });
+        let mut metadata_file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(&self.metadata_path)
+            .map_err(|error| SweepError::new("sigmf_meta_create", error.to_string()))?;
+        serde_json::to_writer_pretty(&mut metadata_file, &metadata)
+            .map_err(|error| SweepError::new("sigmf_meta_write", error.to_string()))?;
+        metadata_file
+            .write_all(b"\n")
+            .and_then(|_| metadata_file.sync_all())
+            .map_err(|error| SweepError::new("sigmf_meta_sync", error.to_string()))?;
+        let bytes = self.samples_written.saturating_mul(4);
+        self.committed = true;
+        Ok(SweepDataset {
+            format: "sigmf".to_owned(),
+            datatype: "ci16_le".to_owned(),
+            data_path: self.data_path.to_string_lossy().into_owned(),
+            metadata_path: self.metadata_path.to_string_lossy().into_owned(),
+            bytes,
+        })
+    }
+}
+
+fn available_storage_bytes(path: &Path) -> Result<u64, SweepError> {
+    let path = std::ffi::CString::new(path.as_os_str().as_bytes())
+        .map_err(|_| SweepError::new("sigmf_space", "capture directory contains a NUL byte"))?;
+    let mut stat = std::mem::MaybeUninit::<libc::statvfs>::uninit();
+    // SAFETY: `path` is a valid NUL-terminated pathname and `stat` points to
+    // writable storage for one `statvfs` result.
+    if unsafe { libc::statvfs(path.as_ptr(), stat.as_mut_ptr()) } != 0 {
+        return Err(SweepError::new(
+            "sigmf_space",
+            std::io::Error::last_os_error().to_string(),
+        ));
+    }
+    // SAFETY: statvfs returned success and initialized the output structure.
+    let stat = unsafe { stat.assume_init() };
+    let available = (stat.f_bavail as u128).saturating_mul(stat.f_frsize as u128);
+    Ok(available.min(u128::from(u64::MAX)) as u64)
+}
+
+impl Drop for SigmfWriter {
+    fn drop(&mut self) {
+        if !self.committed {
+            let _ = fs::remove_file(&self.data_path);
+            let _ = fs::remove_file(&self.metadata_path);
+        }
+    }
+}
+
+fn aggregate_ci16_power(bytes: &[u8], samples: u64) -> Result<(u64, u64), SweepError> {
+    let expected = samples
+        .checked_mul(4)
+        .and_then(|value| usize::try_from(value).ok())
+        .ok_or_else(|| SweepError::new("agx_iq_shape", "IQ byte count overflow"))?;
+    if bytes.len() != expected {
+        return Err(SweepError::new(
+            "agx_iq_shape",
+            "decoded IQ length does not match the capture sample count",
+        ));
+    }
+    let mut power = 0_u64;
+    let mut clipped = 0_u64;
+    for sample in bytes.chunks_exact(4) {
+        let i = i16::from_le_bytes([sample[0], sample[1]]);
+        let q = i16::from_le_bytes([sample[2], sample[3]]);
+        let i64_value = i64::from(i);
+        let q64_value = i64::from(q);
+        power = power
+            .checked_add((i64_value * i64_value + q64_value * q64_value) as u64)
+            .ok_or_else(|| SweepError::new("agx_power_overflow", "AGX IQ power sum overflow"))?;
+        if i <= -2048 || i >= 2047 || q <= -2048 || q >= 2047 {
+            clipped = clipped.saturating_add(1);
+        }
+    }
+    Ok((power, clipped))
+}
+
+fn decode_base64(input: &str) -> Result<Vec<u8>, SweepError> {
+    if input.is_empty() || input.len() % 4 != 0 {
+        return Err(SweepError::new("agx_iq_base64", "invalid IQ base64 length"));
+    }
+    let mut output = Vec::with_capacity(input.len() / 4 * 3);
+    for (block_index, block) in input.as_bytes().chunks_exact(4).enumerate() {
+        let last = block_index + 1 == input.len() / 4;
+        let a = base64_value(block[0])?;
+        let b = base64_value(block[1])?;
+        let c_padding = block[2] == b'=';
+        let d_padding = block[3] == b'=';
+        if c_padding && !d_padding || (!last && (c_padding || d_padding)) {
+            return Err(SweepError::new(
+                "agx_iq_base64",
+                "invalid IQ base64 padding",
+            ));
+        }
+        let c = if c_padding {
+            0
+        } else {
+            base64_value(block[2])?
+        };
+        let d = if d_padding {
+            0
+        } else {
+            base64_value(block[3])?
+        };
+        let packed =
+            (u32::from(a) << 18) | (u32::from(b) << 12) | (u32::from(c) << 6) | u32::from(d);
+        output.push((packed >> 16) as u8);
+        if !c_padding {
+            output.push((packed >> 8) as u8);
+        }
+        if !d_padding {
+            output.push(packed as u8);
+        }
+    }
+    Ok(output)
+}
+
+fn base64_value(value: u8) -> Result<u8, SweepError> {
+    match value {
+        b'A'..=b'Z' => Ok(value - b'A'),
+        b'a'..=b'z' => Ok(value - b'a' + 26),
+        b'0'..=b'9' => Ok(value - b'0' + 52),
+        b'+' => Ok(62),
+        b'/' => Ok(63),
+        _ => Err(SweepError::new(
+            "agx_iq_base64",
+            "invalid IQ base64 character",
+        )),
+    }
 }
 
 pub fn validate_plan(plan: &SweepPlan) -> Result<ValidatedSweepPlan, SweepError> {
@@ -748,10 +1103,10 @@ struct CapabilitiesResponse {
     _mode: String,
     iio_visible: bool,
     radio_control: bool,
-    #[serde(rename = "raw_iq_capture")]
-    _raw_iq_capture: bool,
+    raw_iq_capture: bool,
     #[serde(default)]
-    software_summary: bool,
+    #[serde(rename = "software_summary")]
+    _software_summary: bool,
     #[serde(rename = "max_capture_bytes")]
     _max_capture_bytes: u64,
     #[serde(rename = "fpga_backend")]
@@ -822,6 +1177,22 @@ struct SummaryResponse {
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
+struct InlineCaptureResponse {
+    #[serde(rename = "schema_version")]
+    _schema_version: u16,
+    #[serde(rename = "request_id")]
+    _request_id: u64,
+    #[serde(rename = "status")]
+    _status: String,
+    generation: u64,
+    samples_captured: u64,
+    bytes_transferred: u64,
+    sequence: u64,
+    iq_base64: String,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct StopResponse {
     #[serde(rename = "schema_version")]
     _schema_version: u16,
@@ -852,6 +1223,39 @@ mod tests {
     use std::io::{BufRead, BufReader, Write};
     use std::net::TcpListener;
 
+    fn temporary_test_directory(label: &str) -> PathBuf {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos();
+        std::env::temp_dir().join(format!("sdrharness-{label}-{}-{nonce}", std::process::id()))
+    }
+
+    fn test_base64(bytes: &[u8]) -> String {
+        const ALPHABET: &[u8; 64] =
+            b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        let mut output = String::new();
+        for chunk in bytes.chunks(3) {
+            let first = u32::from(chunk[0]);
+            let second = u32::from(*chunk.get(1).unwrap_or(&0));
+            let third = u32::from(*chunk.get(2).unwrap_or(&0));
+            let packed = (first << 16) | (second << 8) | third;
+            output.push(ALPHABET[((packed >> 18) & 0x3f) as usize] as char);
+            output.push(ALPHABET[((packed >> 12) & 0x3f) as usize] as char);
+            output.push(if chunk.len() > 1 {
+                ALPHABET[((packed >> 6) & 0x3f) as usize] as char
+            } else {
+                '='
+            });
+            output.push(if chunk.len() > 2 {
+                ALPHABET[(packed & 0x3f) as usize] as char
+            } else {
+                '='
+            });
+        }
+        output
+    }
+
     fn plan() -> SweepPlan {
         SweepPlan {
             sweep_id: "survey-24g".to_owned(),
@@ -870,6 +1274,51 @@ mod tests {
             detection_threshold_db: 6.0,
             gain_db: None,
         }
+    }
+
+    #[test]
+    fn sigmf_writer_keeps_one_dataset_pair_for_all_sweep_windows() {
+        let directory = temporary_test_directory("sigmf-pair");
+        let validated = validate_plan(&plan()).unwrap();
+        let mut writer = SigmfWriter::create(&directory, &validated).unwrap();
+        for (index, center_hz) in validated.centers_hz.iter().copied().enumerate() {
+            writer
+                .append(index, center_hz, &[1, 0, 2, 0, 3, 0, 4, 0])
+                .unwrap();
+        }
+        let dataset = writer.finish().unwrap();
+        let entries: Vec<_> = fs::read_dir(&directory).unwrap().collect();
+        assert_eq!(entries.len(), 2);
+        assert_eq!(dataset.format, "sigmf");
+        assert_eq!(dataset.datatype, "ci16_le");
+        assert_eq!(dataset.bytes, validated.centers_hz.len() as u64 * 8);
+        assert_eq!(
+            fs::metadata(&dataset.data_path).unwrap().len(),
+            dataset.bytes
+        );
+        let metadata: serde_json::Value =
+            serde_json::from_slice(&fs::read(&dataset.metadata_path).unwrap()).unwrap();
+        let captures = metadata["captures"].as_array().unwrap();
+        assert_eq!(captures.len(), validated.centers_hz.len());
+        for (index, capture) in captures.iter().enumerate() {
+            assert_eq!(capture["core:sample_start"], (index as u64) * 2);
+            assert_eq!(capture["core:frequency"], validated.centers_hz[index]);
+        }
+        fs::remove_file(dataset.data_path).unwrap();
+        fs::remove_file(dataset.metadata_path).unwrap();
+        fs::remove_dir(directory).unwrap();
+    }
+
+    #[test]
+    fn incomplete_sigmf_writer_removes_partial_files() {
+        let directory = temporary_test_directory("sigmf-drop");
+        let validated = validate_plan(&plan()).unwrap();
+        {
+            let mut writer = SigmfWriter::create(&directory, &validated).unwrap();
+            assert!(writer.append(0, validated.centers_hz[0], &[]).is_err());
+        }
+        assert_eq!(fs::read_dir(&directory).unwrap().count(), 0);
+        fs::remove_dir(directory).unwrap();
     }
 
     fn point(index: usize, center: u64, power: f32) -> SweepPoint {
@@ -901,6 +1350,7 @@ mod tests {
             backend: "replay".to_owned(),
             backend_version: 1,
             points,
+            dataset: None,
         })]);
         let mut engine = SweepEngine::new(replay);
         let report = engine.run(&plan()).unwrap();
@@ -944,6 +1394,7 @@ mod tests {
                 snr_db: 40.0,
                 point_count: 19,
             }],
+            dataset: None,
         };
         let observation = report.planner_observation(
             0,
@@ -987,6 +1438,7 @@ mod tests {
                 elapsed_us: 500,
             }],
             candidates: Vec::new(),
+            dataset: None,
         };
         let health = HealthSummary {
             sdr_online: true,
@@ -1100,16 +1552,18 @@ mod tests {
     }
 
     #[test]
-    fn software_adapter_uses_power_summary_and_restores() {
+    fn software_adapter_transfers_iq_for_agx_aggregation_and_restores() {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let address = listener.local_addr().unwrap();
         let server = thread::spawn(move || {
+            let iq = vec![0_u8; 64 * 4];
+            let inline = format!("{{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":9,\"samples_captured\":64,\"bytes_transferred\":256,\"sequence\":45,\"iq_base64\":\"{}\"}}\n", test_base64(&iq));
             let responses = [
                 "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
                 "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
                 "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":9,\"session_state\":\"owned\",\"restore_armed\":true}\n",
                 "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":9,\"center_hz\":2440000000,\"sample_rate_hz\":3000000,\"rf_bandwidth_hz\":2500000,\"gain_mode\":\"manual\",\"hardware_gain_db\":30,\"enabled_channels\":1}\n",
-                "{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":9,\"sequence\":45,\"aggregate_samples\":32768,\"rx0_power_lo\":1073741824,\"rx0_power_mid\":0,\"rx0_power_hi\":0,\"rx0_clip_count\":0,\"status_flags\":0,\"elapsed_us\":800}\n",
+                inline.as_str(),
                 "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":9,\"stopped\":true,\"restored\":true}\n",
                 "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"closing\":true}\n",
             ];
@@ -1122,7 +1576,7 @@ mod tests {
                     assert!(request.contains(" manual 30 1"));
                 }
                 if index == 4 {
-                    assert!(request.starts_with("SDRD/1 CAPTURE_POWER 5 "));
+                    assert!(request.starts_with("SDRD/1 CAPTURE_IQ_INLINE 5 9 64 256 "));
                 }
                 stream.write_all(response.as_bytes()).unwrap();
                 stream.flush().unwrap();
@@ -1133,13 +1587,15 @@ mod tests {
             centers_hz: vec![2_440_000_000],
         };
         one_point.gain_db = Some(30);
+        one_point.frame_samples = 64;
+        one_point.aggregate_frames = 1;
         let report = SweepEngine::new(SdrdSoftwareSweepAdapter::new(
             address,
             Duration::from_secs(1),
         ))
         .run(&one_point)
         .unwrap();
-        assert_eq!(report.backend, "sdr_iio_power_summary");
+        assert_eq!(report.backend, "agx_iq_software_aggregate");
         assert_eq!(report.points[0].sequence, 45);
         server.join().unwrap();
     }
@@ -1151,7 +1607,7 @@ mod tests {
         let server = thread::spawn(move || {
             let responses = [
                 "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
-                "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":false,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
+                "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":false,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
                 "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"closing\":true}\n",
             ];
             let (mut stream, _) = listener.accept().unwrap();
@@ -1170,7 +1626,7 @@ mod tests {
         ))
         .run(&plan())
         .unwrap_err();
-        assert_eq!(error.code, "software_summary_unavailable");
+        assert_eq!(error.code, "raw_iq_transport_unavailable");
         server.join().unwrap();
     }
 
@@ -1215,16 +1671,19 @@ mod tests {
     }
 
     #[test]
-    fn clipped_fixed_gain_summary_fails_and_restores_session() {
+    fn clipped_fixed_gain_agx_iq_fails_and_restores_session() {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let address = listener.local_addr().unwrap();
         let server = thread::spawn(move || {
+            let mut iq = vec![0_u8; 64 * 4];
+            iq[..2].copy_from_slice(&2047_i16.to_le_bytes());
+            let inline = format!("{{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":9,\"samples_captured\":64,\"bytes_transferred\":256,\"sequence\":46,\"iq_base64\":\"{}\"}}\n", test_base64(&iq));
             let responses = [
                 "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
                 "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
                 "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":9,\"session_state\":\"owned\",\"restore_armed\":true}\n",
                 "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":9,\"center_hz\":2440000000,\"sample_rate_hz\":3000000,\"rf_bandwidth_hz\":2500000,\"gain_mode\":\"manual\",\"hardware_gain_db\":20,\"enabled_channels\":1}\n",
-                "{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":9,\"sequence\":46,\"aggregate_samples\":32768,\"rx0_power_lo\":1073741824,\"rx0_power_mid\":0,\"rx0_power_hi\":0,\"rx0_clip_count\":1,\"status_flags\":0,\"elapsed_us\":800}\n",
+                inline.as_str(),
                 "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":9,\"stopped\":true,\"restored\":true}\n",
                 "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"closing\":true}\n",
             ];
@@ -1248,6 +1707,8 @@ mod tests {
             centers_hz: vec![2_440_000_000],
         };
         one_point.gain_db = Some(20);
+        one_point.frame_samples = 64;
+        one_point.aggregate_frames = 1;
         let error = SweepEngine::new(SdrdSoftwareSweepAdapter::new(
             address,
             Duration::from_secs(1),

@@ -76,7 +76,7 @@ test("rejects loose permissions and unknown private config fields", (context) =>
   assert.throws(() => loadPrivateProviderFile(path), /unknown field shell/u);
 });
 
-test("accepts the Web-owned initial survey settings without exposing them upstream", (context) => {
+test("accepts Web-owned survey and result-storage settings without exposing them upstream", (context) => {
   const directory = mkdtempSync(join(tmpdir(), "sdr-provider-survey-"));
   context.after(() => rmSync(directory, { recursive: true }));
   const path = join(directory, "provider.json");
@@ -95,6 +95,9 @@ test("accepts the Web-owned initial survey settings without exposing them upstre
       dwell_ms: 5,
       gain_db: 30,
     },
+    result_storage: { save_iq: true },
   }), { mode: 0o600 });
-  assert.equal(loadPrivateProviderFile(path).model, "example-model");
+  const loaded = loadPrivateProviderFile(path);
+  assert.equal(loaded.model, "example-model");
+  assert.equal(loaded.result_storage, undefined);
 });

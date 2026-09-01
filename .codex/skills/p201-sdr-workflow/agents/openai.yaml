@@ -1,0 +1,4 @@
+interface:
+  display_name: "P201 SDR Workflow"
+  short_description: "Safe P201 access, ARMv7 builds, deploy and RX tests"
+  default_prompt: "Use $p201-sdr-workflow to safely build, deploy, or validate the P201 receive-only SDR path."

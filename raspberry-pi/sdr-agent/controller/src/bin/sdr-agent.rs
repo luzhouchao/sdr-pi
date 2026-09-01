@@ -57,6 +57,7 @@ fn run() -> AppResult<()> {
         options.sdrd_address,
         Duration::from_millis(options.sdrd_timeout_ms),
         options.survey_gain_db,
+        options.sigmf_directory,
     )?;
 
     if let Some(instruction) = options.instruction {
@@ -131,7 +132,12 @@ fn handle_input(app: &mut ConsoleApp, input: &str) -> AppResult<bool> {
         ),
         _ if input.starts_with("/auto start ") => {
             match parse_auto_start(input.trim_start_matches("/auto start ").trim()) {
-                Ok(command) => app.start_auto(&command.mission, command.steps, command.seconds)?,
+                Ok(command) => app.start_auto(
+                    &command.mission,
+                    command.steps,
+                    command.seconds,
+                    command.iq_bytes,
+                )?,
                 Err(error) => println!("自动巡航参数无效：{error}"),
             }
         }
@@ -151,11 +157,13 @@ struct AutoStartCommand {
     mission: String,
     steps: u8,
     seconds: u64,
+    iq_bytes: Option<u64>,
 }
 
 fn parse_auto_start(arguments: &str) -> Result<AutoStartCommand, String> {
     let mut steps = None;
     let mut seconds = None;
+    let mut mib = None;
     let mut mission = Vec::new();
     let mut tokens = arguments.split_whitespace();
     while let Some(token) = tokens.next() {
@@ -187,6 +195,20 @@ fn parse_auto_start(arguments: &str) -> Result<AutoStartCommand, String> {
                     HARD_AUTO_DURATION_SECS,
                 )?);
             }
+            "--mib" => {
+                if mib.is_some() {
+                    return Err("--mib 只能填写一次".to_owned());
+                }
+                let value = tokens
+                    .next()
+                    .ok_or_else(|| "--mib 后缺少累计预算".to_owned())?;
+                mib = Some(parse_bounded_auto_value(
+                    value,
+                    "累计预算",
+                    1,
+                    u64::MAX / (1024 * 1024),
+                )?);
+            }
             unknown if unknown.starts_with("--") => {
                 return Err(format!("未知参数 {unknown}"));
             }
@@ -200,6 +222,7 @@ fn parse_auto_start(arguments: &str) -> Result<AutoStartCommand, String> {
         mission: mission.join(" "),
         steps: steps.unwrap_or(DEFAULT_AUTO_MAX_STEPS),
         seconds: seconds.unwrap_or(DEFAULT_AUTO_DURATION_SECS),
+        iq_bytes: mib.map(|value| value * 1024 * 1024),
     })
 }
 
@@ -235,6 +258,7 @@ struct ConsoleApp {
     sdrd_address: Option<SocketAddr>,
     sdrd_timeout: Duration,
     survey_gain_db: i16,
+    sigmf_directory: Option<PathBuf>,
     cruise: CruiseControl,
     auto_mission: Option<String>,
     auto_next_instruction: Option<String>,
@@ -287,6 +311,7 @@ impl ConsoleApp {
         sdrd_address: Option<SocketAddr>,
         sdrd_timeout: Duration,
         survey_gain_db: i16,
+        sigmf_directory: Option<PathBuf>,
     ) -> AppResult<Self> {
         let generation = template.session_generation;
         let next_request_id = template.request_id;
@@ -307,6 +332,7 @@ impl ConsoleApp {
             sdrd_address,
             sdrd_timeout,
             survey_gain_db,
+            sigmf_directory,
             cruise: CruiseControl::default(),
             auto_mission: None,
             auto_next_instruction: None,
@@ -334,6 +360,7 @@ impl ConsoleApp {
         request.session_generation = self.session_generation;
         request.instruction = instruction.clone();
         ControllerPolicy.validate_request(&request)?;
+        println!("模型输入> {}", serde_json::to_string(&request)?);
         self.record(format!("operator: {instruction}"));
         self.requests.insert(request_id, request.clone());
         self.agent_cycle_active = true;
@@ -522,7 +549,8 @@ impl ConsoleApp {
         let points = validated.centers_hz.len();
         let maximum_bytes = points as u64 * 4_096 * 4;
         let timeout = self.sdrd_timeout.max(Duration::from_millis(500));
-        let mut engine = SweepEngine::new(SdrdSoftwareSweepAdapter::new(address, timeout));
+        let adapter = self.software_sweep_adapter(address, timeout);
+        let mut engine = SweepEngine::new(adapter);
         let worker = thread::spawn(move || engine.run(&plan));
         self.active_sweep = Some(ActiveSweep {
             kind: ActiveSweepKind::Initial,
@@ -608,7 +636,8 @@ impl ConsoleApp {
             return Ok(());
         }
         let timeout = self.sdrd_timeout.max(Duration::from_millis(500));
-        let mut engine = SweepEngine::new(SdrdSoftwareSweepAdapter::new(address, timeout));
+        let adapter = self.software_sweep_adapter(address, timeout);
+        let mut engine = SweepEngine::new(adapter);
         let worker = thread::spawn(move || engine.run(&sweep));
         self.active_sweep = Some(ActiveSweep {
             kind: ActiveSweepKind::Planned {
@@ -698,7 +727,8 @@ impl ConsoleApp {
             return Ok(());
         }
         let timeout = self.sdrd_timeout.max(Duration::from_millis(500));
-        let mut engine = SweepEngine::new(SdrdSoftwareSweepAdapter::new(address, timeout));
+        let adapter = self.software_sweep_adapter(address, timeout);
+        let mut engine = SweepEngine::new(adapter);
         let worker = thread::spawn(move || engine.run(&sweep));
         self.active_sweep = Some(ActiveSweep {
             kind: ActiveSweepKind::Inspection {
@@ -723,6 +753,19 @@ impl ConsoleApp {
             maximum_bytes
         );
         Ok(())
+    }
+
+    fn software_sweep_adapter(
+        &self,
+        address: SocketAddr,
+        timeout: Duration,
+    ) -> SdrdSoftwareSweepAdapter {
+        let adapter = SdrdSoftwareSweepAdapter::new(address, timeout);
+        self.sigmf_directory
+            .as_ref()
+            .map_or(adapter.clone(), |directory| {
+                adapter.with_sigmf_directory(directory)
+            })
     }
 
     fn poll_sweep(&mut self) -> AppResult<()> {
@@ -755,6 +798,9 @@ impl ConsoleApp {
                 }
                 let health = self.template.observation.health.clone();
                 self.template.state = ControllerState::Idle;
+                if !matches!(&kind, ActiveSweepKind::Inspection { .. }) {
+                    self.emit_sweep_plot(&report, &kind)?;
+                }
                 match kind {
                     ActiveSweepKind::Initial => {
                         self.template.observation = report.planner_observation(0, health);
@@ -1189,6 +1235,7 @@ impl ConsoleApp {
         mission: &str,
         max_steps: u8,
         max_duration_secs: u64,
+        max_iq_bytes: Option<u64>,
     ) -> AppResult<()> {
         if mission.is_empty() || mission.len() > 700 || mission.chars().any(char::is_control) {
             return Err(invalid_input("自动巡航任务必须为 1–700 字节的单行文本").into());
@@ -1202,24 +1249,28 @@ impl ConsoleApp {
             println!("仍有计划等待人工决定；请先 /approve、/reject 或 /stop。");
             return Ok(());
         }
+        let max_iq_bytes = max_iq_bytes.unwrap_or_else(|| {
+            self.template
+                .limits
+                .max_iq_bytes
+                .saturating_mul(u64::from(max_steps))
+        });
+        if max_iq_bytes == 0 {
+            return Err(invalid_input("无法从步骤数推导有限 IQ 预算").into());
+        }
         self.renew(ControllerState::Idle, "自动巡航已建立新的安全代次")?;
         self.cruise
-            .start(
-                self.template.limits.max_iq_bytes,
-                max_steps,
-                max_duration_secs,
-                Instant::now(),
-            )
+            .start(max_iq_bytes, max_steps, max_duration_secs, Instant::now())
             .map_err(invalid_input)?;
         self.auto_mission = Some(mission.to_owned());
         self.auto_next_instruction = Some(format!(
             "自动巡航任务：{mission}\n本巡航最多 {max_steps} 个已执行步骤、{max_duration_secs} 秒、累计 {} 字节 IQ；SDR 不可用或上游未给出下一步各自连续重试 5 次，每次间隔 10 秒。只能提出 Rust Controller 能验证的接收动作，安全边界不变。请给出第一步。",
-            self.template.limits.max_iq_bytes
+            max_iq_bytes
         ));
         self.next_auto_attempt = Instant::now();
         println!(
             "已启动受限自动巡航：最多 {max_steps} 步、{max_duration_secs} 秒、{} 字节；两类失败分别最多重试 5 次、间隔 10 秒。输入 /stop 可立即停止。",
-            self.template.limits.max_iq_bytes
+            max_iq_bytes
         );
         self.print_cruise_status();
         Ok(())
@@ -1341,12 +1392,12 @@ impl ConsoleApp {
         }
         if snapshot.active {
             println!(
-                "巡航状态：{}；已完成 {}/{} 步，已用 {}/{} 字节，SDR 重试 {}/{}，上游重试 {}/{}。",
+                "巡航状态：{}；已完成 {}/{} 步，累计 {:.1}/{:.1} MiB，SDR 重试 {}/{}，上游重试 {}/{}。",
                 snapshot.phase_label,
                 snapshot.completed_steps,
                 snapshot.max_steps,
-                snapshot.used_iq_bytes,
-                snapshot.max_iq_bytes,
+                snapshot.used_iq_bytes as f64 / (1024.0 * 1024.0),
+                snapshot.max_iq_bytes as f64 / (1024.0 * 1024.0),
                 snapshot.sdr_retry_count,
                 snapshot.retry_limit,
                 snapshot.planner_retry_count,
@@ -1417,6 +1468,28 @@ impl ConsoleApp {
             return Err(invalid_input("stale session event").into());
         }
         match frame.get("event").and_then(Value::as_str).unwrap_or("") {
+            "thinking_start" | "thinking_delta" | "thinking_end" => {
+                let data = frame
+                    .get("data")
+                    .cloned()
+                    .ok_or_else(|| invalid_input("thinking event is missing data"))?;
+                let request_id = data
+                    .get("request_id")
+                    .and_then(Value::as_u64)
+                    .ok_or_else(|| invalid_input("thinking event is missing request_id"))?;
+                if !self.requests.contains_key(&request_id) {
+                    return Err(invalid_input("thinking event refers to an unknown request").into());
+                }
+                if data.get("delta").is_some_and(|delta| !delta.is_string()) {
+                    return Err(invalid_input("thinking delta must be text").into());
+                }
+                let label = match frame.get("event").and_then(Value::as_str) {
+                    Some("thinking_start") => "ThinkingStart",
+                    Some("thinking_delta") => "ThinkingDelta",
+                    _ => "ThinkingEnd",
+                };
+                println!("{label}> {}", serde_json::to_string(&data)?);
+            }
             "assistant_message" => {
                 if let Some(text) = frame.pointer("/data/text").and_then(Value::as_str) {
                     if !text.trim().is_empty() {
@@ -1437,9 +1510,11 @@ impl ConsoleApp {
                     .get(&response.request_id)
                     .ok_or_else(|| invalid_input("plan refers to an unknown request"))?;
                 let plan = ControllerPolicy.validate_response(request, response)?;
+                let decision_basis = describe_decision_basis(&plan, request);
                 self.plan_seen_in_cycle = true;
                 self.cruise.record_planner_action();
                 println!("已验证计划：{}", describe_plan(&plan));
+                println!("决策依据> {decision_basis}");
                 let agent_reply = describe_agent_reply(&plan, self.cruise.mode());
                 println!("Agent> {agent_reply}");
                 self.record(format!("agent: {agent_reply}"));
@@ -1551,6 +1626,34 @@ impl ConsoleApp {
         Ok(())
     }
 
+    fn emit_sweep_plot(&self, report: &SweepReport, kind: &ActiveSweepKind) -> AppResult<()> {
+        let kind = match kind {
+            ActiveSweepKind::Initial => "initial",
+            ActiveSweepKind::Planned { .. } => "planned",
+            ActiveSweepKind::Inspection { .. } => return Ok(()),
+        };
+        let points: Vec<Value> = report
+            .points
+            .iter()
+            .map(|point| json!([point.actual_center_hz, point.band_power_dbfs]))
+            .collect();
+        println!(
+            "SweepPlot> {}",
+            serde_json::to_string(&json!({
+                "schema_version": 1,
+                "sweep_id": report.sweep_id,
+                "kind": kind,
+                "elapsed_ms": report.elapsed_ms,
+                "gain_db": self.survey_gain_db,
+                "noise_floor_dbfs": report.noise_floor_dbfs,
+                "points": points,
+                "candidates": report.candidates,
+                "dataset": report.dataset,
+            }))?
+        );
+        Ok(())
+    }
+
     fn print_history(&self) {
         if self.history.is_empty() {
             println!("本次终端没有历史记录。")
@@ -1654,6 +1757,7 @@ struct Options {
     sdrd_timeout_ms: u64,
     survey_gain_db: i16,
     initial_survey: Option<InitialSurveyOptions>,
+    sigmf_directory: Option<PathBuf>,
 }
 
 impl Options {
@@ -1669,6 +1773,7 @@ impl Options {
         let mut initial_survey_step_hz = None;
         let mut initial_survey_dwell_ms = None;
         let mut initial_survey_gain_db = None;
+        let mut sigmf_directory = None;
         let mut args = env::args().skip(1);
         while let Some(arg) = args.next() {
             match arg.as_str() {
@@ -1699,6 +1804,12 @@ impl Options {
                 }
                 "--survey-gain-db" => {
                     survey_gain_db = parse_option_u64(&mut args, &arg)?;
+                }
+                "--sigmf-directory" => {
+                    sigmf_directory =
+                        Some(PathBuf::from(args.next().ok_or_else(|| {
+                            invalid_input("missing --sigmf-directory value")
+                        })?));
                 }
                 "--initial-survey-start-hz" => {
                     initial_survey_start_hz = Some(parse_option_u64(&mut args, &arg)?);
@@ -1789,6 +1900,7 @@ impl Options {
             sdrd_timeout_ms,
             survey_gain_db,
             initial_survey,
+            sigmf_directory,
         })
     }
 }
@@ -1816,8 +1928,9 @@ fn print_help() {
     println!(
         "查看：/status 当前状态，/history 本次历史\n\
          人工模式：/mode manual，/approve 批准当前步骤，/reject 拒绝当前步骤\n\
-         自动巡航：/auto start [--steps 1–128] [--seconds 10–1800] <任务>\n\
-         默认 8 步、120 秒；两类失败各重试 5 次，每次间隔 10 秒\n\
+         自动巡航：/auto start [--steps 1–128] [--seconds 10–1800] [--mib 正整数] <任务>\n\
+         不填 --mib 时，按步数 × 单动作 IQ 上限自动推导有限预算。\n\
+         默认 8 步、120 秒、累计 64 MiB；两类失败各重试 5 次，每次间隔 10 秒\n\
          会话：/pause 暂停，/resume 继续，/stop 立即停止，/quit 退出"
     );
 }
@@ -1881,6 +1994,78 @@ fn describe_plan(plan: &ValidatedPlan) -> String {
     }
 }
 
+fn describe_decision_basis(plan: &ValidatedPlan, request: &PlanRequest) -> String {
+    let limits = &request.limits;
+    let correlation = format!(
+        "request={}、generation={} 与当前上下文一致；状态={:?}",
+        plan.request_id, plan.session_generation, request.state
+    );
+    let action = match &plan.action {
+        ProposedAction::Hold { .. } => "保持不触发硬件，原因文本已通过长度和可打印字符校验".to_owned(),
+        ProposedAction::StopSession { .. } => {
+            "停止会话不触发新的硬件动作，原因文本已通过校验".to_owned()
+        }
+        ProposedAction::SurveyBand {
+            start_hz,
+            stop_hz,
+            step_hz,
+            dwell_ms,
+        } => {
+            let points = (stop_hz - start_hz).div_ceil(*step_hz).saturating_add(1);
+            let bytes = points.saturating_mul(4_096 * 4);
+            format!(
+                "扫频范围位于 {}–{} Hz，跨度 {}≤{} Hz，点数 {}≤768，停留 {}≤{} ms，预计处理 {}≤{} 字节；SDR 在线且允许调谐",
+                limits.min_freq_hz,
+                limits.max_freq_hz,
+                stop_hz - start_hz,
+                limits.max_span_hz,
+                points,
+                dwell_ms,
+                limits.max_dwell_ms,
+                bytes,
+                limits.max_iq_bytes
+            )
+        }
+        ProposedAction::InspectCandidate {
+            candidate_id,
+            center_hz,
+            bandwidth_hz,
+            dwell_ms,
+        } => format!(
+            "候选 {candidate_id} 存在；中心 {} Hz 位于安全频段，带宽 {}≤{} Hz，停留 {}≤1000 ms；SDR 在线且允许调谐",
+            center_hz, bandwidth_hz, limits.max_bandwidth_hz, dwell_ms
+        ),
+        ProposedAction::CaptureBoundedIq {
+            candidate_id,
+            center_hz,
+            rf_bandwidth_hz,
+            samples,
+            ..
+        } => {
+            let bytes = samples.saturating_mul(4);
+            format!(
+                "候选 {candidate_id} 存在；中心 {} Hz 与候选匹配，带宽 {}≤{} Hz，样本 {}≤{}，字节 {}≤{}；{}",
+                center_hz,
+                rf_bandwidth_hz,
+                limits.max_bandwidth_hz,
+                samples,
+                limits.max_iq_samples,
+                bytes,
+                limits.max_iq_bytes,
+                if plan.approval_required {
+                    "超过自动批准阈值，必须人工批准"
+                } else {
+                    "未超过自动批准阈值"
+                }
+            )
+        }
+        ProposedAction::RunLocalRecognition { candidate_id } => format!(
+            "候选 {candidate_id} 存在，且本地识别能力由运行时探测为可用"
+        ),
+    };
+    format!("{correlation}；{action}")
+}
+
 fn describe_agent_reply(plan: &ValidatedPlan, mode: InteractionMode) -> String {
     if let ProposedAction::Hold { reason } = &plan.action {
         return reason.clone();
@@ -1930,14 +2115,16 @@ mod tests {
                 mission: "在允许频段内检查活动".to_owned(),
                 steps: DEFAULT_AUTO_MAX_STEPS,
                 seconds: DEFAULT_AUTO_DURATION_SECS,
+                iq_bytes: None,
             }
         );
         assert_eq!(
-            parse_auto_start("--steps 128 --seconds 1800 完整巡航").unwrap(),
+            parse_auto_start("--steps 128 --seconds 1800 --mib 32 完整巡航").unwrap(),
             AutoStartCommand {
                 mission: "完整巡航".to_owned(),
                 steps: 128,
                 seconds: 1_800,
+                iq_bytes: Some(32 * 1024 * 1024),
             }
         );
     }
@@ -1951,9 +2138,13 @@ mod tests {
             "--seconds 1801 任务",
             "--steps 8 --steps 9 任务",
             "--seconds 120 --seconds 121 任务",
+            "--mib 0 任务",
+            "--mib 17592186044416 任务",
+            "--mib 16 --mib 32 任务",
             "--unknown 1 任务",
             "--steps",
             "--seconds",
+            "--mib",
         ] {
             assert!(parse_auto_start(invalid).is_err(), "accepted {invalid}");
         }

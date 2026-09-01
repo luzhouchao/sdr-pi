@@ -40,16 +40,25 @@ export function loadPrivateProviderFile(path) {
     value,
     ["schema_version", "api", "base_url", "provider", "model", "api_key"],
     "provider config",
-    ["context_window", "compression_threshold_percent", "initial_survey"],
+    ["context_window", "compression_threshold_percent", "initial_survey", "result_storage"],
   );
   if (value.schema_version !== PROVIDER_CONFIG_SCHEMA_VERSION) {
     throw new Error("unsupported provider config schema version");
   }
   if (value.initial_survey !== undefined) validateInitialSurvey(value.initial_survey);
+  if (value.result_storage !== undefined) validateResultStorage(value.result_storage);
   return validateProviderSelection({
     ...value,
     api_key_source: "private provider config",
   });
+}
+
+function validateResultStorage(value) {
+  requirePlainObject(value, "result_storage");
+  requireExactKeys(value, ["save_iq"], "result_storage");
+  if (typeof value.save_iq !== "boolean") {
+    throw new Error("result_storage save_iq must be boolean");
+  }
 }
 
 function validateInitialSurvey(value) {

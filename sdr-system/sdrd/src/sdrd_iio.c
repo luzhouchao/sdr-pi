@@ -506,7 +506,8 @@ static int adapter_capture_iq(
   }
   if (statvfs(feature_path, &filesystem) != 0 ||
       (uint64_t)filesystem.f_bavail * (uint64_t)filesystem.f_frsize < request->max_bytes) {
-    return -ENOSPC;
+    rc = -ENOSPC;
+    goto failed_directory;
   }
   ++adapter->sequence;
   memset(result, 0, sizeof(*result));
@@ -518,15 +519,18 @@ static int adapter_capture_iq(
           request->generation,
           adapter->sequence);
   if (written < 0 || (size_t)written >= sizeof(result->relative_path)) {
-    return -ENAMETOOLONG;
+    rc = -ENAMETOOLONG;
+    goto failed_directory;
   }
   written = snprintf(full_path, sizeof(full_path), "%s/%s", adapter->data_root, result->relative_path);
   if (written < 0 || (size_t)written >= sizeof(full_path)) {
-    return -ENAMETOOLONG;
+    rc = -ENAMETOOLONG;
+    goto failed_directory;
   }
   fd = open(full_path, O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, 0600);
   if (fd < 0) {
-    return -errno;
+    rc = -errno;
+    goto failed_directory;
   }
   if (adapter->buffer == NULL) {
     adapter->buffer = adapter->api.device_create_buffer(adapter->rx, adapter->buffer_samples, false);
@@ -593,6 +597,8 @@ failed:
     (void)close(fd);
   }
   (void)unlink(full_path);
+failed_directory:
+  (void)rmdir(feature_path);
   return rc;
 }
 
