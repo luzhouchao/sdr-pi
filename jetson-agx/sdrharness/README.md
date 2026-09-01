@@ -92,9 +92,11 @@ declare a dependency on `tailscaled.service`. The all-interface LAN bind was
 explicitly requested after testing both `192.168.50.75` and `192.168.1.20`.
 This is plain HTTP: submit real provider credentials only from a trusted LAN.
 
-The 2026-09-01 AGX loopback validation passed, but the direct SDRD observation
-was refused because port 43110 was not listening. Do not work around that by
-starting a second collector or changing radio state. Evidence is in
+The 2026-09-01 AGX loopback validation passed. The persistent receive-only
+`sdrd` was subsequently restored under explicit authorization after confirming
+that neither the process nor TCP port 43110 was already active; the AGX
+read-only Controller observation then passed. This does not authorize starting
+a collector or changing radio state. Evidence is in
 [`../../docs/AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](../../docs/AGX_FRAMEWORK_VALIDATION_2026-09-01.md).
 
 Existing AGX Qwen remains untouched and is no longer the configured default.

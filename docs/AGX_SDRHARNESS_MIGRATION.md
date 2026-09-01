@@ -14,8 +14,9 @@ separate later feature. The earlier ultra-light ONNX package is not part of the
 AGX migration bundle and must not be used to open `recognizer_available`.
 
 The real AGX clone was natively built and loopback-validated on 2026-09-01.
-Direct network reachability to the SDR was healthy, but TCP port 43110 refused
-the read-only Controller observation because `sdrd` was not listening. See
+After an explicitly authorized recovery of the persistent receive-only `sdrd`,
+the AGX also completed a healthy read-only Controller observation on TCP 43110.
+See
 [`AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](AGX_FRAMEWORK_VALIDATION_2026-09-01.md).
 
 ## Ownership and seams
@@ -72,15 +73,15 @@ acquisition cutover, retain these gates:
    disk baseline;
 2. recheck Spectrum Agent, predictor, Qwen and collector status without restarting;
 3. recheck interfaces and routes, especially AGX `192.168.1.20`;
-4. make `sdrd` available through a separately controlled SDR-side operation,
-   then repeat TCP/read-only health at `192.168.1.10:43110`;
+4. recheck the persistent `sdrd` and TCP/read-only health at
+   `192.168.1.10:43110` after any P201 reboot;
 5. prove no existing collector owns the SDR before starting Harness acquisition;
 6. preserve the verified native Rust 1.98, Node 22, Git and C/C++20 toolchain;
 7. rerun the native build for the deployment commit and retain its SHA-256 manifest;
 8. install Planner and Web only after review; the user-authorized AGX template
    binds all IPv4 interfaces for changing trusted LANs and must not be exposed
    through public port forwarding;
-9. validate one read-only Controller observation;
+9. retain the completed read-only Controller observation evidence;
 10. plan the acquisition cutover and Pi rollback separately.
 
 Do not start a second collection simply because the clone and build succeed.

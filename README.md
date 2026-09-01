@@ -34,9 +34,9 @@ SDR 继续运行 `sdrd`，保留独占所有权、限幅、停止和射频状态
 - Pi 侧 Rust Controller、Planner Worker、终端和 Web Console 已实机验证，作为可回滚基线。
 - SDR 侧受控 `sdrd` 已验证只接收扫频、限幅 IQ、取消和状态恢复。
 - AGX 迁移目录、配置、systemd 模板和本机构建入口已纳入 Git。
-- AGX 已在 `/home/jetson/sdrharness` 完成提交 `22cc751` 的 aarch64
-  原生构建、测试和 loopback 运行验证；直连 SDR 网络正常，但
-  `192.168.1.10:43110` 当时未监听，只读 SDRD 观察仍待完成。
+- AGX 已在 `/home/jetson/sdrharness` 完成 aarch64 原生构建、测试和
+  loopback 运行验证；P201 的持久 `sdrd` 经重复实例门禁后恢复，AGX
+  对 `192.168.1.10:43110` 的只读 SDRD 观察已通过。
 - AGX Web 可将 OpenAI-compatible Completions/Responses 上游写入
   不被 Git 跟踪的 `0600` 私密配置；按用户要求监听所有 IPv4
   接口，不得做公网端口映射。

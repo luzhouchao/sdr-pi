@@ -19,9 +19,10 @@ state.
       baseline during migration.
 - [x] Clone and build the repository on the real AGX and record its runtime,
       toolchain, artifact-hash and loopback-service baseline.
-- [ ] Verify one read-only SDRD observation from the AGX; direct network
-      reachability passed on 2026-09-01, but `192.168.1.10:43110` refused the
-      connection because `sdrd` was not listening.
+- [x] Verify one read-only SDRD observation from the AGX; after an explicitly
+      authorized persistent `sdrd` recovery with duplicate-instance gates, the
+      Controller reported online and healthy on 2026-09-01 without acquisition
+      or radio/FPGA writes.
 - [ ] Cut SDR acquisition ownership over to AGX only after proving the existing
       Spectrum collector is stopped or otherwise cannot contend for the radio.
 
@@ -325,12 +326,12 @@ Evidence:
 
 ## Current next milestone
 
-Make the existing controlled `sdrd` endpoint available at
-`192.168.1.10:43110` through a separately authorized SDR-side operation, then
-repeat the AGX Controller's read-only observation without starting a second
-collector. The AGX clone, native build, runtime baseline and Planner/Web
-runtime gate are complete; an authenticated third-party Planner request also
-remains pending until the user enters a subscription API key through Web.
-CUDA/Mamba recognition remains explicitly deferred until the SDRD observation
-gate passes. FPGA-image work remains independently gated by hardware identity,
-sequence/quality fields and rollback evidence.
+Plan the SDR acquisition-ownership cutover only after proving the existing
+Spectrum collector is stopped or otherwise cannot contend for the radio, and
+preserve the Raspberry Pi rollback path. The AGX clone, native build, runtime
+baseline, Planner/Web runtime gate and read-only SDRD observation are complete;
+an authenticated third-party Planner request remains pending until the user
+enters a subscription API key through Web. CUDA/Mamba recognition remains
+explicitly deferred by the current scope until separately authorized after the
+Agent framework is stable. FPGA-image work remains independently gated by
+hardware identity, sequence/quality fields and rollback evidence.

@@ -127,10 +127,34 @@ The read-only Controller observation then failed closed:
 controller_error=connect: Connection refused (os error 111)
 ```
 
-This proves the direct IP path but not SDRD health: port 43110 was not
-listening. No attempt was made to start `sdrd`, start another collector, claim
-radio ownership, change an IIO/radio value, capture IQ, or stop an existing
-process. The checklist item for a live read-only SDRD observation remains open.
+This proved the direct IP path but not SDRD health at that point: port 43110 was
+not listening. No attempt was made during the initial baseline to start `sdrd`,
+start another collector, claim radio ownership, change an IIO/radio value,
+capture IQ, or stop an existing process.
+
+### Authorized persistent SDRD recovery
+
+At `2026-09-01T13:37:18+08:00`, the user explicitly authorized recovery of the
+persistent receive-only service. Before startup, the AGX verified that TCP
+43110 was not reachable and had no existing connection. The remote guarded
+operation independently rejected an existing `sdrd` PID or IPv4 listener,
+verified the executable, configuration and init script under
+`/sd/sdr-agent/current/`, and only then installed the init-script copy and
+started the service. Its status reported `sdrd is running`.
+
+The AGX TCP probe then succeeded, followed by the Controller's bounded
+read-only `HELLO`, `CAPABILITIES`, `HEALTH`, `QUIT` sequence:
+
+```json
+{"online":true,"healthy":true,"health_flags":0,"iio_visible":true,"can_retune":true,"can_capture_iq":true,"fpga_available":false,"fpga_backend":"disabled","fpga_summary_version":0,"fpga_abi_version":0,"fpga_capability":0}
+```
+
+No acquisition, retune, IIO write, FPGA-register access, `BOOT.bin`/uramdisk
+change, or second `sdrd` instance was attempted. The temporary password-helper
+directory was deleted and its absence verified; the password content was not
+printed, logged, copied into the repository or committed. Because `sdrd` does
+not automatically survive a P201 reboot, repeat the same duplicate-instance
+and persistent-file gates before any future recovery.
 
 ## Third-party Planner and LAN Web follow-up
 
@@ -180,7 +204,7 @@ evidence but local Qwen is no longer the default upstream. An authenticated
 third-party Planner request remains a deployment check after the user enters a
 private subscription API key through Web.
 
-Do not enable production units or cut SDR ownership over to AGX until the
-controlled SDR-side `sdrd` listener is deliberately restored, the same
-read-only observation succeeds, unit paths and private configuration are
-reviewed, and the current collector ownership state is rechecked.
+The controlled SDR-side `sdrd` listener and read-only observation gates are now
+complete. Do not cut SDR acquisition ownership over to AGX until unit paths and
+private configuration are reviewed and the current collector ownership state
+is rechecked and proven unable to contend for the radio.
