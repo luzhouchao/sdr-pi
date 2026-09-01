@@ -40,6 +40,12 @@ const MAX_CONTEXT_WINDOW: u64 = 1_000_000;
 const DEFAULT_COMPRESSION_THRESHOLD_PERCENT: u8 = 90;
 const MIN_COMPRESSION_THRESHOLD_PERCENT: u8 = 50;
 const MAX_COMPRESSION_THRESHOLD_PERCENT: u8 = 95;
+const DEFAULT_SURVEY_START_HZ: u64 = 70_000_000;
+const DEFAULT_SURVEY_STOP_HZ: u64 = 6_000_000_000;
+const DEFAULT_SURVEY_STEP_HZ: u64 = 8_000_000;
+const DEFAULT_SURVEY_DWELL_MS: u64 = 5;
+const DEFAULT_SURVEY_GAIN_DB: i16 = 20;
+const MAX_SURVEY_POINTS: u64 = 768;
 
 #[derive(Clone)]
 struct Config {
@@ -80,10 +86,16 @@ struct Session {
     created_at_ms: u64,
     last_used_at_ms: u64,
     generation: u64,
+    #[serde(default)]
+    compaction_count: u64,
     status: String,
     compacted_summary: String,
     summary_pending: bool,
     events_since_compaction: usize,
+    #[serde(default)]
+    initial_survey: Option<InitialSurveyConfig>,
+    #[serde(default = "default_initial_survey_status")]
+    initial_survey_status: String,
     events: VecDeque<TerminalEvent>,
 }
 
@@ -136,6 +148,8 @@ struct ProviderConfigFile {
     context_window: u64,
     #[serde(default = "default_compression_threshold_percent")]
     compression_threshold_percent: u8,
+    #[serde(default = "default_initial_survey")]
+    initial_survey: InitialSurveyConfig,
 }
 
 #[derive(Deserialize)]
@@ -148,6 +162,7 @@ struct ProviderConfigRequest {
     api_key: String,
     context_window: u64,
     compression_threshold_percent: u8,
+    initial_survey: InitialSurveyConfig,
 }
 
 #[derive(Debug, Serialize)]
@@ -159,6 +174,19 @@ struct ProviderConfigView {
     model: String,
     context_window: u64,
     compression_threshold_percent: u8,
+    initial_survey: InitialSurveyConfig,
+}
+
+#[derive(Debug, Clone, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+struct InitialSurveyConfig {
+    mode: String,
+    start_hz: u64,
+    stop_hz: u64,
+    step_hz: u64,
+    dwell_ms: u64,
+    #[serde(default = "default_survey_gain_db")]
+    gain_db: i16,
 }
 
 #[derive(Deserialize)]
@@ -314,15 +342,7 @@ async fn save_provider_config(
         reuse_saved_provider_key(&mut request, saved.as_ref())?;
     }
     let config = validate_provider_request(request)?;
-    let inner = state.inner.lock().await;
-    if inner.runtime.is_some() {
-        return Err(ApiError(
-            StatusCode::CONFLICT,
-            "请先停止当前对话，再修改上游模型".into(),
-        ));
-    }
     persist_provider_config(&state.config.provider_config_path, &config)?;
-    drop(inner);
     Ok(Json(provider_config_view(&config)))
 }
 
@@ -356,6 +376,7 @@ async fn delete_provider_config(
         model: String::new(),
         context_window: DEFAULT_CONTEXT_WINDOW,
         compression_threshold_percent: DEFAULT_COMPRESSION_THRESHOLD_PERCENT,
+        initial_survey: default_initial_survey(),
     }))
 }
 
@@ -415,6 +436,14 @@ async fn create_session(
     let now = now_ms();
     let id = format!("session-{now}");
     let title = bounded_title(request.title.as_deref(), now);
+    let initial_survey = load_provider_config_file(&state.config.provider_config_path)?
+        .map(|config| config.initial_survey)
+        .unwrap_or_else(default_initial_survey);
+    let initial_survey_status = if initial_survey.mode == "disabled" {
+        "skipped"
+    } else {
+        "pending"
+    };
     let mut inner = state.inner.lock().await;
 
     if inner.persisted.sessions.len() >= MAX_SESSIONS {
@@ -432,10 +461,13 @@ async fn create_session(
         created_at_ms: now,
         last_used_at_ms: now,
         generation: 1,
+        compaction_count: 0,
         status: "starting".into(),
         compacted_summary: String::new(),
         summary_pending: false,
         events_since_compaction: 0,
+        initial_survey: Some(initial_survey),
+        initial_survey_status: initial_survey_status.into(),
         events: VecDeque::new(),
     });
     inner.persisted.active_session_id = Some(id.clone());
@@ -507,7 +539,10 @@ async fn send_command(
     let should_compact = find_session_mut(&mut inner.persisted, &id)
         .is_some_and(|session| session.events_since_compaction >= COMPACT_AT_EVENTS);
     if should_compact {
-        compact_session(find_session_mut(&mut inner.persisted, &id).expect("session exists"));
+        compact_session(
+            find_session_mut(&mut inner.persisted, &id).expect("session exists"),
+            true,
+        );
         if let Some(runtime) = inner.runtime.take() {
             let _ = runtime.tx.try_send(ProcessCommand::Shutdown);
         }
@@ -558,7 +593,7 @@ async fn send_command(
 fn deactivate_current(inner: &mut Inner) {
     if let Some(active_id) = inner.persisted.active_session_id.clone() {
         if let Some(session) = find_session_mut(&mut inner.persisted, &active_id) {
-            compact_session(session);
+            compact_session(session, false);
             session.status = "stored".into();
         }
     }
@@ -576,6 +611,30 @@ fn spawn_agent_process(state: AppState, session_id: String) -> RuntimeHandle {
     RuntimeHandle { session_id, tx }
 }
 
+async fn claim_initial_survey(state: &AppState, session_id: &str) -> Option<InitialSurveyConfig> {
+    let mut inner = state.inner.lock().await;
+    let survey = find_session_mut(&mut inner.persisted, session_id).and_then(|session| {
+        if session.initial_survey_status != "pending" {
+            return None;
+        }
+        let survey = session.initial_survey.clone()?;
+        if survey.mode == "disabled" {
+            session.initial_survey_status = "skipped".into();
+            return None;
+        }
+        session.initial_survey_status = "running".into();
+        Some(survey)
+    });
+    if survey.is_some() {
+        let _ = persist_locked(&state.config, &inner.persisted);
+    }
+    drop(inner);
+    if survey.is_some() {
+        publish_state(state);
+    }
+    survey
+}
+
 async fn process_actor(
     state: AppState,
     session_id: String,
@@ -585,13 +644,29 @@ async fn process_actor(
     // Holding this gate for the complete child lifetime makes a replacement
     // wait until the previous terminal has stopped and released session.sock.
     let _process_guard = state.process_gate.lock().await;
-    let mut child = match Command::new(&state.config.agent_binary)
+    let initial_survey = claim_initial_survey(&state, &session_id).await;
+    let mut command = Command::new(&state.config.agent_binary);
+    command
         .arg("--socket")
         .arg(&state.config.session_socket)
         .arg("--request")
         .arg(&state.config.request_path)
         .arg("--sdrd")
-        .arg(&state.config.sdrd_address)
+        .arg(&state.config.sdrd_address);
+    if let Some(survey) = initial_survey {
+        command
+            .arg("--initial-survey-start-hz")
+            .arg(survey.start_hz.to_string())
+            .arg("--initial-survey-stop-hz")
+            .arg(survey.stop_hz.to_string())
+            .arg("--initial-survey-step-hz")
+            .arg(survey.step_hz.to_string())
+            .arg("--initial-survey-dwell-ms")
+            .arg(survey.dwell_ms.to_string())
+            .arg("--initial-survey-gain-db")
+            .arg(survey.gain_db.to_string());
+    }
+    let mut child = match command
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -670,6 +745,9 @@ async fn record_runtime_exit(state: &AppState, session_id: &str, text: String) {
     if let Some(session) = find_session_mut(&mut inner.persisted, session_id) {
         if is_current {
             session.status = "exited".into();
+        }
+        if session.initial_survey_status == "running" {
+            session.initial_survey_status = "failed".into();
         }
         if let Some(event) = push_event(session, "system", text) {
             let _ = state.updates.send(UiUpdate {
@@ -769,6 +847,7 @@ async fn record_process_output(state: &AppState, session_id: &str, kind: &str, t
                 "connected".into()
             };
         }
+        update_initial_survey_status(session, &text);
         if let Some(event) = push_event(session, kind, text) {
             let _ = state.updates.send(UiUpdate {
                 update_type: "terminal".into(),
@@ -777,6 +856,22 @@ async fn record_process_output(state: &AppState, session_id: &str, kind: &str, t
             });
         }
         let _ = persist_locked(&state.config, &inner.persisted);
+    }
+}
+
+fn update_initial_survey_status(session: &mut Session, text: &str) {
+    if text.starts_with("首次扫频完成：") {
+        session.initial_survey_status = "complete".into();
+    } else if text.starts_with("首次扫频失败：")
+        || text.starts_with("首次扫频已取消")
+        || text.starts_with("取消到达前扫频已完成：")
+    {
+        session.initial_survey_status = if text.starts_with("取消到达前扫频已完成：") {
+            "complete"
+        } else {
+            "failed"
+        }
+        .into();
     }
 }
 
@@ -801,7 +896,7 @@ fn push_event(session: &mut Session, kind: &str, text: String) -> Option<Termina
     Some(event)
 }
 
-fn compact_session(session: &mut Session) {
+fn compact_session(session: &mut Session, automatic: bool) {
     if session.events.is_empty() {
         return;
     }
@@ -823,6 +918,9 @@ fn compact_session(session: &mut Session) {
     session.events_since_compaction = 0;
     session.summary_pending = !session.compacted_summary.is_empty();
     session.generation = session.generation.saturating_add(1);
+    if automatic {
+        session.compaction_count = session.compaction_count.saturating_add(1);
+    }
 }
 
 fn select_evict_id(state: &PersistedState) -> Option<String> {
@@ -876,6 +974,7 @@ fn validate_provider_request(request: ProviderConfigRequest) -> ApiResult<Provid
         request.context_window,
         request.compression_threshold_percent,
     )?;
+    validate_initial_survey(&request.initial_survey)?;
     Ok(ProviderConfigFile {
         schema_version: 1,
         api: request.api,
@@ -885,6 +984,7 @@ fn validate_provider_request(request: ProviderConfigRequest) -> ApiResult<Provid
         api_key,
         context_window: request.context_window,
         compression_threshold_percent: request.compression_threshold_percent,
+        initial_survey: request.initial_survey,
     })
 }
 
@@ -915,6 +1015,70 @@ const fn default_context_window() -> u64 {
 
 const fn default_compression_threshold_percent() -> u8 {
     DEFAULT_COMPRESSION_THRESHOLD_PERCENT
+}
+
+fn default_initial_survey() -> InitialSurveyConfig {
+    InitialSurveyConfig {
+        mode: "full_band".into(),
+        start_hz: DEFAULT_SURVEY_START_HZ,
+        stop_hz: DEFAULT_SURVEY_STOP_HZ,
+        step_hz: DEFAULT_SURVEY_STEP_HZ,
+        dwell_ms: DEFAULT_SURVEY_DWELL_MS,
+        gain_db: DEFAULT_SURVEY_GAIN_DB,
+    }
+}
+
+const fn default_survey_gain_db() -> i16 {
+    DEFAULT_SURVEY_GAIN_DB
+}
+
+fn default_initial_survey_status() -> String {
+    "skipped".into()
+}
+
+fn validate_initial_survey(survey: &InitialSurveyConfig) -> ApiResult<()> {
+    if !matches!(
+        survey.mode.as_str(),
+        "full_band" | "custom_band" | "disabled"
+    ) {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            "首次扫描模式必须为全频段、手动频段或关闭".into(),
+        ));
+    }
+    if survey.mode == "disabled" {
+        return Ok(());
+    }
+    if !(DEFAULT_SURVEY_START_HZ..=DEFAULT_SURVEY_STOP_HZ).contains(&survey.start_hz)
+        || !(DEFAULT_SURVEY_START_HZ..=DEFAULT_SURVEY_STOP_HZ).contains(&survey.stop_hz)
+        || survey.start_hz > survey.stop_hz
+        || survey.step_hz == 0
+        || survey.step_hz > DEFAULT_SURVEY_STEP_HZ
+        || survey.dwell_ms > 1_000
+        || !(0..=60).contains(&survey.gain_db)
+    {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            "首次扫描必须位于 70 MHz–6 GHz，起点不高于终点，步进为 1–8 MHz，每点停留不超过 1000 ms，固定增益为 0–60 dB"
+                .into(),
+        ));
+    }
+    let span = survey.stop_hz.saturating_sub(survey.start_hz);
+    let points = span
+        .checked_add(survey.step_hz - 1)
+        .and_then(|value| value.checked_div(survey.step_hz))
+        .and_then(|value| value.checked_add(1))
+        .ok_or_else(|| ApiError(StatusCode::BAD_REQUEST, "首次扫描点数溢出".into()))?;
+    let duration_ms = points
+        .checked_mul(survey.dwell_ms.saturating_add(250))
+        .ok_or_else(|| ApiError(StatusCode::BAD_REQUEST, "首次扫描时长溢出".into()))?;
+    if points > MAX_SURVEY_POINTS || duration_ms > 300_000 {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            "首次扫描不得超过 768 个频点或 300 秒保守时长".into(),
+        ));
+    }
+    Ok(())
 }
 
 fn validate_context_settings(context_window: u64, threshold_percent: u8) -> ApiResult<()> {
@@ -1003,6 +1167,7 @@ fn provider_config_view(config: &ProviderConfigFile) -> ProviderConfigView {
         model: config.model.clone(),
         context_window: config.context_window,
         compression_threshold_percent: config.compression_threshold_percent,
+        initial_survey: config.initial_survey.clone(),
     }
 }
 
@@ -1016,6 +1181,7 @@ fn load_provider_config_view(path: &FsPath) -> ApiResult<ProviderConfigView> {
             model: String::new(),
             context_window: DEFAULT_CONTEXT_WINDOW,
             compression_threshold_percent: DEFAULT_COMPRESSION_THRESHOLD_PERCENT,
+            initial_survey: default_initial_survey(),
         });
     };
     Ok(provider_config_view(&config))
@@ -1047,6 +1213,8 @@ fn load_provider_config_file(path: &FsPath) -> ApiResult<Option<ProviderConfigFi
         ));
     }
     validate_context_settings(config.context_window, config.compression_threshold_percent)
+        .map_err(|error| ApiError(StatusCode::INTERNAL_SERVER_ERROR, error.1))?;
+    validate_initial_survey(&config.initial_survey)
         .map_err(|error| ApiError(StatusCode::INTERNAL_SERVER_ERROR, error.1))?;
     Ok(Some(config))
 }
@@ -1264,6 +1432,14 @@ fn load_state(path: &FsPath) -> Result<PersistedState, Box<dyn std::error::Error
         return Ok(PersistedState::default());
     }
     let mut state: PersistedState = serde_json::from_slice(&fs::read(path)?)?;
+    for session in &mut state.sessions {
+        if session.initial_survey_status == "running" {
+            // A persisted running state means the prior process disappeared
+            // without a terminal result. Fail closed and never repeat a radio
+            // sweep merely because the Web service restarted.
+            session.initial_survey_status = "failed".into();
+        }
+    }
     state
         .sessions
         .sort_by_key(|session| session.last_used_at_ms);
@@ -1300,7 +1476,7 @@ async fn restore_active_runtime(state: &AppState) {
     });
     if let Some(id) = active {
         if let Some(session) = find_session_mut(&mut inner.persisted, &id) {
-            compact_session(session);
+            compact_session(session, false);
             session.status = "starting".into();
         }
         inner.runtime = Some(spawn_agent_process(state.clone(), id));
@@ -1361,10 +1537,13 @@ mod tests {
             created_at_ms: 1,
             last_used_at_ms,
             generation: 1,
+            compaction_count: 0,
             status: "stored".into(),
             compacted_summary: String::new(),
             summary_pending: false,
             events_since_compaction: 0,
+            initial_survey: None,
+            initial_survey_status: "skipped".into(),
             events: VecDeque::new(),
         }
     }
@@ -1388,11 +1567,37 @@ mod tests {
                 format!("Agent> 第 {index} 条输出 {}", "x".repeat(80)),
             );
         }
-        compact_session(&mut item);
+        compact_session(&mut item, true);
         assert!(item.compacted_summary.len() <= MAX_SUMMARY_BYTES + 3);
         assert_eq!(item.events.len(), RETAIN_AFTER_COMPACT);
         assert!(item.summary_pending);
         assert_eq!(item.events_since_compaction, 0);
+        assert_eq!(item.compaction_count, 1);
+    }
+
+    #[test]
+    fn carry_forward_on_switch_does_not_increment_automatic_count() {
+        let mut item = session("one", 1);
+        push_event(&mut item, "operator", "Operator> hello".into());
+        compact_session(&mut item, false);
+        assert_eq!(item.generation, 2);
+        assert_eq!(item.compaction_count, 0);
+    }
+
+    #[test]
+    fn validates_default_and_custom_initial_survey_budgets() {
+        assert!(validate_initial_survey(&default_initial_survey()).is_ok());
+        let mut custom = default_initial_survey();
+        custom.mode = "custom_band".into();
+        custom.start_hz = 100_000_000;
+        custom.stop_hz = 108_100_000;
+        custom.step_hz = 8_000_000;
+        assert!(validate_initial_survey(&custom).is_ok());
+        custom.step_hz = 8_000_001;
+        assert!(validate_initial_survey(&custom).is_err());
+        custom.step_hz = 8_000_000;
+        custom.gain_db = 61;
+        assert!(validate_initial_survey(&custom).is_err());
     }
 
     #[test]
@@ -1415,6 +1620,7 @@ mod tests {
             api_key: "test-secret".into(),
             context_window: 200_000,
             compression_threshold_percent: 90,
+            initial_survey: default_initial_survey(),
         })
         .unwrap();
         let public = serde_json::to_string(&provider_config_view(&config)).unwrap();
@@ -1433,6 +1639,7 @@ mod tests {
             api_key: "test-secret".into(),
             context_window: 196_608,
             compression_threshold_percent: 90,
+            initial_survey: default_initial_survey(),
         })
         .unwrap();
         let mut request = ProviderConfigRequest {
@@ -1443,6 +1650,7 @@ mod tests {
             api_key: String::new(),
             context_window: 200_000,
             compression_threshold_percent: 90,
+            initial_survey: default_initial_survey(),
         };
         reuse_saved_provider_key(&mut request, Some(&saved)).unwrap();
         assert_eq!(request.api_key, "test-secret");

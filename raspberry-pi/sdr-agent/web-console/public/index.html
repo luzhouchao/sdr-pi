@@ -8,165 +8,83 @@
 </head>
 <body>
   <header class="topbar">
-    <div>
-      <p class="eyebrow">AGX CONTROL PLANE</p>
-      <h1>SDR Web Console</h1>
+    <div><p class="eyebrow">AGX CONTROL PLANE</p><h1>SDR Web Console</h1></div>
+    <div class="topbar-actions">
+      <button id="settings-entry" class="settings-entry" type="button" aria-controls="settings-view" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Zm8.2 4.8v-2l-2.3-.8a7 7 0 0 0-.6-1.5l1.1-2.2L17 5.1l-2.2 1.1a7 7 0 0 0-1.5-.6L12.5 3h-2l-.8 2.6a7 7 0 0 0-1.5.6L6 5.1 4.6 6.5l1.1 2.2a7 7 0 0 0-.6 1.5l-2.3.8v2l2.3.8a7 7 0 0 0 .6 1.5l-1.1 2.2L6 18.9l2.2-1.1a7 7 0 0 0 1.5.6l.8 2.6h2l.8-2.6a7 7 0 0 0 1.5-.6l2.2 1.1 1.4-1.4-1.1-2.2a7 7 0 0 0 .6-1.5l2.3-.8Z"/></svg>
+        <span>设置</span><i id="settings-dirty-dot" aria-label="有未保存修改" hidden></i>
+      </button>
+      <div class="connection"><span id="connection-dot"></span><span id="connection-text">正在连接</span></div>
     </div>
-    <div class="connection"><span id="connection-dot"></span><span id="connection-text">正在连接</span></div>
   </header>
 
   <main>
-    <section class="overview" aria-label="系统状态">
-      <article class="status-card accent-cyan">
-        <span>当前扫频</span>
-        <strong id="sweep-status">尚无扫频输出</strong>
-      </article>
-      <article class="status-card accent-violet">
-        <span>上游模型最近返回</span>
-        <strong id="qwen-status">尚无模型输出</strong>
-      </article>
-      <article class="status-card accent-amber">
-        <span>控制器</span>
-        <strong id="controller-status">等待活动对话</strong>
-      </article>
-      <article class="status-card accent-green">
-        <span>运行授权</span>
-        <strong id="cruise-status">逐步批准模式</strong>
-      </article>
-    </section>
-
-    <details id="provider-dock" class="provider-dock">
-      <summary>
-        <span class="uplink-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span>
-          <small>MODEL UPLINK</small>
-          <strong id="provider-status">尚未配置第三方上游</strong>
-        </span>
-        <span class="provider-hint">配置接入 <b aria-hidden="true">↘</b></span>
-      </summary>
-      <form id="provider-form" class="provider-form" autocomplete="off">
-        <div class="provider-presets" aria-label="上游预设">
-          <span>快速填充</span>
-          <button id="preset-opencode" type="button">OpenCode Go</button>
-          <button id="preset-custom" type="button">清空字段</button>
-        </div>
-        <label>
-          <span>API 协议</span>
-          <select id="provider-api" required>
-            <option value="openai-completions">OpenAI Chat Completions</option>
-            <option value="openai-responses">OpenAI Responses</option>
-          </select>
-        </label>
-        <label class="wide-field">
-          <span>Base URL</span>
-          <input id="provider-base-url" type="url" maxlength="2048" placeholder="https://api.example.com/v1" required>
-        </label>
-        <label>
-          <span>Provider ID</span>
-          <input id="provider-id" maxlength="64" placeholder="opencode-go" required>
-        </label>
-        <div class="model-field">
-          <label for="provider-model">Model ID</label>
-          <div class="model-query-row">
-            <input id="provider-model" list="provider-model-options" maxlength="256" placeholder="deepseek-v4-flash" required>
-            <datalist id="provider-model-options"></datalist>
-            <button id="query-provider-models" type="button">查询上游模型</button>
-          </div>
-        </div>
-        <label>
-          <span>上下文窗口（tokens）</span>
-          <input id="provider-context-window" type="number" min="8192" max="1000000" step="1" value="196608" required>
-        </label>
-        <label>
-          <span>自动压缩阈值（%）</span>
-          <input id="provider-compression-threshold" type="number" min="50" max="95" step="1" value="90" required>
-        </label>
-        <label class="wide-field">
-          <span>API Key</span>
-          <input id="provider-api-key" type="password" maxlength="4096" autocomplete="new-password" placeholder="密钥不会回显；同一 Base URL 下留空可保留原密钥">
-        </label>
-        <section id="model-inventory" class="model-inventory" aria-live="polite" hidden>
-          <div>
-            <span class="inventory-signal" aria-hidden="true"></span>
-            <p><small>UPSTREAM INVENTORY</small><strong id="model-inventory-status">等待查询</strong></p>
-          </div>
-          <select id="provider-model-list" aria-label="上游返回的模型"></select>
-          <p>选择后会写入 Model ID；仍可手工填写上游未列出的模型。</p>
+    <section id="console-view" class="page-view">
+      <section class="overview" aria-label="系统状态">
+        <article class="status-card accent-cyan"><span>当前扫频</span><strong id="sweep-status">尚无扫频输出</strong></article>
+        <article class="status-card accent-violet"><span>上游模型最近返回</span><strong id="qwen-status">尚无模型输出</strong></article>
+        <article class="status-card accent-amber"><span>控制器</span><strong id="controller-status">等待活动对话</strong></article>
+        <article class="status-card accent-green"><span>运行授权</span><strong id="cruise-status">逐步批准模式</strong></article>
+      </section>
+      <section class="workspace">
+        <aside class="sessions-panel">
+          <div class="panel-title"><div><span>对话</span><small>最多保留 2 个</small></div><button id="new-session" class="icon-button" type="button" title="新建对话">＋</button></div>
+          <div id="sessions" class="sessions"></div>
+          <p class="retention-note">新建第 3 个对话时，自动丢弃最久未使用的非活动对话。上下文达到设置阈值后才计为自动压缩。</p>
+        </aside>
+        <section class="console-panel">
+          <div class="console-header"><div><span id="active-title">未选择对话</span><small id="active-meta">启动一个对话以连接 sdr-agent</small></div><button id="scroll-bottom" class="ghost-button" type="button">回到底部</button></div>
+          <section class="authorization-rail" aria-labelledby="authorization-title">
+            <div class="rail-copy"><small>RUN AUTHORIZATION</small><strong id="authorization-title">选择谁决定下一步</strong><p>两种模式都经过 Rust 安全校验；不会放宽频段、时长、字节或独占限制。</p></div>
+            <button type="button" data-command="/mode manual" class="mode-card manual-mode"><span>逐步批准</span><small>每个可执行动作都停在人工批准门前</small></button>
+            <form id="auto-form" class="mode-card auto-mode"><label for="auto-mission">受限自动巡航</label><div class="auto-mission-row"><input id="auto-mission" maxlength="700" placeholder="例如：在允许频段内寻找活动并根据结果继续" required><button type="submit">启动巡航</button></div><div class="auto-budget-row"><label for="auto-steps"><span>最多步数</span><input id="auto-steps" type="number" min="1" max="128" step="1" value="8" required></label><label for="auto-seconds"><span>总时长（秒）</span><input id="auto-seconds" type="number" min="10" max="1800" step="1" value="120" required></label><small>硬上限 128 步 / 30 分钟；两类失败各重试 5 次</small></div></form>
+            <button type="button" data-command="/stop" class="emergency-stop">■ 立即停止</button>
+          </section>
+          <div id="terminal" class="terminal" role="log" aria-live="polite"></div>
+          <div class="controls" aria-label="快捷控制"><button type="button" data-command="/approve">✓ 批准</button><button type="button" data-command="/reject">× 拒绝</button><button type="button" data-command="/pause">Ⅱ 暂停</button><button type="button" data-command="/resume">▶ 恢复</button><button type="button" data-command="/status">● 状态</button></div>
+          <form id="command-form" class="command-form"><label for="command-input">终端输入</label><div><textarea id="command-input" rows="2" maxlength="2048" placeholder="输入自然语言指令或 /help；Ctrl+Enter 发送"></textarea><button type="submit">发送</button></div><small>按钮和手动输入都会以 <code>Operator&gt;</code> 记录在上方终端中。</small></form>
         </section>
-        <div class="provider-actions wide-field">
-          <p>仅写入 AGX 的 <code>0600</code> 私密运行文件，Git 不跟踪。仅对下一个新对话生效。</p>
-          <button id="clear-provider" class="ghost-button" type="button">清除配置</button>
-          <button type="submit">保存并用于新对话</button>
-        </div>
-      </form>
-    </details>
-
-    <section class="workspace">
-      <aside class="sessions-panel">
-        <div class="panel-title">
-          <div><span>对话</span><small>最多保留 2 个</small></div>
-          <button id="new-session" class="icon-button" type="button" title="新建对话">＋</button>
-        </div>
-        <div id="sessions" class="sessions"></div>
-        <p class="retention-note">新建第 3 个对话时，自动丢弃最久未使用的非活动对话。切换或超长后会压缩上下文。</p>
-      </aside>
-
-      <section class="console-panel">
-        <div class="console-header">
-          <div>
-            <span id="active-title">未选择对话</span>
-            <small id="active-meta">启动一个对话以连接 sdr-agent</small>
-          </div>
-          <button id="scroll-bottom" class="ghost-button" type="button">回到底部</button>
-        </div>
-
-        <section class="authorization-rail" aria-labelledby="authorization-title">
-          <div class="rail-copy">
-            <small>RUN AUTHORIZATION</small>
-            <strong id="authorization-title">选择谁决定下一步</strong>
-            <p>两种模式都经过 Rust 安全校验；切换模式不会放宽频段、时长、字节或独占限制。</p>
-          </div>
-          <button type="button" data-command="/mode manual" class="mode-card manual-mode">
-            <span>逐步批准</span>
-            <small>每个可执行动作都停在人工批准门前</small>
-          </button>
-          <form id="auto-form" class="mode-card auto-mode">
-            <label for="auto-mission">受限自动巡航</label>
-            <div class="auto-mission-row">
-              <input id="auto-mission" maxlength="700" placeholder="例如：在允许频段内寻找活动并根据结果继续" required>
-              <button type="submit">启动巡航</button>
-            </div>
-            <div class="auto-budget-row">
-              <label for="auto-steps"><span>最多步数</span><input id="auto-steps" type="number" min="1" max="128" step="1" value="8" required></label>
-              <label for="auto-seconds"><span>总时长（秒）</span><input id="auto-seconds" type="number" min="10" max="1800" step="1" value="120" required></label>
-              <small>硬上限 128 步 / 30 分钟；两类失败各重试 5 次，间隔 10 秒</small>
-            </div>
-          </form>
-          <button type="button" data-command="/stop" class="emergency-stop">■ 立即停止</button>
-        </section>
-
-        <div id="terminal" class="terminal" role="log" aria-live="polite"></div>
-
-        <div class="controls" aria-label="快捷控制">
-          <button type="button" data-command="/approve">✓ 批准</button>
-          <button type="button" data-command="/reject">× 拒绝</button>
-          <button type="button" data-command="/pause">Ⅱ 暂停</button>
-          <button type="button" data-command="/resume">▶ 恢复</button>
-          <button type="button" data-command="/status">● 状态</button>
-        </div>
-
-        <form id="command-form" class="command-form">
-          <label for="command-input">终端输入</label>
-          <div>
-            <textarea id="command-input" rows="2" maxlength="2048" placeholder="输入自然语言指令或 /help；Ctrl+Enter 发送"></textarea>
-            <button type="submit">发送</button>
-          </div>
-          <small>按钮和手动输入都会以 <code>Operator&gt;</code> 记录在上方终端中。</small>
-        </form>
       </section>
     </section>
-  </main>
 
+    <section id="settings-view" class="page-view settings-view" hidden aria-labelledby="settings-title">
+      <div class="settings-heading">
+        <div><p class="eyebrow">RADIO + AGENT CONFIG</p><h2 id="settings-title">设置</h2><p>修改先留在本页，点击“保存设置”后才写入；只影响下一个新对话。</p></div>
+        <div class="settings-state"><span id="settings-save-state">已载入当前设置</span><button id="settings-back" class="ghost-button" type="button">返回运行台</button></div>
+      </div>
+      <form id="provider-form" class="settings-form" autocomplete="off">
+        <section class="settings-card model-settings">
+          <div class="settings-card-title"><span class="card-index">MODEL</span><div><h3>模型接入</h3><p id="provider-status">尚未配置第三方上游</p></div><div class="provider-presets"><button id="preset-opencode" type="button">OpenCode Go</button><button id="preset-custom" type="button">清空字段</button></div></div>
+          <div class="settings-grid">
+            <label><span>API 协议</span><select id="provider-api" required><option value="openai-completions">OpenAI Chat Completions</option><option value="openai-responses">OpenAI Responses</option></select></label>
+            <label class="span-2"><span>Base URL</span><input id="provider-base-url" type="url" maxlength="2048" placeholder="https://api.example.com/v1" required></label>
+            <label><span>Provider ID</span><input id="provider-id" maxlength="64" placeholder="opencode-go" required></label>
+            <div class="model-field span-2"><label for="provider-model">Model ID</label><div class="model-query-row"><input id="provider-model" list="provider-model-options" maxlength="256" placeholder="deepseek-v4-flash" required><datalist id="provider-model-options"></datalist><button id="query-provider-models" type="button">查询上游模型</button></div></div>
+            <label class="span-2"><span>API Key</span><input id="provider-api-key" type="password" maxlength="4096" autocomplete="new-password" placeholder="密钥不回显；同一 Base URL 下留空可保留原密钥"></label>
+          </div>
+          <section id="model-inventory" class="model-inventory" aria-live="polite" hidden><div><span class="inventory-signal" aria-hidden="true"></span><p><small>UPSTREAM INVENTORY</small><strong id="model-inventory-status">等待查询</strong></p></div><select id="provider-model-list" aria-label="上游返回的模型"></select><p>选择后写入 Model ID，也可以手工填写。</p></section>
+        </section>
+
+        <section class="settings-card context-settings">
+          <div class="settings-card-title"><span class="card-index">CONTEXT</span><div><h3>Agent 上下文</h3><p>边界可手填，也可由模型清单带回；默认占用 90% 时自动压缩。</p></div></div>
+          <div class="settings-grid two-columns"><label><span>上下文窗口（tokens）</span><input id="provider-context-window" type="number" min="8192" max="1000000" step="1" value="196608" required></label><label><span>自动压缩阈值（%）</span><input id="provider-compression-threshold" type="number" min="50" max="95" step="1" value="90" required></label></div>
+        </section>
+
+        <section class="settings-card survey-settings">
+          <div class="settings-card-title"><span class="card-index">SURVEY</span><div><h3>首次频谱建立</h3><p>每个新对话最多执行一次受限 RX 扫描；切换对话和服务恢复不会重扫。</p></div></div>
+          <div class="survey-mode" role="radiogroup" aria-label="首次扫描模式">
+            <label><input type="radio" name="survey-mode" value="full_band" checked><span><strong>默认全频段</strong><small>70 MHz–6 GHz</small></span></label>
+            <label><input type="radio" name="survey-mode" value="custom_band"><span><strong>手动指定</strong><small>填写起止频率</small></span></label>
+            <label><input type="radio" name="survey-mode" value="disabled"><span><strong>关闭首次扫描</strong><small>直接进入对话</small></span></label>
+          </div>
+          <div id="survey-fields" class="settings-grid survey-fields"><label><span>起始频率（MHz）</span><input id="survey-start-mhz" type="number" min="70" max="6000" step="0.001" value="70" required></label><label><span>终止频率（MHz）</span><input id="survey-stop-mhz" type="number" min="70" max="6000" step="0.001" value="6000" required></label><label><span>步进（MHz）</span><input id="survey-step-mhz" type="number" min="0.001" max="8" step="0.001" value="8" required></label><label><span>每点停留（ms）</span><input id="survey-dwell-ms" type="number" min="0" max="1000" step="1" value="5" required></label><label><span>固定接收增益（dB）</span><input id="survey-gain-db" type="number" min="0" max="60" step="1" value="20" required><small>全频扫描建议先用 20；若出现削顶请降低。</small></label></div>
+          <div id="survey-budget" class="survey-budget" aria-live="polite"><span class="scan-line" aria-hidden="true"><i></i></span><div><small>扫描预算预览</small><strong id="survey-budget-summary">743 点 · 约 189 秒 · 约 11.6 MiB</strong></div><p id="survey-budget-detail">仅 RX，固定 20 dB 增益，10 MHz 采样率，4096 samples/点；可随时停止并恢复射频状态。</p></div>
+        </section>
+
+        <div class="settings-actions"><p>设置写入 AGX 上 mode <code>0600</code> 的私密文件，Git 不跟踪。</p><button id="discard-settings" class="ghost-button" type="button">放弃修改</button><button id="save-settings" type="submit">保存设置</button></div>
+      </form>
+    </section>
+  </main>
   <div id="toast" class="toast" role="status"></div>
   <script src="/app.js" defer></script>
 </body>

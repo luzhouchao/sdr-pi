@@ -48,6 +48,7 @@ typedef struct fake_radio {
   unsigned int begin_session_calls;
   unsigned int apply_calls;
   unsigned int capture_calls;
+  unsigned int power_calls;
   unsigned int summary_calls;
   unsigned int cancel_calls;
   unsigned int stop_calls;
@@ -120,6 +121,21 @@ static int fake_capture_summary(
   return 0;
 }
 
+static int fake_capture_power(
+    void *context,
+    const sdrd_summary_request_t *request,
+    sdrd_summary_result_t *result) {
+  fake_radio_t *fake = context;
+  ++fake->power_calls;
+  result->sequence = 19u;
+  result->aggregate_samples =
+      (uint64_t)request->frame_samples * (uint64_t)request->aggregate_frames;
+  result->rx0_power_lo = 789u;
+  result->rx0_clip_count = 1u;
+  result->elapsed_us = 700u;
+  return 0;
+}
+
 static int fake_begin_summary(void *context) {
   return context == NULL ? -EINVAL : 0;
 }
@@ -158,6 +174,7 @@ static sdrd_radio_ops_t fake_ops(fake_radio_t *fake) {
   ops.snapshot = fake_snapshot;
   ops.apply_profile = fake_apply;
   ops.capture_iq = fake_capture;
+  ops.capture_power = fake_capture_power;
   ops.summary_context = fake;
   ops.begin_summary = fake_begin_summary;
   ops.capture_summary = fake_capture_summary;
@@ -288,10 +305,13 @@ static void test_controlled_allowlist_and_restore(void) {
   assert(strstr(response, "\"mode\":\"controlled\"") != NULL);
   assert(strstr(response, "\"mutating_commands\":true") != NULL);
   assert(sdrd_handle_request(
+             &config, &session, &ops, "SDRD/1 CAPABILITIES 2", response, sizeof(response)) == 0);
+  assert(strstr(response, "\"software_summary\":true") != NULL);
+  assert(sdrd_handle_request(
              &config,
              &session,
              &ops,
-             "SDRD/1 START_SESSION 2 1001",
+             "SDRD/1 START_SESSION 3 1001",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"restore_armed\":true") != NULL);
@@ -300,7 +320,7 @@ static void test_controlled_allowlist_and_restore(void) {
              &config,
              &session,
              &ops,
-             "SDRD/1 START_SESSION 2 1001",
+             "SDRD/1 START_SESSION 3 1001",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "stale_or_duplicate_request") != NULL);
@@ -308,7 +328,7 @@ static void test_controlled_allowlist_and_restore(void) {
              &config,
              &session,
              &ops,
-             "SDRD/1 APPLY_PROFILE 3 1001 2400000000 10000000 8000000 slow_attack 3",
+             "SDRD/1 APPLY_PROFILE 4 1001 2400000000 10000000 8000000 slow_attack 3",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "profile_out_of_bounds") != NULL);
@@ -317,7 +337,7 @@ static void test_controlled_allowlist_and_restore(void) {
              &config,
              &session,
              &ops,
-             "SDRD/1 APPLY_PROFILE 4 1001 2400000000 10000000 8000000 slow_attack 1",
+             "SDRD/1 APPLY_PROFILE 5 1001 2400000000 10000000 8000000 slow_attack 1",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"center_hz\":2400000000") != NULL);
@@ -326,7 +346,33 @@ static void test_controlled_allowlist_and_restore(void) {
              &config,
              &session,
              &ops,
-             "SDRD/1 CAPTURE_IQ 5 1001 1024 4096 sdrd-schema-v1",
+             "SDRD/1 APPLY_PROFILE 6 1001 2400000000 10000000 8000000 manual 1",
+             response,
+             sizeof(response)) == 0);
+  assert(strstr(response, "invalid_arguments") != NULL);
+  assert(sdrd_handle_request(
+             &config,
+             &session,
+             &ops,
+             "SDRD/1 APPLY_PROFILE 7 1001 2400000000 10000000 8000000 manual 61 1",
+             response,
+             sizeof(response)) == 0);
+  assert(strstr(response, "invalid_arguments") != NULL);
+  assert(sdrd_handle_request(
+             &config,
+             &session,
+             &ops,
+             "SDRD/1 APPLY_PROFILE 8 1001 2400000000 10000000 8000000 manual 30 1",
+             response,
+             sizeof(response)) == 0);
+  assert(strstr(response, "\"gain_mode\":\"manual\"") != NULL);
+  assert(strstr(response, "\"hardware_gain_db\":30") != NULL);
+  assert(strcmp(fake.state.hardware_gain, "30") == 0);
+  assert(sdrd_handle_request(
+             &config,
+             &session,
+             &ops,
+             "SDRD/1 CAPTURE_IQ 9 1001 1024 4096 sdrd-schema-v1",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"bytes_written\":4096") != NULL);
@@ -336,7 +382,17 @@ static void test_controlled_allowlist_and_restore(void) {
              &config,
              &session,
              &ops,
-             "SDRD/1 CAPTURE_SUMMARY 6 1001 2048 16 500",
+             "SDRD/1 CAPTURE_POWER 10 1001 4096 1 500",
+             response,
+             sizeof(response)) == 0);
+  assert(strstr(response, "\"aggregate_samples\":4096") != NULL);
+  assert(strstr(response, "\"rx0_power_lo\":789") != NULL);
+  assert(fake.power_calls == 1u);
+  assert(sdrd_handle_request(
+             &config,
+             &session,
+             &ops,
+             "SDRD/1 CAPTURE_SUMMARY 11 1001 2048 16 500",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"aggregate_samples\":32768") != NULL);
@@ -346,7 +402,7 @@ static void test_controlled_allowlist_and_restore(void) {
              &config,
              &session,
              &ops,
-             "SDRD/1 EXECUTION_STATUS 7 1001",
+             "SDRD/1 EXECUTION_STATUS 12 1001",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"active\":true") != NULL);
@@ -354,7 +410,7 @@ static void test_controlled_allowlist_and_restore(void) {
              &config,
              &session,
              &ops,
-             "SDRD/1 STOP_SESSION 8 1001",
+             "SDRD/1 STOP_SESSION 13 1001",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"restored\":true") != NULL);
@@ -467,7 +523,7 @@ static void test_disconnect_and_failure_restore(void) {
              &config,
              &session,
              &ops,
-             "SDRD/1 APPLY_PROFILE 31 3003 1000000000 4000000 3000000 manual 1",
+             "SDRD/1 APPLY_PROFILE 31 3003 1000000000 4000000 3000000 manual 30 1",
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "apply_failed_restore_fault") != NULL);

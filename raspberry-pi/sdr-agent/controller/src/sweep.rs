@@ -9,10 +9,11 @@ use std::net::SocketAddr;
 use std::thread;
 use std::time::{Duration, Instant};
 
-const MAX_POINTS: usize = 64;
-const MAX_DURATION_MS: u64 = 60_000;
+pub const MAX_POINTS: usize = 768;
+const MAX_DURATION_MS: u64 = 300_000;
 const ADC_FULL_SCALE: f64 = 2_048.0;
 const MIN_POWER: f64 = 1.0e-20;
+const MAX_PLANNER_CANDIDATE_BANDWIDTH_HZ: u64 = 10_000_000;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -27,6 +28,8 @@ pub struct SweepPlan {
     pub aggregate_frames: u32,
     pub point_timeout_ms: u32,
     pub detection_threshold_db: f32,
+    #[serde(default)]
+    pub gain_db: Option<i16>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -54,6 +57,7 @@ pub struct ValidatedSweepPlan {
     pub aggregate_frames: u32,
     pub point_timeout_ms: u32,
     pub detection_threshold_db: f32,
+    pub gain_db: Option<i16>,
     pub estimated_duration_ms: u64,
     pub maximum_summary_bytes: u64,
 }
@@ -113,7 +117,12 @@ impl SweepReport {
                 .map(|candidate| CandidateSummary {
                     id: candidate.id.clone(),
                     center_hz: candidate.center_hz,
-                    bandwidth_hz: candidate.bandwidth_hz,
+                    // The sweep report preserves the full contiguous active
+                    // region. Planning receives a peak-centered inspection
+                    // window that cannot exceed the production policy limit.
+                    bandwidth_hz: candidate
+                        .bandwidth_hz
+                        .min(MAX_PLANNER_CANDIDATE_BANDWIDTH_HZ),
                     peak_dbfs: candidate.peak_dbfs,
                     snr_db: candidate.snr_db,
                     age_ms,
@@ -185,6 +194,7 @@ impl SweepBackend for ReplaySweepAdapter {
     }
 }
 
+#[derive(Clone)]
 pub struct SdrdFpgaSweepAdapter {
     address: SocketAddr,
     timeout: Duration,
@@ -198,129 +208,201 @@ impl SdrdFpgaSweepAdapter {
 
 impl SweepBackend for SdrdFpgaSweepAdapter {
     fn run_points(&mut self, plan: &ValidatedSweepPlan) -> Result<BackendSweep, SweepError> {
-        let mut wire = SdrdWire::connect(self.address, self.timeout)?;
-        let hello: HelloResponse = wire.request("HELLO", "")?;
-        if hello.server != "p201-sdrd"
-            || hello.protocol != "SDRD/1"
-            || hello.mode != "controlled"
-            || !hello.mutating_commands
-        {
-            return Err(SweepError::new(
-                "controlled_mode_unavailable",
-                "SDRD is not the expected controlled endpoint",
-            ));
-        }
-        let capabilities: CapabilitiesResponse = wire.request("CAPABILITIES", "")?;
-        if !capabilities.iio_visible || !capabilities.radio_control {
-            return Err(SweepError::new(
-                "radio_capability",
-                "SDRD cannot own and retune the receive path",
-            ));
-        }
-        if !capabilities.fpga_identity_valid || !capabilities.fpga_aggregate {
-            let _: Result<QuitResponse, _> = wire.request("QUIT", "");
-            return Err(SweepError::new(
-                "fpga_aggregate_unavailable",
-                "the loaded FPGA image does not expose a validated aggregate summary",
-            ));
-        }
+        run_sdrd_points(self.address, self.timeout, plan, SummarySource::Fpga)
+    }
+}
 
-        let generation = plan.session_generation;
-        let mut session_started = false;
-        let execution = (|| {
-            let start: StartResponse = wire.request("START_SESSION", &generation.to_string())?;
-            if start.generation != generation || !start.restore_armed {
-                return Err(SweepError::new(
-                    "session_start",
-                    "SDRD did not arm sweep restoration",
-                ));
-            }
-            session_started = true;
-            let mut points = Vec::with_capacity(plan.centers_hz.len());
-            for (point_index, center_hz) in plan.centers_hz.iter().copied().enumerate() {
-                let profile_args = format!(
+#[derive(Clone)]
+pub struct SdrdSoftwareSweepAdapter {
+    address: SocketAddr,
+    timeout: Duration,
+}
+
+impl SdrdSoftwareSweepAdapter {
+    pub fn new(address: SocketAddr, timeout: Duration) -> Self {
+        Self { address, timeout }
+    }
+}
+
+impl SweepBackend for SdrdSoftwareSweepAdapter {
+    fn run_points(&mut self, plan: &ValidatedSweepPlan) -> Result<BackendSweep, SweepError> {
+        run_sdrd_points(self.address, self.timeout, plan, SummarySource::Software)
+    }
+}
+
+#[derive(Clone, Copy)]
+enum SummarySource {
+    Fpga,
+    Software,
+}
+
+fn run_sdrd_points(
+    address: SocketAddr,
+    timeout: Duration,
+    plan: &ValidatedSweepPlan,
+    source: SummarySource,
+) -> Result<BackendSweep, SweepError> {
+    let mut wire = SdrdWire::connect(address, timeout)?;
+    let hello: HelloResponse = wire.request("HELLO", "")?;
+    if hello.server != "p201-sdrd"
+        || hello.protocol != "SDRD/1"
+        || hello.mode != "controlled"
+        || !hello.mutating_commands
+    {
+        return Err(SweepError::new(
+            "controlled_mode_unavailable",
+            "SDRD is not the expected controlled endpoint",
+        ));
+    }
+    let capabilities: CapabilitiesResponse = wire.request("CAPABILITIES", "")?;
+    if !capabilities.iio_visible || !capabilities.radio_control {
+        return Err(SweepError::new(
+            "radio_capability",
+            "SDRD cannot own and retune the receive path",
+        ));
+    }
+    if matches!(source, SummarySource::Fpga)
+        && (!capabilities.fpga_identity_valid || !capabilities.fpga_aggregate)
+    {
+        let _: Result<QuitResponse, _> = wire.request("QUIT", "");
+        return Err(SweepError::new(
+            "fpga_aggregate_unavailable",
+            "the loaded FPGA image does not expose a validated aggregate summary",
+        ));
+    }
+    if matches!(source, SummarySource::Software) && !capabilities.software_summary {
+        let _: Result<QuitResponse, _> = wire.request("QUIT", "");
+        return Err(SweepError::new(
+            "software_summary_unavailable",
+            "SDRD does not expose the bounded receive-only software power summary",
+        ));
+    }
+
+    let generation = plan.session_generation;
+    let mut session_started = false;
+    let execution = (|| {
+        let start: StartResponse = wire.request("START_SESSION", &generation.to_string())?;
+        if start.generation != generation || !start.restore_armed {
+            return Err(SweepError::new(
+                "session_start",
+                "SDRD did not arm sweep restoration",
+            ));
+        }
+        session_started = true;
+        let mut points = Vec::with_capacity(plan.centers_hz.len());
+        for (point_index, center_hz) in plan.centers_hz.iter().copied().enumerate() {
+            let profile_args = if let Some(gain_db) = plan.gain_db {
+                format!(
+                    "{generation} {center_hz} {} {} manual {gain_db} 1",
+                    plan.sample_rate_hz, plan.rf_bandwidth_hz
+                )
+            } else {
+                format!(
                     "{generation} {center_hz} {} {} slow_attack 1",
                     plan.sample_rate_hz, plan.rf_bandwidth_hz
-                );
-                let profile: ProfileResponse = wire.request("APPLY_PROFILE", &profile_args)?;
-                if profile.generation != generation
-                    || profile.center_hz.abs_diff(center_hz) > 2
-                    || profile.sample_rate_hz != plan.sample_rate_hz
-                    || profile.rf_bandwidth_hz != plan.rf_bandwidth_hz
-                {
-                    return Err(SweepError::new(
-                        "profile_response",
-                        "SDRD sweep profile readback is inconsistent",
-                    ));
-                }
-                thread::sleep(Duration::from_millis(plan.settle_ms));
-                let summary_args = format!(
-                    "{generation} {} {} {}",
-                    plan.frame_samples, plan.aggregate_frames, plan.point_timeout_ms
-                );
-                let summary: SummaryResponse = wire.request("CAPTURE_SUMMARY", &summary_args)?;
-                if summary.generation != generation || summary.status_flags != 0 {
-                    return Err(SweepError::new(
-                        "summary_quality",
-                        "FPGA summary reported invalid, stale, overflow, or shape flags",
-                    ));
-                }
-                let captured_samples = u64::from(plan.frame_samples)
-                    .checked_mul(u64::from(plan.aggregate_frames))
-                    .ok_or_else(|| SweepError::new("sample_count", "sample count overflow"))?;
-                if summary.aggregate_samples != captured_samples {
-                    return Err(SweepError::new(
-                        "summary_shape",
-                        "FPGA summary sample count does not match the plan",
-                    ));
-                }
-                points.push(SweepPoint {
-                    point_index,
-                    requested_center_hz: center_hz,
-                    actual_center_hz: profile.center_hz,
-                    sample_rate_hz: profile.sample_rate_hz,
-                    rf_bandwidth_hz: profile.rf_bandwidth_hz,
-                    sequence: summary.sequence,
-                    captured_samples,
-                    band_power_dbfs: u96_power_dbfs(
-                        summary.rx0_power_lo,
-                        summary.rx0_power_mid,
-                        summary.rx0_power_hi,
-                        captured_samples,
-                    )?,
-                    clipped_samples: summary.rx0_clip_count,
-                    status_flags: summary.status_flags,
-                    elapsed_us: summary.elapsed_us,
-                });
-            }
-            let stop: StopResponse = wire.request("STOP_SESSION", &generation.to_string())?;
-            if stop.generation != generation || !stop.stopped || !stop.restored {
+                )
+            };
+            let profile: ProfileResponse = wire.request("APPLY_PROFILE", &profile_args)?;
+            if profile.generation != generation
+                || profile.center_hz.abs_diff(center_hz) > 2
+                || profile.sample_rate_hz != plan.sample_rate_hz
+                || profile.rf_bandwidth_hz != plan.rf_bandwidth_hz
+                || profile.gain_mode
+                    != if plan.gain_db.is_some() {
+                        "manual"
+                    } else {
+                        "slow_attack"
+                    }
+                || profile.hardware_gain_db != plan.gain_db
+            {
                 return Err(SweepError::new(
-                    "restore_response",
-                    "SDRD did not confirm sweep restoration",
+                    "profile_response",
+                    "SDRD sweep profile readback is inconsistent",
                 ));
             }
-            session_started = false;
-            let quit: QuitResponse = wire.request("QUIT", "")?;
-            if !quit.closing {
-                return Err(SweepError::new("quit_rejected", "SDRD did not close"));
+            thread::sleep(Duration::from_millis(plan.settle_ms));
+            let summary_args = format!(
+                "{generation} {} {} {}",
+                plan.frame_samples, plan.aggregate_frames, plan.point_timeout_ms
+            );
+            let command = match source {
+                SummarySource::Fpga => "CAPTURE_SUMMARY",
+                SummarySource::Software => "CAPTURE_POWER",
+            };
+            let summary: SummaryResponse = wire.request(command, &summary_args)?;
+            if summary.generation != generation || summary.status_flags != 0 {
+                return Err(SweepError::new(
+                    "summary_quality",
+                    "SDR summary reported invalid, stale, overflow, or shape flags",
+                ));
             }
-            Ok(BackendSweep {
-                backend: "sdr_fpga_summary".to_owned(),
-                backend_version: capabilities.fpga_summary_version,
-                points,
-            })
-        })();
-
-        if execution.is_err() {
-            if session_started {
-                let _: Result<StopResponse, _> =
-                    wire.request("STOP_SESSION", &generation.to_string());
+            if summary.rx0_clip_count != 0 {
+                return Err(SweepError::new(
+                    "summary_clipped",
+                    "SDR summary clipped at the configured fixed gain; lower survey gain and retry",
+                ));
             }
-            let _: Result<QuitResponse, _> = wire.request("QUIT", "");
+            let captured_samples = u64::from(plan.frame_samples)
+                .checked_mul(u64::from(plan.aggregate_frames))
+                .ok_or_else(|| SweepError::new("sample_count", "sample count overflow"))?;
+            if summary.aggregate_samples != captured_samples {
+                return Err(SweepError::new(
+                    "summary_shape",
+                    "FPGA summary sample count does not match the plan",
+                ));
+            }
+            points.push(SweepPoint {
+                point_index,
+                requested_center_hz: center_hz,
+                actual_center_hz: profile.center_hz,
+                sample_rate_hz: profile.sample_rate_hz,
+                rf_bandwidth_hz: profile.rf_bandwidth_hz,
+                sequence: summary.sequence,
+                captured_samples,
+                band_power_dbfs: u96_power_dbfs(
+                    summary.rx0_power_lo,
+                    summary.rx0_power_mid,
+                    summary.rx0_power_hi,
+                    captured_samples,
+                )?,
+                clipped_samples: summary.rx0_clip_count,
+                status_flags: summary.status_flags,
+                elapsed_us: summary.elapsed_us,
+            });
         }
-        execution
+        let stop: StopResponse = wire.request("STOP_SESSION", &generation.to_string())?;
+        if stop.generation != generation || !stop.stopped || !stop.restored {
+            return Err(SweepError::new(
+                "restore_response",
+                "SDRD did not confirm sweep restoration",
+            ));
+        }
+        session_started = false;
+        let quit: QuitResponse = wire.request("QUIT", "")?;
+        if !quit.closing {
+            return Err(SweepError::new("quit_rejected", "SDRD did not close"));
+        }
+        Ok(BackendSweep {
+            backend: match source {
+                SummarySource::Fpga => "sdr_fpga_summary",
+                SummarySource::Software => "sdr_iio_power_summary",
+            }
+            .to_owned(),
+            backend_version: match source {
+                SummarySource::Fpga => capabilities.fpga_summary_version,
+                SummarySource::Software => 1,
+            },
+            points,
+        })
+    })();
+
+    if execution.is_err() {
+        if session_started {
+            let _: Result<StopResponse, _> = wire.request("STOP_SESSION", &generation.to_string());
+        }
+        let _: Result<QuitResponse, _> = wire.request("QUIT", "");
     }
+    execution
 }
 
 pub fn validate_plan(plan: &SweepPlan) -> Result<ValidatedSweepPlan, SweepError> {
@@ -346,7 +428,7 @@ pub fn validate_plan(plan: &SweepPlan) -> Result<ValidatedSweepPlan, SweepError>
     if centers_hz.is_empty() || centers_hz.len() > MAX_POINTS {
         return Err(SweepError::new(
             "point_count",
-            "sweep must contain between one and 64 points",
+            "sweep must contain between one and 768 points",
         ));
     }
     if centers_hz.windows(2).any(|pair| pair[0] >= pair[1])
@@ -366,6 +448,15 @@ pub fn validate_plan(plan: &SweepPlan) -> Result<ValidatedSweepPlan, SweepError>
         return Err(SweepError::new(
             "radio_profile",
             "sample rate or RF bandwidth is outside the controlled profile",
+        ));
+    }
+    if plan
+        .gain_db
+        .is_some_and(|gain_db| !(0..=60).contains(&gain_db))
+    {
+        return Err(SweepError::new(
+            "gain",
+            "manual sweep gain must be between 0 and 60 dB",
         ));
     }
     if centers_hz.len() > 1
@@ -401,7 +492,7 @@ pub fn validate_plan(plan: &SweepPlan) -> Result<ValidatedSweepPlan, SweepError>
     if estimated_duration_ms > MAX_DURATION_MS {
         return Err(SweepError::new(
             "duration",
-            "estimated sweep duration exceeds 60 seconds",
+            "estimated sweep duration exceeds 300 seconds",
         ));
     }
     Ok(ValidatedSweepPlan {
@@ -415,6 +506,7 @@ pub fn validate_plan(plan: &SweepPlan) -> Result<ValidatedSweepPlan, SweepError>
         aggregate_frames: plan.aggregate_frames,
         point_timeout_ms: plan.point_timeout_ms,
         detection_threshold_db: plan.detection_threshold_db,
+        gain_db: plan.gain_db,
         estimated_duration_ms,
         maximum_summary_bytes: (MAX_POINTS as u64) * 256,
     })
@@ -441,13 +533,14 @@ fn expand_centers(frequencies: &SweepFrequencies) -> Result<Vec<u64>, SweepError
                 if center == *stop_hz {
                     break;
                 }
-                center = center.checked_add(*step_hz).ok_or_else(|| {
+                let next = center.checked_add(*step_hz).ok_or_else(|| {
                     SweepError::new("frequency_range", "frequency range overflow")
                 })?;
-                if center > *stop_hz || centers.len() > MAX_POINTS {
+                center = next.min(*stop_hz);
+                if centers.len() > MAX_POINTS {
                     return Err(SweepError::new(
                         "frequency_range",
-                        "range must land on stop and contain at most 64 points",
+                        "range must contain at most 768 points",
                     ));
                 }
             }
@@ -617,6 +710,8 @@ struct CapabilitiesResponse {
     radio_control: bool,
     #[serde(rename = "raw_iq_capture")]
     _raw_iq_capture: bool,
+    #[serde(default)]
+    software_summary: bool,
     #[serde(rename = "max_capture_bytes")]
     _max_capture_bytes: u64,
     #[serde(rename = "fpga_backend")]
@@ -658,8 +753,9 @@ struct ProfileResponse {
     center_hz: u64,
     sample_rate_hz: u64,
     rf_bandwidth_hz: u64,
-    #[serde(rename = "gain_mode")]
-    _gain_mode: String,
+    gain_mode: String,
+    #[serde(default)]
+    hardware_gain_db: Option<i16>,
     #[serde(rename = "enabled_channels")]
     _enabled_channels: u32,
 }
@@ -732,6 +828,7 @@ mod tests {
             aggregate_frames: 16,
             point_timeout_ms: 500,
             detection_threshold_db: 6.0,
+            gain_db: None,
         }
     }
 
@@ -783,6 +880,47 @@ mod tests {
         );
         assert_eq!(observation.candidates.len(), 1);
         assert_eq!(observation.candidates[0].id, "survey-24g-1");
+        assert_eq!(observation.candidates[0].bandwidth_hz, 4_500_000);
+    }
+
+    #[test]
+    fn planner_observation_bounds_a_wide_contiguous_region() {
+        let report = SweepReport {
+            sweep_id: "wide".into(),
+            session_generation: 1,
+            backend: "replay".into(),
+            backend_version: 1,
+            estimated_duration_ms: 1,
+            elapsed_ms: 1,
+            noise_floor_dbfs: -50.0,
+            points: Vec::new(),
+            candidates: vec![SweepCandidate {
+                id: "wide-1".into(),
+                start_hz: 100_000_000,
+                stop_hz: 254_000_000,
+                center_hz: 150_000_000,
+                bandwidth_hz: 154_000_000,
+                peak_dbfs: -10.0,
+                snr_db: 40.0,
+                point_count: 19,
+            }],
+        };
+        let observation = report.planner_observation(
+            0,
+            HealthSummary {
+                sdr_online: true,
+                can_retune: true,
+                can_capture_iq: true,
+                fpga_available: false,
+                recognizer_available: false,
+                dropped_observations: 0,
+            },
+        );
+        assert_eq!(observation.candidates[0].center_hz, 150_000_000);
+        assert_eq!(
+            observation.candidates[0].bandwidth_hz,
+            MAX_PLANNER_CANDIDATE_BANDWIDTH_HZ
+        );
     }
 
     #[test]
@@ -854,5 +992,189 @@ mod tests {
         assert_eq!(report.points.len(), 1);
         assert_eq!(report.points[0].sequence, 44);
         server.join().unwrap();
+    }
+
+    #[test]
+    fn software_adapter_uses_power_summary_and_restores() {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = thread::spawn(move || {
+            let responses = [
+                "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
+                "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
+                "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":9,\"session_state\":\"owned\",\"restore_armed\":true}\n",
+                "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":9,\"center_hz\":2440000000,\"sample_rate_hz\":3000000,\"rf_bandwidth_hz\":2500000,\"gain_mode\":\"manual\",\"hardware_gain_db\":30,\"enabled_channels\":1}\n",
+                "{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":9,\"sequence\":45,\"aggregate_samples\":32768,\"rx0_power_lo\":1073741824,\"rx0_power_mid\":0,\"rx0_power_hi\":0,\"rx0_clip_count\":0,\"status_flags\":0,\"elapsed_us\":800}\n",
+                "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":9,\"stopped\":true,\"restored\":true}\n",
+                "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"closing\":true}\n",
+            ];
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut reader = BufReader::new(stream.try_clone().unwrap());
+            for (index, response) in responses.into_iter().enumerate() {
+                let mut request = String::new();
+                reader.read_line(&mut request).unwrap();
+                if index == 3 {
+                    assert!(request.contains(" manual 30 1"));
+                }
+                if index == 4 {
+                    assert!(request.starts_with("SDRD/1 CAPTURE_POWER 5 "));
+                }
+                stream.write_all(response.as_bytes()).unwrap();
+                stream.flush().unwrap();
+            }
+        });
+        let mut one_point = plan();
+        one_point.frequencies = SweepFrequencies::Centers {
+            centers_hz: vec![2_440_000_000],
+        };
+        one_point.gain_db = Some(30);
+        let report = SweepEngine::new(SdrdSoftwareSweepAdapter::new(
+            address,
+            Duration::from_secs(1),
+        ))
+        .run(&one_point)
+        .unwrap();
+        assert_eq!(report.backend, "sdr_iio_power_summary");
+        assert_eq!(report.points[0].sequence, 45);
+        server.join().unwrap();
+    }
+
+    #[test]
+    fn software_adapter_fails_closed_without_capability() {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = thread::spawn(move || {
+            let responses = [
+                "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
+                "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":false,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
+                "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"closing\":true}\n",
+            ];
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut reader = BufReader::new(stream.try_clone().unwrap());
+            for response in responses {
+                let mut request = String::new();
+                reader.read_line(&mut request).unwrap();
+                assert!(!request.contains("START_SESSION"));
+                stream.write_all(response.as_bytes()).unwrap();
+                stream.flush().unwrap();
+            }
+        });
+        let error = SweepEngine::new(SdrdSoftwareSweepAdapter::new(
+            address,
+            Duration::from_secs(1),
+        ))
+        .run(&plan())
+        .unwrap_err();
+        assert_eq!(error.code, "software_summary_unavailable");
+        server.join().unwrap();
+    }
+
+    #[test]
+    fn software_summary_failure_stops_and_restores_session() {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = thread::spawn(move || {
+            let responses = [
+                "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
+                "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
+                "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":9,\"session_state\":\"owned\",\"restore_armed\":true}\n",
+                "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":9,\"center_hz\":2440000000,\"sample_rate_hz\":3000000,\"rf_bandwidth_hz\":2500000,\"gain_mode\":\"slow_attack\",\"enabled_channels\":1}\n",
+                "{\"schema_version\":1,\"request_id\":5,\"status\":\"error\",\"error\":\"capture_timeout\"}\n",
+                "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":9,\"stopped\":true,\"restored\":true}\n",
+                "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"closing\":true}\n",
+            ];
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut reader = BufReader::new(stream.try_clone().unwrap());
+            for (index, response) in responses.into_iter().enumerate() {
+                let mut request = String::new();
+                reader.read_line(&mut request).unwrap();
+                if index == 5 {
+                    assert!(request.starts_with("SDRD/1 STOP_SESSION 6 9"));
+                }
+                stream.write_all(response.as_bytes()).unwrap();
+                stream.flush().unwrap();
+            }
+        });
+        let mut one_point = plan();
+        one_point.frequencies = SweepFrequencies::Centers {
+            centers_hz: vec![2_440_000_000],
+        };
+        let error = SweepEngine::new(SdrdSoftwareSweepAdapter::new(
+            address,
+            Duration::from_secs(1),
+        ))
+        .run(&one_point)
+        .unwrap_err();
+        assert_eq!(error.code, "remote_error");
+        server.join().unwrap();
+    }
+
+    #[test]
+    fn clipped_fixed_gain_summary_fails_and_restores_session() {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = thread::spawn(move || {
+            let responses = [
+                "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
+                "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
+                "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":9,\"session_state\":\"owned\",\"restore_armed\":true}\n",
+                "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":9,\"center_hz\":2440000000,\"sample_rate_hz\":3000000,\"rf_bandwidth_hz\":2500000,\"gain_mode\":\"manual\",\"hardware_gain_db\":20,\"enabled_channels\":1}\n",
+                "{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":9,\"sequence\":46,\"aggregate_samples\":32768,\"rx0_power_lo\":1073741824,\"rx0_power_mid\":0,\"rx0_power_hi\":0,\"rx0_clip_count\":1,\"status_flags\":0,\"elapsed_us\":800}\n",
+                "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":9,\"stopped\":true,\"restored\":true}\n",
+                "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"closing\":true}\n",
+            ];
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut reader = BufReader::new(stream.try_clone().unwrap());
+            for (index, response) in responses.into_iter().enumerate() {
+                let mut request = String::new();
+                reader.read_line(&mut request).unwrap();
+                if index == 3 {
+                    assert!(request.contains(" manual 20 1"));
+                }
+                if index == 5 {
+                    assert!(request.starts_with("SDRD/1 STOP_SESSION 6 9"));
+                }
+                stream.write_all(response.as_bytes()).unwrap();
+                stream.flush().unwrap();
+            }
+        });
+        let mut one_point = plan();
+        one_point.frequencies = SweepFrequencies::Centers {
+            centers_hz: vec![2_440_000_000],
+        };
+        one_point.gain_db = Some(20);
+        let error = SweepEngine::new(SdrdSoftwareSweepAdapter::new(
+            address,
+            Duration::from_secs(1),
+        ))
+        .run(&one_point)
+        .unwrap_err();
+        assert_eq!(error.code, "summary_clipped");
+        server.join().unwrap();
+    }
+
+    #[test]
+    fn accepts_768_non_divisible_range_points_and_rejects_769() {
+        let mut boundary = plan();
+        boundary.sample_rate_hz = 10_000_000;
+        boundary.rf_bandwidth_hz = 10_000_000;
+        boundary.frame_samples = 4_096;
+        boundary.aggregate_frames = 1;
+        boundary.point_timeout_ms = 250;
+        boundary.frequencies = SweepFrequencies::Range {
+            start_hz: 70_000_000,
+            stop_hz: 5_432_000_001,
+            step_hz: 7_000_000,
+        };
+        let validated = validate_plan(&boundary).unwrap();
+        assert_eq!(validated.centers_hz.len(), 768);
+        assert_eq!(validated.centers_hz.last(), Some(&5_432_000_001));
+
+        boundary.frequencies = SweepFrequencies::Range {
+            start_hz: 70_000_000,
+            stop_hz: 5_439_000_001,
+            step_hz: 7_000_000,
+        };
+        assert_eq!(validate_plan(&boundary).unwrap_err().code, "point_count");
     }
 }

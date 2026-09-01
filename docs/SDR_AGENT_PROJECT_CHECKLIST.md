@@ -83,6 +83,15 @@ state.
       automatically compact obsolete planning turns at a configurable 50–95%
       threshold (default 90%) while retaining the newest complete Rust-validated
       PlanningContext as authoritative.
+- [x] Provide a top-bar gear beside LAN status that opens a separate settings
+      page for model/API, context, compaction and initial-survey configuration;
+      keep edits local until explicit save, warn on unsaved navigation, write
+      the private file atomically as mode `0600`, and live-validate the deployed
+      browser form and upstream settings readback.
+- [x] Track automatic compaction separately from session-generation changes and
+      persist one-shot initial-survey state so switching or restarting a
+      completed conversation neither increments `compaction_count` nor repeats
+      the survey.
 - [x] Keep Planner/session sockets restricted to exact dedicated runtime
       directories, use canonical `/run/sdr-agent` on AGX, and retain exact
       `/run/sdrharness` compatibility for migration from the first installed
@@ -113,6 +122,7 @@ Evidence:
 - [`SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md)
 - [`SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md)
 - [`SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md)
+- [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 
 ## 2. Planning policy and autonomous loop
 
@@ -187,6 +197,9 @@ Evidence:
 - [x] Implement and live-validate bounded retune, explicit settle delay, and
       quantized LO readback tolerance in `sdrd`.
 - [x] Implement and live-validate bounded complex-int16 IQ capture in `sdrd`.
+- [x] Implement and live-validate bounded no-file `CAPTURE_POWER` summaries and
+      fixed manual-gain profiles with per-point numeric gain readback, clipping
+      metadata, cancellation, and saved AGC/gain restoration.
 - [x] Implement and live-validate direct in-flight cancel in `sdrd`.
 - [x] Implement and live-validate explicit post-action stop, buffer teardown,
       and state restoration.
@@ -211,6 +224,7 @@ Evidence:
 - [`SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md)
 - [`SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md`](SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md)
+- [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 
 ## 4. Raspberry Pi acquisition, aggregation, and sweep
 
@@ -230,6 +244,11 @@ Evidence:
 - [x] Execute a bounded Pi software multi-frequency sweep with per-point LO
       readback, compact candidates and verified state restoration.
 - [x] Feed compact aggregate candidates into the Agent observation contract.
+- [x] Run a configurable one-shot receive-only initial survey for each new Web
+      conversation, defaulting to a 743-point 70 MHz–6 GHz plan at fixed 20 dB;
+      fail on clipping or gain-readback mismatch, restore radio state, persist
+      completion, and live-validate the full real-SDR to OpenCode Go hold loop
+      without raw-IQ persistence or repeated scanning after Web restart.
 - [ ] Feed only selected, bounded IQ windows into local recognition.
 - [ ] Validate aggregate mode at sustained 5 MS/s and 10 MS/s with CPU, dropped
       sample, latency, and thermal measurements.
@@ -242,6 +261,7 @@ Evidence:
 - [`../raspberry-pi/p201pro-rust/TEST_RESULTS.md`](../raspberry-pi/p201pro-rust/TEST_RESULTS.md)
 - [`SDR_AGENT_FPGA_SWEEP_GATE_2026-09-01.md`](SDR_AGENT_FPGA_SWEEP_GATE_2026-09-01.md)
 - [`PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md`](PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md)
+- [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 
 ## 5. SDR FPGA aggregation
 

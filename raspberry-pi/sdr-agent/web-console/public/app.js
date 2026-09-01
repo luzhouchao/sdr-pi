@@ -3,6 +3,8 @@ const view = {
   active: null,
   provider: null,
   providerModels: [],
+  settingsDirty: false,
+  settingsOpen: false,
   reloadTimer: null,
   terminal: document.querySelector('#terminal'),
   sessions: document.querySelector('#sessions'),
@@ -31,7 +33,6 @@ function render() {
   renderSessions();
   renderTerminal();
   renderOverview();
-  renderProvider();
   const enabled = Boolean(view.active);
   document.querySelectorAll('[data-command], #command-input, #command-form button, #auto-form input, #auto-form button').forEach((element) => { element.disabled = !enabled; });
 }
@@ -55,11 +56,130 @@ function renderProvider() {
   } else {
     status.textContent = '尚未配置第三方上游';
   }
-  document.querySelector('#provider-dock').classList.toggle('configured', view.provider.configured);
+  const survey = view.provider.initial_survey || defaultSurvey();
+  const radio = document.querySelector(`input[name="survey-mode"][value="${survey.mode}"]`);
+  if (radio) radio.checked = true;
+  document.querySelector('#survey-start-mhz').value = hzToMhz(survey.start_hz);
+  document.querySelector('#survey-stop-mhz').value = hzToMhz(survey.stop_hz);
+  document.querySelector('#survey-step-mhz').value = hzToMhz(survey.step_hz);
+  document.querySelector('#survey-dwell-ms').value = survey.dwell_ms;
+  document.querySelector('#survey-gain-db').value = survey.gain_db ?? 20;
+  document.querySelector('#provider-api-key').value = '';
+  updateSurveyControls();
+  markSettingsDirty(false);
+}
+
+function defaultSurvey() {
+  return { mode: 'full_band', start_hz: 70000000, stop_hz: 6000000000, step_hz: 8000000, dwell_ms: 5, gain_db: 20 };
+}
+
+function surveyMode() {
+  return document.querySelector('input[name="survey-mode"]:checked')?.value || 'full_band';
+}
+
+function surveyPayload() {
+  return {
+    mode: surveyMode(),
+    start_hz: Math.round(Number(document.querySelector('#survey-start-mhz').value) * 1000000),
+    stop_hz: Math.round(Number(document.querySelector('#survey-stop-mhz').value) * 1000000),
+    step_hz: Math.round(Number(document.querySelector('#survey-step-mhz').value) * 1000000),
+    dwell_ms: Number(document.querySelector('#survey-dwell-ms').value),
+    gain_db: Number(document.querySelector('#survey-gain-db').value),
+  };
+}
+
+function updateSurveyControls() {
+  const mode = surveyMode();
+  if (mode === 'full_band') {
+    const survey = defaultSurvey();
+    document.querySelector('#survey-start-mhz').value = hzToMhz(survey.start_hz);
+    document.querySelector('#survey-stop-mhz').value = hzToMhz(survey.stop_hz);
+    document.querySelector('#survey-step-mhz').value = hzToMhz(survey.step_hz);
+    document.querySelector('#survey-dwell-ms').value = survey.dwell_ms;
+  }
+  document.querySelectorAll('#survey-fields input').forEach((input) => {
+    input.disabled = mode === 'disabled' || (mode === 'full_band' && input.id !== 'survey-gain-db');
+  });
+  document.querySelector('#survey-fields').classList.toggle('fields-disabled', mode === 'disabled');
+  updateSurveyBudget();
+}
+
+function updateSurveyBudget() {
+  const budget = document.querySelector('#survey-budget');
+  const summary = document.querySelector('#survey-budget-summary');
+  const detail = document.querySelector('#survey-budget-detail');
+  if (surveyMode() === 'disabled') {
+    budget.dataset.state = 'disabled';
+    summary.textContent = '首次扫描已关闭';
+    detail.textContent = '新对话会直接进入控制台，不建立初始频谱。';
+    return;
+  }
+  const survey = surveyPayload();
+  const span = survey.stop_hz - survey.start_hz;
+  const points = survey.step_hz > 0 && span >= 0 ? Math.ceil(span / survey.step_hz) + 1 : 0;
+  const durationMs = points * (survey.dwell_ms + 250);
+  const bytes = points * 4096 * 4;
+  const valid = survey.start_hz >= 70000000 && survey.stop_hz <= 6000000000
+    && survey.start_hz <= survey.stop_hz && survey.step_hz > 0 && survey.step_hz <= 8000000
+    && survey.dwell_ms >= 0 && survey.dwell_ms <= 1000 && survey.gain_db >= 0 && survey.gain_db <= 60
+    && points <= 768 && durationMs <= 300000;
+  budget.dataset.state = valid ? 'ready' : 'error';
+  summary.textContent = valid
+    ? `${points} 点 · 约 ${Math.round(durationMs / 1000)} 秒 · 约 ${formatBytes(bytes)}`
+    : '扫描预算超出安全边界';
+  detail.textContent = valid
+    ? `仅 RX，固定 ${survey.gain_db} dB 增益，10 MHz 采样率，4096 samples/点；可随时停止并恢复射频状态。`
+    : '请限制在 70–6000 MHz、步进不超过 8 MHz、增益 0–60 dB、最多 768 点 / 300 秒。';
+}
+
+function hzToMhz(value) {
+  return Number((Number(value) / 1000000).toFixed(6));
+}
+
+function formatBytes(value) {
+  return value < 1048576 ? `${Math.round(value / 1024)} KiB` : `${(value / 1048576).toFixed(1)} MiB`;
+}
+
+function markSettingsDirty(dirty = true) {
+  view.settingsDirty = dirty;
+  document.querySelector('#settings-dirty-dot').hidden = !dirty;
+  document.querySelector('#settings-save-state').textContent = dirty ? '有未保存修改' : '已载入当前设置';
+  document.querySelector('#settings-view').classList.toggle('dirty', dirty);
+}
+
+function showSettings() {
+  view.settingsOpen = true;
+  document.querySelector('#console-view').hidden = true;
+  document.querySelector('#settings-view').hidden = false;
+  document.querySelector('#settings-entry').setAttribute('aria-expanded', 'true');
+  document.querySelector('#settings-entry').classList.add('active');
+  document.querySelector('#settings-title').focus?.();
+}
+
+function showConsole() {
+  if (view.settingsDirty && !window.confirm('设置尚未保存，放弃修改并返回运行台？')) return;
+  if (view.settingsDirty) renderProvider();
+  view.settingsOpen = false;
+  document.querySelector('#settings-view').hidden = true;
+  document.querySelector('#console-view').hidden = false;
+  document.querySelector('#settings-entry').setAttribute('aria-expanded', 'false');
+  document.querySelector('#settings-entry').classList.remove('active');
+}
+
+function toggleSettings() {
+  if (view.settingsOpen) showConsole(); else showSettings();
+}
+
+function discardSettings() {
+  renderProvider();
+  clearModelInventory();
+  toast('未保存修改已放弃');
 }
 
 async function saveProvider(event) {
   event.preventDefault();
+  const form = document.querySelector('#provider-form');
+  if (!form.reportValidity()) return;
   const payload = {
     api: document.querySelector('#provider-api').value,
     base_url: document.querySelector('#provider-base-url').value.trim(),
@@ -68,13 +188,13 @@ async function saveProvider(event) {
     api_key: document.querySelector('#provider-api-key').value,
     context_window: Number(document.querySelector('#provider-context-window').value),
     compression_threshold_percent: Number(document.querySelector('#provider-compression-threshold').value),
+    initial_survey: surveyPayload(),
   };
   try {
     view.provider = await api('/api/provider', { method: 'PUT', body: JSON.stringify(payload) });
     document.querySelector('#provider-api-key').value = '';
-    document.querySelector('#provider-dock').open = false;
     renderProvider();
-    toast('上游配置已保存，将用于下一个新对话');
+    toast('设置已保存，将用于下一个新对话');
   } catch (error) { toast(error.message); }
 }
 
@@ -127,6 +247,7 @@ function applySelectedModel(modelId) {
   const selected = view.providerModels.find((model) => model.id === modelId);
   if (selected?.context_window) {
     document.querySelector('#provider-context-window').value = selected.context_window;
+    markSettingsDirty();
     toast(`已采用上游返回的上下文窗口：${formatTokens(selected.context_window)}`);
   }
 }
@@ -166,12 +287,15 @@ function presetOpenCode() {
   document.querySelector('#provider-context-window').value = '196608';
   document.querySelector('#provider-compression-threshold').value = '90';
   clearModelInventory();
+  markSettingsDirty();
   document.querySelector('#provider-api-key').focus();
 }
 
 function clearProviderFields() {
   document.querySelector('#provider-form').reset();
   clearModelInventory();
+  updateSurveyControls();
+  markSettingsDirty();
   document.querySelector('#provider-base-url').focus();
 }
 
@@ -209,7 +333,7 @@ function renderTerminal() {
     return;
   }
   activeTitle.textContent = view.active.title;
-  const compacted = Math.max(0, view.active.generation - 1);
+  const compacted = view.active.compaction_count || 0;
   activeMeta.textContent = `${statusLabel(view.active.status)} · ${view.active.events.length} 条可见记录${compacted ? ` · 已压缩 ${compacted} 次` : ''}`;
   for (const event of view.active.events) {
     const row = document.createElement('div');
@@ -229,7 +353,7 @@ function renderTerminal() {
 
 function renderOverview() {
   setText('#controller-status', view.active ? `${statusLabel(view.active.status)} · ${view.active.title}` : '等待活动对话');
-  setText('#sweep-status', latestText('sweep') || '尚无扫频输出');
+  setText('#sweep-status', latestText('sweep') || initialSurveyLabel(view.active?.initial_survey_status));
   setText('#qwen-status', latestText('qwen') || '尚无模型输出');
   setText('#cruise-status', latestText('cruise') || '逐步批准模式');
 }
@@ -311,8 +435,15 @@ function formatTokens(value) {
   return `${new Intl.NumberFormat('zh-CN').format(value)} tokens`;
 }
 function sessionMeta(session) {
-  const compacted = Math.max(0, session.generation - 1);
-  return `${statusLabel(session.status)}${compacted ? ` · 已压缩 ${compacted} 次` : ''}`;
+  const compacted = session.compaction_count || 0;
+  const survey = initialSurveyLabel(session.initial_survey_status, true);
+  return `${statusLabel(session.status)}${survey ? ` · ${survey}` : ''}${compacted ? ` · 已压缩 ${compacted} 次` : ''}`;
+}
+function initialSurveyLabel(status, compact = false) {
+  const labels = compact
+    ? { pending: '待初扫', running: '初扫中', complete: '初扫完成', failed: '初扫失败', skipped: '' }
+    : { pending: '首次扫频等待启动', running: '首次全频扫描中', complete: '首次频谱已建立', failed: '首次扫频失败', skipped: '首次扫描已关闭' };
+  return labels[status] ?? (compact ? '' : '尚无扫频输出');
 }
 function statusLabel(status) {
   return ({ connected: '已连接', stored: '已保存', starting: '启动中', exited: '已退出', error: '错误' })[status] || status;
@@ -333,15 +464,30 @@ document.querySelector('#provider-base-url').addEventListener('input', () => {
 document.querySelector('#provider-api-key').addEventListener('input', () => {
   if (view.providerModels.length) clearModelInventory();
 });
-document.querySelector('#clear-provider').addEventListener('click', clearProvider);
 document.querySelector('#preset-opencode').addEventListener('click', presetOpenCode);
 document.querySelector('#preset-custom').addEventListener('click', clearProviderFields);
+document.querySelector('#settings-entry').addEventListener('click', toggleSettings);
+document.querySelector('#settings-back').addEventListener('click', showConsole);
+document.querySelector('#discard-settings').addEventListener('click', discardSettings);
+document.querySelector('#provider-form').addEventListener('input', (event) => {
+  if (event.target.closest('#survey-fields') || event.target.name === 'survey-mode') updateSurveyBudget();
+  markSettingsDirty();
+});
+document.querySelectorAll('input[name="survey-mode"]').forEach((radio) => radio.addEventListener('change', () => {
+  updateSurveyControls();
+  markSettingsDirty();
+}));
 document.querySelector('#scroll-bottom').addEventListener('click', scrollBottom);
 document.querySelector('#auto-form').addEventListener('submit', startAuto);
 document.querySelectorAll('[data-command]').forEach((button) => button.addEventListener('click', () => send(button.dataset.command)));
 document.querySelector('#command-form').addEventListener('submit', (event) => { event.preventDefault(); send(view.input.value); });
 view.input.addEventListener('keydown', (event) => {
   if (event.key === 'Enter' && event.ctrlKey) { event.preventDefault(); send(view.input.value); }
+});
+window.addEventListener('beforeunload', (event) => {
+  if (!view.settingsDirty) return;
+  event.preventDefault();
+  event.returnValue = '';
 });
 
 Promise.all([loadState({ keepScroll: false }), loadProvider()])

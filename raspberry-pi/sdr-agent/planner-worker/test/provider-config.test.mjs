@@ -75,3 +75,26 @@ test("rejects loose permissions and unknown private config fields", (context) =>
   writeFileSync(path, JSON.stringify({ ...config, shell: true }), { mode: 0o600 });
   assert.throws(() => loadPrivateProviderFile(path), /unknown field shell/u);
 });
+
+test("accepts the Web-owned initial survey settings without exposing them upstream", (context) => {
+  const directory = mkdtempSync(join(tmpdir(), "sdr-provider-survey-"));
+  context.after(() => rmSync(directory, { recursive: true }));
+  const path = join(directory, "provider.json");
+  writeFileSync(path, JSON.stringify({
+    schema_version: 1,
+    api: "openai-completions",
+    base_url: "https://api.example.com/v1",
+    provider: "example",
+    model: "example-model",
+    api_key: "test-key",
+    initial_survey: {
+      mode: "full_band",
+      start_hz: 70_000_000,
+      stop_hz: 6_000_000_000,
+      step_hz: 8_000_000,
+      dwell_ms: 5,
+      gain_db: 30,
+    },
+  }), { mode: 0o600 });
+  assert.equal(loadPrivateProviderFile(path).model, "example-model");
+});

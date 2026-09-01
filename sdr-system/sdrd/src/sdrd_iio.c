@@ -299,6 +299,11 @@ static int adapter_snapshot(void *context, sdrd_radio_state_t *state) {
 static int verify_profile(sdrd_iio_adapter_t *adapter, const sdrd_radio_state_t *state) {
   sdrd_radio_state_t observed;
   uint64_t center_delta;
+  double requested_gain = 0.0;
+  double observed_gain = 0.0;
+  double gain_delta = 0.0;
+  char *requested_end = NULL;
+  char *observed_end = NULL;
   int rc;
   memset(&observed, 0, sizeof(observed));
   rc = read_u64_attr(adapter, adapter->rx_lo, "frequency", &observed.center_hz);
@@ -316,8 +321,30 @@ static int verify_profile(sdrd_iio_adapter_t *adapter, const sdrd_radio_state_t 
         observed.gain_mode,
         sizeof(observed.gain_mode));
   }
+  if (rc == 0 && strcmp(state->gain_mode, "manual") == 0) {
+    rc = read_text_attr(
+        adapter,
+        adapter->phy_rx0,
+        "hardwaregain",
+        observed.hardware_gain,
+        sizeof(observed.hardware_gain));
+  }
   if (rc != 0) {
     return rc;
+  }
+  if (strcmp(state->gain_mode, "manual") == 0) {
+    errno = 0;
+    requested_gain = strtod(state->hardware_gain, &requested_end);
+    if (errno != 0 || requested_end == state->hardware_gain) {
+      return -EINVAL;
+    }
+    errno = 0;
+    observed_gain = strtod(observed.hardware_gain, &observed_end);
+    if (errno != 0 || observed_end == observed.hardware_gain) {
+      return -EIO;
+    }
+    gain_delta = requested_gain > observed_gain ? requested_gain - observed_gain
+                                                : observed_gain - requested_gain;
   }
   center_delta = observed.center_hz > state->center_hz
                      ? observed.center_hz - state->center_hz
@@ -326,13 +353,15 @@ static int verify_profile(sdrd_iio_adapter_t *adapter, const sdrd_radio_state_t 
       observed.sample_rate_hz != state->sample_rate_hz ||
       observed.rf_bandwidth_hz != state->rf_bandwidth_hz ||
       strcmp(observed.gain_mode, state->gain_mode) != 0 ||
+      (strcmp(state->gain_mode, "manual") == 0 && gain_delta > 0.05) ||
       get_scan_mask(adapter) != 0x03u) {
     fprintf(
         stderr,
         "iio_operation=apply stage=verify requested_center=%" PRIu64
         " observed_center=%" PRIu64 " requested_rate=%u observed_rate=%u"
         " requested_bandwidth=%u observed_bandwidth=%u requested_gain=%s"
-        " observed_gain=%s observed_scan_mask=%u\n",
+        " observed_gain=%s requested_hardware_gain=%s observed_hardware_gain=%s"
+        " observed_scan_mask=%u\n",
         state->center_hz,
         observed.center_hz,
         state->sample_rate_hz,
@@ -341,6 +370,8 @@ static int verify_profile(sdrd_iio_adapter_t *adapter, const sdrd_radio_state_t 
         observed.rf_bandwidth_hz,
         state->gain_mode,
         observed.gain_mode,
+        state->hardware_gain,
+        observed.hardware_gain,
         get_scan_mask(adapter));
     return -EIO;
   }
@@ -374,6 +405,15 @@ static int adapter_apply_profile(void *context, const sdrd_radio_state_t *state)
   if (rc != 0) {
     fprintf(stderr, "iio_operation=apply stage=gain_control_mode rc=%d\n", rc);
     return rc;
+  }
+  if (strcmp(state->gain_mode, "manual") == 0) {
+    const ssize_t written = adapter->api.channel_attr_write(
+        adapter->phy_rx0, "hardwaregain", state->hardware_gain);
+    rc = written < 0 ? (int)written : 0;
+    if (rc != 0) {
+      fprintf(stderr, "iio_operation=apply stage=hardwaregain rc=%d\n", rc);
+      return rc;
+    }
   }
   rc = adapter->api.channel_attr_write_longlong(
       adapter->rx_lo, "frequency", (long long)state->center_hz);
@@ -556,6 +596,111 @@ failed:
   return rc;
 }
 
+static uint64_t elapsed_microseconds(struct timespec started, struct timespec finished) {
+  time_t seconds = finished.tv_sec - started.tv_sec;
+  long nanoseconds = finished.tv_nsec - started.tv_nsec;
+  if (nanoseconds < 0) {
+    --seconds;
+    nanoseconds += 1000000000L;
+  }
+  if (seconds < 0) {
+    return 0u;
+  }
+  return (uint64_t)seconds * 1000000u + (uint64_t)nanoseconds / 1000u;
+}
+
+static int adapter_capture_power(
+    void *context,
+    const sdrd_summary_request_t *request,
+    sdrd_summary_result_t *result) {
+  sdrd_iio_adapter_t *adapter = context;
+  const uint64_t requested_samples =
+      (uint64_t)request->frame_samples * (uint64_t)request->aggregate_frames;
+  uint64_t remaining = requested_samples;
+  uint64_t power = 0u;
+  uint64_t clipped = 0u;
+  struct timespec started;
+  struct timespec finished;
+  int rc = 0;
+  if (adapter == NULL || request == NULL || result == NULL || requested_samples == 0u) {
+    return -EINVAL;
+  }
+  if (adapter->api.device_get_sample_size(adapter->rx) != 4) {
+    return -EPROTO;
+  }
+  if (adapter->buffer == NULL) {
+    adapter->buffer = adapter->api.device_create_buffer(adapter->rx, adapter->buffer_samples, false);
+    if (adapter->buffer == NULL) {
+      return errno != 0 ? -errno : -EIO;
+    }
+  }
+  memset(result, 0, sizeof(*result));
+  (void)clock_gettime(CLOCK_MONOTONIC, &started);
+  (void)pthread_mutex_lock(&adapter->cancel_mutex);
+  if (adapter->cancel_requested != 0) {
+    (void)pthread_mutex_unlock(&adapter->cancel_mutex);
+    return -ECANCELED;
+  }
+  adapter->capture_active = 1;
+  (void)pthread_mutex_unlock(&adapter->cancel_mutex);
+  while (remaining > 0u) {
+    const ssize_t refill = adapter->api.buffer_refill(adapter->buffer);
+    const unsigned char *cursor;
+    const unsigned char *end;
+    uint64_t available_samples;
+    uint64_t take;
+    uint64_t index;
+    if (refill < 0) {
+      rc = (int)refill;
+      break;
+    }
+    cursor = adapter->api.buffer_start(adapter->buffer);
+    end = adapter->api.buffer_end(adapter->buffer);
+    if (cursor == NULL || end == NULL || end <= cursor || ((size_t)(end - cursor) % 4u) != 0u) {
+      rc = -EIO;
+      break;
+    }
+    available_samples = (uint64_t)(end - cursor) / 4u;
+    take = available_samples < remaining ? available_samples : remaining;
+    for (index = 0u; index < take; ++index) {
+      int16_t i_sample;
+      int16_t q_sample;
+      int64_t i_value;
+      int64_t q_value;
+      memcpy(&i_sample, cursor + index * 4u, sizeof(i_sample));
+      memcpy(&q_sample, cursor + index * 4u + 2u, sizeof(q_sample));
+      i_value = (int64_t)i_sample;
+      q_value = (int64_t)q_sample;
+      power += (uint64_t)(i_value * i_value) + (uint64_t)(q_value * q_value);
+      if (i_sample <= -2048 || i_sample >= 2047 || q_sample <= -2048 || q_sample >= 2047) {
+        ++clipped;
+      }
+    }
+    remaining -= take;
+    (void)clock_gettime(CLOCK_MONOTONIC, &finished);
+    if (elapsed_microseconds(started, finished) > (uint64_t)request->timeout_ms * 1000u) {
+      rc = -ETIMEDOUT;
+      break;
+    }
+  }
+  (void)pthread_mutex_lock(&adapter->cancel_mutex);
+  adapter->capture_active = 0;
+  (void)pthread_mutex_unlock(&adapter->cancel_mutex);
+  if (rc != 0) {
+    return rc;
+  }
+  (void)clock_gettime(CLOCK_MONOTONIC, &finished);
+  ++adapter->sequence;
+  result->sequence = adapter->sequence;
+  result->aggregate_samples = requested_samples;
+  result->rx0_power_lo = (uint32_t)(power & UINT32_MAX);
+  result->rx0_power_mid = (uint32_t)(power >> 32u);
+  result->rx0_power_hi = 0u;
+  result->rx0_clip_count = clipped;
+  result->elapsed_us = elapsed_microseconds(started, finished);
+  return 0;
+}
+
 static int adapter_cancel(void *context) {
   sdrd_iio_adapter_t *adapter = context;
   if (adapter == NULL) {
@@ -728,6 +873,7 @@ void sdrd_iio_adapter_ops(sdrd_iio_adapter_t *adapter, sdrd_radio_ops_t *ops) {
   ops->snapshot = adapter_snapshot;
   ops->apply_profile = adapter_apply_profile;
   ops->capture_iq = adapter_capture_iq;
+  ops->capture_power = adapter_capture_power;
   ops->cancel = adapter_cancel;
   ops->stop = adapter_stop;
   ops->restore = adapter_restore;

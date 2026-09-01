@@ -40,15 +40,37 @@ export function loadPrivateProviderFile(path) {
     value,
     ["schema_version", "api", "base_url", "provider", "model", "api_key"],
     "provider config",
-    ["context_window", "compression_threshold_percent"],
+    ["context_window", "compression_threshold_percent", "initial_survey"],
   );
   if (value.schema_version !== PROVIDER_CONFIG_SCHEMA_VERSION) {
     throw new Error("unsupported provider config schema version");
   }
+  if (value.initial_survey !== undefined) validateInitialSurvey(value.initial_survey);
   return validateProviderSelection({
     ...value,
     api_key_source: "private provider config",
   });
+}
+
+function validateInitialSurvey(value) {
+  requirePlainObject(value, "initial_survey");
+  requireExactKeys(
+    value,
+    ["mode", "start_hz", "stop_hz", "step_hz", "dwell_ms"],
+    "initial_survey",
+    ["gain_db"],
+  );
+  if (!["full_band", "custom_band", "disabled"].includes(value.mode)) {
+    throw new Error("initial_survey mode is unsupported");
+  }
+  for (const key of ["start_hz", "stop_hz", "step_hz", "dwell_ms"]) {
+    if (!Number.isSafeInteger(value[key]) || value[key] < 0) {
+      throw new Error(`initial_survey ${key} must be a non-negative integer`);
+    }
+  }
+  if (value.gain_db !== undefined && (!Number.isSafeInteger(value.gain_db) || value.gain_db < 0 || value.gain_db > 60)) {
+    throw new Error("initial_survey gain_db must be an integer between 0 and 60");
+  }
 }
 
 export function validateProviderSelection(value) {

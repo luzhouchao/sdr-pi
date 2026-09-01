@@ -13,6 +13,9 @@ use sdr_agent_controller::protocol::{
     ControllerState, PlanRequest, PlanResponse, ProposedAction, ValidatedPlan, MAX_FRAME_BYTES,
 };
 use sdr_agent_controller::sdr::{SdrEngine, SdrError, SdrdAdapter};
+use sdr_agent_controller::sweep::{
+    SdrdSoftwareSweepAdapter, SweepEngine, SweepError, SweepFrequencies, SweepPlan, SweepReport,
+};
 use serde_json::{json, Value};
 use std::collections::{HashMap, VecDeque};
 use std::env;
@@ -72,6 +75,9 @@ fn run() -> AppResult<()> {
             "未配置"
         }
     );
+    if let Some(initial_survey) = options.initial_survey {
+        app.start_initial_survey(initial_survey)?;
+    }
     let (input_tx, input_rx) = mpsc::channel();
     thread::spawn(move || {
         let stdin = io::stdin();
@@ -224,6 +230,7 @@ struct ConsoleApp {
     plan_seen_in_cycle: bool,
     executor: Option<SdrdActionAdapter>,
     active_execution: Option<ActiveExecution>,
+    active_sweep: Option<ActiveSweep>,
     sdrd_address: Option<SocketAddr>,
     sdrd_timeout: Duration,
     cruise: CruiseControl,
@@ -238,6 +245,21 @@ struct ActiveExecution {
     session_generation: u64,
     canceller: SdrdActionAdapter,
     worker: JoinHandle<(SdrdActionAdapter, Result<ExecutionObservation, SdrError>)>,
+}
+
+struct ActiveSweep {
+    session_generation: u64,
+    canceller: SdrdActionAdapter,
+    worker: JoinHandle<Result<SweepReport, SweepError>>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct InitialSurveyOptions {
+    start_hz: u64,
+    stop_hz: u64,
+    step_hz: u64,
+    dwell_ms: u64,
+    gain_db: i16,
 }
 
 impl ConsoleApp {
@@ -263,6 +285,7 @@ impl ConsoleApp {
             plan_seen_in_cycle: false,
             executor,
             active_execution: None,
+            active_sweep: None,
             sdrd_address,
             sdrd_timeout,
             cruise: CruiseControl::default(),
@@ -276,7 +299,8 @@ impl ConsoleApp {
     }
 
     fn submit(&mut self, instruction: String) -> AppResult<()> {
-        if self.active_execution.is_some() || self.agent_cycle_active {
+        if self.active_execution.is_some() || self.active_sweep.is_some() || self.agent_cycle_active
+        {
             println!("当前步骤尚未结束；可输入 /stop 立即停止，或等待完成后再提交新指令。");
             return Ok(());
         }
@@ -365,7 +389,8 @@ impl ConsoleApp {
     }
 
     fn renew(&mut self, state: ControllerState, message: &str) -> AppResult<()> {
-        if self.active_execution.is_some() || self.agent_cycle_active {
+        if self.active_execution.is_some() || self.active_sweep.is_some() || self.agent_cycle_active
+        {
             return Err(invalid_input(
                 "cannot renew the session while a planning or hardware step is active",
             )
@@ -432,6 +457,120 @@ impl ConsoleApp {
         });
         self.cruise.set_phase(CruisePhase::Executing);
         println!("受限硬件动作 request={request_id} 已开始；执行期间可随时输入 /stop。");
+        Ok(())
+    }
+
+    fn start_initial_survey(&mut self, options: InitialSurveyOptions) -> AppResult<()> {
+        if self.active_execution.is_some() || self.active_sweep.is_some() || self.agent_cycle_active
+        {
+            return Err(
+                invalid_input("cannot start initial survey while another step is active").into(),
+            );
+        }
+        let Some(address) = self.sdrd_address else {
+            println!("首次扫频失败：没有配置 SDRD 地址。");
+            return Ok(());
+        };
+        if !self.refresh_sdr_health(true)? {
+            println!("首次扫频失败：SDR 健康检查未通过，不会尝试调谐。");
+            return Ok(());
+        }
+        let plan = SweepPlan {
+            sweep_id: format!("initial-{}", self.session_generation),
+            session_generation: self.session_generation,
+            frequencies: SweepFrequencies::Range {
+                start_hz: options.start_hz,
+                stop_hz: options.stop_hz,
+                step_hz: options.step_hz,
+            },
+            sample_rate_hz: 10_000_000,
+            rf_bandwidth_hz: 10_000_000,
+            settle_ms: options.dwell_ms,
+            frame_samples: 4_096,
+            aggregate_frames: 1,
+            point_timeout_ms: 250,
+            detection_threshold_db: 12.0,
+            gain_db: Some(options.gain_db),
+        };
+        let validated = sdr_agent_controller::sweep::validate_plan(&plan)?;
+        let points = validated.centers_hz.len();
+        let maximum_bytes = points as u64 * 4_096 * 4;
+        let timeout = self.sdrd_timeout.max(Duration::from_millis(500));
+        let mut engine = SweepEngine::new(SdrdSoftwareSweepAdapter::new(address, timeout));
+        let worker = thread::spawn(move || engine.run(&plan));
+        self.active_sweep = Some(ActiveSweep {
+            session_generation: self.session_generation,
+            canceller: SdrdActionAdapter::new(address, timeout),
+            worker,
+        });
+        self.template.state = ControllerState::Surveying;
+        println!(
+            "首次扫频已开始：{}–{} Hz，{} 个点，步进 {} Hz，每点停留 {} ms，固定接收增益 {} dB；最多处理 {} 字节接收样本，可随时输入 /stop。",
+            options.start_hz,
+            options.stop_hz,
+            points,
+            options.step_hz,
+            options.dwell_ms,
+            options.gain_db,
+            maximum_bytes
+        );
+        Ok(())
+    }
+
+    fn poll_sweep(&mut self) -> AppResult<()> {
+        let finished = self
+            .active_sweep
+            .as_ref()
+            .is_some_and(|active| active.worker.is_finished());
+        if !finished {
+            return Ok(());
+        }
+        let active = self
+            .active_sweep
+            .take()
+            .ok_or_else(|| invalid_input("missing active sweep"))?;
+        let result = active
+            .worker
+            .join()
+            .map_err(|_| invalid_input("initial survey worker panicked"))?;
+        match result {
+            Ok(report) => {
+                if !self.refresh_sdr_health(true)? {
+                    self.template.state = ControllerState::Faulted;
+                    println!("首次扫频失败：扫频结束后 SDR 健康或状态恢复检查未通过。");
+                    return Ok(());
+                }
+                let health = self.template.observation.health.clone();
+                self.template.observation = report.planner_observation(0, health);
+                self.template.state = ControllerState::Idle;
+                self.record(format!(
+                    "initial survey completed with {} candidates",
+                    report.candidates.len()
+                ));
+                println!(
+                    "首次扫频完成：{} 个频点，耗时 {} ms，噪声基线 {:.1} dBFS，发现 {} 个候选；射频状态已恢复。",
+                    report.points.len(),
+                    report.elapsed_ms,
+                    report.noise_floor_dbfs,
+                    report.candidates.len()
+                );
+                for candidate in report.candidates.iter().take(8) {
+                    println!(
+                        "候选 {}：中心 {} Hz，带宽 {} Hz，峰值 {:.1} dBFS，信噪比 {:.1} dB。",
+                        candidate.id,
+                        candidate.center_hz,
+                        candidate.bandwidth_hz,
+                        candidate.peak_dbfs,
+                        candidate.snr_db
+                    );
+                }
+            }
+            Err(error) => {
+                self.template.state = ControllerState::Holding;
+                self.record(format!("initial survey failed: {error}"));
+                println!("首次扫频失败：{error}。SDRD 已执行停止与状态恢复路径。");
+            }
+        }
         Ok(())
     }
 
@@ -535,6 +674,9 @@ impl ConsoleApp {
             }
             println!("已要求上游停止当前生成；收到结束确认后会使旧计划失效。");
         }
+        if self.active_sweep.is_some() {
+            return self.stop_sweep(message);
+        }
         if self.active_execution.is_none() {
             if self.agent_cycle_active {
                 return Ok(());
@@ -609,12 +751,65 @@ impl ConsoleApp {
         }
     }
 
+    fn stop_sweep(&mut self, message: &str) -> AppResult<()> {
+        let mut attempts = 0_usize;
+        let cancel_result = loop {
+            let result = {
+                let active = self
+                    .active_sweep
+                    .as_mut()
+                    .ok_or_else(|| invalid_input("missing active sweep"))?;
+                active.canceller.cancel(active.session_generation)
+            };
+            let retry = matches!(
+                &result,
+                Err(error)
+                    if error.code == "remote_error" && error.message == "stale_or_missing_session"
+            ) && self
+                .active_sweep
+                .as_ref()
+                .is_some_and(|active| !active.worker.is_finished());
+            if !retry || attempts >= CANCEL_START_RETRIES {
+                break result;
+            }
+            attempts += 1;
+            thread::sleep(Duration::from_millis(10));
+        };
+        if let Err(error) = cancel_result {
+            if self
+                .active_sweep
+                .as_ref()
+                .is_some_and(|active| active.worker.is_finished())
+            {
+                self.poll_sweep()?;
+                return self.renew(ControllerState::Holding, message);
+            }
+            println!("扫频取消请求失败，SDR 仍由当前会话持有：{error}");
+            return Ok(());
+        }
+        let active = self
+            .active_sweep
+            .take()
+            .ok_or_else(|| invalid_input("missing active sweep"))?;
+        let result = active
+            .worker
+            .join()
+            .map_err(|_| invalid_input("initial survey worker panicked after cancellation"))?;
+        match result {
+            Ok(report) => println!("取消到达前扫频已完成：{} 个频点。", report.points.len()),
+            Err(error) => println!("首次扫频已取消并完成恢复：{error}"),
+        }
+        self.renew(ControllerState::Holding, message)
+    }
+
     fn enable_step_approval(&mut self) -> AppResult<()> {
         if self.cruise.mode() == InteractionMode::StepApproval && !self.cruise.is_active() {
             println!("当前已经是逐步人工批准模式。每个可执行动作都会等待 /approve 或 /reject。");
             return Ok(());
         }
-        let had_active_step = self.agent_cycle_active || self.active_execution.is_some();
+        let had_active_step = self.agent_cycle_active
+            || self.active_execution.is_some()
+            || self.active_sweep.is_some();
         if had_active_step {
             self.stop("已切换到逐步人工批准模式")?;
         }
@@ -637,7 +832,8 @@ impl ConsoleApp {
         if mission.is_empty() || mission.len() > 700 || mission.chars().any(char::is_control) {
             return Err(invalid_input("自动巡航任务必须为 1–700 字节的单行文本").into());
         }
-        if self.agent_cycle_active || self.active_execution.is_some() {
+        if self.agent_cycle_active || self.active_execution.is_some() || self.active_sweep.is_some()
+        {
             println!("当前步骤尚未结束；请先 /stop，再启动新的自动巡航。");
             return Ok(());
         }
@@ -673,7 +869,11 @@ impl ConsoleApp {
             self.handle_event(frame)?;
         }
         self.poll_execution()?;
-        if !self.agent_cycle_active && self.active_execution.is_none() {
+        self.poll_sweep()?;
+        if !self.agent_cycle_active
+            && self.active_execution.is_none()
+            && self.active_sweep.is_none()
+        {
             if let Some((state, message)) = self.deferred_renew.take() {
                 self.renew(state, &message)?;
             }
@@ -687,13 +887,17 @@ impl ConsoleApp {
         }
         if !self.cruise.check_duration(Instant::now()) {
             self.print_cruise_status();
-            if self.agent_cycle_active || self.active_execution.is_some() {
+            if self.agent_cycle_active
+                || self.active_execution.is_some()
+                || self.active_sweep.is_some()
+            {
                 self.stop("自动巡航达到时长上限")?;
             }
             return Ok(());
         }
         if self.agent_cycle_active
             || self.active_execution.is_some()
+            || self.active_sweep.is_some()
             || self.pending.is_some()
             || Instant::now() < self.next_auto_attempt
         {
@@ -796,7 +1000,8 @@ impl ConsoleApp {
     }
 
     fn close(&mut self) -> AppResult<()> {
-        if self.active_execution.is_some() || self.agent_cycle_active {
+        if self.active_execution.is_some() || self.active_sweep.is_some() || self.agent_cycle_active
+        {
             self.stop("终端关闭，硬件动作已停止")?;
         }
         let deadline = Instant::now() + Duration::from_secs(2);
@@ -1056,6 +1261,7 @@ struct Options {
     instruction: Option<String>,
     sdrd_address: Option<SocketAddr>,
     sdrd_timeout_ms: u64,
+    initial_survey: Option<InitialSurveyOptions>,
 }
 
 impl Options {
@@ -1065,6 +1271,11 @@ impl Options {
         let mut instruction = Vec::new();
         let mut sdrd_address = None;
         let mut sdrd_timeout_ms = 5_000_u64;
+        let mut initial_survey_start_hz = None;
+        let mut initial_survey_stop_hz = None;
+        let mut initial_survey_step_hz = None;
+        let mut initial_survey_dwell_ms = None;
+        let mut initial_survey_gain_db = None;
         let mut args = env::args().skip(1);
         while let Some(arg) = args.next() {
             match arg.as_str() {
@@ -1093,6 +1304,21 @@ impl Options {
                         .ok_or_else(|| invalid_input("missing --sdrd-timeout-ms value"))?
                         .parse()?;
                 }
+                "--initial-survey-start-hz" => {
+                    initial_survey_start_hz = Some(parse_option_u64(&mut args, &arg)?);
+                }
+                "--initial-survey-stop-hz" => {
+                    initial_survey_stop_hz = Some(parse_option_u64(&mut args, &arg)?);
+                }
+                "--initial-survey-step-hz" => {
+                    initial_survey_step_hz = Some(parse_option_u64(&mut args, &arg)?);
+                }
+                "--initial-survey-dwell-ms" => {
+                    initial_survey_dwell_ms = Some(parse_option_u64(&mut args, &arg)?);
+                }
+                "--initial-survey-gain-db" => {
+                    initial_survey_gain_db = Some(parse_option_u64(&mut args, &arg)?);
+                }
                 _ if arg.starts_with('-') => {
                     return Err(invalid_input(format!("unknown option {arg}")).into())
                 }
@@ -1102,14 +1328,73 @@ impl Options {
         if !(100..=60_000).contains(&sdrd_timeout_ms) {
             return Err(invalid_input("--sdrd-timeout-ms must be between 100 and 60000").into());
         }
+        let survey_fields = [
+            initial_survey_start_hz,
+            initial_survey_stop_hz,
+            initial_survey_step_hz,
+            initial_survey_dwell_ms,
+        ];
+        let initial_survey =
+            if survey_fields.iter().all(Option::is_none) && initial_survey_gain_db.is_none() {
+                None
+            } else if survey_fields.iter().any(Option::is_none) {
+                return Err(
+                    invalid_input("initial survey requires start, stop, step, and dwell").into(),
+                );
+            } else {
+                let options = InitialSurveyOptions {
+                    start_hz: initial_survey_start_hz.unwrap(),
+                    stop_hz: initial_survey_stop_hz.unwrap(),
+                    step_hz: initial_survey_step_hz.unwrap(),
+                    dwell_ms: initial_survey_dwell_ms.unwrap(),
+                    gain_db: initial_survey_gain_db
+                        .unwrap_or(20)
+                        .try_into()
+                        .map_err(|_| {
+                            invalid_input("initial survey gain must be between 0 and 60 dB")
+                        })?,
+                };
+                if !(0..=60).contains(&options.gain_db) {
+                    return Err(
+                        invalid_input("initial survey gain must be between 0 and 60 dB").into(),
+                    );
+                }
+                let plan = SweepPlan {
+                    sweep_id: "initial-options".into(),
+                    session_generation: 1,
+                    frequencies: SweepFrequencies::Range {
+                        start_hz: options.start_hz,
+                        stop_hz: options.stop_hz,
+                        step_hz: options.step_hz,
+                    },
+                    sample_rate_hz: 10_000_000,
+                    rf_bandwidth_hz: 10_000_000,
+                    settle_ms: options.dwell_ms,
+                    frame_samples: 4_096,
+                    aggregate_frames: 1,
+                    point_timeout_ms: 250,
+                    detection_threshold_db: 12.0,
+                    gain_db: Some(options.gain_db),
+                };
+                sdr_agent_controller::sweep::validate_plan(&plan)?;
+                Some(options)
+            };
         Ok(Self {
             socket_path,
             request_path,
             instruction: (!instruction.is_empty()).then(|| instruction.join(" ")),
             sdrd_address,
             sdrd_timeout_ms,
+            initial_survey,
         })
     }
+}
+
+fn parse_option_u64(args: &mut impl Iterator<Item = String>, option: &str) -> AppResult<u64> {
+    Ok(args
+        .next()
+        .ok_or_else(|| invalid_input(format!("missing {option} value")))?
+        .parse()?)
 }
 
 fn read_bounded(mut reader: impl Read) -> AppResult<Vec<u8>> {

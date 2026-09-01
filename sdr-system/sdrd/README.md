@@ -44,8 +44,9 @@ Controlled mode adds only these allowlisted messages:
 
 ```text
 SDRD/1 START_SESSION <request_id> <generation>
-SDRD/1 APPLY_PROFILE <request_id> <generation> <center_hz> <sample_rate_hz> <rf_bandwidth_hz> <gain_mode> <enabled_channels>
+SDRD/1 APPLY_PROFILE <request_id> <generation> <center_hz> <sample_rate_hz> <rf_bandwidth_hz> <gain_mode> [hardware_gain_db] <enabled_channels>
 SDRD/1 CAPTURE_IQ <request_id> <generation> <sample_count> <max_bytes> <feature_id>
+SDRD/1 CAPTURE_POWER <request_id> <generation> <frame_samples> <aggregate_frames> <timeout_ms>
 SDRD/1 CAPTURE_SUMMARY <request_id> <generation> <frame_samples> <aggregate_frames> <timeout_ms>
 SDRD/1 EXECUTION_STATUS <request_id> <generation>
 SDRD/1 STOP_SESSION <request_id> <generation>
@@ -63,6 +64,11 @@ acknowledgement means that cancellation was requested. The owner connection's
 `capture_failed_restored` response proves that capture stopped, the partial file
 was removed, and restoration ran.
 
+`CAPTURE_POWER` uses the controlled IIO RX buffer to return a bounded scalar
+power/clip summary without writing raw IQ to disk. It accepts at most 1,048,576
+complex samples, enforces the request timeout, remains cancelable, and stays
+inside the same session ownership and restoration path as `CAPTURE_IQ`.
+
 `CAPTURE_SUMMARY` is capability-gated by the validated SUM8/AGG8 identity and a
 writable UIO or guarded `/dev/mem` Adapter. It arms one bounded aggregate,
 polls with timeout and cancellation checks, and returns fixed-size power,
@@ -77,6 +83,12 @@ gain modes, and RX0 only in this slice. `CAPTURE_IQ` requires a safe feature ID,
 uses four bytes per complex int16 sample, and cannot exceed the configured hard
 cap (64 MiB by default). Adapter results use paths relative to
 `/tmp/sdr-agent-dev`; clients cannot submit an arbitrary output path.
+
+Non-manual gain modes keep the original `APPLY_PROFILE` command shape. Manual
+mode requires an integer `hardware_gain_db` from 0 through 60. The Adapter sets
+manual mode before hardware gain and rejects the profile unless numeric IIO
+readback matches within 0.05 dB; the successful response includes
+`hardware_gain_db`.
 
 The session snapshots radio state before ownership, resets its cancellation
 latch, and arms restoration before any mutation. Stop, quit, disconnect, apply

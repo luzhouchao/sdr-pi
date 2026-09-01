@@ -200,6 +200,45 @@ at 160 new events, keep 48 recent visible events, and cap carried context at 6
 KiB. The UI labels this as `已压缩 N 次`; it is not a model version. No raw IQ is
 stored by this service.
 
+The top bar places a gear-shaped `设置` entry directly beside the LAN live
+connection indicator. It opens a separate settings page instead of expanding
+configuration inside the run console. Model/API selection, upstream model
+inventory, the 8,192–1,000,000-token context boundary, the default 90% context
+compaction threshold and the first-conversation survey profile are edited
+together. Changes remain local form state until the operator presses
+`保存设置`; an unsaved marker and leave confirmation prevent accidental loss.
+The atomic mode-`0600` private file update affects only the next new
+conversation and does not restart the active one.
+
+A new conversation defaults to one receive-only 70 MHz–6 GHz initial survey
+with an 8 MHz step, 5 ms settle time and one fixed 20 dB manual RX gain for the
+whole sweep. The settings page can select a custom
+bounded range or disable the survey and previews points, conservative duration
+and maximum received sample bytes before saving. Gain remains editable in
+full-band mode over the bounded 0–60 dB range. Each session snapshots this
+choice and persists `pending`, `running`, `complete`, `failed` or `skipped`, so
+switching conversations and restarting the Web service never repeats a survey.
+The terminal accepts the equivalent explicit options:
+
+```text
+sdr-agent --sdrd 192.168.1.10:43110 \
+  --initial-survey-start-hz 70000000 \
+  --initial-survey-stop-hz 6000000000 \
+  --initial-survey-step-hz 8000000 \
+  --initial-survey-dwell-ms 5 \
+  --initial-survey-gain-db 20
+```
+
+The software summary path returns only scalar power, clipping, sequence and
+timing data; it does not create raw-IQ files. `/stop` cancels the active point
+and verifies SDRD restoration. Every point must read back the requested manual
+gain; any mismatch or clipped sample invalidates the run and tells the operator
+to lower gain. Fixed-gain dBFS is comparable only while gain, bandwidth, sample
+rate, antenna and environment remain unchanged; it is not calibrated dBm.
+Wide contiguous active regions remain visible
+in the sweep report, while the peak-centered candidate window passed to the
+Planner is capped at the configured 10 MHz policy boundary.
+
 The Planner acknowledges a model run before generation begins, so the terminal
 continues to consume input. `/stop` can abort an active upstream run and can
 also cancel a hardware action directly through an independent SDRD connection.

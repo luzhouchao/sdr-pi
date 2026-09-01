@@ -114,6 +114,10 @@ typedef struct sdrd_radio_ops {
       void *context,
       const sdrd_capture_request_t *request,
       sdrd_capture_result_t *result);
+  int (*capture_power)(
+      void *context,
+      const sdrd_summary_request_t *request,
+      sdrd_summary_result_t *result);
   void *summary_context;
   int (*begin_summary)(void *context);
   int (*capture_summary)(

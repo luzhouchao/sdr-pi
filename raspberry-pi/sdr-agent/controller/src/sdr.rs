@@ -272,6 +272,9 @@ struct CapabilitiesResponse {
     radio_control: bool,
     raw_iq_capture: bool,
     #[serde(default)]
+    #[serde(rename = "software_summary")]
+    _software_summary: bool,
+    #[serde(default)]
     max_capture_bytes: u64,
     fpga_backend: String,
     fpga_identity_valid: bool,
@@ -395,7 +398,7 @@ mod tests {
     fn reads_and_reduces_shadow_sdrd_snapshot() {
         let responses = vec![
             "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"shadow\",\"mutating_commands\":false}\n",
-            "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"shadow\",\"iio_visible\":true,\"radio_control\":false,\"raw_iq_capture\":false,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
+            "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"shadow\",\"iio_visible\":true,\"radio_control\":false,\"raw_iq_capture\":false,\"software_summary\":true,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
             "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"healthy\":true,\"health_flags\":0,\"iio_phy_visible\":true,\"iio_rx_visible\":true,\"fpga_configured\":false,\"fpga_mapped\":false,\"fpga_identity_valid\":false}\n",
             "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"closing\":true}\n",
         ];

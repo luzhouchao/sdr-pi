@@ -587,6 +587,10 @@ static int radio_ops_available(const sdrd_radio_ops_t *radio) {
          radio->stop != NULL && radio->restore != NULL;
 }
 
+static int power_ops_available(const sdrd_radio_ops_t *radio) {
+  return radio != NULL && radio->capture_power != NULL;
+}
+
 static int summary_ops_available(const sdrd_radio_ops_t *radio) {
   return radio != NULL && radio->summary_context != NULL && radio->begin_summary != NULL &&
          radio->capture_summary != NULL && radio->cancel_summary != NULL;
@@ -731,17 +735,25 @@ static int handle_apply_profile(
     size_t response_size) {
   sdrd_radio_state_t state;
   uint64_t generation;
+  uint32_t hardware_gain_db = 0u;
   uint32_t enabled_channels;
+  size_t expected_fields;
   int rc;
   int written;
   memset(&state, 0, sizeof(state));
-  if (request_has_fields(request, 9u) != 0 ||
+  if (request->field_count < 8u) {
+    return format_error(request->request_id, "invalid_arguments", response, response_size);
+  }
+  expected_fields = strcmp(request->fields[7], "manual") == 0 ? 10u : 9u;
+  if (request_has_fields(request, expected_fields) != 0 ||
       parse_u64(request->fields[3], &generation) != 0 ||
       parse_u64(request->fields[4], &state.center_hz) != 0 ||
       parse_u32(request->fields[5], &state.sample_rate_hz) != 0 ||
       parse_u32(request->fields[6], &state.rf_bandwidth_hz) != 0 ||
       valid_gain_mode(request->fields[7]) == 0 ||
-      parse_u32(request->fields[8], &enabled_channels) != 0) {
+      (expected_fields == 10u &&
+       (parse_u32(request->fields[8], &hardware_gain_db) != 0 || hardware_gain_db > 60u)) ||
+      parse_u32(request->fields[expected_fields - 1u], &enabled_channels) != 0) {
     return format_error(request->request_id, "invalid_arguments", response, response_size);
   }
   if (session->active == 0 || generation != session->generation) {
@@ -756,6 +768,9 @@ static int handle_apply_profile(
     return format_error(request->request_id, "profile_out_of_bounds", response, response_size);
   }
   (void)copy_text(state.gain_mode, sizeof(state.gain_mode), request->fields[7]);
+  if (expected_fields == 10u) {
+    (void)snprintf(state.hardware_gain, sizeof(state.hardware_gain), "%u", hardware_gain_db);
+  }
   state.enabled_channels = enabled_channels;
   rc = radio->apply_profile(radio->context, &state);
   if (rc != 0) {
@@ -768,17 +783,32 @@ static int handle_apply_profile(
   }
   session->current_state = state;
   session->profile_applied = 1;
-  written = snprintf(
-      response,
-      response_size,
-      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"enabled_channels\":%u}\n",
-      request->request_id,
-      generation,
-      state.center_hz,
-      state.sample_rate_hz,
-      state.rf_bandwidth_hz,
-      state.gain_mode,
-      state.enabled_channels);
+  if (expected_fields == 10u) {
+    written = snprintf(
+        response,
+        response_size,
+        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"hardware_gain_db\":%u,\"enabled_channels\":%u}\n",
+        request->request_id,
+        generation,
+        state.center_hz,
+        state.sample_rate_hz,
+        state.rf_bandwidth_hz,
+        state.gain_mode,
+        hardware_gain_db,
+        state.enabled_channels);
+  } else {
+    written = snprintf(
+        response,
+        response_size,
+        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"enabled_channels\":%u}\n",
+        request->request_id,
+        generation,
+        state.center_hz,
+        state.sample_rate_hz,
+        state.rf_bandwidth_hz,
+        state.gain_mode,
+        state.enabled_channels);
+  }
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
 
@@ -883,6 +913,68 @@ static int handle_capture_summary(
     const char *code = rc == -ETIMEDOUT ? "summary_timeout_restored" : "summary_failed_restored";
     if (restore_rc != 0) {
       code = "summary_failed_restore_fault";
+    }
+    return format_error(request->request_id, code, response, response_size);
+  }
+  written = snprintf(
+      response,
+      response_size,
+      "{\"schema_version\":1,\"request_id\":%" PRIu64
+      ",\"status\":\"ok\",\"generation\":%" PRIu64
+      ",\"sequence\":%" PRIu64 ",\"aggregate_samples\":%" PRIu64
+      ",\"rx0_power_lo\":%u,\"rx0_power_mid\":%u,\"rx0_power_hi\":%u"
+      ",\"rx0_clip_count\":%" PRIu64 ",\"status_flags\":%u,\"elapsed_us\":%" PRIu64 "}\n",
+      request->request_id,
+      summary.generation,
+      result.sequence,
+      result.aggregate_samples,
+      result.rx0_power_lo,
+      result.rx0_power_mid,
+      result.rx0_power_hi,
+      result.rx0_clip_count,
+      result.status_flags,
+      result.elapsed_us);
+  return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
+}
+
+static int handle_capture_power(
+    const parsed_request_t *request,
+    sdrd_session_t *session,
+    const sdrd_radio_ops_t *radio,
+    char *response,
+    size_t response_size) {
+  sdrd_summary_request_t summary;
+  sdrd_summary_result_t result;
+  int rc;
+  int written;
+  memset(&summary, 0, sizeof(summary));
+  memset(&result, 0, sizeof(result));
+  if (request_has_fields(request, 7u) != 0 ||
+      parse_u64(request->fields[3], &summary.generation) != 0 ||
+      parse_u32(request->fields[4], &summary.frame_samples) != 0 ||
+      parse_u32(request->fields[5], &summary.aggregate_frames) != 0 ||
+      parse_u32(request->fields[6], &summary.timeout_ms) != 0) {
+    return format_error(request->request_id, "invalid_arguments", response, response_size);
+  }
+  if (session->active == 0 || session->profile_applied == 0 ||
+      summary.generation != session->generation) {
+    return format_error(request->request_id, "stale_or_missing_session", response, response_size);
+  }
+  if (summary.frame_samples < 64u || summary.frame_samples > 65535u ||
+      summary.aggregate_frames == 0u || summary.aggregate_frames > 65535u ||
+      (uint64_t)summary.frame_samples * (uint64_t)summary.aggregate_frames > 1048576u ||
+      summary.timeout_ms == 0u || summary.timeout_ms > 5000u) {
+    return format_error(request->request_id, "summary_out_of_bounds", response, response_size);
+  }
+  if (power_ops_available(radio) == 0) {
+    return format_error(request->request_id, "software_summary_unavailable", response, response_size);
+  }
+  rc = radio->capture_power(radio->context, &summary, &result);
+  if (rc != 0) {
+    const int restore_rc = sdrd_session_close(session, radio);
+    const char *code = rc == -ETIMEDOUT ? "power_timeout_restored" : "power_failed_restored";
+    if (restore_rc != 0) {
+      code = "power_failed_restore_fault";
     }
     return format_error(request->request_id, code, response, response_size);
   }
@@ -1015,12 +1107,13 @@ int sdrd_handle_request(
       written = snprintf(
           response,
           response_size,
-          "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"mode\":\"%s\",\"iio_visible\":%s,\"radio_control\":%s,\"raw_iq_capture\":%s,\"max_capture_bytes\":%" PRIu64 ",\"fpga_backend\":\"%s\",\"fpga_identity_valid\":%s,\"fpga_summary_version\":%u,\"fpga_abi_version\":%u,\"fpga_capability\":%u,\"fpga_aggregate\":%s}\n",
+          "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"mode\":\"%s\",\"iio_visible\":%s,\"radio_control\":%s,\"raw_iq_capture\":%s,\"software_summary\":%s,\"max_capture_bytes\":%" PRIu64 ",\"fpga_backend\":\"%s\",\"fpga_identity_valid\":%s,\"fpga_summary_version\":%u,\"fpga_abi_version\":%u,\"fpga_capability\":%u,\"fpga_aggregate\":%s}\n",
           request.request_id,
           sdrd_mode_name(config->mode),
           status.iio_phy_visible != 0 && status.iio_rx_visible != 0 ? "true" : "false",
           control != 0 ? "true" : "false",
           control != 0 ? "true" : "false",
+          control != 0 && power_ops_available(radio) != 0 ? "true" : "false",
           config->max_capture_bytes,
           sdrd_fpga_backend_name(config->fpga_backend),
           status.fpga_identity_valid != 0 ? "true" : "false",
@@ -1060,6 +1153,7 @@ int sdrd_handle_request(
   } else if (strcmp(request.command, "START_SESSION") == 0 ||
              strcmp(request.command, "APPLY_PROFILE") == 0 ||
              strcmp(request.command, "CAPTURE_IQ") == 0 ||
+             strcmp(request.command, "CAPTURE_POWER") == 0 ||
              strcmp(request.command, "CAPTURE_SUMMARY") == 0 ||
              strcmp(request.command, "EXECUTION_STATUS") == 0 ||
              strcmp(request.command, "STOP_SESSION") == 0) {
@@ -1077,6 +1171,9 @@ int sdrd_handle_request(
     }
     if (strcmp(request.command, "CAPTURE_IQ") == 0) {
       return handle_capture_iq(config, &request, session, radio, response, response_size);
+    }
+    if (strcmp(request.command, "CAPTURE_POWER") == 0) {
+      return handle_capture_power(&request, session, radio, response, response_size);
     }
     if (strcmp(request.command, "CAPTURE_SUMMARY") == 0) {
       return handle_capture_summary(&request, session, radio, response, response_size);
