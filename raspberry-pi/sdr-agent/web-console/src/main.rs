@@ -1,0 +1,823 @@
+use axum::{
+    extract::{Path, State},
+    http::{header, StatusCode},
+    response::{sse::Event as SseEvent, sse::KeepAlive, Html, IntoResponse, Response, Sse},
+    routing::{get, post},
+    Json, Router,
+};
+use serde::{Deserialize, Serialize};
+use std::{
+    collections::VecDeque,
+    convert::Infallible,
+    env, fs,
+    net::SocketAddr,
+    path::{Path as FsPath, PathBuf},
+    process::Stdio,
+    sync::Arc,
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
+use tokio::{
+    io::{AsyncRead, AsyncReadExt, AsyncWriteExt},
+    process::Command,
+    sync::{broadcast, mpsc, Mutex},
+};
+use tokio_stream::{wrappers::BroadcastStream, Stream, StreamExt};
+
+const MAX_SESSIONS: usize = 2;
+const MAX_EVENTS: usize = 240;
+const COMPACT_AT_EVENTS: usize = 160;
+const RETAIN_AFTER_COMPACT: usize = 48;
+const MAX_SUMMARY_BYTES: usize = 6_144;
+const MAX_COMMAND_BYTES: usize = 2_048;
+
+#[derive(Clone)]
+struct Config {
+    listen: SocketAddr,
+    state_path: PathBuf,
+    agent_binary: PathBuf,
+    request_path: PathBuf,
+    session_socket: PathBuf,
+    sdrd_address: String,
+}
+
+#[derive(Clone)]
+struct AppState {
+    config: Config,
+    inner: Arc<Mutex<Inner>>,
+    process_gate: Arc<Mutex<()>>,
+    shutdown: broadcast::Sender<()>,
+    updates: broadcast::Sender<UiUpdate>,
+}
+
+struct Inner {
+    persisted: PersistedState,
+    runtime: Option<RuntimeHandle>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+struct PersistedState {
+    active_session_id: Option<String>,
+    sessions: Vec<Session>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct Session {
+    id: String,
+    title: String,
+    created_at_ms: u64,
+    last_used_at_ms: u64,
+    generation: u64,
+    status: String,
+    compacted_summary: String,
+    summary_pending: bool,
+    events_since_compaction: usize,
+    events: VecDeque<TerminalEvent>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct TerminalEvent {
+    id: u64,
+    timestamp_ms: u64,
+    kind: String,
+    text: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct UiUpdate {
+    update_type: String,
+    session_id: Option<String>,
+    event: Option<TerminalEvent>,
+}
+
+#[derive(Clone)]
+struct RuntimeHandle {
+    session_id: String,
+    tx: mpsc::Sender<ProcessCommand>,
+}
+
+enum ProcessCommand {
+    Input(String),
+    Shutdown,
+}
+
+#[derive(Deserialize)]
+struct CreateSessionRequest {
+    title: Option<String>,
+}
+
+#[derive(Deserialize)]
+struct CommandRequest {
+    command: String,
+}
+
+#[derive(Debug)]
+struct ApiError(StatusCode, String);
+
+impl IntoResponse for ApiError {
+    fn into_response(self) -> Response {
+        (self.0, Json(serde_json::json!({ "error": self.1 }))).into_response()
+    }
+}
+
+type ApiResult<T> = Result<T, ApiError>;
+
+#[tokio::main]
+async fn main() {
+    if let Err(error) = run().await {
+        eprintln!("sdr_web_error={error}");
+        std::process::exit(1);
+    }
+}
+
+async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    let config = Config::from_env()?;
+    let persisted = load_state(&config.state_path)?;
+    let (updates, _) = broadcast::channel(512);
+    let (shutdown, _) = broadcast::channel(4);
+    let state = AppState {
+        config: config.clone(),
+        inner: Arc::new(Mutex::new(Inner {
+            persisted,
+            runtime: None,
+        })),
+        process_gate: Arc::new(Mutex::new(())),
+        shutdown,
+        updates,
+    };
+
+    restore_active_runtime(&state).await;
+    let app = Router::new()
+        .route("/", get(index))
+        .route("/app.js", get(app_js))
+        .route("/styles.css", get(styles_css))
+        .route("/api/state", get(get_state))
+        .route("/api/events", get(events))
+        .route("/api/sessions", post(create_session))
+        .route("/api/sessions/{id}/activate", post(activate_session))
+        .route("/api/sessions/{id}/command", post(send_command))
+        .with_state(state.clone());
+
+    println!("SDR Web Console listening on http://{}", config.listen);
+    let listener = tokio::net::TcpListener::bind(config.listen).await?;
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal(state.clone()))
+        .await?;
+    begin_runtime_shutdown(&state).await;
+    // The process actor bounds child shutdown at four seconds. Keep the Rust
+    // supervisor alive long enough for that cleanup after HTTP has drained.
+    tokio::time::sleep(Duration::from_secs(5)).await;
+    Ok(())
+}
+
+impl Config {
+    fn from_env() -> Result<Self, Box<dyn std::error::Error>> {
+        let host = env::var("SDR_WEB_LISTEN_HOST").unwrap_or_else(|_| "100.102.130.52".into());
+        let port = env::var("SDR_WEB_LISTEN_PORT").unwrap_or_else(|_| "8787".into());
+        Ok(Self {
+            listen: format!("{host}:{port}").parse()?,
+            state_path: env_path(
+                "SDR_WEB_STATE_PATH",
+                "/var/lib/sdr-agent/web-console/state.json",
+            ),
+            agent_binary: env_path(
+                "SDR_WEB_AGENT_BINARY",
+                "/opt/sdr-agent/current/bin/sdr-agent",
+            ),
+            request_path: env_path("SDR_WEB_REQUEST_PATH", "/etc/sdr-agent/request.json"),
+            session_socket: env_path("SDR_WEB_SESSION_SOCKET", "/run/sdr-agent/session.sock"),
+            sdrd_address: env::var("SDR_WEB_SDRD_ADDRESS")
+                .unwrap_or_else(|_| "192.168.1.10:43110".into()),
+        })
+    }
+}
+
+fn env_path(name: &str, default: &str) -> PathBuf {
+    PathBuf::from(env::var(name).unwrap_or_else(|_| default.into()))
+}
+
+async fn index() -> Html<&'static str> {
+    Html(include_str!("../public/index.html"))
+}
+
+async fn app_js() -> impl IntoResponse {
+    (
+        [(header::CONTENT_TYPE, "text/javascript; charset=utf-8")],
+        include_str!("../public/app.js"),
+    )
+}
+
+async fn styles_css() -> impl IntoResponse {
+    (
+        [(header::CONTENT_TYPE, "text/css; charset=utf-8")],
+        include_str!("../public/styles.css"),
+    )
+}
+
+async fn get_state(State(state): State<AppState>) -> Json<PersistedState> {
+    Json(state.inner.lock().await.persisted.clone())
+}
+
+async fn events(
+    State(state): State<AppState>,
+) -> Sse<impl Stream<Item = Result<SseEvent, Infallible>>> {
+    let mut shutdown = state.shutdown.subscribe();
+    let stream = BroadcastStream::new(state.updates.subscribe()).filter_map(|item| match item {
+        Ok(update) => serde_json::to_string(&update)
+            .ok()
+            .map(|json| Ok(SseEvent::default().data(json))),
+        Err(_) => None,
+    });
+    let stream = futures_util::StreamExt::take_until(stream, async move {
+        let _ = shutdown.recv().await;
+    });
+    Sse::new(stream).keep_alive(KeepAlive::new().interval(Duration::from_secs(15)))
+}
+
+async fn create_session(
+    State(state): State<AppState>,
+    Json(request): Json<CreateSessionRequest>,
+) -> ApiResult<Json<PersistedState>> {
+    let now = now_ms();
+    let id = format!("session-{now}");
+    let title = bounded_title(request.title.as_deref(), now);
+    let mut inner = state.inner.lock().await;
+
+    if inner.persisted.sessions.len() >= MAX_SESSIONS {
+        let evict = select_evict_id(&inner.persisted)
+            .ok_or_else(|| ApiError(StatusCode::CONFLICT, "没有可丢弃的非活动对话".into()))?;
+        inner
+            .persisted
+            .sessions
+            .retain(|session| session.id != evict);
+    }
+    deactivate_current(&mut inner);
+    inner.persisted.sessions.push(Session {
+        id: id.clone(),
+        title,
+        created_at_ms: now,
+        last_used_at_ms: now,
+        generation: 1,
+        status: "starting".into(),
+        compacted_summary: String::new(),
+        summary_pending: false,
+        events_since_compaction: 0,
+        events: VecDeque::new(),
+    });
+    inner.persisted.active_session_id = Some(id.clone());
+    inner.runtime = Some(spawn_agent_process(state.clone(), id));
+    persist_locked(&state.config, &inner.persisted)?;
+    let snapshot = inner.persisted.clone();
+    drop(inner);
+    publish_state(&state);
+    Ok(Json(snapshot))
+}
+
+async fn activate_session(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+) -> ApiResult<Json<PersistedState>> {
+    let mut inner = state.inner.lock().await;
+    if !inner
+        .persisted
+        .sessions
+        .iter()
+        .any(|session| session.id == id)
+    {
+        return Err(ApiError(StatusCode::NOT_FOUND, "对话不存在".into()));
+    }
+    if inner.persisted.active_session_id.as_deref() != Some(&id) {
+        deactivate_current(&mut inner);
+        inner.persisted.active_session_id = Some(id.clone());
+        if let Some(session) = find_session_mut(&mut inner.persisted, &id) {
+            session.status = "starting".into();
+            session.last_used_at_ms = now_ms();
+        }
+        inner.runtime = Some(spawn_agent_process(state.clone(), id));
+        persist_locked(&state.config, &inner.persisted)?;
+    }
+    let snapshot = inner.persisted.clone();
+    drop(inner);
+    publish_state(&state);
+    Ok(Json(snapshot))
+}
+
+async fn send_command(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+    Json(request): Json<CommandRequest>,
+) -> ApiResult<Json<PersistedState>> {
+    let command = request.command.trim().to_owned();
+    if command.is_empty() || command.len() > MAX_COMMAND_BYTES {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            "输入必须为 1–2048 字节".into(),
+        ));
+    }
+    let mut inner = state.inner.lock().await;
+    if inner.persisted.active_session_id.as_deref() != Some(&id) {
+        return Err(ApiError(
+            StatusCode::CONFLICT,
+            "只有当前活动对话可以输入".into(),
+        ));
+    }
+    if inner
+        .runtime
+        .as_ref()
+        .map(|runtime| runtime.session_id.as_str())
+        != Some(&id)
+    {
+        inner.runtime = Some(spawn_agent_process(state.clone(), id.clone()));
+    }
+
+    let should_compact = find_session_mut(&mut inner.persisted, &id)
+        .is_some_and(|session| session.events_since_compaction >= COMPACT_AT_EVENTS);
+    if should_compact {
+        compact_session(find_session_mut(&mut inner.persisted, &id).expect("session exists"));
+        if let Some(runtime) = inner.runtime.take() {
+            let _ = runtime.tx.try_send(ProcessCommand::Shutdown);
+        }
+        inner.runtime = Some(spawn_agent_process(state.clone(), id.clone()));
+    }
+
+    let outgoing = {
+        let session = find_session_mut(&mut inner.persisted, &id)
+            .ok_or_else(|| ApiError(StatusCode::NOT_FOUND, "对话不存在".into()))?;
+        session.last_used_at_ms = now_ms();
+        let text = if !command.starts_with('/')
+            && session.summary_pending
+            && !session.compacted_summary.is_empty()
+        {
+            session.summary_pending = false;
+            format!(
+                "前序对话已自动压缩，仅作为上下文：\n{}\n\n当前指令：{}",
+                session.compacted_summary, command
+            )
+        } else {
+            command.clone()
+        };
+        push_event(session, "operator", format!("Operator> {command}")).map(|event| {
+            state.updates.send(UiUpdate {
+                update_type: "terminal".into(),
+                session_id: Some(id.clone()),
+                event: Some(event),
+            })
+        });
+        text
+    };
+    let runtime = inner.runtime.as_ref().expect("runtime exists").clone();
+    runtime
+        .tx
+        .try_send(ProcessCommand::Input(outgoing))
+        .map_err(|_| {
+            ApiError(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "终端进程暂不可写，请稍后重试".into(),
+            )
+        })?;
+    persist_locked(&state.config, &inner.persisted)?;
+    let snapshot = inner.persisted.clone();
+    drop(inner);
+    Ok(Json(snapshot))
+}
+
+fn deactivate_current(inner: &mut Inner) {
+    if let Some(active_id) = inner.persisted.active_session_id.clone() {
+        if let Some(session) = find_session_mut(&mut inner.persisted, &active_id) {
+            compact_session(session);
+            session.status = "stored".into();
+        }
+    }
+    if let Some(runtime) = inner.runtime.take() {
+        let _ = runtime.tx.try_send(ProcessCommand::Shutdown);
+    }
+}
+
+fn spawn_agent_process(state: AppState, session_id: String) -> RuntimeHandle {
+    let (tx, rx) = mpsc::channel(16);
+    let actor_session_id = session_id.clone();
+    tokio::spawn(async move {
+        process_actor(state, actor_session_id, rx).await;
+    });
+    RuntimeHandle { session_id, tx }
+}
+
+async fn process_actor(
+    state: AppState,
+    session_id: String,
+    mut rx: mpsc::Receiver<ProcessCommand>,
+) {
+    // The Planner Worker deliberately permits one interactive socket owner.
+    // Holding this gate for the complete child lifetime makes a replacement
+    // wait until the previous terminal has stopped and released session.sock.
+    let _process_guard = state.process_gate.lock().await;
+    let mut child = match Command::new(&state.config.agent_binary)
+        .arg("--socket")
+        .arg(&state.config.session_socket)
+        .arg("--request")
+        .arg(&state.config.request_path)
+        .arg("--sdrd")
+        .arg(&state.config.sdrd_address)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .kill_on_drop(true)
+        .spawn()
+    {
+        Ok(child) => child,
+        Err(error) => {
+            record_process_output(
+                &state,
+                &session_id,
+                "system",
+                format!("无法启动 sdr-agent：{error}"),
+            )
+            .await;
+            return;
+        }
+    };
+    let stdout = child.stdout.take().expect("stdout piped");
+    let stderr = child.stderr.take().expect("stderr piped");
+    let mut stdin = child.stdin.take().expect("stdin piped");
+    tokio::spawn(read_process_stream(
+        state.clone(),
+        session_id.clone(),
+        stdout,
+        false,
+    ));
+    tokio::spawn(read_process_stream(
+        state.clone(),
+        session_id.clone(),
+        stderr,
+        true,
+    ));
+    record_process_output(
+        &state,
+        &session_id,
+        "system",
+        "终端进程已启动，等待控制器提示。".into(),
+    )
+    .await;
+
+    loop {
+        tokio::select! {
+            status = child.wait() => {
+                record_runtime_exit(&state, &session_id, format!("终端进程已退出：{status:?}")).await;
+                break;
+            }
+            command = rx.recv() => match command {
+                Some(ProcessCommand::Input(input)) => {
+                    if let Err(error) = stdin.write_all(format!("{input}\n").as_bytes()).await {
+                        record_process_output(&state, &session_id, "system", format!("写入终端失败：{error}")).await;
+                    } else if let Err(error) = stdin.flush().await {
+                        record_process_output(&state, &session_id, "system", format!("刷新终端输入失败：{error}")).await;
+                    }
+                }
+                Some(ProcessCommand::Shutdown) | None => {
+                    let _ = stdin.write_all(b"/stop\n/quit\n").await;
+                    let _ = stdin.flush().await;
+                    if tokio::time::timeout(Duration::from_secs(4), child.wait()).await.is_err() {
+                        let _ = child.kill().await;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+}
+
+async fn record_runtime_exit(state: &AppState, session_id: &str, text: String) {
+    let mut inner = state.inner.lock().await;
+    let is_current = inner
+        .runtime
+        .as_ref()
+        .map(|runtime| runtime.session_id.as_str())
+        == Some(session_id);
+    if let Some(session) = find_session_mut(&mut inner.persisted, session_id) {
+        if is_current {
+            session.status = "exited".into();
+        }
+        if let Some(event) = push_event(session, "system", text) {
+            let _ = state.updates.send(UiUpdate {
+                update_type: "terminal".into(),
+                session_id: Some(session_id.to_owned()),
+                event: Some(event),
+            });
+        }
+    }
+    if is_current {
+        inner.runtime = None;
+    }
+    let _ = persist_locked(&state.config, &inner.persisted);
+}
+
+async fn read_process_stream<R: AsyncRead + Unpin>(
+    state: AppState,
+    session_id: String,
+    mut reader: R,
+    stderr: bool,
+) {
+    let mut chunk = [0_u8; 1024];
+    let mut pending = String::new();
+    loop {
+        match reader.read(&mut chunk).await {
+            Ok(0) => break,
+            Ok(count) => {
+                pending.push_str(&String::from_utf8_lossy(&chunk[..count]));
+                while let Some(index) = pending.find('\n') {
+                    let line = pending[..index].trim_end_matches('\r').to_owned();
+                    pending.drain(..=index);
+                    if !line.is_empty() {
+                        let kind = classify_output(&line, stderr);
+                        record_process_output(&state, &session_id, kind, line).await;
+                    }
+                }
+                if pending.ends_with("SDR Agent> ") {
+                    let prompt = std::mem::take(&mut pending);
+                    record_process_output(&state, &session_id, "prompt", prompt).await;
+                }
+            }
+            Err(error) => {
+                record_process_output(
+                    &state,
+                    &session_id,
+                    "system",
+                    format!("读取终端输出失败：{error}"),
+                )
+                .await;
+                break;
+            }
+        }
+    }
+    if !pending.trim().is_empty() {
+        let kind = classify_output(&pending, stderr);
+        record_process_output(&state, &session_id, kind, pending).await;
+    }
+}
+
+fn classify_output(line: &str, stderr: bool) -> &'static str {
+    if stderr {
+        "error"
+    } else if line.starts_with("Agent>") {
+        "qwen"
+    } else if line.starts_with("Validated plan>") {
+        "plan"
+    } else if line.starts_with("Execution>")
+        || line.contains("硬件动作")
+        || line.contains("执行失败")
+    {
+        "execution"
+    } else if line.contains("扫频") || line.to_ascii_lowercase().contains("sweep") {
+        "sweep"
+    } else {
+        "system"
+    }
+}
+
+async fn record_process_output(state: &AppState, session_id: &str, kind: &str, text: String) {
+    let mut inner = state.inner.lock().await;
+    let is_current_runtime = inner
+        .runtime
+        .as_ref()
+        .map(|runtime| runtime.session_id.as_str())
+        == Some(session_id);
+    if let Some(session) = find_session_mut(&mut inner.persisted, session_id) {
+        if is_current_runtime {
+            session.status = if kind == "error" {
+                "error".into()
+            } else {
+                "connected".into()
+            };
+        }
+        if let Some(event) = push_event(session, kind, text) {
+            let _ = state.updates.send(UiUpdate {
+                update_type: "terminal".into(),
+                session_id: Some(session_id.to_owned()),
+                event: Some(event),
+            });
+        }
+        let _ = persist_locked(&state.config, &inner.persisted);
+    }
+}
+
+fn push_event(session: &mut Session, kind: &str, text: String) -> Option<TerminalEvent> {
+    if text.is_empty() {
+        return None;
+    }
+    let event = TerminalEvent {
+        id: session
+            .events
+            .back()
+            .map_or(1, |event| event.id.saturating_add(1)),
+        timestamp_ms: now_ms(),
+        kind: kind.into(),
+        text,
+    };
+    if session.events.len() == MAX_EVENTS {
+        session.events.pop_front();
+    }
+    session.events.push_back(event.clone());
+    session.events_since_compaction = session.events_since_compaction.saturating_add(1);
+    Some(event)
+}
+
+fn compact_session(session: &mut Session) {
+    if session.events.is_empty() {
+        return;
+    }
+    let mut parts = Vec::new();
+    if !session.compacted_summary.is_empty() {
+        parts.push(session.compacted_summary.clone());
+    }
+    for event in session.events.iter().filter(|event| event.kind != "prompt") {
+        parts.push(format!(
+            "[{}] {}",
+            event.kind,
+            event.text.replace('\n', " ")
+        ));
+    }
+    session.compacted_summary = tail_utf8(&parts.join("\n"), MAX_SUMMARY_BYTES);
+    while session.events.len() > RETAIN_AFTER_COMPACT {
+        session.events.pop_front();
+    }
+    session.events_since_compaction = 0;
+    session.summary_pending = !session.compacted_summary.is_empty();
+    session.generation = session.generation.saturating_add(1);
+}
+
+fn select_evict_id(state: &PersistedState) -> Option<String> {
+    state
+        .sessions
+        .iter()
+        .filter(|session| Some(session.id.as_str()) != state.active_session_id.as_deref())
+        .min_by_key(|session| session.last_used_at_ms)
+        .map(|session| session.id.clone())
+}
+
+fn find_session_mut<'a>(state: &'a mut PersistedState, id: &str) -> Option<&'a mut Session> {
+    state.sessions.iter_mut().find(|session| session.id == id)
+}
+
+fn bounded_title(title: Option<&str>, now: u64) -> String {
+    let cleaned = title.unwrap_or("").trim();
+    if cleaned.is_empty() {
+        format!("对话 {}", now % 100_000)
+    } else {
+        cleaned.chars().take(40).collect()
+    }
+}
+
+fn tail_utf8(value: &str, max_bytes: usize) -> String {
+    if value.len() <= max_bytes {
+        return value.to_owned();
+    }
+    let mut start = value.len() - max_bytes;
+    while !value.is_char_boundary(start) {
+        start += 1;
+    }
+    format!("…{}", &value[start..])
+}
+
+fn load_state(path: &FsPath) -> Result<PersistedState, Box<dyn std::error::Error>> {
+    if !path.exists() {
+        return Ok(PersistedState::default());
+    }
+    let mut state: PersistedState = serde_json::from_slice(&fs::read(path)?)?;
+    state
+        .sessions
+        .sort_by_key(|session| session.last_used_at_ms);
+    while state.sessions.len() > MAX_SESSIONS {
+        state.sessions.remove(0);
+    }
+    Ok(state)
+}
+
+fn persist_locked(config: &Config, state: &PersistedState) -> ApiResult<()> {
+    let parent = config
+        .state_path
+        .parent()
+        .ok_or_else(|| ApiError(StatusCode::INTERNAL_SERVER_ERROR, "状态路径无父目录".into()))?;
+    fs::create_dir_all(parent).map_err(internal_error)?;
+    let temporary = config.state_path.with_extension("json.tmp");
+    fs::write(
+        &temporary,
+        serde_json::to_vec_pretty(state).map_err(internal_error)?,
+    )
+    .map_err(internal_error)?;
+    fs::rename(temporary, &config.state_path).map_err(internal_error)?;
+    Ok(())
+}
+
+async fn restore_active_runtime(state: &AppState) {
+    let mut inner = state.inner.lock().await;
+    let active = inner.persisted.active_session_id.clone().filter(|id| {
+        inner
+            .persisted
+            .sessions
+            .iter()
+            .any(|session| &session.id == id)
+    });
+    if let Some(id) = active {
+        if let Some(session) = find_session_mut(&mut inner.persisted, &id) {
+            compact_session(session);
+            session.status = "starting".into();
+        }
+        inner.runtime = Some(spawn_agent_process(state.clone(), id));
+    }
+}
+
+fn publish_state(state: &AppState) {
+    let _ = state.updates.send(UiUpdate {
+        update_type: "state".into(),
+        session_id: None,
+        event: None,
+    });
+}
+
+fn internal_error(error: impl std::fmt::Display) -> ApiError {
+    ApiError(StatusCode::INTERNAL_SERVER_ERROR, error.to_string())
+}
+
+fn now_ms() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis() as u64
+}
+
+async fn shutdown_signal(state: AppState) {
+    #[cfg(unix)]
+    {
+        let mut terminate =
+            tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+                .expect("install SIGTERM handler");
+        tokio::select! {
+            _ = tokio::signal::ctrl_c() => {}
+            _ = terminate.recv() => {}
+        }
+    }
+    #[cfg(not(unix))]
+    let _ = tokio::signal::ctrl_c().await;
+    let _ = state.shutdown.send(());
+    begin_runtime_shutdown(&state).await;
+}
+
+async fn begin_runtime_shutdown(state: &AppState) {
+    let runtime = state.inner.lock().await.runtime.take();
+    if let Some(runtime) = runtime {
+        let _ = runtime.tx.send(ProcessCommand::Shutdown).await;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn session(id: &str, last_used_at_ms: u64) -> Session {
+        Session {
+            id: id.into(),
+            title: id.into(),
+            created_at_ms: 1,
+            last_used_at_ms,
+            generation: 1,
+            status: "stored".into(),
+            compacted_summary: String::new(),
+            summary_pending: false,
+            events_since_compaction: 0,
+            events: VecDeque::new(),
+        }
+    }
+
+    #[test]
+    fn evicts_oldest_inactive_session() {
+        let state = PersistedState {
+            active_session_id: Some("active".into()),
+            sessions: vec![session("active", 1), session("old", 2)],
+        };
+        assert_eq!(select_evict_id(&state).as_deref(), Some("old"));
+    }
+
+    #[test]
+    fn compaction_is_bounded_and_keeps_recent_terminal_events() {
+        let mut item = session("one", 1);
+        for index in 0..200 {
+            push_event(
+                &mut item,
+                "qwen",
+                format!("Agent> 第 {index} 条输出 {}", "x".repeat(80)),
+            );
+        }
+        compact_session(&mut item);
+        assert!(item.compacted_summary.len() <= MAX_SUMMARY_BYTES + 3);
+        assert_eq!(item.events.len(), RETAIN_AFTER_COMPACT);
+        assert!(item.summary_pending);
+        assert_eq!(item.events_since_compaction, 0);
+    }
+
+    #[test]
+    fn output_classification_exposes_control_plane_events() {
+        assert_eq!(classify_output("Agent> hello", false), "qwen");
+        assert_eq!(classify_output("Validated plan> {}", false), "plan");
+        assert_eq!(classify_output("Execution> {}", false), "execution");
+        assert_eq!(classify_output("正在扫频 100MHz", false), "sweep");
+    }
+}

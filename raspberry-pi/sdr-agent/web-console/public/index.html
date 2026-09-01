@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SDR Web Console</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">TAILNET CONTROL PLANE</p>
+      <h1>SDR Web Console</h1>
+    </div>
+    <div class="connection"><span id="connection-dot"></span><span id="connection-text">正在连接</span></div>
+  </header>
+
+  <main>
+    <section class="overview" aria-label="系统状态">
+      <article class="status-card accent-cyan">
+        <span>当前扫频</span>
+        <strong id="sweep-status">尚无扫频输出</strong>
+      </article>
+      <article class="status-card accent-violet">
+        <span>Qwen 最近返回</span>
+        <strong id="qwen-status">尚无模型输出</strong>
+      </article>
+      <article class="status-card accent-amber">
+        <span>控制器</span>
+        <strong id="controller-status">等待活动对话</strong>
+      </article>
+    </section>
+
+    <section class="workspace">
+      <aside class="sessions-panel">
+        <div class="panel-title">
+          <div><span>对话</span><small>最多保留 2 个</small></div>
+          <button id="new-session" class="icon-button" type="button" title="新建对话">＋</button>
+        </div>
+        <div id="sessions" class="sessions"></div>
+        <p class="retention-note">新建第 3 个对话时，自动丢弃最久未使用的非活动对话。切换或超长后会压缩上下文。</p>
+      </aside>
+
+      <section class="console-panel">
+        <div class="console-header">
+          <div>
+            <span id="active-title">未选择对话</span>
+            <small id="active-meta">启动一个对话以连接 sdr-agent</small>
+          </div>
+          <button id="scroll-bottom" class="ghost-button" type="button">回到底部</button>
+        </div>
+
+        <div id="terminal" class="terminal" role="log" aria-live="polite"></div>
+
+        <div class="controls" aria-label="快捷控制">
+          <button type="button" data-command="/stop" class="danger">■ 停止</button>
+          <button type="button" data-command="/approve">✓ 批准</button>
+          <button type="button" data-command="/reject">× 拒绝</button>
+          <button type="button" data-command="/pause">Ⅱ 暂停</button>
+          <button type="button" data-command="/resume">▶ 恢复</button>
+          <button type="button" data-command="/status">● 状态</button>
+        </div>
+
+        <form id="command-form" class="command-form">
+          <label for="command-input">终端输入</label>
+          <div>
+            <textarea id="command-input" rows="2" maxlength="2048" placeholder="输入自然语言指令或 /help；Ctrl+Enter 发送"></textarea>
+            <button type="submit">发送</button>
+          </div>
+          <small>按钮和手动输入都会以 <code>Operator&gt;</code> 记录在上方终端中。</small>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

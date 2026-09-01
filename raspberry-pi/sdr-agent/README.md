@@ -38,6 +38,10 @@ SSH, IIO, FPGA-register or SDR tools.
 - `recognizer-worker/`: dependency-free C++20 model-backend interface and replay
   validation. Socket framing and ONNX/ncnn backends remain intentionally
   disabled until their dependencies and model artifacts are pinned.
+- `web-console/`: static ARM64 Rust HTTP/SSE service with an embedded responsive
+  frontend. It owns at most one live `sdr-agent` child, retains at most two
+  logical conversations, and persists bounded terminal events plus compressed
+  context without duplicating Controller policy or SDR access.
 - `../p201pro-rust/`: current direct libiio acquisition and spectrum
   aggregation executable. It is intentionally not merged into the Controller
   until the ownership seam is implemented.
@@ -147,6 +151,43 @@ calling Qwen, waits for the owner response that confirms restoration, and then
 advances the session generation. It retries only the bounded startup window in
 which `START_SESSION` has not yet completed.
 
+## Tailnet web console
+
+The Rust web console is deployed on the Pi at:
+
+```text
+http://100.102.130.52:8787/
+```
+
+The listener binds the Pi's Tailscale address directly; it does not listen on
+`0.0.0.0`, the LAN address, or a public interface. The page shows the raw
+terminal stream, including operator input, Qwen `Agent>` messages, `Validated
+plan>` output, execution results, sweep-related lines and errors. `/stop`,
+`/approve`, `/reject`, `/pause`, `/resume` and `/status` are buttons, but each
+click still appears as `Operator> <command>` before the Controller response.
+
+Only one logical conversation is active because `session.sock` permits one
+interactive owner. One additional conversation may be stored. A third evicts
+the least-recently-used inactive conversation. Switching stops the old terminal
+safely and summarizes its bounded event history; histories are also compacted
+at 160 new events, keep 48 recent visible events, and cap carried context at 6
+KiB. The UI labels this as `已压缩 N 次`; it is not a model version. No raw IQ is
+stored by this service.
+
+The terminal cannot consume new stdin while waiting for a Qwen run to finish.
+The page records such input immediately, but the Controller reads it after that
+model turn. During a hardware action the terminal is back in its input loop, so
+`/stop` retains the direct cancellation path.
+
+Development checks and the static Pi build are:
+
+```bash
+cd raspberry-pi/sdr-agent/web-console
+cargo test --all-targets
+cargo clippy --all-targets -- -D warnings
+cargo build --locked --release --target aarch64-unknown-linux-musl
+```
+
 The one-shot Runner performs one live
 observe-plan-validate-approve-execute-observe cycle and appends a root-only
 JSONL audit trail:
@@ -242,6 +283,8 @@ see
 [`../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md).
 The interactive `sdr-agent` terminal was then deployed and validated; see
 [`../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md).
+The Tailnet Rust web console was deployed and live-validated on 2026-09-01; see
+[`../../docs/SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md`](../../docs/SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md).
 The Controller now has live-validated bounded-IQ execution and in-flight
 `/stop` cancellation. It does not yet execute surveys, candidate-inspection
 dwell loops, recognition, or automatic Runner cycles. Controlled `sdrd` is

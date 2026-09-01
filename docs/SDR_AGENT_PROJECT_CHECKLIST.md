@@ -34,6 +34,18 @@ state.
 - [x] Support both interactive `sdr-agent` and one-shot `sdr-agent "..."` usage.
 - [x] Provide `/status`, `/history`, `/approve`, `/reject`, `/pause`, `/resume`,
       `/stop`, `/help`, and `/quit` terminal commands.
+- [x] Provide a Tailscale-address-only Rust web console that exposes the live
+      terminal, Qwen messages, validated plans, execution/sweep output and
+      system errors without duplicating Controller policy or SDR access.
+- [x] Show every web shortcut command and its Controller response in the same
+      terminal stream, including stop, approve, reject, pause, resume and
+      status.
+- [x] Keep at most two web conversations, permit only one active interactive
+      owner, and evict the least-recently-used inactive conversation before a
+      third is created.
+- [x] Persist root-only bounded web history and automatically compress long or
+      switched conversations into a 6 KiB carry-forward context while retaining
+      the 48 most recent terminal events.
 - [x] Advance session generation and clear stale pending state on pause, resume,
       and stop.
 - [x] Revalidate every interactive `plan_proposed` event in Rust before showing
@@ -54,6 +66,7 @@ Evidence:
 - [`TERMINAL_AGENT_CLI_RESEARCH.md`](TERMINAL_AGENT_CLI_RESEARCH.md)
 - [`SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md)
 - [`SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md)
+- [`SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md)
 
 ## 2. Planning policy and autonomous loop
 
@@ -264,6 +277,9 @@ Evidence:
 - [x] Live-test interactive and one-shot Agent paths on the Pi.
 - [x] Record deployed releases, hashes, resource measurements, and rollback
       locations.
+- [x] Run the Rust web console as an enabled, resource-bounded systemd service
+      bound only to the Pi Tailscale address, with root-only state and a retained
+      independent rollback release.
 - [x] Keep repository secrets, passwords, tokens, private keys, build outputs,
       dependency directories, and deployment staging files out of Git.
 - [x] Remove local build intermediates and temporary upstream research clones
