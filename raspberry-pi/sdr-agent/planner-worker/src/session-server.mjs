@@ -2,6 +2,7 @@ import { chmodSync, existsSync, lstatSync, unlinkSync } from "node:fs";
 import { createServer } from "node:net";
 import { MAX_FRAME_BYTES } from "./protocol.mjs";
 import { makeSessionResponse, parseSessionCommand } from "./session-protocol.mjs";
+import { validateRuntimeSocketPath } from "./runtime-path.mjs";
 
 export function startSessionServer({ socketPath, createRuntime, onError = () => {} }) {
   prepareSocket(socketPath);
@@ -65,10 +66,7 @@ export function startSessionServer({ socketPath, createRuntime, onError = () => 
 }
 
 function prepareSocket(socketPath) {
-  const runtimePrefix = `/run/user/${process.getuid?.()}/sdr-agent/`;
-  if (!socketPath.startsWith("/run/sdr-agent/") && !socketPath.startsWith(runtimePrefix)) {
-    throw new Error("session socket must be under a dedicated /run sdr-agent directory");
-  }
+  validateRuntimeSocketPath(socketPath, "session socket");
   if (!existsSync(socketPath)) return;
   if (!lstatSync(socketPath).isSocket()) {
     throw new Error("refusing to replace a non-socket session path");

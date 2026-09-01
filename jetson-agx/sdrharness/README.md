@@ -80,6 +80,21 @@ Web `MODEL UPLINK` panel to configure API protocol, Base URL, Provider ID,
 Model ID and API Key. OpenCode Zen is provided as a quick-fill preset, while
 all fields remain editable for other providers.
 
+Use `查询上游模型` after entering the Base URL and API Key to request the
+provider's standard `{Base URL}/models` inventory. If the same Base URL was
+already saved, the Web service reuses the private stored key without returning
+it to the browser. Select a returned model to fill Model ID, or keep typing a
+manual ID when a provider does not expose a compatible model-list endpoint.
+Discovery is serialized and bounded to one request, 8 seconds, 512 KiB and 512
+model IDs. Redirects are rejected. The key is sent to the bounded `curl`
+process through stdin rather than its command line or environment.
+
+The Web service therefore requires `curl` at runtime; the AGX toolchain check
+verifies it. AGX now uses the shared canonical `/run/sdr-agent/` directory for
+Planner and session sockets. The exact `/run/sdrharness/` name remains accepted
+only for migration from the first installed template; other, nested and
+traversal paths remain rejected.
+
 The Web service atomically stores the upstream in
 `/var/lib/sdrharness/web-console/provider.json` with mode `0600`. The key is
 never returned by the API or included in Web state. The Planner reloads this

@@ -32,6 +32,8 @@ const RETAIN_AFTER_COMPACT: usize = 48;
 const MAX_SUMMARY_BYTES: usize = 6_144;
 const MAX_COMMAND_BYTES: usize = 2_048;
 const MAX_PROVIDER_CONFIG_BYTES: u64 = 8 * 1024;
+const MAX_PROVIDER_MODELS_BYTES: usize = 512 * 1024;
+const MAX_PROVIDER_MODELS: usize = 512;
 
 #[derive(Clone)]
 struct Config {
@@ -49,6 +51,7 @@ struct AppState {
     config: Config,
     inner: Arc<Mutex<Inner>>,
     process_gate: Arc<Mutex<()>>,
+    model_query_gate: Arc<Mutex<()>>,
     shutdown: broadcast::Sender<()>,
     updates: broadcast::Sender<UiUpdate>,
 }
@@ -144,6 +147,19 @@ struct ProviderConfigView {
     model: String,
 }
 
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ProviderModelsRequest {
+    base_url: String,
+    #[serde(default)]
+    api_key: String,
+}
+
+#[derive(Debug, Serialize)]
+struct ProviderModelsView {
+    models: Vec<String>,
+}
+
 #[derive(Debug)]
 struct ApiError(StatusCode, String);
 
@@ -175,6 +191,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             runtime: None,
         })),
         process_gate: Arc::new(Mutex::new(())),
+        model_query_gate: Arc::new(Mutex::new(())),
         shutdown,
         updates,
     };
@@ -191,6 +208,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 .put(save_provider_config)
                 .delete(delete_provider_config),
         )
+        .route("/api/provider/models", post(discover_provider_models))
         .route("/api/events", get(events))
         .route("/api/sessions", post(create_session))
         .route("/api/sessions/{id}/activate", post(activate_session))
@@ -313,6 +331,39 @@ async fn delete_provider_config(
         provider: String::new(),
         model: String::new(),
     }))
+}
+
+async fn discover_provider_models(
+    State(state): State<AppState>,
+    Json(request): Json<ProviderModelsRequest>,
+) -> ApiResult<Json<ProviderModelsView>> {
+    let base_url = validate_provider_url(&request.base_url)?;
+    let api_key = if request.api_key.trim().is_empty() {
+        let saved =
+            load_provider_config_file(&state.config.provider_config_path)?.ok_or_else(|| {
+                ApiError(
+                    StatusCode::BAD_REQUEST,
+                    "请输入 API Key，或先保存同一 Base URL 的上游配置".into(),
+                )
+            })?;
+        if saved.base_url != base_url {
+            return Err(ApiError(
+                StatusCode::BAD_REQUEST,
+                "当前私密配置属于另一个 Base URL，请重新输入 API Key".into(),
+            ));
+        }
+        saved.api_key
+    } else {
+        bounded_printable(&request.api_key, "API Key", 4_096)?
+    };
+    let _query_guard = state.model_query_gate.try_lock().map_err(|_| {
+        ApiError(
+            StatusCode::TOO_MANY_REQUESTS,
+            "已有一个上游模型查询正在进行".into(),
+        )
+    })?;
+    let models = fetch_provider_models(&base_url, &api_key).await?;
+    Ok(Json(ProviderModelsView { models }))
 }
 
 async fn events(
@@ -867,7 +918,7 @@ fn provider_config_view(config: &ProviderConfigFile) -> ProviderConfigView {
 }
 
 fn load_provider_config_view(path: &FsPath) -> ApiResult<ProviderConfigView> {
-    if !path.exists() {
+    let Some(config) = load_provider_config_file(path)? else {
         return Ok(ProviderConfigView {
             configured: false,
             api: String::new(),
@@ -875,6 +926,13 @@ fn load_provider_config_view(path: &FsPath) -> ApiResult<ProviderConfigView> {
             provider: String::new(),
             model: String::new(),
         });
+    };
+    Ok(provider_config_view(&config))
+}
+
+fn load_provider_config_file(path: &FsPath) -> ApiResult<Option<ProviderConfigFile>> {
+    if !path.exists() {
+        return Ok(None);
     }
     let metadata = fs::symlink_metadata(path).map_err(internal_error)?;
     if !metadata.file_type().is_file() || metadata.len() > MAX_PROVIDER_CONFIG_BYTES {
@@ -897,7 +955,160 @@ fn load_provider_config_view(path: &FsPath) -> ApiResult<ProviderConfigView> {
             "不支持的上游配置版本".into(),
         ));
     }
-    Ok(provider_config_view(&config))
+    Ok(Some(config))
+}
+
+async fn fetch_provider_models(base_url: &str, api_key: &str) -> ApiResult<Vec<String>> {
+    let endpoint = format!("{}/models", base_url.trim_end_matches('/'));
+    let mut child = Command::new("curl")
+        .args([
+            "--silent",
+            "--show-error",
+            "--no-progress-meter",
+            "--connect-timeout",
+            "4",
+            "--max-time",
+            "8",
+            "--max-filesize",
+            "524288",
+            "--proto",
+            "=http,https",
+            "--proto-redir",
+            "=https",
+            "--header",
+            "Accept: application/json",
+            "--header",
+            "@-",
+            "--write-out",
+            "\n%{http_code}",
+            "--url",
+            &endpoint,
+        ])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .kill_on_drop(true)
+        .spawn()
+        .map_err(|_| {
+            ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "无法启动受限的 curl 上游查询".into(),
+            )
+        })?;
+
+    let mut stdin = child.stdin.take().ok_or_else(|| {
+        ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "无法建立上游查询的私密输入管道".into(),
+        )
+    })?;
+    stdin
+        .write_all(format!("Authorization: Bearer {api_key}\n").as_bytes())
+        .await
+        .map_err(|_| {
+            ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "无法写入上游认证管道".into(),
+            )
+        })?;
+    drop(stdin);
+
+    let output = tokio::time::timeout(Duration::from_secs(10), child.wait_with_output())
+        .await
+        .map_err(|_| {
+            ApiError(
+                StatusCode::BAD_GATEWAY,
+                "连接上游超过 8 秒，请检查 Base URL 和网络".into(),
+            )
+        })?
+        .map_err(|_| ApiError(StatusCode::BAD_GATEWAY, "上游查询进程异常退出".into()))?;
+    if !output.status.success() {
+        return Err(ApiError(
+            StatusCode::BAD_GATEWAY,
+            "上游连接失败、超时或响应超过 512 KiB".into(),
+        ));
+    }
+    if output.stdout.len() < 4 || output.stdout[output.stdout.len() - 4] != b'\n' {
+        return Err(ApiError(
+            StatusCode::BAD_GATEWAY,
+            "上游查询缺少 HTTP 状态".into(),
+        ));
+    }
+    let split_at = output.stdout.len() - 4;
+    let status = std::str::from_utf8(&output.stdout[split_at + 1..])
+        .ok()
+        .and_then(|value| value.parse::<u16>().ok())
+        .ok_or_else(|| ApiError(StatusCode::BAD_GATEWAY, "上游 HTTP 状态无效".into()))?;
+    if (300..400).contains(&status) {
+        return Err(ApiError(
+            StatusCode::BAD_GATEWAY,
+            "上游模型接口返回重定向；请直接填写最终 HTTPS Base URL".into(),
+        ));
+    }
+    if !(200..300).contains(&status) {
+        return Err(ApiError(
+            StatusCode::BAD_GATEWAY,
+            format!("上游模型接口返回 HTTP {status}"),
+        ));
+    }
+    let body = &output.stdout[..split_at];
+    if body.len() > MAX_PROVIDER_MODELS_BYTES {
+        return Err(ApiError(
+            StatusCode::BAD_GATEWAY,
+            "上游模型列表超过 512 KiB 限制".into(),
+        ));
+    }
+    parse_provider_models(body)
+}
+
+fn parse_provider_models(body: &[u8]) -> ApiResult<Vec<String>> {
+    let payload: serde_json::Value = serde_json::from_slice(body).map_err(|_| {
+        ApiError(
+            StatusCode::BAD_GATEWAY,
+            "上游模型接口没有返回有效 JSON".into(),
+        )
+    })?;
+    let items = payload
+        .get("data")
+        .and_then(serde_json::Value::as_array)
+        .or_else(|| payload.get("models").and_then(serde_json::Value::as_array))
+        .or_else(|| payload.as_array())
+        .ok_or_else(|| {
+            ApiError(
+                StatusCode::BAD_GATEWAY,
+                "上游模型 JSON 缺少 data 或 models 数组".into(),
+            )
+        })?;
+
+    let mut models = items
+        .iter()
+        .filter_map(|item| {
+            item.as_str().or_else(|| {
+                item.get("id")
+                    .or_else(|| item.get("model"))
+                    .and_then(serde_json::Value::as_str)
+            })
+        })
+        .filter_map(valid_remote_model_id)
+        .collect::<Vec<_>>();
+    models.sort_unstable();
+    models.dedup();
+    models.truncate(MAX_PROVIDER_MODELS);
+    if models.is_empty() {
+        return Err(ApiError(
+            StatusCode::BAD_GATEWAY,
+            "上游没有返回可用的模型 ID".into(),
+        ));
+    }
+    Ok(models)
+}
+
+fn valid_remote_model_id(value: &str) -> Option<String> {
+    let value = value.trim();
+    if value.is_empty() || value.len() > 256 || value.chars().any(char::is_control) {
+        return None;
+    }
+    Some(value.to_owned())
 }
 
 fn persist_provider_config(path: &FsPath, config: &ProviderConfigFile) -> ApiResult<()> {
@@ -1095,5 +1306,53 @@ mod tests {
         assert!(validate_provider_url("http://127.0.0.1:8000/v1").is_ok());
         let error = validate_provider_url("http://api.example.com/v1").unwrap_err();
         assert_eq!(error.0, StatusCode::BAD_REQUEST);
+    }
+
+    #[test]
+    fn parses_and_bounds_common_provider_model_lists() {
+        let models = parse_provider_models(
+            br#"{"data":[{"id":"z-model"},{"id":"a-model"},{"id":"a-model"}]}"#,
+        )
+        .unwrap();
+        assert_eq!(models, vec!["a-model", "z-model"]);
+
+        let models = parse_provider_models(br#"{"models":["one",{"model":"two"}]}"#).unwrap();
+        assert_eq!(models, vec!["one", "two"]);
+    }
+
+    #[tokio::test]
+    async fn discovers_models_with_bearer_auth_without_returning_the_key() {
+        async fn mock_models(headers: axum::http::HeaderMap) -> Response {
+            if headers
+                .get(header::AUTHORIZATION)
+                .and_then(|value| value.to_str().ok())
+                != Some("Bearer test-secret")
+            {
+                return StatusCode::UNAUTHORIZED.into_response();
+            }
+            Json(serde_json::json!({
+                "object": "list",
+                "data": [{"id": "gpt-test"}]
+            }))
+            .into_response()
+        }
+
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = tokio::spawn(async move {
+            axum::serve(
+                listener,
+                Router::new().route("/v1/models", get(mock_models)),
+            )
+            .await
+            .unwrap();
+        });
+        let models = fetch_provider_models(&format!("http://{address}/v1"), "test-secret")
+            .await
+            .unwrap();
+        server.abort();
+        assert_eq!(models, vec!["gpt-test"]);
+        let public = serde_json::to_string(&ProviderModelsView { models }).unwrap();
+        assert!(!public.contains("test-secret"));
     }
 }

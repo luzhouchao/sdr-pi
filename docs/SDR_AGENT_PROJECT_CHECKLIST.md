@@ -71,6 +71,14 @@ state.
       OpenAI-compatible Completions and Responses, with a `0600` untracked
       secret file, key redaction, strict schema/URL/permission validation and
       per-new-session reload.
+- [x] Let the AGX Web Console query an authenticated OpenAI-compatible
+      `{Base URL}/models` inventory and select a returned Model ID, with manual
+      fallback, no key echo or process-argument exposure, one-query concurrency,
+      no redirects, an 8-second timeout, and 512 KiB/512-model bounds.
+- [x] Keep Planner/session sockets restricted to exact dedicated runtime
+      directories, use canonical `/run/sdr-agent` on AGX, and retain exact
+      `/run/sdrharness` compatibility for migration from the first installed
+      template; reject nested and traversal paths.
 - [x] Deploy and live-test the interactive terminal while retaining the prior
       Pi release for rollback.
 - [ ] Support concurrent terminal input while Qwen is streaming so users can

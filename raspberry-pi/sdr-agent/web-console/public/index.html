@@ -61,14 +61,26 @@
           <span>Provider ID</span>
           <input id="provider-id" maxlength="64" placeholder="opencode" required>
         </label>
-        <label>
-          <span>Model ID</span>
-          <input id="provider-model" maxlength="256" placeholder="gpt-5.6-sol" required>
-        </label>
+        <div class="model-field">
+          <label for="provider-model">Model ID</label>
+          <div class="model-query-row">
+            <input id="provider-model" list="provider-model-options" maxlength="256" placeholder="gpt-5.6-sol" required>
+            <datalist id="provider-model-options"></datalist>
+            <button id="query-provider-models" type="button">查询上游模型</button>
+          </div>
+        </div>
         <label class="wide-field">
           <span>API Key</span>
           <input id="provider-api-key" type="password" maxlength="4096" autocomplete="new-password" placeholder="密钥不会回显；修改配置时请重新输入" required>
         </label>
+        <section id="model-inventory" class="model-inventory" aria-live="polite" hidden>
+          <div>
+            <span class="inventory-signal" aria-hidden="true"></span>
+            <p><small>UPSTREAM INVENTORY</small><strong id="model-inventory-status">等待查询</strong></p>
+          </div>
+          <select id="provider-model-list" aria-label="上游返回的模型"></select>
+          <p>选择后会写入 Model ID；仍可手工填写上游未列出的模型。</p>
+        </section>
         <div class="provider-actions wide-field">
           <p>仅写入 AGX 的 <code>0600</code> 私密运行文件，Git 不跟踪。仅对下一个新对话生效。</p>
           <button id="clear-provider" class="ghost-button" type="button">清除配置</button>

@@ -177,6 +177,32 @@ The provider interface was validated with a fake key only:
 - saving or clearing is rejected while Web owns an active terminal process;
 - the configuration is reloaded for each new one-shot or interactive Agent.
 
+The follow-up model-inventory path was tested against an isolated fake
+OpenAI-compatible HTTP service. Web successfully reused the saved `0600` fake
+credential to query `/models`, returned a sorted/deduplicated model-ID list,
+and never returned the credential. Unit coverage also verifies Bearer delivery
+through the private stdin pipe and both common `data` and `models` response
+shapes. Browser automation was unavailable because Python Playwright is not
+installed on the AGX; static JavaScript syntax and real HTTP integration were
+used instead.
+
+The final model-inventory Web binary has SHA-256
+`cc9410ab5a3be6cff8f3cd4f28d4e27350b3858352285cc723b9422b35401701`
+and was atomically placed at the user-local runtime path. Loading that binary
+into the already running system service still requires one privileged Web
+restart; no active Web conversation existed when the artifact was replaced.
+
+After the user installed and enabled the production templates, the first
+Planner start exposed a path-policy mismatch: systemd correctly created
+`/run/sdrharness`, while the shared Planner still allowed only the legacy
+`/run/sdr-agent` name. The validation was extended to an exact allow-list for
+both dedicated names and their per-user development equivalents, with lexical
+resolution that rejects traversal and nested paths. The installed Planner then
+created both mode `0660` sockets under `/run/sdrharness`; Planner and Web
+reported active, and Web listened on `0.0.0.0:8787`. The checked-in AGX
+template was then standardized on the shared canonical `/run/sdr-agent` name;
+the exact first-template name remains accepted only as a migration path.
+
 No real OpenCode or other subscription key was used and no authenticated model
 request was sent, so the live third-party-provider checklist item remains open.
 

@@ -2,6 +2,7 @@ const view = {
   state: null,
   active: null,
   provider: null,
+  providerModels: [],
   reloadTimer: null,
   terminal: document.querySelector('#terminal'),
   sessions: document.querySelector('#sessions'),
@@ -73,11 +74,71 @@ async function saveProvider(event) {
   } catch (error) { toast(error.message); }
 }
 
+async function queryProviderModels() {
+  const baseUrl = document.querySelector('#provider-base-url');
+  const apiKey = document.querySelector('#provider-api-key');
+  if (!baseUrl.reportValidity()) return;
+  const button = document.querySelector('#query-provider-models');
+  clearModelInventory();
+  const modelList = document.querySelector('#provider-model-list');
+  modelList.replaceChildren(new Option('正在查询…', ''));
+  modelList.disabled = true;
+  button.disabled = true;
+  button.textContent = '正在查询…';
+  setModelInventoryStatus('正在连接上游 /models…', 'loading');
+  try {
+    const result = await api('/api/provider/models', {
+      method: 'POST',
+      body: JSON.stringify({ base_url: baseUrl.value.trim(), api_key: apiKey.value }),
+    });
+    renderModelInventory(result.models);
+    toast(`上游返回 ${result.models.length} 个模型`);
+  } catch (error) {
+    modelList.replaceChildren(new Option('查询失败，请检查上方状态', ''));
+    setModelInventoryStatus(error.message, 'error');
+    toast(error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = '查询上游模型';
+  }
+}
+
+function renderModelInventory(models) {
+  view.providerModels = models;
+  const datalist = document.querySelector('#provider-model-options');
+  const select = document.querySelector('#provider-model-list');
+  datalist.replaceChildren();
+  select.replaceChildren(new Option('选择一个上游模型…', ''));
+  for (const model of models) {
+    datalist.append(new Option('', model));
+    select.append(new Option(model, model));
+  }
+  select.disabled = false;
+  setModelInventoryStatus(`已发现 ${models.length} 个模型`, 'ready');
+}
+
+function setModelInventoryStatus(message, state) {
+  const inventory = document.querySelector('#model-inventory');
+  inventory.hidden = false;
+  inventory.dataset.state = state;
+  document.querySelector('#model-inventory-status').textContent = message;
+}
+
+function clearModelInventory() {
+  view.providerModels = [];
+  document.querySelector('#provider-model-options').replaceChildren();
+  const select = document.querySelector('#provider-model-list');
+  select.replaceChildren();
+  select.disabled = true;
+  document.querySelector('#model-inventory').hidden = true;
+}
+
 async function clearProvider() {
   if (!window.confirm('清除私密上游配置？新对话将回退到部署环境配置。')) return;
   try {
     view.provider = await api('/api/provider', { method: 'DELETE' });
     document.querySelector('#provider-form').reset();
+    clearModelInventory();
     renderProvider();
     toast('上游配置已清除');
   } catch (error) { toast(error.message); }
@@ -88,11 +149,13 @@ function presetOpenCode() {
   document.querySelector('#provider-base-url').value = 'https://opencode.ai/zen/v1';
   document.querySelector('#provider-id').value = 'opencode';
   document.querySelector('#provider-model').value = 'gpt-5.6-sol';
+  clearModelInventory();
   document.querySelector('#provider-api-key').focus();
 }
 
 function clearProviderFields() {
   document.querySelector('#provider-form').reset();
+  clearModelInventory();
   document.querySelector('#provider-base-url').focus();
 }
 
@@ -224,6 +287,16 @@ function statusLabel(status) {
 
 document.querySelector('#new-session').addEventListener('click', createSession);
 document.querySelector('#provider-form').addEventListener('submit', saveProvider);
+document.querySelector('#query-provider-models').addEventListener('click', queryProviderModels);
+document.querySelector('#provider-model-list').addEventListener('change', (event) => {
+  if (event.target.value) document.querySelector('#provider-model').value = event.target.value;
+});
+document.querySelector('#provider-base-url').addEventListener('input', () => {
+  if (view.providerModels.length) clearModelInventory();
+});
+document.querySelector('#provider-api-key').addEventListener('input', () => {
+  if (view.providerModels.length) clearModelInventory();
+});
 document.querySelector('#clear-provider').addEventListener('click', clearProvider);
 document.querySelector('#preset-opencode').addEventListener('click', presetOpenCode);
 document.querySelector('#preset-custom').addEventListener('click', clearProviderFields);

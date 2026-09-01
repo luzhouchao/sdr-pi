@@ -7,6 +7,7 @@ import { openAICompletionsApi } from "@earendil-works/pi-ai/api/openai-completio
 import { openAIResponsesApi } from "@earendil-works/pi-ai/api/openai-responses.lazy";
 import { Type } from "typebox";
 import { loadProviderSelection } from "./provider-config.mjs";
+import { validateRuntimeSocketPath } from "./runtime-path.mjs";
 import { RunLease } from "./run-lease.mjs";
 import { SessionRuntime } from "./session-runtime.mjs";
 import { startSessionServer } from "./session-server.mjs";
@@ -267,10 +268,7 @@ function loadConfig() {
 }
 
 function prepareSocket(socketPath) {
-  const runtimePrefix = `/run/user/${process.getuid?.()}/sdr-agent/`;
-  if (!socketPath.startsWith("/run/sdr-agent/") && !socketPath.startsWith(runtimePrefix)) {
-    throw new Error("planner socket must be under a dedicated /run sdr-agent directory");
-  }
+  validateRuntimeSocketPath(socketPath, "planner socket");
   if (!existsSync(socketPath)) return;
   if (!lstatSync(socketPath).isSocket()) {
     throw new Error("refusing to replace a non-socket planner path");
