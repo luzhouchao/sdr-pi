@@ -123,6 +123,7 @@ Evidence:
 - [`SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md)
 - [`SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md)
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
+- [`SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md)
 
 ## 2. Planning policy and autonomous loop
 
@@ -143,8 +144,9 @@ Evidence:
 - [x] Implement and live-validate the bounded
       observe-plan-validate-approve-execute-observe Runner for the production
       bounded-IQ action; unsupported action kinds remain explicitly plan-only.
-- [x] Add a fail-closed interactive automatic-cruise controller for the current
-      production bounded-IQ action with operator-selectable step/time budgets
+- [x] Add a fail-closed interactive automatic-cruise controller for production
+      bounded-IQ capture and software-summary `survey_band`, with
+      operator-selectable step/time budgets
       (defaults 8 steps/120 seconds; hard limits 128 steps/1,800 seconds), a
       cumulative-IQ budget, automatic execution only below the existing approval
       threshold, separate five-attempt SDR/upstream-next-step retry limits with
@@ -157,12 +159,14 @@ Evidence:
       per-survey maximum span, per-action bandwidth, dwell, sample, byte,
       approval and freshness bounds; missing current data requires `hold` and
       never permits invented signals or capabilities.
-- [ ] Complete automatic `survey_band` execution and feed its compact CPU sweep
-      observation into the next Planner turn. The current production executor
-      remains bounded-IQ-only and explicitly stops automatic cruise when the
-      model proposes a plan-only action; do not claim automatic sweep complete
-      until acquisition ownership is cut over without contention and the AGX
-      CPU path is live-validated.
+- [x] Complete automatic `survey_band` execution and feed its compact CPU sweep
+      observation into the next Planner turn. The bounded AGX CPU path was
+      live-validated receive-only with the real P201 SDR and OpenCode Go model,
+      including fixed gain, byte/step accounting, candidate feedback, zero
+      clipping and verified radio restoration; see
+      [`SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md).
+- [ ] Extend the stateless one-shot Runner abstraction to execute
+      `survey_band`; the deployed interactive Web/terminal loop is complete.
 - [x] Persist a root-only JSONL audit record joining operator input,
       model/provider, raw proposal, Rust validation, approval, execution and the
       resulting observation, including fail-closed planning attempts.
@@ -386,14 +390,13 @@ Evidence:
 
 ## Current next milestone
 
-Plan the SDR acquisition-ownership cutover only after proving the existing
-Spectrum collector is stopped or otherwise cannot contend for the radio, and
-preserve the Raspberry Pi rollback path. The AGX clone, native build, runtime
-baseline, Planner/Web runtime gate and read-only SDRD observation are complete;
-the authenticated OpenCode Go Planner request and live SDR health-only `hold`
-are complete. A new IQ capture remains intentionally unclaimed because the
-current live observation had no candidate and acquisition ownership has not
-been cut over. CUDA/Mamba recognition remains explicitly deferred by the
-current scope until separately authorized after the Agent framework is stable.
+Keep the receive-only bounded software sweep isolated from any Spectrum
+collector and preserve the Raspberry Pi rollback path before a broader
+acquisition-ownership cutover. The AGX clone, native build, runtime baseline,
+Planner/Web runtime gate, bounded-IQ executor, fixed-gain initial survey and
+automatic `survey_band` feedback loop are live-validated with the real SDR and
+OpenCode Go model. Candidate inspection and CUDA/Mamba recognition remain
+explicitly deferred by the current scope until separately authorized after the
+Agent framework is stable.
 FPGA-image work remains independently gated by hardware identity,
 sequence/quality fields and rollback evidence.

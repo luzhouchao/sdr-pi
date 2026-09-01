@@ -165,31 +165,39 @@ export class SessionRuntime {
   }
 
   #runPrompt(context) {
+    const generation = this.sessionGeneration;
+    const agent = this.agent;
+    const releaseRun = this.releaseRun;
+    const emitIfCurrent = (event, data = undefined) => {
+      if (this.sessionGeneration === generation && this.agent === agent) {
+        this.emit(makeSessionEvent(generation, event, data));
+      }
+    };
     Promise.resolve()
-      .then(() => this.agent.prompt(JSON.stringify(context)))
+      .then(() => agent.prompt(JSON.stringify(context)))
       .then(() => {
-        if (this.planSubmittedForRequest !== context.request_id) {
-          this.emit(
-            makeSessionEvent(this.sessionGeneration, "agent_error", {
-              error: "上游模型结束了本轮生成，但没有提交下一步计划",
-            }),
-          );
+        if (
+          this.sessionGeneration === generation
+          && this.agent === agent
+          && this.planSubmittedForRequest !== context.request_id
+        ) {
+          emitIfCurrent("agent_error", {
+            error: "上游模型结束了本轮生成，但没有提交下一步计划",
+          });
         }
       })
       .catch((error) => {
-        this.emit(
-          makeSessionEvent(this.sessionGeneration, "agent_error", {
-            error: boundedText(error, 512, "Agent run failed"),
-          }),
-        );
+        emitIfCurrent("agent_error", {
+          error: boundedText(error, 512, "Agent run failed"),
+        });
       })
       .finally(() => {
-        this.releaseRun?.();
-        this.releaseRun = undefined;
-        if (this.active) {
+        releaseRun?.();
+        if (this.releaseRun === releaseRun) this.releaseRun = undefined;
+        if (this.sessionGeneration === generation && this.agent === agent && this.active) {
           this.active = false;
           this.queued = 0;
-          this.emit(makeSessionEvent(this.sessionGeneration, "agent_end"));
+          emitIfCurrent("agent_end");
         }
       });
   }

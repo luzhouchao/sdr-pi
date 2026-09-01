@@ -2,6 +2,11 @@ use crate::protocol::{
     CandidateSummary, ControllerState, PlanRequest, PlanResponse, PlanStatus, ProposedAction,
     SafetyLimits, ValidatedPlan, MAX_CANDIDATES, MAX_INSTRUCTION_BYTES, PROTOCOL_VERSION,
 };
+
+const MAX_SURVEY_POINTS: u64 = 768;
+const MAX_SURVEY_DURATION_MS: u64 = 300_000;
+const SURVEY_POINT_TIMEOUT_MS: u64 = 250;
+const SURVEY_FRAME_BYTES: u64 = 4_096 * 4;
 use std::collections::HashSet;
 use std::error::Error;
 use std::fmt;
@@ -235,6 +240,33 @@ fn validate_action(request: &PlanRequest, action: &ProposedAction) -> Result<boo
                 "survey step is invalid",
             )?;
             validate_dwell(*dwell_ms, &request.limits)?;
+            let span_hz = stop_hz - start_hz;
+            let point_count = span_hz
+                .checked_add(step_hz.saturating_sub(1))
+                .and_then(|rounded| rounded.checked_div(*step_hz))
+                .and_then(|intervals| intervals.checked_add(1))
+                .ok_or_else(|| PolicyError::new("survey_points", "survey point count overflow"))?;
+            require(
+                point_count <= MAX_SURVEY_POINTS,
+                "survey_points",
+                "survey exceeds the 768-point execution limit",
+            )?;
+            let estimated_duration_ms = point_count
+                .checked_mul(dwell_ms.saturating_add(SURVEY_POINT_TIMEOUT_MS))
+                .ok_or_else(|| PolicyError::new("survey_duration", "survey duration overflow"))?;
+            require(
+                estimated_duration_ms <= MAX_SURVEY_DURATION_MS,
+                "survey_duration",
+                "survey exceeds the 300-second execution limit",
+            )?;
+            let processed_bytes = point_count
+                .checked_mul(SURVEY_FRAME_BYTES)
+                .ok_or_else(|| PolicyError::new("survey_bytes", "survey byte budget overflow"))?;
+            require(
+                processed_bytes <= request.limits.max_iq_bytes,
+                "survey_bytes",
+                "survey exceeds the per-action receive-byte limit",
+            )?;
             Ok(false)
         }
         ProposedAction::InspectCandidate {
@@ -529,6 +561,42 @@ mod tests {
             ),
         );
         assert_eq!(result.unwrap_err().code, "retune_unavailable");
+    }
+
+    #[test]
+    fn accepts_executable_survey_and_rejects_excessive_points() {
+        let request = request();
+        let plan = ControllerPolicy
+            .validate_response(
+                &request,
+                response(
+                    &request,
+                    ProposedAction::SurveyBand {
+                        start_hz: 70_000_000,
+                        stop_hz: 90_000_000,
+                        step_hz: 100_000,
+                        dwell_ms: 10,
+                    },
+                ),
+            )
+            .unwrap();
+        assert!(!plan.approval_required);
+
+        let error = ControllerPolicy
+            .validate_response(
+                &request,
+                response(
+                    &request,
+                    ProposedAction::SurveyBand {
+                        start_hz: 70_000_000,
+                        stop_hz: 90_000_000,
+                        step_hz: 10_000,
+                        dwell_ms: 10,
+                    },
+                ),
+            )
+            .unwrap_err();
+        assert_eq!(error.code, "survey_points");
     }
 
     #[test]

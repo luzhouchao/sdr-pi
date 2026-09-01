@@ -227,6 +227,10 @@ impl CruiseControl {
         }
     }
 
+    pub fn remaining_iq_bytes(&self) -> u64 {
+        self.max_iq_bytes.saturating_sub(self.used_iq_bytes)
+    }
+
     pub fn check_duration(&mut self, now: Instant) -> bool {
         if self.active
             && self

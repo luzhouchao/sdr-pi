@@ -644,7 +644,38 @@ async fn process_actor(
     // Holding this gate for the complete child lifetime makes a replacement
     // wait until the previous terminal has stopped and released session.sock.
     let _process_guard = state.process_gate.lock().await;
+    let survey_gain_db = {
+        let inner = state.inner.lock().await;
+        inner
+            .persisted
+            .sessions
+            .iter()
+            .find(|session| session.id == session_id)
+            .and_then(|session| session.initial_survey.as_ref())
+            .map_or(DEFAULT_SURVEY_GAIN_DB, |survey| survey.gain_db)
+    };
     let initial_survey = claim_initial_survey(&state, &session_id).await;
+    let mut planner_socket_ready = false;
+    for _ in 0..50 {
+        if tokio::fs::metadata(&state.config.session_socket)
+            .await
+            .is_ok()
+        {
+            planner_socket_ready = true;
+            break;
+        }
+        tokio::time::sleep(Duration::from_millis(100)).await;
+    }
+    if !planner_socket_ready {
+        record_process_output(
+            &state,
+            &session_id,
+            "system",
+            "Planner 会话 socket 在 5 秒内未就绪，终端没有启动。".into(),
+        )
+        .await;
+        return;
+    }
     let mut command = Command::new(&state.config.agent_binary);
     command
         .arg("--socket")
@@ -652,7 +683,9 @@ async fn process_actor(
         .arg("--request")
         .arg(&state.config.request_path)
         .arg("--sdrd")
-        .arg(&state.config.sdrd_address);
+        .arg(&state.config.sdrd_address)
+        .arg("--survey-gain-db")
+        .arg(survey_gain_db.to_string());
     if let Some(survey) = initial_survey {
         command
             .arg("--initial-survey-start-hz")
@@ -779,7 +812,7 @@ async fn read_process_stream<R: AsyncRead + Unpin>(
                 while let Some(index) = pending.find('\n') {
                     let line = pending[..index].trim_end_matches('\r').to_owned();
                     pending.drain(..=index);
-                    if !line.is_empty() {
+                    if !line.is_empty() && !is_empty_agent_line(&line) {
                         let kind = classify_output(&line, stderr);
                         record_process_output(&state, &session_id, kind, line).await;
                     }
@@ -801,10 +834,15 @@ async fn read_process_stream<R: AsyncRead + Unpin>(
             }
         }
     }
-    if !pending.trim().is_empty() {
+    if !pending.trim().is_empty() && !is_empty_agent_line(&pending) {
         let kind = classify_output(&pending, stderr);
         record_process_output(&state, &session_id, kind, pending).await;
     }
+}
+
+fn is_empty_agent_line(line: &str) -> bool {
+    line.strip_prefix("Agent>")
+        .is_some_and(|text| text.trim().is_empty())
 }
 
 fn classify_output(line: &str, stderr: bool) -> &'static str {
@@ -1602,6 +1640,8 @@ mod tests {
 
     #[test]
     fn output_classification_exposes_control_plane_events() {
+        assert!(is_empty_agent_line("Agent> "));
+        assert!(!is_empty_agent_line("Agent> hello"));
         assert_eq!(classify_output("Agent> hello", false), "qwen");
         assert_eq!(classify_output("Validated plan> {}", false), "plan");
         assert_eq!(classify_output("已验证计划：保持当前状态", false), "plan");

@@ -139,8 +139,8 @@ sdr-agent "查看当前 SDR 状态"
 The terminal connects to `/run/sdr-agent/session.sock`; the existing
 `planner.sock` remains the stateless fallback. `/pause`, `/resume` and `/stop`
 advance the Controller session generation so prior proposals become stale.
-`/approve` executes the pending bounded-IQ plan only when the terminal was
-started with an explicit controlled endpoint:
+`/approve` executes a pending bounded-IQ or `survey_band` plan only when the
+terminal was started with an explicit controlled endpoint:
 
 ```bash
 sdr-agent --sdrd 192.168.1.10:43110
@@ -166,6 +166,10 @@ Steps are limited to 1–128 and duration to 10–1,800 seconds. Omitting both u
 8 steps and 120 seconds. Consecutive SDR-unavailable and missing-upstream-action
 failures are counted independently; each retries at 10-second intervals and the
 fifth failure exits. `/stop` remains immediately available during the interval.
+Automatic `survey_band` uses the fixed RX gain saved on the settings page,
+counts its maximum processed sample bytes and one completed step against the
+cruise budgets, and writes only a compact candidate summary into the next
+Planner turn. Raw IQ is not persisted by the sweep.
 
 The Planner system prompt explains every live `observation` and hard `limits`
 field, including current candidate signals, the overall tunable band, maximum
@@ -351,7 +355,10 @@ The original Tailnet Rust web console was deployed and live-validated on
 2026-09-01; see
 [`../../docs/SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md`](../../docs/SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md).
 The AGX Controller now has live-validated bounded-IQ execution, in-flight
-`/stop` cancellation and a bounded automatic cruise for the current IQ action.
-It does not yet execute surveys, candidate-inspection dwell loops or
-recognition. The persistent P201 `sdrd` endpoint was recovered and
-read-only-observed from AGX; acquisition ownership has not yet been cut over.
+`/stop` cancellation, fixed-gain software surveys and a bounded automatic
+cruise that feeds real sweep candidates into the next OpenCode Go turn; see
+[`../../docs/SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](../../docs/SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md).
+Candidate-inspection dwell loops and recognition remain plan-only. The
+persistent P201 `sdrd` endpoint was recovered and the bounded receive-only
+survey path was live-validated from AGX; a broader acquisition-ownership
+cutover remains separately gated.

@@ -191,6 +191,19 @@ test("rejects stale generation and active close", async () => {
   await new Promise((resolve) => setImmediate(resolve));
 });
 
+test("disposing an active run does not emit an undefined generation", async () => {
+  const lease = new RunLease();
+  const { instance } = runtime(true, lease);
+  const events = [];
+  await instance.dispatch(command("open_session", 1), (event) => events.push(event));
+  await instance.dispatch(command("prompt", 2, { context: context() }), (event) => events.push(event));
+  await new Promise((resolve) => setImmediate(resolve));
+  await instance.dispose();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(events.every((event) => Number.isSafeInteger(event.session_generation)), true);
+  assert.equal(lease.state().busy, false);
+});
+
 test("shares one inference lease with the one-shot planner", async () => {
   const lease = new RunLease();
   const releasePlanner = lease.acquire("one_shot_planner");
