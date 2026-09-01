@@ -1,0 +1,30 @@
+{
+  "protocol_version": 1,
+  "request_id": 1,
+  "session_generation": 1,
+  "instruction": "保持当前状态并说明原因",
+  "state": "idle",
+  "observation": {
+    "age_ms": 100,
+    "health": {
+      "sdr_online": false,
+      "can_retune": false,
+      "can_capture_iq": false,
+      "fpga_available": false,
+      "recognizer_available": false,
+      "dropped_observations": 0
+    },
+    "candidates": []
+  },
+  "limits": {
+    "min_freq_hz": 70000000,
+    "max_freq_hz": 6000000000,
+    "max_span_hz": 20000000,
+    "max_bandwidth_hz": 10000000,
+    "max_dwell_ms": 5000,
+    "max_iq_samples": 1048576,
+    "max_iq_bytes": 4194304,
+    "auto_approve_iq_bytes": 262144,
+    "max_observation_age_ms": 2000
+  }
+}

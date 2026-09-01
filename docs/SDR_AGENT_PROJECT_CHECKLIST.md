@@ -7,7 +7,20 @@ after the exact wording is implemented and verified. Split partial work into a
 completed item and a remaining item instead of marking an ambiguous partial
 state.
 
-## 1. Architecture and Pi Agent Harness
+## 1. Architecture and Agent Harness
+
+- [x] Select Jetson AGX Orin as the primary future Agent, acquisition,
+      aggregation and CUDA-inference host, with clone root fixed at
+      `/home/jetson/sdrharness`.
+- [x] Add AGX-specific non-secret configuration, systemd templates, native build
+      entry and checkout verifier without duplicating the Controller, Planner or
+      Web implementations.
+- [x] Preserve the Raspberry Pi release and validation evidence as the rollback
+      baseline during migration.
+- [ ] Clone and build the repository on the real AGX, record its runtime
+      baseline, and verify one read-only SDRD observation.
+- [ ] Cut SDR acquisition ownership over to AGX only after proving the existing
+      Spectrum collector is stopped or otherwise cannot contend for the radio.
 
 - [x] Keep Qwen inference, tokenization, and KV cache on the 4090 llama.cpp
       module.
@@ -62,6 +75,7 @@ state.
 
 Evidence:
 
+- [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md)
 - [`SDR_AGENT_RUNTIME_DESIGN.md`](SDR_AGENT_RUNTIME_DESIGN.md)
 - [`TERMINAL_AGENT_CLI_RESEARCH.md`](TERMINAL_AGENT_CLI_RESEARCH.md)
 - [`SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md)
@@ -215,9 +229,10 @@ Evidence:
 
 ## 6. Local modulation recognition
 
-- [x] Select ONNX as the production model interchange format.
-- [x] Select ONNX Runtime C/C++ CPU as the reference Pi backend and ncnn CPU as
-      the later optimization candidate.
+- [x] Complete the historical Pi feasibility decision around ONNX interchange,
+      ONNX Runtime C/C++ CPU and a strict small-model package seam.
+- [x] Supersede the Pi-sized production-model direction with a backend-neutral
+      AGX recognizer seam and defer the production Adapter to CUDA/Mamba.
 - [x] Implement the Rust `LocalRecognizer` interface.
 - [x] Implement replay and Unix-socket Recognizer Adapters.
 - [x] Enforce bounded, canonical spool-root IQ references and fixed planar
@@ -229,14 +244,15 @@ Evidence:
 - [x] Implement the strict Pi `ModelPackageLoader` interface, filesystem and
       replay Adapters, manifest/path/size/SHA-256/label validation, and package
       inspection command.
-- [ ] Select and version a real modulation-recognition label set, training
-      corpus, preprocessing profile, and acceptance thresholds.
-- [ ] Train or import a compact model and export a pinned ONNX artifact.
-- [ ] Implement the persistent C++ ONNX Runtime Worker.
-- [ ] Numerically compare Pi outputs with the workstation reference on the same
-      IQ corpus.
-- [ ] Measure preprocessing, copy/map, inference, total p50/p99 latency, CPU,
-      RSS, drops, and thermal behavior.
+- [ ] After the Agent framework migration, identify and version the trained
+      Mamba checkpoint, model source, labels, preprocessing, sample-rate policy,
+      precision and acceptance thresholds.
+- [ ] Implement the AGX CUDA/Mamba Recognizer Adapter without exposing PyTorch,
+      Triton, TensorRT or CUDA details through the Controller interface.
+- [ ] Numerically compare AGX FP16/BF16/FP32 outputs with the training reference
+      on the same IQ corpus.
+- [ ] Measure preprocessing, host/device transfer, warm-up, inference, total
+      p50/p99 latency, CUDA memory, CPU/RSS, drops and thermal behavior.
 - [ ] Validate confusion matrix, total accuracy, and per-class recall before
       enabling `recognizer_available`.
 - [ ] Deploy the Recognizer Worker with one bounded queue and explicit thread
@@ -249,6 +265,7 @@ Evidence:
 - [`PI4_LIGHTWEIGHT_AMR_RUNTIME_RESEARCH.md`](PI4_LIGHTWEIGHT_AMR_RUNTIME_RESEARCH.md)
 - [`LOCAL_RECOGNIZER_INTERFACE.md`](LOCAL_RECOGNIZER_INTERFACE.md)
 - [`PI_ULTRALIGHT_MODEL_TRAINING_HANDOFF.md`](PI_ULTRALIGHT_MODEL_TRAINING_HANDOFF.md)
+- [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md)
 
 ## 7. Emitter/radiation-source identification
 
@@ -299,8 +316,9 @@ Evidence:
 
 ## Current next milestone
 
-The Harness has reached the FPGA-image gate. Resume sweep work only after a
-hardware-validated image exposes the documented summary identity, writable
-aggregate control, sequence/quality fields, and a rollback path. The Pi model
-package seam is also ready. Recognition work now waits for the ultra-light ONNX
-model, labels, manifest and reference corpus trained on the 4090.
+Bring the Agent framework up at `/home/jetson/sdrharness`: record the AGX
+JetPack/CUDA/services/network baseline, build from the clone, verify the
+Planner and Web on loopback, and perform one read-only SDRD observation without
+starting a second collector. CUDA/Mamba recognition remains explicitly deferred
+until this framework gate passes. FPGA-image work remains independently gated by
+hardware identity, sequence/quality fields and rollback evidence.

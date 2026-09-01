@@ -2,6 +2,11 @@
 
 Date: 2026-09-01
 
+> Superseded for production on 2026-09-01. This document remains the complete
+> Pi feasibility/training record, but the user selected AGX and deferred model
+> integration until after the Agent framework migration. The ultra-light ONNX
+> artifact is not part of the `/home/jetson/sdrharness` migration bundle.
+
 ## What is ready
 
 The Pi-side model-package loading interface is complete and fail-closed. It can

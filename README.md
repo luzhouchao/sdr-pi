@@ -1,57 +1,74 @@
-# sdr-pi
+# SDR Harness for Jetson AGX Orin
 
-P201 Pro SDR、Raspberry Pi 4B Rust 采集端和 Zynq-7020 FPGA 加速的统一工程仓库。
+P201 Pro SDR、Jetson AGX Orin、Rust 安全控制器、Qwen Planner 和后续 CUDA
+识别后端的统一工程仓库。
 
-仓库只保存继续开发和复现所需的源码、配置样例、构建脚本、版本路线与测试证据。Vivado 安装包、厂商原始工程、综合缓存、私钥、密码以及可重新生成的大型二进制不会提交。
+主运行节点已从 Raspberry Pi 4B 调整为 Jetson AGX Orin。目标 clone 路径固定为
+`/home/jetson/sdrharness`。Pi 上已经完成的控制、扫频、Web Console 和回滚证据继续
+保留，但不再是新功能的算力或数据面目标。
+
+## 目标架构
+
+```text
+operator / Tailscale Web Console
+                |
+                v
+       AGX SDR Harness
+  Rust Controller + Qwen Planner
+  acquisition / aggregation / future CUDA recognizer
+                |
+                v
+      SDRD/1 over 192.168.1.x
+                |
+                v
+      P201 Pro SDR + AD9361/FPGA
+```
+
+AGX 负责 Agent、控制器、Web、扫频编排、预处理和未来 CUDA/Mamba 推理。P201
+SDR 继续运行 `sdrd`，保留独占所有权、限幅、停止和射频状态恢复。模型接入当前
+明确延期：小型 Pi ONNX 模型不进入迁移主线，后续单独接入 AGX CUDA 后端。
 
 ## 当前状态
 
-- Raspberry Pi 4B 已通过 Rust + libiio 驱动 P201 Pro。
-- `10 MS/s` 纯采集实测约 `9.988 MS/s / 38.102 MiB/s`，未出现超时或短读。
-- 树莓派只需要 libiio 运行库；Rust 在本机交叉编译，不需要安装到树莓派。
-- FPGA 历史主线以 V8L1 为最高硬件验证基线；当前 SDR 实际加载镜像必须重新读取身份后才能引用这些能力。
-- 当前优化方向是端到端扫描会话、SDR 本机传输和可复用 FPGA 摘要内核，而不是孤立追求 FFT 单项速度。
+- Pi 侧 Rust Controller、Planner Worker、终端和 Web Console 已实机验证，作为可回滚基线。
+- SDR 侧受控 `sdrd` 已验证只接收扫频、限幅 IQ、取消和状态恢复。
+- AGX 迁移目录、配置、systemd 模板和本机构建入口已纳入 Git。
+- AGX 尚未完成本次 clone 和实机切换；上线后必须先做只读网络与运行环境基线。
+- CUDA/Mamba 模型、权重和推理 Worker 暂不包含在本次框架迁移中。
 
 ## 目录
 
 | 目录 | 内容 |
 | --- | --- |
-| [`raspberry-pi/`](raspberry-pi/) | Rust/libiio 客户端、树莓派网络配置与实测报告 |
-| [`sdr-system/`](sdr-system/) | P201 Pro 内嵌 Buildroot/IIOD 系统基线与后续系统优化 |
-| [`fpga/`](fpga/) | 精简后的 FPGA HDL、Vivado 脚本、版本路线和硬件证据 |
-| [`docs/`](docs/) | 跨层架构、路线和迭代工作流 |
+| [`jetson-agx/sdrharness/`](jetson-agx/sdrharness/) | AGX clone 后的构建、配置和 systemd 入口 |
+| [`raspberry-pi/sdr-agent/`](raspberry-pi/sdr-agent/) | 已验证的 Controller、Planner、终端、Web 与历史识别 seam |
+| [`raspberry-pi/p201pro-rust/`](raspberry-pi/p201pro-rust/) | Rust/libiio 采集和软件扫频参考实现 |
+| [`sdr-system/`](sdr-system/) | P201 Pro 内嵌系统与 `sdrd` |
+| [`fpga/`](fpga/) | FPGA HDL、Vivado 脚本、版本路线和硬件证据 |
+| [`docs/`](docs/) | 跨层架构、迁移记录、检查清单和验证证据 |
 
-## 快速开始
+## AGX 快速开始
 
-本机 WSL/Docker 构建 ARM64 Rust 客户端：
-
-```bash
-cd raspberry-pi/p201pro-rust
-docker build -t p201pro-rust-cross:1.98 -f Dockerfile.cross .
-docker run --rm -v "$PWD:/work" -w /work p201pro-rust-cross:1.98 \
-  bash -c 'cargo test --all-targets && \
-    CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
-    cargo build --release --target aarch64-unknown-linux-gnu'
-```
-
-树莓派端只读探测：
+AGX 上线后：
 
 ```bash
-./p201pro-test probe
+git clone https://github.com/luzhouchao/sdr-pi.git /home/jetson/sdrharness
+cd /home/jetson/sdrharness
+bash jetson-agx/sdrharness/scripts/verify-checkout.sh
+bash jetson-agx/sdrharness/scripts/check-toolchain.sh
+bash jetson-agx/sdrharness/scripts/build-agent-runtime.sh
 ```
 
-默认安全配置短采样：
-
-```bash
-./p201pro-test capture --seconds 3
-```
+上述命令只验证和构建，不安装 systemd、不启动第二套采集，也不修改 SDR。部署步骤见
+[`jetson-agx/sdrharness/README.md`](jetson-agx/sdrharness/README.md) 和
+[`docs/AGX_SDRHARNESS_MIGRATION.md`](docs/AGX_SDRHARNESS_MIGRATION.md)。
 
 ## 安全边界
 
-- 不提交密码、私钥、访问令牌或带凭据的日志。
-- 不覆盖厂商原始 `BOOT.bin` 或原始 SD 备份。
-- 未通过时序、路由、Bootgen、哈希和物理断电重启验证的 FPGA 镜像，不得标记为硬件验证通过。
-- FPGA/BOOT 大文件只在通过门禁后作为 GitHub Release artifact 发布，不进入 Git 历史。
-- 修改 SDR 系统或 FPGA 前必须保存当前状态、提供回滚镜像，并在测试后验证 AD9361/IIO 健康。
+- 不提交密码、私钥、API key、原始 IQ、训练数据集、缓存或环境目录。
+- 未完成 AGX 实机基线前，不停止现有 Spectrum Agent/Qwen，不启动第二套 SDR 采集。
+- 不覆盖厂商原始 `BOOT.bin`；FPGA 镜像仍需时序、路由、哈希和回滚门禁。
+- CUDA 模型权重按大小使用 GitHub Release 或其他带 SHA-256 的制品渠道，不直接混入源码历史。
+- 所有能力默认关闭，只有负责的 Adapter 通过实机探测后才能报告可用。
 
-迭代规则见 [`docs/ITERATION_WORKFLOW.md`](docs/ITERATION_WORKFLOW.md)。
+权威进度见 [`docs/SDR_AGENT_PROJECT_CHECKLIST.md`](docs/SDR_AGENT_PROJECT_CHECKLIST.md)。

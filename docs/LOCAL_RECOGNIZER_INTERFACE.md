@@ -2,6 +2,12 @@
 
 Date: 2026-08-31
 
+> Migration status (2026-09-01): this remains the implemented, backend-neutral
+> Controller seam and the historical Pi CPU design record. The primary runtime
+> is now `/home/jetson/sdrharness` on AGX. ONNX Runtime CPU/ncnn and the small
+> model package are not the production direction; a CUDA/Mamba Adapter will be
+> specified only after the AGX Agent framework is live-validated.
+
 ## Implemented boundary
 
 The Rust Controller now has a provider-neutral `LocalRecognizer` interface with
@@ -23,8 +29,8 @@ triggered candidate
     -> file-backed IQ window in /run/sdr-agent/iq
     -> Rust validates path, range and shape
     -> JSONL metadata over /run/sdr-agent/recognizer.sock
-    -> C++ worker mmaps the IQ range
-    -> ONNX Runtime CPU or ncnn CPU backend
+    -> worker maps the bounded IQ range
+    -> backend Adapter (future AGX CUDA/Mamba; historical Pi ONNX/ncnn)
     -> bounded labels, confidence, model identity and timing
 ```
 

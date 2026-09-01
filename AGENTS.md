@@ -41,8 +41,9 @@ during development without asking again, subject to all of these constraints:
    disabling a safety check. Those require separate explicit authority.
 3. Before a live sweep, print or record the validated plan, estimated duration,
    maximum bytes, free-space check, and the exact temporary data directory.
-4. Put Pi development data only under
-   `/var/tmp/sdr-agent-dev/<feature-id>/` and SDR-local development data only
+4. Put AGX development data only under
+   `/var/tmp/sdrharness-dev/<feature-id>/`, legacy Pi development data only under
+   `/var/tmp/sdr-agent-dev/<feature-id>/`, and SDR-local development data only
    under `/tmp/sdr-agent-dev/<feature-id>/`. Use a unique feature ID and a hard
    byte cap; default to no more than 64 MiB unless the user sets another limit.
 5. Keep raw IQ and intermediate sweep outputs out of Git. Retain the feature's

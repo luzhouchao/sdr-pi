@@ -10,6 +10,8 @@ secrets/
 
 # Rust
 **/target/
+**/node_modules/
+.artifacts/
 
 # Python caches used by offline FPGA validation helpers
 **/__pycache__/

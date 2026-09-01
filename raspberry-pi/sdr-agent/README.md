@@ -1,5 +1,10 @@
 # Raspberry Pi SDR Agent runtime
 
+> Historical/rollback runtime: new development targets the Jetson AGX clone at
+> `/home/jetson/sdrharness`. The implementations in this directory remain the
+> shared Controller, Planner and Web modules used by the AGX migration; the Pi
+> deployment itself is no longer the primary runtime.
+
 The runtime is one logical agent split into two processes:
 
 ```text
