@@ -1,0 +1,39 @@
+{
+  "protocol_version": 1,
+  "request_id": 201,
+  "session_generation": 21,
+  "instruction": "Call submit_plan once with capture_bounded_iq for development-2442m using center_hz 2442000000, sample_rate_hz 2100000, rf_bandwidth_hz 2000000 and samples 4096; do not change these values",
+  "state": "idle",
+  "observation": {
+    "age_ms": 100,
+    "health": {
+      "sdr_online": false,
+      "can_retune": false,
+      "can_capture_iq": false,
+      "fpga_available": false,
+      "recognizer_available": false,
+      "dropped_observations": 0
+    },
+    "candidates": [
+      {
+        "id": "development-2442m",
+        "center_hz": 2442000000,
+        "bandwidth_hz": 2000000,
+        "peak_dbfs": -20.0,
+        "snr_db": 10.0,
+        "age_ms": 100
+      }
+    ]
+  },
+  "limits": {
+    "min_freq_hz": 70000000,
+    "max_freq_hz": 6000000000,
+    "max_span_hz": 20000000,
+    "max_bandwidth_hz": 10000000,
+    "max_dwell_ms": 5000,
+    "max_iq_samples": 16384,
+    "max_iq_bytes": 65536,
+    "auto_approve_iq_bytes": 8192,
+    "max_observation_age_ms": 2000
+  }
+}

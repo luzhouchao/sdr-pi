@@ -147,6 +147,25 @@ calling Qwen, waits for the owner response that confirms restoration, and then
 advances the session generation. It retries only the bounded startup window in
 which `START_SESSION` has not yet completed.
 
+The one-shot Runner performs one live
+observe-plan-validate-approve-execute-observe cycle and appends a root-only
+JSONL audit trail:
+
+```bash
+sdr-agent-controller \
+  --mode run-once \
+  --request controller/config/runner.development.example.json \
+  --socket /run/sdr-agent/planner.sock \
+  --sdrd 192.168.1.10:43110 \
+  --approval operator \
+  --audit-log /var/lib/sdr-agent/audit.jsonl
+```
+
+Use `--approval pending` to stop at the manual gate or `automatic` only for a
+plan below the existing automatic threshold. The current production execution
+Adapter supports bounded IQ capture; other plan kinds are returned as
+`planned_only` rather than being reported as executed.
+
 For a deterministic development or recovery check, `execute` mode accepts an
 envelope containing the original `PlanRequest` and `PlanResponse`, reruns Rust
 policy validation, then requires explicit operator approval when needed:

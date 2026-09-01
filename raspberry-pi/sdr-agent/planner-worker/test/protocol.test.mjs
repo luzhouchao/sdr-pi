@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { normalizeAction, parseRequest } from "../src/protocol.mjs";
+import { normalizeAction, parseRequest, requireSubmitPlan } from "../src/protocol.mjs";
 
 function request() {
   return {
@@ -92,4 +92,17 @@ test("rejects incomplete proposals", () => {
     () => normalizeAction({ action: "inspect_candidate", candidate_id: "candidate-1" }),
     /center_hz/u,
   );
+});
+
+test("forces the only allowed planning tool without mutating the provider payload", () => {
+  const payload = { model: "test", messages: [] };
+  assert.deepEqual(requireSubmitPlan(payload), {
+    model: "test",
+    messages: [],
+    tool_choice: {
+      type: "function",
+      function: { name: "submit_plan" },
+    },
+  });
+  assert.equal(Object.hasOwn(payload, "tool_choice"), false);
 });

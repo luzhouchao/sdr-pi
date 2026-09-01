@@ -3,6 +3,7 @@ pub mod planner;
 pub mod policy;
 pub mod protocol;
 pub mod recognizer;
+pub mod runner;
 pub mod sdr;
 pub mod sweep;
 

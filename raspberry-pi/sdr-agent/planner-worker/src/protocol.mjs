@@ -99,6 +99,16 @@ export function normalizeAction(params) {
   }
 }
 
+export function requireSubmitPlan(payload) {
+  return {
+    ...payload,
+    tool_choice: {
+      type: "function",
+      function: { name: "submit_plan" },
+    },
+  };
+}
+
 export function makeResponse(request, planner, action) {
   return {
     protocol_version: PROTOCOL_VERSION,

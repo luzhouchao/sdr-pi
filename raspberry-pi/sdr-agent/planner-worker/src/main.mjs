@@ -13,6 +13,7 @@ import {
   makeResponse,
   normalizeAction,
   parseRequest,
+  requireSubmitPlan,
 } from "./protocol.mjs";
 
 const config = loadConfig();
@@ -205,6 +206,7 @@ function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) 
       messages: [],
     },
     streamFn: models.streamSimple.bind(models),
+    onPayload: requireSubmitPlan,
     toolExecution: "sequential",
     sessionId: `sdr-${sessionGeneration}`,
     beforeToolCall: async ({ toolCall }) => {

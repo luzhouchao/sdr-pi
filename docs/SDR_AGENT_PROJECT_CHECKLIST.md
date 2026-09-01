@@ -71,11 +71,14 @@ Evidence:
       observation.
 - [x] Make `/stop` cancel active hardware execution directly without waiting for
       Qwen.
-- [ ] Implement the bounded observe-plan-validate-approve-execute-observe Runner.
+- [x] Implement and live-validate the bounded
+      observe-plan-validate-approve-execute-observe Runner for the production
+      bounded-IQ action; unsupported action kinds remain explicitly plan-only.
 - [ ] Add an automatic mode that repeats the Runner within a fixed session plan,
       resource budget, and stop condition.
-- [ ] Persist an audit record joining operator input, model/provider, proposal,
-      Rust validation, approval, execution, and resulting observation.
+- [x] Persist a root-only JSONL audit record joining operator input,
+      model/provider, raw proposal, Rust validation, approval, execution and the
+      resulting observation, including fail-closed planning attempts.
 - [ ] Validate reconnect, cancellation, stale-result, timeout, and partial-action
       recovery for the complete loop.
 
@@ -130,6 +133,7 @@ Evidence:
 - [`../sdr-system/docs/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md`](../sdr-system/docs/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md)
 - [`SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md)
 - [`SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md`](SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md)
+- [`SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md)
 
 ## 4. Raspberry Pi acquisition, aggregation, and sweep
 

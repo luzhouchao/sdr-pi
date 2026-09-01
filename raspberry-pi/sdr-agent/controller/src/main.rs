@@ -10,6 +10,7 @@ use sdr_agent_controller::protocol::{PlanRequest, PlanResponse, ValidatedPlan, M
 use sdr_agent_controller::recognizer::{
     LocalRecognizer, RecognitionRequest, UnixRecognizerAdapter, RECOGNIZER_MAX_FRAME_BYTES,
 };
+use sdr_agent_controller::runner::{ApprovalMode, JsonlAuditAdapter, Runner};
 use sdr_agent_controller::sdr::{SdrEngine, SdrdAdapter};
 use sdr_agent_controller::sweep::{SdrdFpgaSweepAdapter, SweepEngine, SweepPlan};
 use sdr_agent_controller::Controller;
@@ -42,6 +43,7 @@ fn run() -> AppResult<()> {
     let mut sdrd_timeout_ms = 5_000_u64;
     let mut recognizer_timeout_ms = 5_000_u64;
     let mut execution_approval = None;
+    let mut audit_log = "/var/lib/sdr-agent/audit.jsonl".to_owned();
     let mut session_generation = None;
     let mut args = env::args().skip(1);
     while let Some(flag) = args.next() {
@@ -60,6 +62,7 @@ fn run() -> AppResult<()> {
             "--sdrd-timeout-ms" => sdrd_timeout_ms = value.parse()?,
             "--recognizer-timeout-ms" => recognizer_timeout_ms = value.parse()?,
             "--approval" => execution_approval = Some(value),
+            "--audit-log" => audit_log = value,
             "--session-generation" => session_generation = Some(value.parse::<u64>()?),
             _ => return Err(invalid_input(format!("unknown option {flag}")).into()),
         }
@@ -75,12 +78,43 @@ fn run() -> AppResult<()> {
     }
     if !matches!(
         mode.as_str(),
-        "plan" | "observe" | "recognize" | "execute" | "cancel" | "sweep"
+        "plan" | "observe" | "recognize" | "execute" | "cancel" | "sweep" | "run-once"
     ) {
         return Err(invalid_input(
-            "--mode must be plan, observe, recognize, execute, cancel, or sweep",
+            "--mode must be plan, observe, recognize, execute, cancel, sweep, or run-once",
         )
         .into());
+    }
+
+    if mode == "run-once" {
+        let address = sdrd_address
+            .ok_or_else(|| invalid_input("--mode run-once requires --sdrd HOST:PORT"))?;
+        let bytes = read_request(&request_path, MAX_FRAME_BYTES)?;
+        let mut request: PlanRequest = serde_json::from_slice(&bytes)?;
+        if let Some(instruction) = instruction {
+            request.instruction = instruction;
+        }
+        let approval = match execution_approval.as_deref().unwrap_or("pending") {
+            "pending" => ApprovalMode::Pending,
+            "automatic" => ApprovalMode::Automatic,
+            "operator" => ApprovalMode::Operator,
+            value => {
+                return Err(invalid_input(format!(
+                    "--approval must be pending, automatic, or operator; got {value}"
+                ))
+                .into())
+            }
+        };
+        let observer = SdrdAdapter::new(address, Duration::from_millis(sdrd_timeout_ms));
+        let planner = UnixPlannerAdapter::new(socket, Duration::from_millis(timeout_ms));
+        let executor = SdrdActionAdapter::new(address, Duration::from_millis(sdrd_timeout_ms));
+        let audit = JsonlAuditAdapter::open(audit_log)?;
+        let mut runner = Runner::new(observer, planner, executor, audit);
+        println!(
+            "{}",
+            serde_json::to_string(&runner.run_once(request, approval)?)?
+        );
+        return Ok(());
     }
 
     if mode == "sweep" {
