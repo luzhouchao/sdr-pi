@@ -148,10 +148,10 @@ Evidence:
       result contract, and restoration requirements.
 - [x] Implement the production `SweepEngine.run(plan)` module with replay and
       capability-gated SDRD FPGA-summary Adapters.
-- [ ] Ensure one process owns and reuses the IIO context, RX buffer, FFT plan,
-      and preallocated sample blocks throughout a sweep.
-- [ ] Execute a bounded multi-frequency sweep with readback and guaranteed state
-      restoration.
+- [x] Ensure one Pi software-sweep process owns and reuses the IIO context, RX
+      buffer, FFT plan and preallocated sample blocks throughout a sweep.
+- [x] Execute a bounded Pi software multi-frequency sweep with per-point LO
+      readback, compact candidates and verified state restoration.
 - [x] Feed compact aggregate candidates into the Agent observation contract.
 - [ ] Feed only selected, bounded IQ windows into local recognition.
 - [ ] Validate aggregate mode at sustained 5 MS/s and 10 MS/s with CPU, dropped
@@ -164,6 +164,7 @@ Evidence:
 - [`SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md`](SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md)
 - [`../raspberry-pi/p201pro-rust/TEST_RESULTS.md`](../raspberry-pi/p201pro-rust/TEST_RESULTS.md)
 - [`SDR_AGENT_FPGA_SWEEP_GATE_2026-09-01.md`](SDR_AGENT_FPGA_SWEEP_GATE_2026-09-01.md)
+- [`PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md`](PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md)
 
 ## 5. SDR FPGA aggregation
 

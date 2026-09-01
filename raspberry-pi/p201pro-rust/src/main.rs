@@ -1,7 +1,9 @@
 mod aggregation;
+mod software_sweep;
 
 use aggregation::{SpectrumAggregator, SpectrumConfig};
 use industrial_io as iio;
+use software_sweep::SoftwareSweepPlan;
 use std::env;
 use std::error::Error;
 use std::fmt;
@@ -20,6 +22,7 @@ const RX_LO_CHANNEL: &str = "altvoltage0";
 enum Command {
     Probe,
     Capture,
+    Sweep,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -45,6 +48,13 @@ struct Config {
     coarse_bins: usize,
     threshold_db: f32,
     merge_gap_bins: usize,
+    sweep_centers_hz: Vec<i64>,
+    sweep_start_hz: Option<i64>,
+    sweep_stop_hz: Option<i64>,
+    sweep_step_hz: Option<i64>,
+    settle_ms: u64,
+    frames_per_point: usize,
+    max_points: usize,
 }
 
 impl Default for Config {
@@ -64,6 +74,13 @@ impl Default for Config {
             coarse_bins: 96,
             threshold_db: 12.0,
             merge_gap_bins: 1,
+            sweep_centers_hz: Vec::new(),
+            sweep_start_hz: None,
+            sweep_stop_hz: None,
+            sweep_step_hz: None,
+            settle_ms: 5,
+            frames_per_point: 8,
+            max_points: 64,
         }
     }
 }
@@ -80,6 +97,7 @@ impl Config {
         cfg.command = match command.as_str() {
             "probe" => Command::Probe,
             "capture" => Command::Capture,
+            "sweep" => Command::Sweep,
             "-h" | "--help" | "help" => return Err(invalid_input(usage()).into()),
             other => {
                 return Err(
@@ -118,6 +136,13 @@ impl Config {
                 "--coarse-bins" => cfg.coarse_bins = parse_value(&flag, &value)?,
                 "--threshold-db" => cfg.threshold_db = parse_value(&flag, &value)?,
                 "--merge-gap-bins" => cfg.merge_gap_bins = parse_value(&flag, &value)?,
+                "--centers" => cfg.sweep_centers_hz = parse_centers(&value)?,
+                "--start-freq" => cfg.sweep_start_hz = Some(parse_value(&flag, &value)?),
+                "--stop-freq" => cfg.sweep_stop_hz = Some(parse_value(&flag, &value)?),
+                "--step-freq" => cfg.sweep_step_hz = Some(parse_value(&flag, &value)?),
+                "--settle-ms" => cfg.settle_ms = parse_value(&flag, &value)?,
+                "--frames-per-point" => cfg.frames_per_point = parse_value(&flag, &value)?,
+                "--max-points" => cfg.max_points = parse_value(&flag, &value)?,
                 other => return Err(invalid_input(format!("unknown option {other:?}")).into()),
             }
         }
@@ -167,8 +192,74 @@ impl Config {
                 return Err(invalid_input("--threshold-db must be a positive finite value").into());
             }
         }
+        if self.command == Command::Sweep {
+            self.software_sweep_plan()?.validate()?;
+        }
         Ok(())
     }
+
+    fn software_sweep_plan(&self) -> AppResult<SoftwareSweepPlan> {
+        let range_fields = [self.sweep_start_hz, self.sweep_stop_hz, self.sweep_step_hz];
+        let has_range = range_fields.iter().any(Option::is_some);
+        if !self.sweep_centers_hz.is_empty() && has_range {
+            return Err(invalid_input("use either --centers or start/stop/step, not both").into());
+        }
+        let (centers_hz, continuous_step_hz) = if !self.sweep_centers_hz.is_empty() {
+            (self.sweep_centers_hz.clone(), None)
+        } else {
+            let start = self
+                .sweep_start_hz
+                .ok_or_else(|| invalid_input("sweep requires --centers or --start-freq"))?;
+            let stop = self
+                .sweep_stop_hz
+                .ok_or_else(|| invalid_input("sweep range requires --stop-freq"))?;
+            let step = self
+                .sweep_step_hz
+                .ok_or_else(|| invalid_input("sweep range requires --step-freq"))?;
+            if start > stop || step <= 0 {
+                return Err(
+                    invalid_input("sweep range requires start <= stop and step > 0").into(),
+                );
+            }
+            let mut centers = Vec::new();
+            let mut center = start;
+            while center <= stop {
+                if centers.len() == self.max_points {
+                    return Err(invalid_input("sweep range exceeds max-points").into());
+                }
+                centers.push(center);
+                center = center
+                    .checked_add(step)
+                    .ok_or_else(|| invalid_input("sweep frequency overflow"))?;
+            }
+            (centers, Some(step))
+        };
+        Ok(SoftwareSweepPlan {
+            centers_hz,
+            continuous_step_hz,
+            sample_rate_hz: self.sample_rate_hz,
+            rf_bandwidth_hz: self.rf_bandwidth_hz,
+            buffer_samples: self.buffer_samples,
+            settle_ms: self.settle_ms,
+            fft_size: self.fft_size,
+            overlap_percent: self.overlap_percent,
+            frames_per_point: self.frames_per_point,
+            coarse_bins: self.coarse_bins,
+            threshold_db: self.threshold_db,
+            merge_gap_bins: self.merge_gap_bins,
+            max_points: self.max_points,
+        })
+    }
+}
+
+fn parse_centers(value: &str) -> AppResult<Vec<i64>> {
+    if value.trim().is_empty() {
+        return Err(invalid_input("--centers must not be empty").into());
+    }
+    value
+        .split(',')
+        .map(|center| parse_value("--centers", center.trim()))
+        .collect()
 }
 
 fn parse_value<T>(flag: &str, value: &str) -> AppResult<T>
@@ -190,7 +281,7 @@ fn not_found(message: impl Into<String>) -> io::Error {
 }
 
 fn usage() -> String {
-    "Usage:\n  p201pro-test probe [options]\n  p201pro-test capture [options]\n\nOptions:\n  --uri URI                      default ip:192.168.1.10\n  --center-freq HZ               default 2452000000\n  --sample-rate HZ               default 2100000\n  --rf-bandwidth HZ              default 2000000\n  --buffer-samples COUNT         default 65536\n  --seconds N                    default 3 (capture only)\n  --analysis aggregate|full|none default full; aggregate emits compact spectrum JSON\n  --fft-size N                   default 2048\n  --overlap-percent N            default 50\n  --report-hz N                  default 10 aggregate snapshots/second\n  --coarse-bins N                default 96\n  --threshold-db DB              default 12 dB above median noise\n  --merge-gap-bins N             default 1"
+    "Usage:\n  p201pro-test probe [options]\n  p201pro-test capture [options]\n  p201pro-test sweep (--centers HZ,HZ | --start-freq HZ --stop-freq HZ --step-freq HZ) [options]\n\nOptions:\n  --uri URI                      default ip:192.168.1.10\n  --center-freq HZ               default 2452000000\n  --sample-rate HZ               default 2100000\n  --rf-bandwidth HZ              default 2000000\n  --buffer-samples COUNT         default 65536\n  --seconds N                    default 3 (capture only)\n  --analysis aggregate|full|none default full; aggregate emits compact spectrum JSON\n  --fft-size N                   default 2048\n  --overlap-percent N            default 50\n  --report-hz N                  default 10 aggregate snapshots/second\n  --coarse-bins N                default 96\n  --threshold-db DB              default 12 dB above median noise\n  --merge-gap-bins N             default 1\n  --settle-ms N                  default 5 (sweep only)\n  --frames-per-point N           default 8 (sweep only)\n  --max-points N                 default 64 (sweep only)"
         .to_owned()
 }
 
@@ -214,7 +305,19 @@ fn run() -> AppResult<()> {
     match cfg.command {
         Command::Probe => probe(&ctx),
         Command::Capture => capture(&ctx, &cfg),
+        Command::Sweep => software_sweep(&ctx, &cfg),
     }
+}
+
+fn software_sweep(ctx: &iio::Context, cfg: &Config) -> AppResult<()> {
+    let plan = cfg.software_sweep_plan()?;
+    let estimate = plan.validate()?;
+    println!("mode=software_sweep");
+    println!("sweep_estimate_json={}", serde_json::to_string(&estimate)?);
+    let report = software_sweep::run(ctx, &plan)?;
+    println!("sweep_json={}", serde_json::to_string(&report)?);
+    println!("sweep_result=ok");
+    Ok(())
 }
 
 fn print_context(ctx: &iio::Context) {

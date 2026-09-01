@@ -25,7 +25,18 @@ Examples:
 ./p201pro-test capture --seconds 3 --sample-rate 10000000 --rf-bandwidth 8000000 --analysis none
 ./p201pro-test capture --seconds 3 --analysis aggregate --report-hz 10 \
   --fft-size 2048 --overlap-percent 50 --coarse-bins 96 --threshold-db 12
+./p201pro-test sweep --start-freq 2448000000 --stop-freq 2450000000 \
+  --step-freq 1000000 --sample-rate 2100000 --rf-bandwidth 2000000 \
+  --buffer-samples 8192 --frames-per-point 4 --fft-size 2048
 ```
+
+`sweep` is the bounded Pi CPU fallback for an FPGA image without aggregate
+support. It validates the complete plan before the first LO write, limits
+continuous steps to 80% of RF bandwidth, caps estimated network IQ at 64 MiB,
+reuses one context/buffer/FFT allocation across every point, emits one compact
+JSON report and restores LO, sample rate, RF bandwidth and scan-channel enables.
+It writes no raw IQ. An explicit center list can be supplied with
+`--centers 2400000000,2450000000`.
 
 `--analysis full` scans every IQ sample and reports signal statistics.
 `--analysis none` performs a pure refill benchmark and derives the sample count

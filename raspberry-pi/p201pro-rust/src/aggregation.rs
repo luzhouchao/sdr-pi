@@ -127,6 +127,21 @@ impl SpectrumAggregator {
         })
     }
 
+    /// Start a fresh tuning point while retaining the FFT plan, scratch space,
+    /// Hann window and all preallocated buffers.
+    pub(crate) fn reset_for_center(&mut self, center_freq_hz: i64) {
+        self.config.center_freq_hz = center_freq_hz;
+        self.ring.fill(Complex32::default());
+        self.write_index = 0;
+        self.filled = 0;
+        self.samples_since_frame = 0;
+        self.fft_input.fill(Complex32::default());
+        self.accumulated_power.fill(0.0);
+        self.accumulated_frames = 0;
+        self.sequence = 0;
+        self.input_samples_seen = 0;
+    }
+
     /// Consume a continuous IQ stream and return every completed aggregate snapshot.
     /// Partial FFT frames and partial snapshot averages remain buffered for the next call.
     pub(crate) fn push_iq<I>(&mut self, samples: I) -> Vec<SpectrumSnapshot>
