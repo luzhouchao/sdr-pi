@@ -1,9 +1,12 @@
 import { readFileSync, chmodSync, existsSync, lstatSync, unlinkSync } from "node:fs";
 import { createServer } from "node:net";
+import { join } from "node:path";
 import { Agent } from "@earendil-works/pi-agent-core";
 import { createModels, createProvider } from "@earendil-works/pi-ai";
 import { openAICompletionsApi } from "@earendil-works/pi-ai/api/openai-completions.lazy";
+import { openAIResponsesApi } from "@earendil-works/pi-ai/api/openai-responses.lazy";
 import { Type } from "typebox";
+import { loadProviderSelection } from "./provider-config.mjs";
 import { RunLease } from "./run-lease.mjs";
 import { SessionRuntime } from "./session-runtime.mjs";
 import { startSessionServer } from "./session-server.mjs";
@@ -17,47 +20,8 @@ import {
 } from "./protocol.mjs";
 
 const config = loadConfig();
-const plannerMeta = { provider: config.provider, model: config.model };
+const defaultPlannerMeta = { provider: config.provider, model: config.model };
 const runLease = new RunLease();
-const models = createModels();
-const model = {
-  id: config.model,
-  name: config.model,
-  api: "openai-completions",
-  provider: config.provider,
-  baseUrl: config.baseUrl,
-  reasoning: false,
-  input: ["text"],
-  cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-  contextWindow: config.contextWindow,
-  maxTokens: config.maxTokens,
-  compat: {
-    supportsStore: false,
-    supportsDeveloperRole: false,
-    supportsReasoningEffort: false,
-    supportsUsageInStreaming: false,
-    supportsStrictMode: false,
-    maxTokensField: "max_tokens",
-  },
-};
-models.setProvider(
-  createProvider({
-    id: config.provider,
-    name: "SDR Qwen planner",
-    baseUrl: config.baseUrl,
-    auth: {
-      apiKey: {
-        name: "SDR planner token",
-        resolve: async ({ signal }) => {
-          signal.throwIfAborted();
-          return { auth: { apiKey: config.apiKey }, source: config.apiKeySource };
-        },
-      },
-    },
-    models: [model],
-    api: openAICompletionsApi(),
-  }),
-);
 
 prepareSocket(config.socketPath);
 const server = createServer((socket) => {
@@ -71,19 +35,19 @@ const server = createServer((socket) => {
     frame = Buffer.concat([frame, chunk]);
     if (frame.length > MAX_FRAME_BYTES + 1) {
       handled = true;
-      writeResponse(socket, makeErrorResponse(undefined, plannerMeta, "error", "request frame exceeds 32 KiB"));
+      writeResponse(socket, makeErrorResponse(undefined, defaultPlannerMeta, "error", "request frame exceeds 32 KiB"));
       return;
     }
     const newline = frame.indexOf(0x0a);
     if (newline < 0) return;
     handled = true;
     if (newline !== frame.length - 1) {
-      writeResponse(socket, makeErrorResponse(undefined, plannerMeta, "error", "one request per connection is required"));
+      writeResponse(socket, makeErrorResponse(undefined, defaultPlannerMeta, "error", "one request per connection is required"));
       return;
     }
     handleFrame(frame.subarray(0, newline).toString("utf8"))
       .then((response) => writeResponse(socket, response))
-      .catch((error) => writeResponse(socket, makeErrorResponse(undefined, plannerMeta, "error", error)));
+      .catch((error) => writeResponse(socket, makeErrorResponse(undefined, defaultPlannerMeta, "error", error)));
   });
   socket.on("timeout", () => socket.destroy());
   socket.on("error", (error) => process.stderr.write(`planner_socket_error=${safeMessage(error)}\n`));
@@ -91,14 +55,14 @@ const server = createServer((socket) => {
 server.maxConnections = 8;
 server.listen(config.socketPath, () => {
   chmodSync(config.socketPath, 0o660);
-  process.stderr.write(`planner_ready socket=${config.socketPath} model=${config.provider}/${config.model}\n`);
+  process.stderr.write(`planner_ready socket=${config.socketPath} provider_config=${config.providerConfigPath}\n`);
 });
 
 const sessionServer = startSessionServer({
   socketPath: config.sessionSocketPath,
   createRuntime: () =>
     new SessionRuntime({
-      plannerMeta,
+      plannerMeta: defaultPlannerMeta,
       runLease,
       createAgent: ({ sessionGeneration, onPlan }) =>
         createPlanningAgent({
@@ -118,49 +82,107 @@ async function handleFrame(frame) {
   try {
     request = parseRequest(frame);
   } catch (error) {
-    return makeErrorResponse(request, plannerMeta, "error", error);
+    return makeErrorResponse(request, defaultPlannerMeta, "error", error);
   }
 
   const releaseRun = runLease.acquire("one_shot_planner");
   if (releaseRun === undefined) {
-    return makeErrorResponse(request, plannerMeta, "unavailable", "planner is busy");
+    return makeErrorResponse(request, defaultPlannerMeta, "unavailable", "planner is busy");
   }
 
   const submittedPlans = [];
-  const agent = createPlanningAgent({
-    sessionGeneration: request.session_generation,
-    terminateAfterPlan: true,
-    onPlan: (action) => {
-      if (submittedPlans.length !== 0) {
-        throw new Error("only one plan may be submitted");
-      }
-      submittedPlans.push(action);
-    },
-  });
+  let runtime;
+  try {
+    runtime = createPlanningAgent({
+      sessionGeneration: request.session_generation,
+      terminateAfterPlan: true,
+      onPlan: (action) => {
+        if (submittedPlans.length !== 0) {
+          throw new Error("only one plan may be submitted");
+        }
+        submittedPlans.push(action);
+      },
+    });
+  } catch (error) {
+    releaseRun();
+    return makeErrorResponse(request, defaultPlannerMeta, "unavailable", error);
+  }
 
   let timedOut = false;
   const timer = setTimeout(() => {
     timedOut = true;
-    agent.abort();
+    runtime.agent.abort();
   }, config.requestTimeoutMs);
   try {
-    await agent.prompt(JSON.stringify(request));
+    await runtime.agent.prompt(JSON.stringify(request));
   } catch (error) {
-    return makeErrorResponse(request, plannerMeta, timedOut ? "unavailable" : "error", error);
+    return makeErrorResponse(request, runtime.plannerMeta, timedOut ? "unavailable" : "error", error);
   } finally {
     clearTimeout(timer);
     releaseRun();
   }
   if (timedOut) {
-    return makeErrorResponse(request, plannerMeta, "unavailable", "planner request timed out");
+    return makeErrorResponse(request, runtime.plannerMeta, "unavailable", "planner request timed out");
   }
   if (submittedPlans.length !== 1) {
-    return makeErrorResponse(request, plannerMeta, "error", "model did not submit exactly one plan");
+    return makeErrorResponse(request, runtime.plannerMeta, "error", "model did not submit exactly one plan");
   }
-  return makeResponse(request, plannerMeta, submittedPlans[0]);
+  return makeResponse(request, runtime.plannerMeta, submittedPlans[0]);
 }
 
 function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) {
+  const providerConfig = loadProviderSelection(config);
+  const plannerMeta = { provider: providerConfig.provider, model: providerConfig.model };
+  const models = createModels();
+  const model = {
+    id: providerConfig.model,
+    name: providerConfig.model,
+    api: providerConfig.api,
+    provider: providerConfig.provider,
+    baseUrl: providerConfig.baseUrl,
+    reasoning: false,
+    input: ["text"],
+    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+    contextWindow: config.contextWindow,
+    maxTokens: config.maxTokens,
+    compat: providerConfig.api === "openai-completions"
+      ? {
+          supportsStore: false,
+          supportsDeveloperRole: false,
+          supportsReasoningEffort: false,
+          supportsUsageInStreaming: false,
+          supportsStrictMode: false,
+          maxTokensField: "max_tokens",
+        }
+      : {
+          supportsStore: false,
+          supportsStrictMode: false,
+        },
+  };
+  const providerApi = providerConfig.api === "openai-responses"
+    ? openAIResponsesApi()
+    : openAICompletionsApi();
+  models.setProvider(
+    createProvider({
+      id: providerConfig.provider,
+      name: "SDR upstream planner",
+      baseUrl: providerConfig.baseUrl,
+      auth: {
+        apiKey: {
+          name: "SDR planner API key",
+          resolve: async ({ signal }) => {
+            signal.throwIfAborted();
+            return {
+              auth: { apiKey: providerConfig.apiKey },
+              source: providerConfig.apiKeySource,
+            };
+          },
+        },
+      },
+      models: [model],
+      api: providerApi,
+    }),
+  );
   const submitPlan = {
     name: "submit_plan",
     label: "Submit SDR plan",
@@ -197,7 +219,7 @@ function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) 
     },
   };
 
-  return new Agent({
+  const agent = new Agent({
     initialState: {
       systemPrompt: SYSTEM_PROMPT,
       model,
@@ -206,7 +228,7 @@ function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) 
       messages: [],
     },
     streamFn: models.streamSimple.bind(models),
-    onPayload: requireSubmitPlan,
+    onPayload: (payload) => requireSubmitPlan(payload, providerConfig.api),
     toolExecution: "sequential",
     sessionId: `sdr-${sessionGeneration}`,
     beforeToolCall: async ({ toolCall }) => {
@@ -216,21 +238,26 @@ function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) 
       return undefined;
     },
   });
+  return { agent, plannerMeta };
 }
 
 function loadConfig() {
   const baseUrl = requiredEnv("SDR_PLANNER_BASE_URL").replace(/\/$/u, "");
   if (!/^https?:\/\//u.test(baseUrl)) throw new Error("SDR_PLANNER_BASE_URL must be HTTP(S)");
-  const apiKeyFile = process.env.SDR_PLANNER_API_KEY_FILE;
+  const credentialsDirectory = process.env.CREDENTIALS_DIRECTORY?.trim();
+  const apiKeyFile = process.env.SDR_PLANNER_API_KEY_FILE ||
+    (credentialsDirectory ? join(credentialsDirectory, "qwen-api-token") : undefined);
   const apiKey = process.env.SDR_PLANNER_API_KEY?.trim() ||
     (apiKeyFile ? readFileSync(apiKeyFile, "utf8").trim() : "");
-  if (!apiKey) throw new Error("set SDR_PLANNER_API_KEY_FILE or SDR_PLANNER_API_KEY");
   return {
+    api: process.env.SDR_PLANNER_API || "openai-completions",
     baseUrl,
     apiKey,
-    apiKeySource: apiKeyFile ? "credential file" : "environment",
+    apiKeySource: apiKeyFile ? "credential file" : "environment API key",
     provider: process.env.SDR_PLANNER_PROVIDER || "qwen4090",
     model: process.env.SDR_PLANNER_MODEL || "qwen3.8-27b",
+    providerConfigPath: process.env.SDR_PLANNER_PROVIDER_CONFIG ||
+      "/var/lib/sdrharness/web-console/provider.json",
     socketPath: process.env.SDR_PLANNER_SOCKET || "/run/sdr-agent/planner.sock",
     sessionSocketPath: process.env.SDR_SESSION_SOCKET || "/run/sdr-agent/session.sock",
     contextWindow: boundedInteger("SDR_PLANNER_CONTEXT_WINDOW", 196_608, 8_192, 1_000_000),
@@ -254,7 +281,7 @@ function prepareSocket(socketPath) {
 function writeResponse(socket, response) {
   const frame = `${JSON.stringify(response)}\n`;
   if (Buffer.byteLength(frame, "utf8") > MAX_FRAME_BYTES + 1) {
-    socket.end(`${JSON.stringify(makeErrorResponse(response, plannerMeta, "error", "response frame exceeds 32 KiB"))}\n`);
+    socket.end(`${JSON.stringify(makeErrorResponse(response, defaultPlannerMeta, "error", "response frame exceeds 32 KiB"))}\n`);
     return;
   }
   socket.end(frame);

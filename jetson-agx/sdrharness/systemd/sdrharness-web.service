@@ -1,6 +1,6 @@
 [Unit]
-Description=AGX SDR Harness Tailnet web console
-After=network-online.target tailscaled.service sdrharness-planner.service
+Description=AGX SDR Harness web console
+After=network-online.target sdrharness-planner.service
 Wants=network-online.target
 Requires=sdrharness-planner.service
 

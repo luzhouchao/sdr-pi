@@ -10,7 +10,7 @@ if [[ "$(uname -m)" != "aarch64" ]]; then
   exit 2
 fi
 
-for command_name in cargo node npm install; do
+for command_name in cargo node npm c++ make install; do
   if ! command -v "${command_name}" >/dev/null 2>&1; then
     echo "Missing required command: ${command_name}" >&2
     exit 2
@@ -45,6 +45,12 @@ planner="${repo_root}/raspberry-pi/sdr-agent/planner-worker"
   cd "${planner}"
   npm ci
   npm test
+)
+
+recognizer_worker="${repo_root}/raspberry-pi/sdr-agent/recognizer-worker"
+(
+  cd "${recognizer_worker}"
+  make test
 )
 
 sha256sum "${artifact_root}/bin/"* | tee "${artifact_root}/SHA256SUMS"

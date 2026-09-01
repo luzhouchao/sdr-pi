@@ -17,8 +17,11 @@ state.
       Web implementations.
 - [x] Preserve the Raspberry Pi release and validation evidence as the rollback
       baseline during migration.
-- [ ] Clone and build the repository on the real AGX, record its runtime
-      baseline, and verify one read-only SDRD observation.
+- [x] Clone and build the repository on the real AGX and record its runtime,
+      toolchain, artifact-hash and loopback-service baseline.
+- [ ] Verify one read-only SDRD observation from the AGX; direct network
+      reachability passed on 2026-09-01, but `192.168.1.10:43110` refused the
+      connection because `sdrd` was not listening.
 - [ ] Cut SDR acquisition ownership over to AGX only after proving the existing
       Spectrum collector is stopped or otherwise cannot contend for the radio.
 
@@ -63,6 +66,10 @@ state.
       and stop.
 - [x] Revalidate every interactive `plan_proposed` event in Rust before showing
       it as a validated plan.
+- [x] Add AGX Web-managed, backend-neutral Pi AI upstream configuration for
+      OpenAI-compatible Completions and Responses, with a `0600` untracked
+      secret file, key redaction, strict schema/URL/permission validation and
+      per-new-session reload.
 - [x] Deploy and live-test the interactive terminal while retaining the prior
       Pi release for rollback.
 - [ ] Support concurrent terminal input while Qwen is streaming so users can
@@ -70,12 +77,14 @@ state.
 - [ ] Persist and resume bounded interactive session history after terminal
       exit.
 - [ ] Support multiple isolated interactive users or sessions.
-- [ ] Live-test a second OpenAI-compatible provider such as DeepSeek without
-      changing the Controller interface.
+- [ ] Live-test an authenticated third-party provider such as OpenCode Zen or
+      DeepSeek without changing the Controller interface; fake-key protocol and
+      Web integration tests pass, but no real subscription credential was used.
 
 Evidence:
 
 - [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md)
+- [`AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](AGX_FRAMEWORK_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_RUNTIME_DESIGN.md`](SDR_AGENT_RUNTIME_DESIGN.md)
 - [`TERMINAL_AGENT_CLI_RESEARCH.md`](TERMINAL_AGENT_CLI_RESEARCH.md)
 - [`SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md)
@@ -316,9 +325,12 @@ Evidence:
 
 ## Current next milestone
 
-Bring the Agent framework up at `/home/jetson/sdrharness`: record the AGX
-JetPack/CUDA/services/network baseline, build from the clone, verify the
-Planner and Web on loopback, and perform one read-only SDRD observation without
-starting a second collector. CUDA/Mamba recognition remains explicitly deferred
-until this framework gate passes. FPGA-image work remains independently gated by
-hardware identity, sequence/quality fields and rollback evidence.
+Make the existing controlled `sdrd` endpoint available at
+`192.168.1.10:43110` through a separately authorized SDR-side operation, then
+repeat the AGX Controller's read-only observation without starting a second
+collector. The AGX clone, native build, runtime baseline and Planner/Web
+runtime gate are complete; an authenticated third-party Planner request also
+remains pending until the user enters a subscription API key through Web.
+CUDA/Mamba recognition remains explicitly deferred until the SDRD observation
+gate passes. FPGA-image work remains independently gated by hardware identity,
+sequence/quality fields and rollback evidence.

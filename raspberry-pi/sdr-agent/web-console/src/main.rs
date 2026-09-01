@@ -10,7 +10,9 @@ use std::{
     collections::VecDeque,
     convert::Infallible,
     env, fs,
+    io::Write,
     net::SocketAddr,
+    os::unix::fs::{OpenOptionsExt, PermissionsExt},
     path::{Path as FsPath, PathBuf},
     process::Stdio,
     sync::Arc,
@@ -29,6 +31,7 @@ const COMPACT_AT_EVENTS: usize = 160;
 const RETAIN_AFTER_COMPACT: usize = 48;
 const MAX_SUMMARY_BYTES: usize = 6_144;
 const MAX_COMMAND_BYTES: usize = 2_048;
+const MAX_PROVIDER_CONFIG_BYTES: u64 = 8 * 1024;
 
 #[derive(Clone)]
 struct Config {
@@ -38,6 +41,7 @@ struct Config {
     request_path: PathBuf,
     session_socket: PathBuf,
     sdrd_address: String,
+    provider_config_path: PathBuf,
 }
 
 #[derive(Clone)]
@@ -110,6 +114,36 @@ struct CommandRequest {
     command: String,
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct ProviderConfigFile {
+    schema_version: u8,
+    api: String,
+    base_url: String,
+    provider: String,
+    model: String,
+    api_key: String,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ProviderConfigRequest {
+    api: String,
+    base_url: String,
+    provider: String,
+    model: String,
+    api_key: String,
+}
+
+#[derive(Debug, Serialize)]
+struct ProviderConfigView {
+    configured: bool,
+    api: String,
+    base_url: String,
+    provider: String,
+    model: String,
+}
+
 #[derive(Debug)]
 struct ApiError(StatusCode, String);
 
@@ -151,6 +185,12 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         .route("/app.js", get(app_js))
         .route("/styles.css", get(styles_css))
         .route("/api/state", get(get_state))
+        .route(
+            "/api/provider",
+            get(get_provider_config)
+                .put(save_provider_config)
+                .delete(delete_provider_config),
+        )
         .route("/api/events", get(events))
         .route("/api/sessions", post(create_session))
         .route("/api/sessions/{id}/activate", post(activate_session))
@@ -187,6 +227,10 @@ impl Config {
             session_socket: env_path("SDR_WEB_SESSION_SOCKET", "/run/sdr-agent/session.sock"),
             sdrd_address: env::var("SDR_WEB_SDRD_ADDRESS")
                 .unwrap_or_else(|_| "192.168.1.10:43110".into()),
+            provider_config_path: env_path(
+                "SDR_WEB_PROVIDER_CONFIG_PATH",
+                "/var/lib/sdrharness/web-console/provider.json",
+            ),
         })
     }
 }
@@ -215,6 +259,60 @@ async fn styles_css() -> impl IntoResponse {
 
 async fn get_state(State(state): State<AppState>) -> Json<PersistedState> {
     Json(state.inner.lock().await.persisted.clone())
+}
+
+async fn get_provider_config(State(state): State<AppState>) -> ApiResult<Json<ProviderConfigView>> {
+    Ok(Json(load_provider_config_view(
+        &state.config.provider_config_path,
+    )?))
+}
+
+async fn save_provider_config(
+    State(state): State<AppState>,
+    Json(request): Json<ProviderConfigRequest>,
+) -> ApiResult<Json<ProviderConfigView>> {
+    let config = validate_provider_request(request)?;
+    let inner = state.inner.lock().await;
+    if inner.runtime.is_some() {
+        return Err(ApiError(
+            StatusCode::CONFLICT,
+            "请先停止当前对话，再修改上游模型".into(),
+        ));
+    }
+    persist_provider_config(&state.config.provider_config_path, &config)?;
+    drop(inner);
+    Ok(Json(provider_config_view(&config)))
+}
+
+async fn delete_provider_config(
+    State(state): State<AppState>,
+) -> ApiResult<Json<ProviderConfigView>> {
+    let inner = state.inner.lock().await;
+    if inner.runtime.is_some() {
+        return Err(ApiError(
+            StatusCode::CONFLICT,
+            "请先停止当前对话，再清除上游模型配置".into(),
+        ));
+    }
+    if state.config.provider_config_path.exists() {
+        let metadata =
+            fs::symlink_metadata(&state.config.provider_config_path).map_err(internal_error)?;
+        if !metadata.file_type().is_file() {
+            return Err(ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "拒绝删除非普通上游配置文件".into(),
+            ));
+        }
+        fs::remove_file(&state.config.provider_config_path).map_err(internal_error)?;
+    }
+    drop(inner);
+    Ok(Json(ProviderConfigView {
+        configured: false,
+        api: String::new(),
+        base_url: String::new(),
+        provider: String::new(),
+        model: String::new(),
+    }))
 }
 
 async fn events(
@@ -677,6 +775,161 @@ fn tail_utf8(value: &str, max_bytes: usize) -> String {
     format!("…{}", &value[start..])
 }
 
+fn validate_provider_request(request: ProviderConfigRequest) -> ApiResult<ProviderConfigFile> {
+    if !matches!(
+        request.api.as_str(),
+        "openai-completions" | "openai-responses"
+    ) {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            "API 协议必须为 OpenAI Completions 或 Responses".into(),
+        ));
+    }
+    let base_url = validate_provider_url(&request.base_url)?;
+    let provider = bounded_provider_id(&request.provider)?;
+    let model = bounded_printable(&request.model, "Model ID", 256)?;
+    let api_key = bounded_printable(&request.api_key, "API Key", 4_096)?;
+    Ok(ProviderConfigFile {
+        schema_version: 1,
+        api: request.api,
+        base_url,
+        provider,
+        model,
+        api_key,
+    })
+}
+
+fn validate_provider_url(value: &str) -> ApiResult<String> {
+    let text = bounded_printable(value, "Base URL", 2_048)?;
+    let uri: axum::http::Uri = text.parse().map_err(|_| {
+        ApiError(
+            StatusCode::BAD_REQUEST,
+            "Base URL 必须是完整的 HTTP(S) URL".into(),
+        )
+    })?;
+    let scheme = uri
+        .scheme_str()
+        .ok_or_else(|| ApiError(StatusCode::BAD_REQUEST, "Base URL 缺少协议".into()))?;
+    let authority = uri
+        .authority()
+        .ok_or_else(|| ApiError(StatusCode::BAD_REQUEST, "Base URL 缺少主机".into()))?;
+    if authority.as_str().contains('@') || uri.query().is_some() {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            "Base URL 不能包含账号信息或查询参数".into(),
+        ));
+    }
+    let host = authority.host().to_ascii_lowercase();
+    let loopback = matches!(host.as_str(), "localhost" | "127.0.0.1" | "[::1]");
+    if scheme != "https" && !(scheme == "http" && loopback) {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            "非 loopback 上游必须使用 HTTPS".into(),
+        ));
+    }
+    Ok(text.trim_end_matches('/').to_owned())
+}
+
+fn bounded_provider_id(value: &str) -> ApiResult<String> {
+    let text = bounded_printable(value, "Provider ID", 64)?;
+    if !text
+        .bytes()
+        .enumerate()
+        .all(|(index, byte)| byte.is_ascii_alphanumeric() || (index > 0 && b"._-".contains(&byte)))
+    {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            "Provider ID 只能包含字母、数字、点、下划线和连字符".into(),
+        ));
+    }
+    Ok(text)
+}
+
+fn bounded_printable(value: &str, label: &str, maximum_bytes: usize) -> ApiResult<String> {
+    let text = value.trim();
+    if text.is_empty() || text.len() > maximum_bytes || text.chars().any(char::is_control) {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            format!("{label} 必须为 1–{maximum_bytes} 字节可打印文本"),
+        ));
+    }
+    Ok(text.to_owned())
+}
+
+fn provider_config_view(config: &ProviderConfigFile) -> ProviderConfigView {
+    ProviderConfigView {
+        configured: true,
+        api: config.api.clone(),
+        base_url: config.base_url.clone(),
+        provider: config.provider.clone(),
+        model: config.model.clone(),
+    }
+}
+
+fn load_provider_config_view(path: &FsPath) -> ApiResult<ProviderConfigView> {
+    if !path.exists() {
+        return Ok(ProviderConfigView {
+            configured: false,
+            api: String::new(),
+            base_url: String::new(),
+            provider: String::new(),
+            model: String::new(),
+        });
+    }
+    let metadata = fs::symlink_metadata(path).map_err(internal_error)?;
+    if !metadata.file_type().is_file() || metadata.len() > MAX_PROVIDER_CONFIG_BYTES {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "上游配置必须是不超过 8 KiB 的普通文件".into(),
+        ));
+    }
+    if metadata.permissions().mode() & 0o077 != 0 {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "上游配置权限必须为 0600".into(),
+        ));
+    }
+    let config: ProviderConfigFile =
+        serde_json::from_slice(&fs::read(path).map_err(internal_error)?).map_err(internal_error)?;
+    if config.schema_version != 1 {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "不支持的上游配置版本".into(),
+        ));
+    }
+    Ok(provider_config_view(&config))
+}
+
+fn persist_provider_config(path: &FsPath, config: &ProviderConfigFile) -> ApiResult<()> {
+    let parent = path.parent().ok_or_else(|| {
+        ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "上游配置路径无父目录".into(),
+        )
+    })?;
+    fs::create_dir_all(parent).map_err(internal_error)?;
+    let bytes = serde_json::to_vec_pretty(config).map_err(internal_error)?;
+    if bytes.len() as u64 > MAX_PROVIDER_CONFIG_BYTES {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            "上游配置超过 8 KiB".into(),
+        ));
+    }
+    let temporary = path.with_extension(format!("json.tmp-{}", now_ms()));
+    let mut file = fs::OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .mode(0o600)
+        .open(&temporary)
+        .map_err(internal_error)?;
+    file.write_all(&bytes).map_err(internal_error)?;
+    file.sync_all().map_err(internal_error)?;
+    drop(file);
+    fs::rename(&temporary, path).map_err(internal_error)?;
+    fs::set_permissions(path, fs::Permissions::from_mode(0o600)).map_err(internal_error)?;
+    Ok(())
+}
+
 fn load_state(path: &FsPath) -> Result<PersistedState, Box<dyn std::error::Error>> {
     if !path.exists() {
         return Ok(PersistedState::default());
@@ -819,5 +1072,28 @@ mod tests {
         assert_eq!(classify_output("Validated plan> {}", false), "plan");
         assert_eq!(classify_output("Execution> {}", false), "execution");
         assert_eq!(classify_output("正在扫频 100MHz", false), "sweep");
+    }
+
+    #[test]
+    fn provider_config_accepts_responses_and_never_serializes_the_key() {
+        let config = validate_provider_request(ProviderConfigRequest {
+            api: "openai-responses".into(),
+            base_url: "https://opencode.ai/zen/v1".into(),
+            provider: "opencode".into(),
+            model: "gpt-5.6-sol".into(),
+            api_key: "test-secret".into(),
+        })
+        .unwrap();
+        let public = serde_json::to_string(&provider_config_view(&config)).unwrap();
+        assert!(public.contains("gpt-5.6-sol"));
+        assert!(!public.contains("test-secret"));
+        assert!(!public.contains("api_key"));
+    }
+
+    #[test]
+    fn provider_config_requires_https_away_from_loopback() {
+        assert!(validate_provider_url("http://127.0.0.1:8000/v1").is_ok());
+        let error = validate_provider_url("http://api.example.com/v1").unwrap_err();
+        assert_eq!(error.0, StatusCode::BAD_REQUEST);
     }
 }

@@ -9,7 +9,7 @@
 <body>
   <header class="topbar">
     <div>
-      <p class="eyebrow">TAILNET CONTROL PLANE</p>
+      <p class="eyebrow">AGX CONTROL PLANE</p>
       <h1>SDR Web Console</h1>
     </div>
     <div class="connection"><span id="connection-dot"></span><span id="connection-text">正在连接</span></div>
@@ -22,7 +22,7 @@
         <strong id="sweep-status">尚无扫频输出</strong>
       </article>
       <article class="status-card accent-violet">
-        <span>Qwen 最近返回</span>
+        <span>上游模型最近返回</span>
         <strong id="qwen-status">尚无模型输出</strong>
       </article>
       <article class="status-card accent-amber">
@@ -30,6 +30,52 @@
         <strong id="controller-status">等待活动对话</strong>
       </article>
     </section>
+
+    <details id="provider-dock" class="provider-dock">
+      <summary>
+        <span class="uplink-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>
+          <small>MODEL UPLINK</small>
+          <strong id="provider-status">尚未配置第三方上游</strong>
+        </span>
+        <span class="provider-hint">配置接入 <b aria-hidden="true">↘</b></span>
+      </summary>
+      <form id="provider-form" class="provider-form" autocomplete="off">
+        <div class="provider-presets" aria-label="上游预设">
+          <span>快速填充</span>
+          <button id="preset-opencode" type="button">OpenCode Zen</button>
+          <button id="preset-custom" type="button">清空字段</button>
+        </div>
+        <label>
+          <span>API 协议</span>
+          <select id="provider-api" required>
+            <option value="openai-completions">OpenAI Chat Completions</option>
+            <option value="openai-responses">OpenAI Responses</option>
+          </select>
+        </label>
+        <label class="wide-field">
+          <span>Base URL</span>
+          <input id="provider-base-url" type="url" maxlength="2048" placeholder="https://api.example.com/v1" required>
+        </label>
+        <label>
+          <span>Provider ID</span>
+          <input id="provider-id" maxlength="64" placeholder="opencode" required>
+        </label>
+        <label>
+          <span>Model ID</span>
+          <input id="provider-model" maxlength="256" placeholder="gpt-5.6-sol" required>
+        </label>
+        <label class="wide-field">
+          <span>API Key</span>
+          <input id="provider-api-key" type="password" maxlength="4096" autocomplete="new-password" placeholder="密钥不会回显；修改配置时请重新输入" required>
+        </label>
+        <div class="provider-actions wide-field">
+          <p>仅写入 AGX 的 <code>0600</code> 私密运行文件，Git 不跟踪。仅对下一个新对话生效。</p>
+          <button id="clear-provider" class="ghost-button" type="button">清除配置</button>
+          <button type="submit">保存并用于新对话</button>
+        </div>
+      </form>
+    </details>
 
     <section class="workspace">
       <aside class="sessions-panel">

@@ -1,6 +1,7 @@
 const view = {
   state: null,
   active: null,
+  provider: null,
   reloadTimer: null,
   terminal: document.querySelector('#terminal'),
   sessions: document.querySelector('#sessions'),
@@ -29,8 +30,74 @@ function render() {
   renderSessions();
   renderTerminal();
   renderOverview();
+  renderProvider();
   const enabled = Boolean(view.active);
   document.querySelectorAll('[data-command], #command-input, #command-form button').forEach((element) => { element.disabled = !enabled; });
+}
+
+async function loadProvider() {
+  view.provider = await api('/api/provider');
+  renderProvider();
+}
+
+function renderProvider() {
+  if (!view.provider) return;
+  const status = document.querySelector('#provider-status');
+  if (view.provider.configured) {
+    status.textContent = `${view.provider.provider} / ${view.provider.model} · ${apiLabel(view.provider.api)}`;
+    document.querySelector('#provider-api').value = view.provider.api;
+    document.querySelector('#provider-base-url').value = view.provider.base_url;
+    document.querySelector('#provider-id').value = view.provider.provider;
+    document.querySelector('#provider-model').value = view.provider.model;
+  } else {
+    status.textContent = '尚未配置第三方上游';
+  }
+  document.querySelector('#provider-dock').classList.toggle('configured', view.provider.configured);
+}
+
+async function saveProvider(event) {
+  event.preventDefault();
+  const payload = {
+    api: document.querySelector('#provider-api').value,
+    base_url: document.querySelector('#provider-base-url').value.trim(),
+    provider: document.querySelector('#provider-id').value.trim(),
+    model: document.querySelector('#provider-model').value.trim(),
+    api_key: document.querySelector('#provider-api-key').value,
+  };
+  try {
+    view.provider = await api('/api/provider', { method: 'PUT', body: JSON.stringify(payload) });
+    document.querySelector('#provider-api-key').value = '';
+    document.querySelector('#provider-dock').open = false;
+    renderProvider();
+    toast('上游配置已保存，将用于下一个新对话');
+  } catch (error) { toast(error.message); }
+}
+
+async function clearProvider() {
+  if (!window.confirm('清除私密上游配置？新对话将回退到部署环境配置。')) return;
+  try {
+    view.provider = await api('/api/provider', { method: 'DELETE' });
+    document.querySelector('#provider-form').reset();
+    renderProvider();
+    toast('上游配置已清除');
+  } catch (error) { toast(error.message); }
+}
+
+function presetOpenCode() {
+  document.querySelector('#provider-api').value = 'openai-responses';
+  document.querySelector('#provider-base-url').value = 'https://opencode.ai/zen/v1';
+  document.querySelector('#provider-id').value = 'opencode';
+  document.querySelector('#provider-model').value = 'gpt-5.6-sol';
+  document.querySelector('#provider-api-key').focus();
+}
+
+function clearProviderFields() {
+  document.querySelector('#provider-form').reset();
+  document.querySelector('#provider-base-url').focus();
+}
+
+function apiLabel(apiName) {
+  return apiName === 'openai-responses' ? 'Responses' : 'Chat Completions';
 }
 
 function renderSessions() {
@@ -121,7 +188,7 @@ async function send(command) {
 function connectEvents() {
   const source = new EventSource('/api/events');
   source.onopen = () => {
-    setConnection(true, 'Tailnet 实时连接');
+    setConnection(true, '局域网实时连接');
     loadState().catch((error) => toast(error.message));
   };
   source.onerror = () => setConnection(false, '正在重新连接');
@@ -156,6 +223,10 @@ function statusLabel(status) {
 }
 
 document.querySelector('#new-session').addEventListener('click', createSession);
+document.querySelector('#provider-form').addEventListener('submit', saveProvider);
+document.querySelector('#clear-provider').addEventListener('click', clearProvider);
+document.querySelector('#preset-opencode').addEventListener('click', presetOpenCode);
+document.querySelector('#preset-custom').addEventListener('click', clearProviderFields);
 document.querySelector('#scroll-bottom').addEventListener('click', scrollBottom);
 document.querySelectorAll('[data-command]').forEach((button) => button.addEventListener('click', () => send(button.dataset.command)));
 document.querySelector('#command-form').addEventListener('submit', (event) => { event.preventDefault(); send(view.input.value); });
@@ -163,4 +234,6 @@ view.input.addEventListener('keydown', (event) => {
   if (event.key === 'Enter' && event.ctrlKey) { event.preventDefault(); send(view.input.value); }
 });
 
-loadState({ keepScroll: false }).then(connectEvents).catch((error) => toast(error.message));
+Promise.all([loadState({ keepScroll: false }), loadProvider()])
+  .then(connectEvents)
+  .catch((error) => toast(error.message));

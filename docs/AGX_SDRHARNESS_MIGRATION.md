@@ -13,13 +13,18 @@ The migration covers the Agent framework first. CUDA/Mamba recognition is a
 separate later feature. The earlier ultra-light ONNX package is not part of the
 AGX migration bundle and must not be used to open `recognizer_available`.
 
+The real AGX clone was natively built and loopback-validated on 2026-09-01.
+Direct network reachability to the SDR was healthy, but TCP port 43110 refused
+the read-only Controller observation because `sdrd` was not listening. See
+[`AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](AGX_FRAMEWORK_VALIDATION_2026-09-01.md).
+
 ## Ownership and seams
 
 ```text
 AGX operator/Web
       |
       v
-AGX Rust Controller ---- AGX Planner Worker ---- AGX-local or 4090 Qwen
+AGX Rust Controller ---- AGX Pi Agent Worker ---- third-party model API
       |
       +---- future Recognizer interface ---- CUDA/Mamba Adapter (deferred)
       |
@@ -51,7 +56,7 @@ bash jetson-agx/sdrharness/scripts/verify-checkout.sh
 
 Excluded intentionally:
 
-- API keys, SSH keys and Qwen credentials;
+- API keys, SSH keys and provider credentials;
 - original RadioML/HisarMod datasets and raw IQ;
 - Python virtual environments, Node modules, Cargo targets and caches;
 - model checkpoints and the discarded small-model staging bundle;
@@ -60,16 +65,21 @@ Excluded intentionally:
 
 ## First AGX session
 
-AGX was offline while this handoff was prepared. Before any installation:
+The first AGX build baseline is recorded. Before production installation or
+acquisition cutover, retain these gates:
 
-1. record `uname`, JetPack/L4T, CUDA, TensorRT, PyTorch, memory and disk;
-2. record Spectrum Agent, predictor, Qwen and collector status without restarting;
-3. record interfaces and routes, especially AGX `192.168.1.20`;
-4. test TCP/read-only SDRD health at `192.168.1.10:43110`;
+1. retain the recorded `uname`, JetPack/L4T, CUDA, TensorRT, PyTorch, memory and
+   disk baseline;
+2. recheck Spectrum Agent, predictor, Qwen and collector status without restarting;
+3. recheck interfaces and routes, especially AGX `192.168.1.20`;
+4. make `sdrd` available through a separately controlled SDR-side operation,
+   then repeat TCP/read-only health at `192.168.1.10:43110`;
 5. prove no existing collector owns the SDR before starting Harness acquisition;
-6. install and check the native Rust 1.98, Node 22, Git and C/C++20 toolchain;
-7. run the native build and retain its SHA-256 manifest;
-8. install Planner and Web only, bound to loopback or the AGX Tailscale IPv4;
+6. preserve the verified native Rust 1.98, Node 22, Git and C/C++20 toolchain;
+7. rerun the native build for the deployment commit and retain its SHA-256 manifest;
+8. install Planner and Web only after review; the user-authorized AGX template
+   binds all IPv4 interfaces for changing trusted LANs and must not be exposed
+   through public port forwarding;
 9. validate one read-only Controller observation;
 10. plan the acquisition cutover and Pi rollback separately.
 

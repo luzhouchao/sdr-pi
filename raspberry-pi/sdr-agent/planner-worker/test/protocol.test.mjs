@@ -106,3 +106,13 @@ test("forces the only allowed planning tool without mutating the provider payloa
   });
   assert.equal(Object.hasOwn(payload, "tool_choice"), false);
 });
+
+test("forces submit_plan with the OpenAI Responses tool shape", () => {
+  const payload = { model: "test", input: [] };
+  assert.deepEqual(requireSubmitPlan(payload, "openai-responses"), {
+    model: "test",
+    input: [],
+    tool_choice: { type: "function", name: "submit_plan" },
+  });
+  assert.equal(Object.hasOwn(payload, "tool_choice"), false);
+});

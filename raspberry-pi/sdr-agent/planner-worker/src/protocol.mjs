@@ -99,7 +99,13 @@ export function normalizeAction(params) {
   }
 }
 
-export function requireSubmitPlan(payload) {
+export function requireSubmitPlan(payload, api = "openai-completions") {
+  if (api === "openai-responses") {
+    return {
+      ...payload,
+      tool_choice: { type: "function", name: "submit_plan" },
+    };
+  }
   return {
     ...payload,
     tool_choice: {

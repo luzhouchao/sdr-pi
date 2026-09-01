@@ -75,10 +75,12 @@ export class SessionRuntime {
   #open(command) {
     if (this.agent !== undefined) throw new Error("a session is already open");
     this.sessionGeneration = command.session_generation;
-    this.agent = this.createAgent({
+    const created = this.createAgent({
       sessionGeneration: command.session_generation,
       onPlan: (action) => this.#submitPlan(action),
     });
+    this.agent = created?.agent ?? created;
+    this.plannerMeta = created?.plannerMeta ?? this.plannerMeta;
     this.agent.steeringMode = "one-at-a-time";
     this.agent.followUpMode = "one-at-a-time";
     this.unsubscribe = this.agent.subscribe((event) => this.#handleAgentEvent(event));

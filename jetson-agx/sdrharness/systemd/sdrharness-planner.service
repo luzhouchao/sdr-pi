@@ -1,6 +1,6 @@
 [Unit]
 Description=AGX SDR Harness planner worker
-After=network-online.target tailscaled.service
+After=network-online.target
 Wants=network-online.target
 
 [Service]
@@ -8,12 +8,10 @@ Type=simple
 User=jetson
 Group=jetson
 EnvironmentFile=/etc/sdrharness/runtime.env
-LoadCredential=qwen-api-token:/etc/sdrharness/qwen-api-token
-Environment=SDR_PLANNER_API_KEY_FILE=%d/qwen-api-token
 RuntimeDirectory=sdrharness
 RuntimeDirectoryMode=0750
 WorkingDirectory=/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker
-ExecStart=/usr/bin/node --max-old-space-size=192 /home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/main.mjs
+ExecStart=/home/jetson/.local/bin/node --max-old-space-size=192 /home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/main.mjs
 Restart=on-failure
 RestartSec=3
 

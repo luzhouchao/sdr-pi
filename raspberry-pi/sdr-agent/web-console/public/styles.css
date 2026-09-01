@@ -15,7 +15,7 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 80% -10%, #15243d 0, transparent 35%), var(--bg); color: var(--text); }
-button, textarea { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: .42; }
 
@@ -33,6 +33,32 @@ main { padding: 24px clamp(14px, 4vw, 56px) 42px; }
 .status-card span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 10px; }
 .status-card strong { display: block; font-size: 14px; line-height: 1.45; font-weight: 600; max-height: 42px; overflow: hidden; }
 .accent-cyan { --accent: var(--cyan); } .accent-violet { --accent: var(--violet); } .accent-amber { --accent: var(--amber); }
+
+.provider-dock { margin-bottom: 16px; border: 1px solid var(--line); border-radius: 12px; background: #0a111b; overflow: hidden; }
+.provider-dock > summary { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; min-height: 64px; padding: 12px 17px; cursor: pointer; list-style: none; }
+.provider-dock > summary::-webkit-details-marker { display: none; }
+.provider-dock > summary:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+.provider-dock > summary small { display: block; color: var(--muted); font: 700 9px/1.2 ui-monospace, monospace; letter-spacing: .16em; }
+.provider-dock > summary strong { display: block; margin-top: 5px; font-size: 13px; }
+.provider-hint { color: var(--muted); font-size: 11px; }
+.provider-hint b { display: inline-block; margin-left: 7px; color: var(--cyan); transition: transform .18s ease; }
+.provider-dock[open] .provider-hint b { transform: rotate(90deg); }
+.uplink-mark { display: flex; align-items: end; gap: 3px; width: 28px; height: 28px; padding: 6px; border: 1px solid #2b4059; border-radius: 50%; background: #0c1926; }
+.uplink-mark i { display: block; width: 3px; height: 6px; border-radius: 2px; background: #52637a; }
+.uplink-mark i:nth-child(2) { height: 10px; }
+.uplink-mark i:nth-child(3) { height: 14px; }
+.provider-dock.configured .uplink-mark i { background: var(--cyan); box-shadow: 0 0 8px rgba(81,213,230,.35); }
+.provider-form { display: grid; grid-template-columns: 1fr 1.6fr 1fr 1.2fr; gap: 13px; padding: 16px 17px 18px; border-top: 1px solid var(--line); background: linear-gradient(90deg, rgba(81,213,230,.035), transparent 32%); }
+.provider-form label > span { display: block; margin-bottom: 7px; color: var(--muted); font-size: 10px; }
+.provider-form input, .provider-form select { width: 100%; min-height: 38px; border: 1px solid #2a3b53; border-radius: 7px; padding: 8px 10px; color: var(--text); background: #080e17; outline: none; }
+.provider-form input:focus, .provider-form select:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(81,213,230,.09); }
+.provider-form .wide-field { grid-column: span 2; }
+.provider-presets { grid-column: 1 / -1; display: flex; align-items: center; gap: 7px; }
+.provider-presets span { margin-right: 4px; color: var(--muted); font-size: 10px; }
+.provider-presets button { border: 1px solid #30465f; border-radius: 999px; padding: 5px 10px; color: #bad0e7; background: #101c2a; font-size: 10px; }
+.provider-actions { display: flex; align-items: center; justify-content: flex-end; gap: 9px; }
+.provider-actions p { margin: 0 auto 0 0; color: #697a90; font-size: 10px; line-height: 1.5; }
+.provider-actions > button:last-child { border: 0; border-radius: 7px; padding: 9px 13px; color: #061117; background: var(--cyan); font-weight: 800; font-size: 11px; }
 
 .workspace { min-height: calc(100vh - 250px); display: grid; grid-template-columns: 250px minmax(0, 1fr); border: 1px solid var(--line); border-radius: 14px; background: var(--panel); overflow: hidden; }
 .sessions-panel { padding: 17px 14px; border-right: 1px solid var(--line); background: #0a101a; }
@@ -88,4 +114,8 @@ textarea:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(81,213,23
   .terminal { max-height: 50vh; }
   .line { grid-template-columns: 62px minmax(0, 1fr); }
   .line .kind { display: none; }
+  .provider-form { grid-template-columns: 1fr; }
+  .provider-form .wide-field { grid-column: auto; }
+  .provider-actions { align-items: stretch; flex-direction: column; }
+  .provider-hint { display: none; }
 }

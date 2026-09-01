@@ -1,6 +1,6 @@
 # SDR Harness for Jetson AGX Orin
 
-P201 Pro SDR、Jetson AGX Orin、Rust 安全控制器、Qwen Planner 和后续 CUDA
+P201 Pro SDR、Jetson AGX Orin、Rust 安全控制器、Pi Agent Planner 和后续 CUDA
 识别后端的统一工程仓库。
 
 主运行节点已从 Raspberry Pi 4B 调整为 Jetson AGX Orin。目标 clone 路径固定为
@@ -10,11 +10,12 @@ P201 Pro SDR、Jetson AGX Orin、Rust 安全控制器、Qwen Planner 和后续 C
 ## 目标架构
 
 ```text
-operator / Tailscale Web Console
+operator / trusted-LAN Web Console
                 |
                 v
        AGX SDR Harness
-  Rust Controller + Qwen Planner
+  Rust Controller + Pi Agent Planner
+       third-party model API
   acquisition / aggregation / future CUDA recognizer
                 |
                 v
@@ -33,7 +34,12 @@ SDR 继续运行 `sdrd`，保留独占所有权、限幅、停止和射频状态
 - Pi 侧 Rust Controller、Planner Worker、终端和 Web Console 已实机验证，作为可回滚基线。
 - SDR 侧受控 `sdrd` 已验证只接收扫频、限幅 IQ、取消和状态恢复。
 - AGX 迁移目录、配置、systemd 模板和本机构建入口已纳入 Git。
-- AGX 尚未完成本次 clone 和实机切换；上线后必须先做只读网络与运行环境基线。
+- AGX 已在 `/home/jetson/sdrharness` 完成提交 `22cc751` 的 aarch64
+  原生构建、测试和 loopback 运行验证；直连 SDR 网络正常，但
+  `192.168.1.10:43110` 当时未监听，只读 SDRD 观察仍待完成。
+- AGX Web 可将 OpenAI-compatible Completions/Responses 上游写入
+  不被 Git 跟踪的 `0600` 私密配置；按用户要求监听所有 IPv4
+  接口，不得做公网端口映射。
 - CUDA/Mamba 模型、权重和推理 Worker 暂不包含在本次框架迁移中。
 
 ## 目录
@@ -66,7 +72,8 @@ bash jetson-agx/sdrharness/scripts/build-agent-runtime.sh
 ## 安全边界
 
 - 不提交密码、私钥、API key、原始 IQ、训练数据集、缓存或环境目录。
-- 未完成 AGX 实机基线前，不停止现有 Spectrum Agent/Qwen，不启动第二套 SDR 采集。
+- 未完成 SDRD 只读观察和采集切换门禁前，不停止现有
+  Spectrum Agent/Qwen，不启动第二套 SDR 采集。
 - 不覆盖厂商原始 `BOOT.bin`；FPGA 镜像仍需时序、路由、哈希和回滚门禁。
 - CUDA 模型权重按大小使用 GitHub Release 或其他带 SHA-256 的制品渠道，不直接混入源码历史。
 - 所有能力默认关闭，只有负责的 Adapter 通过实机探测后才能报告可用。
