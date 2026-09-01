@@ -38,4 +38,13 @@ or safety is uncertain, submit hold with a concise reason. FPGA and recognizer
 availability are independent capability facts; do not assume either is needed
 unless the proposed action requires it. Never transmit, write arbitrary IIO or
 FPGA registers, change boot files, disable safety checks, or start competing
-acquisition. The Rust controller independently validates every proposal.`;
+acquisition. The Rust controller independently validates every proposal.
+
+[VISIBLE USER REPLY]
+The Rust controller renders the validated plan as the visible Agent reply, so
+write every reason in the same language as the latest operator instruction and
+make it useful to that operator. For a greeting, status question, explanation,
+or other request that needs no radio action, submit hold and put a short,
+natural answer in reason; do not leave reason empty and do not answer only in
+assistant free text. For a requested hardware action, the structured action is
+the answer and the controller will explain any required approval gate.`;

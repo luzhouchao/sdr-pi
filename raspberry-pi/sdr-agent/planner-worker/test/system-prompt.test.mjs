@@ -18,6 +18,11 @@ test("system prompt names live SDR observations and every hard planning boundary
     "max_observation_age_ms",
     "never\\s+invent a candidate",
     "Never transmit",
+    "same language as the latest operator instruction",
+    "For a greeting, status question, explanation",
+    "submit hold",
+    "do not leave reason empty",
+    "controller will explain any required approval gate",
   ]) {
     assert.match(PLANNER_SYSTEM_PROMPT, new RegExp(required, "u"));
   }

@@ -1440,6 +1440,9 @@ impl ConsoleApp {
                 self.plan_seen_in_cycle = true;
                 self.cruise.record_planner_action();
                 println!("已验证计划：{}", describe_plan(&plan));
+                let agent_reply = describe_agent_reply(&plan, self.cruise.mode());
+                println!("Agent> {agent_reply}");
+                self.record(format!("agent: {agent_reply}"));
                 self.record(format!("validated request {}", plan.request_id));
                 match self.cruise.mode() {
                     InteractionMode::StepApproval => {
@@ -1878,6 +1881,26 @@ fn describe_plan(plan: &ValidatedPlan) -> String {
     }
 }
 
+fn describe_agent_reply(plan: &ValidatedPlan, mode: InteractionMode) -> String {
+    if let ProposedAction::Hold { reason } = &plan.action {
+        return reason.clone();
+    }
+
+    let summary = describe_plan(plan);
+    if mode == InteractionMode::StepApproval
+        && matches!(
+            &plan.action,
+            ProposedAction::CaptureBoundedIq { .. }
+                | ProposedAction::SurveyBand { .. }
+                | ProposedAction::InspectCandidate { .. }
+        )
+    {
+        format!("计划已生成：{summary}。请点击批准或输入 /approve 执行，也可以拒绝。")
+    } else {
+        format!("下一步计划：{summary}")
+    }
+}
+
 fn invalid_input(message: impl Into<String>) -> io::Error {
     io::Error::new(io::ErrorKind::InvalidInput, message.into())
 }
@@ -1885,6 +1908,19 @@ fn invalid_input(message: impl Into<String>) -> io::Error {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn reply_plan(action: ProposedAction) -> ValidatedPlan {
+        ValidatedPlan {
+            request_id: 1,
+            session_generation: 1,
+            approval_required: false,
+            action,
+            planner: sdr_agent_controller::protocol::PlannerMeta {
+                provider: "test".to_owned(),
+                model: "test".to_owned(),
+            },
+        }
+    }
 
     #[test]
     fn parses_default_and_operator_cruise_budgets() {
@@ -1921,5 +1957,29 @@ mod tests {
         ] {
             assert!(parse_auto_start(invalid).is_err(), "accepted {invalid}");
         }
+    }
+
+    #[test]
+    fn hold_reason_becomes_the_visible_agent_reply() {
+        let plan = reply_plan(ProposedAction::Hold {
+            reason: "你好，我已连接，可以帮你安全地检查频段。".to_owned(),
+        });
+        assert_eq!(
+            describe_agent_reply(&plan, InteractionMode::StepApproval),
+            "你好，我已连接，可以帮你安全地检查频段。"
+        );
+    }
+
+    #[test]
+    fn manual_survey_reply_explains_the_approval_gate() {
+        let plan = reply_plan(ProposedAction::SurveyBand {
+            start_hz: 70_000_000,
+            stop_hz: 90_000_000,
+            step_hz: 100_000,
+            dwell_ms: 10,
+        });
+        let reply = describe_agent_reply(&plan, InteractionMode::StepApproval);
+        assert!(reply.contains("70000000–90000000 Hz"));
+        assert!(reply.contains("请点击批准或输入 /approve"));
     }
 }

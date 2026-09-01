@@ -439,6 +439,8 @@ struct CapabilitiesResponse {
     iio_visible: bool,
     radio_control: bool,
     raw_iq_capture: bool,
+    #[serde(rename = "software_summary")]
+    _software_summary: bool,
     max_capture_bytes: u64,
     #[serde(rename = "fpga_backend")]
     _fpga_backend: String,
@@ -623,7 +625,7 @@ mod tests {
             let response_groups = vec![
                 vec![
                     "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
-                    "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
+                    "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
                     "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":3,\"session_state\":\"owned\",\"restore_armed\":true}\n",
                     "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":3,\"center_hz\":433920000,\"sample_rate_hz\":2100000,\"rf_bandwidth_hz\":500000,\"gain_mode\":\"slow_attack\",\"enabled_channels\":1}\n",
                     "{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":3,\"feature_id\":\"agent-3-7\",\"samples_captured\":4096,\"bytes_written\":16384,\"sequence\":1,\"dropped_samples\":0,\"overflow\":false,\"relative_path\":\"agent-3-7/capture-3-1.ci16\"}\n",
@@ -633,7 +635,7 @@ mod tests {
                 ],
                 vec![
                     "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
-                    "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
+                    "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
                     "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"healthy\":true,\"health_flags\":0,\"iio_phy_visible\":true,\"iio_rx_visible\":true,\"fpga_configured\":false,\"fpga_mapped\":false,\"fpga_identity_valid\":false,\"session_faulted\":false}\n",
                     "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"closing\":true}\n",
                 ],

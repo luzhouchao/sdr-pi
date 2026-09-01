@@ -172,6 +172,12 @@ Evidence:
       live-validated with candidate feedback, zero clipping and restoration;
       see
       [`SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md`](SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md).
+- [x] Render every Rust-validated proposal as a visible Agent reply, use
+      language-matched `hold.reason` replies for non-hardware conversation,
+      expose the manual approval gate for single surveys, and accept the
+      declared SDRD `software_summary` capability in bounded-IQ execution. The
+      real Web/OpenCode Go/P201 paths and exact delivery cleanup passed; see
+      [`SDR_AGENT_REPLY_AND_CAPTURE_COMPAT_VALIDATION_2026-09-01.md`](SDR_AGENT_REPLY_AND_CAPTURE_COMPAT_VALIDATION_2026-09-01.md).
 - [x] Persist typed candidate observations independently of terminal history,
       restore them through a validated mode-`0600` runtime PlanningContext after
       Web restart, and bound textual carry-forward to one 1,024-byte terminal

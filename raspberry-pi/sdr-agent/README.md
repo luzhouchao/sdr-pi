@@ -176,6 +176,15 @@ the same fixed gain and a single 4,096-sample `CAPTURE_POWER` summary. It
 processes at most 16 KiB, persists no IQ, updates the selected candidate for the
 next Planner turn, and counts against automatic-cruise step/byte budgets.
 
+Every model proposal is rendered as a visible `Agent>` reply only after Rust
+has validated its structured action. Greetings, status questions and
+explanations use a validated `hold.reason` in the operator's language. In
+step-approval mode, an executable `survey_band`, `inspect_candidate` or
+bounded-IQ reply explicitly asks the operator to click approve or enter
+`/approve`; sending the natural-language request alone does not bypass that
+gate. SDRD capability parsing remains strict while accepting the declared
+`software_summary` field shared by the sweep and bounded-IQ production paths.
+
 The Planner system prompt explains every live `observation` and hard `limits`
 field, including current candidate signals, the overall tunable band, maximum
 single-survey span and per-action bandwidth. The private provider configuration
