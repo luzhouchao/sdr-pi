@@ -21,8 +21,11 @@ The library now also contains the controlled-mode command parser, ownership
 state machine, bounded-capture contract, and a local libiio 0.21 Adapter. The
 Adapter keeps one process-local IIO context, snapshots all controlled state,
 uses one session buffer, writes bounded complex-int16 files, and restores state
-on stop or failure. It is development-validated but is not installed as an SDR
-service; the deployed SDR remains in shadow mode.
+on stop or failure. A personal receive-only configuration and BusyBox init
+script are provided in [`config/sdrd-personal.conf`](config/sdrd-personal.conf)
+and [`deploy/S60sdrd`](deploy/S60sdrd). The live deployment is retained on
+`/sd`, but the SDR's RAM root means the `/etc/init.d` copy is current-boot only;
+see the deployment evidence before changing the boot chain.
 [`config/sdrd-controlled-interface.conf`](config/sdrd-controlled-interface.conf)
 documents the accepted limits but is explicitly not a deployment configuration.
 

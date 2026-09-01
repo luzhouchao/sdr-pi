@@ -1,5 +1,6 @@
 param(
-    [string]$ToolchainBin = 'E:\Xilinx\SDK\2019.1\gnu\aarch32\nt\gcc-arm-linux-gnueabi\bin'
+    [string]$ToolchainBin = 'E:\Xilinx\SDK\2019.1\gnu\aarch32\nt\gcc-arm-linux-gnueabi\bin',
+    [switch]$Clean
 )
 
 $ErrorActionPreference = 'Stop'
@@ -10,6 +11,20 @@ $Output = Join-Path $BuildRoot 'sdrd'
 $Compiler = Join-Path $ToolchainBin 'arm-linux-gnueabihf-gcc.exe'
 $Strip = Join-Path $ToolchainBin 'arm-linux-gnueabihf-strip.exe'
 $Readelf = Join-Path $ToolchainBin 'arm-linux-gnueabihf-readelf.exe'
+
+if ($Clean) {
+    $ExpectedBuildRoot = [System.IO.Path]::GetFullPath(
+        (Join-Path $SdrdRoot 'build-armhf-dynamic'))
+    if (Test-Path -LiteralPath $BuildRoot) {
+        $ResolvedBuildRoot = (Resolve-Path -LiteralPath $BuildRoot).Path
+        if ($ResolvedBuildRoot -ne $ExpectedBuildRoot) {
+            throw "Refusing to clean unexpected build path: $ResolvedBuildRoot"
+        }
+        Remove-Item -LiteralPath $ResolvedBuildRoot -Recurse -Force
+    }
+    Write-Output 'armhf_build_cleanup=verified'
+    return
+}
 
 foreach ($Tool in @($Compiler, $Strip, $Readelf)) {
     if (-not (Test-Path -LiteralPath $Tool -PathType Leaf)) {

@@ -112,8 +112,12 @@ Evidence:
       and state restoration.
 - [ ] Add sequence, overflow, dropped-sample, timeout, and health metadata to all
       execution results.
-- [ ] Deploy executable `sdrd` as an enabled service on the SDR with a tested
-      rollback path.
+- [x] Deploy controlled `sdrd` for the current SDR boot with a private-link
+      listener, protected-BOOT gate, retained `/sd` release, tested stop path,
+      bounded live capture and verified state restoration.
+- [ ] Make `sdrd` start automatically after an SDR reboot; the RAM root loses
+      `/etc/init.d/S60sdrd`, so this requires a separately authorized and tested
+      ramdisk or boot-chain change with golden rollback.
 - [ ] Complete long-duration reconnect and fault-recovery testing on the real
       SDR.
 
@@ -123,6 +127,7 @@ Evidence:
 - [`../sdr-system/docs/SDRD_SHADOW_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_SHADOW_VALIDATION_2026-08-31.md)
 - [`../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md)
 - [`../sdr-system/docs/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md)
+- [`../sdr-system/docs/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md`](../sdr-system/docs/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md)
 - [`SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md)
 - [`SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md`](SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md)
 

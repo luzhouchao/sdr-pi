@@ -1,0 +1,67 @@
+#!/bin/sh
+
+DAEMON=/sd/sdr-agent/current/sdrd
+CONFIG=/sd/sdr-agent/current/sdrd.conf
+PIDFILE=/run/sdrd.pid
+LOGFILE=/tmp/sdrd.log
+EXPECTED_BOOT_SHA256=02c7f8f84f003879fda27021bb243517ccf8e9b85e7404a37db2e4dda1d8b951
+
+start() {
+	printf 'Starting receive-only sdrd: '
+	[ -x "$DAEMON" ] || { echo 'FAIL (missing daemon)'; return 1; }
+	[ -r "$CONFIG" ] || { echo 'FAIL (missing config)'; return 1; }
+	observed_boot="$(sha256sum /sd/BOOT.bin | awk '{print $1}')"
+	[ "$observed_boot" = "$EXPECTED_BOOT_SHA256" ] || {
+		echo 'FAIL (unexpected BOOT.bin)'
+		return 1
+	}
+	pidof iiod >/dev/null || { echo 'FAIL (iiod unavailable)'; return 1; }
+	"$DAEMON" --config "$CONFIG" --check-config >/dev/null || {
+		echo 'FAIL (config)'
+		return 1
+	}
+	"$DAEMON" --config "$CONFIG" --probe >/dev/null || {
+		echo 'FAIL (health probe)'
+		return 1
+	}
+	"$DAEMON" --config "$CONFIG" --probe-radio >/dev/null || {
+		echo 'FAIL (radio probe)'
+		return 1
+	}
+	mkdir -p -m 700 /tmp/sdr-agent-dev
+	start-stop-daemon -S -q -b -m -p "$PIDFILE" -x "$DAEMON" -- \
+		--config "$CONFIG" --serve >"$LOGFILE" 2>&1 || {
+		echo 'FAIL (start)'
+		return 1
+	}
+	sleep 1
+	start-stop-daemon -K -t -q -p "$PIDFILE" -x "$DAEMON" || {
+		echo 'FAIL (not running)'
+		return 1
+	}
+	echo 'OK'
+}
+
+stop() {
+	printf 'Stopping receive-only sdrd: '
+	start-stop-daemon -K -q -o -p "$PIDFILE" -x "$DAEMON" -s TERM
+	rm -f "$PIDFILE"
+	echo 'OK'
+}
+
+status() {
+	if start-stop-daemon -K -t -q -p "$PIDFILE" -x "$DAEMON"; then
+		echo 'sdrd is running'
+		return 0
+	fi
+	echo 'sdrd is stopped'
+	return 3
+}
+
+case "$1" in
+	start) start ;;
+	stop) stop ;;
+	restart) stop && start ;;
+	status) status ;;
+	*) echo "Usage: $0 {start|stop|restart|status}"; exit 1 ;;
+esac
