@@ -120,7 +120,10 @@ async function send(command) {
 
 function connectEvents() {
   const source = new EventSource('/api/events');
-  source.onopen = () => setConnection(true, 'Tailnet 实时连接');
+  source.onopen = () => {
+    setConnection(true, 'Tailnet 实时连接');
+    loadState().catch((error) => toast(error.message));
+  };
   source.onerror = () => setConnection(false, '正在重新连接');
   source.onmessage = () => {
     clearTimeout(view.reloadTimer);

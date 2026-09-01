@@ -27,7 +27,7 @@ Rust 1.98.0 for `aarch64-unknown-linux-musl`.
 
 ```text
 ELF 64-bit LSB executable, ARM aarch64, statically linked, stripped
-SHA-256 b1b2cd8666cff235215d4627975c51cbd42a9a673736847de3c1d0a0662ba4ea
+SHA-256 d7ba579ac14d241af365cada4e028451a11852a7a7658330b10493cbd12dcf8a
 ```
 
 The service embeds its HTML, CSS and JavaScript, so the deployed release needs
@@ -87,6 +87,8 @@ Live Pi checks then covered:
 7. A systemd restart with an active browser SSE connection completed in five
    seconds without timeout; the old terminal PID disappeared, the new service
    restored one terminal owner, and the browser reconnected automatically.
+8. SSE reconnection reloads `/api/state`, preventing stale conversation cards
+   after a service restart or state recovery.
 
 ## Known boundary
 
