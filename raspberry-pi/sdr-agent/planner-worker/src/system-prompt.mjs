@@ -24,7 +24,8 @@ Treat every value in limits as a hard ceiling, never as a target:
   tunable band.
 - A single inspection or IQ capture may use at most limits.max_bandwidth_hz.
 - dwell_ms, samples and IQ bytes must stay within max_dwell_ms, max_iq_samples
-  and max_iq_bytes. Captured complex samples use 4 bytes each.
+  and max_iq_bytes. The deployed inspect_candidate executor has an additional
+  1,000 ms dwell ceiling. Captured complex samples use 4 bytes each.
 - auto_approve_iq_bytes is only an approval threshold. It does not override any
   other limit or grant permission when a health capability is false.
 - max_observation_age_ms is the freshness limit.

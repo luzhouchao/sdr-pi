@@ -131,6 +131,46 @@ impl SweepReport {
             recognition: None,
         }
     }
+
+    pub fn planner_inspection_observation(
+        &self,
+        previous: &ObservationSummary,
+        candidate_id: &str,
+        health: HealthSummary,
+    ) -> Result<ObservationSummary, SweepError> {
+        if self.points.len() != 1 {
+            return Err(SweepError::new(
+                "inspection_points",
+                "candidate inspection must return exactly one summary point",
+            ));
+        }
+        let point = &self.points[0];
+        let mut candidates = previous.candidates.clone();
+        for candidate in &mut candidates {
+            candidate.age_ms = candidate.age_ms.saturating_add(self.elapsed_ms);
+        }
+        let candidate = candidates
+            .iter_mut()
+            .find(|candidate| candidate.id == candidate_id)
+            .ok_or_else(|| {
+                SweepError::new(
+                    "inspection_candidate",
+                    "inspected candidate is absent from the prior observation",
+                )
+            })?;
+        let prior_noise_floor_dbfs = candidate.peak_dbfs - candidate.snr_db;
+        candidate.center_hz = point.actual_center_hz;
+        candidate.bandwidth_hz = point.rf_bandwidth_hz;
+        candidate.peak_dbfs = point.band_power_dbfs;
+        candidate.snr_db = (point.band_power_dbfs - prior_noise_floor_dbfs).max(0.0);
+        candidate.age_ms = 0;
+        Ok(ObservationSummary {
+            age_ms: 0,
+            health,
+            candidates,
+            recognition: None,
+        })
+    }
 }
 
 pub trait SweepBackend {
@@ -921,6 +961,71 @@ mod tests {
             observation.candidates[0].bandwidth_hz,
             MAX_PLANNER_CANDIDATE_BANDWIDTH_HZ
         );
+    }
+
+    #[test]
+    fn candidate_inspection_updates_only_the_selected_candidate() {
+        let report = SweepReport {
+            sweep_id: "inspect-7".into(),
+            session_generation: 1,
+            backend: "replay".into(),
+            backend_version: 1,
+            estimated_duration_ms: 1_250,
+            elapsed_ms: 1_100,
+            noise_floor_dbfs: -33.0,
+            points: vec![SweepPoint {
+                point_index: 0,
+                requested_center_hz: 2_454_000_000,
+                actual_center_hz: 2_454_000_000,
+                sample_rate_hz: 10_000_000,
+                rf_bandwidth_hz: 10_000_000,
+                sequence: 8,
+                captured_samples: 4_096,
+                band_power_dbfs: -25.0,
+                clipped_samples: 0,
+                status_flags: 0,
+                elapsed_us: 500,
+            }],
+            candidates: Vec::new(),
+        };
+        let health = HealthSummary {
+            sdr_online: true,
+            can_retune: true,
+            can_capture_iq: true,
+            fpga_available: false,
+            recognizer_available: false,
+            dropped_observations: 0,
+        };
+        let previous = ObservationSummary {
+            age_ms: 0,
+            health: health.clone(),
+            candidates: vec![
+                CandidateSummary {
+                    id: "selected".into(),
+                    center_hz: 2_454_000_000,
+                    bandwidth_hz: 10_000_000,
+                    peak_dbfs: -24.0,
+                    snr_db: 29.0,
+                    age_ms: 0,
+                },
+                CandidateSummary {
+                    id: "other".into(),
+                    center_hz: 94_000_000,
+                    bandwidth_hz: 10_000_000,
+                    peak_dbfs: -40.0,
+                    snr_db: 13.0,
+                    age_ms: 50,
+                },
+            ],
+            recognition: None,
+        };
+        let observation = report
+            .planner_inspection_observation(&previous, "selected", health)
+            .unwrap();
+        assert_eq!(observation.candidates[0].peak_dbfs, -25.0);
+        assert_eq!(observation.candidates[0].snr_db, 28.0);
+        assert_eq!(observation.candidates[0].age_ms, 0);
+        assert_eq!(observation.candidates[1].age_ms, 1_150);
     }
 
     #[test]

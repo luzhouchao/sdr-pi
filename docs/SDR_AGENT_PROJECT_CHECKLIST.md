@@ -124,6 +124,7 @@ Evidence:
 - [`SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md)
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md)
+- [`SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md`](SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md)
 
 ## 2. Planning policy and autonomous loop
 
@@ -165,8 +166,19 @@ Evidence:
       including fixed gain, byte/step accounting, candidate feedback, zero
       clipping and verified radio restoration; see
       [`SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md).
+- [x] Execute a current `inspect_candidate` proposal through the fixed-gain,
+      no-file software power-summary path in both step-approval and automatic
+      dispatch modes. The real SDR/OpenCode Go manual-approval path was
+      live-validated with candidate feedback, zero clipping and restoration;
+      see
+      [`SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md`](SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md).
+- [x] Persist typed candidate observations independently of terminal history,
+      restore them through a validated mode-`0600` runtime PlanningContext after
+      Web restart, and bound textual carry-forward to one 1,024-byte terminal
+      command.
 - [ ] Extend the stateless one-shot Runner abstraction to execute
-      `survey_band`; the deployed interactive Web/terminal loop is complete.
+      `survey_band` and `inspect_candidate`; the deployed interactive
+      Web/terminal loop is complete.
 - [x] Persist a root-only JSONL audit record joining operator input,
       model/provider, raw proposal, Rust validation, approval, execution and the
       resulting observation, including fail-closed planning attempts.
@@ -393,10 +405,10 @@ Evidence:
 Keep the receive-only bounded software sweep isolated from any Spectrum
 collector and preserve the Raspberry Pi rollback path before a broader
 acquisition-ownership cutover. The AGX clone, native build, runtime baseline,
-Planner/Web runtime gate, bounded-IQ executor, fixed-gain initial survey and
-automatic `survey_band` feedback loop are live-validated with the real SDR and
-OpenCode Go model. Candidate inspection and CUDA/Mamba recognition remain
-explicitly deferred by the current scope until separately authorized after the
-Agent framework is stable.
+Planner/Web runtime gate, bounded-IQ executor, fixed-gain initial survey,
+automatic `survey_band` feedback loop and step-approved candidate inspection
+are live-validated with the real SDR and OpenCode Go model. CUDA/Mamba
+recognition remains explicitly deferred by the current scope until separately
+authorized after the Agent framework is stable.
 FPGA-image work remains independently gated by hardware identity,
 sequence/quality fields and rollback evidence.

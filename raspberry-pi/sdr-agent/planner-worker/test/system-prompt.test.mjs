@@ -11,6 +11,7 @@ test("system prompt names live SDR observations and every hard planning boundary
     "limits.max_span_hz",
     "limits.max_bandwidth_hz",
     "max_dwell_ms",
+    "1,000 ms dwell ceiling",
     "max_iq_samples",
     "max_iq_bytes",
     "auto_approve_iq_bytes",

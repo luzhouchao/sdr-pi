@@ -5,9 +5,15 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use sdr_agent_controller::{
+    policy::ControllerPolicy,
+    protocol::{
+        ObservationSummary, PlanRequest, MAX_CANDIDATES, MAX_FRAME_BYTES, MAX_INSTRUCTION_BYTES,
+    },
+};
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::VecDeque,
+    collections::{HashSet, VecDeque},
     convert::Infallible,
     env, fs,
     io::Write,
@@ -30,7 +36,7 @@ const MAX_EVENTS: usize = 240;
 const COMPACT_AT_EVENTS: usize = 160;
 const RETAIN_AFTER_COMPACT: usize = 48;
 const MAX_SUMMARY_BYTES: usize = 6_144;
-const MAX_COMMAND_BYTES: usize = 2_048;
+const MAX_COMMAND_BYTES: usize = MAX_INSTRUCTION_BYTES;
 const MAX_PROVIDER_CONFIG_BYTES: u64 = 8 * 1024;
 const MAX_PROVIDER_MODELS_BYTES: usize = 512 * 1024;
 const MAX_PROVIDER_MODELS: usize = 512;
@@ -96,6 +102,8 @@ struct Session {
     initial_survey: Option<InitialSurveyConfig>,
     #[serde(default = "default_initial_survey_status")]
     initial_survey_status: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    observation: Option<ObservationSummary>,
     events: VecDeque<TerminalEvent>,
 }
 
@@ -468,6 +476,7 @@ async fn create_session(
         events_since_compaction: 0,
         initial_survey: Some(initial_survey),
         initial_survey_status: initial_survey_status.into(),
+        observation: None,
         events: VecDeque::new(),
     });
     inner.persisted.active_session_id = Some(id.clone());
@@ -513,11 +522,11 @@ async fn send_command(
     Path(id): Path<String>,
     Json(request): Json<CommandRequest>,
 ) -> ApiResult<Json<PersistedState>> {
-    let command = request.command.trim().to_owned();
+    let command = single_line(&request.command);
     if command.is_empty() || command.len() > MAX_COMMAND_BYTES {
         return Err(ApiError(
             StatusCode::BAD_REQUEST,
-            "输入必须为 1–2048 字节".into(),
+            "输入必须为 1–1024 字节".into(),
         ));
     }
     let mut inner = state.inner.lock().await;
@@ -558,10 +567,7 @@ async fn send_command(
             && !session.compacted_summary.is_empty()
         {
             session.summary_pending = false;
-            format!(
-                "前序对话已自动压缩，仅作为上下文：\n{}\n\n当前指令：{}",
-                session.compacted_summary, command
-            )
+            carry_forward_instruction(&session.compacted_summary, &command)
         } else {
             command.clone()
         };
@@ -588,6 +594,36 @@ async fn send_command(
     let snapshot = inner.persisted.clone();
     drop(inner);
     Ok(Json(snapshot))
+}
+
+fn single_line(value: &str) -> String {
+    value
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .trim()
+        .to_owned()
+}
+
+fn carry_forward_instruction(summary: &str, command: &str) -> String {
+    const PREFIX: &str = "前序压缩摘要：";
+    const CURRENT: &str = "；当前指令：";
+    let summary = single_line(summary);
+    let command = single_line(command);
+    let fixed_bytes = PREFIX.len() + CURRENT.len() + command.len();
+    if summary.is_empty() || fixed_bytes >= MAX_COMMAND_BYTES {
+        return command;
+    }
+    let summary_budget = MAX_COMMAND_BYTES - fixed_bytes;
+    if summary_budget <= '…'.len_utf8() {
+        return command;
+    }
+    let summary = if summary.len() > summary_budget {
+        tail_utf8(&summary, summary_budget - '…'.len_utf8())
+    } else {
+        summary
+    };
+    format!("{PREFIX}{summary}{CURRENT}{command}")
 }
 
 fn deactivate_current(inner: &mut Inner) {
@@ -644,15 +680,19 @@ async fn process_actor(
     // Holding this gate for the complete child lifetime makes a replacement
     // wait until the previous terminal has stopped and released session.sock.
     let _process_guard = state.process_gate.lock().await;
-    let survey_gain_db = {
+    let (survey_gain_db, persisted_observation) = {
         let inner = state.inner.lock().await;
-        inner
+        let session = inner
             .persisted
             .sessions
             .iter()
-            .find(|session| session.id == session_id)
-            .and_then(|session| session.initial_survey.as_ref())
-            .map_or(DEFAULT_SURVEY_GAIN_DB, |survey| survey.gain_db)
+            .find(|session| session.id == session_id);
+        (
+            session
+                .and_then(|session| session.initial_survey.as_ref())
+                .map_or(DEFAULT_SURVEY_GAIN_DB, |survey| survey.gain_db),
+            session.and_then(|session| session.observation.clone()),
+        )
     };
     let initial_survey = claim_initial_survey(&state, &session_id).await;
     let mut planner_socket_ready = false;
@@ -676,12 +716,26 @@ async fn process_actor(
         .await;
         return;
     }
+    let (request_path, temporary_request) =
+        match prepare_runtime_request(&state.config, persisted_observation.as_ref()) {
+            Ok(result) => result,
+            Err(error) => {
+                record_process_output(
+                    &state,
+                    &session_id,
+                    "system",
+                    format!("无法恢复结构化 SDR 观测：{}", error.1),
+                )
+                .await;
+                return;
+            }
+        };
     let mut command = Command::new(&state.config.agent_binary);
     command
         .arg("--socket")
         .arg(&state.config.session_socket)
         .arg("--request")
-        .arg(&state.config.request_path)
+        .arg(&request_path)
         .arg("--sdrd")
         .arg(&state.config.sdrd_address)
         .arg("--survey-gain-db")
@@ -708,6 +762,7 @@ async fn process_actor(
     {
         Ok(child) => child,
         Err(error) => {
+            cleanup_runtime_request(temporary_request.as_deref());
             record_process_output(
                 &state,
                 &session_id,
@@ -765,6 +820,66 @@ async fn process_actor(
                 }
             }
         }
+    }
+    cleanup_runtime_request(temporary_request.as_deref());
+}
+
+fn prepare_runtime_request(
+    config: &Config,
+    observation: Option<&ObservationSummary>,
+) -> ApiResult<(PathBuf, Option<PathBuf>)> {
+    let Some(observation) = observation else {
+        return Ok((config.request_path.clone(), None));
+    };
+    let base = fs::read(&config.request_path).map_err(internal_error)?;
+    if base.len() > MAX_FRAME_BYTES {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "基础 PlanningContext 超过 32 KiB".into(),
+        ));
+    }
+    let bytes = runtime_request_bytes(&base, observation)?;
+    let parent = config
+        .state_path
+        .parent()
+        .ok_or_else(|| ApiError(StatusCode::INTERNAL_SERVER_ERROR, "状态路径无父目录".into()))?;
+    fs::create_dir_all(parent).map_err(internal_error)?;
+    let path = parent.join("runtime-request.json");
+    let temporary = parent.join(format!("runtime-request.tmp-{}", now_ms()));
+    let mut file = fs::OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .mode(0o600)
+        .open(&temporary)
+        .map_err(internal_error)?;
+    file.write_all(&bytes).map_err(internal_error)?;
+    file.sync_all().map_err(internal_error)?;
+    drop(file);
+    fs::rename(&temporary, &path).map_err(internal_error)?;
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).map_err(internal_error)?;
+    Ok((path.clone(), Some(path)))
+}
+
+fn runtime_request_bytes(base: &[u8], observation: &ObservationSummary) -> ApiResult<Vec<u8>> {
+    validate_persisted_observation(observation)?;
+    let mut request: PlanRequest = serde_json::from_slice(base).map_err(internal_error)?;
+    request.observation = observation.clone();
+    ControllerPolicy
+        .validate_request(&request)
+        .map_err(internal_error)?;
+    let bytes = serde_json::to_vec_pretty(&request).map_err(internal_error)?;
+    if bytes.len() > MAX_FRAME_BYTES {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "恢复后的 PlanningContext 超过 32 KiB".into(),
+        ));
+    }
+    Ok(bytes)
+}
+
+fn cleanup_runtime_request(path: Option<&FsPath>) {
+    if let Some(path) = path {
+        let _ = fs::remove_file(path);
     }
 }
 
@@ -859,6 +974,7 @@ fn classify_output(line: &str, stderr: bool) -> &'static str {
         "cruise"
     } else if line.starts_with("Execution>")
         || line.starts_with("执行结果：")
+        || line.starts_with("候选复查")
         || line.contains("硬件动作")
         || line.contains("执行失败")
     {
@@ -878,6 +994,31 @@ async fn record_process_output(state: &AppState, session_id: &str, kind: &str, t
         .map(|runtime| runtime.session_id.as_str())
         == Some(session_id);
     if let Some(session) = find_session_mut(&mut inner.persisted, session_id) {
+        if let Some(payload) = text.strip_prefix("Observation> ") {
+            match serde_json::from_str::<ObservationSummary>(payload)
+                .map_err(internal_error)
+                .and_then(|observation| {
+                    validate_persisted_observation(&observation)?;
+                    Ok(observation)
+                }) {
+                Ok(observation) => session.observation = Some(observation),
+                Err(error) => {
+                    if let Some(event) = push_event(
+                        session,
+                        "error",
+                        format!("拒绝持久化无效的结构化 SDR 观测：{}", error.1),
+                    ) {
+                        let _ = state.updates.send(UiUpdate {
+                            update_type: "terminal".into(),
+                            session_id: Some(session_id.to_owned()),
+                            event: Some(event),
+                        });
+                    }
+                }
+            }
+            let _ = persist_locked(&state.config, &inner.persisted);
+            return;
+        }
         if is_current_runtime {
             session.status = if kind == "error" {
                 "error".into()
@@ -895,6 +1036,47 @@ async fn record_process_output(state: &AppState, session_id: &str, kind: &str, t
         }
         let _ = persist_locked(&state.config, &inner.persisted);
     }
+}
+
+fn validate_persisted_observation(observation: &ObservationSummary) -> ApiResult<()> {
+    if observation.candidates.len() > MAX_CANDIDATES {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "结构化观测候选数量超过 32".into(),
+        ));
+    }
+    let mut ids = HashSet::new();
+    for candidate in &observation.candidates {
+        if candidate.id.is_empty()
+            || candidate.id.len() >= 64
+            || !ids.insert(candidate.id.as_str())
+            || !(DEFAULT_SURVEY_START_HZ..=DEFAULT_SURVEY_STOP_HZ).contains(&candidate.center_hz)
+            || candidate.bandwidth_hz == 0
+            || candidate.bandwidth_hz > 56_000_000
+            || !candidate.peak_dbfs.is_finite()
+            || !candidate.snr_db.is_finite()
+            || candidate.snr_db < 0.0
+        {
+            return Err(ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "结构化观测包含无效或重复候选".into(),
+            ));
+        }
+    }
+    if observation.recognition.as_ref().is_some_and(|recognition| {
+        recognition.candidate_id.is_empty()
+            || recognition.candidate_id.len() >= 64
+            || recognition.label.is_empty()
+            || recognition.label.len() > 128
+            || !recognition.confidence.is_finite()
+            || !(0.0..=1.0).contains(&recognition.confidence)
+    }) {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "结构化观测包含无效识别结果".into(),
+        ));
+    }
+    Ok(())
 }
 
 fn update_initial_survey_status(session: &mut Session, text: &str) {
@@ -1582,8 +1764,32 @@ mod tests {
             events_since_compaction: 0,
             initial_survey: None,
             initial_survey_status: "skipped".into(),
+            observation: None,
             events: VecDeque::new(),
         }
+    }
+
+    fn observation() -> ObservationSummary {
+        serde_json::from_value(serde_json::json!({
+            "age_ms": 0,
+            "health": {
+                "sdr_online": true,
+                "can_retune": true,
+                "can_capture_iq": true,
+                "fpga_available": false,
+                "recognizer_available": false,
+                "dropped_observations": 0
+            },
+            "candidates": [{
+                "id": "initial-1-7",
+                "center_hz": 2454000000_u64,
+                "bandwidth_hz": 10000000,
+                "peak_dbfs": -24.2,
+                "snr_db": 28.8,
+                "age_ms": 0
+            }]
+        }))
+        .unwrap()
     }
 
     #[test]
@@ -1623,6 +1829,16 @@ mod tests {
     }
 
     #[test]
+    fn carry_forward_is_one_bounded_terminal_command() {
+        let summary = format!("第一行\n第二行 {}", "历史".repeat(1_000));
+        let instruction = "复查候选\ninitial-1-7";
+        let outgoing = carry_forward_instruction(&summary, instruction);
+        assert!(outgoing.len() <= MAX_COMMAND_BYTES);
+        assert!(!outgoing.contains('\n'));
+        assert!(outgoing.ends_with("当前指令：复查候选 initial-1-7"));
+    }
+
+    #[test]
     fn validates_default_and_custom_initial_survey_budgets() {
         assert!(validate_initial_survey(&default_initial_survey()).is_ok());
         let mut custom = default_initial_survey();
@@ -1646,8 +1862,57 @@ mod tests {
         assert_eq!(classify_output("Validated plan> {}", false), "plan");
         assert_eq!(classify_output("已验证计划：保持当前状态", false), "plan");
         assert_eq!(classify_output("Execution> {}", false), "execution");
+        assert_eq!(
+            classify_output("候选复查结果：安全完成", false),
+            "execution"
+        );
         assert_eq!(classify_output("巡航状态：正在检查 SDR", false), "cruise");
         assert_eq!(classify_output("正在扫频 100MHz", false), "sweep");
+    }
+
+    #[test]
+    fn restores_validated_structured_observation_into_runtime_request() {
+        let base = serde_json::to_vec(&serde_json::json!({
+            "protocol_version": 1,
+            "request_id": 1,
+            "session_generation": 1,
+            "instruction": "status",
+            "state": "idle",
+            "observation": {
+                "age_ms": 0,
+                "health": {
+                    "sdr_online": true,
+                    "can_retune": true,
+                    "can_capture_iq": true,
+                    "fpga_available": false,
+                    "recognizer_available": false,
+                    "dropped_observations": 0
+                },
+                "candidates": []
+            },
+            "limits": {
+                "min_freq_hz": 70000000,
+                "max_freq_hz": 6000000000_u64,
+                "max_span_hz": 20000000,
+                "max_bandwidth_hz": 10000000,
+                "max_dwell_ms": 5000,
+                "max_iq_samples": 1048576,
+                "max_iq_bytes": 4194304,
+                "auto_approve_iq_bytes": 262144,
+                "max_observation_age_ms": 120000
+            }
+        }))
+        .unwrap();
+        let restored = runtime_request_bytes(&base, &observation()).unwrap();
+        let request: PlanRequest = serde_json::from_slice(&restored).unwrap();
+        assert_eq!(request.observation.candidates[0].id, "initial-1-7");
+    }
+
+    #[test]
+    fn rejects_duplicate_persisted_candidate_ids() {
+        let mut invalid = observation();
+        invalid.candidates.push(invalid.candidates[0].clone());
+        assert!(validate_persisted_observation(&invalid).is_err());
     }
 
     #[test]

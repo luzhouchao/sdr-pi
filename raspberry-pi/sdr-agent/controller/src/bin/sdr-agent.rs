@@ -256,10 +256,18 @@ struct ActiveSweep {
     worker: JoinHandle<Result<SweepReport, SweepError>>,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 enum ActiveSweepKind {
     Initial,
-    Planned { request_id: u64, maximum_bytes: u64 },
+    Planned {
+        request_id: u64,
+        maximum_bytes: u64,
+    },
+    Inspection {
+        request_id: u64,
+        candidate_id: String,
+        maximum_bytes: u64,
+    },
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -426,7 +434,7 @@ impl ConsoleApp {
     }
 
     fn approve(&mut self) -> AppResult<()> {
-        if self.active_execution.is_some() {
+        if self.active_execution.is_some() || self.active_sweep.is_some() {
             println!("已有硬件动作正在执行。");
             return Ok(());
         }
@@ -434,6 +442,7 @@ impl ConsoleApp {
             self.record(format!("approved request {}", plan.request_id));
             match plan.action {
                 ProposedAction::SurveyBand { .. } => self.start_planned_survey(plan)?,
+                ProposedAction::InspectCandidate { .. } => self.start_candidate_inspection(plan)?,
                 ProposedAction::CaptureBoundedIq { .. } => {
                     let authorization = ExecutionAuthorization::operator_approved(&plan);
                     self.start_execution(plan, authorization)?;
@@ -626,6 +635,96 @@ impl ConsoleApp {
         Ok(())
     }
 
+    fn start_candidate_inspection(&mut self, plan: ValidatedPlan) -> AppResult<()> {
+        if self.active_execution.is_some() || self.active_sweep.is_some() {
+            return Err(
+                invalid_input("cannot inspect a candidate while another step is active").into(),
+            );
+        }
+        let ProposedAction::InspectCandidate {
+            candidate_id,
+            center_hz,
+            bandwidth_hz,
+            dwell_ms,
+        } = plan.action
+        else {
+            return Err(invalid_input("candidate inspection requires inspect_candidate").into());
+        };
+        let Some(address) = self.sdrd_address else {
+            println!("候选复查失败：没有配置 SDRD 地址。");
+            if self.cruise.is_active() {
+                self.cruise.stop(CruiseStopReason::Fault);
+                self.print_cruise_status();
+            }
+            return Ok(());
+        };
+        if !self.refresh_sdr_health(true)? {
+            println!("候选复查失败：SDR 健康检查未通过，不会尝试调谐。");
+            if self.cruise.is_active() {
+                let retrying = self.cruise.record_sdr_unavailable();
+                self.next_auto_attempt = Instant::now() + AUTO_RETRY_DELAY;
+                if !retrying {
+                    self.print_cruise_status();
+                }
+            }
+            return Ok(());
+        }
+        let rf_bandwidth_hz = bandwidth_hz.max(200_000);
+        let sample_rate_hz = rf_bandwidth_hz.max(2_083_333);
+        let sweep = SweepPlan {
+            sweep_id: format!("inspect-{}", plan.request_id),
+            session_generation: plan.session_generation,
+            frequencies: SweepFrequencies::Centers {
+                centers_hz: vec![center_hz],
+            },
+            sample_rate_hz,
+            rf_bandwidth_hz,
+            settle_ms: dwell_ms,
+            frame_samples: 4_096,
+            aggregate_frames: 1,
+            point_timeout_ms: 250,
+            detection_threshold_db: 12.0,
+            gain_db: Some(self.survey_gain_db),
+        };
+        sdr_agent_controller::sweep::validate_plan(&sweep)?;
+        let maximum_bytes = 4_096_u64 * 4;
+        if self.cruise.is_active() && maximum_bytes > self.cruise.remaining_iq_bytes() {
+            self.cruise.stop(CruiseStopReason::ByteBudgetExhausted);
+            println!(
+                "候选复查未开始：需要处理 {maximum_bytes} 字节，超过巡航剩余接收预算 {} 字节。",
+                self.cruise.remaining_iq_bytes()
+            );
+            self.print_cruise_status();
+            return Ok(());
+        }
+        let timeout = self.sdrd_timeout.max(Duration::from_millis(500));
+        let mut engine = SweepEngine::new(SdrdSoftwareSweepAdapter::new(address, timeout));
+        let worker = thread::spawn(move || engine.run(&sweep));
+        self.active_sweep = Some(ActiveSweep {
+            kind: ActiveSweepKind::Inspection {
+                request_id: plan.request_id,
+                candidate_id: candidate_id.clone(),
+                maximum_bytes,
+            },
+            session_generation: plan.session_generation,
+            canceller: SdrdActionAdapter::new(address, timeout),
+            worker,
+        });
+        self.template.state = ControllerState::Inspecting;
+        self.cruise.set_phase(CruisePhase::Executing);
+        println!(
+            "候选复查 request={} 已开始：候选 {}，中心 {} Hz，带宽 {} Hz，驻留 {} ms，固定接收增益 {} dB；最多处理 {} 字节，可随时输入 /stop。",
+            plan.request_id,
+            candidate_id,
+            center_hz,
+            rf_bandwidth_hz,
+            dwell_ms,
+            self.survey_gain_db,
+            maximum_bytes
+        );
+        Ok(())
+    }
+
     fn poll_sweep(&mut self) -> AppResult<()> {
         let finished = self
             .active_sweep
@@ -655,10 +754,10 @@ impl ConsoleApp {
                     return Ok(());
                 }
                 let health = self.template.observation.health.clone();
-                self.template.observation = report.planner_observation(0, health);
                 self.template.state = ControllerState::Idle;
                 match kind {
                     ActiveSweepKind::Initial => {
+                        self.template.observation = report.planner_observation(0, health);
                         self.record(format!(
                             "initial survey completed with {} candidates",
                             report.candidates.len()
@@ -675,6 +774,7 @@ impl ConsoleApp {
                         request_id,
                         maximum_bytes,
                     } => {
+                        self.template.observation = report.planner_observation(0, health);
                         self.record(format!(
                             "executed survey request {request_id} with {} candidates",
                             report.candidates.len()
@@ -705,7 +805,55 @@ impl ConsoleApp {
                             self.print_cruise_status();
                         }
                     }
+                    ActiveSweepKind::Inspection {
+                        request_id,
+                        candidate_id,
+                        maximum_bytes,
+                    } => {
+                        self.template.observation = report.planner_inspection_observation(
+                            &self.template.observation,
+                            &candidate_id,
+                            health,
+                        )?;
+                        let candidate = self
+                            .template
+                            .observation
+                            .candidates
+                            .iter()
+                            .find(|candidate| candidate.id == candidate_id)
+                            .cloned()
+                            .ok_or_else(|| invalid_input("missing inspected candidate"))?;
+                        self.record(format!(
+                            "inspected candidate {candidate_id} for request {request_id}"
+                        ));
+                        println!(
+                            "候选复查结果：request={request_id}，候选 {candidate_id}，中心 {} Hz，带宽 {} Hz，实测功率 {:.1} dBFS，参考信噪比 {:.1} dB；零削顶，射频状态已恢复。",
+                            candidate.center_hz,
+                            candidate.bandwidth_hz,
+                            candidate.peak_dbfs,
+                            candidate.snr_db
+                        );
+                        if self.cruise.is_active() {
+                            self.cruise.record_execution(maximum_bytes);
+                            if self.cruise.is_active() {
+                                let mission =
+                                    self.auto_mission.as_deref().unwrap_or("继续受限巡航");
+                                self.auto_next_instruction = Some(format!(
+                                    "自动巡航任务：{mission}\n上一步 inspect_candidate request={request_id} 已真实复查候选 {candidate_id}：中心 {} Hz、带宽 {} Hz、固定增益 {} dB、实测功率 {:.1} dBFS、参考信噪比 {:.1} dB、处理 {} 字节，零削顶且射频状态已恢复。请根据最新候选只给出下一步。",
+                                    candidate.center_hz,
+                                    candidate.bandwidth_hz,
+                                    self.survey_gain_db,
+                                    candidate.peak_dbfs,
+                                    candidate.snr_db,
+                                    maximum_bytes
+                                ));
+                                self.next_auto_attempt = Instant::now();
+                            }
+                            self.print_cruise_status();
+                        }
+                    }
                 }
+                self.emit_observation()?;
                 for candidate in report.candidates.iter().take(8) {
                     println!(
                         "候选 {}：中心 {} Hz，带宽 {} Hz，峰值 {:.1} dBFS，信噪比 {:.1} dB。",
@@ -728,6 +876,22 @@ impl ConsoleApp {
                         self.record(format!("survey request {request_id} failed: {error}"));
                         println!(
                             "自动扫频失败：request={request_id}，{error}。SDRD 已执行停止与状态恢复路径。"
+                        );
+                        if self.cruise.is_active() {
+                            self.cruise.stop(CruiseStopReason::Fault);
+                            self.print_cruise_status();
+                        }
+                    }
+                    ActiveSweepKind::Inspection {
+                        request_id,
+                        candidate_id,
+                        ..
+                    } => {
+                        self.record(format!(
+                            "candidate inspection request {request_id} failed: {error}"
+                        ));
+                        println!(
+                            "候选复查失败：request={request_id}，候选 {candidate_id}，{error}。SDRD 已执行停止与状态恢复路径。"
                         );
                         if self.cruise.is_active() {
                             self.cruise.stop(CruiseStopReason::Fault);
@@ -775,6 +939,7 @@ impl ConsoleApp {
                     self.template.observation.health.recognizer_available,
                     self.template.observation.health.dropped_observations,
                 );
+                self.emit_observation()?;
                 println!(
                     "执行结果：request={request_id} 已安全采集 {} 个复数样本（{} 字节）；丢样 {}，溢出 {}，射频状态已恢复。",
                     observation.capture.samples_captured,
@@ -976,6 +1141,24 @@ impl ConsoleApp {
             (ActiveSweepKind::Planned { request_id, .. }, Err(error)) => {
                 println!("自动扫频 request={request_id} 已取消并完成恢复：{error}")
             }
+            (
+                ActiveSweepKind::Inspection {
+                    request_id,
+                    candidate_id,
+                    ..
+                },
+                Ok(_),
+            ) => println!("取消到达前候选复查 request={request_id}、候选 {candidate_id} 已完成。"),
+            (
+                ActiveSweepKind::Inspection {
+                    request_id,
+                    candidate_id,
+                    ..
+                },
+                Err(error),
+            ) => println!(
+                "候选复查 request={request_id}、候选 {candidate_id} 已取消并完成恢复：{error}"
+            ),
         }
         self.renew(ControllerState::Holding, message)
     }
@@ -1264,6 +1447,7 @@ impl ConsoleApp {
                             plan.action,
                             ProposedAction::CaptureBoundedIq { .. }
                                 | ProposedAction::SurveyBand { .. }
+                                | ProposedAction::InspectCandidate { .. }
                         ) {
                             if self.pending.is_some() {
                                 return Err(
@@ -1292,6 +1476,9 @@ impl ConsoleApp {
                         }
                         ProposedAction::SurveyBand { .. } => {
                             self.start_planned_survey(plan)?;
+                        }
+                        ProposedAction::InspectCandidate { .. } => {
+                            self.start_candidate_inspection(plan)?;
                         }
                         ProposedAction::Hold { .. } | ProposedAction::StopSession { .. } => {
                             self.cruise.stop(CruiseStopReason::PlannerRequestedStop);
@@ -1351,6 +1538,14 @@ impl ConsoleApp {
             self.history.pop_front();
         }
         self.history.push_back(entry);
+    }
+
+    fn emit_observation(&self) -> AppResult<()> {
+        println!(
+            "Observation> {}",
+            serde_json::to_string(&self.template.observation)?
+        );
+        Ok(())
     }
 
     fn print_history(&self) {
@@ -1658,8 +1853,8 @@ fn describe_plan(plan: &ValidatedPlan) -> String {
             bandwidth_hz,
             dwell_ms,
         } => format!(
-            "建议检查候选 {candidate_id}：中心 {} Hz、带宽 {} Hz、停留 {} ms；当前仅规划",
-            center_hz, bandwidth_hz, dwell_ms
+            "受限复查候选 {candidate_id}：中心 {} Hz、带宽 {} Hz、驻留 {} ms，执行时采用设置中的固定接收增益{}",
+            center_hz, bandwidth_hz, dwell_ms, approval
         ),
         ProposedAction::CaptureBoundedIq {
             candidate_id,

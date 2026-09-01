@@ -7,6 +7,7 @@ const MAX_SURVEY_POINTS: u64 = 768;
 const MAX_SURVEY_DURATION_MS: u64 = 300_000;
 const SURVEY_POINT_TIMEOUT_MS: u64 = 250;
 const SURVEY_FRAME_BYTES: u64 = 4_096 * 4;
+const MAX_INSPECTION_DWELL_MS: u64 = 1_000;
 use std::collections::HashSet;
 use std::error::Error;
 use std::fmt;
@@ -290,6 +291,16 @@ fn validate_action(request: &PlanRequest, action: &ProposedAction) -> Result<boo
                 "inspection frequency does not match the selected candidate",
             )?;
             validate_dwell(*dwell_ms, &request.limits)?;
+            require(
+                *dwell_ms <= MAX_INSPECTION_DWELL_MS,
+                "inspect_dwell",
+                "candidate inspection dwell exceeds the one-second execution limit",
+            )?;
+            require(
+                SURVEY_FRAME_BYTES <= request.limits.max_iq_bytes,
+                "inspect_bytes",
+                "candidate inspection exceeds the per-action receive-byte limit",
+            )?;
             Ok(false)
         }
         ProposedAction::CaptureBoundedIq {
@@ -523,6 +534,26 @@ mod tests {
             )
             .unwrap();
         assert!(!plan.approval_required);
+    }
+
+    #[test]
+    fn rejects_candidate_inspection_above_execution_dwell_limit() {
+        let request = request();
+        let error = ControllerPolicy
+            .validate_response(
+                &request,
+                response(
+                    &request,
+                    ProposedAction::InspectCandidate {
+                        candidate_id: "candidate-1".to_owned(),
+                        center_hz: 433_920_000,
+                        bandwidth_hz: 500_000,
+                        dwell_ms: 1_001,
+                    },
+                ),
+            )
+            .unwrap_err();
+        assert_eq!(error.code, "inspect_dwell");
     }
 
     #[test]
