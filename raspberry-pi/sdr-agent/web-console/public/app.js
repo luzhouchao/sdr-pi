@@ -33,7 +33,7 @@ function render() {
   renderOverview();
   renderProvider();
   const enabled = Boolean(view.active);
-  document.querySelectorAll('[data-command], #command-input, #command-form button').forEach((element) => { element.disabled = !enabled; });
+  document.querySelectorAll('[data-command], #command-input, #command-form button, #auto-form input, #auto-form button').forEach((element) => { element.disabled = !enabled; });
 }
 
 async function loadProvider() {
@@ -45,11 +45,13 @@ function renderProvider() {
   if (!view.provider) return;
   const status = document.querySelector('#provider-status');
   if (view.provider.configured) {
-    status.textContent = `${view.provider.provider} / ${view.provider.model} · ${apiLabel(view.provider.api)}`;
+    status.textContent = `${view.provider.provider} / ${view.provider.model} · ${formatTokens(view.provider.context_window)} · ${view.provider.compression_threshold_percent}% 压缩`;
     document.querySelector('#provider-api').value = view.provider.api;
     document.querySelector('#provider-base-url').value = view.provider.base_url;
     document.querySelector('#provider-id').value = view.provider.provider;
     document.querySelector('#provider-model').value = view.provider.model;
+    document.querySelector('#provider-context-window').value = view.provider.context_window;
+    document.querySelector('#provider-compression-threshold').value = view.provider.compression_threshold_percent;
   } else {
     status.textContent = '尚未配置第三方上游';
   }
@@ -64,6 +66,8 @@ async function saveProvider(event) {
     provider: document.querySelector('#provider-id').value.trim(),
     model: document.querySelector('#provider-model').value.trim(),
     api_key: document.querySelector('#provider-api-key').value,
+    context_window: Number(document.querySelector('#provider-context-window').value),
+    compression_threshold_percent: Number(document.querySelector('#provider-compression-threshold').value),
   };
   try {
     view.provider = await api('/api/provider', { method: 'PUT', body: JSON.stringify(payload) });
@@ -110,11 +114,21 @@ function renderModelInventory(models) {
   datalist.replaceChildren();
   select.replaceChildren(new Option('选择一个上游模型…', ''));
   for (const model of models) {
-    datalist.append(new Option('', model));
-    select.append(new Option(model, model));
+    datalist.append(new Option('', model.id));
+    select.append(new Option(model.context_window ? `${model.id} · ${formatTokens(model.context_window)}` : `${model.id} · 上游未提供上下文`, model.id));
   }
   select.disabled = false;
-  setModelInventoryStatus(`已发现 ${models.length} 个模型`, 'ready');
+  const withContext = models.filter((model) => model.context_window).length;
+  setModelInventoryStatus(`已发现 ${models.length} 个模型，其中 ${withContext} 个带上下文窗口`, 'ready');
+  applySelectedModel(document.querySelector('#provider-model').value);
+}
+
+function applySelectedModel(modelId) {
+  const selected = view.providerModels.find((model) => model.id === modelId);
+  if (selected?.context_window) {
+    document.querySelector('#provider-context-window').value = selected.context_window;
+    toast(`已采用上游返回的上下文窗口：${formatTokens(selected.context_window)}`);
+  }
 }
 
 function setModelInventoryStatus(message, state) {
@@ -145,10 +159,12 @@ async function clearProvider() {
 }
 
 function presetOpenCode() {
-  document.querySelector('#provider-api').value = 'openai-responses';
-  document.querySelector('#provider-base-url').value = 'https://opencode.ai/zen/v1';
-  document.querySelector('#provider-id').value = 'opencode';
-  document.querySelector('#provider-model').value = 'gpt-5.6-sol';
+  document.querySelector('#provider-api').value = 'openai-completions';
+  document.querySelector('#provider-base-url').value = 'https://opencode.ai/zen/go/v1';
+  document.querySelector('#provider-id').value = 'opencode-go';
+  document.querySelector('#provider-model').value = 'deepseek-v4-flash';
+  document.querySelector('#provider-context-window').value = '196608';
+  document.querySelector('#provider-compression-threshold').value = '90';
   clearModelInventory();
   document.querySelector('#provider-api-key').focus();
 }
@@ -202,7 +218,7 @@ function renderTerminal() {
     time.textContent = new Date(event.timestamp_ms).toLocaleTimeString('zh-CN', { hour12: false });
     const kind = document.createElement('span');
     kind.className = 'kind';
-    kind.textContent = event.kind;
+    kind.textContent = kindLabel(event.kind);
     const text = document.createElement('span');
     text.className = 'text';
     text.textContent = event.text;
@@ -215,6 +231,7 @@ function renderOverview() {
   setText('#controller-status', view.active ? `${statusLabel(view.active.status)} · ${view.active.title}` : '等待活动对话');
   setText('#sweep-status', latestText('sweep') || '尚无扫频输出');
   setText('#qwen-status', latestText('qwen') || '尚无模型输出');
+  setText('#cruise-status', latestText('cruise') || '逐步批准模式');
 }
 
 function latestText(kind) {
@@ -248,6 +265,16 @@ async function send(command) {
   } catch (error) { toast(error.message); }
 }
 
+async function startAuto(event) {
+  event.preventDefault();
+  const form = document.querySelector('#auto-form');
+  const mission = document.querySelector('#auto-mission');
+  if (!form.reportValidity()) return;
+  const steps = Number(document.querySelector('#auto-steps').value);
+  const seconds = Number(document.querySelector('#auto-seconds').value);
+  await send(`/auto start --steps ${steps} --seconds ${seconds} ${mission.value.trim()}`);
+}
+
 function connectEvents() {
   const source = new EventSource('/api/events');
   source.onopen = () => {
@@ -277,6 +304,12 @@ function toast(message) {
 function scrollBottom() { view.terminal.scrollTop = view.terminal.scrollHeight; }
 function setText(selector, text) { document.querySelector(selector).textContent = text; }
 function safeKind(value) { return /^[a-z]+$/.test(value) ? value : 'system'; }
+function kindLabel(kind) {
+  return ({ system: '系统', prompt: '提示', operator: '操作员', qwen: '上游模型', plan: '已验证计划', execution: '执行', sweep: '扫频', cruise: '巡航', error: '错误' })[kind] || '系统';
+}
+function formatTokens(value) {
+  return `${new Intl.NumberFormat('zh-CN').format(value)} tokens`;
+}
 function sessionMeta(session) {
   const compacted = Math.max(0, session.generation - 1);
   return `${statusLabel(session.status)}${compacted ? ` · 已压缩 ${compacted} 次` : ''}`;
@@ -289,7 +322,10 @@ document.querySelector('#new-session').addEventListener('click', createSession);
 document.querySelector('#provider-form').addEventListener('submit', saveProvider);
 document.querySelector('#query-provider-models').addEventListener('click', queryProviderModels);
 document.querySelector('#provider-model-list').addEventListener('change', (event) => {
-  if (event.target.value) document.querySelector('#provider-model').value = event.target.value;
+  if (event.target.value) {
+    document.querySelector('#provider-model').value = event.target.value;
+    applySelectedModel(event.target.value);
+  }
 });
 document.querySelector('#provider-base-url').addEventListener('input', () => {
   if (view.providerModels.length) clearModelInventory();
@@ -301,6 +337,7 @@ document.querySelector('#clear-provider').addEventListener('click', clearProvide
 document.querySelector('#preset-opencode').addEventListener('click', presetOpenCode);
 document.querySelector('#preset-custom').addEventListener('click', clearProviderFields);
 document.querySelector('#scroll-bottom').addEventListener('click', scrollBottom);
+document.querySelector('#auto-form').addEventListener('submit', startAuto);
 document.querySelectorAll('[data-command]').forEach((button) => button.addEventListener('click', () => send(button.dataset.command)));
 document.querySelector('#command-form').addEventListener('submit', (event) => { event.preventDefault(); send(view.input.value); });
 view.input.addEventListener('keydown', (event) => {

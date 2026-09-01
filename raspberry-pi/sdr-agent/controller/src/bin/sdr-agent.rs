@@ -1,28 +1,36 @@
 #![cfg(unix)]
 
+use sdr_agent_controller::autonomy::{
+    CruiseControl, CruisePhase, CruiseStopReason, InteractionMode, AUTO_RETRY_DELAY_SECS,
+    AUTO_RETRY_LIMIT, DEFAULT_AUTO_DURATION_SECS, DEFAULT_AUTO_MAX_STEPS, HARD_AUTO_DURATION_SECS,
+    HARD_AUTO_MAX_STEPS, MIN_AUTO_DURATION_SECS,
+};
 use sdr_agent_controller::execution::{
     ExecutionAuthorization, ExecutionObservation, SdrActionExecutor, SdrdActionAdapter,
 };
 use sdr_agent_controller::policy::ControllerPolicy;
 use sdr_agent_controller::protocol::{
-    ControllerState, PlanRequest, PlanResponse, ValidatedPlan, MAX_FRAME_BYTES,
+    ControllerState, PlanRequest, PlanResponse, ProposedAction, ValidatedPlan, MAX_FRAME_BYTES,
 };
-use sdr_agent_controller::sdr::SdrError;
+use sdr_agent_controller::sdr::{SdrEngine, SdrError, SdrdAdapter};
 use serde_json::{json, Value};
 use std::collections::{HashMap, VecDeque};
 use std::env;
 use std::error::Error;
 use std::fs;
-use std::io::{self, BufRead, BufReader, Read, Write};
+use std::io::{self, Read, Write};
 use std::net::SocketAddr;
 use std::os::unix::net::UnixStream;
 use std::path::PathBuf;
+use std::sync::mpsc::{self, RecvTimeoutError};
 use std::thread::{self, JoinHandle};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 type AppResult<T> = Result<T, Box<dyn Error>>;
 const HISTORY_LIMIT: usize = 32;
 const CANCEL_START_RETRIES: usize = 50;
+const AUTO_RETRY_DELAY: Duration = Duration::from_secs(AUTO_RETRY_DELAY_SECS);
+const EVENT_POLL_INTERVAL: Duration = Duration::from_millis(50);
 
 fn main() {
     if let Err(error) = run() {
@@ -39,10 +47,20 @@ fn run() -> AppResult<()> {
     let executor = options.sdrd_address.map(|address| {
         SdrdActionAdapter::new(address, Duration::from_millis(options.sdrd_timeout_ms))
     });
-    let mut app = ConsoleApp::connect(options.socket_path, template, executor)?;
+    let mut app = ConsoleApp::connect(
+        options.socket_path,
+        template,
+        executor,
+        options.sdrd_address,
+        Duration::from_millis(options.sdrd_timeout_ms),
+    )?;
 
     if let Some(instruction) = options.instruction {
         app.submit(instruction)?;
+        while app.agent_cycle_active {
+            app.poll()?;
+            thread::sleep(EVENT_POLL_INTERVAL);
+        }
         return Ok(());
     }
 
@@ -54,38 +72,143 @@ fn run() -> AppResult<()> {
             "未配置"
         }
     );
-    let stdin = io::stdin();
-    loop {
-        app.poll_execution()?;
-        print!("SDR Agent> ");
-        io::stdout().flush()?;
-        let mut line = String::new();
-        if stdin.read_line(&mut line)? == 0 {
-            println!();
-            break;
-        }
-        let input = line.trim();
-        if input.is_empty() {
-            continue;
-        }
-        match input {
-            "/quit" | "/exit" | "/退出" => break,
-            "/help" | "/帮助" => print_help(),
-            "/status" | "/状态" => app.status()?,
-            "/history" | "/历史" => app.print_history(),
-            "/approve" | "/批准" => app.approve()?,
-            "/reject" | "/拒绝" => app.reject(),
-            "/pause" | "/暂停" => app.stop("会话已暂停")?,
-            "/resume" | "/继续" => app.renew(ControllerState::Idle, "会话已恢复")?,
-            "/stop" | "/停止" => app.stop("会话已停止")?,
-            _ if input.starts_with('/') => {
-                println!("未知命令；输入 /help 查看可用命令。")
+    let (input_tx, input_rx) = mpsc::channel();
+    thread::spawn(move || {
+        let stdin = io::stdin();
+        loop {
+            let mut line = String::new();
+            match stdin.read_line(&mut line) {
+                Ok(0) | Err(_) => break,
+                Ok(_) if input_tx.send(line).is_err() => break,
+                Ok(_) => {}
             }
-            _ => app.submit(input.to_owned())?,
+        }
+    });
+    print_prompt()?;
+    let mut running = true;
+    while running {
+        app.poll()?;
+        app.advance_auto()?;
+        match input_rx.recv_timeout(EVENT_POLL_INTERVAL) {
+            Ok(line) => {
+                running = handle_input(&mut app, line.trim())?;
+                if running {
+                    print_prompt()?;
+                }
+            }
+            Err(RecvTimeoutError::Timeout) => {}
+            Err(RecvTimeoutError::Disconnected) => break,
         }
     }
     app.close()?;
     Ok(())
+}
+
+fn handle_input(app: &mut ConsoleApp, input: &str) -> AppResult<bool> {
+    if input.is_empty() {
+        return Ok(true);
+    }
+    match input {
+        "/quit" | "/exit" | "/退出" => return Ok(false),
+        "/help" | "/帮助" => print_help(),
+        "/status" | "/状态" => app.status()?,
+        "/history" | "/历史" => app.print_history(),
+        "/approve" | "/批准" => app.approve()?,
+        "/reject" | "/拒绝" => app.reject(),
+        "/mode manual" | "/模式 人工" => app.enable_step_approval()?,
+        "/pause" | "/暂停" => app.stop("会话已暂停")?,
+        "/resume" | "/继续" => app.renew(ControllerState::Idle, "会话已恢复")?,
+        "/stop" | "/停止" => app.stop("会话已停止")?,
+        _ if input == "/auto" || input == "/auto start" => println!(
+            "请在命令后写明巡航任务，例如：/auto start --steps 16 --seconds 300 扫描指定的受限频段并根据结果给出下一步。"
+        ),
+        _ if input.starts_with("/auto start ") => {
+            match parse_auto_start(input.trim_start_matches("/auto start ").trim()) {
+                Ok(command) => app.start_auto(&command.mission, command.steps, command.seconds)?,
+                Err(error) => println!("自动巡航参数无效：{error}"),
+            }
+        }
+        _ if input.starts_with('/') => println!("未知命令；输入 /help 查看可用命令。"),
+        _ => app.submit(input.to_owned())?,
+    }
+    Ok(true)
+}
+
+fn print_prompt() -> io::Result<()> {
+    print!("SDR Agent> ");
+    io::stdout().flush()
+}
+
+#[derive(Debug, Eq, PartialEq)]
+struct AutoStartCommand {
+    mission: String,
+    steps: u8,
+    seconds: u64,
+}
+
+fn parse_auto_start(arguments: &str) -> Result<AutoStartCommand, String> {
+    let mut steps = None;
+    let mut seconds = None;
+    let mut mission = Vec::new();
+    let mut tokens = arguments.split_whitespace();
+    while let Some(token) = tokens.next() {
+        match token {
+            "--steps" => {
+                if steps.is_some() {
+                    return Err("--steps 只能填写一次".to_owned());
+                }
+                let value = tokens
+                    .next()
+                    .ok_or_else(|| "--steps 后缺少步数".to_owned())?;
+                steps =
+                    Some(
+                        parse_bounded_auto_value(value, "步数", 1, u64::from(HARD_AUTO_MAX_STEPS))?
+                            as u8,
+                    );
+            }
+            "--seconds" => {
+                if seconds.is_some() {
+                    return Err("--seconds 只能填写一次".to_owned());
+                }
+                let value = tokens
+                    .next()
+                    .ok_or_else(|| "--seconds 后缺少秒数".to_owned())?;
+                seconds = Some(parse_bounded_auto_value(
+                    value,
+                    "总时长",
+                    MIN_AUTO_DURATION_SECS,
+                    HARD_AUTO_DURATION_SECS,
+                )?);
+            }
+            unknown if unknown.starts_with("--") => {
+                return Err(format!("未知参数 {unknown}"));
+            }
+            word => mission.push(word),
+        }
+    }
+    if mission.is_empty() {
+        return Err("必须填写巡航任务".to_owned());
+    }
+    Ok(AutoStartCommand {
+        mission: mission.join(" "),
+        steps: steps.unwrap_or(DEFAULT_AUTO_MAX_STEPS),
+        seconds: seconds.unwrap_or(DEFAULT_AUTO_DURATION_SECS),
+    })
+}
+
+fn parse_bounded_auto_value(
+    value: &str,
+    label: &str,
+    minimum: u64,
+    maximum: u64,
+) -> Result<u64, String> {
+    let parsed = value
+        .parse::<u64>()
+        .map_err(|_| format!("{label}必须是 {minimum}–{maximum} 的整数"))?;
+    if !(minimum..=maximum).contains(&parsed) {
+        return Err(format!("{label}必须在 {minimum}–{maximum} 之间"));
+    }
+    Ok(parsed)
 }
 
 struct ConsoleApp {
@@ -96,9 +219,18 @@ struct ConsoleApp {
     pending: Option<ValidatedPlan>,
     requests: HashMap<u64, PlanRequest>,
     history: VecDeque<String>,
-    agent_cycle_ended: bool,
+    agent_cycle_active: bool,
+    active_request_id: Option<u64>,
+    plan_seen_in_cycle: bool,
     executor: Option<SdrdActionAdapter>,
     active_execution: Option<ActiveExecution>,
+    sdrd_address: Option<SocketAddr>,
+    sdrd_timeout: Duration,
+    cruise: CruiseControl,
+    auto_mission: Option<String>,
+    auto_next_instruction: Option<String>,
+    next_auto_attempt: Instant,
+    deferred_renew: Option<(ControllerState, String)>,
 }
 
 struct ActiveExecution {
@@ -113,6 +245,8 @@ impl ConsoleApp {
         socket_path: PathBuf,
         template: PlanRequest,
         executor: Option<SdrdActionAdapter>,
+        sdrd_address: Option<SocketAddr>,
+        sdrd_timeout: Duration,
     ) -> AppResult<Self> {
         let generation = template.session_generation;
         let next_request_id = template.request_id;
@@ -124,19 +258,29 @@ impl ConsoleApp {
             pending: None,
             requests: HashMap::new(),
             history: VecDeque::with_capacity(HISTORY_LIMIT),
-            agent_cycle_ended: false,
+            agent_cycle_active: false,
+            active_request_id: None,
+            plan_seen_in_cycle: false,
             executor,
             active_execution: None,
+            sdrd_address,
+            sdrd_timeout,
+            cruise: CruiseControl::default(),
+            auto_mission: None,
+            auto_next_instruction: None,
+            next_auto_attempt: Instant::now(),
+            deferred_renew: None,
         };
         app.command("open_session", None)?;
         Ok(app)
     }
 
     fn submit(&mut self, instruction: String) -> AppResult<()> {
-        if self.active_execution.is_some() {
-            println!("硬件动作仍在执行；请先输入 /stop，或等待动作完成后再提交新指令。");
+        if self.active_execution.is_some() || self.agent_cycle_active {
+            println!("当前步骤尚未结束；可输入 /stop 立即停止，或等待完成后再提交新指令。");
             return Ok(());
         }
+        self.refresh_sdr_health(false)?;
         let request_id = self.next_request_id;
         self.next_request_id = self
             .next_request_id
@@ -149,32 +293,81 @@ impl ConsoleApp {
         ControllerPolicy.validate_request(&request)?;
         self.record(format!("operator: {instruction}"));
         self.requests.insert(request_id, request.clone());
-        self.agent_cycle_ended = false;
-        self.command("prompt", Some(request))?;
-        if !self.agent_cycle_ended {
-            self.read_until_agent_end()?;
+        self.agent_cycle_active = true;
+        self.active_request_id = Some(request_id);
+        self.plan_seen_in_cycle = false;
+        if let Err(error) = self.command("prompt", Some(request)) {
+            self.requests.remove(&request_id);
+            self.active_request_id = None;
+            self.agent_cycle_active = false;
+            if self.cruise.is_active() {
+                let retrying = self.cruise.record_planner_missing();
+                self.next_auto_attempt = Instant::now() + AUTO_RETRY_DELAY;
+                println!(
+                    "上游下一步重试：第 {}/{} 次；本次未开始：{}{}。",
+                    self.cruise.snapshot(Instant::now()).planner_retry_count,
+                    AUTO_RETRY_LIMIT,
+                    error,
+                    if retrying {
+                        "，10 秒后重试"
+                    } else {
+                        "，巡航退出"
+                    }
+                );
+                self.print_cruise_status();
+                return Ok(());
+            }
+            return Err(error);
         }
-        self.requests.remove(&request_id);
         Ok(())
     }
 
     fn status(&mut self) -> AppResult<()> {
         let response = self.command("get_state", None)?;
+        let worker = response.get("data").unwrap_or(&Value::Null);
+        let worker_open = worker.get("open").and_then(Value::as_bool).unwrap_or(false);
+        let worker_active = worker
+            .get("active")
+            .and_then(Value::as_bool)
+            .unwrap_or(false);
+        let queued = worker.get("queued").and_then(Value::as_u64).unwrap_or(0);
         println!(
-            "state={:?} generation={} next_request={} pending_approval={} worker={}",
-            self.template.state,
-            self.session_generation,
-            self.next_request_id,
-            self.pending.is_some(),
-            response.get("data").unwrap_or(&Value::Null)
+            "控制器状态：{}；运行模式：{}。",
+            controller_state_label(self.template.state),
+            self.cruise.mode().label()
         );
+        println!(
+            "Agent 会话：{}；上游模型：{}；等待处理的消息：{} 条。",
+            if worker_open {
+                "已打开"
+            } else {
+                "未打开"
+            },
+            if worker_active {
+                "正在生成下一步"
+            } else {
+                "空闲"
+            },
+            queued
+        );
+        println!(
+            "人工批准：{}；下一请求编号：{}；安全代次：{}。",
+            if self.pending.is_some() {
+                "有计划等待决定"
+            } else {
+                "没有待处理计划"
+            },
+            self.next_request_id,
+            self.session_generation
+        );
+        self.print_cruise_status();
         Ok(())
     }
 
     fn renew(&mut self, state: ControllerState, message: &str) -> AppResult<()> {
-        if self.active_execution.is_some() {
+        if self.active_execution.is_some() || self.agent_cycle_active {
             return Err(invalid_input(
-                "cannot renew the session while hardware execution is active",
+                "cannot renew the session while a planning or hardware step is active",
             )
             .into());
         }
@@ -187,6 +380,8 @@ impl ConsoleApp {
         self.template.session_generation = self.session_generation;
         self.pending = None;
         self.requests.clear();
+        self.active_request_id = None;
+        self.plan_seen_in_cycle = false;
         self.client.session_generation = self.session_generation;
         self.command("open_session", None)?;
         self.record(message.to_owned());
@@ -201,31 +396,42 @@ impl ConsoleApp {
         }
         if let Some(plan) = self.pending.take() {
             self.record(format!("approved request {}", plan.request_id));
-            let Some(mut executor) = self.executor.take() else {
-                println!(
-                    "已记录批准 request={}；未配置 --sdrd，因此没有操作硬件。",
-                    plan.request_id
-                );
-                return Ok(());
-            };
             let authorization = ExecutionAuthorization::operator_approved(&plan);
-            let request_id = plan.request_id;
-            let session_generation = plan.session_generation;
-            let canceller = executor.clone();
-            let worker = thread::spawn(move || {
-                let result = executor.execute(&plan, &authorization);
-                (executor, result)
-            });
-            self.active_execution = Some(ActiveExecution {
-                request_id,
-                session_generation,
-                canceller,
-                worker,
-            });
-            println!("硬件动作 request={request_id} 已开始；执行期间可输入 /stop 直接取消。");
+            self.start_execution(plan, authorization)?;
         } else {
             println!("没有等待批准的计划。")
         }
+        Ok(())
+    }
+
+    fn start_execution(
+        &mut self,
+        plan: ValidatedPlan,
+        authorization: ExecutionAuthorization,
+    ) -> AppResult<()> {
+        let request_id = plan.request_id;
+        let Some(mut executor) = self.executor.take() else {
+            println!("request={request_id} 未执行：没有配置 SDRD 执行器。");
+            if self.cruise.is_active() {
+                self.cruise.stop(CruiseStopReason::Fault);
+                self.print_cruise_status();
+            }
+            return Ok(());
+        };
+        let session_generation = plan.session_generation;
+        let canceller = executor.clone();
+        let worker = thread::spawn(move || {
+            let result = executor.execute(&plan, &authorization);
+            (executor, result)
+        });
+        self.active_execution = Some(ActiveExecution {
+            request_id,
+            session_generation,
+            canceller,
+            worker,
+        });
+        self.cruise.set_phase(CruisePhase::Executing);
+        println!("受限硬件动作 request={request_id} 已开始；执行期间可随时输入 /stop。");
         Ok(())
     }
 
@@ -259,19 +465,81 @@ impl ConsoleApp {
         match result {
             Ok(observation) => {
                 self.record(format!("executed request {request_id}"));
-                println!("Execution> {}", serde_json::to_string(&observation)?);
+                self.template.observation.age_ms = 0;
+                self.template.observation.health = observation.post_execution_sdr.planner_health(
+                    self.template.observation.health.recognizer_available,
+                    self.template.observation.health.dropped_observations,
+                );
+                println!(
+                    "执行结果：request={request_id} 已安全采集 {} 个复数样本（{} 字节）；丢样 {}，溢出 {}，射频状态已恢复。",
+                    observation.capture.samples_captured,
+                    observation.capture.bytes_written,
+                    observation.capture.dropped_samples,
+                    if observation.capture.overflow { "是" } else { "否" }
+                );
+                if self.cruise.is_active() {
+                    self.cruise
+                        .record_execution(observation.capture.bytes_written);
+                    if self.cruise.is_active() {
+                        let mission = self.auto_mission.as_deref().unwrap_or("继续受限巡航");
+                        self.auto_next_instruction = Some(format!(
+                            "自动巡航任务：{mission}\n上一步 request={request_id} 已完成，采集 {} 个样本、{} 字节、丢样 {}、溢出 {}，并已恢复射频状态。请根据这个结果和最新健康状态只给出下一步。",
+                            observation.capture.samples_captured,
+                            observation.capture.bytes_written,
+                            observation.capture.dropped_samples,
+                            observation.capture.overflow
+                        ));
+                        self.next_auto_attempt = Instant::now();
+                    }
+                    self.print_cruise_status();
+                }
             }
             Err(error) => {
                 self.record(format!("execution failed request {request_id}: {error}"));
                 println!("执行失败：{error}");
-                self.renew(ControllerState::Faulted, "硬件执行失败，会话已进入故障状态")?;
+                if self.cruise.is_active() && !self.refresh_sdr_health(true)? {
+                    let retrying = self.cruise.record_sdr_unavailable();
+                    self.next_auto_attempt = Instant::now() + AUTO_RETRY_DELAY;
+                    println!(
+                        "SDR 连通性重试：第 {}/{} 次{}。",
+                        self.cruise.snapshot(Instant::now()).sdr_retry_count,
+                        AUTO_RETRY_LIMIT,
+                        if retrying {
+                            "，10 秒后重试"
+                        } else {
+                            "，巡航退出"
+                        }
+                    );
+                    self.print_cruise_status();
+                } else {
+                    self.cruise.stop(CruiseStopReason::Fault);
+                    self.template.state = ControllerState::Faulted;
+                    self.print_cruise_status();
+                }
             }
         }
         Ok(())
     }
 
     fn stop(&mut self, message: &str) -> AppResult<()> {
+        if self.cruise.is_active() {
+            self.cruise.stop(CruiseStopReason::OperatorStopped);
+            self.auto_mission = None;
+            self.auto_next_instruction = None;
+            self.print_cruise_status();
+        }
+        if self.agent_cycle_active {
+            self.command("abort", None)?;
+            if self.agent_cycle_active {
+                self.deferred_renew = Some((ControllerState::Holding, message.to_owned()));
+            }
+            println!("已要求上游停止当前生成；收到结束确认后会使旧计划失效。");
+        }
         if self.active_execution.is_none() {
+            if self.agent_cycle_active {
+                return Ok(());
+            }
+            self.deferred_renew = None;
             return self.renew(ControllerState::Holding, message);
         }
 
@@ -333,14 +601,212 @@ impl ConsoleApp {
             ),
             Err(error) => println!("硬件动作已取消并完成恢复：{error}"),
         }
-        self.renew(ControllerState::Holding, message)
+        if self.agent_cycle_active {
+            self.deferred_renew = Some((ControllerState::Holding, message.to_owned()));
+            Ok(())
+        } else {
+            self.renew(ControllerState::Holding, message)
+        }
+    }
+
+    fn enable_step_approval(&mut self) -> AppResult<()> {
+        if self.cruise.mode() == InteractionMode::StepApproval && !self.cruise.is_active() {
+            println!("当前已经是逐步人工批准模式。每个可执行动作都会等待 /approve 或 /reject。");
+            return Ok(());
+        }
+        let had_active_step = self.agent_cycle_active || self.active_execution.is_some();
+        if had_active_step {
+            self.stop("已切换到逐步人工批准模式")?;
+        }
+        self.cruise.switch_to_step_approval();
+        self.auto_mission = None;
+        self.auto_next_instruction = None;
+        if !had_active_step {
+            self.renew(ControllerState::Idle, "已切换到逐步人工批准模式")?;
+        }
+        println!("已切换到逐步人工批准模式；自动巡航已关闭，旧自动计划不会继续执行。");
+        Ok(())
+    }
+
+    fn start_auto(
+        &mut self,
+        mission: &str,
+        max_steps: u8,
+        max_duration_secs: u64,
+    ) -> AppResult<()> {
+        if mission.is_empty() || mission.len() > 700 || mission.chars().any(char::is_control) {
+            return Err(invalid_input("自动巡航任务必须为 1–700 字节的单行文本").into());
+        }
+        if self.agent_cycle_active || self.active_execution.is_some() {
+            println!("当前步骤尚未结束；请先 /stop，再启动新的自动巡航。");
+            return Ok(());
+        }
+        if self.pending.is_some() {
+            println!("仍有计划等待人工决定；请先 /approve、/reject 或 /stop。");
+            return Ok(());
+        }
+        self.renew(ControllerState::Idle, "自动巡航已建立新的安全代次")?;
+        self.cruise
+            .start(
+                self.template.limits.max_iq_bytes,
+                max_steps,
+                max_duration_secs,
+                Instant::now(),
+            )
+            .map_err(invalid_input)?;
+        self.auto_mission = Some(mission.to_owned());
+        self.auto_next_instruction = Some(format!(
+            "自动巡航任务：{mission}\n本巡航最多 {max_steps} 个已执行步骤、{max_duration_secs} 秒、累计 {} 字节 IQ；SDR 不可用或上游未给出下一步各自连续重试 5 次，每次间隔 10 秒。只能提出 Rust Controller 能验证的接收动作，安全边界不变。请给出第一步。",
+            self.template.limits.max_iq_bytes
+        ));
+        self.next_auto_attempt = Instant::now();
+        println!(
+            "已启动受限自动巡航：最多 {max_steps} 步、{max_duration_secs} 秒、{} 字节；两类失败分别最多重试 5 次、间隔 10 秒。输入 /stop 可立即停止。",
+            self.template.limits.max_iq_bytes
+        );
+        self.print_cruise_status();
+        Ok(())
+    }
+
+    fn poll(&mut self) -> AppResult<()> {
+        while let Some(frame) = self.client.try_read()? {
+            self.handle_event(frame)?;
+        }
+        self.poll_execution()?;
+        if !self.agent_cycle_active && self.active_execution.is_none() {
+            if let Some((state, message)) = self.deferred_renew.take() {
+                self.renew(state, &message)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn advance_auto(&mut self) -> AppResult<()> {
+        if !self.cruise.is_active() {
+            return Ok(());
+        }
+        if !self.cruise.check_duration(Instant::now()) {
+            self.print_cruise_status();
+            if self.agent_cycle_active || self.active_execution.is_some() {
+                self.stop("自动巡航达到时长上限")?;
+            }
+            return Ok(());
+        }
+        if self.agent_cycle_active
+            || self.active_execution.is_some()
+            || self.pending.is_some()
+            || Instant::now() < self.next_auto_attempt
+        {
+            return Ok(());
+        }
+        self.cruise.set_phase(CruisePhase::CheckingSdr);
+        if !self.refresh_sdr_health(true)? {
+            let retrying = self.cruise.record_sdr_unavailable();
+            self.next_auto_attempt = Instant::now() + AUTO_RETRY_DELAY;
+            println!(
+                "SDR 连通性重试：第 {}/{} 次{}。",
+                self.cruise.snapshot(Instant::now()).sdr_retry_count,
+                AUTO_RETRY_LIMIT,
+                if retrying {
+                    "，10 秒后重试"
+                } else {
+                    "，巡航退出"
+                }
+            );
+            self.print_cruise_status();
+            return Ok(());
+        }
+        self.cruise.record_sdr_available();
+        let instruction = self.auto_next_instruction.take().unwrap_or_else(|| {
+            format!(
+                "自动巡航任务：{}\n请根据最新状态给出下一步。",
+                self.auto_mission.as_deref().unwrap_or("继续受限巡航")
+            )
+        });
+        self.cruise.set_phase(CruisePhase::WaitingForPlanner);
+        self.print_cruise_status();
+        self.submit(instruction)
+    }
+
+    fn refresh_sdr_health(&mut self, announce_failure: bool) -> AppResult<bool> {
+        let Some(address) = self.sdrd_address else {
+            if announce_failure {
+                println!("SDR 检查失败：没有配置 SDRD 地址。");
+            }
+            return Ok(false);
+        };
+        let mut observer = SdrdAdapter::new(address, self.sdrd_timeout);
+        match observer.observe() {
+            Ok(snapshot) if snapshot.online && snapshot.healthy => {
+                self.template.observation.age_ms = 0;
+                self.template.observation.health = snapshot.planner_health(
+                    self.template.observation.health.recognizer_available,
+                    self.template.observation.health.dropped_observations,
+                );
+                Ok(true)
+            }
+            Ok(snapshot) => {
+                self.template.observation.age_ms = 0;
+                self.template.observation.health = snapshot.planner_health(
+                    self.template.observation.health.recognizer_available,
+                    self.template.observation.health.dropped_observations,
+                );
+                if announce_failure {
+                    println!("SDR 检查未通过：设备有响应，但健康状态异常。");
+                }
+                Ok(false)
+            }
+            Err(error) => {
+                self.template.observation.health.sdr_online = false;
+                self.template.observation.health.can_retune = false;
+                self.template.observation.health.can_capture_iq = false;
+                if announce_failure {
+                    println!("SDR 检查失败：{error}");
+                }
+                Ok(false)
+            }
+        }
+    }
+
+    fn print_cruise_status(&self) {
+        let snapshot = self.cruise.snapshot(Instant::now());
+        if snapshot.mode == InteractionMode::StepApproval {
+            println!("巡航状态：未启用；当前每个可执行动作都需要人工批准。");
+            return;
+        }
+        if snapshot.active {
+            println!(
+                "巡航状态：{}；已完成 {}/{} 步，已用 {}/{} 字节，SDR 重试 {}/{}，上游重试 {}/{}。",
+                snapshot.phase_label,
+                snapshot.completed_steps,
+                snapshot.max_steps,
+                snapshot.used_iq_bytes,
+                snapshot.max_iq_bytes,
+                snapshot.sdr_retry_count,
+                snapshot.retry_limit,
+                snapshot.planner_retry_count,
+                snapshot.retry_limit
+            );
+        } else {
+            println!(
+                "巡航状态：已退出；原因：{}。",
+                snapshot.stop_reason_label.unwrap_or("尚未启动")
+            );
+        }
     }
 
     fn close(&mut self) -> AppResult<()> {
-        if self.active_execution.is_some() {
+        if self.active_execution.is_some() || self.agent_cycle_active {
             self.stop("终端关闭，硬件动作已停止")?;
         }
-        let _ = self.command("close_session", None);
+        let deadline = Instant::now() + Duration::from_secs(2);
+        while self.agent_cycle_active && Instant::now() < deadline {
+            self.poll()?;
+            thread::sleep(Duration::from_millis(10));
+        }
+        if !self.agent_cycle_active {
+            let _ = self.command("close_session", None);
+        }
         Ok(())
     }
 
@@ -376,18 +842,6 @@ impl ConsoleApp {
         }
     }
 
-    fn read_until_agent_end(&mut self) -> AppResult<()> {
-        loop {
-            let frame = self.client.read()?;
-            let ended = frame.get("type").and_then(Value::as_str) == Some("event")
-                && frame.get("event").and_then(Value::as_str) == Some("agent_end");
-            self.handle_event(frame)?;
-            if ended {
-                return Ok(());
-            }
-        }
-    }
-
     fn handle_event(&mut self, frame: Value) -> AppResult<()> {
         if frame.get("type").and_then(Value::as_str) != Some("event") {
             return Ok(());
@@ -415,21 +869,80 @@ impl ConsoleApp {
                     .get(&response.request_id)
                     .ok_or_else(|| invalid_input("plan refers to an unknown request"))?;
                 let plan = ControllerPolicy.validate_response(request, response)?;
-                println!("Validated plan> {}", serde_json::to_string(&plan)?);
+                self.plan_seen_in_cycle = true;
+                self.cruise.record_planner_action();
+                println!("已验证计划：{}", describe_plan(&plan));
                 self.record(format!("validated request {}", plan.request_id));
-                if plan.approval_required {
-                    self.pending = Some(plan);
-                    println!("该计划需要人工批准：输入 /approve 或 /reject。")
+                match self.cruise.mode() {
+                    InteractionMode::StepApproval => {
+                        if matches!(plan.action, ProposedAction::CaptureBoundedIq { .. }) {
+                            if self.pending.is_some() {
+                                return Err(
+                                    invalid_input("a validated plan is already pending").into()
+                                );
+                            }
+                            self.pending = Some(plan);
+                            println!("逐步批准模式：输入 /approve 执行，或输入 /reject 拒绝。")
+                        } else {
+                            println!("该计划当前没有生产执行器，仅记录建议，不会操作硬件。");
+                        }
+                    }
+                    InteractionMode::AutomaticCruise if !self.cruise.is_active() => {
+                        println!("该计划到达时巡航已经停止，已作为过期计划忽略，不会执行。")
+                    }
+                    InteractionMode::AutomaticCruise => match &plan.action {
+                        ProposedAction::CaptureBoundedIq { .. } if plan.approval_required => {
+                            self.pending = Some(plan);
+                            self.cruise.stop(CruiseStopReason::ApprovalRequired);
+                            println!("自动巡航不会代替人工批准；计划已停在批准门前。");
+                            self.print_cruise_status();
+                        }
+                        ProposedAction::CaptureBoundedIq { .. } => {
+                            let authorization = ExecutionAuthorization::automatic(&plan)?;
+                            self.start_execution(plan, authorization)?;
+                        }
+                        ProposedAction::Hold { .. } | ProposedAction::StopSession { .. } => {
+                            self.cruise.stop(CruiseStopReason::PlannerRequestedStop);
+                            self.print_cruise_status();
+                        }
+                        _ => {
+                            self.cruise.stop(CruiseStopReason::UnsupportedAction);
+                            println!("自动巡航已停止：该建议尚无生产执行器，不能伪装成已执行。");
+                            self.print_cruise_status();
+                        }
+                    },
                 }
             }
             "agent_error" => {
                 let error = frame
                     .pointer("/data/error")
                     .and_then(Value::as_str)
-                    .unwrap_or("Agent unavailable");
-                return Err(invalid_input(error).into());
+                    .unwrap_or("上游暂不可用");
+                println!("上游模型本次请求失败：{error}");
+                self.record(format!("planner error: {error}"));
             }
-            "agent_end" => self.agent_cycle_ended = true,
+            "agent_end" => {
+                self.agent_cycle_active = false;
+                if let Some(request_id) = self.active_request_id.take() {
+                    self.requests.remove(&request_id);
+                }
+                if self.cruise.is_active() && !self.plan_seen_in_cycle {
+                    let retrying = self.cruise.record_planner_missing();
+                    self.next_auto_attempt = Instant::now() + AUTO_RETRY_DELAY;
+                    println!(
+                        "上游下一步重试：第 {}/{} 次{}。",
+                        self.cruise.snapshot(Instant::now()).planner_retry_count,
+                        AUTO_RETRY_LIMIT,
+                        if retrying {
+                            "，10 秒后重试"
+                        } else {
+                            "，巡航退出"
+                        }
+                    );
+                    self.print_cruise_status();
+                }
+                self.plan_seen_in_cycle = false;
+            }
             _ => {}
         }
         Ok(())
@@ -455,7 +968,8 @@ impl ConsoleApp {
 
 struct SessionClient {
     writer: UnixStream,
-    reader: BufReader<UnixStream>,
+    reader: UnixStream,
+    pending: Vec<u8>,
     command_id: u64,
     session_generation: u64,
 }
@@ -463,10 +977,12 @@ struct SessionClient {
 impl SessionClient {
     fn connect(path: PathBuf, session_generation: u64) -> AppResult<Self> {
         let writer = UnixStream::connect(path)?;
-        let reader = BufReader::new(writer.try_clone()?);
+        let reader = writer.try_clone()?;
+        reader.set_nonblocking(true)?;
         Ok(Self {
             writer,
             reader,
+            pending: Vec::new(),
             command_id: 1,
             session_generation,
         })
@@ -490,16 +1006,47 @@ impl SessionClient {
     }
 
     fn read(&mut self) -> AppResult<Value> {
-        let mut frame = Vec::new();
-        self.reader
-            .by_ref()
-            .take((MAX_FRAME_BYTES + 1) as u64)
-            .read_until(b'\n', &mut frame)?;
-        if frame.len() > MAX_FRAME_BYTES + 1 || frame.last() != Some(&b'\n') {
-            return Err(invalid_input("invalid session response framing").into());
+        loop {
+            if let Some(frame) = self.try_read()? {
+                return Ok(frame);
+            }
+            thread::sleep(Duration::from_millis(2));
         }
-        frame.pop();
-        Ok(serde_json::from_slice(&frame)?)
+    }
+
+    fn try_read(&mut self) -> AppResult<Option<Value>> {
+        if let Some(frame) = self.take_frame()? {
+            return Ok(Some(frame));
+        }
+        let mut chunk = [0_u8; 4_096];
+        match self.reader.read(&mut chunk) {
+            Ok(0) => Err(io::Error::new(
+                io::ErrorKind::UnexpectedEof,
+                "planner session socket closed",
+            )
+            .into()),
+            Ok(count) => {
+                self.pending.extend_from_slice(&chunk[..count]);
+                if self.pending.len() > MAX_FRAME_BYTES && !self.pending.contains(&b'\n') {
+                    return Err(invalid_input("session response exceeds 32 KiB").into());
+                }
+                self.take_frame()
+            }
+            Err(error) if error.kind() == io::ErrorKind::WouldBlock => Ok(None),
+            Err(error) => Err(error.into()),
+        }
+    }
+
+    fn take_frame(&mut self) -> AppResult<Option<Value>> {
+        let Some(newline) = self.pending.iter().position(|byte| *byte == b'\n') else {
+            return Ok(None);
+        };
+        if newline > MAX_FRAME_BYTES {
+            return Err(invalid_input("session response exceeds 32 KiB").into());
+        }
+        let frame = self.pending[..newline].to_vec();
+        self.pending.drain(..=newline);
+        Ok(Some(serde_json::from_slice(&frame)?))
     }
 }
 
@@ -579,11 +1126,115 @@ fn read_bounded(mut reader: impl Read) -> AppResult<Vec<u8>> {
 
 fn print_help() {
     println!(
-        "/status 状态  /history 历史  /approve 批准  /reject 拒绝\n\
-         /pause 暂停  /resume 继续  /stop 停止  /quit 退出"
+        "查看：/status 当前状态，/history 本次历史\n\
+         人工模式：/mode manual，/approve 批准当前步骤，/reject 拒绝当前步骤\n\
+         自动巡航：/auto start [--steps 1–128] [--seconds 10–1800] <任务>\n\
+         默认 8 步、120 秒；两类失败各重试 5 次，每次间隔 10 秒\n\
+         会话：/pause 暂停，/resume 继续，/stop 立即停止，/quit 退出"
     );
+}
+
+fn controller_state_label(state: ControllerState) -> &'static str {
+    match state {
+        ControllerState::Idle => "空闲，可以接收新任务",
+        ControllerState::Surveying => "正在扫频",
+        ControllerState::Inspecting => "正在检查候选信号",
+        ControllerState::Recognizing => "正在识别信号",
+        ControllerState::Holding => "已保持，不会继续操作硬件",
+        ControllerState::Faulted => "故障锁定，需要检查后恢复",
+    }
+}
+
+fn describe_plan(plan: &ValidatedPlan) -> String {
+    let approval = if plan.approval_required {
+        "；必须人工批准"
+    } else {
+        "；位于自动安全阈值内"
+    };
+    match &plan.action {
+        ProposedAction::Hold { reason } => format!("保持当前状态：{reason}"),
+        ProposedAction::SurveyBand {
+            start_hz,
+            stop_hz,
+            step_hz,
+            dwell_ms,
+        } => format!(
+            "建议扫频 {}–{} Hz，步进 {} Hz，每点停留 {} ms；当前仅规划，不会假装已执行",
+            start_hz, stop_hz, step_hz, dwell_ms
+        ),
+        ProposedAction::InspectCandidate {
+            candidate_id,
+            center_hz,
+            bandwidth_hz,
+            dwell_ms,
+        } => format!(
+            "建议检查候选 {candidate_id}：中心 {} Hz、带宽 {} Hz、停留 {} ms；当前仅规划",
+            center_hz, bandwidth_hz, dwell_ms
+        ),
+        ProposedAction::CaptureBoundedIq {
+            candidate_id,
+            center_hz,
+            sample_rate_hz,
+            rf_bandwidth_hz,
+            samples,
+        } => format!(
+            "受限采集候选 {candidate_id}：中心 {} Hz、采样率 {}、射频带宽 {}、{} 个复数样本（最多 {} 字节）{}",
+            center_hz,
+            sample_rate_hz,
+            rf_bandwidth_hz,
+            samples,
+            samples.saturating_mul(4),
+            approval
+        ),
+        ProposedAction::RunLocalRecognition { candidate_id } => {
+            format!("建议本地识别候选 {candidate_id}；识别后端尚未启用，不会执行")
+        }
+        ProposedAction::StopSession { reason } => format!("停止本次会话：{reason}"),
+    }
 }
 
 fn invalid_input(message: impl Into<String>) -> io::Error {
     io::Error::new(io::ErrorKind::InvalidInput, message.into())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parses_default_and_operator_cruise_budgets() {
+        assert_eq!(
+            parse_auto_start("在允许频段内检查活动").unwrap(),
+            AutoStartCommand {
+                mission: "在允许频段内检查活动".to_owned(),
+                steps: DEFAULT_AUTO_MAX_STEPS,
+                seconds: DEFAULT_AUTO_DURATION_SECS,
+            }
+        );
+        assert_eq!(
+            parse_auto_start("--steps 128 --seconds 1800 完整巡航").unwrap(),
+            AutoStartCommand {
+                mission: "完整巡航".to_owned(),
+                steps: 128,
+                seconds: 1_800,
+            }
+        );
+    }
+
+    #[test]
+    fn rejects_invalid_or_ambiguous_cruise_parameters() {
+        for invalid in [
+            "--steps 0 任务",
+            "--steps 129 任务",
+            "--seconds 9 任务",
+            "--seconds 1801 任务",
+            "--steps 8 --steps 9 任务",
+            "--seconds 120 --seconds 121 任务",
+            "--unknown 1 任务",
+            "--steps",
+            "--seconds",
+        ] {
+            assert!(parse_auto_start(invalid).is_err(), "accepted {invalid}");
+        }
+    }
 }

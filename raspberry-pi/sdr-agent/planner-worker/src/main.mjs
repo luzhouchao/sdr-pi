@@ -6,11 +6,14 @@ import { createModels, createProvider } from "@earendil-works/pi-ai";
 import { openAICompletionsApi } from "@earendil-works/pi-ai/api/openai-completions.lazy";
 import { openAIResponsesApi } from "@earendil-works/pi-ai/api/openai-responses.lazy";
 import { Type } from "typebox";
+import { compactPlanningContext } from "./context-policy.mjs";
+import { resolveModelProfile } from "./model-profile.mjs";
 import { loadProviderSelection } from "./provider-config.mjs";
 import { validateRuntimeSocketPath } from "./runtime-path.mjs";
 import { RunLease } from "./run-lease.mjs";
 import { SessionRuntime } from "./session-runtime.mjs";
 import { startSessionServer } from "./session-server.mjs";
+import { PLANNER_SYSTEM_PROMPT } from "./system-prompt.mjs";
 import {
   MAX_FRAME_BYTES,
   makeErrorResponse,
@@ -126,7 +129,12 @@ async function handleFrame(frame) {
     return makeErrorResponse(request, runtime.plannerMeta, "unavailable", "planner request timed out");
   }
   if (submittedPlans.length !== 1) {
-    return makeErrorResponse(request, runtime.plannerMeta, "error", "model did not submit exactly one plan");
+    return makeErrorResponse(
+      request,
+      runtime.plannerMeta,
+      "error",
+      describeMissingPlan(runtime.agent),
+    );
   }
   return makeResponse(request, runtime.plannerMeta, submittedPlans[0]);
 }
@@ -135,31 +143,7 @@ function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) 
   const providerConfig = loadProviderSelection(config);
   const plannerMeta = { provider: providerConfig.provider, model: providerConfig.model };
   const models = createModels();
-  const model = {
-    id: providerConfig.model,
-    name: providerConfig.model,
-    api: providerConfig.api,
-    provider: providerConfig.provider,
-    baseUrl: providerConfig.baseUrl,
-    reasoning: false,
-    input: ["text"],
-    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-    contextWindow: config.contextWindow,
-    maxTokens: config.maxTokens,
-    compat: providerConfig.api === "openai-completions"
-      ? {
-          supportsStore: false,
-          supportsDeveloperRole: false,
-          supportsReasoningEffort: false,
-          supportsUsageInStreaming: false,
-          supportsStrictMode: false,
-          maxTokensField: "max_tokens",
-        }
-      : {
-          supportsStore: false,
-          supportsStrictMode: false,
-        },
-  };
+  const model = resolveModelProfile(providerConfig, config.maxTokens);
   const providerApi = providerConfig.api === "openai-responses"
     ? openAIResponsesApi()
     : openAICompletionsApi();
@@ -222,13 +206,18 @@ function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) 
 
   const agent = new Agent({
     initialState: {
-      systemPrompt: SYSTEM_PROMPT,
+      systemPrompt: PLANNER_SYSTEM_PROMPT,
       model,
       thinkingLevel: "off",
       tools: [submitPlan],
       messages: [],
     },
     streamFn: models.streamSimple.bind(models),
+    transformContext: async (messages) => compactPlanningContext(
+      messages,
+      providerConfig.contextWindow,
+      providerConfig.compressionThresholdPercent,
+    ),
     onPayload: (payload) => requireSubmitPlan(payload, providerConfig.api),
     toolExecution: "sequential",
     sessionId: `sdr-${sessionGeneration}`,
@@ -262,6 +251,12 @@ function loadConfig() {
     socketPath: process.env.SDR_PLANNER_SOCKET || "/run/sdr-agent/planner.sock",
     sessionSocketPath: process.env.SDR_SESSION_SOCKET || "/run/sdr-agent/session.sock",
     contextWindow: boundedInteger("SDR_PLANNER_CONTEXT_WINDOW", 196_608, 8_192, 1_000_000),
+    compressionThresholdPercent: boundedInteger(
+      "SDR_PLANNER_COMPRESSION_THRESHOLD_PERCENT",
+      90,
+      50,
+      95,
+    ),
     maxTokens: boundedInteger("SDR_PLANNER_MAX_TOKENS", 1_024, 128, 8_192),
     requestTimeoutMs: boundedInteger("SDR_PLANNER_TIMEOUT_MS", 30_000, 1_000, 120_000),
   };
@@ -304,10 +299,16 @@ function safeMessage(error) {
   return message.replace(/[\r\n\u0000-\u001f\u007f]+/gu, " ").slice(0, 512);
 }
 
-const SYSTEM_PROMPT = `You are the planning module of a receive-only SDR agent.
-The user message is a JSON PlanningContext from a deterministic Rust controller.
-Choose exactly one conservative next action and call submit_plan exactly once.
-Never claim that an action executed. Never invent candidates or capabilities.
-Respect the supplied limits and health flags. When data is stale, capabilities
-are missing, the instruction is ambiguous, or safety is uncertain, submit hold.
-The Rust controller independently validates every proposal and owns all hardware.`;
+function describeMissingPlan(agent) {
+  const messages = agent?.state?.messages;
+  const assistant = Array.isArray(messages)
+    ? messages.findLast((message) => message?.role === "assistant")
+    : undefined;
+  if (assistant?.errorMessage) {
+    return `model request failed: ${safeMessage(assistant.errorMessage)}`;
+  }
+  const stopReason = typeof assistant?.stopReason === "string"
+    ? safeMessage(assistant.stopReason)
+    : "unknown";
+  return `model ended without submit_plan (stop_reason=${stopReason})`;
+}

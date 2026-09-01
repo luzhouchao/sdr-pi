@@ -1,3 +1,4 @@
+pub mod autonomy;
 pub mod execution;
 pub mod planner;
 pub mod policy;

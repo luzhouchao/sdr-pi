@@ -14,7 +14,7 @@ operator / automatic observation
 Rust Controller -- JSONL over Unix socket --> Pi Agent Planner Worker
       |                                      |
       |                                      v
-      |                              4090 llama.cpp + Qwen
+      |                              third-party model API
       v
 SDRD/1 adapter -> SDR Linux C sdrd -> IIO/FPGA
       |
@@ -33,10 +33,10 @@ SSH, IIO, FPGA-register or SDR tools.
   and production SDRD Adapters. It has no libiio or Node dependency and builds
   as a static ARM64 binary.
 - `planner-worker/`: headless `pi-agent-core` worker using one `submit_plan`
-  tool and the existing 4090 llama.cpp OpenAI-compatible endpoint.
-  Its tested, not-yet-deployed `SessionRuntime` reuses Pi Agent's public
-  prompt/steer/follow-up/abort/event interface for a future thin terminal while
-  retaining the one-shot Planner as the stable path.
+  tool and a Web-managed third-party OpenAI-compatible endpoint.
+  Its deployed `SessionRuntime` reuses Pi Agent's public
+  prompt/steer/follow-up/abort/event interface for the thin terminal while
+  retaining the one-shot Planner as a stateless fallback.
 - `controller/src/recognizer.rs`: bounded local-recognition protocol with replay
   and Unix-socket Adapters. The production C++ worker and model are not yet
   deployed, so availability remains false.
@@ -113,9 +113,8 @@ npm test
 ```
 
 These tests also cover the Pi-inspired session command subset, persistent
-Agent Adapter, queue bound, abort and stale-generation behavior. The session
-socket and terminal are not enabled until one-shot and interactive runs share
-one global inference lease.
+Agent Adapter, queue bound, abort, stale-generation behavior, one global
+inference lease and explicit missing-next-plan events.
 
 Rust checks:
 
@@ -156,18 +155,40 @@ calling Qwen, waits for the owner response that confirms restoration, and then
 advances the session generation. It retries only the bounded startup window in
 which `START_SESSION` has not yet completed.
 
-## Tailnet web console
-
-The Rust web console is deployed on the Pi at:
+The terminal defaults to step approval. An operator starts bounded automatic
+cruise with optional budgets:
 
 ```text
-http://100.102.130.52:8787/
+/auto start --steps 16 --seconds 300 在允许频段内寻找活动并根据结果继续
 ```
 
-The listener binds the Pi's Tailscale address directly; it does not listen on
-`0.0.0.0`, the LAN address, or a public interface. The page shows the raw
-terminal stream, including operator input, Qwen `Agent>` messages, `Validated
-plan>` output, execution results, sweep-related lines and errors. `/stop`,
+Steps are limited to 1–128 and duration to 10–1,800 seconds. Omitting both uses
+8 steps and 120 seconds. Consecutive SDR-unavailable and missing-upstream-action
+failures are counted independently; each retries at 10-second intervals and the
+fifth failure exits. `/stop` remains immediately available during the interval.
+
+The Planner system prompt explains every live `observation` and hard `limits`
+field, including current candidate signals, the overall tunable band, maximum
+single-survey span and per-action bandwidth. The private provider configuration
+can set an 8,192–1,000,000-token context window or adopt compatible metadata
+from `/models`. Old planning turns are automatically removed at the configured
+50–95% threshold (90% by default); the newest complete Rust-validated context is
+retained instead of asking a summarizer to invent radio facts.
+
+## Web console
+
+The current Rust web console is deployed on the AGX and listens on trusted-LAN
+interfaces at port 8787. The earlier Pi Tailnet deployment remains a rollback
+baseline.
+
+```text
+http://192.168.50.75:8787/
+```
+
+The AGX template binds `0.0.0.0`; it is unauthenticated plain HTTP and must not
+be port-forwarded to the Internet. The page shows the raw terminal stream,
+including operator input, upstream-model messages, Rust-validated plans,
+execution results, sweep-related lines and errors. `/stop`,
 `/approve`, `/reject`, `/pause`, `/resume` and `/status` are buttons, but each
 click still appears as `Operator> <command>` before the Controller response.
 
@@ -179,10 +200,9 @@ at 160 new events, keep 48 recent visible events, and cap carried context at 6
 KiB. The UI labels this as `已压缩 N 次`; it is not a model version. No raw IQ is
 stored by this service.
 
-The terminal cannot consume new stdin while waiting for a Qwen run to finish.
-The page records such input immediately, but the Controller reads it after that
-model turn. During a hardware action the terminal is back in its input loop, so
-`/stop` retains the direct cancellation path.
+The Planner acknowledges a model run before generation begins, so the terminal
+continues to consume input. `/stop` can abort an active upstream run and can
+also cancel a hardware action directly through an independent SDRD connection.
 
 Development checks and the static Pi build are:
 
@@ -288,9 +308,11 @@ see
 [`../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md).
 The interactive `sdr-agent` terminal was then deployed and validated; see
 [`../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md).
-The Tailnet Rust web console was deployed and live-validated on 2026-09-01; see
+The original Tailnet Rust web console was deployed and live-validated on
+2026-09-01; see
 [`../../docs/SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md`](../../docs/SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md).
-The Controller now has live-validated bounded-IQ execution and in-flight
-`/stop` cancellation. It does not yet execute surveys, candidate-inspection
-dwell loops, recognition, or automatic Runner cycles. Controlled `sdrd` is
-still a temporary development process rather than an enabled SDR service.
+The AGX Controller now has live-validated bounded-IQ execution, in-flight
+`/stop` cancellation and a bounded automatic cruise for the current IQ action.
+It does not yet execute surveys, candidate-inspection dwell loops or
+recognition. The persistent P201 `sdrd` endpoint was recovered and
+read-only-observed from AGX; acquisition ownership has not yet been cut over.

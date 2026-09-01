@@ -3,6 +3,8 @@ import { existsSync, lstatSync, readFileSync } from "node:fs";
 export const PROVIDER_CONFIG_SCHEMA_VERSION = 1;
 export const PROVIDER_CONFIG_MAX_BYTES = 8 * 1024;
 export const SUPPORTED_PROVIDER_APIS = new Set(["openai-completions", "openai-responses"]);
+export const DEFAULT_CONTEXT_WINDOW = 196_608;
+export const DEFAULT_COMPRESSION_THRESHOLD_PERCENT = 90;
 
 export function loadProviderSelection(config) {
   if (config.providerConfigPath && existsSync(config.providerConfigPath)) {
@@ -15,6 +17,8 @@ export function loadProviderSelection(config) {
     model: config.model,
     api_key: config.apiKey,
     api_key_source: config.apiKeySource,
+    context_window: config.contextWindow,
+    compression_threshold_percent: config.compressionThresholdPercent,
   });
 }
 
@@ -36,6 +40,7 @@ export function loadPrivateProviderFile(path) {
     value,
     ["schema_version", "api", "base_url", "provider", "model", "api_key"],
     "provider config",
+    ["context_window", "compression_threshold_percent"],
   );
   if (value.schema_version !== PROVIDER_CONFIG_SCHEMA_VERSION) {
     throw new Error("unsupported provider config schema version");
@@ -54,6 +59,18 @@ export function validateProviderSelection(value) {
   const provider = requireIdentifier(value.provider, "provider", 64);
   const model = requirePrintable(value.model, "model", 256);
   const apiKey = requirePrintable(value.api_key, "api_key", 4_096);
+  const contextWindow = requireBoundedInteger(
+    value.context_window ?? DEFAULT_CONTEXT_WINDOW,
+    "context_window",
+    8_192,
+    1_000_000,
+  );
+  const compressionThresholdPercent = requireBoundedInteger(
+    value.compression_threshold_percent ?? DEFAULT_COMPRESSION_THRESHOLD_PERCENT,
+    "compression_threshold_percent",
+    50,
+    95,
+  );
   return {
     api: value.api,
     baseUrl,
@@ -61,6 +78,8 @@ export function validateProviderSelection(value) {
     model,
     apiKey,
     apiKeySource: value.api_key_source || "configured API key",
+    contextWindow,
+    compressionThresholdPercent,
   };
 }
 
@@ -103,14 +122,21 @@ function requirePrintable(value, label, maximumBytes) {
   return value.trim();
 }
 
-function requireExactKeys(value, keys, label) {
-  const expected = new Set(keys);
+function requireExactKeys(value, keys, label, optionalKeys = []) {
+  const expected = new Set([...keys, ...optionalKeys]);
   for (const key of Object.keys(value)) {
     if (!expected.has(key)) throw new Error(`${label} contains unknown field ${key}`);
   }
   for (const key of keys) {
     if (!Object.hasOwn(value, key)) throw new Error(`${label} is missing field ${key}`);
   }
+}
+
+function requireBoundedInteger(value, label, minimum, maximum) {
+  if (!Number.isSafeInteger(value) || value < minimum || value > maximum) {
+    throw new Error(`${label} must be an integer between ${minimum} and ${maximum}`);
+  }
+  return value;
 }
 
 function requirePlainObject(value, label) {

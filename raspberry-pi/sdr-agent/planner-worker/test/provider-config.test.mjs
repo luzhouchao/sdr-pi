@@ -20,6 +20,33 @@ test("accepts OpenCode through the Pi AI Responses protocol", () => {
   assert.equal(selected.api, "openai-responses");
   assert.equal(selected.baseUrl, "https://opencode.ai/zen/v1");
   assert.equal(selected.apiKey, "test-key");
+  assert.equal(selected.contextWindow, 196_608);
+  assert.equal(selected.compressionThresholdPercent, 90);
+});
+
+test("accepts bounded operator context settings", () => {
+  const selected = validateProviderSelection({
+    api: "openai-completions",
+    base_url: "https://api.example.com/v1",
+    provider: "example",
+    model: "example-model",
+    api_key: "test-key",
+    context_window: 131_072,
+    compression_threshold_percent: 85,
+  });
+  assert.equal(selected.contextWindow, 131_072);
+  assert.equal(selected.compressionThresholdPercent, 85);
+  assert.throws(
+    () => validateProviderSelection({
+      api: "openai-completions",
+      base_url: "https://api.example.com/v1",
+      provider: "example",
+      model: "example-model",
+      api_key: "test-key",
+      context_window: 1_000_001,
+    }),
+    /context_window/u,
+  );
 });
 
 test("permits HTTP only for loopback providers", () => {

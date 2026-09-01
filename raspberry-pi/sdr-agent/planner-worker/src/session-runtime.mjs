@@ -167,6 +167,15 @@ export class SessionRuntime {
   #runPrompt(context) {
     Promise.resolve()
       .then(() => this.agent.prompt(JSON.stringify(context)))
+      .then(() => {
+        if (this.planSubmittedForRequest !== context.request_id) {
+          this.emit(
+            makeSessionEvent(this.sessionGeneration, "agent_error", {
+              error: "上游模型结束了本轮生成，但没有提交下一步计划",
+            }),
+          );
+        }
+      })
       .catch((error) => {
         this.emit(
           makeSessionEvent(this.sessionGeneration, "agent_error", {

@@ -77,7 +77,7 @@ Installing a unit file does not authorize enabling or starting it. Keep both
 units disabled until the private environment, binary hashes, LAN exposure and
 SDR ownership gate have been reviewed. Before opening a conversation, use the
 Web `MODEL UPLINK` panel to configure API protocol, Base URL, Provider ID,
-Model ID and API Key. OpenCode Zen is provided as a quick-fill preset, while
+Model ID and API Key. OpenCode Go is provided as a quick-fill preset, while
 all fields remain editable for other providers.
 
 Use `查询上游模型` after entering the Base URL and API Key to request the
@@ -85,6 +85,11 @@ provider's standard `{Base URL}/models` inventory. If the same Base URL was
 already saved, the Web service reuses the private stored key without returning
 it to the browser. Select a returned model to fill Model ID, or keep typing a
 manual ID when a provider does not expose a compatible model-list endpoint.
+The same panel accepts the model context window (8,192–1,000,000 tokens) and an
+automatic compaction threshold (50–95%, default 90%). When `/models` returns a
+bounded `context_window`, `context_length`, `max_context_length`, `max_model_len`
+or common nested equivalent, selecting that model fills the context field;
+otherwise the manual value remains authoritative.
 Discovery is serialized and bounded to one request, 8 seconds, 512 KiB and 512
 model IDs. Redirects are rejected. The key is sent to the bounded `curl`
 process through stdin rather than its command line or environment.
@@ -101,6 +106,9 @@ never returned by the API or included in Web state. The Planner reloads this
 file for each new one-shot or interactive Agent; an active conversation keeps
 its original provider. Non-loopback endpoints require HTTPS, and invalid,
 oversized, loosely permissioned or unknown-field configurations fail closed.
+For the same saved Base URL, a blank API Key preserves the private stored key,
+so the operator can change only the model, context window or 90% compression
+setting without making the service return the secret.
 
 Tailscale was not installed on the 2026-09-01 AGX baseline, so the units do not
 declare a dependency on `tailscaled.service`. The all-interface LAN bind was

@@ -6,9 +6,10 @@ import { parseSessionCommand } from "../src/session-protocol.mjs";
 import { SessionRuntime } from "../src/session-runtime.mjs";
 
 class FakeAgent {
-  constructor(onPlan, blocking = false) {
+  constructor(onPlan, blocking = false, submitPlan = true) {
     this.onPlan = onPlan;
     this.blocking = blocking;
+    this.submitPlan = submitPlan;
     this.listeners = new Set();
     this.queues = [];
     this.aborted = false;
@@ -23,7 +24,9 @@ class FakeAgent {
   async prompt(text) {
     this.emit({ type: "agent_start" });
     this.emit({ type: "message_start", message: userMessage(text) });
-    this.onPlan(normalizeAction({ action: "hold", reason: "safe replay" }));
+    if (this.submitPlan) {
+      this.onPlan(normalizeAction({ action: "hold", reason: "safe replay" }));
+    }
     this.emit({
       type: "message_end",
       message: { role: "assistant", content: [{ type: "text", text: "保持等待" }] },
@@ -109,11 +112,11 @@ function command(type, id, extra = {}) {
   );
 }
 
-function runtime(blocking = false, runLease = new RunLease()) {
+function runtime(blocking = false, runLease = new RunLease(), submitPlan = true) {
   let fake;
   const instance = new SessionRuntime({
     plannerMeta: { provider: "test", model: "test" },
-    createAgent: ({ onPlan }) => (fake = new FakeAgent(onPlan, blocking)),
+    createAgent: ({ onPlan }) => (fake = new FakeAgent(onPlan, blocking, submitPlan)),
     runLease,
   });
   return { instance, getFake: () => fake };
@@ -132,6 +135,20 @@ test("runs a persistent Agent and emits a correlated plan", async () => {
   assert.equal(proposed.data.request_id, 9);
   assert.equal(proposed.data.action.kind, "hold");
   assert.equal(events.some((event) => event.event === "assistant_message"), true);
+});
+
+test("reports an upstream turn that ends without a next plan", async () => {
+  const { instance } = runtime(false, new RunLease(), false);
+  const events = [];
+  await instance.dispatch(command("open_session", 1), (event) => events.push(event));
+  await instance.dispatch(
+    command("prompt", 2, { context: context() }),
+    (event) => events.push(event),
+  );
+  await new Promise((resolve) => setImmediate(resolve));
+  const error = events.find((event) => event.event === "agent_error");
+  assert.match(error.data.error, /没有提交下一步计划/u);
+  assert.equal(events.some((event) => event.event === "plan_proposed"), false);
 });
 
 test("uses Pi steering and follow-up queues with a hard limit", async () => {

@@ -29,6 +29,10 @@
         <span>控制器</span>
         <strong id="controller-status">等待活动对话</strong>
       </article>
+      <article class="status-card accent-green">
+        <span>运行授权</span>
+        <strong id="cruise-status">逐步批准模式</strong>
+      </article>
     </section>
 
     <details id="provider-dock" class="provider-dock">
@@ -43,7 +47,7 @@
       <form id="provider-form" class="provider-form" autocomplete="off">
         <div class="provider-presets" aria-label="上游预设">
           <span>快速填充</span>
-          <button id="preset-opencode" type="button">OpenCode Zen</button>
+          <button id="preset-opencode" type="button">OpenCode Go</button>
           <button id="preset-custom" type="button">清空字段</button>
         </div>
         <label>
@@ -59,19 +63,27 @@
         </label>
         <label>
           <span>Provider ID</span>
-          <input id="provider-id" maxlength="64" placeholder="opencode" required>
+          <input id="provider-id" maxlength="64" placeholder="opencode-go" required>
         </label>
         <div class="model-field">
           <label for="provider-model">Model ID</label>
           <div class="model-query-row">
-            <input id="provider-model" list="provider-model-options" maxlength="256" placeholder="gpt-5.6-sol" required>
+            <input id="provider-model" list="provider-model-options" maxlength="256" placeholder="deepseek-v4-flash" required>
             <datalist id="provider-model-options"></datalist>
             <button id="query-provider-models" type="button">查询上游模型</button>
           </div>
         </div>
+        <label>
+          <span>上下文窗口（tokens）</span>
+          <input id="provider-context-window" type="number" min="8192" max="1000000" step="1" value="196608" required>
+        </label>
+        <label>
+          <span>自动压缩阈值（%）</span>
+          <input id="provider-compression-threshold" type="number" min="50" max="95" step="1" value="90" required>
+        </label>
         <label class="wide-field">
           <span>API Key</span>
-          <input id="provider-api-key" type="password" maxlength="4096" autocomplete="new-password" placeholder="密钥不会回显；修改配置时请重新输入" required>
+          <input id="provider-api-key" type="password" maxlength="4096" autocomplete="new-password" placeholder="密钥不会回显；同一 Base URL 下留空可保留原密钥">
         </label>
         <section id="model-inventory" class="model-inventory" aria-live="polite" hidden>
           <div>
@@ -108,10 +120,34 @@
           <button id="scroll-bottom" class="ghost-button" type="button">回到底部</button>
         </div>
 
+        <section class="authorization-rail" aria-labelledby="authorization-title">
+          <div class="rail-copy">
+            <small>RUN AUTHORIZATION</small>
+            <strong id="authorization-title">选择谁决定下一步</strong>
+            <p>两种模式都经过 Rust 安全校验；切换模式不会放宽频段、时长、字节或独占限制。</p>
+          </div>
+          <button type="button" data-command="/mode manual" class="mode-card manual-mode">
+            <span>逐步批准</span>
+            <small>每个可执行动作都停在人工批准门前</small>
+          </button>
+          <form id="auto-form" class="mode-card auto-mode">
+            <label for="auto-mission">受限自动巡航</label>
+            <div class="auto-mission-row">
+              <input id="auto-mission" maxlength="700" placeholder="例如：在允许频段内寻找活动并根据结果继续" required>
+              <button type="submit">启动巡航</button>
+            </div>
+            <div class="auto-budget-row">
+              <label for="auto-steps"><span>最多步数</span><input id="auto-steps" type="number" min="1" max="128" step="1" value="8" required></label>
+              <label for="auto-seconds"><span>总时长（秒）</span><input id="auto-seconds" type="number" min="10" max="1800" step="1" value="120" required></label>
+              <small>硬上限 128 步 / 30 分钟；两类失败各重试 5 次，间隔 10 秒</small>
+            </div>
+          </form>
+          <button type="button" data-command="/stop" class="emergency-stop">■ 立即停止</button>
+        </section>
+
         <div id="terminal" class="terminal" role="log" aria-live="polite"></div>
 
         <div class="controls" aria-label="快捷控制">
-          <button type="button" data-command="/stop" class="danger">■ 停止</button>
           <button type="button" data-command="/approve">✓ 批准</button>
           <button type="button" data-command="/reject">× 拒绝</button>
           <button type="button" data-command="/pause">Ⅱ 暂停</button>

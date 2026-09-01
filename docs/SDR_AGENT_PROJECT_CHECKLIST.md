@@ -49,11 +49,14 @@ state.
 - [x] Bound the interactive steering/follow-up queue to four messages.
 - [x] Provide the static ARM64 `sdr-agent` terminal command on the Pi.
 - [x] Support both interactive `sdr-agent` and one-shot `sdr-agent "..."` usage.
-- [x] Provide `/status`, `/history`, `/approve`, `/reject`, `/pause`, `/resume`,
-      `/stop`, `/help`, and `/quit` terminal commands.
-- [x] Provide a Tailscale-address-only Rust web console that exposes the live
-      terminal, Qwen messages, validated plans, execution/sweep output and
-      system errors without duplicating Controller policy or SDR access.
+- [x] Provide `/status`, `/history`, `/approve`, `/reject`, `/mode manual`,
+      `/auto start`, `/pause`, `/resume`, `/stop`, `/help`, and `/quit`
+      terminal commands, with operator-facing state and plan output rendered as
+      natural Chinese instead of raw internal fields.
+- [x] Provide a Rust web console, explicitly deployed on the trusted LAN at
+      `0.0.0.0:8787` because Tailscale is absent, that exposes the live terminal,
+      model messages, validated plans, execution/sweep output and system errors
+      without duplicating Controller policy or SDR access.
 - [x] Show every web shortcut command and its Controller response in the same
       terminal stream, including stop, approve, reject, pause, resume and
       status.
@@ -75,20 +78,31 @@ state.
       `{Base URL}/models` inventory and select a returned Model ID, with manual
       fallback, no key echo or process-argument exposure, one-query concurrency,
       no redirects, an 8-second timeout, and 512 KiB/512-model bounds.
+- [x] Let the operator configure an 8,192–1,000,000-token upstream context
+      window, adopt common bounded context metadata returned by `/models`, and
+      automatically compact obsolete planning turns at a configurable 50–95%
+      threshold (default 90%) while retaining the newest complete Rust-validated
+      PlanningContext as authoritative.
 - [x] Keep Planner/session sockets restricted to exact dedicated runtime
       directories, use canonical `/run/sdr-agent` on AGX, and retain exact
       `/run/sdrharness` compatibility for migration from the first installed
       template; reject nested and traversal paths.
 - [x] Deploy and live-test the interactive terminal while retaining the prior
       Pi release for rollback.
+- [x] Configure the local `jetson` account for passwordless sudo through a
+      root-owned mode-`0440` `/etc/sudoers.d/90-jetson-nopasswd` rule, validate
+      it with `visudo`, and prove non-interactive `sudo -n` succeeds.
 - [ ] Support concurrent terminal input while Qwen is streaming so users can
       invoke Pi-style steer/follow-up from the line interface.
 - [ ] Persist and resume bounded interactive session history after terminal
       exit.
 - [ ] Support multiple isolated interactive users or sessions.
-- [ ] Live-test an authenticated third-party provider such as OpenCode Zen or
-      DeepSeek without changing the Controller interface; fake-key protocol and
-      Web integration tests pass, but no real subscription credential was used.
+- [x] Live-test OpenCode Go `deepseek-v4-flash` through the deployed Web,
+      unchanged Controller interface and real `0600` subscription credential:
+      a new conversation produced a Rust-validated health-only `hold` from the
+      live SDR observation, `/stop` aborted an active upstream run, and the
+      authenticated `/models` query returned 33 model IDs without exposing the
+      key.
 
 Evidence:
 
@@ -119,8 +133,26 @@ Evidence:
 - [x] Implement and live-validate the bounded
       observe-plan-validate-approve-execute-observe Runner for the production
       bounded-IQ action; unsupported action kinds remain explicitly plan-only.
-- [ ] Add an automatic mode that repeats the Runner within a fixed session plan,
-      resource budget, and stop condition.
+- [x] Add a fail-closed interactive automatic-cruise controller for the current
+      production bounded-IQ action with operator-selectable step/time budgets
+      (defaults 8 steps/120 seconds; hard limits 128 steps/1,800 seconds), a
+      cumulative-IQ budget, automatic execution only below the existing approval
+      threshold, separate five-attempt SDR/upstream-next-step retry limits with
+      a 10-second interval, and Pi Agent abort plus direct hardware cancel on
+      operator stop. Isolated end-to-end fake Planner/SDRD tests covered both
+      retry exhaustions and stop during an active upstream run; the AGX
+      Web/terminal deployment was live-validated.
+- [x] Supply the Planner system prompt with explicit semantics for the current
+      SDR health and candidate-signal observation, total tunable frequency band,
+      per-survey maximum span, per-action bandwidth, dwell, sample, byte,
+      approval and freshness bounds; missing current data requires `hold` and
+      never permits invented signals or capabilities.
+- [ ] Complete automatic `survey_band` execution and feed its compact CPU sweep
+      observation into the next Planner turn. The current production executor
+      remains bounded-IQ-only and explicitly stops automatic cruise when the
+      model proposes a plan-only action; do not claim automatic sweep complete
+      until acquisition ownership is cut over without contention and the AGX
+      CPU path is live-validated.
 - [x] Persist a root-only JSONL audit record joining operator input,
       model/provider, raw proposal, Rust validation, approval, execution and the
       resulting observation, including fail-closed planning attempts.
@@ -338,8 +370,10 @@ Plan the SDR acquisition-ownership cutover only after proving the existing
 Spectrum collector is stopped or otherwise cannot contend for the radio, and
 preserve the Raspberry Pi rollback path. The AGX clone, native build, runtime
 baseline, Planner/Web runtime gate and read-only SDRD observation are complete;
-an authenticated third-party Planner request remains pending until the user
-enters a subscription API key through Web. CUDA/Mamba recognition remains
-explicitly deferred by the current scope until separately authorized after the
-Agent framework is stable. FPGA-image work remains independently gated by
-hardware identity, sequence/quality fields and rollback evidence.
+the authenticated OpenCode Go Planner request and live SDR health-only `hold`
+are complete. A new IQ capture remains intentionally unclaimed because the
+current live observation had no candidate and acquisition ownership has not
+been cut over. CUDA/Mamba recognition remains explicitly deferred by the
+current scope until separately authorized after the Agent framework is stable.
+FPGA-image work remains independently gated by hardware identity,
+sequence/quality fields and rollback evidence.

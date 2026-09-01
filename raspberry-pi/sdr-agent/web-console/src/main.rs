@@ -34,6 +34,12 @@ const MAX_COMMAND_BYTES: usize = 2_048;
 const MAX_PROVIDER_CONFIG_BYTES: u64 = 8 * 1024;
 const MAX_PROVIDER_MODELS_BYTES: usize = 512 * 1024;
 const MAX_PROVIDER_MODELS: usize = 512;
+const DEFAULT_CONTEXT_WINDOW: u64 = 196_608;
+const MIN_CONTEXT_WINDOW: u64 = 8_192;
+const MAX_CONTEXT_WINDOW: u64 = 1_000_000;
+const DEFAULT_COMPRESSION_THRESHOLD_PERCENT: u8 = 90;
+const MIN_COMPRESSION_THRESHOLD_PERCENT: u8 = 50;
+const MAX_COMPRESSION_THRESHOLD_PERCENT: u8 = 95;
 
 #[derive(Clone)]
 struct Config {
@@ -126,6 +132,10 @@ struct ProviderConfigFile {
     provider: String,
     model: String,
     api_key: String,
+    #[serde(default = "default_context_window")]
+    context_window: u64,
+    #[serde(default = "default_compression_threshold_percent")]
+    compression_threshold_percent: u8,
 }
 
 #[derive(Deserialize)]
@@ -136,6 +146,8 @@ struct ProviderConfigRequest {
     provider: String,
     model: String,
     api_key: String,
+    context_window: u64,
+    compression_threshold_percent: u8,
 }
 
 #[derive(Debug, Serialize)]
@@ -145,6 +157,8 @@ struct ProviderConfigView {
     base_url: String,
     provider: String,
     model: String,
+    context_window: u64,
+    compression_threshold_percent: u8,
 }
 
 #[derive(Deserialize)]
@@ -157,7 +171,13 @@ struct ProviderModelsRequest {
 
 #[derive(Debug, Serialize)]
 struct ProviderModelsView {
-    models: Vec<String>,
+    models: Vec<ProviderModelView>,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
+struct ProviderModelView {
+    id: String,
+    context_window: Option<u64>,
 }
 
 #[derive(Debug)]
@@ -287,8 +307,12 @@ async fn get_provider_config(State(state): State<AppState>) -> ApiResult<Json<Pr
 
 async fn save_provider_config(
     State(state): State<AppState>,
-    Json(request): Json<ProviderConfigRequest>,
+    Json(mut request): Json<ProviderConfigRequest>,
 ) -> ApiResult<Json<ProviderConfigView>> {
+    if request.api_key.trim().is_empty() {
+        let saved = load_provider_config_file(&state.config.provider_config_path)?;
+        reuse_saved_provider_key(&mut request, saved.as_ref())?;
+    }
     let config = validate_provider_request(request)?;
     let inner = state.inner.lock().await;
     if inner.runtime.is_some() {
@@ -330,6 +354,8 @@ async fn delete_provider_config(
         base_url: String::new(),
         provider: String::new(),
         model: String::new(),
+        context_window: DEFAULT_CONTEXT_WINDOW,
+        compression_threshold_percent: DEFAULT_COMPRESSION_THRESHOLD_PERCENT,
     }))
 }
 
@@ -708,9 +734,15 @@ fn classify_output(line: &str, stderr: bool) -> &'static str {
         "error"
     } else if line.starts_with("Agent>") {
         "qwen"
-    } else if line.starts_with("Validated plan>") {
+    } else if line.starts_with("Validated plan>") || line.starts_with("已验证计划：") {
         "plan"
+    } else if line.starts_with("巡航状态：")
+        || line.starts_with("SDR 连通性重试：")
+        || line.starts_with("上游下一步重试：")
+    {
+        "cruise"
     } else if line.starts_with("Execution>")
+        || line.starts_with("执行结果：")
         || line.contains("硬件动作")
         || line.contains("执行失败")
     {
@@ -840,6 +872,10 @@ fn validate_provider_request(request: ProviderConfigRequest) -> ApiResult<Provid
     let provider = bounded_provider_id(&request.provider)?;
     let model = bounded_printable(&request.model, "Model ID", 256)?;
     let api_key = bounded_printable(&request.api_key, "API Key", 4_096)?;
+    validate_context_settings(
+        request.context_window,
+        request.compression_threshold_percent,
+    )?;
     Ok(ProviderConfigFile {
         schema_version: 1,
         api: request.api,
@@ -847,7 +883,58 @@ fn validate_provider_request(request: ProviderConfigRequest) -> ApiResult<Provid
         provider,
         model,
         api_key,
+        context_window: request.context_window,
+        compression_threshold_percent: request.compression_threshold_percent,
     })
+}
+
+fn reuse_saved_provider_key(
+    request: &mut ProviderConfigRequest,
+    saved: Option<&ProviderConfigFile>,
+) -> ApiResult<()> {
+    let saved = saved.ok_or_else(|| {
+        ApiError(
+            StatusCode::BAD_REQUEST,
+            "首次保存上游配置时必须填写 API Key".into(),
+        )
+    })?;
+    let requested_base_url = validate_provider_url(&request.base_url)?;
+    if saved.base_url != requested_base_url {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            "Base URL 已改变，请重新输入 API Key".into(),
+        ));
+    }
+    request.api_key.clone_from(&saved.api_key);
+    Ok(())
+}
+
+const fn default_context_window() -> u64 {
+    DEFAULT_CONTEXT_WINDOW
+}
+
+const fn default_compression_threshold_percent() -> u8 {
+    DEFAULT_COMPRESSION_THRESHOLD_PERCENT
+}
+
+fn validate_context_settings(context_window: u64, threshold_percent: u8) -> ApiResult<()> {
+    if !(MIN_CONTEXT_WINDOW..=MAX_CONTEXT_WINDOW).contains(&context_window) {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            format!("上下文窗口必须在 {MIN_CONTEXT_WINDOW}–{MAX_CONTEXT_WINDOW} tokens 之间"),
+        ));
+    }
+    if !(MIN_COMPRESSION_THRESHOLD_PERCENT..=MAX_COMPRESSION_THRESHOLD_PERCENT)
+        .contains(&threshold_percent)
+    {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            format!(
+                "自动压缩阈值必须在 {MIN_COMPRESSION_THRESHOLD_PERCENT}%–{MAX_COMPRESSION_THRESHOLD_PERCENT}% 之间"
+            ),
+        ));
+    }
+    Ok(())
 }
 
 fn validate_provider_url(value: &str) -> ApiResult<String> {
@@ -914,6 +1001,8 @@ fn provider_config_view(config: &ProviderConfigFile) -> ProviderConfigView {
         base_url: config.base_url.clone(),
         provider: config.provider.clone(),
         model: config.model.clone(),
+        context_window: config.context_window,
+        compression_threshold_percent: config.compression_threshold_percent,
     }
 }
 
@@ -925,6 +1014,8 @@ fn load_provider_config_view(path: &FsPath) -> ApiResult<ProviderConfigView> {
             base_url: String::new(),
             provider: String::new(),
             model: String::new(),
+            context_window: DEFAULT_CONTEXT_WINDOW,
+            compression_threshold_percent: DEFAULT_COMPRESSION_THRESHOLD_PERCENT,
         });
     };
     Ok(provider_config_view(&config))
@@ -955,10 +1046,12 @@ fn load_provider_config_file(path: &FsPath) -> ApiResult<Option<ProviderConfigFi
             "不支持的上游配置版本".into(),
         ));
     }
+    validate_context_settings(config.context_window, config.compression_threshold_percent)
+        .map_err(|error| ApiError(StatusCode::INTERNAL_SERVER_ERROR, error.1))?;
     Ok(Some(config))
 }
 
-async fn fetch_provider_models(base_url: &str, api_key: &str) -> ApiResult<Vec<String>> {
+async fn fetch_provider_models(base_url: &str, api_key: &str) -> ApiResult<Vec<ProviderModelView>> {
     let endpoint = format!("{}/models", base_url.trim_end_matches('/'));
     let mut child = Command::new("curl")
         .args([
@@ -1061,7 +1154,7 @@ async fn fetch_provider_models(base_url: &str, api_key: &str) -> ApiResult<Vec<S
     parse_provider_models(body)
 }
 
-fn parse_provider_models(body: &[u8]) -> ApiResult<Vec<String>> {
+fn parse_provider_models(body: &[u8]) -> ApiResult<Vec<ProviderModelView>> {
     let payload: serde_json::Value = serde_json::from_slice(body).map_err(|_| {
         ApiError(
             StatusCode::BAD_GATEWAY,
@@ -1082,17 +1175,18 @@ fn parse_provider_models(body: &[u8]) -> ApiResult<Vec<String>> {
 
     let mut models = items
         .iter()
-        .filter_map(|item| {
-            item.as_str().or_else(|| {
-                item.get("id")
-                    .or_else(|| item.get("model"))
-                    .and_then(serde_json::Value::as_str)
-            })
-        })
-        .filter_map(valid_remote_model_id)
+        .filter_map(parse_provider_model)
         .collect::<Vec<_>>();
-    models.sort_unstable();
-    models.dedup();
+    models.sort_unstable_by(|left, right| left.id.cmp(&right.id));
+    models.dedup_by(|left, right| {
+        if left.id != right.id {
+            return false;
+        }
+        if left.context_window.is_none() {
+            left.context_window = right.context_window;
+        }
+        true
+    });
     models.truncate(MAX_PROVIDER_MODELS);
     if models.is_empty() {
         return Err(ApiError(
@@ -1101,6 +1195,30 @@ fn parse_provider_models(body: &[u8]) -> ApiResult<Vec<String>> {
         ));
     }
     Ok(models)
+}
+
+fn parse_provider_model(item: &serde_json::Value) -> Option<ProviderModelView> {
+    let id = item
+        .as_str()
+        .or_else(|| {
+            item.get("id")
+                .or_else(|| item.get("model"))
+                .and_then(serde_json::Value::as_str)
+        })
+        .and_then(valid_remote_model_id)?;
+    let context_window = [
+        item.get("context_window"),
+        item.get("context_length"),
+        item.get("max_context_length"),
+        item.get("max_model_len"),
+        item.pointer("/limits/context_window"),
+        item.pointer("/top_provider/context_length"),
+    ]
+    .into_iter()
+    .flatten()
+    .filter_map(serde_json::Value::as_u64)
+    .find(|value| (MIN_CONTEXT_WINDOW..=MAX_CONTEXT_WINDOW).contains(value));
+    Some(ProviderModelView { id, context_window })
 }
 
 fn valid_remote_model_id(value: &str) -> Option<String> {
@@ -1281,7 +1399,9 @@ mod tests {
     fn output_classification_exposes_control_plane_events() {
         assert_eq!(classify_output("Agent> hello", false), "qwen");
         assert_eq!(classify_output("Validated plan> {}", false), "plan");
+        assert_eq!(classify_output("已验证计划：保持当前状态", false), "plan");
         assert_eq!(classify_output("Execution> {}", false), "execution");
+        assert_eq!(classify_output("巡航状态：正在检查 SDR", false), "cruise");
         assert_eq!(classify_output("正在扫频 100MHz", false), "sweep");
     }
 
@@ -1293,12 +1413,43 @@ mod tests {
             provider: "opencode".into(),
             model: "gpt-5.6-sol".into(),
             api_key: "test-secret".into(),
+            context_window: 200_000,
+            compression_threshold_percent: 90,
         })
         .unwrap();
         let public = serde_json::to_string(&provider_config_view(&config)).unwrap();
         assert!(public.contains("gpt-5.6-sol"));
         assert!(!public.contains("test-secret"));
         assert!(!public.contains("api_key"));
+    }
+
+    #[test]
+    fn saved_key_can_be_reused_only_for_the_same_base_url() {
+        let saved = validate_provider_request(ProviderConfigRequest {
+            api: "openai-completions".into(),
+            base_url: "https://opencode.ai/zen/go/v1".into(),
+            provider: "opencode-go".into(),
+            model: "deepseek-v4-flash".into(),
+            api_key: "test-secret".into(),
+            context_window: 196_608,
+            compression_threshold_percent: 90,
+        })
+        .unwrap();
+        let mut request = ProviderConfigRequest {
+            api: "openai-completions".into(),
+            base_url: "https://opencode.ai/zen/go/v1".into(),
+            provider: "opencode-go".into(),
+            model: "glm-5.2".into(),
+            api_key: String::new(),
+            context_window: 200_000,
+            compression_threshold_percent: 90,
+        };
+        reuse_saved_provider_key(&mut request, Some(&saved)).unwrap();
+        assert_eq!(request.api_key, "test-secret");
+
+        request.api_key.clear();
+        request.base_url = "https://api.example.com/v1".into();
+        assert!(reuse_saved_provider_key(&mut request, Some(&saved)).is_err());
     }
 
     #[test]
@@ -1311,13 +1462,26 @@ mod tests {
     #[test]
     fn parses_and_bounds_common_provider_model_lists() {
         let models = parse_provider_models(
-            br#"{"data":[{"id":"z-model"},{"id":"a-model"},{"id":"a-model"}]}"#,
+            br#"{"data":[{"id":"z-model"},{"id":"a-model","context_window":131072},{"id":"a-model"}]}"#,
         )
         .unwrap();
-        assert_eq!(models, vec!["a-model", "z-model"]);
+        assert_eq!(
+            models,
+            vec![
+                ProviderModelView {
+                    id: "a-model".into(),
+                    context_window: Some(131_072),
+                },
+                ProviderModelView {
+                    id: "z-model".into(),
+                    context_window: None,
+                },
+            ]
+        );
 
         let models = parse_provider_models(br#"{"models":["one",{"model":"two"}]}"#).unwrap();
-        assert_eq!(models, vec!["one", "two"]);
+        assert_eq!(models[0].id, "one");
+        assert_eq!(models[1].id, "two");
     }
 
     #[tokio::test]
@@ -1351,7 +1515,7 @@ mod tests {
             .await
             .unwrap();
         server.abort();
-        assert_eq!(models, vec!["gpt-test"]);
+        assert_eq!(models[0].id, "gpt-test");
         let public = serde_json::to_string(&ProviderModelsView { models }).unwrap();
         assert!(!public.contains("test-secret"));
     }

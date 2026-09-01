@@ -8,9 +8,11 @@ AGX Orin at `/home/jetson/sdrharness`, starting from Git commit `22cc751` on
 weights. It did not modify or stop `/home/jetson/agent`, the Spectrum Agent,
 the existing capture tasks, `/home/jetson/Qwen`, or Qwen.
 
-No production unit was installed, enabled or started. The only SDR operation
-attempted was the Controller's read-only `observe` mode, whose SDRD/1 command
-sequence is `HELLO`, `CAPABILITIES`, `HEALTH`, and `QUIT`.
+During the initial baseline, no production unit was installed, enabled or
+started. The only SDR operation attempted in that phase was the Controller's
+read-only `observe` mode, whose SDRD/1 command sequence is `HELLO`,
+`CAPABILITIES`, `HEALTH`, and `QUIT`. Later deployment and authenticated
+health-only validation are recorded below.
 
 ## AGX baseline
 
@@ -163,9 +165,9 @@ configurable third-party upstream. The implementation continues to use
 `pi-agent-core` and the pinned `@earendil-works/pi-ai` provider/stream stack;
 it does not add a parallel inference HTTP client. Each new Agent can select
 OpenAI-compatible Chat Completions or Responses through a Web-managed provider
-file. OpenCode Zen is a quick-fill preset rather than a hard-coded dependency.
+file. OpenCode Go is a quick-fill preset rather than a hard-coded dependency.
 
-The provider interface was validated with a fake key only:
+The provider interface was first validated with a fake key:
 
 - Web saved `api`, Base URL, Provider ID, Model ID and API Key atomically to a
   regular `0600` file owned by `jetson`;
@@ -179,18 +181,19 @@ The provider interface was validated with a fake key only:
 
 The follow-up model-inventory path was tested against an isolated fake
 OpenAI-compatible HTTP service. Web successfully reused the saved `0600` fake
-credential to query `/models`, returned a sorted/deduplicated model-ID list,
-and never returned the credential. Unit coverage also verifies Bearer delivery
+credential to query `/models`, returned a sorted/deduplicated model inventory,
+adopted bounded context-window metadata when the upstream supplied one, and
+never returned the credential. Unit coverage also verifies Bearer delivery
 through the private stdin pipe and both common `data` and `models` response
 shapes. Browser automation was unavailable because Python Playwright is not
 installed on the AGX; static JavaScript syntax and real HTTP integration were
 used instead.
 
-The final model-inventory Web binary has SHA-256
+The intermediate model-inventory Web binary had SHA-256
 `cc9410ab5a3be6cff8f3cd4f28d4e27350b3858352285cc723b9422b35401701`
-and was atomically placed at the user-local runtime path. Loading that binary
-into the already running system service still requires one privileged Web
-restart; no active Web conversation existed when the artifact was replaced.
+and was atomically placed at the user-local runtime path. It was subsequently
+superseded by the final build and privileged service restart recorded below; no
+active Web conversation existed when the intermediate artifact was replaced.
 
 After the user installed and enabled the production templates, the first
 Planner start exposed a path-policy mismatch: systemd correctly created
@@ -203,8 +206,36 @@ reported active, and Web listened on `0.0.0.0:8787`. The checked-in AGX
 template was then standardized on the shared canonical `/run/sdr-agent` name;
 the exact first-template name remains accepted only as a migration path.
 
-No real OpenCode or other subscription key was used and no authenticated model
-request was sent, so the live third-party-provider checklist item remains open.
+The final authenticated validation used the user's OpenCode Go subscription
+through the deployed Web and Planner services:
+
+- API `openai-completions`, Base URL `https://opencode.ai/zen/go/v1`, Provider
+  ID `opencode-go`, and Model ID `deepseek-v4-flash`;
+- context window `196608` and automatic compaction at 90%;
+- private provider file `/var/lib/sdrharness/web-console/provider.json`, owned by
+  `jetson:jetson` with mode `0600`; the API key was never printed or returned by
+  a public API;
+- authenticated `/models` returned 33 model IDs, including
+  `deepseek-v4-flash`, and no context metadata, so Web correctly retained the
+  operator-entered context window;
+- a new formal Web conversation observed the real SDR and produced the
+  Rust-validated plan `hold`: SDR online, retune and bounded IQ capture
+  available, zero candidates, FPGA aggregation unavailable and recognizer
+  unavailable;
+- the next live generation was stopped while upstream generation was active;
+  Web observed the abort and stale-plan invalidation in 381 ms.
+
+Real-provider compatibility required preserving Pi AI's built-in model
+`reasoning` and `compat` metadata whenever provider, model, API and Base URL
+match its catalog. Unknown third-party endpoints still use the conservative
+generic profile. One-shot and interactive runtimes now surface an explicit
+upstream error when generation ends without `submit_plan` instead of reporting
+only a missing proposal.
+
+This was a health-only receive-side validation. It performed no new IQ capture,
+retune, radio/IIO write, FPGA operation or transmission. The current observation
+had no candidate, and the Controller correctly forbids inventing one to force a
+capture.
 
 At the user's explicit request, the deployment template now binds Web to
 `0.0.0.0:8787` so LAN address changes do not require a configuration edit. A
@@ -216,6 +247,80 @@ Internet. The temporary directory
 `/var/tmp/sdrharness-dev/agx-provider-ui-20260901` and fake provider file were
 removed and their absence verified.
 
+## Bounded cruise authorization and natural-language console
+
+The automatic-control design was checked against the same Pi Agent project
+already used by the Planner Worker before implementation. The reviewed
+`pi-mono` revision was
+`853a80d26c90a14c1886f0ebb8ffaae133ca2185` under the MIT License. The Harness
+continues to use pinned `@earendil-works/pi-agent-core` 0.84.4 rather than adding
+a second Agent framework. The implementation follows Pi's public abort,
+steer/follow-up queue and pre-tool gate patterns; SDR retry accounting remains
+in deterministic Rust because Pi Agent has no radio authority.
+
+The AGX console now defaults to step approval, where every action supported by
+the production executor waits for `/approve` or `/reject` even when it is below
+the automatic threshold. `/auto start <mission>` creates a new session
+generation and starts a bounded cruise with all of these independent limits:
+
+- an operator-selected completed-step limit, default 8 and hard maximum 128;
+- an operator-selected duration, default 120 seconds and hard maximum 1,800
+  seconds;
+- cumulative IQ bytes no greater than the request template's `max_iq_bytes`;
+- at most five consecutive failed SDR health checks, 10 seconds apart;
+- at most five consecutive Planner runs without one validated next action, 10
+  seconds apart;
+- automatic authorization only below the existing Rust approval threshold;
+- immediate Pi Agent abort and direct SDRD cancel from `/stop`.
+
+Any required approval, unsupported/plan-only action, invalid plan, exhausted
+budget or fault stops the cruise. In particular, `survey_band` remains
+plan-only in the current production executor. The UI and Controller explicitly
+say that it was not executed. A true AGX CPU software-sweep Adapter remains
+open until acquisition ownership can be cut over without contending with the
+existing collector.
+
+The Controller suite passed 35 tests, including separate retry-counter reset,
+operator-budget boundary and command-parser tests. The Planner suite passed 33
+tests, including the expanded SDR-boundary system prompt, default 90%
+context-compaction policy and built-in model-profile preservation. The Web suite
+passed 8 tests, including bounded upstream context metadata parsing and private
+API-key reuse at the unchanged Base URL. Earlier isolated end-to-end fake-runtime
+scenarios proved fifth-failure exit for an unavailable SDR, fifth-failure
+exit when the Planner emitted no next action, and operator stop while the
+upstream run was active. The fake SDRD served only `HELLO`, `CAPABILITIES`,
+`HEALTH` and `QUIT`; no P201 connection, IQ capture or radio write occurred.
+All temporary state and sockets under
+`/var/tmp/sdrharness-dev/auto-cruise-control/` were deleted and absence was
+verified.
+
+The Web console adds a dedicated authorization rail for step approval,
+automatic mission entry, operator-editable steps and seconds, and an
+always-visible stop button. `/status`, validated
+plans, execution results and event-kind labels are shown as natural Chinese;
+raw correlation details remain available to the audit path. Python Playwright
+was not installed, so validation used JavaScript syntax checking, Web unit
+tests and a real isolated HTTP server. Its temporary directory
+`/var/tmp/sdrharness-dev/auto-cruise-web/` and the context/UI staging directory
+`/var/tmp/sdrharness-dev/auto-cruise-context-ui-20260901/` were removed, and
+their absence was verified.
+
+The final AGX artifacts are:
+
+```text
+d4b0330412b228b99d11767c3578d14f67af710dae1a612ee85d55d7951cec59  sdr-agent
+3df16449eafb2662329b7fecc8c53b7005fb54583e768d90ba48b387e6782207  sdr-agent-controller
+9a9a6df261d1c8189f8ebe56e4c625010ab7a5676aaf830cfa463e5269bbde03  sdr-agent-web-console
+```
+
+The final artifacts were atomically deployed and Planner and Web were restarted
+at `2026-09-01 16:05:49 CST`. Both remained active with zero service restarts;
+Web listened on `0.0.0.0:8787`, served the Go preset, editable context window,
+90% compression threshold, bounded-cruise controls and immediate-stop button,
+and completed the authenticated model/SDR checks above. Spectrum services,
+`qwen.service`, the independent `/home/jetson/Qwen` `llama-server`, and existing
+capture state were not modified or stopped.
+
 ## Deployment gate
 
 The Planner unit's Node path was corrected to the validated user-local
@@ -224,11 +329,18 @@ the Web-managed private provider file is the primary Planner credential path.
 The environment fallback is deliberately unusable until a private provider is
 configured.
 
+At the user's request, the local `jetson` account was configured for
+passwordless sudo with `/etc/sudoers.d/90-jetson-nopasswd`. The installed file is
+owned by `root:root`, has mode `0440`, passes `visudo -cf`, and `sudo -n true`
+succeeds. The staging copy under
+`/var/tmp/sdrharness-dev/passwordless-sudo-20260901/` and the user-runtime test
+Planner sockets under `/run/user/1000/sdr-agent/` were removed and their absence
+verified.
+
 Because Tailscale is absent, the units no longer order themselves after a
 nonexistent `tailscaled.service`. The local Qwen health result remains baseline
-evidence but local Qwen is no longer the default upstream. An authenticated
-third-party Planner request remains a deployment check after the user enters a
-private subscription API key through Web.
+evidence but local Qwen is no longer the default upstream. The authenticated
+OpenCode Go deployment check is complete; the private key remains outside Git.
 
 The controlled SDR-side `sdrd` listener and read-only observation gates are now
 complete. Do not cut SDR acquisition ownership over to AGX until unit paths and
