@@ -1,5 +1,11 @@
 # SDR preprocessing and configurable sweep architecture
 
+> **Current scope:** The configurable sweep/result contract remains active, but
+> its FPGA backend discussion is historical. FPGA work was retired on
+> 2026-09-02; production uses P201 bounded Linux/IIO RX transport and AGX
+> software aggregation only. See
+> [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md).
+
 Date: 2026-08-31
 
 ## Outcome
@@ -14,7 +20,6 @@ SweepEngine.run(plan) -> SweepReport
    |                         ^
    +-- IIO tuning/capture ---+
    +-- CPU/GPU processor ----+
-   +-- SDR summary adapter --+
 ```
 
 This is a deep module: callers learn one plan and one report instead of separately controlling AD9361 attributes, libiio buffers, CPU/GPU FFT, FPGA registers, timing, and rollback.
@@ -33,7 +38,7 @@ frequency: start / stop / step or centers[]
 radio:     sample_rate, RF bandwidth, gain mode
 timing:    settle time, captures per point, optional dwell limit
 DSP:       NFFT, overlap, window, averages, coarse bins, top-k
-backend:   cpu / gpu / sdr_summary / auto
+backend:   cpu / gpu / auto
 output:    summary, coarse PSD, or trigger-only raw IQ
 ```
 
@@ -49,16 +54,16 @@ The first software aggregation slice is now available through
 `p201pro-test capture --analysis aggregate`. It provides the streaming
 Hann/RustFFT, linear-power averaging, median noise estimation, coarse PSD and
 adjacent-candidate merge needed to validate this result shape before the fixed
-work is moved into the SDR. It deliberately leaves raw-IQ trigger capture and
-FPGA activation for later verified slices.
+work was considered for the SDR. FPGA activation is now cancelled; bounded raw
+IQ is transported to AGX for software processing.
 
 The Harness now implements the production `SweepEngine.run(plan)` seam and the
 SDRD FPGA-summary Adapter. It validates and expands range/center plans, keeps one
 SDRD session across all points, validates fixed summary results, merges
 cross-point activity, and emits existing Agent candidate observations. Replay
 tests cover the complete report path. On the real original image the Adapter
-fails before session ownership because `fpga_aggregate=false`; a compatible
-FPGA summary page is now the next required implementation input.
+fails before session ownership because `fpga_aggregate=false`. This Adapter is
+historical compatibility code and no FPGA summary page will be developed.
 
 ## Validation before touching the radio
 
@@ -100,6 +105,9 @@ Keep RF tuning, analog/digital filtering, gain control, and supported calibratio
 
 ### SDR Zynq programmable logic
 
+This subsection is retained as cancelled historical analysis. None of these
+items is an active implementation option.
+
 This is the best place for fixed, high-rate work that can reduce data before Ethernet:
 
 - framing, overlap bookkeeping, clipping/quality counters;
@@ -112,7 +120,7 @@ This is the best place for fixed, high-rate work that can reduce data before Eth
 
 The useful output is a small versioned result page or DMA ring with sequence, source frequency, sample count, scale exponent, valid/stale/overflow flags, timestamp, dropped-frame counter, and payload length. Full FFT vectors must use DMA/ring transport; repeated AXI-Lite or `devmem` reads are not a runtime path.
 
-The current loaded FPGA image is not the documented V8L1/V10 baseline, so this path cannot be enabled until boot identity, golden rollback, timing, and hardware health are re-established.
+This path must not be enabled under the 2026-09-02 retirement decision.
 
 ### SDR Zynq ARM cores
 
@@ -120,7 +128,7 @@ Use the dual Cortex-A9 for persistent local control and light aggregation:
 
 - own one local IIO context/buffer across the whole scan;
 - execute the frequency plan without per-point SSH/process setup;
-- configure FPGA kernels and package compact results;
+- package bounded Linux/IIO RX data for AGX transport;
 - expose a small framed TCP protocol to the Pi;
 - monitor overflow, sequence gaps, temperature and health.
 

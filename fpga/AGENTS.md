@@ -1,5 +1,13 @@
 # P201Pro SDR FPGA Agent Rules
 
+> **RETIRED OVERRIDE — 2026-09-02:** The user abandoned the FPGA route for the
+> SDR Agent project. Everything below this notice is retained as historical
+> evidence only. Do not continue HDL, Vivado, Bootgen, SD staging, register,
+> NX-assist, `BOOT.bin`, or hardware-validation work, and do not use the older
+> standing approvals recorded below. The active architecture is P201
+> Linux/IIO bounded RX transport plus AGX software aggregation. Only a new,
+> explicit user decision reversing this retirement may reactivate this tree.
+
 Last updated: 2026-06-09 12:53 Asia/Shanghai
 
 This file is the working rulebook for agents continuing the P201Pro 2T2R Zynq-7020 SDR FPGA offload project.

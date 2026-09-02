@@ -25,12 +25,14 @@ static void write_text(const char *path, const char *text) {
   assert(fclose(stream) == 0);
 }
 
+#ifdef SDRD_ENABLE_FPGA
 static void write_u32(int fd, off_t offset, uint32_t value) {
   assert(pwrite(fd, &value, sizeof(value), offset) == (ssize_t)sizeof(value));
 }
+#endif
 
 static void create_iio_tree(const char *root) {
-  char path[512];
+  char path[1024];
   (void)snprintf(path, sizeof(path), "%s/iio:device0", root);
   must_mkdir(path);
   (void)snprintf(path, sizeof(path), "%s/iio:device0/name", root);
@@ -235,6 +237,7 @@ static void test_shadow_config_and_protocol(const char *root) {
   assert(strstr(response, "\"error\":\"read_only_shadow\"") != NULL);
 }
 
+#ifdef SDRD_ENABLE_FPGA
 static void test_fake_uio_identity(const char *root) {
   char register_path[512];
   char iio_root[512];
@@ -283,6 +286,7 @@ static void test_devmem_requires_explicit_gate(void) {
   assert(sdrd_config_validate(&config, error, sizeof(error)) == -EACCES);
   assert(strstr(error, "allow_devmem=true") != NULL);
 }
+#endif
 
 static void test_iio_control_limits(void) {
   sdrd_config_t config;
@@ -615,6 +619,9 @@ static void remove_test_tree(const char *root) {
   assert(rmdir(path) == 0);
   (void)snprintf(path, sizeof(path), "%s/iio", root);
   assert(rmdir(path) == 0);
+  (void)snprintf(path, sizeof(path), "%s/sdrd.conf", root);
+  assert(unlink(path) == 0);
+#ifdef SDRD_ENABLE_FPGA
   (void)snprintf(path, sizeof(path), "%s/iio-fpga/iio:device0/name", root);
   assert(unlink(path) == 0);
   (void)snprintf(path, sizeof(path), "%s/iio-fpga/iio:device1/name", root);
@@ -625,10 +632,9 @@ static void remove_test_tree(const char *root) {
   assert(rmdir(path) == 0);
   (void)snprintf(path, sizeof(path), "%s/iio-fpga", root);
   assert(rmdir(path) == 0);
-  (void)snprintf(path, sizeof(path), "%s/sdrd.conf", root);
-  assert(unlink(path) == 0);
   (void)snprintf(path, sizeof(path), "%s/registers.bin", root);
   assert(unlink(path) == 0);
+#endif
   assert(rmdir(root) == 0);
 }
 
@@ -636,8 +642,10 @@ int main(void) {
   char root[] = "/tmp/sdrd-test-XXXXXX";
   assert(mkdtemp(root) != NULL);
   test_shadow_config_and_protocol(root);
+#ifdef SDRD_ENABLE_FPGA
   test_fake_uio_identity(root);
   test_devmem_requires_explicit_gate();
+#endif
   test_iio_control_limits();
   test_controlled_allowlist_and_restore();
   test_disconnect_and_failure_restore();

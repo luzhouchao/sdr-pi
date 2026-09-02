@@ -28,6 +28,26 @@ All agents working in this repository must follow these rules:
 8. Before finishing a project change, review `git diff` and confirm the
    checklist accurately describes the resulting repository and deployed state.
 
+## Retired FPGA scope
+
+The user retired the FPGA acceleration route on 2026-09-02. This decision
+overrides older FPGA plans, checklists, experiments, and standing approvals:
+
+1. The production architecture is P201 Linux/IIO bounded RX acquisition and
+   transport followed by AGX software aggregation, storage, and inference.
+2. Do not build, enable, deploy, stage, or advertise an FPGA aggregation
+   backend. Do not use `ENABLE_FPGA=1`, write FPGA registers, generate or copy a
+   `BOOT.bin`, modify the boot chain, or resume FPGA/NX offload work.
+3. Keep protocol fields such as `fpga_backend` and historical FPGA source/tests
+   only when needed for wire compatibility, audit evidence, or rollback
+   archaeology. They must remain disabled and capability-false in production.
+4. Files under `fpga/` and historical FPGA design/validation documents are
+   archived evidence, not an active backlog. Do not delete or rewrite that
+   evidence merely to make the current tree look software-only.
+5. Reopening FPGA work requires a new explicit user decision that reverses this
+   retirement; ordinary performance work or hardware access authorization is
+   not sufficient.
+
 ## Development sweep authorization and data hygiene
 
 The user authorizes the agent to approve receive-only, bounded sweep operations
@@ -38,16 +58,17 @@ during development without asking again, subject to all of these constraints:
    and include a direct stop plus verified radio-state restoration.
 2. This authorization does not cover transmission, arbitrary IIO writes,
    capture without a plan-derived finite byte count, persistent radio changes,
-   FPGA/`BOOT.bin` replacement, or disabling a safety check. Those require
-   separate explicit authority.
+   FPGA/`BOOT.bin` work, or disabling a safety check. FPGA/`BOOT.bin` work is
+   retired from project scope; the other actions require separate explicit
+   authority.
 3. Before a live sweep, print or record the validated plan, estimated duration,
    maximum bytes, free-space check, and the exact temporary data directory.
 4. In the software path, the SDR is responsible only for bounded RX acquisition
    and transport. AGX owns raw-IQ storage, software aggregation, power/noise
    estimation, candidate merging, and model-facing summaries. Do not move
    software aggregation back onto the SDR merely to reduce transport unless the
-   user explicitly changes this architecture. A capability-gated FPGA summary
-   path remains a separate optional backend.
+   user explicitly changes this architecture. There is no active FPGA summary
+   backend.
 5. Put AGX development data only under
    `/var/tmp/sdrharness-dev/<feature-id>/`, legacy Pi development data only under
    `/var/tmp/sdr-agent-dev/<feature-id>/`, and SDR-local transient data only

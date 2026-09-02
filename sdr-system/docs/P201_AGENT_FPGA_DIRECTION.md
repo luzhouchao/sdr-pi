@@ -1,5 +1,11 @@
 # P201 Agent-oriented FPGA direction
 
+> **Historical and cancelled:** The user retired FPGA acceleration from the SDR
+> Agent project on 2026-09-02. The plan below is preserved only as design
+> history. Do not build, stage, deploy, or validate it. The active architecture
+> is P201 Linux/IIO bounded RX transport plus AGX software aggregation; see
+> [`../../docs/FPGA_RETIREMENT_DECISION_2026-09-02.md`](../../docs/FPGA_RETIREMENT_DECISION_2026-09-02.md).
+
 Date: 2026-08-31
 
 ## Decision

@@ -22,7 +22,7 @@ operator / trusted-LAN Web Console
       SDRD/1 over 192.168.1.x
                 |
                 v
-      P201 Pro SDR + AD9361/FPGA
+      P201 Pro SDR + AD9361 Linux/IIO RX
 ```
 
 AGX 负责 Agent、控制器、Web、扫频编排、预处理和未来 CUDA/Mamba 推理。P201
@@ -50,7 +50,7 @@ SDR 继续运行 `sdrd`，保留独占所有权、限幅、停止和射频状态
 | [`raspberry-pi/sdr-agent/`](raspberry-pi/sdr-agent/) | 已验证的 Controller、Planner、终端、Web 与历史识别 seam |
 | [`raspberry-pi/p201pro-rust/`](raspberry-pi/p201pro-rust/) | Rust/libiio 采集和软件扫频参考实现 |
 | [`sdr-system/`](sdr-system/) | P201 Pro 内嵌系统与 `sdrd` |
-| [`fpga/`](fpga/) | FPGA HDL、Vivado 脚本、版本路线和硬件证据 |
+| [`fpga/`](fpga/) | 已退役的 FPGA 探索源码、Vivado 脚本和历史硬件证据（不再开发或部署） |
 | [`docs/`](docs/) | 跨层架构、迁移记录、检查清单和验证证据 |
 
 ## AGX 快速开始
@@ -74,7 +74,7 @@ bash jetson-agx/sdrharness/scripts/build-agent-runtime.sh
 - 不提交密码、私钥、API key、原始 IQ、训练数据集、缓存或环境目录。
 - 未完成 SDRD 只读观察和采集切换门禁前，不停止现有
   Spectrum Agent/Qwen，不启动第二套 SDR 采集。
-- 不覆盖厂商原始 `BOOT.bin`；FPGA 镜像仍需时序、路由、哈希和回滚门禁。
+- 不生成、复制或覆盖 `BOOT.bin`，不启用 FPGA 聚合；该路线已正式退役。
 - CUDA 模型权重按大小使用 GitHub Release 或其他带 SHA-256 的制品渠道，不直接混入源码历史。
 - 所有能力默认关闭，只有负责的 Adapter 通过实机探测后才能报告可用。
 

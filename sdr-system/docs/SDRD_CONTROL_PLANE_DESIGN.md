@@ -1,26 +1,28 @@
 # P201 Pro SDR Linux control-plane design
 
+> **Current scope override:** FPGA work described below was retired on
+> 2026-09-02 and is historical only. The active control plane is Linux/IIO
+> bounded RX acquisition and transport to AGX software aggregation. Do not
+> enable UIO, `/dev/mem`, `CAPTURE_SUMMARY`, or FPGA capability; see
+> [`../../docs/FPGA_RETIREMENT_DECISION_2026-09-02.md`](../../docs/FPGA_RETIREMENT_DECISION_2026-09-02.md).
+
 Date: 2026-08-31
 
 ## Decision
 
-Use the SDR's ARMv7 Linux as the hardware-control module between the Raspberry
-Pi Harness and the AD9361/FPGA data path:
+Use the SDR's ARMv7 Linux as the hardware-control module between the AGX
+Harness and the AD9361 Linux/IIO receive path:
 
 ```text
-Pi Rust Harness
+AGX Rust Harness
   -> one SDRD/1 execution connection + independent cancellation connection
 SDR Linux C sdrd
   -> local IIO adapter for AD9361 and bounded IQ capture
-  -> local UIO/mmap adapter for validated FPGA pages (future)
-FPGA
-  -> fixed-shape streaming primitives
 ```
 
-The Pi never writes FPGA registers over SSH and Qwen never talks to the SDR.
-Qwen returns a high-level scan intent to the Pi; the Pi validates it and calls
-the `SdrEngine` interface; the remote adapter translates that interface into
-SDRD messages.
+The upstream model never talks to the SDR. It returns a high-level scan intent
+to the AGX; the AGX validates it and calls the `SdrEngine` interface; the remote
+adapter translates that interface into SDRD messages.
 
 ## Current original-BOOT constraint
 
@@ -39,11 +41,10 @@ with `fpga_backend=disabled` and does not touch MMIO.
 
 `sdrd` owns four internal interfaces:
 
-| Module | Version 1 | Later controlled mode |
+| Module | Version 1 | Controlled software path |
 |---|---|---|
 | Configuration | strict `key=value`, shadow default | signed/versioned profile allowlist |
 | Linux/IIO Adapter | IIO visibility, local context, state restore, bounded IQ | temperature, drops, long-run ownership |
-| FPGA adapter | disabled, optional read-only identity | UIO mapping and atomic profile generation |
 | Wire server | HELLO/CAPABILITIES/HEALTH plus tested controlled schema | binary observation stream |
 
 The external interface remains small: discover capabilities, apply one validated
@@ -75,27 +76,26 @@ where its worker has not completed `START_SESSION`; `sdrd` itself never accepts
 a stale or not-yet-active generation. The IIO Adapter latches cancellation once
 the session begins and calls `iio_buffer_cancel()` when a refill is active.
 
-The optional FPGA-summary seam is attached only after the configured UIO or
-guarded `/dev/mem` page passes identity probing. `CAPTURE_SUMMARY` keeps that
-mapping persistent, bounds frame count and timeout, checks the same cancellation
-generation while polling, and returns fixed power/quality metadata. Capability
-probing remains independent of configuration claims: the current original
-image continues to report the seam unavailable, so the Harness exits before
-radio ownership.
+The historical FPGA-summary seam and `CAPTURE_SUMMARY` command remain disabled
+for wire compatibility only. Current builds link the fail-closed stub, report
+the capability unavailable, and use bounded `CAPTURE_IQ_INLINE` transport to
+AGX software aggregation.
 
 Development capture files are namespaced below
-`/tmp/sdr-agent-dev/<feature-id>/`, capped at 64 MiB by default, excluded from
-Git, and removed after the feature validation. Source interfaces, tests,
-configuration examples, design decisions, compact metrics, and validation
-evidence are retained and pushed with the feature.
+`/tmp/sdr-agent-dev/<feature-id>/` only while transient on the SDR, excluded
+from Git, and removed after confirmed AGX receipt. Every operation uses an exact
+plan-derived finite byte bound and AGX free-space check; there is no fixed
+project-wide 64 MiB ceiling. Source interfaces, tests, configuration examples,
+design decisions, compact metrics, and validation evidence are retained and
+pushed with the feature.
 
 ## Performance rules
 
 - C implementation on SDR ARMv7; no Python runtime path.
-- Persistent process, socket, IIO context, buffers, and future UIO mapping.
+- Persistent process, socket, IIO context, and buffers.
 - Preallocated fixed-size request/response buffers.
 - No SSH polling, `devmem` subprocess loop, per-frame process launch, or log spam.
-- No allocation in the future capture/observation hot loop.
+- No allocation in the capture/observation hot loop.
 - Summary/control traffic uses the persistent control connection.
 - Raw IQ remains a separate bounded binary data plane and is candidate-triggered.
 
@@ -110,10 +110,13 @@ Only one process may own the RX buffer. Migration is staged:
 4. After disconnect, timeout, in-flight cancel, reconnect, and repeated-session
    tests, `sdrd` may become the enabled sole session owner and provide bounded
    raw-IQ references plus compact observations.
-5. FPGA capability is enabled only after the loaded image, address page, UIO or
-   `/proc/iomem` resource, ABI, build ID, and rollback image are verified.
+5. FPGA capability remains permanently disabled under the 2026-09-02 retirement
+   decision; no image or resource validation is scheduled.
 
-## FPGA enable gate
+## Retired historical FPGA enable gate
+
+This gate is cancelled and must not be executed. The requirements below are
+retained only to explain why older experiments failed closed.
 
 `fpga_backend` may change from `disabled` only when all of these are recorded:
 

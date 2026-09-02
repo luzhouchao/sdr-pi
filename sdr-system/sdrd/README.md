@@ -4,8 +4,8 @@
 Buildroot Linux. The deployed configuration remains deliberately read-only:
 
 - it reports `ad9361-phy` and `cf-ad9361-lpc` visibility;
-- it reports FPGA identity only when an explicitly enabled UIO or guarded
-  `/dev/mem` backend is available;
+- it retains legacy FPGA capability fields only for protocol compatibility;
+  production reports them disabled;
 - it serves a small versioned protocol over a persistent TCP connection;
 - it rejects profile, session, and IQ-capture commands in `mode=shadow`;
 - it never writes FPGA registers or IIO attributes;
@@ -76,12 +76,10 @@ power/clip summary without writing raw IQ to disk. It accepts at most 1,048,576
 complex samples, enforces the request timeout, remains cancelable, and stays
 inside the same session ownership and restoration path as `CAPTURE_IQ`.
 
-`CAPTURE_SUMMARY` is capability-gated by the validated SUM8/AGG8 identity and a
-writable UIO or guarded `/dev/mem` Adapter. It arms one bounded aggregate,
-polls with timeout and cancellation checks, and returns fixed-size power,
-quality, sequence and timing metadata. The current original FPGA image reports
-`fpga_aggregate=false`, so this command cannot run until a compatible image and
-register resource are installed and verified.
+`CAPTURE_SUMMARY` is retained only for compatibility with historical SDRD/1
+validation artifacts. The project retired FPGA work on 2026-09-02; production
+reports `fpga_aggregate=false` and must not enable this command. AGX software
+aggregation consumes bounded `CAPTURE_IQ_INLINE` data instead.
 
 `APPLY_PROFILE` accepts only the configured subset of the verified project
 limits: 70 MHz..6 GHz center frequency, 2.083333..30.72 MS/s sample rate,
@@ -123,11 +121,13 @@ sdr-system/sdrd/build/sdrd \
 
 ## ARMv7 builds
 
-The production build defaults to `ENABLE_FPGA=0`: it links only the Linux/IIO
-capture path plus a fail-closed FPGA stub and does not compile or link the MMIO
-implementation. The optional historical FPGA backend is built only with an
-explicit `ENABLE_FPGA=1`; normal unit tests still compile that opt-in path to
-preserve rollback coverage.
+The production build uses `ENABLE_FPGA=0`: it links only the Linux/IIO capture
+path plus a fail-closed compatibility stub and does not compile or link MMIO.
+Although historical source and old validation evidence remain in Git, the
+default daemon and test targets compile only the fail-closed stub. Project
+Makefiles and cross-build scripts reject `ENABLE_FPGA=1`; that flag is
+prohibited for current project builds and releases by
+[`../../docs/FPGA_RETIREMENT_DECISION_2026-09-02.md`](../../docs/FPGA_RETIREMENT_DECISION_2026-09-02.md).
 
 The static Docker build remains valid for shadow-only probes. Do not use that
 artifact for controlled mode: a static glibc 2.36 executable cannot safely

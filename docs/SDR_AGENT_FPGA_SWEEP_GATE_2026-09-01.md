@@ -1,5 +1,11 @@
 # SDR Agent FPGA sweep gate validation
 
+> **Historical closed gate:** This validation remains evidence that the old
+> path failed closed without touching hardware. The user retired FPGA work on
+> 2026-09-02, so satisfying or reopening this gate is no longer a project task.
+> See
+> [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md).
+
 Date: 2026-09-01
 
 ## Outcome
@@ -64,11 +70,10 @@ Pi:  /var/tmp/sdr-agent-dev/fpga-sweep-gate-v1/
 Pi:  /var/tmp/sdr-agent-dev/fpga-sweep-deploy-v1/
 ```
 
-## Required FPGA handoff
+## Cancelled historical FPGA handoff
 
-Do not enable `fpga_backend` yet. Resumption requires a board-matched image with
+Do not enable `fpga_backend`. The former handoff would have required a board-matched image with
 the documented identity/ABI/build ID, bounded aggregate arm/done behavior,
 power and quality counters, monotonic sequence, overflow/stale flags, a UIO or
 verified iomem resource, timing closure evidence, image hash, source commit and
-golden rollback image. That is the first remaining step that changes the FPGA
-image, so Harness sweep work stops here as requested.
+golden rollback image. The 2026-09-02 retirement decision cancels that work.

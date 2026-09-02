@@ -1,5 +1,11 @@
 # P201 Pro SDR + Raspberry Pi 4B performance plan
 
+> **Partially superseded:** All FPGA recommendations, gates, targets, and Phase
+> F below were cancelled by the user's 2026-09-02 retirement decision. Retain
+> them only as historical analysis. Current optimization is limited to bounded
+> P201 Linux/IIO RX transport and AGX software aggregation; see
+> [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md).
+
 Date: 2026-08-31
 
 ## Decision summary
@@ -203,7 +209,7 @@ Avoid overclocking until the normal 1.5 GHz pipeline has been profiled. Active c
 - Compare IIOD task/IRQ affinity only with before/after counters.
 - Do not upgrade the old Buildroot/libiio image merely because it is old; upgrade only if a source-level change addresses a measured bottleneck and has a bootable rollback image.
 
-### Phase F — FPGA offload decision
+### Cancelled historical Phase F — FPGA offload decision
 
 FPGA is justified when at least one of these is true:
 
@@ -222,6 +228,6 @@ Start from an identified, hardware-validated V8L1-compatible boot baseline and r
 - Next target: one RX, 20 MS/s, NFFT 2048, 50% overlap, two FFT workers.
 - Stretch target: one RX, 25 MS/s, NFFT 2048, 50% overlap, only if the network ceiling and full classifier budget pass.
 - Pi GPU candidate: dual RX at 10 MS/s, or one RX at 20–25 MS/s when batched spectrum/classification needs to release ARM cores and can accept measured batch latency.
-- FPGA-required candidate: dual RX at 20–25 MS/s with 50% overlap, or one RX at 20–25 MS/s with 75% overlap and substantial downstream recognition.
+- Retired FPGA candidate (not planned): dual RX at 20–25 MS/s with 50% overlap, or one RX at 20–25 MS/s with 75% overlap and substantial downstream recognition.
 
 Raw recording at 20–25 MS/s requires sustained 80–100 MB/s plus headroom; use a USB 3 SSD and a separate bounded writer queue. Do not treat a microSD card as a guaranteed lossless sink at those rates.

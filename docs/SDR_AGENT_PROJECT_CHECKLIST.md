@@ -356,7 +356,13 @@ Evidence:
 - [`PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md`](PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md)
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 
-## 5. SDR FPGA aggregation
+## 5. SDR FPGA aggregation (retired historical route)
+
+The user retired FPGA acceleration on 2026-09-02. Completed items below are
+preserved as historical evidence; they are not production capabilities or a
+reason to resume this route. The former image, HDL kernel, FFT, DMA, comparison,
+stability and deployment tasks are cancelled and intentionally no longer open
+checklist items.
 
 - [x] Define the intended division between AD9361 filtering, FPGA fixed-rate
       processing, SDR Linux packaging, and Pi control.
@@ -368,27 +374,20 @@ Evidence:
       magic value.
 - [x] Implement the bounded SDRD/1 aggregate-summary command, persistent MMIO
       Adapter, timeout/cancel seam, and fail-closed Harness capability gate.
-- [ ] Recover or create a hardware-validated FPGA base matching the real board
-      and documented interfaces.
-- [ ] Implement the first FPGA shadow kernel for frame quality, I/Q sums, power,
-      and bounded accumulation.
-- [ ] Implement fixed-size FFT, power, coarse PSD, threshold, top-k, or band
-      aggregation selected by measured end-to-end benefit.
-- [ ] Implement a DMA/result ring for vector or repeated summary transport rather
-      than runtime SSH/devmem polling.
-- [ ] Generate a versioned FPGA image and record source commit, tool version,
-      timing report, bitstream hash, register map, and rollback image.
-- [ ] Compare FPGA shadow output numerically against the Pi software reference on
-      the same captured IQ corpus.
-- [ ] Pass raw-IQ bypass, overflow, stale-data, sequence-gap, rollback, thermal,
-      and 30-minute stability tests.
-- [ ] Deploy the FPGA aggregation image and enable `fpga_backend` only after
-      identity and health probes pass on every start.
+- [x] Retire FPGA aggregation from the active project by explicit user decision:
+      production remains P201 Linux/IIO bounded RX transport plus AGX software
+      aggregation; all deployed configurations stay `fpga_backend=disabled`,
+      the Controller production path instantiates only the software Adapter,
+      current native daemon/tests compile only the fail-closed compatibility
+      stub, FPGA-enabled builds are rejected, and historical FPGA sources are
+      retained for audit rather than treated as backlog. See
+      [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md).
 
 Evidence:
 
 - [`../sdr-system/docs/P201_AGENT_FPGA_DIRECTION.md`](../sdr-system/docs/P201_AGENT_FPGA_DIRECTION.md)
 - [`PERFORMANCE_OPTIMIZATION_PLAN.md`](PERFORMANCE_OPTIMIZATION_PLAN.md)
+- [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md)
 
 ## 6. Local modulation recognition
 
@@ -471,8 +470,9 @@ Evidence:
       healthy direct or SSH-relay route instead of assuming a fixed Pi relay.
 - [ ] Add automated protocol fuzzing for malformed, oversized, stale, duplicate,
       truncated, and reordered frames across all sockets.
-- [ ] Add repeatable fault injection for 4090 loss, Pi Worker restart, SDRD loss,
-      IIO timeout, FPGA stale data, overflow, and cancellation races.
+- [ ] Add repeatable fault injection for upstream-model loss, Planner Worker
+      restart, SDRD loss, IIO timeout, transport overflow, and cancellation
+      races.
 - [ ] Run and document a complete 24-hour autonomous-loop soak test.
 - [ ] Define production log rotation, health monitoring, alerting, update, and
       rollback procedures for Pi and SDR services.
@@ -488,7 +488,7 @@ candidate inspection are live-validated with the real SDR and both OpenCode Go
 and the local Spark-X2.5-4B BF16 model. Inline-IQ AGX aggregation, persistent
 Web results and optional SigMF are deployed and live-validated with both
 storage modes, model feedback, browser readback, cancellation, cleanup and
-radio restoration. CUDA/Mamba recognition remains explicitly deferred by the
-current scope until separately authorized after the Agent framework is stable.
-FPGA-image work remains independently gated by hardware identity,
-sequence/quality fields and rollback evidence.
+radio restoration. The next implementation focus is sustained software-path
+throughput/fault testing followed by the CUDA/Mamba recognizer. FPGA image,
+register, DMA and boot work was explicitly retired on 2026-09-02 and is not a
+future milestone.

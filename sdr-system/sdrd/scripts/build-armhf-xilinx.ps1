@@ -5,8 +5,10 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+if ($EnableFpga) {
+    throw 'FPGA builds were retired from the SDR Agent project on 2026-09-02. Build the Linux/IIO-only sdrd instead.'
+}
 $SdrdRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$RepoRoot = (Resolve-Path (Join-Path $SdrdRoot '..\..')).Path
 $BuildRoot = Join-Path $SdrdRoot 'build-armhf-dynamic'
 $Output = Join-Path $BuildRoot 'sdrd'
 $Compiler = Join-Path $ToolchainBin 'arm-linux-gnueabihf-gcc.exe'
@@ -40,19 +42,9 @@ $Arguments = @(
     '-o', $Output,
     (Join-Path $SdrdRoot 'src\main.c'),
     (Join-Path $SdrdRoot 'src\sdrd.c'),
-    (Join-Path $SdrdRoot 'src\sdrd_iio.c')
+    (Join-Path $SdrdRoot 'src\sdrd_iio.c'),
+    (Join-Path $SdrdRoot 'src\sdrd_fpga_disabled.c')
 )
-if ($EnableFpga) {
-    $FpgaNative = Join-Path $RepoRoot 'fpga\nx_experiments\sdr_fpga_offload_test\native'
-    $Arguments += @(
-        '-DSDRD_ENABLE_FPGA=1',
-        "-I$FpgaNative",
-        (Join-Path $SdrdRoot 'src\sdrd_fpga.c'),
-        (Join-Path $FpgaNative 'p201_native_mmio.c')
-    )
-} else {
-    $Arguments += (Join-Path $SdrdRoot 'src\sdrd_fpga_disabled.c')
-}
 $Arguments += @('-ldl', '-pthread')
 
 & $Compiler @Arguments
@@ -68,4 +60,4 @@ $Hash = (Get-FileHash -LiteralPath $Output -Algorithm SHA256).Hash.ToLowerInvari
 Write-Output "artifact=$Output"
 Write-Output "sha256=$Hash"
 Write-Output "required_glibc=$($Versions -join ',')"
-Write-Output "fpga_compiled=$($EnableFpga.IsPresent.ToString().ToLowerInvariant())"
+Write-Output 'fpga_compiled=false'

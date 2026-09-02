@@ -16,7 +16,7 @@ Rust Controller -- JSONL over Unix socket --> Pi Agent Planner Worker
       |                                      v
       |                              third-party model API
       v
-SDRD/1 adapter -> SDR Linux C sdrd -> IIO/FPGA
+SDRD/1 adapter -> SDR Linux C sdrd -> Linux/IIO RX
       |
       +-> LocalRecognizer adapter -> future C++ inference worker
 ```
@@ -51,9 +51,9 @@ SSH, IIO, FPGA-register or SDR tools.
   aggregation executable. It is intentionally not merged into the Controller
   until the ownership seam is implemented.
 
-The deployed SDR still uses its original `BOOT.bin`, so FPGA aggregation remains
-disabled. The local-IIO controlled `sdrd` development mode can retune and perform
-bounded IQ capture without FPGA support, but it is not installed as a service.
+FPGA aggregation was retired from the project on 2026-09-02 and remains
+disabled. The controlled `sdrd` can retune and perform bounded Linux/IIO IQ
+capture without FPGA support.
 The normal request template therefore remains capability-false; Rust accepts
 execution only from live controlled capabilities or an explicitly validated
 development envelope.
@@ -99,13 +99,12 @@ endpoint; all other action kinds still fail closed in this executor slice.
 The same Adapter exposes a generation-correlated cancel operation on an
 independent SDRD/1 connection.
 
-`SweepEngine.run(plan)` now validates a bounded range or explicit center list,
-executes all points through one SDRD ownership session, consumes fixed FPGA
-aggregate summaries, validates sequence/shape/quality, derives a cross-point
-noise floor, merges adjacent active points, and converts compact candidates to
-the existing Planner observation. Replay and production SDRD Adapters exercise
-the same seam. The production Adapter fails before `START_SESSION` while the
-loaded image reports `fpga_aggregate=false`.
+`SweepEngine.run(plan)` validates a bounded range or explicit center list. The
+production AGX Adapter requests bounded inline IQ from one SDRD ownership
+session, performs software power/noise/candidate aggregation on AGX, and
+converts compact candidates to the existing Planner observation. Legacy FPGA
+Adapter source remains only for protocol/history tests and is not constructed
+by the production terminal.
 
 ## Development checks
 

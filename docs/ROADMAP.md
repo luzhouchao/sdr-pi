@@ -35,11 +35,11 @@
 - Start with an isolated non-ROS 1/6/11 Wi-Fi scan only after explicit live
   retune approval.
 
-## Phase 4: FPGA summary backend
+## Retired route: FPGA summary backend
 
-- Start from a hardware-validated V8L1-compatible base, not an unverified
-  current image.
-- Use local mmap/UIO, never SSH/devmem in the runtime hot path.
-- Promote FPGA only when it removes a complete raw-IQ/CPU stage at session
-  level.
-- Keep CPU/Rust fallback for stale, invalid, overflow or low-confidence data.
+The user retired FPGA acceleration on 2026-09-02. Phase 4 is cancelled rather
+than deferred. Do not build, stage, deploy, or enable an FPGA image or backend.
+The production data path remains bounded P201 Linux/IIO RX transport followed
+by AGX software aggregation. Historical FPGA sources and reports remain only as
+audit evidence; see
+[`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md).
