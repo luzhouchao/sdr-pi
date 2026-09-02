@@ -1,11 +1,9 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include "sdrd.h"
-#include "sdrd_fpga.h"
 
 #include <assert.h>
 #include <errno.h>
-#include <fcntl.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,12 +22,6 @@ static void write_text(const char *path, const char *text) {
   assert(fputs(text, stream) >= 0);
   assert(fclose(stream) == 0);
 }
-
-#ifdef SDRD_ENABLE_FPGA
-static void write_u32(int fd, off_t offset, uint32_t value) {
-  assert(pwrite(fd, &value, sizeof(value), offset) == (ssize_t)sizeof(value));
-}
-#endif
 
 static void create_iio_tree(const char *root) {
   char path[1024];
@@ -51,13 +43,11 @@ typedef struct fake_radio {
   unsigned int apply_calls;
   unsigned int capture_calls;
   unsigned int power_calls;
-  unsigned int summary_calls;
   unsigned int cancel_calls;
   unsigned int stop_calls;
   unsigned int restore_calls;
   int apply_result;
   int capture_result;
-  int summary_result;
   int restore_result;
   char data_root[SDRD_MAX_PATH];
 } fake_radio_t;
@@ -124,26 +114,6 @@ static int fake_capture(
   return 0;
 }
 
-static int fake_capture_summary(
-    void *context,
-    const sdrd_summary_request_t *request,
-    sdrd_summary_result_t *result) {
-  fake_radio_t *fake = context;
-  ++fake->summary_calls;
-  if (fake->summary_result != 0) {
-    return fake->summary_result;
-  }
-  result->sequence = 21u;
-  result->aggregate_samples =
-      (uint64_t)request->frame_samples * (uint64_t)request->aggregate_frames;
-  result->rx0_power_lo = 123u;
-  result->rx0_power_mid = 456u;
-  result->rx0_power_hi = 0u;
-  result->rx0_clip_count = 2u;
-  result->elapsed_us = 900u;
-  return 0;
-}
-
 static int fake_capture_power(
     void *context,
     const sdrd_summary_request_t *request,
@@ -157,14 +127,6 @@ static int fake_capture_power(
   result->rx0_clip_count = 1u;
   result->elapsed_us = 700u;
   return 0;
-}
-
-static int fake_begin_summary(void *context) {
-  return context == NULL ? -EINVAL : 0;
-}
-
-static int fake_cancel_summary(void *context) {
-  return context == NULL ? -EINVAL : 0;
 }
 
 static int fake_stop(void *context) {
@@ -198,10 +160,6 @@ static sdrd_radio_ops_t fake_ops(fake_radio_t *fake) {
   ops.apply_profile = fake_apply;
   ops.capture_iq = fake_capture;
   ops.capture_power = fake_capture_power;
-  ops.summary_context = fake;
-  ops.begin_summary = fake_begin_summary;
-  ops.capture_summary = fake_capture_summary;
-  ops.cancel_summary = fake_cancel_summary;
   ops.cancel = fake_cancel;
   ops.stop = fake_stop;
   ops.restore = fake_restore;
@@ -222,11 +180,10 @@ static void test_shadow_config_and_protocol(const char *root) {
   (void)snprintf(
       config_text,
       sizeof(config_text),
-      "mode=shadow\nlisten_address=127.0.0.1\nlisten_port=43110\nclient_timeout_ms=5000\niio_sysfs_root=%s\nfpga_backend=disabled\nfpga_device=/dev/mem\nfpga_base=0x43c00000\nfpga_span=0x10000\nrequire_iomem_region=true\nallow_devmem=false\n",
+      "mode=shadow\nlisten_address=127.0.0.1\nlisten_port=43110\nclient_timeout_ms=5000\niio_sysfs_root=%s\n",
       iio_root);
   write_text(config_path, config_text);
   assert(sdrd_config_load(config_path, &config, error, sizeof(error)) == 0);
-  assert(config.fpga_backend == SDRD_FPGA_DISABLED);
   assert(sdrd_format_response(&config, "SDRD/1 HELLO 41", response, sizeof(response)) == 0);
   assert(strstr(response, "\"request_id\":41") != NULL);
   assert(strstr(response, "\"mutating_commands\":false") != NULL);
@@ -236,57 +193,6 @@ static void test_shadow_config_and_protocol(const char *root) {
   assert(sdrd_format_response(&config, "SDRD/1 APPLY_PROFILE 43", response, sizeof(response)) == 0);
   assert(strstr(response, "\"error\":\"read_only_shadow\"") != NULL);
 }
-
-#ifdef SDRD_ENABLE_FPGA
-static void test_fake_uio_identity(const char *root) {
-  char register_path[512];
-  char iio_root[512];
-  char response[SDRD_MAX_RESPONSE];
-  char error[256];
-  sdrd_config_t config;
-  sdrd_fpga_adapter_t *adapter = NULL;
-  sdrd_radio_ops_t ops;
-  int fd;
-  (void)snprintf(iio_root, sizeof(iio_root), "%s/iio-fpga", root);
-  must_mkdir(iio_root);
-  create_iio_tree(iio_root);
-  (void)snprintf(register_path, sizeof(register_path), "%s/registers.bin", root);
-  fd = open(register_path, O_CREAT | O_RDWR | O_TRUNC, 0600);
-  assert(fd >= 0);
-  assert(ftruncate(fd, 0x10000) == 0);
-  write_u32(fd, 0x040, 0x53554D38u);
-  write_u32(fd, 0x0EC, 0x00010002u);
-  write_u32(fd, 0x0F0, 0x000003FFu);
-  write_u32(fd, 0x0FC, 0x56380001u);
-  write_u32(fd, 0x180, 0x41474738u);
-  write_u32(fd, 0x1F4, 0x0000001Fu);
-  write_u32(fd, 0x1F8, 0x41380001u);
-  assert(close(fd) == 0);
-  sdrd_config_defaults(&config);
-  assert(snprintf(config.iio_sysfs_root, sizeof(config.iio_sysfs_root), "%s", iio_root) > 0);
-  assert(snprintf(config.fpga_device, sizeof(config.fpga_device), "%s", register_path) > 0);
-  config.fpga_backend = SDRD_FPGA_UIO;
-  assert(sdrd_config_validate(&config, error, sizeof(error)) == 0);
-  assert(sdrd_format_response(&config, "SDRD/1 CAPABILITIES 9", response, sizeof(response)) == 0);
-  assert(strstr(response, "\"fpga_identity_valid\":true") != NULL);
-  assert(strstr(response, "\"fpga_aggregate\":true") != NULL);
-  assert(sdrd_fpga_adapter_create(&config, &adapter, error, sizeof(error)) == 0);
-  memset(&ops, 0, sizeof(ops));
-  sdrd_fpga_adapter_attach(adapter, &ops);
-  assert(ops.summary_context != NULL && ops.begin_summary != NULL &&
-         ops.capture_summary != NULL && ops.cancel_summary != NULL);
-  sdrd_fpga_adapter_destroy(adapter);
-}
-
-static void test_devmem_requires_explicit_gate(void) {
-  sdrd_config_t config;
-  char error[256];
-  sdrd_config_defaults(&config);
-  config.fpga_backend = SDRD_FPGA_DEVMEM;
-  assert(sdrd_config_validate(&config, error, sizeof(error)) == -EACCES);
-  assert(strstr(error, "allow_devmem=true") != NULL);
-}
-#endif
 
 static void test_iio_control_limits(void) {
   sdrd_config_t config;
@@ -420,9 +326,7 @@ static void test_controlled_allowlist_and_restore(void) {
              "SDRD/1 CAPTURE_SUMMARY 11 1001 2048 16 500",
              response,
              sizeof(response)) == 0);
-  assert(strstr(response, "\"aggregate_samples\":32768") != NULL);
-  assert(strstr(response, "\"rx0_power_mid\":456") != NULL);
-  assert(fake.summary_calls == 1u);
+  assert(strstr(response, "retired_command") != NULL);
   assert(sdrd_handle_request(
              &config,
              &session,
@@ -506,33 +410,6 @@ static void test_disconnect_and_failure_restore(void) {
   assert(strstr(response, "capture_failed_restored") != NULL);
   assert(session.active == 0 && session.restore_required == 0);
   fake.capture_result = 0;
-
-  fake.summary_result = -ETIMEDOUT;
-  sdrd_session_init(&session);
-  assert(sdrd_handle_request(
-             &config,
-             &session,
-             &ops,
-             "SDRD/1 START_SESSION 18 2600",
-             response,
-             sizeof(response)) == 0);
-  assert(sdrd_handle_request(
-             &config,
-             &session,
-             &ops,
-             "SDRD/1 APPLY_PROFILE 19 2600 2450000000 5000000 4000000 fast_attack 1",
-             response,
-             sizeof(response)) == 0);
-  assert(sdrd_handle_request(
-             &config,
-             &session,
-             &ops,
-             "SDRD/1 CAPTURE_SUMMARY 20 2600 2048 16 500",
-             response,
-             sizeof(response)) == 0);
-  assert(strstr(response, "summary_timeout_restored") != NULL);
-  assert(session.active == 0 && session.restore_required == 0);
-  fake.summary_result = 0;
 
   fake.apply_result = -EIO;
   fake.restore_result = -EIO;
@@ -621,20 +498,6 @@ static void remove_test_tree(const char *root) {
   assert(rmdir(path) == 0);
   (void)snprintf(path, sizeof(path), "%s/sdrd.conf", root);
   assert(unlink(path) == 0);
-#ifdef SDRD_ENABLE_FPGA
-  (void)snprintf(path, sizeof(path), "%s/iio-fpga/iio:device0/name", root);
-  assert(unlink(path) == 0);
-  (void)snprintf(path, sizeof(path), "%s/iio-fpga/iio:device1/name", root);
-  assert(unlink(path) == 0);
-  (void)snprintf(path, sizeof(path), "%s/iio-fpga/iio:device0", root);
-  assert(rmdir(path) == 0);
-  (void)snprintf(path, sizeof(path), "%s/iio-fpga/iio:device1", root);
-  assert(rmdir(path) == 0);
-  (void)snprintf(path, sizeof(path), "%s/iio-fpga", root);
-  assert(rmdir(path) == 0);
-  (void)snprintf(path, sizeof(path), "%s/registers.bin", root);
-  assert(unlink(path) == 0);
-#endif
   assert(rmdir(root) == 0);
 }
 
@@ -642,10 +505,6 @@ int main(void) {
   char root[] = "/tmp/sdrd-test-XXXXXX";
   assert(mkdtemp(root) != NULL);
   test_shadow_config_and_protocol(root);
-#ifdef SDRD_ENABLE_FPGA
-  test_fake_uio_identity(root);
-  test_devmem_requires_explicit_gate();
-#endif
   test_iio_control_limits();
   test_controlled_allowlist_and_restore();
   test_disconnect_and_failure_restore();

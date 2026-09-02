@@ -11,7 +11,7 @@ endif
 
 CPPFLAGS += -Iinclude
 BASE_SOURCES := src/sdrd.c src/sdrd_iio.c
-DAEMON_SOURCES := $(BASE_SOURCES) src/sdrd_fpga_disabled.c
+DAEMON_SOURCES := $(BASE_SOURCES)
 TEST_SOURCES := $(DAEMON_SOURCES)
 LDLIBS += -ldl -pthread
 DAEMON := $(BUILD_DIR)/sdrd
@@ -24,10 +24,10 @@ all: $(DAEMON)
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-$(DAEMON): src/main.c $(DAEMON_SOURCES) include/sdrd.h include/sdrd_iio.h include/sdrd_fpga.h | $(BUILD_DIR)
+$(DAEMON): src/main.c $(DAEMON_SOURCES) include/sdrd.h include/sdrd_iio.h | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ src/main.c $(DAEMON_SOURCES) $(LDFLAGS) $(LDLIBS)
 
-$(TEST): tests/test_sdrd.c $(TEST_SOURCES) include/sdrd.h include/sdrd_iio.h include/sdrd_fpga.h | $(BUILD_DIR)
+$(TEST): tests/test_sdrd.c $(TEST_SOURCES) include/sdrd.h include/sdrd_iio.h | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ tests/test_sdrd.c $(TEST_SOURCES) $(LDFLAGS) $(LDLIBS)
 
 test: $(TEST)

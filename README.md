@@ -15,7 +15,7 @@ operator / trusted-LAN Web Console
                 v
        AGX SDR Harness
   Rust Controller + Pi Agent Planner
-       third-party model API
+  local Spark / compatible model API
   acquisition / aggregation / future CUDA recognizer
                 |
                 v
@@ -25,9 +25,10 @@ operator / trusted-LAN Web Console
       P201 Pro SDR + AD9361 Linux/IIO RX
 ```
 
-AGX 负责 Agent、控制器、Web、扫频编排、预处理和未来 CUDA/Mamba 推理。P201
-SDR 继续运行 `sdrd`，保留独占所有权、限幅、停止和射频状态恢复。模型接入当前
-明确延期：小型 Pi ONNX 模型不进入迁移主线，后续单独接入 AGX CUDA 后端。
+AGX 负责 Agent、控制器、Web、扫频编排、结果存储、预处理和模型接入。当前
+Planner 可使用本机 Spark-X2.5-4B BF16 或 Web 配置的 OpenAI-compatible 上游；
+调制识别仍等待单独的 CUDA/Mamba 后端。P201 SDR 只运行 `sdrd`，负责有界 RX
+采集与传输，并保留独占所有权、限幅、停止和射频状态恢复。
 
 ## 当前状态
 
@@ -40,7 +41,11 @@ SDR 继续运行 `sdrd`，保留独占所有权、限幅、停止和射频状态
 - AGX Web 可将 OpenAI-compatible Completions/Responses 上游写入
   不被 Git 跟踪的 `0600` 私密配置；按用户要求监听所有 IPv4
   接口，不得做公网端口映射。
-- CUDA/Mamba 模型、权重和推理 Worker 暂不包含在本次框架迁移中。
+- 本机 Spark-X2.5-4B BF16 Planner 与受限 Web Search 已接入并实机验证；旧
+  Qwen 进程已停止并禁用。
+- 扫频聚合结果可在 Web 独立页面查看和手动删除；原始 IQ 仅在显式开启时按
+  每次扫描保存为 SigMF。
+- CUDA/Mamba 调制识别权重和生产推理 Worker 尚未接入。
 
 ## 目录
 
@@ -50,8 +55,7 @@ SDR 继续运行 `sdrd`，保留独占所有权、限幅、停止和射频状态
 | [`raspberry-pi/sdr-agent/`](raspberry-pi/sdr-agent/) | 已验证的 Controller、Planner、终端、Web 与历史识别 seam |
 | [`raspberry-pi/p201pro-rust/`](raspberry-pi/p201pro-rust/) | Rust/libiio 采集和软件扫频参考实现 |
 | [`sdr-system/`](sdr-system/) | P201 Pro 内嵌系统与 `sdrd` |
-| [`fpga/`](fpga/) | 已退役的 FPGA 探索源码、Vivado 脚本和历史硬件证据（不再开发或部署） |
-| [`docs/`](docs/) | 跨层架构、迁移记录、检查清单和验证证据 |
+| [`docs/`](docs/) | 当前设计、迁移记录、检查清单和验证证据索引 |
 
 ## AGX 快速开始
 
@@ -72,10 +76,11 @@ bash jetson-agx/sdrharness/scripts/build-agent-runtime.sh
 ## 安全边界
 
 - 不提交密码、私钥、API key、原始 IQ、训练数据集、缓存或环境目录。
-- 未完成 SDRD 只读观察和采集切换门禁前，不停止现有
-  Spectrum Agent/Qwen，不启动第二套 SDR 采集。
+- 未完成采集切换门禁前，不启动第二套 SDR 采集；必须先确认没有其他采集器
+  占用接收路径。
 - 不生成、复制或覆盖 `BOOT.bin`，不启用 FPGA 聚合；该路线已正式退役。
 - CUDA 模型权重按大小使用 GitHub Release 或其他带 SHA-256 的制品渠道，不直接混入源码历史。
 - 所有能力默认关闭，只有负责的 Adapter 通过实机探测后才能报告可用。
 
-权威进度见 [`docs/SDR_AGENT_PROJECT_CHECKLIST.md`](docs/SDR_AGENT_PROJECT_CHECKLIST.md)。
+文档入口见 [`docs/README.md`](docs/README.md)，权威进度见
+[`docs/SDR_AGENT_PROJECT_CHECKLIST.md`](docs/SDR_AGENT_PROJECT_CHECKLIST.md)。

@@ -1,128 +1,123 @@
 # SDR Agent runtime design
 
-Date: 2026-08-31
+Last reviewed: 2026-09-02
 
-## Decision
+## Current decision
 
-The complete SDR Agent is a distributed logical module whose Pi-side runtime
-contains a deterministic Rust Controller and a lightweight Pi Agent Planner
-Worker. Qwen remains in the existing llama.cpp process on the 4090.
+Jetson AGX Orin is the primary Agent, control, aggregation, result-storage and
+model host. P201 Linux owns one bounded receive path through `sdrd`; it does not
+aggregate results. The Raspberry Pi deployment remains a rollback baseline.
 
 ```text
-Raspberry Pi 4B                              4090 server
----------------------------------------      -----------------------
-Rust Controller                              llama.cpp
-  - authoritative state                         - qwen3.8-27b
-  - policy and capability validation             - inference/KV cache
-  - timeout, approval and audit            <---- OpenAI-compatible HTTP
-  - future SdrEngine execution
-          |
-          +-- Unix socket --> Planner Worker
-                                  - pi-agent-core
-                                  - one submit_plan tool
-                                  - no persistent conversation
-                                  - no hardware or shell authority
+operator / trusted-LAN Web
+             |
+             v
+AGX Rust Controller <----> AGX Pi Agent Planner Worker
+       |                         |
+       |                         +--> local Spark-X2.5-4B BF16
+       |                         +--> configured OpenAI-compatible provider
+       |
+       +--> result store / optional per-scan SigMF
+       +--> future bounded CUDA recognizer
+       |
+       v
+SDRD/1 --> P201 sdrd --> Linux/IIO RX
 ```
 
-The repository named `pi` is an agent framework; it does not move Qwen
-inference onto the Raspberry Pi. The Pi stores only one bounded planning
-context and streams the remote result.
+Pi Agent is the Planner framework, not the hardware authority. The Planner sees
+only bounded observations and one structured `submit_plan` tool. It has no
+shell, filesystem, SSH, SDR or IIO access. Rust validates every proposed action
+against live capabilities and numeric limits before approval or execution.
 
-## Deep modules and seams
+## Runtime seams
 
-### Controller module
+### Controller and policy
 
-Its external interface is deliberately small:
+The Controller owns state, request/session correlation, freshness checks,
+limits, approval classification, cancellation and audit. Invalid, stale,
+oversized or unsupported proposals fail closed.
 
 ```text
 decide(PlanRequest) -> ValidatedPlan | ControllerError
 ```
 
-Behind it are frame correlation, stale-generation rejection, capability and
-state checks, numeric limits, candidate matching and approval classification.
-Callers do not need to repeat those rules.
+### Planner
 
-### Planner seam
+One-shot `planner.sock` is the stateless fallback. Persistent `session.sock`
+supports interactive prompt, steering, follow-up, abort and model events while
+sharing one global inference lease. Provider details, model-specific payloads,
+reasoning deltas and the bounded Spark search adapter remain behind this seam.
 
-The Controller depends on one `Planner` interface. The Unix-socket adapter is
-the production adapter; tests can use an in-memory adapter. Provider selection,
-Pi Agent events, Qwen compatibility and token handling stay behind this seam.
+The Web-managed provider configuration supports OpenAI-compatible Completions
+and Responses, an 8,192–1,000,000-token context window and automatic compaction
+at 50–95% (90% by default). The fixed system prompt is never exposed in the Web
+UI. Real upstream reasoning is collapsed by default and omitted when absent.
 
-### SDR observation seam
-
-The read-only `SdrEngine` interface is now implemented:
+### SDR observation and execution
 
 ```text
 SdrEngine.observe() -> SdrSnapshot
+SdrActionExecutor.execute(ValidatedSdrAction) -> ExecutionObservation
+SweepEngine.run(SweepPlan) -> SweepReport
 ```
 
-It has an SDRD/1 shadow Adapter and a replay Adapter. Protocol framing,
-correlation, server identity, capability reduction and fail-closed behavior are
-hidden behind the interface.
+The Controller uses SDRD/1 for read-only health, bounded retune/capture, direct
+cancel and verified restoration. P201 acquires and transports finite RX data;
+AGX computes power, clipping, noise and merged candidates. There is no active
+FPGA/MMIO backend. Protocol-v1 FPGA response fields remain constant false/zero
+only so older deployed clients can parse the wire response.
 
-### Recognition seam
+### Results
 
-The provider-neutral recognition boundary is now implemented:
+The AGX result store keeps processed sweep points, candidates and recognition
+output in SQLite. When the operator enables raw-IQ retention, one scan writes
+one SigMF metadata/data pair under the managed capture root. The Web aggregate
+view displays stored traces and provides an indexed manual-delete path.
+
+### Recognition
 
 ```text
 LocalRecognizer.classify(BoundedIqRef) -> RecognitionOutput
 ```
 
-Its Unix Adapter passes only bounded file metadata to a future persistent C++
-worker; IQ remains outside JSON and Qwen. A replay Adapter covers protocol and
-policy tests. See [`LOCAL_RECOGNIZER_INTERFACE.md`](LOCAL_RECOGNIZER_INTERFACE.md).
+The backend-neutral Unix-socket and replay Adapters are implemented. The
+production CUDA/Mamba worker is not yet integrated, so
+`recognizer_available=false`. IQ remains outside Planner JSON and must be a
+bounded, canonical file reference under the configured spool root.
 
-### Future execution seam
+## Ownership and concurrency
 
-SDR mutation remains a future, separate interface:
-
-```text
-SdrActionExecutor.execute(ValidatedSdrAction) -> Observation
-```
-
-The existing direct-libiio acquisition executable remains separate until only
-one process owns the RX buffer.
-
-## Resource budget
-
-The hot data path does not enter Pi Agent. Spectrum aggregation remains in Rust
-and future recognition remains in C++. Only compact candidates, health and one
-operator instruction cross the planner seam.
-
-Initial worker gates:
-
-| Resource | Gate |
-|---|---:|
-| active planning requests | 1 |
-| JSONL frame | 32 KiB |
-| candidates per request | 32 |
-| operator instruction | 1024 bytes |
-| generated tokens | 1024 |
-| request timeout | 30 s |
-| V8 old-space cap | 96 MiB |
-| systemd memory high/max | 144/192 MiB |
-| systemd CPU quota | 25% of one host CPU |
-
-The Worker creates a fresh Agent state for each request and does not persist a
-conversation or SQLite session. The 196608-token model context describes the
-remote model's capacity; the Pi never attempts to fill it.
+- One interactive conversation owns `session.sock`; Web retains at most two
+  bounded conversation histories.
+- One active inference lease serializes one-shot and interactive model runs.
+- One receive owner is allowed. Starting Harness acquisition requires proof
+  that no legacy Spectrum collector or direct-IIOD benchmark owns the radio.
+- `/stop` cancels the model and active SDR action without waiting for another
+  model turn, then advances session generation so stale plans cannot execute.
+- P201 restores LO, sample rate, RF bandwidth, gain mode and channel enables on
+  success, error, cancellation and disconnect.
 
 ## Failure behavior
 
-- Planner unavailable, busy, timed out or malformed: no action is executed.
-- Response request ID or session generation mismatch: reject as stale.
-- Current shadow `sdrd` reports no retune/capture capability: reject those
-  proposals even when the model requests them.
-- Faulted Controller state: only `hold` and `stop_session` are accepted.
-- IQ proposal exceeds the hard byte/sample limit: reject.
-- IQ proposal is bounded but above the automatic threshold: require explicit
-  operator approval.
-- Emergency pause/stop is implemented directly in Rust later and never waits
-  for the model.
+- Planner unavailable, busy, timed out, malformed or missing an action: execute
+  nothing.
+- Response ID or session generation mismatch: reject as stale.
+- Missing/old observation or unavailable live capability: require `hold`.
+- Invalid frequency, rate, bandwidth, dwell, samples or byte count: reject.
+- Bounded IQ above the automatic threshold: require explicit approval.
+- Storage without an exact finite bound or successful AGX free-space check:
+  reject before acquisition.
+- Recognition backend absent or unvalidated: keep its capability false.
 
-## Configuration ownership
+## Configuration boundaries
 
-Non-secret endpoint and model settings live in `planner.env`. The token lives
-in a separate permission-restricted file. The current endpoint is reached over
-Tailscale; the 4090's Aliyun reverse SSH route remains an operations fallback,
-not a model-data path.
+Non-secret runtime templates live under `jetson-agx/sdrharness/`. Provider keys,
+SSH credentials, model weights, runtime state, result databases and captures
+remain outside Git with restrictive permissions. New conversations reload the
+saved provider settings; an active conversation retains the provider snapshot
+with which it started.
+
+The Web service is intentionally bound to trusted-LAN interfaces and has no
+application authentication. It must not be port-forwarded to the Internet.
+Authoritative implementation status and remaining work are in
+[`SDR_AGENT_PROJECT_CHECKLIST.md`](SDR_AGENT_PROJECT_CHECKLIST.md).

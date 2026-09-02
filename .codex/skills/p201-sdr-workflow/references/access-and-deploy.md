@@ -64,7 +64,7 @@ p201_strip="$P201_ARMHF_TOOLCHAIN_BIN/arm-linux-gnueabihf-strip"
 p201_readelf="$P201_ARMHF_TOOLCHAIN_BIN/arm-linux-gnueabihf-readelf"
 test -x "$p201_cc" -a -x "$p201_strip" -a -x "$p201_readelf"
 make -C sdr-system/sdrd clean all \
-  CC="$p201_cc" ENABLE_FPGA=0 BUILD_DIR=<AGX-feature-directory>/sdrd-build
+  CC="$p201_cc" BUILD_DIR=<AGX-feature-directory>/sdrd-build
 "$p201_strip" <AGX-feature-directory>/sdrd-build/sdrd
 file <AGX-feature-directory>/sdrd-build/sdrd
 "$p201_readelf" --version-info <AGX-feature-directory>/sdrd-build/sdrd
@@ -82,17 +82,16 @@ SHA-256 5b3f20e1327edc3073e545a5bd3d15f33e7f94181ff4e37a76e95924c1b439b9
 Keep the archive, extracted toolchain and output below the AGX feature
 directory. On aarch64 AGX, require working amd64 binfmt support (for example,
 `qemu-user-static`) and run the compiler in an amd64 Docker container with the
-repository mounted read-only. Compile only `main.c`, `sdrd.c`, `sdrd_iio.c`
-and `sdrd_fpga_disabled.c`, then strip with the same toolchain. Do not compile
-`sdrd_fpga.c` or `p201_native_mmio.c`. The 2026-09-01 live deployment produced
-ELF32 ARM EABI5 hard-float and required only `GLIBC_2.4`, `GLIBC_2.7` and
-`GLIBC_2.17`.
+repository mounted read-only. Compile only `main.c`, `sdrd.c`, and
+`sdrd_iio.c`, then strip with the same toolchain. The retired FPGA/MMIO sources
+are no longer present. The 2026-09-01 live deployment produced ELF32 ARM EABI5
+hard-float and required only `GLIBC_2.4`, `GLIBC_2.7` and `GLIBC_2.17`.
 
 Deployment gate:
 
 - ELF 32-bit ARM, EABI5, dynamically linked, hard-float interpreter.
-- `nm`/symbol inspection shows no linked `p201_mmio` or FPGA aggregate code in
-  the default `ENABLE_FPGA=0` daemon.
+- `nm`/symbol inspection shows no linked FPGA/MMIO code in the Linux/IIO-only
+  daemon.
 - Required GLIBC versions are listed and none exceed the target. For both
   verified builds, only `GLIBC_2.4`, `GLIBC_2.7` and `GLIBC_2.17` appear.
 - `--check-config`, `--probe`, and read-only `--probe-radio` pass on P201 before

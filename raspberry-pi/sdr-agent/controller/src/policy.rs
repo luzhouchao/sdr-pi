@@ -524,7 +524,6 @@ mod tests {
                     sdr_online: true,
                     can_retune: true,
                     can_capture_iq: true,
-                    fpga_available: false,
                     recognizer_available: true,
                     dropped_observations: 0,
                 },
@@ -761,7 +760,6 @@ mod tests {
                     "sdr_online": true,
                     "can_retune": false,
                     "can_capture_iq": false,
-                    "fpga_available": false,
                     "recognizer_available": false,
                     "dropped_observations": 0
                 },

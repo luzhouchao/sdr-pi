@@ -154,28 +154,36 @@ function validateObservation(observation) {
   }
   requireSafeInteger(observation.age_ms, "observation.age_ms", 0);
   requirePlainObject(observation.health, "observation.health");
+  const healthKeys = [
+    "sdr_online",
+    "can_retune",
+    "can_capture_iq",
+    "recognizer_available",
+    "dropped_observations",
+  ];
+  if (Object.hasOwn(observation.health, "fpga_available")) {
+    healthKeys.push("fpga_available");
+  }
   requireExactKeys(
     observation.health,
-    [
-      "sdr_online",
-      "can_retune",
-      "can_capture_iq",
-      "fpga_available",
-      "recognizer_available",
-      "dropped_observations",
-    ],
+    healthKeys,
     "observation.health",
   );
   for (const field of [
     "sdr_online",
     "can_retune",
     "can_capture_iq",
-    "fpga_available",
     "recognizer_available",
   ]) {
     if (typeof observation.health[field] !== "boolean") {
       throw new Error(`observation.health.${field} must be boolean`);
     }
+  }
+  if (Object.hasOwn(observation.health, "fpga_available")) {
+    if (observation.health.fpga_available !== false) {
+      throw new Error("observation.health.fpga_available is retired and must be false");
+    }
+    delete observation.health.fpga_available;
   }
   requireSafeInteger(
     observation.health.dropped_observations,

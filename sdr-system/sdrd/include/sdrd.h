@@ -23,17 +23,9 @@ typedef enum sdrd_mode {
   SDRD_MODE_CONTROLLED = 1
 } sdrd_mode_t;
 
-typedef enum sdrd_fpga_backend {
-  SDRD_FPGA_DISABLED = 0,
-  SDRD_FPGA_UIO = 1,
-  SDRD_FPGA_DEVMEM = 2
-} sdrd_fpga_backend_t;
-
 enum sdrd_health_flag {
   SDRD_HEALTH_IIO_PHY_MISSING = 1u << 0,
   SDRD_HEALTH_IIO_RX_MISSING = 1u << 1,
-  SDRD_HEALTH_FPGA_UNAVAILABLE = 1u << 2,
-  SDRD_HEALTH_FPGA_IDENTITY_INVALID = 1u << 3,
   SDRD_HEALTH_CONFIG_INVALID = 1u << 4
 };
 
@@ -43,12 +35,6 @@ typedef struct sdrd_config {
   uint16_t listen_port;
   uint32_t client_timeout_ms;
   char iio_sysfs_root[SDRD_MAX_PATH];
-  sdrd_fpga_backend_t fpga_backend;
-  char fpga_device[SDRD_MAX_PATH];
-  uint64_t fpga_base;
-  uint32_t fpga_span;
-  int require_iomem_region;
-  int allow_devmem;
   char development_data_root[SDRD_MAX_PATH];
   uint32_t iio_timeout_ms;
   uint32_t iio_buffer_samples;
@@ -119,13 +105,6 @@ typedef struct sdrd_radio_ops {
       void *context,
       const sdrd_summary_request_t *request,
       sdrd_summary_result_t *result);
-  void *summary_context;
-  int (*begin_summary)(void *context);
-  int (*capture_summary)(
-      void *context,
-      const sdrd_summary_request_t *request,
-      sdrd_summary_result_t *result);
-  int (*cancel_summary)(void *context);
   int (*cancel)(void *context);
   int (*stop)(void *context);
   int (*restore)(void *context, const sdrd_radio_state_t *state);
@@ -146,16 +125,6 @@ typedef struct sdrd_status {
   uint32_t health_flags;
   int iio_phy_visible;
   int iio_rx_visible;
-  int fpga_configured;
-  int fpga_mapped;
-  int fpga_identity_valid;
-  uint32_t summary_version;
-  uint32_t fpga_abi_version;
-  uint32_t fpga_capability;
-  uint32_t fpga_build_id;
-  uint32_t aggregate_version;
-  uint32_t aggregate_capability;
-  uint32_t aggregate_build_id;
 } sdrd_status_t;
 
 void sdrd_config_defaults(sdrd_config_t *config);
@@ -168,7 +137,6 @@ int sdrd_config_validate(
     const sdrd_config_t *config,
     char *error,
     size_t error_size);
-const char *sdrd_fpga_backend_name(sdrd_fpga_backend_t backend);
 const char *sdrd_mode_name(sdrd_mode_t mode);
 
 int sdrd_probe_status(

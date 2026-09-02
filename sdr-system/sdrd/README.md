@@ -4,18 +4,12 @@
 Buildroot Linux. The deployed configuration remains deliberately read-only:
 
 - it reports `ad9361-phy` and `cf-ad9361-lpc` visibility;
-- it retains legacy FPGA capability fields only for protocol compatibility;
-  production reports them disabled;
+- it retains constant false/zero FPGA response fields only for SDRD/1 client
+  compatibility; no FPGA configuration or implementation remains;
 - it serves a small versioned protocol over a persistent TCP connection;
 - it rejects profile, session, and IQ-capture commands in `mode=shadow`;
-- it never writes FPGA registers or IIO attributes;
+- shadow mode never writes IIO attributes;
 - it is not installed as a startup service by this repository.
-
-The current SDR uses the original `BOOT.bin` with SHA-256
-`02c7f8f84f003879fda27021bb243517ccf8e9b85e7404a37db2e4dda1d8b951`.
-That image does not expose the later SUM8 page at `0x43c00000`, so
-[`config/sdrd-shadow.conf`](config/sdrd-shadow.conf) keeps
-`fpga_backend=disabled`.
 
 The library now also contains the controlled-mode command parser, ownership
 state machine, bounded-capture contract, and a local libiio 0.21 Adapter. The
@@ -48,7 +42,6 @@ SDRD/1 APPLY_PROFILE <request_id> <generation> <center_hz> <sample_rate_hz> <rf_
 SDRD/1 CAPTURE_IQ <request_id> <generation> <sample_count> <max_bytes> <feature_id>
 SDRD/1 CAPTURE_IQ_INLINE <request_id> <generation> <sample_count> <exact_bytes> <feature_id>
 SDRD/1 CAPTURE_POWER <request_id> <generation> <frame_samples> <aggregate_frames> <timeout_ms>
-SDRD/1 CAPTURE_SUMMARY <request_id> <generation> <frame_samples> <aggregate_frames> <timeout_ms>
 SDRD/1 EXECUTION_STATUS <request_id> <generation>
 SDRD/1 STOP_SESSION <request_id> <generation>
 SDRD/1 CANCEL_SESSION <request_id> <generation>
@@ -76,10 +69,8 @@ power/clip summary without writing raw IQ to disk. It accepts at most 1,048,576
 complex samples, enforces the request timeout, remains cancelable, and stays
 inside the same session ownership and restoration path as `CAPTURE_IQ`.
 
-`CAPTURE_SUMMARY` is retained only for compatibility with historical SDRD/1
-validation artifacts. The project retired FPGA work on 2026-09-02; production
-reports `fpga_aggregate=false` and must not enable this command. AGX software
-aggregation consumes bounded `CAPTURE_IQ_INLINE` data instead.
+The retired `CAPTURE_SUMMARY` spelling returns `retired_command`; it has no
+implementation or configuration path.
 
 `APPLY_PROFILE` accepts only the configured subset of the verified project
 limits: 70 MHz..6 GHz center frequency, 2.083333..30.72 MS/s sample rate,
@@ -104,9 +95,9 @@ until capture begins, then follows the same capture-failure restoration path.
 The Adapter snapshots and restores LO, sample rate, bandwidth, gain mode, and
 enabled channels.
 
-Raw IQ is not transported inside the JSON control response. The Adapter returns
-only bounded metadata and a safe path relative to the configured development
-data root.
+`CAPTURE_IQ` returns bounded metadata and a safe path relative to the configured
+development-data root. `CAPTURE_IQ_INLINE` is the deliberately bounded exception
+that transports base64 IQ to AGX and immediately removes the P201 temporary file.
 
 ## Native build and tests
 
@@ -121,12 +112,10 @@ sdr-system/sdrd/build/sdrd \
 
 ## ARMv7 builds
 
-The production build uses `ENABLE_FPGA=0`: it links only the Linux/IIO capture
-path plus a fail-closed compatibility stub and does not compile or link MMIO.
-Although historical source and old validation evidence remain in Git, the
-default daemon and test targets compile only the fail-closed stub. Project
-Makefiles and cross-build scripts reject `ENABLE_FPGA=1`; that flag is
-prohibited for current project builds and releases by
+The production build contains only the Linux/IIO capture path. The retired
+FPGA/MMIO source and compatibility stub were removed; the Makefile and
+cross-build script still reject the old `ENABLE_FPGA=1` request explicitly.
+See
 [`../../docs/FPGA_RETIREMENT_DECISION_2026-09-02.md`](../../docs/FPGA_RETIREMENT_DECISION_2026-09-02.md).
 
 The static Docker build remains valid for shadow-only probes. Do not use that
@@ -154,8 +143,8 @@ powershell -ExecutionPolicy Bypass -File `
 Always inspect the emitted GLIBC requirements and artifact hash before staging.
 
 Do not start controlled `--serve` until `--check-config`, `--probe`, and the
-read-only `--probe-radio` pass. Run it manually from a unique directory below
-`/tmp/sdr-agent-dev`; it must not replace IIOD or be added to boot.
+read-only `--probe-radio` pass. Ensure port 43110 has no listener before starting
+the retained `/sd` release; persistent reboot startup remains an open gate.
 
 For a host-only socket smoke test, use
 `config/sdrd-loopback-test.conf`; it binds only to `127.0.0.1` and must not be

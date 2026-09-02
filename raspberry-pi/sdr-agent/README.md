@@ -14,7 +14,7 @@ operator / automatic observation
 Rust Controller -- JSONL over Unix socket --> Pi Agent Planner Worker
       |                                      |
       |                                      v
-      |                              third-party model API
+      |                              local or remote model API
       v
 SDRD/1 adapter -> SDR Linux C sdrd -> Linux/IIO RX
       |
@@ -47,16 +47,14 @@ SSH, IIO, FPGA-register or SDR tools.
   frontend. It owns at most one live `sdr-agent` child, retains at most two
   logical conversations, and persists bounded terminal events plus compressed
   context without duplicating Controller policy or SDR access.
-- `../p201pro-rust/`: current direct libiio acquisition and spectrum
-  aggregation executable. It is intentionally not merged into the Controller
-  until the ownership seam is implemented.
+- `../p201pro-rust/`: historical direct-IIOD throughput benchmark. It is kept
+  for measured reference and must not run while Harness owns the RX path.
 
 FPGA aggregation was retired from the project on 2026-09-02 and remains
 disabled. The controlled `sdrd` can retune and perform bounded Linux/IIO IQ
 capture without FPGA support.
-The normal request template therefore remains capability-false; Rust accepts
-execution only from live controlled capabilities or an explicitly validated
-development envelope.
+Rust accepts execution only from live controlled capabilities or an explicitly
+validated development envelope.
 
 Safe live health observation:
 
@@ -102,9 +100,9 @@ independent SDRD/1 connection.
 `SweepEngine.run(plan)` validates a bounded range or explicit center list. The
 production AGX Adapter requests bounded inline IQ from one SDRD ownership
 session, performs software power/noise/candidate aggregation on AGX, and
-converts compact candidates to the existing Planner observation. Legacy FPGA
-Adapter source remains only for protocol/history tests and is not constructed
-by the production terminal.
+converts compact candidates to the existing Planner observation. The retired
+FPGA Adapter has been removed; only false/zero SDRD/1 wire fields remain for
+older-client parsing.
 
 ## Development checks
 
@@ -155,7 +153,7 @@ execution failure advances the session generation and puts the terminal into
 `faulted` state so the stale approval cannot be retried accidentally.
 With `--sdrd`, `/approve` moves execution to a bounded background worker so the
 line interface remains available. `/stop` sends cancellation directly without
-calling Qwen, waits for the owner response that confirms restoration, and then
+calling the model, waits for the owner response that confirms restoration, and then
 advances the session generation. It retries only the bounded startup window in
 which `START_SESSION` has not yet completed.
 
@@ -232,8 +230,9 @@ interactive owner. One additional conversation may be stored. A third evicts
 the least-recently-used inactive conversation. Switching stops the old terminal
 safely and summarizes its bounded event history; histories are also compacted
 at 160 new events, keep 48 recent visible events, and cap carried context at 6
-KiB. The UI labels this as `已压缩 N 次`; it is not a model version. No raw IQ is
-stored by this service.
+KiB. The UI labels this as `已压缩 N 次`; it is not a model version. Processed
+scan results are stored on AGX; raw IQ is retained only when the operator has
+enabled the per-scan SigMF switch.
 
 The top bar places a gear-shaped `设置` entry directly beside the LAN live
 connection indicator. It opens a separate settings page instead of expanding
@@ -328,13 +327,13 @@ sdr-agent-controller \
   --sdrd 192.168.1.10:43110
 ```
 
-The FPGA-summary sweep entry point uses the same validated plan file in tests
-and operations:
+The AGX software-aggregate sweep entry point uses the same validated plan file
+in tests and operations:
 
 ```bash
 sdr-agent-controller \
   --mode sweep \
-  --request controller/config/sweep.fpga-summary.example.json \
+  --request controller/config/sweep.software-aggregate.example.json \
   --sdrd 192.168.1.10:43110
 ```
 
@@ -351,7 +350,7 @@ cargo run -- \
   --instruction "保持当前状态并说明原因"
 ```
 
-## Configuration
+## Legacy Raspberry Pi provider configuration
 
 Copy `planner-worker/config/planner.env.example` to
 `/etc/sdr-agent/planner.env`. Put the API token in the separate root-owned,
@@ -366,11 +365,9 @@ http://100.104.138.63:27879/v1
 model: qwen3.8-27b
 ```
 
-The 4090 continues to own llama.cpp inference, tokenization and KV cache. The
-Pi worker is stateless between planning requests, has one active request at a
-time, emits at most 1024 output tokens and is intended to run with a 96 MiB V8
-heap cap plus a systemd `MemoryMax` of 192 MiB. These limits are initial gates,
-not measured claims; measure RSS on the Pi before tightening them.
+This section documents the rollback Pi release. The current AGX deployment uses
+Web-managed provider settings and defaults to the local Spark service described
+in [`../../jetson-agx/sdrharness/README.md`](../../jetson-agx/sdrharness/README.md).
 
 ## Safety and deployment status
 

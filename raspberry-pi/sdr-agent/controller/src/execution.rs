@@ -609,11 +609,6 @@ mod tests {
                 iio_visible: true,
                 can_retune: true,
                 can_capture_iq: true,
-                fpga_available: false,
-                fpga_backend: "disabled".to_owned(),
-                fpga_summary_version: 0,
-                fpga_abi_version: 0,
-                fpga_capability: 0,
             },
         }
     }

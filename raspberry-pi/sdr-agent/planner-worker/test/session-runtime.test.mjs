@@ -80,7 +80,6 @@ function context(generation = 3, requestId = 9, instruction = "查看状态") {
         sdr_online: true,
         can_retune: false,
         can_capture_iq: false,
-        fpga_available: false,
         recognizer_available: false,
         dropped_observations: 0,
       },

@@ -24,11 +24,6 @@ pub struct SdrSnapshot {
     pub iio_visible: bool,
     pub can_retune: bool,
     pub can_capture_iq: bool,
-    pub fpga_available: bool,
-    pub fpga_backend: String,
-    pub fpga_summary_version: u32,
-    pub fpga_abi_version: u32,
-    pub fpga_capability: u32,
 }
 
 impl SdrSnapshot {
@@ -41,7 +36,6 @@ impl SdrSnapshot {
             sdr_online: self.online && self.healthy,
             can_retune: self.online && self.healthy && self.can_retune,
             can_capture_iq: self.online && self.healthy && self.can_capture_iq,
-            fpga_available: self.online && self.healthy && self.fpga_available,
             recognizer_available,
             dropped_observations,
         }
@@ -210,11 +204,6 @@ impl SdrEngine for SdrdAdapter {
 
         let iio_visible =
             capabilities.iio_visible && health.iio_phy_visible && health.iio_rx_visible;
-        let fpga_available = capabilities.fpga_identity_valid
-            && capabilities.fpga_aggregate
-            && health.fpga_configured
-            && health.fpga_mapped
-            && health.fpga_identity_valid;
         Ok(SdrSnapshot {
             online: true,
             healthy: health.healthy
@@ -225,11 +214,6 @@ impl SdrEngine for SdrdAdapter {
             iio_visible,
             can_retune: capabilities.radio_control,
             can_capture_iq: capabilities.raw_iq_capture && capabilities.max_capture_bytes > 0,
-            fpga_available,
-            fpga_backend: capabilities.fpga_backend,
-            fpga_summary_version: capabilities.fpga_summary_version,
-            fpga_abi_version: capabilities.fpga_abi_version,
-            fpga_capability: capabilities.fpga_capability,
         })
     }
 }
@@ -276,12 +260,18 @@ struct CapabilitiesResponse {
     _software_summary: bool,
     #[serde(default)]
     max_capture_bytes: u64,
-    fpga_backend: String,
-    fpga_identity_valid: bool,
-    fpga_summary_version: u32,
-    fpga_abi_version: u32,
-    fpga_capability: u32,
-    fpga_aggregate: bool,
+    #[serde(rename = "fpga_backend")]
+    _fpga_backend: String,
+    #[serde(rename = "fpga_identity_valid")]
+    _fpga_identity_valid: bool,
+    #[serde(rename = "fpga_summary_version")]
+    _fpga_summary_version: u32,
+    #[serde(rename = "fpga_abi_version")]
+    _fpga_abi_version: u32,
+    #[serde(rename = "fpga_capability")]
+    _fpga_capability: u32,
+    #[serde(rename = "fpga_aggregate")]
+    _fpga_aggregate: bool,
 }
 
 #[derive(Deserialize)]
@@ -297,9 +287,12 @@ struct HealthResponse {
     health_flags: u32,
     iio_phy_visible: bool,
     iio_rx_visible: bool,
-    fpga_configured: bool,
-    fpga_mapped: bool,
-    fpga_identity_valid: bool,
+    #[serde(rename = "fpga_configured")]
+    _fpga_configured: bool,
+    #[serde(rename = "fpga_mapped")]
+    _fpga_mapped: bool,
+    #[serde(rename = "fpga_identity_valid")]
+    _fpga_identity_valid: bool,
     #[serde(default)]
     session_faulted: bool,
 }
@@ -361,11 +354,6 @@ mod tests {
             iio_visible: true,
             can_retune: false,
             can_capture_iq: false,
-            fpga_available: false,
-            fpga_backend: "disabled".to_owned(),
-            fpga_summary_version: 0,
-            fpga_abi_version: 0,
-            fpga_capability: 0,
         }
     }
 

@@ -1,5 +1,0 @@
-image : {
-  [bootloader] fsbl_from_pzsdr_fw.elf
-  system_top_with_p201_summary_v4.bit
-  u-boot_from_pzsdr_fw.elf
-}

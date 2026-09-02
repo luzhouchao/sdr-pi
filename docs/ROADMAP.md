@@ -1,45 +1,45 @@
-# Cross-layer roadmap
+# SDR Agent roadmap
 
-## Phase 0: plan-only SDR Agent runtime
+Last reviewed: 2026-09-02
 
-- Run a stateless `pi-agent-core` Planner Worker on the Raspberry Pi while
-  llama.cpp/Qwen inference remains on the 4090.
-- Correlate every proposal by request ID and Controller session generation.
-- Validate all proposals in Rust against state, capability and numeric limits.
-- Read live shadow health through the read-only SDRD/1 Adapter and abort plans
-  on connection, schema or correlation failure.
-- Exercise mock/replay contexts before any plan can reach a hardware adapter.
-- Keep the current original-BOOT/shadow-SDRD path read-only.
+The authoritative item-level status is
+[`SDR_AGENT_PROJECT_CHECKLIST.md`](SDR_AGENT_PROJECT_CHECKLIST.md).
 
-## Phase 1: stable Raspberry Pi acquisition
+## Stage 1 — AGX software-path hardening
 
-- Keep a session-owned libiio context and RX buffer.
-- Move per-sample DSP out of the acquisition thread.
-- Use preallocated bounded IQ blocks and explicit overload policy.
-- Add long-duration 2.1/5/10 MS/s tests and reconnect tests.
-- Feed only triggered, bounded, model-ready IQ windows through the implemented
-  `LocalRecognizer` seam; keep the production C++ worker disabled until a
-  pinned model and replay corpus pass the admission gates.
+- Prove AGX is the sole receive-path owner.
+- Add complete sequence, overflow, dropped-sample, timeout and health metadata.
+- Validate IIO-timeout restoration and full-loop stale/cancel/reconnect recovery.
+- Measure sustained 5 MS/s and 10 MS/s throughput, CPU, latency, drops and
+  thermal behavior.
+- Complete bounded overload and long-duration acquisition tests.
 
-## Phase 2: SDR-system transport baseline
+## Stage 2 — local modulation recognition
 
-- Add a read-only benchmark mode inside the SDR Buildroot environment.
-- Measure IIOD/TCP throughput, IRQ load, context switches and buffer latency.
-- Evaluate reversible socket-buffer/affinity changes one at a time.
-- Preserve the stock configuration and provide a one-command rollback.
+- Identify and version the trained Mamba checkpoint, labels, preprocessing,
+  sample-rate policy, precision and acceptance thresholds.
+- Implement a backend-neutral CUDA Recognizer Worker on AGX.
+- Compare FP16/BF16/FP32 against the training reference and measure end-to-end
+  latency, memory, drops and thermals.
+- Validate accuracy/per-class recall, then enable the capability and feed only
+  selected bounded IQ windows into it.
 
-## Phase 3: scan-session optimization
+## Stage 3 — production operations
 
-- Reuse context, buffers and FFT plans across channels.
-- Measure retune, settle, capture, DSP, scoring and payload time separately.
-- Start with an isolated non-ROS 1/6/11 Wi-Fi scan only after explicit live
-  retune approval.
+- Add protocol fuzzing and repeatable fault injection.
+- Add log rotation, health monitoring, alerts, update and rollback procedures.
+- Complete a documented 24-hour automatic-cruise soak.
+- Finish bounded session resume and multi-user isolation.
 
-## Retired route: FPGA summary backend
+## Stage 4 — emitter identification
 
-The user retired FPGA acceleration on 2026-09-02. Phase 4 is cancelled rather
-than deferred. Do not build, stage, deploy, or enable an FPGA image or backend.
-The production data path remains bounded P201 Linux/IIO RX transport followed
-by AGX software aggregation. Historical FPGA sources and reports remain only as
-audit evidence; see
-[`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md).
+Start only after modulation recognition and bounded acquisition are stable.
+First define whether the target is protocol family, transmitter model or an
+individual physical emitter, then establish lawful data collection, open-set
+handling and cross-day/channel validation.
+
+## Non-goals
+
+FPGA acceleration, MMIO/UIO, Vivado, `BOOT.bin` changes and transmit support are
+not part of this project. The retired implementation was removed from the
+working tree on 2026-09-02 and remains recoverable from Git history only.

@@ -38,12 +38,13 @@ overrides older FPGA plans, checklists, experiments, and standing approvals:
 2. Do not build, enable, deploy, stage, or advertise an FPGA aggregation
    backend. Do not use `ENABLE_FPGA=1`, write FPGA registers, generate or copy a
    `BOOT.bin`, modify the boot chain, or resume FPGA/NX offload work.
-3. Keep protocol fields such as `fpga_backend` and historical FPGA source/tests
-   only when needed for wire compatibility, audit evidence, or rollback
-   archaeology. They must remain disabled and capability-false in production.
-4. Files under `fpga/` and historical FPGA design/validation documents are
-   archived evidence, not an active backlog. Do not delete or rewrite that
-   evidence merely to make the current tree look software-only.
+3. Protocol-v1 FPGA fields may remain only as constant false/zero wire-compatibility
+   fields for already deployed clients. They must not reach the Planner as a
+   selectable capability.
+4. The retired FPGA source tree, MMIO Adapter, Pi VkFFT experiment and obsolete
+   research documents were removed from the working tree at the user's request
+   on 2026-09-02. Git history before that cleanup is the audit archive; do not
+   restore those files into current source merely for historical reference.
 5. Reopening FPGA work requires a new explicit user decision that reverses this
    retirement; ordinary performance work or hardware access authorization is
    not sufficient.

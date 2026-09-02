@@ -146,7 +146,6 @@ Evidence:
 - [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md)
 - [`AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](AGX_FRAMEWORK_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_RUNTIME_DESIGN.md`](SDR_AGENT_RUNTIME_DESIGN.md)
-- [`TERMINAL_AGENT_CLI_RESEARCH.md`](TERMINAL_AGENT_CLI_RESEARCH.md)
 - [`SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md)
 - [`SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md)
 - [`SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md)
@@ -231,17 +230,13 @@ Evidence:
 
 ## 3. SDR Linux control plane (`sdrd`)
 
-- [x] Record the SDR Linux, IIO, FPGA, network, and boot baseline.
-- [x] Verify that the current `/sd/BOOT.bin` matches the protected original
-      backup.
+- [x] Record the SDR Linux, IIO and network baseline.
 - [x] Implement the C `sdrd` configuration parser, framed SDRD/1 protocol,
       request correlation, health reporting, and capability reporting.
-- [x] Implement and unit-test FPGA backend identity, ABI, build ID, and aggregate
-      capability probing.
 - [x] Implement a read-only shadow mode that rejects all mutating commands.
 - [x] Cross-build and temporarily validate shadow `sdrd` on the real SDR without
-      changing IIO, FPGA, boot, or radio state.
-- [x] Implement the Pi Rust `SdrdAdapter` for read-only shadow observation.
+      changing IIO or radio state.
+- [x] Implement the Rust `SdrdAdapter` for read-only shadow observation.
 - [x] Define and unit-test the allowlisted SDRD/1 mutation command schema for ownership,
       retune, bounded capture, stop, restore, and execution status.
 - [x] Implement the Adapter-backed connection ownership state machine and prove
@@ -260,12 +255,11 @@ Evidence:
 - [x] Implement and unit-test bounded SDRD/1 inline complex-int16 IQ transport
       for AGX aggregation, including exact shape validation and immediate
       SDR-local temporary-file cleanup after successful transfer.
-- [x] Make the production `sdrd` build Linux/IIO-only by default: FPGA/MMIO
-      sources are excluded unless `ENABLE_FPGA=1` is explicit, the disabled
-      build fails closed if an FPGA backend is configured, and both the
-      no-FPGA binary and opt-in rollback tests pass.
+- [x] Remove the retired FPGA/MMIO Adapter, configuration, source and test paths
+      from `sdrd`; keep only constant false/zero SDRD/1 fields for deployed-client
+      compatibility and return `retired_command` for `CAPTURE_SUMMARY`.
 - [x] Deploy and live-validate the inline IQ transport on P201 without changing
-      BOOT, FPGA registers or persistent radio state; see
+      persistent radio state; see
       [`SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md`](SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md).
 - [x] Implement and live-validate bounded no-file `CAPTURE_POWER` summaries and
       fixed manual-gain profiles with per-point numeric gain readback, clipping
@@ -275,12 +269,11 @@ Evidence:
       and state restoration.
 - [ ] Add sequence, overflow, dropped-sample, timeout, and health metadata to all
       execution results.
-- [x] Deploy controlled `sdrd` for the current SDR boot with a private-link
-      listener, protected-BOOT gate, retained `/sd` release, tested stop path,
+- [x] Deploy controlled `sdrd` with a private-link listener, retained `/sd`
+      release, tested stop path,
       bounded live capture and verified state restoration.
-- [ ] Make `sdrd` start automatically after an SDR reboot; the RAM root loses
-      `/etc/init.d/S60sdrd`, so this requires a separately authorized and tested
-      ramdisk or boot-chain change with golden rollback.
+- [ ] Design and validate safe persistent `sdrd` startup after reboot without
+      modifying the boot image; until then startup remains explicitly manual.
 - [ ] Complete long-duration reconnect and fault-recovery testing on the real
       SDR.
 
@@ -296,27 +289,15 @@ Evidence:
 - [`SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md)
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 
-## 4. Raspberry Pi acquisition, aggregation, and sweep
+## 4. AGX acquisition, aggregation, and sweep
 
-The completed Pi software-aggregation items below are retained as historical
-rollback evidence. New production software aggregation is being cut over to
-AGX while P201 remains responsible only for bounded RX capture and transport.
+P201 owns bounded receive-only acquisition and transport. AGX owns software
+aggregation, result persistence and model-facing summaries.
 
-- [x] Implement direct Pi libiio probe and capture utilities in Rust.
-- [x] Implement streaming Hann-windowed RustFFT aggregation.
-- [x] Implement linear-power averaging and bounded report cadence.
-- [x] Implement median noise estimation and threshold-based candidate detection.
-- [x] Implement coarse PSD output and adjacent-candidate merging.
-- [x] Validate the Pi software aggregate pipeline at approximately 2.1 MS/s on
-      the real SDR.
 - [x] Define the `SweepPlan` inputs, validation requirements, backend choices,
       result contract, and restoration requirements.
 - [x] Implement the production `SweepEngine.run(plan)` module with replay and
-      capability-gated SDRD FPGA-summary Adapters.
-- [x] Ensure one Pi software-sweep process owns and reuses the IIO context, RX
-      buffer, FFT plan and preallocated sample blocks throughout a sweep.
-- [x] Execute a bounded Pi software multi-frequency sweep with per-point LO
-      readback, compact candidates and verified state restoration.
+      SDRD inline-IQ software Adapters.
 - [x] Feed compact aggregate candidates into the Agent observation contract.
 - [x] Implement and unit-test the AGX software-sweep Adapter that requests
       bounded inline IQ from P201, decodes and aggregates complex-int16 windows
@@ -352,47 +333,25 @@ Evidence:
 
 - [`SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md`](SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md)
 - [`../raspberry-pi/p201pro-rust/TEST_RESULTS.md`](../raspberry-pi/p201pro-rust/TEST_RESULTS.md)
-- [`SDR_AGENT_FPGA_SWEEP_GATE_2026-09-01.md`](SDR_AGENT_FPGA_SWEEP_GATE_2026-09-01.md)
 - [`PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md`](PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md)
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 
-## 5. SDR FPGA aggregation (retired historical route)
+## 5. Retired FPGA route
 
-The user retired FPGA acceleration on 2026-09-02. Completed items below are
-preserved as historical evidence; they are not production capabilities or a
-reason to resume this route. The former image, HDL kernel, FFT, DMA, comparison,
-stability and deployment tasks are cancelled and intentionally no longer open
-checklist items.
-
-- [x] Define the intended division between AD9361 filtering, FPGA fixed-rate
-      processing, SDR Linux packaging, and Pi control.
-- [x] Define the FPGA summary identity, version, capability, sequence, quality,
-      overflow, timestamp, scaling, and payload metadata requirements.
-- [x] Require the original raw-IQ path to remain available as a bypass and
-      rollback path.
-- [x] Implement SDRD-side probing for the documented aggregate registers and
-      magic value.
-- [x] Implement the bounded SDRD/1 aggregate-summary command, persistent MMIO
-      Adapter, timeout/cancel seam, and fail-closed Harness capability gate.
-- [x] Retire FPGA aggregation from the active project by explicit user decision:
-      production remains P201 Linux/IIO bounded RX transport plus AGX software
-      aggregation; all deployed configurations stay `fpga_backend=disabled`,
-      the Controller production path instantiates only the software Adapter,
-      current native daemon/tests compile only the fail-closed compatibility
-      stub, FPGA-enabled builds are rejected, and historical FPGA sources are
-      retained for audit rather than treated as backlog. See
-      [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md).
+- [x] Retire FPGA aggregation by explicit user decision and fix production on
+      P201 Linux/IIO bounded RX transport plus AGX software aggregation.
+- [x] Remove the FPGA/Vivado tree, FPGA-only documents, MMIO Adapters and active
+      Planner/controller snapshot capability from the working tree. Retain only
+      constant false/zero SDRD/1 compatibility fields, strict acceptance of a
+      legacy false Planner-health field, and the retirement decision;
+      pre-cleanup evidence remains recoverable from Git history at `59cbb17`.
 
 Evidence:
 
-- [`../sdr-system/docs/P201_AGENT_FPGA_DIRECTION.md`](../sdr-system/docs/P201_AGENT_FPGA_DIRECTION.md)
-- [`PERFORMANCE_OPTIMIZATION_PLAN.md`](PERFORMANCE_OPTIMIZATION_PLAN.md)
 - [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md)
 
 ## 6. Local modulation recognition
 
-- [x] Complete the historical Pi feasibility decision around ONNX interchange,
-      ONNX Runtime C/C++ CPU and a strict small-model package seam.
 - [x] Supersede the Pi-sized production-model direction with a backend-neutral
       AGX recognizer seam and defer the production Adapter to CUDA/Mamba.
 - [x] Implement the Rust `LocalRecognizer` interface.
@@ -403,7 +362,7 @@ Evidence:
       generation, and candidate ID.
 - [x] Implement the dependency-free C++20 model-backend interface and
       `ReplayBackend` tests.
-- [x] Implement the strict Pi `ModelPackageLoader` interface, filesystem and
+- [x] Implement the bounded `ModelPackageLoader` interface, filesystem and
       replay Adapters, manifest/path/size/SHA-256/label validation, and package
       inspection command.
 - [ ] After the Agent framework migration, identify and version the trained
@@ -424,9 +383,7 @@ Evidence:
 
 Evidence:
 
-- [`PI4_LIGHTWEIGHT_AMR_RUNTIME_RESEARCH.md`](PI4_LIGHTWEIGHT_AMR_RUNTIME_RESEARCH.md)
 - [`LOCAL_RECOGNIZER_INTERFACE.md`](LOCAL_RECOGNIZER_INTERFACE.md)
-- [`PI_ULTRALIGHT_MODEL_TRAINING_HANDOFF.md`](PI_ULTRALIGHT_MODEL_TRAINING_HANDOFF.md)
 - [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md)
 
 ## 7. Emitter/radiation-source identification
@@ -466,8 +423,8 @@ Evidence:
 - [x] Record the user's development-only authorization for bounded receive
       sweeps, isolated per-feature data directories, hard data caps, and
       mandatory cleanup before feature completion.
-- [x] Add and validate a versioned `connect-p201-sdr` skill that selects a
-      healthy direct or SSH-relay route instead of assuming a fixed Pi relay.
+- [x] Add and validate the project-local `p201-sdr-workflow` skill for bounded
+      access, cross-build, deployment, duplicate-instance gating and cleanup.
 - [ ] Add automated protocol fuzzing for malformed, oversized, stale, duplicate,
       truncated, and reordered frames across all sockets.
 - [ ] Add repeatable fault injection for upstream-model loss, Planner Worker

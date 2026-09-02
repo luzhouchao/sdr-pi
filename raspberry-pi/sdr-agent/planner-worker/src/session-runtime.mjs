@@ -1,6 +1,6 @@
 // Agent interaction semantics intentionally use the public pi-agent-core
 // prompt/steer/followUp/abort/subscribe interface instead of reimplementing
-// Pi's Agent loop. See THIRD_PARTY_NOTICES.md and docs/TERMINAL_AGENT_CLI_RESEARCH.md.
+// Pi's Agent loop. See THIRD_PARTY_NOTICES.md.
 
 import { makeResponse, parseRequest } from "./protocol.mjs";
 import {

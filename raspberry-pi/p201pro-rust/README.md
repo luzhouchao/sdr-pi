@@ -1,4 +1,9 @@
-# P201 Pro Rust/libiio test client
+# P201 Pro Rust/libiio reference benchmark
+
+> Historical Pi-side benchmark. Production acquisition now runs through P201
+> `sdrd`, with aggregation and persistence on AGX. Keep this tool for repeatable
+> direct-IIOD measurements only; do not run it while another collector owns the
+> RX path.
 
 This is a minimal test client for the PUZHI PZSDR P201PRO connected through
 IIOD at `ip:192.168.1.10`. It deliberately has three analysis modes:
@@ -30,9 +35,10 @@ Examples:
   --buffer-samples 8192 --frames-per-point 4 --fft-size 2048
 ```
 
-`sweep` is the bounded Pi CPU fallback for an FPGA image without aggregate
-support. It validates the complete plan before the first LO write, limits
-continuous steps to 80% of RF bandwidth, caps estimated network IQ at 64 MiB,
+`sweep` is the benchmark's bounded Pi CPU sweep mode. It validates the complete
+plan before the first LO write, limits continuous steps to 80% of RF bandwidth,
+and retains its own historical 64 MiB command ceiling; this is not a project-wide
+capture limit. It
 reuses one context/buffer/FFT allocation across every point, emits one compact
 JSON report and restores LO, sample rate, RF bandwidth and scan-channel enables.
 It writes no raw IQ. An explicit center list can be supplied with
@@ -60,10 +66,9 @@ power is normalized against the 12-bit ADC full-scale code and Hann window
 energy. Values are therefore internally comparable, but they are not calibrated
 dBm until an RF gain/path calibration is added.
 
-This software path validates the result contract and reduces output sent to an
-agent. It does not reduce SDR-to-Pi IQ traffic. That requires moving the same
-fixed FFT/power/averaging interface into the SDR programmable logic after the
-loaded bitstream identity and rollback path are verified.
+This software path validated the original result contract, but it is no longer
+the production data path. Current operation transports bounded IQ through
+`sdrd` and performs aggregation on AGX.
 
 For future modulation or emitter-specific recognition, treat candidates as
 triggers for bounded IQ capture. Coarse PSD is useful for discovery, but it does

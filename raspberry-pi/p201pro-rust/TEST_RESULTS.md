@@ -59,9 +59,9 @@ median noise floor of -53.21 dBFS/bin and no candidate above the configured
 threshold. The aggregate test finished successfully, and the temporary binary
 and output log were removed from the Pi afterward.
 
-This test validates Pi-side streaming aggregation and downstream result
-reduction. Raw IQ still crossed the SDR-to-Pi Ethernet link; reducing that link
-load remains an SDR FPGA/ARM offload task.
+This historical test validates Pi-side streaming aggregation and downstream
+result reduction. The current production architecture instead transports
+bounded RX data through `sdrd` and aggregates it on AGX.
 
 The Pi stayed near 36-37 C and reported `throttled=0x0` after the higher-rate
 tests. No timeout, short read, or connection error occurred.

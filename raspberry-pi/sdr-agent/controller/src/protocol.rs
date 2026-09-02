@@ -56,15 +56,47 @@ pub struct SweepObservationSummary {
     pub points: Vec<(u64, f32)>,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct HealthSummary {
     pub sdr_online: bool,
     pub can_retune: bool,
     pub can_capture_iq: bool,
-    pub fpga_available: bool,
     pub recognizer_available: bool,
     pub dropped_observations: u64,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct HealthSummaryWire {
+    sdr_online: bool,
+    can_retune: bool,
+    can_capture_iq: bool,
+    #[serde(default)]
+    fpga_available: Option<bool>,
+    recognizer_available: bool,
+    dropped_observations: u64,
+}
+
+impl<'de> Deserialize<'de> for HealthSummary {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let wire = HealthSummaryWire::deserialize(deserializer)?;
+        if wire.fpga_available == Some(true) {
+            return Err(serde::de::Error::custom(
+                "fpga_available is retired and must be false",
+            ));
+        }
+        Ok(Self {
+            sdr_online: wire.sdr_online,
+            can_retune: wire.can_retune,
+            can_capture_iq: wire.can_capture_iq,
+            recognizer_available: wire.recognizer_available,
+            dropped_observations: wire.dropped_observations,
+        })
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -173,4 +205,28 @@ pub struct ValidatedPlan {
     pub approval_required: bool,
     pub action: ProposedAction,
     pub planner: PlannerMeta,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::HealthSummary;
+
+    #[test]
+    fn legacy_false_fpga_health_is_accepted_but_never_serialized() {
+        let health: HealthSummary = serde_json::from_str(
+            r#"{"sdr_online":true,"can_retune":true,"can_capture_iq":true,"fpga_available":false,"recognizer_available":false,"dropped_observations":0}"#,
+        )
+        .unwrap();
+        let serialized = serde_json::to_string(&health).unwrap();
+        assert!(!serialized.contains("fpga"));
+    }
+
+    #[test]
+    fn legacy_true_fpga_health_is_rejected() {
+        let error = serde_json::from_str::<HealthSummary>(
+            r#"{"sdr_online":true,"can_retune":true,"can_capture_iq":true,"fpga_available":true,"recognizer_available":false,"dropped_observations":0}"#,
+        )
+        .unwrap_err();
+        assert!(error.to_string().contains("retired and must be false"));
+    }
 }

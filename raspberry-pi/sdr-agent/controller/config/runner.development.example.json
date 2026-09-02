@@ -10,7 +10,6 @@
       "sdr_online": false,
       "can_retune": false,
       "can_capture_iq": false,
-      "fpga_available": false,
       "recognizer_available": false,
       "dropped_observations": 0
     },

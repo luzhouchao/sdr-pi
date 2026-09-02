@@ -273,24 +273,6 @@ impl SweepBackend for ReplaySweepAdapter {
 }
 
 #[derive(Clone)]
-pub struct SdrdFpgaSweepAdapter {
-    address: SocketAddr,
-    timeout: Duration,
-}
-
-impl SdrdFpgaSweepAdapter {
-    pub fn new(address: SocketAddr, timeout: Duration) -> Self {
-        Self { address, timeout }
-    }
-}
-
-impl SweepBackend for SdrdFpgaSweepAdapter {
-    fn run_points(&mut self, plan: &ValidatedSweepPlan) -> Result<BackendSweep, SweepError> {
-        run_sdrd_points(self.address, self.timeout, plan, SummarySource::Fpga, None)
-    }
-}
-
-#[derive(Clone)]
 pub struct SdrdSoftwareSweepAdapter {
     address: SocketAddr,
     timeout: Duration,
@@ -318,23 +300,15 @@ impl SweepBackend for SdrdSoftwareSweepAdapter {
             self.address,
             self.timeout,
             plan,
-            SummarySource::Software,
             self.sigmf_directory.as_deref(),
         )
     }
-}
-
-#[derive(Clone, Copy)]
-enum SummarySource {
-    Fpga,
-    Software,
 }
 
 fn run_sdrd_points(
     address: SocketAddr,
     timeout: Duration,
     plan: &ValidatedSweepPlan,
-    source: SummarySource,
     sigmf_directory: Option<&Path>,
 ) -> Result<BackendSweep, SweepError> {
     let mut wire = SdrdWire::connect(address, timeout)?;
@@ -356,16 +330,7 @@ fn run_sdrd_points(
             "SDRD cannot own and retune the receive path",
         ));
     }
-    if matches!(source, SummarySource::Fpga)
-        && (!capabilities.fpga_identity_valid || !capabilities.fpga_aggregate)
-    {
-        let _: Result<QuitResponse, _> = wire.request("QUIT", "");
-        return Err(SweepError::new(
-            "fpga_aggregate_unavailable",
-            "the loaded FPGA image does not expose a validated aggregate summary",
-        ));
-    }
-    if matches!(source, SummarySource::Software) && !capabilities.raw_iq_capture {
+    if !capabilities.raw_iq_capture {
         let _: Result<QuitResponse, _> = wire.request("QUIT", "");
         return Err(SweepError::new(
             "raw_iq_transport_unavailable",
@@ -385,13 +350,9 @@ fn run_sdrd_points(
         }
         session_started = true;
         let mut points = Vec::with_capacity(plan.centers_hz.len());
-        let mut sigmf = if matches!(source, SummarySource::Software) {
-            sigmf_directory
-                .map(|directory| SigmfWriter::create(directory, plan))
-                .transpose()?
-        } else {
-            None
-        };
+        let mut sigmf = sigmf_directory
+            .map(|directory| SigmfWriter::create(directory, plan))
+            .transpose()?;
         for (point_index, center_hz) in plan.centers_hz.iter().copied().enumerate() {
             let profile_args = if let Some(gain_db) = plan.gain_db {
                 format!(
@@ -426,78 +387,41 @@ fn run_sdrd_points(
             let captured_samples = u64::from(plan.frame_samples)
                 .checked_mul(u64::from(plan.aggregate_frames))
                 .ok_or_else(|| SweepError::new("sample_count", "sample count overflow"))?;
-            let (
-                response_generation,
-                sequence,
-                aggregate_samples,
-                power_lo,
-                power_mid,
-                power_hi,
-                clipped,
-                status_flags,
-                elapsed_us,
-            ) = match source {
-                SummarySource::Fpga => {
-                    let summary_args = format!(
-                        "{generation} {} {} {}",
-                        plan.frame_samples, plan.aggregate_frames, plan.point_timeout_ms
-                    );
-                    let summary: SummaryResponse =
-                        wire.request("CAPTURE_SUMMARY", &summary_args)?;
-                    (
-                        summary.generation,
-                        summary.sequence,
-                        summary.aggregate_samples,
-                        summary.rx0_power_lo,
-                        summary.rx0_power_mid,
-                        summary.rx0_power_hi,
-                        summary.rx0_clip_count,
-                        summary.status_flags,
-                        summary.elapsed_us,
-                    )
-                }
-                SummarySource::Software => {
-                    let bytes = captured_samples
-                        .checked_mul(4)
-                        .ok_or_else(|| SweepError::new("sample_count", "IQ byte count overflow"))?;
-                    if bytes > 256 * 1024 {
-                        return Err(SweepError::new(
-                            "agx_capture_size",
-                            "one AGX software-aggregate point exceeds the 256 KiB transport frame",
-                        ));
-                    }
-                    let feature_id = format!("agx-sweep-{generation}-{point_index}");
-                    let capture_args =
-                        format!("{generation} {captured_samples} {bytes} {feature_id}");
-                    let capture: InlineCaptureResponse =
-                        wire.request("CAPTURE_IQ_INLINE", &capture_args)?;
-                    if capture.generation != generation
-                        || capture.samples_captured != captured_samples
-                        || capture.bytes_transferred != bytes
-                    {
-                        return Err(SweepError::new(
-                            "agx_capture_shape",
-                            "inline IQ response does not match the validated AGX aggregation plan",
-                        ));
-                    }
-                    let iq = decode_base64(&capture.iq_base64)?;
-                    if let Some(writer) = sigmf.as_mut() {
-                        writer.append(point_index, center_hz, &iq)?;
-                    }
-                    let (power, clip_count) = aggregate_ci16_power(&iq, captured_samples)?;
-                    (
-                        capture.generation,
-                        capture.sequence,
-                        captured_samples,
-                        power as u32,
-                        (power >> 32) as u32,
-                        0,
-                        clip_count,
-                        0,
-                        0,
-                    )
-                }
-            };
+            let bytes = captured_samples
+                .checked_mul(4)
+                .ok_or_else(|| SweepError::new("sample_count", "IQ byte count overflow"))?;
+            if bytes > 256 * 1024 {
+                return Err(SweepError::new(
+                    "agx_capture_size",
+                    "one AGX software-aggregate point exceeds the 256 KiB transport frame",
+                ));
+            }
+            let feature_id = format!("agx-sweep-{generation}-{point_index}");
+            let capture_args = format!("{generation} {captured_samples} {bytes} {feature_id}");
+            let capture: InlineCaptureResponse =
+                wire.request("CAPTURE_IQ_INLINE", &capture_args)?;
+            if capture.generation != generation
+                || capture.samples_captured != captured_samples
+                || capture.bytes_transferred != bytes
+            {
+                return Err(SweepError::new(
+                    "agx_capture_shape",
+                    "inline IQ response does not match the validated AGX aggregation plan",
+                ));
+            }
+            let iq = decode_base64(&capture.iq_base64)?;
+            if let Some(writer) = sigmf.as_mut() {
+                writer.append(point_index, center_hz, &iq)?;
+            }
+            let (power, clipped) = aggregate_ci16_power(&iq, captured_samples)?;
+            let response_generation = capture.generation;
+            let sequence = capture.sequence;
+            let aggregate_samples = captured_samples;
+            let power_lo = power as u32;
+            let power_mid = (power >> 32) as u32;
+            let power_hi = 0;
+            let status_flags = 0;
+            let elapsed_us = 0;
             if response_generation != generation || status_flags != 0 {
                 return Err(SweepError::new(
                     "summary_quality",
@@ -544,15 +468,8 @@ fn run_sdrd_points(
         }
         let dataset = sigmf.map(|writer| writer.finish()).transpose()?;
         Ok(BackendSweep {
-            backend: match source {
-                SummarySource::Fpga => "sdr_fpga_summary",
-                SummarySource::Software => "agx_iq_software_aggregate",
-            }
-            .to_owned(),
-            backend_version: match source {
-                SummarySource::Fpga => capabilities.fpga_summary_version,
-                SummarySource::Software => 1,
-            },
+            backend: "agx_iq_software_aggregate".to_owned(),
+            backend_version: 1,
             points,
             dataset,
         })
@@ -1130,13 +1047,16 @@ struct CapabilitiesResponse {
     _max_capture_bytes: u64,
     #[serde(rename = "fpga_backend")]
     _fpga_backend: String,
-    fpga_identity_valid: bool,
-    fpga_summary_version: u32,
+    #[serde(rename = "fpga_identity_valid")]
+    _fpga_identity_valid: bool,
+    #[serde(rename = "fpga_summary_version")]
+    _fpga_summary_version: u32,
     #[serde(rename = "fpga_abi_version")]
     _fpga_abi_version: u32,
     #[serde(rename = "fpga_capability")]
     _fpga_capability: u32,
-    fpga_aggregate: bool,
+    #[serde(rename = "fpga_aggregate")]
+    _fpga_aggregate: bool,
 }
 
 #[derive(Deserialize)]
@@ -1172,26 +1092,6 @@ struct ProfileResponse {
     hardware_gain_db: Option<i16>,
     #[serde(rename = "enabled_channels")]
     _enabled_channels: u32,
-}
-
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct SummaryResponse {
-    #[serde(rename = "schema_version")]
-    _schema_version: u16,
-    #[serde(rename = "request_id")]
-    _request_id: u64,
-    #[serde(rename = "status")]
-    _status: String,
-    generation: u64,
-    sequence: u64,
-    aggregate_samples: u64,
-    rx0_power_lo: u32,
-    rx0_power_mid: u32,
-    rx0_power_hi: u32,
-    rx0_clip_count: u64,
-    status_flags: u32,
-    elapsed_us: u64,
 }
 
 #[derive(Deserialize)]
@@ -1382,7 +1282,6 @@ mod tests {
                 sdr_online: true,
                 can_retune: true,
                 can_capture_iq: true,
-                fpga_available: true,
                 recognizer_available: false,
                 dropped_observations: 0,
             },
@@ -1427,7 +1326,6 @@ mod tests {
                 sdr_online: true,
                 can_retune: true,
                 can_capture_iq: true,
-                fpga_available: false,
                 recognizer_available: false,
                 dropped_observations: 0,
             },
@@ -1470,7 +1368,6 @@ mod tests {
             sdr_online: true,
             can_retune: true,
             can_capture_iq: true,
-            fpga_available: false,
             recognizer_available: false,
             dropped_observations: 0,
         };
@@ -1514,68 +1411,6 @@ mod tests {
             centers_hz: vec![2_400_000_000, 2_410_000_000],
         };
         assert_eq!(validate_plan(&invalid).unwrap_err().code, "coverage_gap");
-    }
-
-    #[test]
-    fn production_adapter_fails_before_start_when_fpga_is_unavailable() {
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-        let address = listener.local_addr().unwrap();
-        let server = thread::spawn(move || {
-            let responses = [
-                "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
-                "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
-                "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"closing\":true}\n",
-            ];
-            let (mut stream, _) = listener.accept().unwrap();
-            let mut reader = BufReader::new(stream.try_clone().unwrap());
-            for response in responses {
-                let mut request = String::new();
-                reader.read_line(&mut request).unwrap();
-                assert!(!request.contains("START_SESSION"));
-                stream.write_all(response.as_bytes()).unwrap();
-                stream.flush().unwrap();
-            }
-        });
-        let adapter = SdrdFpgaSweepAdapter::new(address, Duration::from_secs(1));
-        let error = SweepEngine::new(adapter).run(&plan()).unwrap_err();
-        assert_eq!(error.code, "fpga_aggregate_unavailable");
-        server.join().unwrap();
-    }
-
-    #[test]
-    fn production_adapter_executes_one_summary_point_and_restores() {
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-        let address = listener.local_addr().unwrap();
-        let server = thread::spawn(move || {
-            let responses = [
-                "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
-                "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"uio\",\"fpga_identity_valid\":true,\"fpga_summary_version\":1398099256,\"fpga_abi_version\":65538,\"fpga_capability\":1023,\"fpga_aggregate\":true}\n",
-                "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":9,\"session_state\":\"owned\",\"restore_armed\":true}\n",
-                "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":9,\"center_hz\":2440000000,\"sample_rate_hz\":3000000,\"rf_bandwidth_hz\":2500000,\"gain_mode\":\"slow_attack\",\"enabled_channels\":1}\n",
-                "{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":9,\"sequence\":44,\"aggregate_samples\":32768,\"rx0_power_lo\":2147483648,\"rx0_power_mid\":0,\"rx0_power_hi\":0,\"rx0_clip_count\":0,\"status_flags\":0,\"elapsed_us\":900}\n",
-                "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":9,\"stopped\":true,\"restored\":true}\n",
-                "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"closing\":true}\n",
-            ];
-            let (mut stream, _) = listener.accept().unwrap();
-            let mut reader = BufReader::new(stream.try_clone().unwrap());
-            for response in responses {
-                let mut request = String::new();
-                reader.read_line(&mut request).unwrap();
-                stream.write_all(response.as_bytes()).unwrap();
-                stream.flush().unwrap();
-            }
-        });
-        let mut one_point = plan();
-        one_point.frequencies = SweepFrequencies::Centers {
-            centers_hz: vec![2_440_000_000],
-        };
-        let report = SweepEngine::new(SdrdFpgaSweepAdapter::new(address, Duration::from_secs(1)))
-            .run(&one_point)
-            .unwrap();
-        assert_eq!(report.backend, "sdr_fpga_summary");
-        assert_eq!(report.points.len(), 1);
-        assert_eq!(report.points[0].sequence, 44);
-        server.join().unwrap();
     }
 
     #[test]

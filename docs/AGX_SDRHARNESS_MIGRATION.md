@@ -1,6 +1,6 @@
 # AGX SDR Harness migration
 
-Last updated: 2026-09-01
+Last updated: 2026-09-02
 
 ## Decision
 
@@ -25,7 +25,7 @@ See
 AGX operator/Web
       |
       v
-AGX Rust Controller ---- AGX Pi Agent Worker ---- third-party model API
+AGX Rust Controller ---- AGX Pi Agent Worker ---- local Spark / model API
       |
       +---- future Recognizer interface ---- CUDA/Mamba Adapter (deferred)
       |
@@ -33,7 +33,7 @@ AGX Rust Controller ---- AGX Pi Agent Worker ---- third-party model API
 SDRD/1 client 192.168.1.20 -> 192.168.1.10:43110
       |
       v
-P201 Pro sdrd -> IIO/FPGA
+P201 Pro sdrd -> Linux/IIO RX
 ```
 
 The Controller interface remains the authority for policy, limits, approvals,
@@ -71,7 +71,8 @@ acquisition cutover, retain these gates:
 
 1. retain the recorded `uname`, JetPack/L4T, CUDA, TensorRT, PyTorch, memory and
    disk baseline;
-2. recheck Spectrum Agent, predictor, Qwen and collector status without restarting;
+2. recheck legacy Spectrum Agent, predictor, Qwen and collector status without
+   restarting anything;
 3. recheck interfaces and routes, especially AGX `192.168.1.20`;
 4. recheck the persistent `sdrd` and TCP/read-only health at
    `192.168.1.10:43110` after any P201 reboot;

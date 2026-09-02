@@ -1,9 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include "sdrd.h"
-#ifdef SDRD_ENABLE_FPGA
-#include "p201_native_mmio.h"
-#endif
 
 #include <arpa/inet.h>
 #include <ctype.h>
@@ -16,13 +13,6 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
-#define SDRD_SUM8_MAGIC 0x53554D38u
-#define SDRD_SUM8_ABI 0x00010002u
-#define SDRD_AGG8_MAGIC 0x41474738u
-#define SDRD_AGGREGATE_CAPABILITY_BIT (1u << 9)
-#define SDRD_DEFAULT_FPGA_BASE 0x43c00000u
-#define SDRD_DEFAULT_FPGA_SPAN 0x10000u
 
 static void set_error(char *error, size_t error_size, const char *message) {
   if (error != NULL && error_size > 0u) {
@@ -77,18 +67,6 @@ static int parse_u32(const char *text, uint32_t *value) {
   return 0;
 }
 
-static int parse_bool(const char *text, int *value) {
-  if (strcmp(text, "true") == 0 || strcmp(text, "1") == 0 || strcmp(text, "yes") == 0) {
-    *value = 1;
-    return 0;
-  }
-  if (strcmp(text, "false") == 0 || strcmp(text, "0") == 0 || strcmp(text, "no") == 0) {
-    *value = 0;
-    return 0;
-  }
-  return -EINVAL;
-}
-
 void sdrd_config_defaults(sdrd_config_t *config) {
   if (config == NULL) {
     return;
@@ -99,12 +77,6 @@ void sdrd_config_defaults(sdrd_config_t *config) {
   config->listen_port = SDRD_DEFAULT_PORT;
   config->client_timeout_ms = 5000u;
   (void)copy_text(config->iio_sysfs_root, sizeof(config->iio_sysfs_root), "/sys/bus/iio/devices");
-  config->fpga_backend = SDRD_FPGA_DISABLED;
-  (void)copy_text(config->fpga_device, sizeof(config->fpga_device), "/dev/mem");
-  config->fpga_base = SDRD_DEFAULT_FPGA_BASE;
-  config->fpga_span = SDRD_DEFAULT_FPGA_SPAN;
-  config->require_iomem_region = 1;
-  config->allow_devmem = 0;
   (void)copy_text(
       config->development_data_root,
       sizeof(config->development_data_root),
@@ -132,27 +104,13 @@ const char *sdrd_mode_name(sdrd_mode_t mode) {
   }
 }
 
-const char *sdrd_fpga_backend_name(sdrd_fpga_backend_t backend) {
-  switch (backend) {
-    case SDRD_FPGA_DISABLED:
-      return "disabled";
-    case SDRD_FPGA_UIO:
-      return "uio";
-    case SDRD_FPGA_DEVMEM:
-      return "devmem";
-    default:
-      return "invalid";
-  }
-}
-
 static int set_config_value(
     sdrd_config_t *config,
     const char *key,
     const char *value,
-    char *error,
-    size_t error_size) {
+  char *error,
+  size_t error_size) {
   uint32_t parsed_u32;
-  uint64_t parsed_u64;
   if (strcmp(key, "mode") == 0) {
     if (strcmp(value, "shadow") == 0) {
       config->mode = SDRD_MODE_SHADOW;
@@ -184,51 +142,6 @@ static int set_config_value(
   }
   if (strcmp(key, "iio_sysfs_root") == 0) {
     return copy_text(config->iio_sysfs_root, sizeof(config->iio_sysfs_root), value);
-  }
-  if (strcmp(key, "fpga_backend") == 0) {
-    if (strcmp(value, "disabled") == 0) {
-      config->fpga_backend = SDRD_FPGA_DISABLED;
-    } else if (strcmp(value, "uio") == 0) {
-      config->fpga_backend = SDRD_FPGA_UIO;
-    } else if (strcmp(value, "devmem") == 0) {
-      config->fpga_backend = SDRD_FPGA_DEVMEM;
-    } else {
-      set_error(error, error_size, "fpga_backend must be disabled, uio, or devmem");
-      return -EINVAL;
-    }
-    return 0;
-  }
-  if (strcmp(key, "fpga_device") == 0) {
-    return copy_text(config->fpga_device, sizeof(config->fpga_device), value);
-  }
-  if (strcmp(key, "fpga_base") == 0) {
-    if (parse_u64(value, &parsed_u64) != 0) {
-      set_error(error, error_size, "invalid fpga_base");
-      return -EINVAL;
-    }
-    config->fpga_base = parsed_u64;
-    return 0;
-  }
-  if (strcmp(key, "fpga_span") == 0) {
-    if (parse_u32(value, &config->fpga_span) != 0) {
-      set_error(error, error_size, "invalid fpga_span");
-      return -EINVAL;
-    }
-    return 0;
-  }
-  if (strcmp(key, "require_iomem_region") == 0) {
-    if (parse_bool(value, &config->require_iomem_region) != 0) {
-      set_error(error, error_size, "invalid require_iomem_region");
-      return -EINVAL;
-    }
-    return 0;
-  }
-  if (strcmp(key, "allow_devmem") == 0) {
-    if (parse_bool(value, &config->allow_devmem) != 0) {
-      set_error(error, error_size, "invalid allow_devmem");
-      return -EINVAL;
-    }
-    return 0;
   }
   if (strcmp(key, "development_data_root") == 0) {
     return copy_text(
@@ -405,16 +318,6 @@ int sdrd_config_validate(
     set_error(error, error_size, "max_capture_bytes must be between 1 and 67108864");
     return -ERANGE;
   }
-  if (config->fpga_backend != SDRD_FPGA_DISABLED) {
-    if (config->fpga_device[0] == '\0' || config->fpga_span < 0x200u) {
-      set_error(error, error_size, "enabled FPGA backend requires device and span >= 0x200");
-      return -EINVAL;
-    }
-    if (config->fpga_backend == SDRD_FPGA_DEVMEM && config->allow_devmem == 0) {
-      set_error(error, error_size, "devmem backend requires allow_devmem=true");
-      return -EACCES;
-    }
-  }
   return 0;
 }
 
@@ -458,88 +361,6 @@ static void probe_iio(const sdrd_config_t *config, sdrd_status_t *status) {
   }
 }
 
-#ifdef SDRD_ENABLE_FPGA
-static int iomem_contains(uint64_t base, uint32_t span) {
-  FILE *stream = fopen("/proc/iomem", "r");
-  char line[256];
-  const uint64_t requested_end = base + (uint64_t)span - 1u;
-  if (stream == NULL || requested_end < base) {
-    if (stream != NULL) {
-      (void)fclose(stream);
-    }
-    return 0;
-  }
-  while (fgets(line, sizeof(line), stream) != NULL) {
-    unsigned long long start;
-    unsigned long long end;
-    if (sscanf(line, "%llx-%llx", &start, &end) == 2 && base >= start && requested_end <= end) {
-      (void)fclose(stream);
-      return 1;
-    }
-  }
-  (void)fclose(stream);
-  return 0;
-}
-
-static void probe_fpga(const sdrd_config_t *config, sdrd_status_t *status) {
-  p201_mmio_t *mmio;
-  uint32_t flags = P201_MMIO_OPEN_READ_ONLY | P201_MMIO_OPEN_SYNC;
-  uint64_t offset = 0u;
-  int rc;
-  if (config->fpga_backend == SDRD_FPGA_DISABLED) {
-    return;
-  }
-  status->fpga_configured = 1;
-  if (config->fpga_backend == SDRD_FPGA_DEVMEM) {
-    if (config->require_iomem_region != 0 && iomem_contains(config->fpga_base, config->fpga_span) == 0) {
-      status->health_flags |= SDRD_HEALTH_FPGA_UNAVAILABLE;
-      return;
-    }
-    flags |= P201_MMIO_OPEN_DEVMEM;
-    offset = config->fpga_base;
-  }
-  mmio = p201_mmio_create();
-  if (mmio == NULL) {
-    status->health_flags |= SDRD_HEALTH_FPGA_UNAVAILABLE;
-    return;
-  }
-  rc = p201_mmio_open(mmio, config->fpga_device, offset, config->fpga_span, flags);
-  if (rc != 0) {
-    status->health_flags |= SDRD_HEALTH_FPGA_UNAVAILABLE;
-    p201_mmio_destroy(mmio);
-    return;
-  }
-  status->fpga_mapped = 1;
-  if (p201_mmio_read32(mmio, 0x040u, &status->summary_version) != 0 ||
-      p201_mmio_read32(mmio, 0x0ECu, &status->fpga_abi_version) != 0 ||
-      p201_mmio_read32(mmio, 0x0F0u, &status->fpga_capability) != 0 ||
-      p201_mmio_read32(mmio, 0x0FCu, &status->fpga_build_id) != 0 ||
-      p201_mmio_read32(mmio, 0x180u, &status->aggregate_version) != 0 ||
-      p201_mmio_read32(mmio, 0x1F4u, &status->aggregate_capability) != 0 ||
-      p201_mmio_read32(mmio, 0x1F8u, &status->aggregate_build_id) != 0) {
-    status->health_flags |= SDRD_HEALTH_FPGA_UNAVAILABLE;
-    p201_mmio_destroy(mmio);
-    return;
-  }
-  if (status->summary_version == SDRD_SUM8_MAGIC &&
-      status->fpga_abi_version == SDRD_SUM8_ABI &&
-      (status->fpga_capability & SDRD_AGGREGATE_CAPABILITY_BIT) != 0u &&
-      status->aggregate_version == SDRD_AGG8_MAGIC) {
-    status->fpga_identity_valid = 1;
-  } else {
-    status->health_flags |= SDRD_HEALTH_FPGA_IDENTITY_INVALID;
-  }
-  p201_mmio_destroy(mmio);
-}
-#else
-static void probe_fpga(const sdrd_config_t *config, sdrd_status_t *status) {
-  if (config->fpga_backend != SDRD_FPGA_DISABLED) {
-    status->fpga_configured = 1;
-    status->health_flags |= SDRD_HEALTH_FPGA_UNAVAILABLE;
-  }
-}
-#endif
-
 int sdrd_probe_status(
     const sdrd_config_t *config,
     sdrd_status_t *status,
@@ -557,7 +378,6 @@ int sdrd_probe_status(
     return rc;
   }
   probe_iio(config, status);
-  probe_fpga(config, status);
   return 0;
 }
 
@@ -604,11 +424,6 @@ static int radio_ops_available(const sdrd_radio_ops_t *radio) {
 
 static int power_ops_available(const sdrd_radio_ops_t *radio) {
   return radio != NULL && radio->capture_power != NULL;
-}
-
-static int summary_ops_available(const sdrd_radio_ops_t *radio) {
-  return radio != NULL && radio->summary_context != NULL && radio->begin_summary != NULL &&
-         radio->capture_summary != NULL && radio->cancel_summary != NULL;
 }
 
 static int valid_feature_id(const char *feature_id) {
@@ -721,12 +536,6 @@ static int handle_start_session(
   rc = radio->begin_session(radio->context);
   if (rc != 0) {
     return format_error(request->request_id, "session_begin_failed", response, response_size);
-  }
-  if (summary_ops_available(radio) != 0) {
-    rc = radio->begin_summary(radio->summary_context);
-    if (rc != 0) {
-      return format_error(request->request_id, "summary_begin_failed", response, response_size);
-    }
   }
   session->generation = generation;
   session->active = 1;
@@ -1071,67 +880,6 @@ static int handle_capture_iq_inline(
   return 0;
 }
 
-static int handle_capture_summary(
-    const parsed_request_t *request,
-    sdrd_session_t *session,
-    const sdrd_radio_ops_t *radio,
-    char *response,
-    size_t response_size) {
-  sdrd_summary_request_t summary;
-  sdrd_summary_result_t result;
-  int rc;
-  int written;
-  memset(&summary, 0, sizeof(summary));
-  memset(&result, 0, sizeof(result));
-  if (request_has_fields(request, 7u) != 0 ||
-      parse_u64(request->fields[3], &summary.generation) != 0 ||
-      parse_u32(request->fields[4], &summary.frame_samples) != 0 ||
-      parse_u32(request->fields[5], &summary.aggregate_frames) != 0 ||
-      parse_u32(request->fields[6], &summary.timeout_ms) != 0) {
-    return format_error(request->request_id, "invalid_arguments", response, response_size);
-  }
-  if (session->active == 0 || session->profile_applied == 0 ||
-      summary.generation != session->generation) {
-    return format_error(request->request_id, "stale_or_missing_session", response, response_size);
-  }
-  if (summary.frame_samples < 64u || summary.frame_samples > 65535u ||
-      summary.aggregate_frames == 0u || summary.aggregate_frames > 65535u ||
-      summary.timeout_ms == 0u || summary.timeout_ms > 5000u) {
-    return format_error(request->request_id, "summary_out_of_bounds", response, response_size);
-  }
-  if (summary_ops_available(radio) == 0) {
-    return format_error(request->request_id, "fpga_aggregate_unavailable", response, response_size);
-  }
-  rc = radio->capture_summary(radio->summary_context, &summary, &result);
-  if (rc != 0) {
-    const int restore_rc = sdrd_session_close(session, radio);
-    const char *code = rc == -ETIMEDOUT ? "summary_timeout_restored" : "summary_failed_restored";
-    if (restore_rc != 0) {
-      code = "summary_failed_restore_fault";
-    }
-    return format_error(request->request_id, code, response, response_size);
-  }
-  written = snprintf(
-      response,
-      response_size,
-      "{\"schema_version\":1,\"request_id\":%" PRIu64
-      ",\"status\":\"ok\",\"generation\":%" PRIu64
-      ",\"sequence\":%" PRIu64 ",\"aggregate_samples\":%" PRIu64
-      ",\"rx0_power_lo\":%u,\"rx0_power_mid\":%u,\"rx0_power_hi\":%u"
-      ",\"rx0_clip_count\":%" PRIu64 ",\"status_flags\":%u,\"elapsed_us\":%" PRIu64 "}\n",
-      request->request_id,
-      summary.generation,
-      result.sequence,
-      result.aggregate_samples,
-      result.rx0_power_lo,
-      result.rx0_power_mid,
-      result.rx0_power_hi,
-      result.rx0_clip_count,
-      result.status_flags,
-      result.elapsed_us);
-  return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
-}
-
 static int handle_capture_power(
     const parsed_request_t *request,
     sdrd_session_t *session,
@@ -1302,34 +1050,25 @@ int sdrd_handle_request(
       written = snprintf(
           response,
           response_size,
-          "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"mode\":\"%s\",\"iio_visible\":%s,\"radio_control\":%s,\"raw_iq_capture\":%s,\"software_summary\":%s,\"max_capture_bytes\":%" PRIu64 ",\"fpga_backend\":\"%s\",\"fpga_identity_valid\":%s,\"fpga_summary_version\":%u,\"fpga_abi_version\":%u,\"fpga_capability\":%u,\"fpga_aggregate\":%s}\n",
+          "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"mode\":\"%s\",\"iio_visible\":%s,\"radio_control\":%s,\"raw_iq_capture\":%s,\"software_summary\":%s,\"max_capture_bytes\":%" PRIu64 ",\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
           request.request_id,
           sdrd_mode_name(config->mode),
           status.iio_phy_visible != 0 && status.iio_rx_visible != 0 ? "true" : "false",
           control != 0 ? "true" : "false",
           control != 0 ? "true" : "false",
           control != 0 && power_ops_available(radio) != 0 ? "true" : "false",
-          config->max_capture_bytes,
-          sdrd_fpga_backend_name(config->fpga_backend),
-          status.fpga_identity_valid != 0 ? "true" : "false",
-          status.summary_version,
-          status.fpga_abi_version,
-          status.fpga_capability,
-          status.fpga_identity_valid != 0 ? "true" : "false");
+          config->max_capture_bytes);
     } else {
       const int healthy = status.health_flags == 0u && session->faulted == 0;
       written = snprintf(
           response,
           response_size,
-          "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"healthy\":%s,\"health_flags\":%u,\"iio_phy_visible\":%s,\"iio_rx_visible\":%s,\"fpga_configured\":%s,\"fpga_mapped\":%s,\"fpga_identity_valid\":%s,\"session_faulted\":%s}\n",
+          "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"healthy\":%s,\"health_flags\":%u,\"iio_phy_visible\":%s,\"iio_rx_visible\":%s,\"fpga_configured\":false,\"fpga_mapped\":false,\"fpga_identity_valid\":false,\"session_faulted\":%s}\n",
           request.request_id,
           healthy != 0 ? "true" : "false",
           status.health_flags,
           status.iio_phy_visible != 0 ? "true" : "false",
           status.iio_rx_visible != 0 ? "true" : "false",
-          status.fpga_configured != 0 ? "true" : "false",
-          status.fpga_mapped != 0 ? "true" : "false",
-          status.fpga_identity_valid != 0 ? "true" : "false",
           session->faulted != 0 ? "true" : "false");
     }
   } else if (strcmp(request.command, "QUIT") == 0) {
@@ -1345,12 +1084,13 @@ int sdrd_handle_request(
         response_size,
         "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"closing\":true}\n",
         request.request_id);
+  } else if (strcmp(request.command, "CAPTURE_SUMMARY") == 0) {
+    return format_error(request.request_id, "retired_command", response, response_size);
   } else if (strcmp(request.command, "START_SESSION") == 0 ||
              strcmp(request.command, "APPLY_PROFILE") == 0 ||
              strcmp(request.command, "CAPTURE_IQ") == 0 ||
              strcmp(request.command, "CAPTURE_IQ_INLINE") == 0 ||
              strcmp(request.command, "CAPTURE_POWER") == 0 ||
-             strcmp(request.command, "CAPTURE_SUMMARY") == 0 ||
              strcmp(request.command, "EXECUTION_STATUS") == 0 ||
              strcmp(request.command, "STOP_SESSION") == 0) {
     if (config->mode != SDRD_MODE_CONTROLLED) {
@@ -1373,9 +1113,6 @@ int sdrd_handle_request(
     }
     if (strcmp(request.command, "CAPTURE_POWER") == 0) {
       return handle_capture_power(&request, session, radio, response, response_size);
-    }
-    if (strcmp(request.command, "CAPTURE_SUMMARY") == 0) {
-      return handle_capture_summary(&request, session, radio, response, response_size);
     }
     if (strcmp(request.command, "EXECUTION_STATUS") == 0) {
       return handle_execution_status(&request, session, response, response_size);

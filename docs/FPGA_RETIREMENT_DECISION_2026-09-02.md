@@ -18,35 +18,29 @@ P201 AD9361 + Linux/IIO
 No `BOOT.bin`, FPGA register, MMIO, UIO, Vivado, Bootgen, or hardware state was
 changed to enact this decision.
 
-## Repository treatment
+## Repository cleanup
 
-- Completed FPGA design, probe, protocol and fail-closed tests remain in Git as
-  historical evidence. They are not proof of a production capability.
-- The legacy protocol fields and Adapter source may remain where needed for
-  compatibility with already deployed SDRD/1 schemas and old validation
-  artifacts. Production must report the capability false and must never select
-  that Adapter.
-- `fpga/` and FPGA-specific reports are archived evidence. Their embedded older
-  plans and standing approvals are superseded by the retirement notice in the
-  root and nested `AGENTS.md` files.
-- `ENABLE_FPGA=1` is prohibited for project builds and releases. Existing
-  source-level support is not an authorized deployment path.
-- Default native builds, unit tests, and ARMv7 cross-builds link only the
-  fail-closed compatibility stub; they do not compile the historical MMIO
-  implementation.
+- At the user's request, the complete `fpga/` tree, FPGA-only reports, MMIO
+  Adapter and its tests were removed from the current working tree.
+- The obsolete Pi VkFFT route, Pi-sized model research, superseded performance
+  plans and duplicate P201 connection skill were also removed.
+- Protocol-v1 capability and health responses retain constant false/zero FPGA
+  fields so already deployed clients keep parsing. The Planner strips the old
+  `fpga_available=false` field and rejects any legacy true claim.
+- `CAPTURE_SUMMARY` remains recognizable only to return `retired_command`; no
+  implementation or configuration path exists.
+- The pre-cleanup tree remains recoverable from Git history at `59cbb17` if a
+  future audit needs the old evidence. It is not an active project archive.
 - Reopening the route requires a new explicit user decision reversing this
   retirement. Performance pressure alone is not authorization.
 
 ## State verified at retirement
 
-- Every checked-in SDRD configuration sets `fpga_backend=disabled`.
 - The deployed Web PlanningContext reported `fpga_available=false` while the
   SDR remained online with bounded retune and IQ-capture capability.
 - The production terminal constructs `SdrdSoftwareSweepAdapter`; it does not
   construct `SdrdFpgaSweepAdapter`.
-- The Linux/IIO-only daemon and unit-test build passed, the resulting daemon had
-  no `p201_native_mmio` symbols, and an `ENABLE_FPGA=1` build was rejected by
-  the retirement guard.
+- Current SDRD configuration contains no FPGA backend or MMIO settings.
 - The deployed AGX scan path was already live-validated as P201 inline IQ to
   AGX software aggregation, SQLite/Web persistence, optional SigMF storage,
   cancellation and radio restoration.

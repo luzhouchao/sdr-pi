@@ -15,7 +15,6 @@ function request() {
         sdr_online: true,
         can_retune: false,
         can_capture_iq: false,
-        fpga_available: false,
         recognizer_available: true,
         dropped_observations: 0,
       },
@@ -46,6 +45,14 @@ function request() {
 
 test("accepts a bounded request", () => {
   assert.deepEqual(parseRequest(JSON.stringify(request())), request());
+});
+
+test("drops the retired false FPGA field and rejects a true legacy claim", () => {
+  const legacy = request();
+  legacy.observation.health.fpga_available = false;
+  assert.deepEqual(parseRequest(JSON.stringify(legacy)), request());
+  legacy.observation.health.fpga_available = true;
+  assert.throws(() => parseRequest(JSON.stringify(legacy)), /retired and must be false/u);
 });
 
 test("rejects unknown top-level fields", () => {

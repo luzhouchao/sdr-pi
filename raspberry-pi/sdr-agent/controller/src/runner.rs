@@ -350,11 +350,6 @@ mod tests {
             iio_visible: true,
             can_retune: true,
             can_capture_iq: true,
-            fpga_available: false,
-            fpga_backend: "disabled".to_owned(),
-            fpga_summary_version: 0,
-            fpga_abi_version: 0,
-            fpga_capability: 0,
         }
     }
 
@@ -371,7 +366,6 @@ mod tests {
                     sdr_online: false,
                     can_retune: false,
                     can_capture_iq: false,
-                    fpga_available: false,
                     recognizer_available: false,
                     dropped_observations: 0,
                 },

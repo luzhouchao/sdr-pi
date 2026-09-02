@@ -2322,7 +2322,6 @@ mod tests {
                         "sdr_online": true,
                         "can_retune": true,
                         "can_capture_iq": true,
-                        "fpga_available": false,
                         "recognizer_available": false,
                         "dropped_observations": 0
                     },

@@ -1,15 +1,18 @@
 # Iteration workflow
 
-All new Raspberry Pi, SDR-system, and FPGA work is tracked in this repository.
+All new AGX Agent, SDR Linux control-plane and recognizer work is tracked in
+this repository. Raspberry Pi releases remain rollback evidence; FPGA work is
+retired.
 
 ## Branch and commit rules
 
 1. Start from `main` and create a focused branch such as
-   `pi/rust-dsp-pipeline`, `sdr/iiod-throughput`, or `fpga/fft-shadow-v1`.
+   `agent/session-recovery`, `sdr/iiod-throughput`, or
+   `recognizer/cuda-adapter`.
 2. Keep commits small and evidence-based: source change, test, then result
    documentation.
-3. Do not mix Raspberry Pi runtime changes, SDR firmware changes, and FPGA
-   bitstream changes in one unreviewable commit.
+3. Do not mix Agent runtime, SDR control-plane and recognizer changes in one
+   unreviewable commit.
 4. Update the relevant README, test result, version route, and rollback note in
    the same branch.
 
@@ -29,16 +32,16 @@ SDR-system changes:
 - throughput, errors, CPU, temperature, and IIO health before/after;
 - rollback procedure.
 
-FPGA changes:
+Recognizer changes:
 
-- XSIM/OOC/IP/BD/bitstream status as applicable;
-- WNS/WHS, route status, routing errors and critical warnings;
-- Bootgen and hashes;
-- unique artifact name and rollback version;
-- physical power-cycle validation before claiming hardware validation.
+- exact model package, labels, preprocessing and SHA-256;
+- numerical comparison with the training reference;
+- latency, GPU memory, RSS, drops and thermal measurements;
+- accuracy, per-class recall and open-set behavior before enabling capability.
 
 ## Binary artifacts
 
-Generated ARM64 binaries, bitstreams, BOOT images and SD payloads do not belong
-in Git history. After all gates pass, publish them as a versioned GitHub Release
-with hashes and a link to the exact source commit.
+Generated binaries, model weights, capture data and deployment staging do not
+belong in Git history. After all gates pass, publish distributable artifacts
+through a versioned release or model store with hashes and a link to the exact
+source commit.

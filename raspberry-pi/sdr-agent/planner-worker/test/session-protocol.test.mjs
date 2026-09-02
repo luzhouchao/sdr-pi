@@ -20,7 +20,6 @@ function context() {
         sdr_online: true,
         can_retune: false,
         can_capture_iq: false,
-        fpga_available: false,
         recognizer_available: false,
         dropped_observations: 0,
       },

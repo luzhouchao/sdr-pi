@@ -2,11 +2,9 @@
 
 Date: 2026-08-31
 
-> Migration status (2026-09-01): this remains the implemented, backend-neutral
-> Controller seam and the historical Pi CPU design record. The primary runtime
-> is now `/home/jetson/sdrharness` on AGX. ONNX Runtime CPU/ncnn and the small
-> model package are not the production direction; a CUDA/Mamba Adapter will be
-> specified only after the AGX Agent framework is live-validated.
+> Current status (2026-09-02): the backend-neutral Controller seam is
+> implemented on AGX. The production CUDA/Mamba Adapter and trained checkpoint
+> are not yet integrated.
 
 ## Implemented boundary
 
@@ -14,12 +12,12 @@ The Rust Controller now has a provider-neutral `LocalRecognizer` interface with
 two adapters:
 
 - `ReplayRecognizerAdapter` for deterministic tests and captured-corpus replay;
-- `UnixRecognizerAdapter` for a future persistent C++ inference worker.
+- `UnixRecognizerAdapter` for a persistent out-of-process inference worker.
 
-The current Pi deployment does not include a model or recognizer worker, so it
-must continue to report `recognizer_available=false`. This slice establishes
-the input, result, correlation and containment rules without claiming that
-modulation or emitter recognition is operational.
+The current AGX deployment does not include a production recognizer worker, so
+it reports `recognizer_available=false`. This interface establishes the input,
+result, correlation and containment rules without claiming that modulation or
+emitter recognition is operational.
 
 ## Data path
 
@@ -30,12 +28,12 @@ triggered candidate
     -> Rust validates path, range and shape
     -> JSONL metadata over /run/sdr-agent/recognizer.sock
     -> worker maps the bounded IQ range
-    -> backend Adapter (future AGX CUDA/Mamba; historical Pi ONNX/ncnn)
+    -> AGX CUDA/Mamba backend Adapter
     -> bounded labels, confidence, model identity and timing
 ```
 
 IQ samples are never embedded in JSON and never enter the Planner Worker or
-Qwen context. The v1 model-ready input is little-endian float32 planar
+upstream-model context. The v1 model-ready input is little-endian float32 planar
 `[I, Q]`, unit-RMS normalized, with a power-of-two length from 256 through
 16384 samples per channel. The referenced file range must contain exactly
 `2 * samples_per_channel * sizeof(float)` bytes.
@@ -63,10 +61,9 @@ A successful output records:
 - file-map, preprocessing, inference and total latency.
 
 The model-specific operators, tensor names and runtime objects remain inside
-the C++ worker. Changing from the ONNX Runtime reference backend to ncnn must
-not change the Controller interface. A separate process was selected for the
-first production implementation so model-runtime faults and memory can be
-contained and the backend can be replaced without relinking the Controller.
+the worker. CUDA, PyTorch, Triton or TensorRT choices must not change the
+Controller interface. A separate process contains model-runtime faults and
+memory and allows backend replacement without relinking the Controller.
 
 ## Controller smoke command
 
@@ -83,15 +80,15 @@ sdr-agent-controller \
 
 ## Next admission slice
 
-The next implementation needs a pinned ONNX model and an offline IQ corpus.
-The C++ worker should start with one inference thread and a bounded queue of
-one, then pass numerical comparison, confusion-matrix, replay throughput,
-p50/p99 latency, RSS, CPU and 30-minute thermal gates before its health can set
-`recognizer_available=true`.
+The next implementation needs the real trained Mamba checkpoint, pinned source,
+labels, preprocessing, sample-rate policy, precision and an offline IQ corpus.
+The worker starts with a bounded queue of one, then must pass numerical
+comparison, confusion-matrix, replay throughput, p50/p99 latency, GPU memory,
+RSS, CPU and thermal gates before setting `recognizer_available=true`.
 
-## Implemented model-package loader
+## Existing package-validation seam
 
-The Pi C++ module now has a `ModelPackageLoader` interface with filesystem and
+The C++ module has a `ModelPackageLoader` interface with filesystem and
 replay Adapters. Loading returns canonical model/label paths plus validated
 metadata; it deliberately does not construct an inference session. The
 filesystem implementation requires direct child files under one package root,
@@ -99,6 +96,5 @@ rejects symlinks and traversal, caps the model at 32 MiB, checks exact byte
 length and streaming SHA-256, and validates label count and uniqueness.
 
 The version-one manifest is strict `key=value` text with no unknown or duplicate
-keys. It fixes ONNX Runtime, `planar_f32_unit_rms_v1`, tensor names, sample
-count/rate, class count and thread limit. This means a model trained on the 4090
-can be admitted without changing the Rust Controller or filesystem interface.
+keys. The production CUDA/Mamba package contract may replace its old
+ONNX-specific fields while preserving the Rust request/result boundary.

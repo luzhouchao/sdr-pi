@@ -42,8 +42,7 @@ $Arguments = @(
     '-o', $Output,
     (Join-Path $SdrdRoot 'src\main.c'),
     (Join-Path $SdrdRoot 'src\sdrd.c'),
-    (Join-Path $SdrdRoot 'src\sdrd_iio.c'),
-    (Join-Path $SdrdRoot 'src\sdrd_fpga_disabled.c')
+    (Join-Path $SdrdRoot 'src\sdrd_iio.c')
 )
 $Arguments += @('-ldl', '-pthread')
 

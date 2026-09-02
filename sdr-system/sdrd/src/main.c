@@ -1,7 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include "sdrd.h"
-#include "sdrd_fpga.h"
 #include "sdrd_iio.h"
 
 #include <arpa/inet.h>
@@ -224,13 +223,6 @@ static int handle_cancel_client(
     return send_control_error(fd, request_id, "stale_or_missing_session");
   }
   rc = runtime->radio->cancel(runtime->radio->context);
-  if (runtime->radio->cancel_summary != NULL && runtime->radio->summary_context != NULL) {
-    const int summary_rc =
-        runtime->radio->cancel_summary(runtime->radio->summary_context);
-    if (rc == 0) {
-      rc = summary_rc;
-    }
-  }
   (void)pthread_mutex_unlock(&runtime->mutex);
   if (rc != 0) {
     return send_control_error(fd, request_id, "cancel_failed");
@@ -313,11 +305,10 @@ static int run_server(const sdrd_config_t *config, const sdrd_radio_ops_t *radio
     return -saved;
   }
   printf(
-      "sdrd_listening=%s:%u mode=%s fpga_backend=%s\n",
+      "sdrd_listening=%s:%u mode=%s\n",
       config->listen_address,
       (unsigned int)config->listen_port,
-      sdrd_mode_name(config->mode),
-      sdrd_fpga_backend_name(config->fpga_backend));
+      sdrd_mode_name(config->mode));
   fflush(stdout);
   while (stop_requested == 0) {
     int client_fd = accept(server_fd, NULL, NULL);
@@ -405,7 +396,6 @@ int main(int argc, char **argv) {
   enum { ACTION_NONE, ACTION_CHECK, ACTION_PROBE, ACTION_RADIO_PROBE, ACTION_SERVE } action = ACTION_NONE;
   sdrd_config_t config;
   sdrd_iio_adapter_t *iio_adapter = NULL;
-  sdrd_fpga_adapter_t *fpga_adapter = NULL;
   sdrd_radio_ops_t radio;
   char error[256];
   int index;
@@ -438,11 +428,10 @@ int main(int argc, char **argv) {
   }
   if (action == ACTION_CHECK) {
     printf(
-        "config_result=ok listen=%s:%u mode=%s fpga_backend=%s\n",
+        "config_result=ok listen=%s:%u mode=%s\n",
         config.listen_address,
         (unsigned int)config.listen_port,
-        sdrd_mode_name(config.mode),
-        sdrd_fpga_backend_name(config.fpga_backend));
+        sdrd_mode_name(config.mode));
     return 0;
   }
   if (action == ACTION_PROBE) {
@@ -495,18 +484,8 @@ int main(int argc, char **argv) {
       return 1;
     }
     sdrd_iio_adapter_ops(iio_adapter, &radio);
-    if (config.fpga_backend != SDRD_FPGA_DISABLED) {
-      rc = sdrd_fpga_adapter_create(&config, &fpga_adapter, error, sizeof(error));
-      if (rc != 0) {
-        fprintf(stderr, "fpga_adapter_error=%s rc=%d\n", error, rc);
-        sdrd_iio_adapter_destroy(iio_adapter);
-        return 1;
-      }
-      sdrd_fpga_adapter_attach(fpga_adapter, &radio);
-    }
   }
   rc = run_server(&config, iio_adapter != NULL ? &radio : NULL);
-  sdrd_fpga_adapter_destroy(fpga_adapter);
   sdrd_iio_adapter_destroy(iio_adapter);
   if (rc != 0) {
     fprintf(stderr, "server_error=%s rc=%d\n", strerror(-rc), rc);
