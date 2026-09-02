@@ -87,6 +87,13 @@ test("normalizes a capture proposal", () => {
   );
 });
 
+test("bounds a multibyte visible reply to the Rust controller byte limit", () => {
+  const action = normalizeAction({ action: "hold", reason: "信号".repeat(100) });
+  assert.equal(action.kind, "hold");
+  assert.ok(Buffer.byteLength(action.reason, "utf8") <= 256);
+  assert.match(action.reason, /…$/u);
+});
+
 test("normalizes model-selected survey and inspection radio profiles", () => {
   assert.deepEqual(
     normalizeAction({

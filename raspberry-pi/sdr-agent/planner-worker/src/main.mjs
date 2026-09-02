@@ -13,6 +13,7 @@ import { validateRuntimeSocketPath } from "./runtime-path.mjs";
 import { RunLease } from "./run-lease.mjs";
 import { SessionRuntime } from "./session-runtime.mjs";
 import { startSessionServer } from "./session-server.mjs";
+import { createSparkJsonPlanningStream } from "./spark-stream.mjs";
 import { PLANNER_SYSTEM_PROMPT } from "./system-prompt.mjs";
 import {
   MAX_FRAME_BYTES,
@@ -203,6 +204,9 @@ function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) 
     },
   };
 
+  const sparkLocal = providerConfig.provider === "spark-local";
+  const baseStream = models.streamSimple.bind(models);
+
   const agent = new Agent({
     initialState: {
       systemPrompt: PLANNER_SYSTEM_PROMPT,
@@ -211,13 +215,15 @@ function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) 
       tools: [submitPlan],
       messages: [],
     },
-    streamFn: models.streamSimple.bind(models),
+    streamFn: sparkLocal ? createSparkJsonPlanningStream(baseStream) : baseStream,
     transformContext: async (messages) => compactPlanningContext(
       messages,
       providerConfig.contextWindow,
       providerConfig.compressionThresholdPercent,
     ),
-    onPayload: (payload) => requireSubmitPlan(payload, providerConfig.api),
+    onPayload: sparkLocal
+      ? undefined
+      : (payload) => requireSubmitPlan(payload, providerConfig.api),
     toolExecution: "sequential",
     sessionId: `sdr-${sessionGeneration}`,
     beforeToolCall: async ({ toolCall }) => {

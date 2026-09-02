@@ -1,0 +1,53 @@
+[Unit]
+Description=Spark-X2.5-4B BF16 local OpenAI-compatible inference
+After=network.target
+ConditionFileIsExecutable=/home/jetson/Spark/runtime/llama.cpp/build/bin/llama-server
+ConditionPathExists=/home/jetson/Spark/models/Spark-X2.5-4B.gguf
+ConditionPathExists=/home/jetson/Spark/config/api-key.txt
+
+[Service]
+Type=simple
+User=jetson
+Group=jetson
+WorkingDirectory=/home/jetson/Spark
+ExecStart=/home/jetson/Spark/runtime/llama.cpp/build/bin/llama-server \
+  --model /home/jetson/Spark/models/Spark-X2.5-4B.gguf \
+  --alias spark-x2.5-4b \
+  --host 127.0.0.1 \
+  --port 8010 \
+  --ctx-size 32768 \
+  --parallel 1 \
+  --threads 12 \
+  --gpu-layers all \
+  --flash-attn on \
+  --cache-type-k f16 \
+  --cache-type-v f16 \
+  --jinja \
+  --reasoning auto \
+  --reasoning-format deepseek \
+  --api-key-file /home/jetson/Spark/config/api-key.txt \
+  --no-webui
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=180
+TimeoutStopSec=15
+
+MemoryHigh=16G
+MemoryMax=24G
+CPUQuota=1200%
+TasksMax=128
+
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

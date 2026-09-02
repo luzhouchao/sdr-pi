@@ -59,11 +59,11 @@ export function normalizeAction(params) {
   }
   switch (params.action) {
     case "hold":
-      return { kind: "hold", reason: requireText(params.reason, "reason", 256) };
+      return { kind: "hold", reason: normalizeReason(params.reason) };
     case "stop_session":
       return {
         kind: "stop_session",
-        reason: requireText(params.reason, "reason", 256),
+        reason: normalizeReason(params.reason),
       };
     case "survey_band":
       return {
@@ -316,6 +316,16 @@ function requireText(value, label, maximumBytes) {
     throw new Error(`${label} must contain 1 to ${maximumBytes} printable bytes`);
   }
   return value;
+}
+
+function normalizeReason(value) {
+  const text = requireText(value, "reason", 1_024);
+  if (Buffer.byteLength(text, "utf8") <= 256) return text;
+  const characters = [...text];
+  while (Buffer.byteLength(`${characters.join("")}…`, "utf8") > 256) {
+    characters.pop();
+  }
+  return `${characters.join("")}…`;
 }
 
 function boundedError(error) {

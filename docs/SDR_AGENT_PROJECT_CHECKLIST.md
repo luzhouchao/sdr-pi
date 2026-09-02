@@ -27,7 +27,8 @@ state.
       Spectrum collector is stopped or otherwise cannot contend for the radio.
 
 - [x] Keep Qwen inference, tokenization, and KV cache on the 4090 llama.cpp
-      module.
+      module for the original Pi deployment baseline; it was later stopped when
+      the local AGX Spark deployment below became current.
 - [x] Run a bounded `pi-agent-core` Planner Worker on the Raspberry Pi.
 - [x] Use a deterministic Rust Controller as the authority for state, policy,
       capability validation, limits, approval classification, and stale-session
@@ -38,6 +39,11 @@ state.
 - [x] Connect the Planner Worker to the existing Qwen endpoint on the 4090.
 - [x] Store the Qwen token outside the repository and pass it through systemd
       credentials.
+- [x] Deploy Spark-X2.5-4B BF16 outside the repository on the AGX, connect it as
+      the Web-selected `spark-local` Planner, adapt its constrained JSON Schema
+      response into the sole `submit_plan` tool event, and live-validate a
+      greeting plus a Rust-approved real-P201 sweep with radio restoration; see
+      [`SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md`](SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md).
 - [x] Run the Planner Worker as an enabled systemd module with memory, CPU, task,
       filesystem, privilege, and address-family restrictions.
 - [x] Preserve the stateless one-shot `planner.sock` interface as a fail-closed
@@ -472,11 +478,11 @@ collector and preserve the Raspberry Pi rollback path while validating the
 P201-capture/AGX-aggregate cutover. The AGX clone, native build, runtime
 baseline, Planner/Web runtime gate, prior bounded-IQ executor, fixed-gain
 initial survey, automatic `survey_band` feedback loop and step-approved
-candidate inspection are live-validated with the real SDR and OpenCode Go
-model. Inline-IQ AGX aggregation, persistent Web results and optional SigMF are
-deployed and live-validated with both storage modes, model feedback, browser
-readback, cancellation, cleanup and radio restoration. CUDA/Mamba recognition remains
-explicitly deferred by the current scope until separately authorized after the
-Agent framework is stable.
+candidate inspection are live-validated with the real SDR and both OpenCode Go
+and the local Spark-X2.5-4B BF16 model. Inline-IQ AGX aggregation, persistent
+Web results and optional SigMF are deployed and live-validated with both
+storage modes, model feedback, browser readback, cancellation, cleanup and
+radio restoration. CUDA/Mamba recognition remains explicitly deferred by the
+current scope until separately authorized after the Agent framework is stable.
 FPGA-image work remains independently gated by hardware identity,
 sequence/quality fields and rollback evidence.

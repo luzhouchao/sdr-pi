@@ -11,8 +11,8 @@ copy those implementations into a second tree.
   and future CUDA recognition Adapter.
 - P201 Pro owns the radio through `sdrd` at `192.168.1.10:43110`.
 - Raspberry Pi remains a stopped/standby rollback target after cutover.
-- The Planner uses Pi Agent's provider stack with a Web-managed third-party
-  OpenAI-compatible Completions or Responses endpoint.
+- The Planner uses Pi Agent's provider stack with a Web-managed local or
+  third-party OpenAI-compatible Completions or Responses endpoint.
 - CUDA/Mamba model loading is intentionally deferred until the framework is
   live-validated on AGX.
 
@@ -122,7 +122,27 @@ read-only Controller observation then passed. This does not authorize starting
 a collector or changing radio state. Evidence is in
 [`../../docs/AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](../../docs/AGX_FRAMEWORK_VALIDATION_2026-09-01.md).
 
-Existing AGX Qwen remains untouched and is no longer the configured default.
+## Local Spark Planner
+
+The live AGX deployment uses the official Spark-X2.5-4B BF16 GGUF without
+quantization. Model weights, the XHToken llama.cpp runtime and the private API
+key remain outside this repository under `/home/jetson/Spark/`. The checked-in
+`systemd/spark-x25.service` exposes only `127.0.0.1:8010`, uses a 32,768-token
+context, F16 KV cache and full CUDA layer offload. Qwen is stopped and disabled;
+Spark is the saved Web provider with a 90% context-compaction threshold.
+
+Spark's llama.cpp chat template can emit unbounded assistant prose before a
+required native tool call. The Planner therefore asks this provider for one
+JSON-Schema-constrained action object and converts the validated object into
+Pi Agent's sole `submit_plan` tool event. The model still has no shell, file,
+network, SDR, IIO or FPGA authority, and the existing Rust policy and manual
+approval gates remain authoritative. Other providers retain their native Pi
+Agent tool-call path.
+
+The 2026-09-02 live test covered Web configuration, a normal greeting, model
+selection of all sweep parameters, Rust validation, manual approval, real P201
+execution, AGX aggregation, zero clipping and verified radio restoration. See
+[`../../docs/SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md`](../../docs/SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md).
 
 ## Deferred CUDA recognizer
 

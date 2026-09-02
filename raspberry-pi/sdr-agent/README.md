@@ -203,6 +203,14 @@ from `/models`. Old planning turns are automatically removed at the configured
 50–95% threshold (90% by default); the newest complete Rust-validated context is
 retained instead of asking a summarizer to invent radio facts.
 
+For the AGX-local `spark-local` provider, the Planner uses llama.cpp's JSON
+Schema constrained output because this Spark template may otherwise emit prose
+until the output limit before entering a required native tool call. The bounded
+JSON action is wrapped back into the same sole Pi Agent `submit_plan` event, so
+normal action normalization, Rust validation, approval and audit behavior do
+not change. Pure greetings and executable plans were live-validated through
+the deployed Web console and real P201 on 2026-09-02.
+
 ## Web console
 
 The current Rust web console is deployed on the AGX and listens on trusted-LAN
