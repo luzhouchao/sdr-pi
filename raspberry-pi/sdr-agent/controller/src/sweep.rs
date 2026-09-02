@@ -123,7 +123,13 @@ pub struct SweepDataset {
 }
 
 impl SweepReport {
-    pub fn planner_observation(&self, age_ms: u64, health: HealthSummary) -> ObservationSummary {
+    pub fn planner_observation(
+        &self,
+        age_ms: u64,
+        health: HealthSummary,
+        fixed_gain_db: i16,
+    ) -> ObservationSummary {
+        let first_point = self.points.first();
         ObservationSummary {
             age_ms,
             health,
@@ -145,6 +151,18 @@ impl SweepReport {
                     age_ms,
                 })
                 .collect(),
+            latest_sweep: first_point.map(|point| crate::protocol::SweepObservationSummary {
+                sweep_id: self.sweep_id.clone(),
+                sample_rate_hz: point.sample_rate_hz,
+                rf_bandwidth_hz: point.rf_bandwidth_hz,
+                fixed_gain_db,
+                noise_floor_dbfs: self.noise_floor_dbfs,
+                points: self
+                    .points
+                    .iter()
+                    .map(|point| (point.actual_center_hz, point.band_power_dbfs))
+                    .collect(),
+            }),
             recognition: None,
         }
     }
@@ -185,6 +203,7 @@ impl SweepReport {
             age_ms: 0,
             health,
             candidates,
+            latest_sweep: previous.latest_sweep.clone(),
             recognition: None,
         })
     }
@@ -836,7 +855,7 @@ pub fn validate_plan(plan: &SweepPlan) -> Result<ValidatedSweepPlan, SweepError>
             "sweep centers must be unique, ascending, and between 70 MHz and 6 GHz",
         ));
     }
-    if !(2_083_333..=30_720_000).contains(&plan.sample_rate_hz)
+    if !(2_100_000..=30_720_000).contains(&plan.sample_rate_hz)
         || !(200_000..=56_000_000).contains(&plan.rf_bandwidth_hz)
         || plan.rf_bandwidth_hz > plan.sample_rate_hz
     {
@@ -1367,10 +1386,16 @@ mod tests {
                 recognizer_available: false,
                 dropped_observations: 0,
             },
+            20,
         );
         assert_eq!(observation.candidates.len(), 1);
         assert_eq!(observation.candidates[0].id, "survey-24g-1");
         assert_eq!(observation.candidates[0].bandwidth_hz, 4_500_000);
+        let latest = observation.latest_sweep.as_ref().unwrap();
+        assert_eq!(latest.sweep_id, "survey-24g");
+        assert_eq!(latest.fixed_gain_db, 20);
+        assert_eq!(latest.points.len(), 5);
+        assert_eq!(latest.points[3], (2_446_000_000, -38.0));
     }
 
     #[test]
@@ -1406,6 +1431,7 @@ mod tests {
                 recognizer_available: false,
                 dropped_observations: 0,
             },
+            20,
         );
         assert_eq!(observation.candidates[0].center_hz, 150_000_000);
         assert_eq!(
@@ -1469,6 +1495,7 @@ mod tests {
                     age_ms: 50,
                 },
             ],
+            latest_sweep: None,
             recognition: None,
         };
         let observation = report

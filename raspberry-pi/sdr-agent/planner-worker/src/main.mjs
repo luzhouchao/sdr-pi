@@ -188,7 +188,6 @@ function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) 
       stop_hz: Type.Optional(Type.Integer({ minimum: 1 })),
       step_hz: Type.Optional(Type.Integer({ minimum: 1 })),
       center_hz: Type.Optional(Type.Integer({ minimum: 1 })),
-      bandwidth_hz: Type.Optional(Type.Integer({ minimum: 1 })),
       sample_rate_hz: Type.Optional(Type.Integer({ minimum: 1 })),
       rf_bandwidth_hz: Type.Optional(Type.Integer({ minimum: 1 })),
       dwell_ms: Type.Optional(Type.Integer({ minimum: 1 })),

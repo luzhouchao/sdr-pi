@@ -88,7 +88,11 @@ The Planner Worker can return only:
 - `stop_session`.
 
 Rust validates current capabilities, state, observation age, candidate
-identity, frequency, bandwidth, dwell time and IQ byte count. Large but bounded
+identity, frequency, sample rate, RF bandwidth, sweep coverage, dwell time and
+IQ byte count. `survey_band` requires the Planner to provide start/stop/step,
+sample rate, RF bandwidth and dwell; `inspect_candidate` requires candidate,
+center, sample rate, RF bandwidth and dwell. There are no hidden 10-MHz radio
+profile defaults in those model-selected actions. Large but bounded
 IQ requests are marked `approval_required`. The Rust `SdrActionExecutor` can
 execute an approved `capture_bounded_iq` plan through a controlled SDRD/1
 endpoint; all other action kinds still fail closed in this executor slice.
@@ -169,12 +173,16 @@ failures are counted independently; each retries at 10-second intervals and the
 fifth failure exits. `/stop` remains immediately available during the interval.
 Automatic `survey_band` uses the fixed RX gain saved on the settings page,
 counts its maximum processed sample bytes and one completed step against the
-cruise budgets, and writes only a compact candidate summary into the next
-Planner turn. Raw IQ is not persisted by the sweep.
+cruise budgets, and writes both compact deterministic candidates and the
+complete bounded measured sweep as compact `[center_hz, power_dbfs]` pairs into
+the next Planner turn. Raw IQ is persisted only when the Web storage switch is
+enabled.
 `inspect_candidate` revisits one current candidate for at most 1,000 ms using
-the same fixed gain and a single 4,096-sample `CAPTURE_POWER` summary. It
+the same fixed gain and one 4,096-sample inline-IQ window aggregated on AGX. It
 processes at most 16 KiB, persists no IQ, updates the selected candidate for the
-next Planner turn, and counts against automatic-cruise step/byte budgets.
+next Planner turn, and counts against automatic-cruise step/byte budgets. Rust
+passes the validated center/sample-rate/RF-bandwidth profile to SDRD/1
+`APPLY_PROFILE` and verifies exact readback before capture.
 
 Every model proposal is rendered as a visible `Agent>` reply only after Rust
 has validated its structured action. Greetings, status questions and
@@ -186,8 +194,10 @@ gate. SDRD capability parsing remains strict while accepting the declared
 `software_summary` field shared by the sweep and bounded-IQ production paths.
 
 The Planner system prompt explains every live `observation` and hard `limits`
-field, including current candidate signals, the overall tunable band, maximum
-single-survey span and per-action bandwidth. The private provider configuration
+field, the complete measured sweep, the tested P201/AGX fixed profile and its
+non-sustained 30.72-MHz ceiling, current candidate signals, the overall tunable
+band, maximum single-survey span and per-action bandwidth. The private provider
+configuration
 can set an 8,192–1,000,000-token context window or adopt compatible metadata
 from `/models`. Old planning turns are automatically removed at the configured
 50–95% threshold (90% by default); the newest complete Rust-validated context is

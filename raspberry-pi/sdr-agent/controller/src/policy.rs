@@ -1,6 +1,7 @@
 use crate::protocol::{
     CandidateSummary, ControllerState, PlanRequest, PlanResponse, PlanStatus, ProposedAction,
-    SafetyLimits, ValidatedPlan, MAX_CANDIDATES, MAX_INSTRUCTION_BYTES, PROTOCOL_VERSION,
+    SafetyLimits, ValidatedPlan, MAX_CANDIDATES, MAX_INSTRUCTION_BYTES, MAX_SWEEP_POINTS,
+    PROTOCOL_VERSION,
 };
 
 const MAX_SURVEY_POINTS: u64 = 768;
@@ -47,6 +48,37 @@ impl ControllerPolicy {
                 "duplicate_candidate_id",
                 "candidate ids must be unique",
             )?;
+        }
+        if let Some(sweep) = &request.observation.latest_sweep {
+            require(
+                valid_label(&sweep.sweep_id, 64),
+                "sweep_id",
+                "latest sweep id is invalid",
+            )?;
+            require(
+                !sweep.points.is_empty() && sweep.points.len() <= MAX_SWEEP_POINTS,
+                "sweep_points",
+                "latest sweep must contain between one and 768 points",
+            )?;
+            require(
+                (2_100_000..=30_720_000).contains(&sweep.sample_rate_hz)
+                    && (200_000..=sweep.sample_rate_hz).contains(&sweep.rf_bandwidth_hz)
+                    && (0..=60).contains(&sweep.fixed_gain_db)
+                    && sweep.noise_floor_dbfs.is_finite(),
+                "sweep_profile",
+                "latest sweep radio profile is invalid",
+            )?;
+            let mut previous_hz = None;
+            for (center_hz, power_dbfs) in &sweep.points {
+                validate_frequency(*center_hz, &request.limits)?;
+                require(
+                    power_dbfs.is_finite()
+                        && previous_hz.map_or(true, |previous| previous < *center_hz),
+                    "sweep_point",
+                    "latest sweep points must be finite, unique, and ascending",
+                )?;
+                previous_hz = Some(*center_hz);
+            }
         }
         if let Some(recognition) = &request.observation.recognition {
             require(
@@ -225,6 +257,8 @@ fn validate_action(request: &PlanRequest, action: &ProposedAction) -> Result<boo
             start_hz,
             stop_hz,
             step_hz,
+            sample_rate_hz,
+            rf_bandwidth_hz,
             dwell_ms,
         } => {
             require_sdr_capability(request, true, false)?;
@@ -239,6 +273,12 @@ fn validate_action(request: &PlanRequest, action: &ProposedAction) -> Result<boo
                 *step_hz > 0 && *step_hz <= stop_hz - start_hz,
                 "survey_step",
                 "survey step is invalid",
+            )?;
+            validate_radio_profile(*sample_rate_hz, *rf_bandwidth_hz, &request.limits)?;
+            require(
+                *step_hz <= rf_bandwidth_hz.saturating_mul(4) / 5,
+                "survey_coverage",
+                "survey step exceeds 80 percent of RF bandwidth",
             )?;
             validate_dwell(*dwell_ms, &request.limits)?;
             let span_hz = stop_hz - start_hz;
@@ -273,20 +313,17 @@ fn validate_action(request: &PlanRequest, action: &ProposedAction) -> Result<boo
         ProposedAction::InspectCandidate {
             candidate_id,
             center_hz,
-            bandwidth_hz,
+            sample_rate_hz,
+            rf_bandwidth_hz,
             dwell_ms,
         } => {
             require_sdr_capability(request, true, false)?;
             let candidate = find_candidate(request, candidate_id)?;
             validate_frequency(*center_hz, &request.limits)?;
-            require(
-                *bandwidth_hz > 0 && *bandwidth_hz <= request.limits.max_bandwidth_hz,
-                "inspect_bandwidth",
-                "inspection bandwidth exceeds the policy limit",
-            )?;
+            validate_radio_profile(*sample_rate_hz, *rf_bandwidth_hz, &request.limits)?;
             require(
                 center_hz.abs_diff(candidate.center_hz)
-                    <= candidate.bandwidth_hz.max(*bandwidth_hz),
+                    <= candidate.bandwidth_hz.max(*rf_bandwidth_hz),
                 "inspect_candidate_mismatch",
                 "inspection frequency does not match the selected candidate",
             )?;
@@ -319,7 +356,7 @@ fn validate_action(request: &PlanRequest, action: &ProposedAction) -> Result<boo
                 "capture frequency does not match the selected candidate",
             )?;
             require(
-                (2_083_333..=30_720_000).contains(sample_rate_hz),
+                (2_100_000..=30_720_000).contains(sample_rate_hz),
                 "capture_sample_rate",
                 "sample rate is outside the supported range",
             )?;
@@ -406,6 +443,24 @@ fn validate_dwell(dwell_ms: u64, limits: &SafetyLimits) -> Result<(), PolicyErro
     )
 }
 
+fn validate_radio_profile(
+    sample_rate_hz: u64,
+    rf_bandwidth_hz: u64,
+    limits: &SafetyLimits,
+) -> Result<(), PolicyError> {
+    require(
+        (2_100_000..=30_720_000).contains(&sample_rate_hz),
+        "sample_rate",
+        "sample rate is outside the controlled hardware range",
+    )?;
+    require(
+        (200_000..=limits.max_bandwidth_hz).contains(&rf_bandwidth_hz)
+            && rf_bandwidth_hz <= sample_rate_hz,
+        "rf_bandwidth",
+        "RF bandwidth is invalid or exceeds the sample rate",
+    )
+}
+
 fn validate_reason(reason: &str) -> Result<(), PolicyError> {
     require(
         valid_label(reason, 256),
@@ -481,6 +536,7 @@ mod tests {
                     snr_db: 16.0,
                     age_ms: 100,
                 }],
+                latest_sweep: None,
                 recognition: Some(RecognitionSummary {
                     candidate_id: "candidate-1".to_owned(),
                     label: "unknown".to_owned(),
@@ -527,7 +583,8 @@ mod tests {
                     ProposedAction::InspectCandidate {
                         candidate_id: "candidate-1".to_owned(),
                         center_hz: 433_920_000,
-                        bandwidth_hz: 500_000,
+                        sample_rate_hz: 2_100_000,
+                        rf_bandwidth_hz: 500_000,
                         dwell_ms: 500,
                     },
                 ),
@@ -547,7 +604,8 @@ mod tests {
                     ProposedAction::InspectCandidate {
                         candidate_id: "candidate-1".to_owned(),
                         center_hz: 433_920_000,
-                        bandwidth_hz: 500_000,
+                        sample_rate_hz: 2_100_000,
+                        rf_bandwidth_hz: 500_000,
                         dwell_ms: 1_001,
                     },
                 ),
@@ -587,6 +645,8 @@ mod tests {
                     start_hz: 430_000_000,
                     stop_hz: 440_000_000,
                     step_hz: 500_000,
+                    sample_rate_hz: 2_100_000,
+                    rf_bandwidth_hz: 2_000_000,
                     dwell_ms: 100,
                 },
             ),
@@ -606,6 +666,8 @@ mod tests {
                         start_hz: 70_000_000,
                         stop_hz: 90_000_000,
                         step_hz: 100_000,
+                        sample_rate_hz: 2_100_000,
+                        rf_bandwidth_hz: 2_000_000,
                         dwell_ms: 10,
                     },
                 ),
@@ -622,6 +684,8 @@ mod tests {
                         start_hz: 70_000_000,
                         stop_hz: 90_000_000,
                         step_hz: 10_000,
+                        sample_rate_hz: 2_100_000,
+                        rf_bandwidth_hz: 2_000_000,
                         dwell_ms: 10,
                     },
                 ),

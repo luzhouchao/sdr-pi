@@ -582,6 +582,8 @@ impl ConsoleApp {
             start_hz,
             stop_hz,
             step_hz,
+            sample_rate_hz,
+            rf_bandwidth_hz,
             dwell_ms,
         } = plan.action
         else {
@@ -614,8 +616,8 @@ impl ConsoleApp {
                 stop_hz,
                 step_hz,
             },
-            sample_rate_hz: 10_000_000,
-            rf_bandwidth_hz: 10_000_000,
+            sample_rate_hz,
+            rf_bandwidth_hz,
             settle_ms: dwell_ms,
             frame_samples: 4_096,
             aggregate_frames: 1,
@@ -651,12 +653,14 @@ impl ConsoleApp {
         self.template.state = ControllerState::Surveying;
         self.cruise.set_phase(CruisePhase::Executing);
         println!(
-            "自动扫频 request={} 已开始：{}–{} Hz，{} 个点，步进 {} Hz，每点停留 {} ms，固定接收增益 {} dB；最多处理 {} 字节，可随时输入 /stop。",
+            "自动扫频 request={} 已开始：{}–{} Hz，{} 个点，步进 {} Hz，采样率 {} Hz，射频带宽 {} Hz，每点停留 {} ms，固定接收增益 {} dB；最多处理 {} 字节，可随时输入 /stop。",
             plan.request_id,
             start_hz,
             stop_hz,
             points,
             step_hz,
+            sample_rate_hz,
+            rf_bandwidth_hz,
             dwell_ms,
             self.survey_gain_db,
             maximum_bytes
@@ -673,7 +677,8 @@ impl ConsoleApp {
         let ProposedAction::InspectCandidate {
             candidate_id,
             center_hz,
-            bandwidth_hz,
+            sample_rate_hz,
+            rf_bandwidth_hz,
             dwell_ms,
         } = plan.action
         else {
@@ -698,8 +703,6 @@ impl ConsoleApp {
             }
             return Ok(());
         }
-        let rf_bandwidth_hz = bandwidth_hz.max(200_000);
-        let sample_rate_hz = rf_bandwidth_hz.max(2_083_333);
         let sweep = SweepPlan {
             sweep_id: format!("inspect-{}", plan.request_id),
             session_generation: plan.session_generation,
@@ -803,7 +806,8 @@ impl ConsoleApp {
                 }
                 match kind {
                     ActiveSweepKind::Initial => {
-                        self.template.observation = report.planner_observation(0, health);
+                        self.template.observation =
+                            report.planner_observation(0, health, self.survey_gain_db);
                         self.record(format!(
                             "initial survey completed with {} candidates",
                             report.candidates.len()
@@ -820,7 +824,8 @@ impl ConsoleApp {
                         request_id,
                         maximum_bytes,
                     } => {
-                        self.template.observation = report.planner_observation(0, health);
+                        self.template.observation =
+                            report.planner_observation(0, health, self.survey_gain_db);
                         self.record(format!(
                             "executed survey request {request_id} with {} candidates",
                             report.candidates.len()
@@ -1958,19 +1963,22 @@ fn describe_plan(plan: &ValidatedPlan) -> String {
             start_hz,
             stop_hz,
             step_hz,
+            sample_rate_hz,
+            rf_bandwidth_hz,
             dwell_ms,
         } => format!(
-            "受限扫频 {}–{} Hz，步进 {} Hz，每点停留 {} ms，执行时采用设置中的固定接收增益{}",
-            start_hz, stop_hz, step_hz, dwell_ms, approval
+            "受限扫频 {}–{} Hz，步进 {} Hz、采样率 {} Hz、射频带宽 {} Hz，每点停留 {} ms，执行时采用设置中的固定接收增益{}",
+            start_hz, stop_hz, step_hz, sample_rate_hz, rf_bandwidth_hz, dwell_ms, approval
         ),
         ProposedAction::InspectCandidate {
             candidate_id,
             center_hz,
-            bandwidth_hz,
+            sample_rate_hz,
+            rf_bandwidth_hz,
             dwell_ms,
         } => format!(
-            "受限复查候选 {candidate_id}：中心 {} Hz、带宽 {} Hz、驻留 {} ms，执行时采用设置中的固定接收增益{}",
-            center_hz, bandwidth_hz, dwell_ms, approval
+            "受限复查候选 {candidate_id}：中心 {} Hz、采样率 {} Hz、射频带宽 {} Hz、驻留 {} ms，执行时采用设置中的固定接收增益{}",
+            center_hz, sample_rate_hz, rf_bandwidth_hz, dwell_ms, approval
         ),
         ProposedAction::CaptureBoundedIq {
             candidate_id,
@@ -2009,17 +2017,22 @@ fn describe_decision_basis(plan: &ValidatedPlan, request: &PlanRequest) -> Strin
             start_hz,
             stop_hz,
             step_hz,
+            sample_rate_hz,
+            rf_bandwidth_hz,
             dwell_ms,
         } => {
             let points = (stop_hz - start_hz).div_ceil(*step_hz).saturating_add(1);
             let bytes = points.saturating_mul(4_096 * 4);
             format!(
-                "扫频范围位于 {}–{} Hz，跨度 {}≤{} Hz，点数 {}≤768，停留 {}≤{} ms，预计处理 {}≤{} 字节；SDR 在线且允许调谐",
+                "扫频范围位于 {}–{} Hz，跨度 {}≤{} Hz，点数 {}≤768，步进 {}≤射频带宽 {} 的 80%，采样率 {} Hz，停留 {}≤{} ms，预计处理 {}≤{} 字节；SDR 在线且允许调谐",
                 limits.min_freq_hz,
                 limits.max_freq_hz,
                 stop_hz - start_hz,
                 limits.max_span_hz,
                 points,
+                step_hz,
+                rf_bandwidth_hz,
+                sample_rate_hz,
                 dwell_ms,
                 limits.max_dwell_ms,
                 bytes,
@@ -2029,11 +2042,12 @@ fn describe_decision_basis(plan: &ValidatedPlan, request: &PlanRequest) -> Strin
         ProposedAction::InspectCandidate {
             candidate_id,
             center_hz,
-            bandwidth_hz,
+            sample_rate_hz,
+            rf_bandwidth_hz,
             dwell_ms,
         } => format!(
-            "候选 {candidate_id} 存在；中心 {} Hz 位于安全频段，带宽 {}≤{} Hz，停留 {}≤1000 ms；SDR 在线且允许调谐",
-            center_hz, bandwidth_hz, limits.max_bandwidth_hz, dwell_ms
+            "候选 {candidate_id} 存在；中心 {} Hz 位于安全频段，采样率 {} Hz，射频带宽 {}≤{} Hz，停留 {}≤1000 ms；SDR 在线且允许调谐",
+            center_hz, sample_rate_hz, rf_bandwidth_hz, limits.max_bandwidth_hz, dwell_ms
         ),
         ProposedAction::CaptureBoundedIq {
             candidate_id,
@@ -2167,6 +2181,8 @@ mod tests {
             start_hz: 70_000_000,
             stop_hz: 90_000_000,
             step_hz: 100_000,
+            sample_rate_hz: 2_100_000,
+            rf_bandwidth_hz: 2_000_000,
             dwell_ms: 10,
         });
         let reply = describe_agent_reply(&plan, InteractionMode::StepApproval);

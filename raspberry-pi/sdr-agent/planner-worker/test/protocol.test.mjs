@@ -87,6 +87,60 @@ test("normalizes a capture proposal", () => {
   );
 });
 
+test("normalizes model-selected survey and inspection radio profiles", () => {
+  assert.deepEqual(
+    normalizeAction({
+      action: "survey_band",
+      start_hz: 2_400_000_000,
+      stop_hz: 2_420_000_000,
+      step_hz: 1_000_000,
+      sample_rate_hz: 10_000_000,
+      rf_bandwidth_hz: 8_000_000,
+      dwell_ms: 10,
+    }),
+    {
+      kind: "survey_band",
+      start_hz: 2_400_000_000,
+      stop_hz: 2_420_000_000,
+      step_hz: 1_000_000,
+      sample_rate_hz: 10_000_000,
+      rf_bandwidth_hz: 8_000_000,
+      dwell_ms: 10,
+    },
+  );
+  assert.deepEqual(
+    normalizeAction({
+      action: "inspect_candidate",
+      candidate_id: "candidate-1",
+      center_hz: 2_405_000_000,
+      sample_rate_hz: 5_000_000,
+      rf_bandwidth_hz: 4_000_000,
+      dwell_ms: 250,
+    }),
+    {
+      kind: "inspect_candidate",
+      candidate_id: "candidate-1",
+      center_hz: 2_405_000_000,
+      sample_rate_hz: 5_000_000,
+      rf_bandwidth_hz: 4_000_000,
+      dwell_ms: 250,
+    },
+  );
+});
+
+test("accepts compact measured sweep points in PlanningContext", () => {
+  const value = request();
+  value.observation.latest_sweep = {
+    sweep_id: "request-6",
+    sample_rate_hz: 10_000_000,
+    rf_bandwidth_hz: 8_000_000,
+    fixed_gain_db: 20,
+    noise_floor_dbfs: -53,
+    points: [[2_400_000_000, -51.2], [2_401_000_000, -28.4]],
+  };
+  assert.deepEqual(parseRequest(JSON.stringify(value)), value);
+});
+
 test("rejects incomplete proposals", () => {
   assert.throws(
     () => normalizeAction({ action: "inspect_candidate", candidate_id: "candidate-1" }),

@@ -4,6 +4,7 @@ pub const PROTOCOL_VERSION: u16 = 1;
 pub const MAX_FRAME_BYTES: usize = 32 * 1024;
 pub const MAX_INSTRUCTION_BYTES: usize = 1024;
 pub const MAX_CANDIDATES: usize = 32;
+pub const MAX_SWEEP_POINTS: usize = 768;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -36,7 +37,23 @@ pub struct ObservationSummary {
     #[serde(default)]
     pub candidates: Vec<CandidateSummary>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub latest_sweep: Option<SweepObservationSummary>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub recognition: Option<RecognitionSummary>,
+}
+
+/// Compact, measured sweep data supplied to the upstream Planner. Each point
+/// is `[actual_center_hz, band_power_dbfs]`; keeping the pair compact lets the
+/// complete bounded 768-point sweep remain inside the Planner protocol frame.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SweepObservationSummary {
+    pub sweep_id: String,
+    pub sample_rate_hz: u64,
+    pub rf_bandwidth_hz: u64,
+    pub fixed_gain_db: i16,
+    pub noise_floor_dbfs: f32,
+    pub points: Vec<(u64, f32)>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -122,12 +139,15 @@ pub enum ProposedAction {
         start_hz: u64,
         stop_hz: u64,
         step_hz: u64,
+        sample_rate_hz: u64,
+        rf_bandwidth_hz: u64,
         dwell_ms: u64,
     },
     InspectCandidate {
         candidate_id: String,
         center_hz: u64,
-        bandwidth_hz: u64,
+        sample_rate_hz: u64,
+        rf_bandwidth_hz: u64,
         dwell_ms: u64,
     },
     CaptureBoundedIq {

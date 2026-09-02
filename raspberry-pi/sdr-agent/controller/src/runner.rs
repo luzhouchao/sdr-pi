@@ -383,6 +383,7 @@ mod tests {
                     snr_db: 10.0,
                     age_ms: 100,
                 }],
+                latest_sweep: None,
                 recognition: None,
             },
             limits: SafetyLimits {

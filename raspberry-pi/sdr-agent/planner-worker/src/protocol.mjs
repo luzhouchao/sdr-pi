@@ -2,6 +2,7 @@ export const PROTOCOL_VERSION = 1;
 export const MAX_FRAME_BYTES = 32 * 1024;
 export const MAX_INSTRUCTION_BYTES = 1024;
 export const MAX_CANDIDATES = 32;
+export const MAX_SWEEP_POINTS = 768;
 
 const STATES = new Set([
   "idle",
@@ -70,6 +71,8 @@ export function normalizeAction(params) {
         start_hz: requireInteger(params.start_hz, "start_hz"),
         stop_hz: requireInteger(params.stop_hz, "stop_hz"),
         step_hz: requireInteger(params.step_hz, "step_hz"),
+        sample_rate_hz: requireInteger(params.sample_rate_hz, "sample_rate_hz"),
+        rf_bandwidth_hz: requireInteger(params.rf_bandwidth_hz, "rf_bandwidth_hz"),
         dwell_ms: requireInteger(params.dwell_ms, "dwell_ms"),
       };
     case "inspect_candidate":
@@ -77,7 +80,8 @@ export function normalizeAction(params) {
         kind: "inspect_candidate",
         candidate_id: requireText(params.candidate_id, "candidate_id", 64),
         center_hz: requireInteger(params.center_hz, "center_hz"),
-        bandwidth_hz: requireInteger(params.bandwidth_hz, "bandwidth_hz"),
+        sample_rate_hz: requireInteger(params.sample_rate_hz, "sample_rate_hz"),
+        rf_bandwidth_hz: requireInteger(params.rf_bandwidth_hz, "rf_bandwidth_hz"),
         dwell_ms: requireInteger(params.dwell_ms, "dwell_ms"),
       };
     case "capture_bounded_iq":
@@ -142,6 +146,7 @@ export function makeErrorResponse(request, planner, status, error) {
 function validateObservation(observation) {
   requirePlainObject(observation, "observation");
   const observationKeys = ["age_ms", "health", "candidates"];
+  if (Object.hasOwn(observation, "latest_sweep")) observationKeys.push("latest_sweep");
   if (Object.hasOwn(observation, "recognition")) observationKeys.push("recognition");
   requireExactKeys(observation, observationKeys, "observation");
   if (!Array.isArray(observation.candidates) || observation.candidates.length > MAX_CANDIDATES) {
@@ -190,6 +195,46 @@ function validateObservation(observation) {
     requireFinite(candidate.peak_dbfs, "candidate.peak_dbfs");
     requireFinite(candidate.snr_db, "candidate.snr_db");
     requireSafeInteger(candidate.age_ms, "candidate.age_ms", 0);
+  }
+  if (observation.latest_sweep !== undefined) {
+    const sweep = observation.latest_sweep;
+    requirePlainObject(sweep, "observation.latest_sweep");
+    requireExactKeys(
+      sweep,
+      [
+        "sweep_id",
+        "sample_rate_hz",
+        "rf_bandwidth_hz",
+        "fixed_gain_db",
+        "noise_floor_dbfs",
+        "points",
+      ],
+      "observation.latest_sweep",
+    );
+    requireText(sweep.sweep_id, "latest_sweep.sweep_id", 64);
+    requireSafeInteger(sweep.sample_rate_hz, "latest_sweep.sample_rate_hz", 1);
+    requireSafeInteger(sweep.rf_bandwidth_hz, "latest_sweep.rf_bandwidth_hz", 1);
+    requireSafeInteger(sweep.fixed_gain_db, "latest_sweep.fixed_gain_db", 0);
+    if (sweep.fixed_gain_db > 60) {
+      throw new Error("latest_sweep.fixed_gain_db must not exceed 60");
+    }
+    requireFinite(sweep.noise_floor_dbfs, "latest_sweep.noise_floor_dbfs");
+    if (!Array.isArray(sweep.points) || sweep.points.length === 0
+      || sweep.points.length > MAX_SWEEP_POINTS) {
+      throw new Error("latest_sweep.points must contain 1 to 768 measured points");
+    }
+    let previousCenterHz = 0;
+    for (const point of sweep.points) {
+      if (!Array.isArray(point) || point.length !== 2) {
+        throw new Error("each latest_sweep point must be [center_hz, power_dbfs]");
+      }
+      requireSafeInteger(point[0], "latest_sweep point center_hz", 1);
+      requireFinite(point[1], "latest_sweep point power_dbfs");
+      if (point[0] <= previousCenterHz) {
+        throw new Error("latest_sweep point centers must be ascending and unique");
+      }
+      previousCenterHz = point[0];
+    }
   }
   if (observation.recognition !== undefined) {
     requirePlainObject(observation.recognition, "observation.recognition");

@@ -10,6 +10,7 @@ use sdr_agent_controller::{
     policy::ControllerPolicy,
     protocol::{
         ObservationSummary, PlanRequest, MAX_CANDIDATES, MAX_FRAME_BYTES, MAX_INSTRUCTION_BYTES,
+        MAX_SWEEP_POINTS,
     },
 };
 use serde::{Deserialize, Serialize};
@@ -1426,7 +1427,10 @@ fn runtime_request_bytes(base: &[u8], observation: &ObservationSummary) -> ApiRe
     ControllerPolicy
         .validate_request(&request)
         .map_err(internal_error)?;
-    let bytes = serde_json::to_vec_pretty(&request).map_err(internal_error)?;
+    // latest_sweep intentionally carries all bounded measured points. Compact
+    // encoding keeps the complete 768-point result inside the 32 KiB Planner
+    // frame while preserving exact numeric values.
+    let bytes = serde_json::to_vec(&request).map_err(internal_error)?;
     if bytes.len() > MAX_FRAME_BYTES {
         return Err(ApiError(
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -1734,6 +1738,31 @@ fn validate_persisted_observation(observation: &ObservationSummary) -> ApiResult
             return Err(ApiError(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "结构化观测包含无效或重复候选".into(),
+            ));
+        }
+    }
+    if let Some(sweep) = &observation.latest_sweep {
+        let mut previous_center_hz = None;
+        if sweep.sweep_id.is_empty()
+            || sweep.sweep_id.len() >= 64
+            || sweep.points.is_empty()
+            || sweep.points.len() > MAX_SWEEP_POINTS
+            || !(2_100_000..=30_720_000).contains(&sweep.sample_rate_hz)
+            || !(200_000..=sweep.sample_rate_hz).contains(&sweep.rf_bandwidth_hz)
+            || !(0..=60).contains(&sweep.fixed_gain_db)
+            || !sweep.noise_floor_dbfs.is_finite()
+            || sweep.points.iter().any(|(center_hz, power_dbfs)| {
+                let invalid = !(DEFAULT_SURVEY_START_HZ..=DEFAULT_SURVEY_STOP_HZ)
+                    .contains(center_hz)
+                    || !power_dbfs.is_finite()
+                    || previous_center_hz.is_some_and(|previous| previous >= *center_hz);
+                previous_center_hz = Some(*center_hz);
+                invalid
+            })
+        {
+            return Err(ApiError(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "结构化观测包含无效扫频点".into(),
             ));
         }
     }

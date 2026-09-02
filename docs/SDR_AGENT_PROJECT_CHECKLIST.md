@@ -1,6 +1,6 @@
 # SDR Agent project checklist
 
-Last reviewed: 2026-09-01
+Last reviewed: 2026-09-02
 
 This is the living source of truth for implementation status. Check an item only
 after the exact wording is implemented and verified. Split partial work into a
@@ -180,6 +180,12 @@ Evidence:
       per-survey maximum span, per-action bandwidth, dwell, sample, byte,
       approval and freshness bounds; missing current data requires `hold` and
       never permits invented signals or capabilities.
+- [x] Deploy and live-validate the revised Planner contract that supplies the
+      complete bounded measured sweep as compact point pairs, states the tested
+      P201/AGX fixed profile and limitations in the system prompt, and requires
+      model-selected survey/inspection sample rate and RF bandwidth before Rust
+      validation and SDRD execution; see
+      [`P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md`](P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md).
 - [x] Complete automatic `survey_band` execution and feed its compact CPU sweep
       observation into the next Planner turn. The bounded AGX CPU path was
       live-validated receive-only with the real P201 SDR and OpenCode Go model,
@@ -313,6 +319,12 @@ AGX while P201 remains responsible only for bounded RX capture and transport.
       accounting, AGX free-space evidence, SVG result readback, manual deletion,
       cancellation and verified radio-state restoration; see
       [`SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md`](SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md).
+- [x] Characterize the current P201/AGX bounded receive profile without raw-IQ
+      retention: 2.1–30.72 MS/s profiles applied and restored, but legacy power
+      processing reached only about 7 MS/s and base64 inline transport only
+      about 1.87 Mb/s. Keep sustained-operation claims and the 5/10-MS/s item
+      below open; see
+      [`P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md`](P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md).
 - [x] Run a configurable one-shot receive-only initial survey for each new Web
       conversation, defaulting to a 743-point 70 MHz–6 GHz plan at fixed 20 dB;
       fail on clipping or gain-readback mismatch, restore radio state, persist
