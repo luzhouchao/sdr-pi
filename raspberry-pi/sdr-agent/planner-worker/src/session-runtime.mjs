@@ -78,6 +78,7 @@ export class SessionRuntime {
     const created = this.createAgent({
       sessionGeneration: command.session_generation,
       onPlan: (action) => this.#submitPlan(action),
+      onSearchEvent: (event) => this.#handleSearchEvent(event),
     });
     this.agent = created?.agent ?? created;
     this.plannerMeta = created?.plannerMeta ?? this.plannerMeta;
@@ -286,6 +287,21 @@ export class SessionRuntime {
       default:
         break;
     }
+  }
+
+  #handleSearchEvent(event) {
+    if (this.currentContext === undefined) {
+      throw new Error("web search has no active planning context");
+    }
+    const requestId = this.currentContext.request_id;
+    const phase = event?.phase;
+    if (!new Set(["start", "end", "error"]).has(phase)) {
+      throw new Error("web search emitted an invalid phase");
+    }
+    this.emit(makeSessionEvent(this.sessionGeneration, `web_search_${phase}`, {
+      ...event,
+      request_id: requestId,
+    }));
   }
 
   #submitPlan(action) {

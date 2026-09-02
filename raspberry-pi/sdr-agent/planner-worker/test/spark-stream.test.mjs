@@ -75,6 +75,88 @@ test("converts constrained Spark JSON into the sole Agent tool call", async () =
   assert.deepEqual(result.usage, usage);
 });
 
+test("runs a bounded host search before converting the final Spark plan", async () => {
+  const responses = [
+    '{"adapter_action":"web_search","query":"Spark X2.5 release"}',
+    '{"adapter_action":"submit_plan","plan":{"action":"hold","reason":"检索完成"}}',
+  ];
+  const payloads = [];
+  const searchEvents = [];
+  const baseStream = (_model, context, options) => {
+    payloads.push(options.onPayload({
+      model: "spark-x2.5-4b",
+      messages: [
+        { role: "system", content: "system" },
+        ...context.messages,
+      ],
+      tools: [{ type: "function" }],
+    }));
+    return completedTextStream(responses.shift());
+  };
+  const streamFn = createSparkJsonPlanningStream(baseStream, {
+    maxSearches: 2,
+    webSearch: async (query) => ({
+      query,
+      sources: [{
+        title: "Spark release",
+        url: "https://example.com/spark",
+        snippet: "A current public fact.",
+      }],
+      truncated: false,
+    }),
+    onSearchEvent: async (event) => searchEvents.push(event),
+  });
+  const result = await streamFn(
+    { api: "openai-completions", provider: "spark-local", id: "spark-x2.5-4b" },
+    {
+      systemPrompt: "system",
+      messages: [{ role: "user", content: [{ type: "text", text: "search" }] }],
+      tools: [{ name: "submit_plan", parameters: { type: "object" } }],
+    },
+  ).result();
+
+  assert.equal(payloads.length, 2);
+  assert.equal(payloads[0].response_format.json_schema.name, "planner_adapter_action");
+  assert.equal(payloads[1].messages.some((message) =>
+    typeof message.content === "string" && message.content.includes("HOST WEB_SEARCH RESULT")), true);
+  assert.deepEqual(searchEvents.map((event) => event.phase), ["start", "end"]);
+  assert.equal(searchEvents[1].sources[0].snippet, undefined);
+  assert.equal(result.stopReason, "toolUse");
+  assert.deepEqual(result.content[0].arguments, { action: "hold", reason: "检索完成" });
+  assert.equal(result.usage.totalTokens, usage.totalTokens * 2);
+});
+
+test("returns a conservative second model turn when local search fails", async () => {
+  const responses = [
+    '{"adapter_action":"web_search","query":"unavailable fact"}',
+    '{"adapter_action":"submit_plan","plan":{"action":"hold","reason":"搜索暂不可用"}}',
+  ];
+  const contexts = [];
+  const events = [];
+  const baseStream = (_model, context, options) => {
+    contexts.push(context);
+    options.onPayload({ messages: [{ role: "system", content: "system" }] });
+    return completedTextStream(responses.shift());
+  };
+  const result = await createSparkJsonPlanningStream(baseStream, {
+    maxSearches: 1,
+    webSearch: async () => { throw new Error("offline\nsecret detail"); },
+    onSearchEvent: (event) => events.push(event),
+  })(
+    { api: "openai-completions", provider: "spark-local", id: "spark-x2.5-4b" },
+    {
+      systemPrompt: "system",
+      messages: [],
+      tools: [{ name: "submit_plan", parameters: { type: "object" } }],
+    },
+  ).result();
+  assert.equal(contexts.length, 2);
+  assert.match(contexts[1].messages.at(-1).content[0].text, /Do not invent results/u);
+  assert.deepEqual(events.map((event) => event.phase), ["start", "error"]);
+  assert.equal(events[1].error.includes("\n"), false);
+  assert.deepEqual(result.content[0].arguments, { action: "hold", reason: "搜索暂不可用" });
+});
+
 function completedTextStream(text) {
   const stream = new AssistantMessageEventStream();
   const message = {

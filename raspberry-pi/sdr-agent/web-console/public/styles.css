@@ -153,7 +153,7 @@ button.mode-card { padding: 10px 12px; text-align: left; }
 .line { display: grid; grid-template-columns: 74px 84px minmax(0, 1fr); gap: 10px; padding: 2px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .line time { color: #526079; }
 .line .kind { color: var(--muted); font-size: 10px; padding-top: 2px; }
-.line.operator .text { color: var(--cyan); } .line.qwen .text { color: #d8caff; } .line.plan .text { color: var(--amber); }
+.line.operator .text { color: var(--cyan); } .line.qwen .text { color: #d8caff; } .line.search .text { color: #8be9c1; } .line.plan .text { color: var(--amber); }
 .line.execution .text, .line.sweep .text, .line.cruise .text { color: #7ee0ad; } .line.error .text { color: var(--danger); }
 .line.prompt { opacity: .5; }
 

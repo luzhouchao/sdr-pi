@@ -133,16 +133,29 @@ Spark is the saved Web provider with a 90% context-compaction threshold.
 
 Spark's llama.cpp chat template can emit unbounded assistant prose before a
 required native tool call. The Planner therefore asks this provider for one
-JSON-Schema-constrained action object and converts the validated object into
-Pi Agent's sole `submit_plan` tool event. The model still has no shell, file,
-network, SDR, IIO or FPGA authority, and the existing Rust policy and manual
-approval gates remain authoritative. Other providers retain their native Pi
-Agent tool-call path.
+JSON-Schema-constrained adapter action. It converts a final plan object into Pi
+Agent's sole `submit_plan` tool event. When explicitly enabled, the other
+adapter action can only submit a text query to the fixed loopback SearXNG
+service; the host returns bounded, untrusted snippets and then asks Spark for
+the final plan. The model cannot choose the search endpoint, fetch an arbitrary
+result URL, follow redirects, or use search results to override the system
+prompt, measured SDR state, hardware limits or Rust policy.
+
+The AGX template enables at most two searches per planning turn, eight sources
+per search, a 15-second search timeout and a 512 KiB response ceiling. Search
+queries and source URLs are visible in the Web terminal under `网络搜索`. The
+model still has no shell, file, unrestricted network, SDR, IIO or FPGA
+authority, and the existing Rust policy and manual approval gates remain
+authoritative. Other providers retain their native Pi Agent tool-call path and
+do not receive this Spark-specific host adapter.
 
 The 2026-09-02 live test covered Web configuration, a normal greeting, model
 selection of all sweep parameters, Rust validation, manual approval, real P201
 execution, AGX aggregation, zero clipping and verified radio restoration. See
 [`../../docs/SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md`](../../docs/SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md).
+The bounded local web-search deployment and real browser/model validation are
+recorded in
+[`../../docs/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md`](../../docs/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md).
 
 ## Deferred CUDA recognizer
 

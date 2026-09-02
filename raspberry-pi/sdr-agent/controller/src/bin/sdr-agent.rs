@@ -1495,6 +1495,11 @@ impl ConsoleApp {
                 };
                 println!("{label}> {}", serde_json::to_string(&data)?);
             }
+            "web_search_start" | "web_search_end" | "web_search_error" => {
+                for line in describe_web_search_event(&frame, &self.requests)? {
+                    println!("{line}");
+                }
+            }
             "assistant_message" => {
                 if let Some(text) = frame.pointer("/data/text").and_then(Value::as_str) {
                     if !text.trim().is_empty() {
@@ -1668,6 +1673,131 @@ impl ConsoleApp {
             }
         }
     }
+}
+
+fn describe_web_search_event(
+    frame: &Value,
+    requests: &HashMap<u64, PlanRequest>,
+) -> AppResult<Vec<String>> {
+    let event = frame
+        .get("event")
+        .and_then(Value::as_str)
+        .ok_or_else(|| invalid_input("web search event name is missing"))?;
+    let data = frame
+        .get("data")
+        .and_then(Value::as_object)
+        .ok_or_else(|| invalid_input("web search event data is missing"))?;
+    let request_id = data
+        .get("request_id")
+        .and_then(Value::as_u64)
+        .ok_or_else(|| invalid_input("web search event is missing request_id"))?;
+    if !requests.contains_key(&request_id) {
+        return Err(invalid_input("web search event refers to an unknown request").into());
+    }
+    let phase = event
+        .strip_prefix("web_search_")
+        .ok_or_else(|| invalid_input("invalid web search event"))?;
+    if data.get("phase").and_then(Value::as_str) != Some(phase) {
+        return Err(invalid_input("web search event phase does not match its name").into());
+    }
+    let query = require_web_event_text(data, "query", 512)?;
+    match phase {
+        "start" => {
+            require_web_event_keys(data, &["request_id", "phase", "query"])?;
+            Ok(vec![format!(
+                "搜索> 正在查询 {}",
+                serde_json::to_string(query)?
+            )])
+        }
+        "error" => {
+            require_web_event_keys(data, &["request_id", "phase", "query", "error"])?;
+            let error = require_web_event_text(data, "error", 512)?;
+            Ok(vec![format!(
+                "搜索> 查询 {} 失败：{}",
+                serde_json::to_string(query)?,
+                error
+            )])
+        }
+        "end" => {
+            require_web_event_keys(
+                data,
+                &[
+                    "request_id",
+                    "phase",
+                    "query",
+                    "count",
+                    "sources",
+                    "truncated",
+                ],
+            )?;
+            let count = data
+                .get("count")
+                .and_then(Value::as_u64)
+                .ok_or_else(|| invalid_input("web search result count is missing"))?;
+            let sources = data
+                .get("sources")
+                .and_then(Value::as_array)
+                .ok_or_else(|| invalid_input("web search sources are missing"))?;
+            if count > 8 || sources.len() != count as usize {
+                return Err(invalid_input("web search source count is invalid").into());
+            }
+            if !data.get("truncated").is_some_and(Value::is_boolean) {
+                return Err(invalid_input("web search truncated flag is invalid").into());
+            }
+            let mut lines = vec![format!(
+                "搜索> 查询 {} 返回 {count} 个来源{}。",
+                serde_json::to_string(query)?,
+                if data.get("truncated").and_then(Value::as_bool) == Some(true) {
+                    "（结果已截断）"
+                } else {
+                    ""
+                }
+            )];
+            for source in sources {
+                let source = source
+                    .as_object()
+                    .ok_or_else(|| invalid_input("web search source must be an object"))?;
+                require_web_event_keys(source, &["title", "url"])?;
+                let title = require_web_event_text(source, "title", 256)?;
+                let url = require_web_event_text(source, "url", 2_048)?;
+                if !(url.starts_with("http://") || url.starts_with("https://")) {
+                    return Err(invalid_input("web search source URL must use HTTP(S)").into());
+                }
+                lines.push(format!(
+                    "搜索来源> {} — {}",
+                    serde_json::to_string(title)?,
+                    serde_json::to_string(url)?
+                ));
+            }
+            Ok(lines)
+        }
+        _ => Err(invalid_input("invalid web search event phase").into()),
+    }
+}
+
+fn require_web_event_text<'a>(
+    data: &'a serde_json::Map<String, Value>,
+    key: &str,
+    maximum_bytes: usize,
+) -> AppResult<&'a str> {
+    let value = data
+        .get(key)
+        .and_then(Value::as_str)
+        .ok_or_else(|| invalid_input(format!("web search {key} must be text")))?;
+    if value.is_empty() || value.len() > maximum_bytes || value.chars().any(char::is_control) {
+        return Err(invalid_input(format!("web search {key} is invalid")).into());
+    }
+    Ok(value)
+}
+
+fn require_web_event_keys(
+    data: &serde_json::Map<String, Value>,
+    expected: &[&str],
+) -> AppResult<()> {
+    if data.len() != expected.len() || expected.iter().any(|key| !data.contains_key(*key)) {
+        return Err(invalid_input("web search event contains unexpected fields").into());
+    }
+    Ok(())
 }
 
 struct SessionClient {
@@ -2173,6 +2303,64 @@ mod tests {
             describe_agent_reply(&plan, InteractionMode::StepApproval),
             "你好，我已连接，可以帮你安全地检查频段。"
         );
+    }
+
+    #[test]
+    fn validates_and_renders_correlated_web_search_sources() {
+        let mut requests = HashMap::new();
+        requests.insert(
+            7,
+            serde_json::from_value(json!({
+                "protocol_version": 1,
+                "request_id": 7,
+                "session_generation": 2,
+                "instruction": "搜索公开资料",
+                "state": "idle",
+                "observation": {
+                    "age_ms": 0,
+                    "health": {
+                        "sdr_online": true,
+                        "can_retune": true,
+                        "can_capture_iq": true,
+                        "fpga_available": false,
+                        "recognizer_available": false,
+                        "dropped_observations": 0
+                    },
+                    "candidates": []
+                },
+                "limits": {
+                    "min_freq_hz": 70000000,
+                    "max_freq_hz": 6000000000_u64,
+                    "max_span_hz": 6000000000_u64,
+                    "max_bandwidth_hz": 30000000,
+                    "max_dwell_ms": 5000,
+                    "max_iq_samples": 1048576,
+                    "max_iq_bytes": 4194304,
+                    "auto_approve_iq_bytes": 262144,
+                    "max_observation_age_ms": 10000
+                }
+            }))
+            .unwrap(),
+        );
+        let frame = json!({
+            "event": "web_search_end",
+            "data": {
+                "request_id": 7,
+                "phase": "end",
+                "query": "Spark X2.5",
+                "count": 1,
+                "sources": [{"title": "Official source", "url": "https://example.com/spark"}],
+                "truncated": false
+            }
+        });
+        let lines = describe_web_search_event(&frame, &requests).unwrap();
+        assert_eq!(lines.len(), 2);
+        assert!(lines[0].contains("返回 1 个来源"));
+        assert!(lines[1].contains("https://example.com/spark"));
+
+        let mut invalid = frame;
+        invalid["data"]["sources"][0]["url"] = json!("file:///etc/passwd");
+        assert!(describe_web_search_event(&invalid, &requests).is_err());
     }
 
     #[test]

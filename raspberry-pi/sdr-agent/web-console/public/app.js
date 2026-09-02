@@ -695,7 +695,7 @@ function scrollBottom() { view.terminal.scrollTop = view.terminal.scrollHeight; 
 function setText(selector, text) { document.querySelector(selector).textContent = text; }
 function safeKind(value) { return /^[a-z]+$/.test(value) ? value : 'system'; }
 function kindLabel(kind) {
-  return ({ system: '系统', prompt: '提示', operator: '操作员', qwen: '上游模型', plan: '已验证计划', decision: '校验依据', execution: '执行', sweep: '扫频', cruise: '巡航', error: '错误' })[kind] || '系统';
+  return ({ system: '系统', prompt: '提示', operator: '操作员', qwen: '上游模型', plan: '已验证计划', decision: '校验依据', search: '网络搜索', execution: '执行', sweep: '扫频', cruise: '巡航', error: '错误' })[kind] || '系统';
 }
 function formatTokens(value) {
   return `${new Intl.NumberFormat('zh-CN').format(value)} tokens`;

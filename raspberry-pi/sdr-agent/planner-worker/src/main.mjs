@@ -15,6 +15,7 @@ import { SessionRuntime } from "./session-runtime.mjs";
 import { startSessionServer } from "./session-server.mjs";
 import { createSparkJsonPlanningStream } from "./spark-stream.mjs";
 import { PLANNER_SYSTEM_PROMPT } from "./system-prompt.mjs";
+import { createSearxngSearchClient, validateLoopbackSearchUrl } from "./web-search.mjs";
 import {
   MAX_FRAME_BYTES,
   makeErrorResponse,
@@ -27,6 +28,13 @@ import {
 const config = loadConfig();
 const defaultPlannerMeta = { provider: config.provider, model: config.model };
 const runLease = new RunLease();
+const webSearch = config.webSearchUrl === undefined
+  ? undefined
+  : createSearxngSearchClient({
+    baseUrl: config.webSearchUrl,
+    maxResults: config.webSearchMaxResults,
+    timeoutMs: config.webSearchTimeoutMs,
+  });
 
 prepareSocket(config.socketPath);
 const server = createServer((socket) => {
@@ -69,10 +77,11 @@ const sessionServer = startSessionServer({
     new SessionRuntime({
       plannerMeta: defaultPlannerMeta,
       runLease,
-      createAgent: ({ sessionGeneration, onPlan }) =>
+      createAgent: ({ sessionGeneration, onPlan, onSearchEvent }) =>
         createPlanningAgent({
           sessionGeneration,
           onPlan,
+          onSearchEvent,
           terminateAfterPlan: false,
         }),
     }),
@@ -140,7 +149,12 @@ async function handleFrame(frame) {
   return makeResponse(request, runtime.plannerMeta, submittedPlans[0]);
 }
 
-function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) {
+function createPlanningAgent({
+  sessionGeneration,
+  onPlan,
+  onSearchEvent = () => {},
+  terminateAfterPlan,
+}) {
   const providerConfig = loadProviderSelection(config);
   const plannerMeta = { provider: providerConfig.provider, model: providerConfig.model };
   const models = createModels();
@@ -215,7 +229,13 @@ function createPlanningAgent({ sessionGeneration, onPlan, terminateAfterPlan }) 
       tools: [submitPlan],
       messages: [],
     },
-    streamFn: sparkLocal ? createSparkJsonPlanningStream(baseStream) : baseStream,
+    streamFn: sparkLocal
+      ? createSparkJsonPlanningStream(baseStream, {
+        webSearch,
+        maxSearches: config.webSearchMaxSearches,
+        onSearchEvent,
+      })
+      : baseStream,
     transformContext: async (messages) => compactPlanningContext(
       messages,
       providerConfig.contextWindow,
@@ -264,7 +284,21 @@ function loadConfig() {
     ),
     maxTokens: boundedInteger("SDR_PLANNER_MAX_TOKENS", 1_024, 128, 8_192),
     requestTimeoutMs: boundedInteger("SDR_PLANNER_TIMEOUT_MS", 30_000, 1_000, 120_000),
+    webSearchUrl: optionalLoopbackUrl("SDR_PLANNER_WEB_SEARCH_URL"),
+    webSearchMaxResults: boundedInteger("SDR_PLANNER_WEB_SEARCH_MAX_RESULTS", 8, 1, 8),
+    webSearchMaxSearches: boundedInteger("SDR_PLANNER_WEB_SEARCH_MAX_SEARCHES", 2, 1, 3),
+    webSearchTimeoutMs: boundedInteger(
+      "SDR_PLANNER_WEB_SEARCH_TIMEOUT_MS",
+      15_000,
+      1_000,
+      60_000,
+    ),
   };
+}
+
+function optionalLoopbackUrl(name) {
+  const value = process.env[name]?.trim();
+  return value ? validateLoopbackSearchUrl(value) : undefined;
 }
 
 function prepareSocket(socketPath) {

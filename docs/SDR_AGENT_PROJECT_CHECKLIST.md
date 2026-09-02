@@ -44,6 +44,12 @@ state.
       response into the sole `submit_plan` tool event, and live-validate a
       greeting plus a Rust-approved real-P201 sweep with radio restoration; see
       [`SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md`](SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md).
+- [x] Reuse the existing AGX loopback SearXNG service as a Spark-only bounded
+      host search adapter with at most two searches, eight sources, a 15-second
+      timeout, a 512 KiB response limit, no redirects or arbitrary result fetch,
+      untrusted-evidence prompting, Web-visible source events and unchanged
+      Rust/SDR authority; live model and browser validation is recorded in
+      [`SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md`](SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md).
 - [x] Run the Planner Worker as an enabled systemd module with memory, CPU, task,
       filesystem, privilege, and address-family restrictions.
 - [x] Preserve the stateless one-shot `planner.sock` interface as a fail-closed

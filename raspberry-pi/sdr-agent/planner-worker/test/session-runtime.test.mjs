@@ -116,7 +116,11 @@ function runtime(blocking = false, runLease = new RunLease(), submitPlan = true)
   let fake;
   const instance = new SessionRuntime({
     plannerMeta: { provider: "test", model: "test" },
-    createAgent: ({ onPlan }) => (fake = new FakeAgent(onPlan, blocking, submitPlan)),
+    createAgent: ({ onPlan, onSearchEvent }) => {
+      fake = new FakeAgent(onPlan, blocking, submitPlan);
+      fake.onSearchEvent = onSearchEvent;
+      return fake;
+    },
     runLease,
   });
   return { instance, getFake: () => fake };
@@ -225,6 +229,53 @@ test("does not invent thinking events when the upstream emits none", async () =>
   );
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(events.some((event) => event.event.startsWith("thinking_")), false);
+});
+
+test("forwards bounded web search lifecycle events with the active request", async () => {
+  const { instance, getFake } = runtime(true);
+  const events = [];
+  await instance.dispatch(command("open_session", 1), (event) => events.push(event));
+  await instance.dispatch(
+    command("prompt", 2, { context: context() }),
+    (event) => events.push(event),
+  );
+  await new Promise((resolve) => setImmediate(resolve));
+  await getFake().onSearchEvent({ phase: "start", query: "current SDR facts" });
+  await getFake().onSearchEvent({
+    phase: "end",
+    query: "current SDR facts",
+    count: 1,
+    sources: [{ title: "Source", url: "https://example.com" }],
+    truncated: false,
+  });
+  assert.deepEqual(
+    events.filter((event) => event.event.startsWith("web_search_")),
+    [
+      {
+        protocol_version: 1,
+        session_generation: 3,
+        type: "event",
+        event: "web_search_start",
+        data: { request_id: 9, phase: "start", query: "current SDR facts" },
+      },
+      {
+        protocol_version: 1,
+        session_generation: 3,
+        type: "event",
+        event: "web_search_end",
+        data: {
+          request_id: 9,
+          phase: "end",
+          query: "current SDR facts",
+          count: 1,
+          sources: [{ title: "Source", url: "https://example.com" }],
+          truncated: false,
+        },
+      },
+    ],
+  );
+  await instance.dispatch(command("abort", 3), (event) => events.push(event));
+  await new Promise((resolve) => setImmediate(resolve));
 });
 
 test("uses Pi steering and follow-up queues with a hard limit", async () => {
