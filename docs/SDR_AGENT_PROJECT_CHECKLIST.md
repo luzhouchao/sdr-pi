@@ -319,9 +319,11 @@ Evidence:
         [`SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md).
   - [ ] Remove the remaining manual host-key repin after a P201 reboot. The
         real reboot proved that volatile Dropbear keys correctly make strict
-        recovery fail closed; the vendor persistent-key path requires
-        formatting the currently blank QSPI `mtd2` JFFS2 partition, which is a
-        destructive persistent-device decision not yet authorized.
+        recovery fail closed. Read-only startup/storage inspection found no
+        safe `/sd`, rootfs or network bootstrap alternative; the only acceptable
+        vendor path initializes all 917,504 bytes of QSPI `mtd2` as JFFS2, which
+        is a destructive persistent-device decision not yet authorized. See
+        [`SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md`](SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md).
 - [ ] Complete long-duration reconnect and fault-recovery testing on the real
       SDR.
 
@@ -336,6 +338,7 @@ Evidence:
 - [`SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md`](SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md)
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
+- [`SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md`](SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md)
 
 ## 4. AGX acquisition, aggregation, and sweep
 
