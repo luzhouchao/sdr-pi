@@ -324,8 +324,13 @@ Evidence:
         vendor path initializes all 917,504 bytes of QSPI `mtd2` as JFFS2, which
         is a destructive persistent-device decision not yet authorized. See
         [`SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md`](SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md).
-- [ ] Complete long-duration reconnect and fault-recovery testing on the real
-      SDR.
+- [x] Complete a full 1,800-second long-duration reconnect and fault-recovery
+      test on the real SDR, covering 100 bounded acquisitions, three
+      profile-applied client disconnects, two idle-daemon timer recoveries,
+      transport and IIO timeouts, direct partial-action cancellation,
+      duplicate-start rejection, sequence/metadata/resource/thermal accounting
+      and verified final restoration; see
+      [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
 
 Evidence:
 
@@ -339,6 +344,7 @@ Evidence:
 - [`SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md)
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md`](SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md)
+- [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md)
 
 ## 4. AGX acquisition, aggregation, and sweep
 
