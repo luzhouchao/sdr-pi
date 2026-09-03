@@ -1,6 +1,6 @@
 # P201 SDR Linux control-plane design
 
-Last reviewed: 2026-09-02
+Last reviewed: 2026-09-03
 
 ## Decision
 
@@ -70,13 +70,14 @@ before optional SigMF persistence and exposes manual deletion for saved results.
 - Preserve direct stop and verified state restoration on every path.
 - Do not add FPGA, MMIO, `/dev/mem`, `BOOT.bin` or transmit functionality.
 
-## Remaining production gates
+## Production status and adjacent gates
 
-- Prove no other collector can contend for the receive buffer before declaring
-  AGX the sole acquisition owner.
-- Live-validate restoration after an IIO timeout.
-- Add sequence, overflow, dropped-sample, timeout and health metadata to every
-  execution result.
-- Complete sustained-rate, reconnect and fault-recovery tests.
-- Keep reboot startup manual until a safe persistent mechanism is separately
-  designed and authorized.
+AGX sole ownership, IIO-timeout restoration, complete execution metadata,
+30-minute reconnect/fault recovery and strict unattended P201 reboot recovery
+are live-validated. The persistent startup path uses the vendor `mtd2` JFFS2
+key-restore hook and the AGX PID/listener-gated recovery timer without modifying
+the boot image.
+
+Sustained 5/10-MS/s throughput, bounded overload behavior and the separate
+24-hour autonomous soak remain adjacent checklist gates; they do not change
+the P201 control-plane ownership boundary.

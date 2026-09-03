@@ -310,20 +310,20 @@ Evidence:
 - [x] Deploy controlled `sdrd` with a private-link listener, retained `/sd`
       release, tested stop path,
       bounded live capture and verified state restoration.
-- [ ] Design and validate safe persistent `sdrd` startup after reboot without
+- [x] Design and validate safe persistent `sdrd` startup after reboot without
       modifying the boot image:
   - [x] Deploy and live-validate the AGX recovery oneshot/timer, strict
         duplicate-instance gates, normal start, idle abnormal-exit recovery,
         concurrent-start rejection, current-boot persistence and rollback;
         see
         [`SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md).
-  - [ ] Remove the remaining manual host-key repin after a P201 reboot. The
-        real reboot proved that volatile Dropbear keys correctly make strict
-        recovery fail closed. Read-only startup/storage inspection found no
-        safe `/sd`, rootfs or network bootstrap alternative; the only acceptable
-        vendor path initializes all 917,504 bytes of QSPI `mtd2` as JFFS2, which
-        is a destructive persistent-device decision not yet authorized. See
-        [`SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md`](SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md).
+  - [x] Remove the manual host-key repin after a P201 reboot by explicitly
+        authorized initialization of only the 917,504-byte vendor QSPI `mtd2`
+        JFFS2 partition, persisting only the verified ECDSA key plus its minimal
+        manifest, retaining a byte-exact root-only rollback image, and proving
+        an unchanged global pin across a real reboot plus subsequent idle-daemon
+        recovery; see
+        [`SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md).
 - [x] Complete a full 1,800-second long-duration reconnect and fault-recovery
       test on the real SDR, covering 100 bounded acquisitions, three
       profile-applied client disconnects, two idle-daemon timer recoveries,
@@ -344,6 +344,7 @@ Evidence:
 - [`SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md)
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md`](SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md)
+- [`SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md)
 - [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md)
 
 ## 4. AGX acquisition, aggregation, and sweep

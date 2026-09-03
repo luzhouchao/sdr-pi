@@ -13,7 +13,9 @@ For non-interactive access use:
 
 ```bash
 sshpass -f /home/jetson/.config/sdrharness/p201-root.password \
-  ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=5 \
+  ssh -o StrictHostKeyChecking=yes \
+  -o UserKnownHostsFile=/home/jetson/.ssh/known_hosts \
+  -o ConnectTimeout=5 \
   root@192.168.1.10 '<bounded command>'
 ```
 
@@ -167,13 +169,21 @@ Never run recovery when a daemon is already present.
 The deployed AGX may run
 `sdrharness-p201-sdrd-recovery.service`/`.timer` to perform exactly this gate.
 That path must keep strict SSH host-key checking and must use SDRD/1, not a
-second `--probe-radio` process, when the daemon is already running. A P201
-reboot currently regenerates its volatile Dropbear host key; a mismatch must
-fail closed until the direct-link MAC, platform, protected BOOT hash and
-persistent release hashes are reverified and the operator approves the new
-pin. Never weaken host-key checking to make recovery unattended. Initializing
-or formatting the vendor QSPI NVM filesystem is outside this workflow unless
-the user explicitly authorizes that persistent destructive action.
+second `--probe-radio` process, when the daemon is already running. The verified
+P201 now restores its ECDSA host key from the vendor `mtd2` JFFS2 filesystem
+before Dropbear starts; a real reboot retained the pinned fingerprint and
+allowed the timer to recover exactly one daemon. Any future mismatch must still
+fail closed until the direct-link MAC, platform, protected BOOT hash,
+persistent-key hash and release hashes are reverified. Never weaken host-key
+checking or automatically replace a pin.
+
+Do not rerun `device_format_jffs2` or add passwords, account files, client
+authorized keys or an RSA key to the persistent store. It must contain only
+`/mnt/jffs2/etc/dropbear/dropbear_ecdsa_host_key` and its one-entry `keys.md5`.
+The byte-exact pre-format rollback is retained root-only at
+`/home/jetson/.local/lib/sdrharness/releases/20260903-p201-host-key-persistence-v1/`.
+Restoring it is another destructive persistent operation and requires explicit
+operator authorization.
 
 ## Receive-only validation record
 
