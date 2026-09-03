@@ -54,6 +54,12 @@ The terminal reads stdin on a separate bounded four-line queue while model
 events stream. Prompt, steer, follow-up and abort acknowledgements are
 correlated asynchronously; `/stop` has an independent priority path and
 invalidates queued or late old-generation work.
+The Runner records initial SDR observation failures before returning, permits a
+bounded 1–5,000-ms per-sweep-point timeout (250 ms by default), preserves real
+Adapter timeout/health metadata, and never emits a successful new observation
+after a partial or stale result.  The P201 daemon suppresses socket `SIGPIPE` so
+a client transport timeout closes and restores only that ownership session; it
+does not terminate the sole daemon.
 Direct terminals also persist at most 32 normalized conversation entries in an
 atomic owner-only file. A restart carries only a bounded unprivileged summary
 into the next request; plans, approvals, queues, actions and generations are

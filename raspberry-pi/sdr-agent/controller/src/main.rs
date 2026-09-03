@@ -46,6 +46,7 @@ fn run() -> AppResult<()> {
     let mut audit_log = "/var/lib/sdr-agent/audit.jsonl".to_owned();
     let mut session_generation = None;
     let mut survey_gain_db = 20_i16;
+    let mut sweep_point_timeout_ms = 250_u32;
     let mut args = env::args().skip(1);
     while let Some(flag) = args.next() {
         let value = args
@@ -66,6 +67,7 @@ fn run() -> AppResult<()> {
             "--audit-log" => audit_log = value,
             "--session-generation" => session_generation = Some(value.parse::<u64>()?),
             "--survey-gain-db" => survey_gain_db = value.parse::<i16>()?,
+            "--sweep-point-timeout-ms" => sweep_point_timeout_ms = value.parse::<u32>()?,
             _ => return Err(invalid_input(format!("unknown option {flag}")).into()),
         }
     }
@@ -80,6 +82,9 @@ fn run() -> AppResult<()> {
     }
     if !(0..=60).contains(&survey_gain_db) {
         return Err(invalid_input("--survey-gain-db must be between 0 and 60").into());
+    }
+    if !(1..=5_000).contains(&sweep_point_timeout_ms) {
+        return Err(invalid_input("--sweep-point-timeout-ms must be between 1 and 5000").into());
     }
     if !matches!(
         mode.as_str(),
@@ -122,6 +127,7 @@ fn run() -> AppResult<()> {
             executor,
             sweep_backend,
             survey_gain_db,
+            sweep_point_timeout_ms,
             audit,
         );
         println!(

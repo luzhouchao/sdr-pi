@@ -56,6 +56,13 @@ capture without FPGA support.
 Rust accepts execution only from live controlled capabilities or an explicitly
 validated development envelope.
 
+The stateless `--mode run-once` path executes validated bounded IQ,
+`survey_band` and current `inspect_candidate` actions through the existing
+SDRD/1 and AGX software-sweep Adapters.  `--sweep-point-timeout-ms` controls the
+per-point hardware deadline (default 250 ms, hard range 1–5,000 ms).  Planner
+and SDRD transport deadlines remain independently bounded by `--timeout-ms` and
+`--sdrd-timeout-ms`.
+
 Safe live health observation:
 
 ```bash
@@ -93,7 +100,8 @@ center, sample rate, RF bandwidth and dwell. There are no hidden 10-MHz radio
 profile defaults in those model-selected actions. Large but bounded
 IQ requests are marked `approval_required`. The Rust `SdrActionExecutor` can
 execute an approved `capture_bounded_iq` plan through a controlled SDRD/1
-endpoint; all other action kinds still fail closed in this executor slice.
+endpoint; the one-shot Runner dispatches validated surveys and candidate
+inspection through `SweepEngine`, while unsupported action kinds fail closed.
 The same Adapter exposes a generation-correlated cancel operation on an
 independent SDRD/1 connection.
 

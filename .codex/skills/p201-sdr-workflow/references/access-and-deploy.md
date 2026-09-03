@@ -71,21 +71,37 @@ file <AGX-feature-directory>/sdrd-build/sdrd
 sha256sum <AGX-feature-directory>/sdrd-build/sdrd
 ```
 
-The verified AGX-native fallback uses the official Arm GNU 8.2-2018.08
-x86-64-hosted hard-float toolchain inside an amd64 container. Its archive is:
+The verified AGX-native path uses the official Arm GNU 8.2-2018.08
+x86-64-hosted hard-float toolchain inside an amd64 container. It is installed
+once outside Git and feature cleanup at this fixed path:
+
+```text
+/home/jetson/.local/lib/sdrharness/toolchains/gcc-arm-8.2-2018.08-x86_64-arm-linux-gnueabihf/
+```
+
+Its retained download archive is:
 
 ```text
 https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/8.2-2018.08/gcc-arm-8.2-2018.08-x86_64-arm-linux-gnueabihf.tar.xz
 SHA-256 5b3f20e1327edc3073e545a5bd3d15f33e7f94181ff4e37a76e95924c1b439b9
 ```
 
-Keep the archive, extracted toolchain and output below the AGX feature
-directory. On aarch64 AGX, require working amd64 binfmt support (for example,
-`qemu-user-static`) and run the compiler in an amd64 Docker container with the
-repository mounted read-only. Compile only `main.c`, `sdrd.c`, and
-`sdrd_iio.c`, then strip with the same toolchain. The retired FPGA/MMIO sources
-are no longer present. The 2026-09-01 live deployment produced ELF32 ARM EABI5
-hard-float and required only `GLIBC_2.4`, `GLIBC_2.7` and `GLIBC_2.17`.
+Do not remove the persistent toolchain during feature cleanup. Put only the
+feature's build output below `/var/tmp/sdrharness-dev/<feature-id>/`. Build with
+the project skill script:
+
+```bash
+.codex/skills/p201-sdr-workflow/scripts/build-sdrd-armv7.sh \
+  /var/tmp/sdrharness-dev/<feature-id>/sdrd-armv7
+```
+
+The script requires working amd64 binfmt, pins the existing Ubuntu 18.04
+builder image ID, mounts the repository and toolchain read-only, disables
+container networking/capabilities, compiles only `main.c`, `sdrd.c`, and
+`sdrd_iio.c`, strips with the matching toolchain, and enforces ELF32 ARM EABI5,
+dynamic linking, the `GLIBC_2.4`/`2.7`/`2.17` allowlist and absence of retired
+FPGA/MMIO/UIO symbols. If the fixed toolchain is absent or invalid, stop; do not
+silently download another copy or use the AGX system cross-compiler.
 
 Deployment gate:
 

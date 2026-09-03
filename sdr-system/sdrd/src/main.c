@@ -48,7 +48,11 @@ static void usage(const char *program) {
 static int send_all(int fd, const char *data, size_t length) {
   size_t sent = 0u;
   while (sent < length) {
-    const ssize_t count = send(fd, data + sent, length - sent, 0);
+    int flags = 0;
+#ifdef MSG_NOSIGNAL
+    flags = MSG_NOSIGNAL;
+#endif
+    const ssize_t count = send(fd, data + sent, length - sent, flags);
     if (count < 0) {
       if (errno == EINTR) {
         continue;

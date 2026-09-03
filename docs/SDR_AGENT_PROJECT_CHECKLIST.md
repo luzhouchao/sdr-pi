@@ -249,12 +249,17 @@ Evidence:
 - [x] Persist a root-only JSONL audit record joining operator input,
       model/provider, raw proposal, Rust validation, approval, execution and the
       resulting observation, including fail-closed planning attempts.
-- [ ] Validate reconnect, cancellation, stale-result, timeout, and partial-action
-      recovery for the complete loop.
+- [x] Validate reconnect, cancellation, stale-result, timeout, and partial-action
+      recovery for the complete loop, including real Spark/P201 Planner and IIO
+      timeouts, direct cancellation after a partial sweep, SDRD loss/recovery,
+      model abort/generation invalidation, stale-result tests and daemon survival
+      after a client transport timeout; see
+      [`SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
 
 Evidence:
 
 - [`SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md`](SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md)
+- [`SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md)
 
 ## 3. SDR Linux control plane (`sdrd`)
 

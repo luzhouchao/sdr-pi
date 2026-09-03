@@ -120,6 +120,7 @@ pub struct Runner<O, P, E, S, A> {
     executor: E,
     sweep: SweepEngine<S>,
     survey_gain_db: i16,
+    sweep_point_timeout_ms: u32,
     audit: A,
 }
 
@@ -137,6 +138,7 @@ where
         executor: E,
         sweep_backend: S,
         survey_gain_db: i16,
+        sweep_point_timeout_ms: u32,
         audit: A,
     ) -> Self {
         Self {
@@ -146,6 +148,7 @@ where
             executor,
             sweep: SweepEngine::new(sweep_backend),
             survey_gain_db,
+            sweep_point_timeout_ms,
             audit,
         }
     }
@@ -155,7 +158,21 @@ where
         mut request: PlanRequest,
         approval: ApprovalMode,
     ) -> Result<RunReport, RunnerError> {
-        let live = self.observer.observe()?;
+        let live = match self.observer.observe() {
+            Ok(observation) => observation,
+            Err(error) => {
+                self.audit(
+                    "observation_failed",
+                    &request,
+                    json!({
+                        "code": error.code,
+                        "message": &error.message,
+                        "metadata": &error.details,
+                    }),
+                )?;
+                return Err(RunnerError::Sdr(error));
+            }
+        };
         let recognizer_available = request.observation.health.recognizer_available;
         let dropped_observations = request.observation.health.dropped_observations;
         request.observation.health =
@@ -291,7 +308,7 @@ where
                     settle_ms: *dwell_ms,
                     frame_samples: 4_096,
                     aggregate_frames: 1,
-                    point_timeout_ms: 250,
+                    point_timeout_ms: self.sweep_point_timeout_ms,
                     detection_threshold_db: 12.0,
                     gain_db: Some(self.survey_gain_db),
                 };
@@ -316,7 +333,7 @@ where
                     settle_ms: *dwell_ms,
                     frame_samples: 4_096,
                     aggregate_frames: 1,
-                    point_timeout_ms: 250,
+                    point_timeout_ms: self.sweep_point_timeout_ms,
                     detection_threshold_db: 12.0,
                     gain_db: Some(self.survey_gain_db),
                 };
@@ -514,12 +531,22 @@ mod tests {
     use super::*;
     use crate::execution::{CaptureObservation, ReplayActionExecutor};
     use crate::planner::PlannerError;
+    #[cfg(unix)]
+    use crate::planner::UnixPlannerAdapter;
     use crate::protocol::{
         ControllerState, HealthSummary, PlanResponse, PlanStatus, PlannerMeta, SafetyLimits,
         PROTOCOL_VERSION,
     };
     use crate::sdr::{ReplaySdrAdapter, SdrSnapshot};
     use crate::sweep::{BackendSweep, ReplaySweepAdapter, SweepPoint};
+    #[cfg(unix)]
+    use std::io::Read;
+    #[cfg(unix)]
+    use std::os::unix::net::UnixListener;
+    #[cfg(unix)]
+    use std::thread;
+    #[cfg(unix)]
+    use std::time::Duration;
 
     struct ReplayPlanner {
         response: Option<PlanResponse>,
@@ -721,6 +748,7 @@ mod tests {
             ReplayActionExecutor::new([Ok(execution())]),
             ReplaySweepAdapter::new([]),
             20,
+            250,
             MemoryAuditAdapter::default(),
         );
         let report = runner.run_once(request(), ApprovalMode::Pending).unwrap();
@@ -741,6 +769,7 @@ mod tests {
             ReplayActionExecutor::new([Ok(execution())]),
             ReplaySweepAdapter::new([]),
             20,
+            250,
             MemoryAuditAdapter::default(),
         );
         let report = runner.run_once(request(), ApprovalMode::Operator).unwrap();
@@ -762,6 +791,7 @@ mod tests {
             ReplayActionExecutor::new([Ok(execution())]),
             ReplaySweepAdapter::new([]),
             20,
+            250,
             MemoryAuditAdapter::default(),
         );
         let error = runner
@@ -789,6 +819,7 @@ mod tests {
             ReplayActionExecutor::new([Ok(execution())]),
             ReplaySweepAdapter::new([]),
             20,
+            250,
             MemoryAuditAdapter::default(),
         );
         let error = runner
@@ -819,6 +850,7 @@ mod tests {
             ReplayActionExecutor::new([]),
             ReplaySweepAdapter::new([Ok(sweep)]),
             20,
+            250,
             MemoryAuditAdapter::default(),
         );
         let report = runner.run_once(request(), ApprovalMode::Automatic).unwrap();
@@ -862,6 +894,7 @@ mod tests {
             ReplayActionExecutor::new([]),
             ReplaySweepAdapter::new([Ok(sweep)]),
             20,
+            250,
             MemoryAuditAdapter::default(),
         );
         let report = runner.run_once(request(), ApprovalMode::Automatic).unwrap();
@@ -885,5 +918,171 @@ mod tests {
             .events()
             .iter()
             .any(|event| event.phase == "planned_only"));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn complete_runner_audits_planner_socket_timeout_before_execution() {
+        let socket_path = std::env::temp_dir().join(format!(
+            "sdrharness-runner-timeout-{}-{}.sock",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let listener = UnixListener::bind(&socket_path).unwrap();
+        let server = thread::spawn(move || {
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut request = [0_u8; 4_096];
+            let _ = stream.read(&mut request);
+            thread::sleep(Duration::from_millis(100));
+        });
+        let mut runner = Runner::new(
+            ReplaySdrAdapter::new([snapshot()]),
+            UnixPlannerAdapter::new(&socket_path, Duration::from_millis(10)),
+            ReplayActionExecutor::new([]),
+            ReplaySweepAdapter::new([]),
+            20,
+            250,
+            MemoryAuditAdapter::default(),
+        );
+        let error = runner
+            .run_once(request(), ApprovalMode::Automatic)
+            .unwrap_err();
+        assert!(matches!(error, RunnerError::Controller(_)));
+        let (_, _, audit) = runner.into_parts();
+        assert_eq!(audit.events().last().unwrap().phase, "planning_failed");
+        assert!(audit.events().last().unwrap().payload["message"]
+            .as_str()
+            .unwrap()
+            .contains("read planner response"));
+        server.join().unwrap();
+        std::fs::remove_file(socket_path).unwrap();
+    }
+
+    #[test]
+    fn complete_runner_rejects_and_audits_stale_planner_result() {
+        let mut stale = sweep_response();
+        stale.session_generation -= 1;
+        let mut runner = Runner::new(
+            ReplaySdrAdapter::new([snapshot()]),
+            ReplayPlanner {
+                response: Some(stale),
+            },
+            ReplayActionExecutor::new([]),
+            ReplaySweepAdapter::new([]),
+            20,
+            250,
+            MemoryAuditAdapter::default(),
+        );
+        let error = runner
+            .run_once(request(), ApprovalMode::Automatic)
+            .unwrap_err();
+        assert!(matches!(error, RunnerError::Controller(_)));
+        let (_, _, audit) = runner.into_parts();
+        assert_eq!(audit.events().last().unwrap().phase, "validation_failed");
+        assert_eq!(
+            audit.events().last().unwrap().payload["code"],
+            "stale_session_generation"
+        );
+    }
+
+    #[test]
+    fn complete_runner_preserves_timeout_metadata_from_partial_sweep_failure() {
+        let mut timeout = SweepError::new("remote_error", "capture_timeout_restored");
+        timeout.details = Some(json!({
+            "request_id": 9,
+            "session_generation": 3,
+            "sequence": 2,
+            "dropped_samples": 0,
+            "overflow": false,
+            "timeout": {"limit_ms": 1, "elapsed_us": 3_100, "timed_out": true},
+            "health": {"healthy": false, "flags": 4, "source": "iio_adapter"}
+        }));
+        let mut runner = Runner::new(
+            ReplaySdrAdapter::new([snapshot()]),
+            ReplayPlanner {
+                response: Some(sweep_response()),
+            },
+            ReplayActionExecutor::new([]),
+            ReplaySweepAdapter::new([Err(timeout)]),
+            20,
+            1,
+            MemoryAuditAdapter::default(),
+        );
+        let error = runner
+            .run_once(request(), ApprovalMode::Automatic)
+            .unwrap_err();
+        assert!(matches!(error, RunnerError::Sweep(_)));
+        let (_, _, audit) = runner.into_parts();
+        let failure = audit.events().last().unwrap();
+        assert_eq!(failure.phase, "execution_failed");
+        assert_eq!(failure.payload["metadata"]["session_generation"], 3);
+        assert_eq!(failure.payload["metadata"]["sequence"], 2);
+        assert_eq!(failure.payload["metadata"]["timeout"]["timed_out"], true);
+        assert_eq!(failure.payload["metadata"]["health"]["flags"], 4);
+    }
+
+    #[test]
+    fn complete_runner_audits_initial_sdr_disconnect_before_planning() {
+        let mut runner = Runner::new(
+            ReplaySdrAdapter::new([]),
+            ReplayPlanner {
+                response: Some(sweep_response()),
+            },
+            ReplayActionExecutor::new([]),
+            ReplaySweepAdapter::new([]),
+            20,
+            250,
+            MemoryAuditAdapter::default(),
+        );
+        let error = runner
+            .run_once(request(), ApprovalMode::Automatic)
+            .unwrap_err();
+        assert!(matches!(error, RunnerError::Sdr(_)));
+        let (_, _, audit) = runner.into_parts();
+        assert_eq!(audit.events().len(), 1);
+        assert_eq!(audit.events()[0].phase, "observation_failed");
+        assert_eq!(audit.events()[0].payload["code"], "replay_exhausted");
+    }
+
+    #[test]
+    fn complete_runner_rejects_stale_sdr_result_before_new_observation() {
+        let mut stale_point = sweep_point(0, 433_000_000, 3_000_000, 2_500_000, -70.0);
+        stale_point.session_generation = 2;
+        let stale_sweep = BackendSweep {
+            backend: "replay".to_owned(),
+            backend_version: 1,
+            points: vec![
+                stale_point,
+                sweep_point(1, 435_000_000, 3_000_000, 2_500_000, -40.0),
+                sweep_point(2, 437_000_000, 3_000_000, 2_500_000, -69.0),
+            ],
+            dataset: None,
+        };
+        let mut runner = Runner::new(
+            ReplaySdrAdapter::new([snapshot()]),
+            ReplayPlanner {
+                response: Some(sweep_response()),
+            },
+            ReplayActionExecutor::new([]),
+            ReplaySweepAdapter::new([Ok(stale_sweep)]),
+            20,
+            250,
+            MemoryAuditAdapter::default(),
+        );
+        let error = runner
+            .run_once(request(), ApprovalMode::Automatic)
+            .unwrap_err();
+        assert!(matches!(error, RunnerError::Sweep(_)));
+        let (_, _, audit) = runner.into_parts();
+        let failure = audit.events().last().unwrap();
+        assert_eq!(failure.phase, "execution_failed");
+        assert_eq!(failure.payload["code"], "point_contract");
+        assert!(!audit
+            .events()
+            .iter()
+            .any(|event| event.phase == "execution_observation"));
     }
 }

@@ -13,6 +13,13 @@ Before any mutation or live capture, read
 credential handling, duplicate-instance gate, ABI gate, staging roots,
 stop/replace/start sequence and cleanup requirements exactly.
 
+For ARMv7 `sdrd` builds on this AGX, use the persistent verified toolchain only
+through
+[`scripts/build-sdrd-armv7.sh`](scripts/build-sdrd-armv7.sh). The script fixes
+the toolchain/image paths, restricts output to a feature directory and performs
+the ELF, GLIBC and retired-symbol gates. Do not redownload a toolchain for each
+feature or replace the script with `/usr/bin/arm-linux-gnueabihf-gcc`.
+
 Hard boundaries:
 
 - Never print, copy, log or commit the SSH password. Use the existing mode-0600
