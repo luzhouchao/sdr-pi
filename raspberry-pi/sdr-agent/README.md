@@ -301,9 +301,13 @@ sdr-agent-controller \
 ```
 
 Use `--approval pending` to stop at the manual gate or `automatic` only for a
-plan below the existing automatic threshold. The current production execution
-Adapter supports bounded IQ capture; other plan kinds are returned as
-`planned_only` rather than being reported as executed.
+plan below the existing automatic threshold. The production Runner executes
+bounded IQ capture plus `survey_band` and `inspect_candidate`. The latter two
+reuse the AGX software `SweepEngine`, default to fixed 20 dB receive gain (set
+explicitly with `--survey-gain-db`), return the aggregate and fresh Planner
+observation, and re-observe restored SDR health. Hold, stop and unavailable
+recognition actions remain explicitly non-executing rather than being reported
+as hardware work.
 
 For a deterministic development or recovery check, `execute` mode accepts an
 envelope containing the original `PlanRequest` and `PlanResponse`, reruns Rust

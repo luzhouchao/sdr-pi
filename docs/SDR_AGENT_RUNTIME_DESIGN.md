@@ -43,9 +43,12 @@ decide(PlanRequest) -> ValidatedPlan | ControllerError
 
 ### Planner
 
-One-shot `planner.sock` is the stateless fallback. Persistent `session.sock`
-supports interactive prompt, steering, follow-up, abort and model events while
-sharing one global inference lease. Provider details, model-specific payloads,
+One-shot `planner.sock` is the stateless fallback. Its Runner performs live
+observe, model proposal, Rust validation, approval, bounded-IQ execution or AGX
+software `survey_band`/`inspect_candidate` aggregation, restored-health
+observation and correlated JSONL audit. Persistent `session.sock` supports
+interactive prompt, steering, follow-up, abort and model events while sharing
+one global inference lease. Provider details, model-specific payloads,
 reasoning deltas and the bounded Spark search adapter remain behind this seam.
 The terminal reads stdin on a separate bounded four-line queue while model
 events stream. Prompt, steer, follow-up and abort acknowledgements are

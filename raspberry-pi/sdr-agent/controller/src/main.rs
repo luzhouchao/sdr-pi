@@ -45,6 +45,7 @@ fn run() -> AppResult<()> {
     let mut execution_approval = None;
     let mut audit_log = "/var/lib/sdr-agent/audit.jsonl".to_owned();
     let mut session_generation = None;
+    let mut survey_gain_db = 20_i16;
     let mut args = env::args().skip(1);
     while let Some(flag) = args.next() {
         let value = args
@@ -64,6 +65,7 @@ fn run() -> AppResult<()> {
             "--approval" => execution_approval = Some(value),
             "--audit-log" => audit_log = value,
             "--session-generation" => session_generation = Some(value.parse::<u64>()?),
+            "--survey-gain-db" => survey_gain_db = value.parse::<i16>()?,
             _ => return Err(invalid_input(format!("unknown option {flag}")).into()),
         }
     }
@@ -75,6 +77,9 @@ fn run() -> AppResult<()> {
     }
     if !(1..=5_000).contains(&recognizer_timeout_ms) {
         return Err(invalid_input("--recognizer-timeout-ms must be between 1 and 5000").into());
+    }
+    if !(0..=60).contains(&survey_gain_db) {
+        return Err(invalid_input("--survey-gain-db must be between 0 and 60").into());
     }
     if !matches!(
         mode.as_str(),
@@ -108,8 +113,17 @@ fn run() -> AppResult<()> {
         let observer = SdrdAdapter::new(address, Duration::from_millis(sdrd_timeout_ms));
         let planner = UnixPlannerAdapter::new(socket, Duration::from_millis(timeout_ms));
         let executor = SdrdActionAdapter::new(address, Duration::from_millis(sdrd_timeout_ms));
+        let sweep_backend =
+            SdrdSoftwareSweepAdapter::new(address, Duration::from_millis(sdrd_timeout_ms));
         let audit = JsonlAuditAdapter::open(audit_log)?;
-        let mut runner = Runner::new(observer, planner, executor, audit);
+        let mut runner = Runner::new(
+            observer,
+            planner,
+            executor,
+            sweep_backend,
+            survey_gain_db,
+            audit,
+        );
         println!(
             "{}",
             serde_json::to_string(&runner.run_once(request, approval)?)?

@@ -3,6 +3,9 @@ use crate::planner::Planner;
 use crate::policy::ControllerPolicy;
 use crate::protocol::{ObservationSummary, PlanRequest, ProposedAction, ValidatedPlan};
 use crate::sdr::{SdrEngine, SdrError};
+use crate::sweep::{
+    SweepBackend, SweepEngine, SweepError, SweepFrequencies, SweepPlan, SweepReport,
+};
 use crate::ControllerError;
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -40,6 +43,8 @@ pub struct RunReport {
     pub plan: ValidatedPlan,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub execution: Option<ExecutionObservation>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sweep: Option<SweepReport>,
     pub next_observation: ObservationSummary,
 }
 
@@ -108,27 +113,39 @@ impl AuditSink for MemoryAuditAdapter {
     }
 }
 
-pub struct Runner<O, P, E, A> {
+pub struct Runner<O, P, E, S, A> {
     observer: O,
     planner: P,
     policy: ControllerPolicy,
     executor: E,
+    sweep: SweepEngine<S>,
+    survey_gain_db: i16,
     audit: A,
 }
 
-impl<O, P, E, A> Runner<O, P, E, A>
+impl<O, P, E, S, A> Runner<O, P, E, S, A>
 where
     O: SdrEngine,
     P: Planner,
     E: SdrActionExecutor,
+    S: SweepBackend,
     A: AuditSink,
 {
-    pub fn new(observer: O, planner: P, executor: E, audit: A) -> Self {
+    pub fn new(
+        observer: O,
+        planner: P,
+        executor: E,
+        sweep_backend: S,
+        survey_gain_db: i16,
+        audit: A,
+    ) -> Self {
         Self {
             observer,
             planner,
             policy: ControllerPolicy,
             executor,
+            sweep: SweepEngine::new(sweep_backend),
+            survey_gain_db,
             audit,
         }
     }
@@ -189,11 +206,17 @@ where
                 status: RunStatus::AwaitingApproval,
                 plan,
                 execution: None,
+                sweep: None,
                 next_observation: request.observation,
             });
         }
 
-        if !matches!(plan.action, ProposedAction::CaptureBoundedIq { .. }) {
+        if !matches!(
+            plan.action,
+            ProposedAction::CaptureBoundedIq { .. }
+                | ProposedAction::SurveyBand { .. }
+                | ProposedAction::InspectCandidate { .. }
+        ) {
             self.audit(
                 "planned_only",
                 &request,
@@ -203,6 +226,7 @@ where
                 status: RunStatus::PlannedOnly,
                 plan,
                 execution: None,
+                sweep: None,
                 next_observation: request.observation,
             });
         }
@@ -222,34 +246,84 @@ where
         };
         self.audit("authorized", &request, json!({"mode": approval.as_str()}))?;
 
-        let execution = match self.executor.execute(&plan, &authorization) {
-            Ok(observation) => observation,
-            Err(error) => {
-                self.audit(
-                    "execution_failed",
-                    &request,
-                    json!({
-                        "code": error.code,
-                        "message": &error.message,
-                        "metadata": &error.details,
-                    }),
-                )?;
-                return Err(RunnerError::Sdr(error));
+        match &plan.action {
+            ProposedAction::CaptureBoundedIq { .. } => {
+                let execution = match self.executor.execute(&plan, &authorization) {
+                    Ok(observation) => observation,
+                    Err(error) => {
+                        self.audit_sdr_failure(&request, &error)?;
+                        return Err(RunnerError::Sdr(error));
+                    }
+                };
+                let mut next_observation = request.observation.clone();
+                next_observation.age_ms = 0;
+                next_observation.health = execution.post_execution_sdr.planner_health(
+                    next_observation.health.recognizer_available,
+                    next_observation.health.dropped_observations,
+                );
+                self.audit("execution_observation", &request, json!(&execution))?;
+                Ok(RunReport {
+                    status: RunStatus::Executed,
+                    plan,
+                    execution: Some(execution),
+                    sweep: None,
+                    next_observation,
+                })
             }
-        };
-        let mut next_observation = request.observation.clone();
-        next_observation.age_ms = 0;
-        next_observation.health = execution.post_execution_sdr.planner_health(
-            next_observation.health.recognizer_available,
-            next_observation.health.dropped_observations,
-        );
-        self.audit("execution_observation", &request, json!(&execution))?;
-        Ok(RunReport {
-            status: RunStatus::Executed,
-            plan,
-            execution: Some(execution),
-            next_observation,
-        })
+            ProposedAction::SurveyBand {
+                start_hz,
+                stop_hz,
+                step_hz,
+                sample_rate_hz,
+                rf_bandwidth_hz,
+                dwell_ms,
+            } => {
+                let sweep = SweepPlan {
+                    sweep_id: format!("request-{}", plan.request_id),
+                    session_generation: plan.session_generation,
+                    frequencies: SweepFrequencies::Range {
+                        start_hz: *start_hz,
+                        stop_hz: *stop_hz,
+                        step_hz: *step_hz,
+                    },
+                    sample_rate_hz: *sample_rate_hz,
+                    rf_bandwidth_hz: *rf_bandwidth_hz,
+                    settle_ms: *dwell_ms,
+                    frame_samples: 4_096,
+                    aggregate_frames: 1,
+                    point_timeout_ms: 250,
+                    detection_threshold_db: 12.0,
+                    gain_db: Some(self.survey_gain_db),
+                };
+                self.execute_sweep(&request, plan, sweep, None)
+            }
+            ProposedAction::InspectCandidate {
+                candidate_id,
+                center_hz,
+                sample_rate_hz,
+                rf_bandwidth_hz,
+                dwell_ms,
+            } => {
+                let candidate_id = candidate_id.clone();
+                let sweep = SweepPlan {
+                    sweep_id: format!("inspect-{}", plan.request_id),
+                    session_generation: plan.session_generation,
+                    frequencies: SweepFrequencies::Centers {
+                        centers_hz: vec![*center_hz],
+                    },
+                    sample_rate_hz: *sample_rate_hz,
+                    rf_bandwidth_hz: *rf_bandwidth_hz,
+                    settle_ms: *dwell_ms,
+                    frame_samples: 4_096,
+                    aggregate_frames: 1,
+                    point_timeout_ms: 250,
+                    detection_threshold_db: 12.0,
+                    gain_db: Some(self.survey_gain_db),
+                };
+                self.execute_sweep(&request, plan, sweep, Some(candidate_id))
+            }
+            _ => unreachable!("non-executable action returned before authorization"),
+        }
     }
 
     pub fn into_parts(self) -> (O, E, A) {
@@ -276,6 +350,108 @@ where
         })?;
         Ok(())
     }
+
+    fn execute_sweep(
+        &mut self,
+        request: &PlanRequest,
+        plan: ValidatedPlan,
+        sweep_plan: SweepPlan,
+        candidate_id: Option<String>,
+    ) -> Result<RunReport, RunnerError> {
+        let report = match self.sweep.run(&sweep_plan) {
+            Ok(report) => report,
+            Err(error) => {
+                self.audit_sweep_failure(request, &error)?;
+                return Err(RunnerError::Sweep(error));
+            }
+        };
+        let post_execution_sdr = match self.observer.observe() {
+            Ok(observation) => observation,
+            Err(error) => {
+                self.audit_sdr_failure(request, &error)?;
+                return Err(RunnerError::Sdr(error));
+            }
+        };
+        if !post_execution_sdr.online || !post_execution_sdr.healthy {
+            let error = SdrError::new(
+                "post_execution_health",
+                "SDR is not healthy after sweep execution and restoration",
+            );
+            self.audit_sdr_failure(request, &error)?;
+            return Err(RunnerError::Sdr(error));
+        }
+        let health = post_execution_sdr.planner_health(
+            request.observation.health.recognizer_available,
+            request.observation.health.dropped_observations,
+        );
+        let next_observation = match candidate_id.as_deref() {
+            Some(candidate_id) => match report.planner_inspection_observation(
+                &request.observation,
+                candidate_id,
+                health,
+            ) {
+                Ok(observation) => observation,
+                Err(error) => {
+                    self.audit_sweep_failure(request, &error)?;
+                    return Err(RunnerError::Sweep(error));
+                }
+            },
+            None => report.planner_observation(0, health, self.survey_gain_db),
+        };
+        self.audit(
+            "execution_observation",
+            request,
+            json!({
+                "sweep_id": &report.sweep_id,
+                "backend": &report.backend,
+                "backend_version": report.backend_version,
+                "elapsed_ms": report.elapsed_ms,
+                "point_count": report.points.len(),
+                "candidate_count": report.candidates.len(),
+                "post_execution_sdr": &post_execution_sdr,
+                "next_observation": &next_observation,
+            }),
+        )?;
+        Ok(RunReport {
+            status: RunStatus::Executed,
+            plan,
+            execution: None,
+            sweep: Some(report),
+            next_observation,
+        })
+    }
+
+    fn audit_sdr_failure(
+        &mut self,
+        request: &PlanRequest,
+        error: &SdrError,
+    ) -> Result<(), RunnerError> {
+        self.audit(
+            "execution_failed",
+            request,
+            json!({
+                "code": error.code,
+                "message": &error.message,
+                "metadata": &error.details,
+            }),
+        )
+    }
+
+    fn audit_sweep_failure(
+        &mut self,
+        request: &PlanRequest,
+        error: &SweepError,
+    ) -> Result<(), RunnerError> {
+        self.audit(
+            "execution_failed",
+            request,
+            json!({
+                "code": error.code,
+                "message": &error.message,
+                "metadata": &error.details,
+            }),
+        )
+    }
 }
 
 impl ApprovalMode {
@@ -292,6 +468,7 @@ impl ApprovalMode {
 pub enum RunnerError {
     Controller(ControllerError),
     Sdr(SdrError),
+    Sweep(SweepError),
     Audit(io::Error),
 }
 
@@ -300,6 +477,7 @@ impl fmt::Display for RunnerError {
         match self {
             Self::Controller(error) => write!(formatter, "controller: {error}"),
             Self::Sdr(error) => write!(formatter, "sdr: {error}"),
+            Self::Sweep(error) => write!(formatter, "sweep: {error}"),
             Self::Audit(error) => write!(formatter, "audit: {error}"),
         }
     }
@@ -319,6 +497,12 @@ impl From<SdrError> for RunnerError {
     }
 }
 
+impl From<SweepError> for RunnerError {
+    fn from(error: SweepError) -> Self {
+        Self::Sweep(error)
+    }
+}
+
 impl From<io::Error> for RunnerError {
     fn from(error: io::Error) -> Self {
         Self::Audit(error)
@@ -335,6 +519,7 @@ mod tests {
         PROTOCOL_VERSION,
     };
     use crate::sdr::{ReplaySdrAdapter, SdrSnapshot};
+    use crate::sweep::{BackendSweep, ReplaySweepAdapter, SweepPoint};
 
     struct ReplayPlanner {
         response: Option<PlanResponse>,
@@ -447,6 +632,85 @@ mod tests {
         }
     }
 
+    fn sweep_point(
+        index: usize,
+        center_hz: u64,
+        sample_rate_hz: u64,
+        rf_bandwidth_hz: u64,
+        power_dbfs: f32,
+    ) -> SweepPoint {
+        SweepPoint {
+            point_index: index,
+            request_id: index as u64 + 1,
+            session_generation: 3,
+            requested_center_hz: center_hz,
+            actual_center_hz: center_hz,
+            sample_rate_hz,
+            rf_bandwidth_hz,
+            sequence: index as u64 + 1,
+            dropped_samples: 0,
+            overflow: false,
+            captured_samples: 4_096,
+            band_power_dbfs: power_dbfs,
+            clipped_samples: 0,
+            status_flags: 0,
+            elapsed_us: 1_000,
+            timeout: crate::execution::ExecutionTimeoutMetadata {
+                limit_ms: 250,
+                elapsed_us: 1_000,
+                timed_out: false,
+            },
+            health: crate::execution::ExecutionHealthMetadata {
+                healthy: true,
+                flags: 0,
+                source: "replay".to_owned(),
+            },
+        }
+    }
+
+    fn sweep_response() -> PlanResponse {
+        PlanResponse {
+            protocol_version: PROTOCOL_VERSION,
+            request_id: 7,
+            session_generation: 3,
+            status: PlanStatus::Ok,
+            action: Some(ProposedAction::SurveyBand {
+                start_hz: 433_000_000,
+                stop_hz: 437_000_000,
+                step_hz: 2_000_000,
+                sample_rate_hz: 3_000_000,
+                rf_bandwidth_hz: 2_500_000,
+                dwell_ms: 5,
+            }),
+            error: None,
+            planner: PlannerMeta {
+                provider: "replay".to_owned(),
+                model: "test".to_owned(),
+            },
+        }
+    }
+
+    fn inspection_response() -> PlanResponse {
+        PlanResponse {
+            protocol_version: PROTOCOL_VERSION,
+            request_id: 7,
+            session_generation: 3,
+            status: PlanStatus::Ok,
+            action: Some(ProposedAction::InspectCandidate {
+                candidate_id: "candidate-1".to_owned(),
+                center_hz: 433_920_000,
+                sample_rate_hz: 2_100_000,
+                rf_bandwidth_hz: 500_000,
+                dwell_ms: 100,
+            }),
+            error: None,
+            planner: PlannerMeta {
+                provider: "replay".to_owned(),
+                model: "test".to_owned(),
+            },
+        }
+    }
+
     #[test]
     fn pending_operator_gate_stops_before_execution() {
         let mut runner = Runner::new(
@@ -455,6 +719,8 @@ mod tests {
                 response: Some(response(4_096)),
             },
             ReplayActionExecutor::new([Ok(execution())]),
+            ReplaySweepAdapter::new([]),
+            20,
             MemoryAuditAdapter::default(),
         );
         let report = runner.run_once(request(), ApprovalMode::Pending).unwrap();
@@ -473,6 +739,8 @@ mod tests {
                 response: Some(response(4_096)),
             },
             ReplayActionExecutor::new([Ok(execution())]),
+            ReplaySweepAdapter::new([]),
+            20,
             MemoryAuditAdapter::default(),
         );
         let report = runner.run_once(request(), ApprovalMode::Operator).unwrap();
@@ -492,6 +760,8 @@ mod tests {
                 response: Some(response(4_096)),
             },
             ReplayActionExecutor::new([Ok(execution())]),
+            ReplaySweepAdapter::new([]),
+            20,
             MemoryAuditAdapter::default(),
         );
         let error = runner
@@ -517,6 +787,8 @@ mod tests {
                 response: Some(failed),
             },
             ReplayActionExecutor::new([Ok(execution())]),
+            ReplaySweepAdapter::new([]),
+            20,
             MemoryAuditAdapter::default(),
         );
         let error = runner
@@ -525,5 +797,93 @@ mod tests {
         assert!(matches!(error, RunnerError::Controller(_)));
         let (_, _, audit) = runner.into_parts();
         assert_eq!(audit.events().last().unwrap().phase, "validation_failed");
+    }
+
+    #[test]
+    fn one_shot_survey_executes_and_returns_aggregate_observation() {
+        let sweep = BackendSweep {
+            backend: "replay".to_owned(),
+            backend_version: 1,
+            points: vec![
+                sweep_point(0, 433_000_000, 3_000_000, 2_500_000, -70.0),
+                sweep_point(1, 435_000_000, 3_000_000, 2_500_000, -40.0),
+                sweep_point(2, 437_000_000, 3_000_000, 2_500_000, -69.0),
+            ],
+            dataset: None,
+        };
+        let mut runner = Runner::new(
+            ReplaySdrAdapter::new([snapshot(), snapshot()]),
+            ReplayPlanner {
+                response: Some(sweep_response()),
+            },
+            ReplayActionExecutor::new([]),
+            ReplaySweepAdapter::new([Ok(sweep)]),
+            20,
+            MemoryAuditAdapter::default(),
+        );
+        let report = runner.run_once(request(), ApprovalMode::Automatic).unwrap();
+        assert_eq!(report.status, RunStatus::Executed);
+        assert!(report.execution.is_none());
+        assert_eq!(report.sweep.as_ref().unwrap().points.len(), 3);
+        assert_eq!(report.next_observation.candidates[0].id, "request-7-1");
+        assert_eq!(
+            report
+                .next_observation
+                .latest_sweep
+                .as_ref()
+                .unwrap()
+                .fixed_gain_db,
+            20
+        );
+        let (_, _, audit) = runner.into_parts();
+        assert_eq!(
+            audit.events().last().unwrap().phase,
+            "execution_observation"
+        );
+        assert!(!audit
+            .events()
+            .iter()
+            .any(|event| event.phase == "planned_only"));
+    }
+
+    #[test]
+    fn one_shot_inspection_executes_and_refreshes_selected_candidate() {
+        let sweep = BackendSweep {
+            backend: "replay".to_owned(),
+            backend_version: 1,
+            points: vec![sweep_point(0, 433_920_000, 2_100_000, 500_000, -25.0)],
+            dataset: None,
+        };
+        let mut runner = Runner::new(
+            ReplaySdrAdapter::new([snapshot(), snapshot()]),
+            ReplayPlanner {
+                response: Some(inspection_response()),
+            },
+            ReplayActionExecutor::new([]),
+            ReplaySweepAdapter::new([Ok(sweep)]),
+            20,
+            MemoryAuditAdapter::default(),
+        );
+        let report = runner.run_once(request(), ApprovalMode::Automatic).unwrap();
+        assert_eq!(report.status, RunStatus::Executed);
+        assert_eq!(report.sweep.as_ref().unwrap().points.len(), 1);
+        let candidate = report
+            .next_observation
+            .candidates
+            .iter()
+            .find(|candidate| candidate.id == "candidate-1")
+            .unwrap();
+        assert_eq!(candidate.peak_dbfs, -25.0);
+        assert_eq!(candidate.snr_db, 5.0);
+        assert_eq!(candidate.age_ms, 0);
+        let (_, _, audit) = runner.into_parts();
+        assert_eq!(
+            audit.events().last().unwrap().phase,
+            "execution_observation"
+        );
+        assert!(!audit
+            .events()
+            .iter()
+            .any(|event| event.phase == "planned_only"));
     }
 }

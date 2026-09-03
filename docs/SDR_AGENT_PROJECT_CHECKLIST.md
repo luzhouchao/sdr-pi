@@ -240,14 +240,21 @@ Evidence:
       restore them through a validated mode-`0600` runtime PlanningContext after
       Web restart, and bound textual carry-forward to one 1,024-byte terminal
       command.
-- [ ] Extend the stateless one-shot Runner abstraction to execute
-      `survey_band` and `inspect_candidate`; the deployed interactive
-      Web/terminal loop is complete.
+- [x] Extend and deploy the stateless one-shot Runner to execute real
+      `survey_band` and `inspect_candidate` actions through the existing AGX
+      software `SweepEngine`, return the aggregate plus a fresh Planner
+      observation, re-observe restored SDR health, and append the correlated
+      proposal/validation/authorization/result JSONL audit chain; see
+      [`SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md`](SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md).
 - [x] Persist a root-only JSONL audit record joining operator input,
       model/provider, raw proposal, Rust validation, approval, execution and the
       resulting observation, including fail-closed planning attempts.
 - [ ] Validate reconnect, cancellation, stale-result, timeout, and partial-action
       recovery for the complete loop.
+
+Evidence:
+
+- [`SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md`](SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md)
 
 ## 3. SDR Linux control plane (`sdrd`)
 
