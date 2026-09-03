@@ -11,25 +11,28 @@ use sdr_agent_controller::execution::{
 use sdr_agent_controller::policy::ControllerPolicy;
 use sdr_agent_controller::protocol::{
     ControllerState, PlanRequest, PlanResponse, ProposedAction, ValidatedPlan, MAX_FRAME_BYTES,
+    MAX_INSTRUCTION_BYTES,
 };
 use sdr_agent_controller::sdr::{SdrEngine, SdrError, SdrdAdapter};
 use sdr_agent_controller::sweep::{
     SdrdSoftwareSweepAdapter, SweepEngine, SweepError, SweepFrequencies, SweepPlan, SweepReport,
 };
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::{HashMap, VecDeque};
 use std::env;
 use std::error::Error;
-use std::fs;
+use std::fs::{self, File, OpenOptions};
 use std::io::{self, Read, Write};
 use std::net::SocketAddr;
+use std::os::unix::fs::{MetadataExt, OpenOptionsExt, PermissionsExt};
 use std::os::unix::net::UnixStream;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{self, RecvTimeoutError, SyncSender, TrySendError};
 use std::sync::Arc;
 use std::thread::{self, JoinHandle};
-use std::time::{Duration, Instant};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 type AppResult<T> = Result<T, Box<dyn Error>>;
 const HISTORY_LIMIT: usize = 32;
@@ -37,6 +40,26 @@ const CANCEL_START_RETRIES: usize = 50;
 const AUTO_RETRY_DELAY: Duration = Duration::from_secs(AUTO_RETRY_DELAY_SECS);
 const EVENT_POLL_INTERVAL: Duration = Duration::from_millis(50);
 const TERMINAL_INPUT_QUEUE_LIMIT: usize = 4;
+const TERMINAL_STATE_SCHEMA_VERSION: u8 = 1;
+const TERMINAL_STATE_MAX_BYTES: usize = 64 * 1024;
+const TERMINAL_RESUME_MAX_ENTRIES: usize = HISTORY_LIMIT;
+const TERMINAL_RESUME_ENTRY_MAX_BYTES: usize = 2_048;
+const TERMINAL_RESUME_SUMMARY_MAX_BYTES: usize = 6_144;
+const TERMINAL_RESUME_MAX_AGE_MS: u64 = 7 * 24 * 60 * 60 * 1_000;
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct PersistedTerminalSession {
+    schema_version: u8,
+    saved_at_ms: u64,
+    history: Vec<String>,
+}
+
+#[derive(Debug)]
+struct LoadedTerminalSession {
+    history: VecDeque<String>,
+    summary: String,
+}
 
 fn main() {
     if let Err(error) = run() {
@@ -50,17 +73,35 @@ fn run() -> AppResult<()> {
     let bytes = read_bounded(fs::File::open(&options.request_path)?)?;
     let template: PlanRequest = serde_json::from_slice(&bytes)?;
     ControllerPolicy.validate_request(&template)?;
+    let loaded_session = if options.instruction.is_none() {
+        options
+            .session_state_path
+            .as_deref()
+            .map(load_terminal_session)
+            .transpose()?
+            .flatten()
+    } else {
+        None
+    };
     let executor = options.sdrd_address.map(|address| {
         SdrdActionAdapter::new(address, Duration::from_millis(options.sdrd_timeout_ms))
     });
     let mut app = ConsoleApp::connect(
-        options.socket_path,
         template,
-        executor,
-        options.sdrd_address,
-        Duration::from_millis(options.sdrd_timeout_ms),
-        options.survey_gain_db,
-        options.sigmf_directory,
+        ConsoleConnectionOptions {
+            socket_path: options.socket_path,
+            executor,
+            sdrd_address: options.sdrd_address,
+            sdrd_timeout: Duration::from_millis(options.sdrd_timeout_ms),
+            survey_gain_db: options.survey_gain_db,
+            sigmf_directory: options.sigmf_directory,
+            session_state_path: if options.instruction.is_none() {
+                options.session_state_path.clone()
+            } else {
+                None
+            },
+        },
+        loaded_session,
     )?;
 
     if let Some(instruction) = options.instruction {
@@ -80,6 +121,12 @@ fn run() -> AppResult<()> {
             "未配置"
         }
     );
+    if !app.history.is_empty() {
+        println!(
+            "已恢复 {} 条有限终端历史；待批准计划、运行中动作和旧 generation 均未恢复。",
+            app.history.len()
+        );
+    }
     if let Some(initial_survey) = options.initial_survey {
         app.start_initial_survey(initial_survey)?;
     }
@@ -345,6 +392,18 @@ struct ConsoleApp {
     auto_next_instruction: Option<String>,
     next_auto_attempt: Instant,
     deferred_renew: Option<(ControllerState, String)>,
+    session_state_path: Option<PathBuf>,
+    resume_summary: Option<String>,
+}
+
+struct ConsoleConnectionOptions {
+    socket_path: PathBuf,
+    executor: Option<SdrdActionAdapter>,
+    sdrd_address: Option<SocketAddr>,
+    sdrd_timeout: Duration,
+    survey_gain_db: i16,
+    sigmf_directory: Option<PathBuf>,
+    session_state_path: Option<PathBuf>,
 }
 
 struct ActiveExecution {
@@ -420,40 +479,47 @@ struct InitialSurveyOptions {
 
 impl ConsoleApp {
     fn connect(
-        socket_path: PathBuf,
         template: PlanRequest,
-        executor: Option<SdrdActionAdapter>,
-        sdrd_address: Option<SocketAddr>,
-        sdrd_timeout: Duration,
-        survey_gain_db: i16,
-        sigmf_directory: Option<PathBuf>,
+        options: ConsoleConnectionOptions,
+        loaded_session: Option<LoadedTerminalSession>,
     ) -> AppResult<Self> {
         let generation = template.session_generation;
         let next_request_id = template.request_id;
+        let (history, resume_summary) = loaded_session.map_or_else(
+            || (VecDeque::with_capacity(HISTORY_LIMIT), None),
+            |loaded| {
+                (
+                    loaded.history,
+                    (!loaded.summary.is_empty()).then_some(loaded.summary),
+                )
+            },
+        );
         let mut app = Self {
-            client: SessionClient::connect(socket_path, generation)?,
+            client: SessionClient::connect(options.socket_path, generation)?,
             template,
             next_request_id,
             session_generation: generation,
             pending: None,
             requests: HashMap::new(),
             pending_session_commands: HashMap::new(),
-            history: VecDeque::with_capacity(HISTORY_LIMIT),
+            history,
             agent_cycle_active: false,
             active_request_id: None,
             plan_seen_in_cycle: false,
-            executor,
+            executor: options.executor,
             active_execution: None,
             active_sweep: None,
-            sdrd_address,
-            sdrd_timeout,
-            survey_gain_db,
-            sigmf_directory,
+            sdrd_address: options.sdrd_address,
+            sdrd_timeout: options.sdrd_timeout,
+            survey_gain_db: options.survey_gain_db,
+            sigmf_directory: options.sigmf_directory,
             cruise: CruiseControl::default(),
             auto_mission: None,
             auto_next_instruction: None,
             next_auto_attempt: Instant::now(),
             deferred_renew: None,
+            session_state_path: options.session_state_path,
+            resume_summary,
         };
         app.command("open_session", None)?;
         Ok(app)
@@ -474,8 +540,12 @@ impl ConsoleApp {
         let mut request = self.template.clone();
         request.request_id = request_id;
         request.session_generation = self.session_generation;
-        request.instruction = instruction.clone();
+        request.instruction = self.resume_summary.as_deref().map_or_else(
+            || instruction.clone(),
+            |summary| carry_forward_instruction(summary, &instruction),
+        );
         ControllerPolicy.validate_request(&request)?;
+        self.resume_summary = None;
         println!("模型输入> {}", serde_json::to_string(&request)?);
         self.record(format!("operator: {instruction}"));
         self.requests.insert(request_id, request.clone());
@@ -1891,6 +1961,11 @@ impl ConsoleApp {
             self.history.pop_front();
         }
         self.history.push_back(entry);
+        if let Some(path) = &self.session_state_path {
+            if let Err(error) = persist_terminal_session(path, &self.history) {
+                eprintln!("终端会话状态未保存：{error}");
+            }
+        }
     }
 
     fn emit_observation(&self) -> AppResult<()> {
@@ -2158,6 +2233,7 @@ struct Options {
     survey_gain_db: i16,
     initial_survey: Option<InitialSurveyOptions>,
     sigmf_directory: Option<PathBuf>,
+    session_state_path: Option<PathBuf>,
 }
 
 impl Options {
@@ -2174,6 +2250,8 @@ impl Options {
         let mut initial_survey_dwell_ms = None;
         let mut initial_survey_gain_db = None;
         let mut sigmf_directory = None;
+        let mut session_state_path = None;
+        let mut session_state_disabled = false;
         let mut args = env::args().skip(1);
         while let Some(arg) = args.next() {
             match arg.as_str() {
@@ -2210,6 +2288,18 @@ impl Options {
                         Some(PathBuf::from(args.next().ok_or_else(|| {
                             invalid_input("missing --sigmf-directory value")
                         })?));
+                }
+                "--session-state" => {
+                    let value = args
+                        .next()
+                        .ok_or_else(|| invalid_input("missing --session-state value"))?;
+                    if value == "off" {
+                        session_state_disabled = true;
+                        session_state_path = None;
+                    } else {
+                        session_state_disabled = false;
+                        session_state_path = Some(PathBuf::from(value));
+                    }
                 }
                 "--initial-survey-start-hz" => {
                     initial_survey_start_hz = Some(parse_option_u64(&mut args, &arg)?);
@@ -2292,15 +2382,26 @@ impl Options {
                 sdr_agent_controller::sweep::validate_plan(&plan)?;
                 Some(options)
             };
+        let instruction = (!instruction.is_empty()).then(|| instruction.join(" "));
+        if instruction.is_none() && !session_state_disabled && session_state_path.is_none() {
+            session_state_path = Some(default_terminal_state_path()?);
+        }
+        if session_state_path
+            .as_ref()
+            .is_some_and(|path| !path.is_absolute())
+        {
+            return Err(invalid_input("--session-state must be an absolute path or off").into());
+        }
         Ok(Self {
             socket_path,
             request_path,
-            instruction: (!instruction.is_empty()).then(|| instruction.join(" ")),
+            instruction,
             sdrd_address,
             sdrd_timeout_ms,
             survey_gain_db,
             initial_survey,
             sigmf_directory,
+            session_state_path,
         })
     }
 }
@@ -2500,6 +2601,260 @@ fn invalid_input(message: impl Into<String>) -> io::Error {
     io::Error::new(io::ErrorKind::InvalidInput, message.into())
 }
 
+fn default_terminal_state_path() -> AppResult<PathBuf> {
+    if let Some(root) = env::var_os("XDG_STATE_HOME").map(PathBuf::from) {
+        if root.is_absolute() {
+            return Ok(root.join("sdrharness/terminal-session.json"));
+        }
+    }
+    let home = env::var_os("HOME")
+        .map(PathBuf::from)
+        .filter(|path| path.is_absolute())
+        .ok_or_else(|| {
+            invalid_input("HOME or absolute XDG_STATE_HOME is required for session state")
+        })?;
+    Ok(home.join(".local/state/sdrharness/terminal-session.json"))
+}
+
+fn load_terminal_session(path: &Path) -> AppResult<Option<LoadedTerminalSession>> {
+    if !path.is_absolute() {
+        return Err(invalid_input("terminal session state path must be absolute").into());
+    }
+    let metadata = match fs::symlink_metadata(path) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error.into()),
+    };
+    ensure_private_state_parent(
+        path.parent()
+            .ok_or_else(|| invalid_input("terminal session state path has no parent"))?,
+    )?;
+    validate_private_state_file(path, &metadata)?;
+    if metadata.len() > TERMINAL_STATE_MAX_BYTES as u64 {
+        return Err(invalid_input("terminal session state exceeds 64 KiB").into());
+    }
+    let bytes = read_bounded_limit(File::open(path)?, TERMINAL_STATE_MAX_BYTES)?;
+    let persisted: PersistedTerminalSession = serde_json::from_slice(&bytes)?;
+    if persisted.schema_version != TERMINAL_STATE_SCHEMA_VERSION {
+        return Err(invalid_input("unsupported terminal session state schema").into());
+    }
+    let now = unix_time_ms()?;
+    if persisted.saved_at_ms > now.saturating_add(5 * 60 * 1_000) {
+        return Err(invalid_input("terminal session state timestamp is in the future").into());
+    }
+    if now.saturating_sub(persisted.saved_at_ms) > TERMINAL_RESUME_MAX_AGE_MS {
+        return Ok(None);
+    }
+    if persisted.history.len() > TERMINAL_RESUME_MAX_ENTRIES {
+        return Err(invalid_input("terminal session state has too many history entries").into());
+    }
+    for entry in &persisted.history {
+        validate_resumable_history_entry(entry)?;
+    }
+    let summary = bounded_resume_summary(&persisted.history);
+    Ok(Some(LoadedTerminalSession {
+        history: persisted.history.into(),
+        summary,
+    }))
+}
+
+fn persist_terminal_session(path: &Path, history: &VecDeque<String>) -> AppResult<()> {
+    if !path.is_absolute() {
+        return Err(invalid_input("terminal session state path must be absolute").into());
+    }
+    let parent = path
+        .parent()
+        .ok_or_else(|| invalid_input("terminal session state path has no parent"))?;
+    ensure_private_state_parent(parent)?;
+    if let Ok(metadata) = fs::symlink_metadata(path) {
+        validate_private_state_file(path, &metadata)?;
+    }
+    let mut resumable = history
+        .iter()
+        .filter_map(|entry| sanitize_resumable_history_entry(entry))
+        .collect::<Vec<_>>();
+    if resumable.len() > TERMINAL_RESUME_MAX_ENTRIES {
+        resumable.drain(..resumable.len() - TERMINAL_RESUME_MAX_ENTRIES);
+    }
+    for entry in &resumable {
+        validate_resumable_history_entry(entry)?;
+    }
+    let state = PersistedTerminalSession {
+        schema_version: TERMINAL_STATE_SCHEMA_VERSION,
+        saved_at_ms: unix_time_ms()?,
+        history: resumable,
+    };
+    let bytes = serde_json::to_vec_pretty(&state)?;
+    if bytes.len() > TERMINAL_STATE_MAX_BYTES {
+        return Err(invalid_input("terminal session state exceeds 64 KiB").into());
+    }
+    let file_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .ok_or_else(|| invalid_input("terminal session state filename is invalid"))?;
+    let temporary = parent.join(format!(
+        ".{file_name}.tmp-{}-{}",
+        std::process::id(),
+        unix_time_ms()?
+    ));
+    let result = (|| -> AppResult<()> {
+        let mut file = OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .mode(0o600)
+            .open(&temporary)?;
+        file.write_all(&bytes)?;
+        file.sync_all()?;
+        drop(file);
+        fs::rename(&temporary, path)?;
+        fs::set_permissions(path, fs::Permissions::from_mode(0o600))?;
+        File::open(parent)?.sync_all()?;
+        Ok(())
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    result
+}
+
+fn ensure_private_state_parent(parent: &Path) -> AppResult<()> {
+    if !parent.exists() {
+        fs::create_dir_all(parent)?;
+        fs::set_permissions(parent, fs::Permissions::from_mode(0o700))?;
+    }
+    let metadata = fs::symlink_metadata(parent)?;
+    if metadata.file_type().is_symlink() || !metadata.is_dir() {
+        return Err(invalid_input("terminal session state parent must be a real directory").into());
+    }
+    if metadata.uid() != unsafe { libc::geteuid() } || metadata.mode() & 0o077 != 0 {
+        return Err(invalid_input("terminal session state parent must be owner-only").into());
+    }
+    Ok(())
+}
+
+fn validate_private_state_file(path: &Path, metadata: &fs::Metadata) -> AppResult<()> {
+    if metadata.file_type().is_symlink() || !metadata.is_file() {
+        return Err(invalid_input(format!(
+            "terminal session state is not a regular file: {}",
+            path.display()
+        ))
+        .into());
+    }
+    if metadata.uid() != unsafe { libc::geteuid() } || metadata.mode() & 0o777 != 0o600 {
+        return Err(invalid_input("terminal session state must be owner mode 0600").into());
+    }
+    Ok(())
+}
+
+fn read_bounded_limit(mut reader: impl Read, maximum: usize) -> AppResult<Vec<u8>> {
+    let mut bytes = Vec::new();
+    reader
+        .by_ref()
+        .take((maximum + 1) as u64)
+        .read_to_end(&mut bytes)?;
+    if bytes.len() > maximum {
+        return Err(invalid_input(format!("input exceeds {maximum} bytes")).into());
+    }
+    Ok(bytes)
+}
+
+fn validate_resumable_history_entry(entry: &str) -> AppResult<()> {
+    if !is_resumable_history_entry(entry)
+        || entry.len() > TERMINAL_RESUME_ENTRY_MAX_BYTES
+        || entry.chars().any(char::is_control)
+    {
+        return Err(invalid_input("terminal session history entry is invalid").into());
+    }
+    Ok(())
+}
+
+fn is_resumable_history_entry(entry: &str) -> bool {
+    entry.starts_with("operator: ")
+        || entry.starts_with("operator steer: ")
+        || entry.starts_with("operator follow_up: ")
+        || entry.starts_with("agent: ")
+}
+
+fn sanitize_resumable_history_entry(entry: &str) -> Option<String> {
+    if !is_resumable_history_entry(entry) {
+        return None;
+    }
+    let printable = entry
+        .chars()
+        .map(|character| {
+            if character.is_control() {
+                ' '
+            } else {
+                character
+            }
+        })
+        .collect::<String>();
+    let normalized = single_line(&printable);
+    Some(head_utf8(&normalized, TERMINAL_RESUME_ENTRY_MAX_BYTES))
+}
+
+fn bounded_resume_summary(history: &[String]) -> String {
+    let joined = history.join("\n");
+    if joined.len() <= TERMINAL_RESUME_SUMMARY_MAX_BYTES {
+        joined
+    } else {
+        tail_utf8(&joined, TERMINAL_RESUME_SUMMARY_MAX_BYTES)
+    }
+}
+
+fn carry_forward_instruction(summary: &str, instruction: &str) -> String {
+    const PREFIX: &str = "前序有限终端摘要（不含任何批准或执行授权）：";
+    const CURRENT: &str = "；当前指令：";
+    let summary = single_line(summary);
+    let instruction = single_line(instruction);
+    let fixed = PREFIX.len() + CURRENT.len() + instruction.len();
+    if summary.is_empty() || fixed >= MAX_INSTRUCTION_BYTES {
+        return instruction;
+    }
+    let budget = MAX_INSTRUCTION_BYTES - fixed;
+    let summary = if summary.len() > budget {
+        tail_utf8(&summary, budget)
+    } else {
+        summary
+    };
+    format!("{PREFIX}{summary}{CURRENT}{instruction}")
+}
+
+fn single_line(value: &str) -> String {
+    value.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+fn tail_utf8(value: &str, maximum_bytes: usize) -> String {
+    if value.len() <= maximum_bytes {
+        return value.to_owned();
+    }
+    let mut start = value.len() - maximum_bytes;
+    while start < value.len() && !value.is_char_boundary(start) {
+        start += 1;
+    }
+    value[start..].to_owned()
+}
+
+fn head_utf8(value: &str, maximum_bytes: usize) -> String {
+    if value.len() <= maximum_bytes {
+        return value.to_owned();
+    }
+    let mut end = maximum_bytes;
+    while end > 0 && !value.is_char_boundary(end) {
+        end -= 1;
+    }
+    value[..end].to_owned()
+}
+
+fn unix_time_ms() -> AppResult<u64> {
+    Ok(SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| invalid_input("system clock predates Unix epoch"))?
+        .as_millis()
+        .try_into()
+        .map_err(|_| invalid_input("system time exceeds u64 milliseconds"))?)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -2573,6 +2928,8 @@ mod tests {
                 auto_next_instruction: None,
                 next_auto_attempt: Instant::now(),
                 deferred_renew: None,
+                session_state_path: None,
+                resume_summary: None,
             },
             peer,
         )
@@ -2726,6 +3083,95 @@ mod tests {
                 "success": true
             }))
             .is_err());
+    }
+
+    fn terminal_state_test_path(label: &str) -> PathBuf {
+        let directory = env::temp_dir().join(format!(
+            "sdrharness-terminal-state-{label}-{}",
+            std::process::id()
+        ));
+        let _ = fs::remove_dir_all(&directory);
+        fs::create_dir_all(&directory).unwrap();
+        fs::set_permissions(&directory, fs::Permissions::from_mode(0o700)).unwrap();
+        directory.join("session.json")
+    }
+
+    #[test]
+    fn atomically_persists_only_bounded_private_conversation_history() {
+        let path = terminal_state_test_path("bounded");
+        let mut history = VecDeque::new();
+        history.push_back("approved request 4".to_owned());
+        history.push_back("execution failed request 4".to_owned());
+        for index in 0..40 {
+            history.push_back(format!("operator: message {index}"));
+        }
+        history.push_back(format!("agent: final\n{}", "x".repeat(3_000)));
+        persist_terminal_session(&path, &history).unwrap();
+
+        let metadata = fs::symlink_metadata(&path).unwrap();
+        assert_eq!(metadata.mode() & 0o777, 0o600);
+        assert_eq!(metadata.uid(), unsafe { libc::geteuid() });
+        assert!(metadata.len() <= TERMINAL_STATE_MAX_BYTES as u64);
+        let loaded = load_terminal_session(&path).unwrap().unwrap();
+        assert_eq!(loaded.history.len(), TERMINAL_RESUME_MAX_ENTRIES);
+        assert!(loaded
+            .history
+            .iter()
+            .all(|entry| { entry.starts_with("operator: ") || entry.starts_with("agent: ") }));
+        assert!(loaded
+            .history
+            .iter()
+            .all(|entry| entry.len() <= TERMINAL_RESUME_ENTRY_MAX_BYTES
+                && !entry.chars().any(char::is_control)));
+        assert!(loaded.summary.len() <= TERMINAL_RESUME_SUMMARY_MAX_BYTES);
+        assert!(!loaded.summary.contains("approved request"));
+        assert!(!loaded.summary.contains("execution failed"));
+        assert!(path.parent().unwrap().read_dir().unwrap().all(|entry| {
+            !entry
+                .unwrap()
+                .file_name()
+                .to_string_lossy()
+                .contains(".tmp-")
+        }));
+        fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
+
+    #[test]
+    fn rejects_expired_loose_or_action_bearing_session_state() {
+        let path = terminal_state_test_path("reject");
+        let expired = PersistedTerminalSession {
+            schema_version: TERMINAL_STATE_SCHEMA_VERSION,
+            saved_at_ms: unix_time_ms().unwrap() - TERMINAL_RESUME_MAX_AGE_MS - 1,
+            history: vec!["operator: old".to_owned()],
+        };
+        fs::write(&path, serde_json::to_vec(&expired).unwrap()).unwrap();
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).unwrap();
+        assert!(load_terminal_session(&path).unwrap().is_none());
+
+        fs::write(
+            &path,
+            serde_json::to_vec(&json!({
+                "schema_version": 1,
+                "saved_at_ms": unix_time_ms().unwrap(),
+                "history": ["operator: safe"],
+                "pending_plan": {"request_id": 7}
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(load_terminal_session(&path).is_err());
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o644)).unwrap();
+        assert!(load_terminal_session(&path).is_err());
+        fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
+
+    #[test]
+    fn bounds_resumed_context_to_one_unprivileged_instruction() {
+        let summary = format!("operator: {}\nagent: previous hold", "历史".repeat(3_000));
+        let instruction = carry_forward_instruction(&summary, "当前只查询状态");
+        assert!(instruction.len() <= MAX_INSTRUCTION_BYTES);
+        assert!(instruction.contains("不含任何批准或执行授权"));
+        assert!(instruction.ends_with("当前指令：当前只查询状态"));
     }
 
     #[test]

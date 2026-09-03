@@ -51,6 +51,11 @@ The terminal reads stdin on a separate bounded four-line queue while model
 events stream. Prompt, steer, follow-up and abort acknowledgements are
 correlated asynchronously; `/stop` has an independent priority path and
 invalidates queued or late old-generation work.
+Direct terminals also persist at most 32 normalized conversation entries in an
+atomic owner-only file. A restart carries only a bounded unprivileged summary
+into the next request; plans, approvals, queues, actions and generations are
+never serialized. Web children disable this terminal store because Web retains
+its own isolated bounded conversation state.
 
 The Web-managed provider configuration supports OpenAI-compatible Completions
 and Responses, an 8,192–1,000,000-token context window and automatic compaction

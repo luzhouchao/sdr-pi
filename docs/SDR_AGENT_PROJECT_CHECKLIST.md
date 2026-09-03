@@ -138,8 +138,11 @@ state.
       follow-up, priority `/stop`, asynchronous acknowledgement correlation,
       and fail-closed stale-generation handling; see
       [`SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md).
-- [ ] Persist and resume bounded interactive session history after terminal
-      exit.
+- [x] Persist and resume bounded interactive terminal history after normal or
+      unexpected exit and Planner restart, using atomic owner-only state,
+      hard file/message/context/age limits, and conversation-only restoration
+      that excludes approvals, plans, actions, queues and old generations; see
+      [`SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md).
 - [ ] Support multiple isolated interactive users or sessions.
 - [x] Live-test OpenCode Go `deepseek-v4-flash` through the deployed Web,
       unchanged Controller interface and real `0600` subscription credential:
@@ -161,6 +164,7 @@ Evidence:
 - [`SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md`](SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md`](SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md)
 - [`SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md)
+- [`SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md)
 
 ## 2. Planning policy and autonomous loop
 

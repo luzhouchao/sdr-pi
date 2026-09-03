@@ -1280,6 +1280,8 @@ async fn process_actor(
         .arg(&state.config.session_socket)
         .arg("--request")
         .arg(&request_path)
+        .arg("--session-state")
+        .arg("off")
         .arg("--sdrd")
         .arg(&state.config.sdrd_address)
         .arg("--survey-gain-db")
