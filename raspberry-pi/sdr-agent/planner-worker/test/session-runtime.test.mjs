@@ -303,6 +303,32 @@ test("uses Pi steering and follow-up queues with a hard limit", async () => {
   await new Promise((resolve) => setImmediate(resolve));
 });
 
+test("correlates a completed follow-up without reporting the original request missing", async () => {
+  const { instance, getFake } = runtime(true);
+  const events = [];
+  await instance.dispatch(command("open_session", 1), (event) => events.push(event));
+  await instance.dispatch(
+    command("prompt", 2, { context: context(3, 9, "first") }),
+    (event) => events.push(event),
+  );
+  await new Promise((resolve) => setImmediate(resolve));
+  await instance.dispatch(
+    command("follow_up", 3, { context: context(3, 10, "second") }),
+    (event) => events.push(event),
+  );
+  const fake = getFake();
+  fake.emit({ type: "message_start", message: userMessage(JSON.stringify(context(3, 10, "second"))) });
+  fake.onPlan(normalizeAction({ action: "hold", reason: "follow-up complete" }));
+  fake.resolveRun();
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(
+    events.filter((event) => event.event === "plan_proposed").map((event) => event.data.request_id),
+    [9, 10],
+  );
+  assert.equal(events.some((event) => event.event === "agent_error"), false);
+});
+
 test("rejects stale generation and active close", async () => {
   const { instance } = runtime(true);
   const sink = () => {};

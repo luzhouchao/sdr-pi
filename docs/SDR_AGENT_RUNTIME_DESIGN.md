@@ -47,6 +47,10 @@ One-shot `planner.sock` is the stateless fallback. Persistent `session.sock`
 supports interactive prompt, steering, follow-up, abort and model events while
 sharing one global inference lease. Provider details, model-specific payloads,
 reasoning deltas and the bounded Spark search adapter remain behind this seam.
+The terminal reads stdin on a separate bounded four-line queue while model
+events stream. Prompt, steer, follow-up and abort acknowledgements are
+correlated asynchronously; `/stop` has an independent priority path and
+invalidates queued or late old-generation work.
 
 The Web-managed provider configuration supports OpenAI-compatible Completions
 and Responses, an 8,192–1,000,000-token context window and automatic compaction

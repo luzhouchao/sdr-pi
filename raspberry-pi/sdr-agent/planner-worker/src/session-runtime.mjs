@@ -22,6 +22,7 @@ export class SessionRuntime {
     this.queued = 0;
     this.currentContext = undefined;
     this.planSubmittedForRequest = undefined;
+    this.pendingPlanRequestIds = new Set();
     this.emit = () => {};
     this.releaseRun = undefined;
   }
@@ -69,6 +70,7 @@ export class SessionRuntime {
     this.sessionGeneration = undefined;
     this.currentContext = undefined;
     this.planSubmittedForRequest = undefined;
+    this.pendingPlanRequestIds.clear();
     this.active = false;
   }
 
@@ -84,6 +86,7 @@ export class SessionRuntime {
     this.plannerMeta = created?.plannerMeta ?? this.plannerMeta;
     this.agent.steeringMode = "one-at-a-time";
     this.agent.followUpMode = "one-at-a-time";
+    this.pendingPlanRequestIds.clear();
     this.unsubscribe = this.agent.subscribe((event) => this.#handleAgentEvent(event));
     return makeSessionResponse(command, true, this.#stateData());
   }
@@ -95,6 +98,8 @@ export class SessionRuntime {
     if (this.runLease !== undefined && this.releaseRun === undefined) {
       throw new Error("Planner Worker is busy with another inference run");
     }
+    this.pendingPlanRequestIds.clear();
+    this.pendingPlanRequestIds.add(command.context.request_id);
     this.active = true;
     this.#runPrompt(command.context);
     return makeSessionResponse(command, true, { accepted: true });
@@ -107,6 +112,7 @@ export class SessionRuntime {
       throw new Error(`session queue limit of ${MAX_SESSION_QUEUE} reached`);
     }
     this.agent[method](userMessage(command.context));
+    this.pendingPlanRequestIds.add(command.context.request_id);
     this.queued += 1;
     this.emit(makeSessionEvent(this.sessionGeneration, "queue_update", { queued: this.queued }));
     return makeSessionResponse(command, true, { queued: this.queued });
@@ -116,6 +122,7 @@ export class SessionRuntime {
     this.#requireSession(command);
     this.agent.clearAllQueues();
     this.queued = 0;
+    this.pendingPlanRequestIds.clear();
     this.agent.abort();
     this.emit(makeSessionEvent(this.sessionGeneration, "queue_update", { queued: 0 }));
     return makeSessionResponse(command, true, { abort_requested: this.active });
@@ -126,6 +133,13 @@ export class SessionRuntime {
     this.agent.clearAllQueues();
     const cleared = this.queued;
     this.queued = 0;
+    this.pendingPlanRequestIds.clear();
+    if (
+      Number.isSafeInteger(this.currentContext?.request_id)
+      && this.planSubmittedForRequest !== this.currentContext.request_id
+    ) {
+      this.pendingPlanRequestIds.add(this.currentContext.request_id);
+    }
     this.emit(makeSessionEvent(this.sessionGeneration, "queue_update", { queued: 0 }));
     return makeSessionResponse(command, true, { cleared });
   }
@@ -146,6 +160,7 @@ export class SessionRuntime {
     this.sessionGeneration = undefined;
     this.currentContext = undefined;
     this.planSubmittedForRequest = undefined;
+    this.pendingPlanRequestIds.clear();
     this.queued = 0;
     return makeSessionResponse(command, true, { closed: true });
   }
@@ -177,13 +192,10 @@ export class SessionRuntime {
     Promise.resolve()
       .then(() => agent.prompt(JSON.stringify(context)))
       .then(() => {
-        if (
-          this.sessionGeneration === generation
-          && this.agent === agent
-          && this.planSubmittedForRequest !== context.request_id
-        ) {
+        if (this.sessionGeneration === generation && this.agent === agent && this.pendingPlanRequestIds.size > 0) {
+          const missing = [...this.pendingPlanRequestIds].join(",");
           emitIfCurrent("agent_error", {
-            error: "上游模型结束了本轮生成，但没有提交下一步计划",
+            error: `上游模型结束了本轮生成，但 request=${missing} 没有提交下一步计划`,
           });
         }
       })
@@ -199,6 +211,9 @@ export class SessionRuntime {
           this.active = false;
           this.queued = 0;
           emitIfCurrent("agent_end");
+        }
+        if (this.sessionGeneration === generation && this.agent === agent) {
+          this.pendingPlanRequestIds.clear();
         }
       });
   }
@@ -312,6 +327,7 @@ export class SessionRuntime {
       throw new Error("only one plan may be submitted per planning context");
     }
     this.planSubmittedForRequest = this.currentContext.request_id;
+    this.pendingPlanRequestIds.delete(this.currentContext.request_id);
     const response = makeResponse(this.currentContext, this.plannerMeta, action);
     this.emit(makeSessionEvent(this.sessionGeneration, "plan_proposed", response));
   }

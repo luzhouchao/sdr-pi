@@ -133,8 +133,11 @@ state.
 - [x] Configure the local `jetson` account for passwordless sudo through a
       root-owned mode-`0440` `/etc/sudoers.d/90-jetson-nopasswd` rule, validate
       it with `visudo`, and prove non-interactive `sudo -n` succeeds.
-- [ ] Support concurrent terminal input while Qwen is streaming so users can
-      invoke Pi-style steer/follow-up from the line interface.
+- [x] Support concurrent terminal input while local Spark or another upstream
+      model is streaming, with a four-line terminal queue, Pi-style steer and
+      follow-up, priority `/stop`, asynchronous acknowledgement correlation,
+      and fail-closed stale-generation handling; see
+      [`SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md).
 - [ ] Persist and resume bounded interactive session history after terminal
       exit.
 - [ ] Support multiple isolated interactive users or sessions.
@@ -157,6 +160,7 @@ Evidence:
 - [`SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md`](SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md`](SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md)
+- [`SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md)
 
 ## 2. Planning policy and autonomous loop
 

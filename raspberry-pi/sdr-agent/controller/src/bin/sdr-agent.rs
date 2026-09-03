@@ -25,7 +25,9 @@ use std::io::{self, Read, Write};
 use std::net::SocketAddr;
 use std::os::unix::net::UnixStream;
 use std::path::PathBuf;
-use std::sync::mpsc::{self, RecvTimeoutError};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::mpsc::{self, RecvTimeoutError, SyncSender, TrySendError};
+use std::sync::Arc;
 use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant};
 
@@ -34,6 +36,7 @@ const HISTORY_LIMIT: usize = 32;
 const CANCEL_START_RETRIES: usize = 50;
 const AUTO_RETRY_DELAY: Duration = Duration::from_secs(AUTO_RETRY_DELAY_SECS);
 const EVENT_POLL_INTERVAL: Duration = Duration::from_millis(50);
+const TERMINAL_INPUT_QUEUE_LIMIT: usize = 4;
 
 fn main() {
     if let Err(error) = run() {
@@ -80,21 +83,43 @@ fn run() -> AppResult<()> {
     if let Some(initial_survey) = options.initial_survey {
         app.start_initial_survey(initial_survey)?;
     }
-    let (input_tx, input_rx) = mpsc::channel();
+    let (input_tx, input_rx) = mpsc::sync_channel(TERMINAL_INPUT_QUEUE_LIMIT);
+    let priority_stop = Arc::new(AtomicBool::new(false));
+    let input_stop = Arc::clone(&priority_stop);
     thread::spawn(move || {
         let stdin = io::stdin();
         loop {
             let mut line = String::new();
             match stdin.read_line(&mut line) {
                 Ok(0) | Err(_) => break,
-                Ok(_) if input_tx.send(line).is_err() => break,
-                Ok(_) => {}
+                Ok(_) => match enqueue_terminal_input(&input_tx, &input_stop, line) {
+                    TerminalEnqueueResult::Queued | TerminalEnqueueResult::StopRequested => {}
+                    TerminalEnqueueResult::Full => eprintln!(
+                        "终端输入队列已满（最多 {TERMINAL_INPUT_QUEUE_LIMIT} 条）；本行已拒绝，/stop 仍可立即使用。"
+                    ),
+                    TerminalEnqueueResult::StopInProgress => {
+                        eprintln!("停止请求正在处理；本行已拒绝，不会进入旧 generation。")
+                    }
+                    TerminalEnqueueResult::Disconnected => break,
+                },
             }
         }
     });
     print_prompt()?;
     let mut running = true;
     while running {
+        if priority_stop.load(Ordering::Acquire) {
+            let mut discarded = 0_usize;
+            while input_rx.try_recv().is_ok() {
+                discarded += 1;
+            }
+            if discarded > 0 {
+                println!("/stop 已丢弃本地队列中的 {discarded} 条旧输入。");
+            }
+            app.stop("会话已停止")?;
+            priority_stop.store(false, Ordering::Release);
+            print_prompt()?;
+        }
         app.poll()?;
         app.advance_auto()?;
         match input_rx.recv_timeout(EVENT_POLL_INTERVAL) {
@@ -112,6 +137,34 @@ fn run() -> AppResult<()> {
     Ok(())
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum TerminalEnqueueResult {
+    Queued,
+    StopRequested,
+    Full,
+    StopInProgress,
+    Disconnected,
+}
+
+fn enqueue_terminal_input(
+    sender: &SyncSender<String>,
+    priority_stop: &AtomicBool,
+    line: String,
+) -> TerminalEnqueueResult {
+    if matches!(line.trim(), "/stop" | "/停止") {
+        priority_stop.store(true, Ordering::Release);
+        return TerminalEnqueueResult::StopRequested;
+    }
+    if priority_stop.load(Ordering::Acquire) {
+        return TerminalEnqueueResult::StopInProgress;
+    }
+    match sender.try_send(line) {
+        Ok(()) => TerminalEnqueueResult::Queued,
+        Err(TrySendError::Full(_)) => TerminalEnqueueResult::Full,
+        Err(TrySendError::Disconnected(_)) => TerminalEnqueueResult::Disconnected,
+    }
+}
+
 fn handle_input(app: &mut ConsoleApp, input: &str) -> AppResult<bool> {
     if input.is_empty() {
         return Ok(true);
@@ -127,6 +180,30 @@ fn handle_input(app: &mut ConsoleApp, input: &str) -> AppResult<bool> {
         "/pause" | "/暂停" => app.stop("会话已暂停")?,
         "/resume" | "/继续" => app.renew(ControllerState::Idle, "会话已恢复")?,
         "/stop" | "/停止" => app.stop("会话已停止")?,
+        "/steer" | "/引导" => println!("用法：/steer <补充或修正指令>"),
+        "/follow-up" | "/followup" | "/跟进" => {
+            println!("用法：/follow-up <本轮完成后处理的指令>")
+        }
+        _ if input.starts_with("/steer ") => app.queue_model_input(
+            input.trim_start_matches("/steer ").trim(),
+            SessionQueueKind::Steer,
+        )?,
+        _ if input.starts_with("/引导 ") => app.queue_model_input(
+            input.trim_start_matches("/引导 ").trim(),
+            SessionQueueKind::Steer,
+        )?,
+        _ if input.starts_with("/follow-up ") => app.queue_model_input(
+            input.trim_start_matches("/follow-up ").trim(),
+            SessionQueueKind::FollowUp,
+        )?,
+        _ if input.starts_with("/followup ") => app.queue_model_input(
+            input.trim_start_matches("/followup ").trim(),
+            SessionQueueKind::FollowUp,
+        )?,
+        _ if input.starts_with("/跟进 ") => app.queue_model_input(
+            input.trim_start_matches("/跟进 ").trim(),
+            SessionQueueKind::FollowUp,
+        )?,
         _ if input == "/auto" || input == "/auto start" => println!(
             "请在命令后写明巡航任务，例如：/auto start --steps 16 --seconds 300 扫描指定的受限频段并根据结果给出下一步。"
         ),
@@ -142,6 +219,9 @@ fn handle_input(app: &mut ConsoleApp, input: &str) -> AppResult<bool> {
             }
         }
         _ if input.starts_with('/') => println!("未知命令；输入 /help 查看可用命令。"),
+        _ if app.agent_cycle_active => {
+            app.queue_model_input(input, SessionQueueKind::Steer)?
+        }
         _ => app.submit(input.to_owned())?,
     }
     Ok(true)
@@ -248,6 +328,7 @@ struct ConsoleApp {
     session_generation: u64,
     pending: Option<ValidatedPlan>,
     requests: HashMap<u64, PlanRequest>,
+    pending_session_commands: HashMap<u64, PendingSessionCommand>,
     history: VecDeque<String>,
     agent_cycle_active: bool,
     active_request_id: Option<u64>,
@@ -295,6 +376,40 @@ enum ActiveSweepKind {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum SessionQueueKind {
+    Steer,
+    FollowUp,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum PendingSessionCommand {
+    Prompt {
+        request_id: u64,
+    },
+    Queue {
+        request_id: u64,
+        kind: SessionQueueKind,
+    },
+    Abort,
+}
+
+impl SessionQueueKind {
+    fn command(self) -> &'static str {
+        match self {
+            Self::Steer => "steer",
+            Self::FollowUp => "follow_up",
+        }
+    }
+
+    fn label(self) -> &'static str {
+        match self {
+            Self::Steer => "引导",
+            Self::FollowUp => "跟进",
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct InitialSurveyOptions {
     start_hz: u64,
     stop_hz: u64,
@@ -322,6 +437,7 @@ impl ConsoleApp {
             session_generation: generation,
             pending: None,
             requests: HashMap::new(),
+            pending_session_commands: HashMap::new(),
             history: VecDeque::with_capacity(HISTORY_LIMIT),
             agent_cycle_active: false,
             active_request_id: None,
@@ -366,29 +482,58 @@ impl ConsoleApp {
         self.agent_cycle_active = true;
         self.active_request_id = Some(request_id);
         self.plan_seen_in_cycle = false;
-        if let Err(error) = self.command("prompt", Some(request)) {
-            self.requests.remove(&request_id);
-            self.active_request_id = None;
-            self.agent_cycle_active = false;
-            if self.cruise.is_active() {
-                let retrying = self.cruise.record_planner_missing();
-                self.next_auto_attempt = Instant::now() + AUTO_RETRY_DELAY;
-                println!(
-                    "上游下一步重试：第 {}/{} 次；本次未开始：{}{}。",
-                    self.cruise.snapshot(Instant::now()).planner_retry_count,
-                    AUTO_RETRY_LIMIT,
-                    error,
-                    if retrying {
-                        "，10 秒后重试"
-                    } else {
-                        "，巡航退出"
-                    }
-                );
-                self.print_cruise_status();
-                return Ok(());
-            }
-            return Err(error);
+        let command_id = self.send_session_command("prompt", Some(request))?;
+        self.pending_session_commands
+            .insert(command_id, PendingSessionCommand::Prompt { request_id });
+        Ok(())
+    }
+
+    fn queue_model_input(&mut self, instruction: &str, kind: SessionQueueKind) -> AppResult<()> {
+        if instruction.is_empty() {
+            println!("{}指令不能为空。", kind.label());
+            return Ok(());
         }
+        if !self.agent_cycle_active {
+            println!(
+                "当前没有流式生成；{}只适用于正在运行的模型轮次。",
+                kind.label()
+            );
+            return Ok(());
+        }
+        if self.deferred_renew.is_some() {
+            println!("停止请求正在处理；{}不会进入旧 generation。", kind.label());
+            return Ok(());
+        }
+        if self.active_execution.is_some() || self.active_sweep.is_some() {
+            println!("硬件动作正在执行；只能使用 /stop，不能向已结束的模型轮次排队。");
+            return Ok(());
+        }
+        let request_id = self.next_request_id;
+        self.next_request_id = self
+            .next_request_id
+            .checked_add(1)
+            .ok_or_else(|| invalid_input("request id exhausted"))?;
+        let mut request = self.template.clone();
+        request.request_id = request_id;
+        request.session_generation = self.session_generation;
+        request.instruction = instruction.to_owned();
+        ControllerPolicy.validate_request(&request)?;
+        println!(
+            "模型{}输入> {}",
+            kind.label(),
+            serde_json::to_string(&request)?
+        );
+        self.record(format!("operator {}: {instruction}", kind.command()));
+        self.requests.insert(request_id, request.clone());
+        let command_id = self.send_session_command(kind.command(), Some(request))?;
+        self.pending_session_commands.insert(
+            command_id,
+            PendingSessionCommand::Queue { request_id, kind },
+        );
+        println!(
+            "模型{}已提交：request={request_id}；等待有界队列确认。",
+            kind.label()
+        );
         Ok(())
     }
 
@@ -451,6 +596,7 @@ impl ConsoleApp {
         self.template.session_generation = self.session_generation;
         self.pending = None;
         self.requests.clear();
+        self.pending_session_commands.clear();
         self.active_request_id = None;
         self.plan_seen_in_cycle = false;
         self.client.session_generation = self.session_generation;
@@ -1050,7 +1196,7 @@ impl ConsoleApp {
             self.print_cruise_status();
         }
         if self.agent_cycle_active {
-            self.command("abort", None)?;
+            self.request_agent_abort()?;
             if self.agent_cycle_active {
                 self.deferred_renew = Some((ControllerState::Holding, message.to_owned()));
             }
@@ -1214,6 +1360,20 @@ impl ConsoleApp {
         self.renew(ControllerState::Holding, message)
     }
 
+    fn request_agent_abort(&mut self) -> AppResult<()> {
+        if self
+            .pending_session_commands
+            .values()
+            .any(|pending| matches!(pending, PendingSessionCommand::Abort))
+        {
+            return Ok(());
+        }
+        let command_id = self.send_session_command("abort", None)?;
+        self.pending_session_commands
+            .insert(command_id, PendingSessionCommand::Abort);
+        Ok(())
+    }
+
     fn enable_step_approval(&mut self) -> AppResult<()> {
         if self.cruise.mode() == InteractionMode::StepApproval && !self.cruise.is_active() {
             println!("当前已经是逐步人工批准模式。每个可执行动作都会等待 /approve 或 /reject。");
@@ -1283,7 +1443,7 @@ impl ConsoleApp {
 
     fn poll(&mut self) -> AppResult<()> {
         while let Some(frame) = self.client.try_read()? {
-            self.handle_event(frame)?;
+            self.handle_frame(frame)?;
         }
         self.poll_execution()?;
         self.poll_sweep()?;
@@ -1433,22 +1593,17 @@ impl ConsoleApp {
     }
 
     fn command(&mut self, kind: &str, context: Option<PlanRequest>) -> AppResult<Value> {
-        let mut command = json!({
-            "protocol_version": 1,
-            "command_id": self.client.next_command_id(),
-            "session_generation": self.session_generation,
-            "type": kind,
-        });
-        if let Some(context) = context {
-            command["context"] = serde_json::to_value(context)?;
-        }
-        self.client.write(&command)?;
+        let command_id = self.send_session_command(kind, context)?;
         loop {
             let frame = self.client.read()?;
             if frame.get("type").and_then(Value::as_str) == Some("response")
-                && frame.get("command_id").and_then(Value::as_u64)
-                    == command.get("command_id").and_then(Value::as_u64)
+                && frame.get("command_id").and_then(Value::as_u64) == Some(command_id)
             {
+                if frame.get("session_generation").and_then(Value::as_u64)
+                    != Some(self.session_generation)
+                {
+                    return Err(invalid_input("stale session response").into());
+                }
                 if frame.get("success").and_then(Value::as_bool) != Some(true) {
                     return Err(invalid_input(
                         frame
@@ -1460,8 +1615,112 @@ impl ConsoleApp {
                 }
                 return Ok(frame);
             }
-            self.handle_event(frame)?;
+            self.handle_frame(frame)?;
         }
+    }
+
+    fn send_session_command(&mut self, kind: &str, context: Option<PlanRequest>) -> AppResult<u64> {
+        let command_id = self.client.next_command_id();
+        let mut command = json!({
+            "protocol_version": 1,
+            "command_id": command_id,
+            "session_generation": self.session_generation,
+            "type": kind,
+        });
+        if let Some(context) = context {
+            command["context"] = serde_json::to_value(context)?;
+        }
+        self.client.write(&command)?;
+        Ok(command_id)
+    }
+
+    fn handle_frame(&mut self, frame: Value) -> AppResult<()> {
+        match frame.get("type").and_then(Value::as_str) {
+            Some("event") => self.handle_event(frame),
+            Some("response") => self.handle_session_response(frame),
+            _ => Err(invalid_input("unknown session frame type").into()),
+        }
+    }
+
+    fn handle_session_response(&mut self, frame: Value) -> AppResult<()> {
+        let command_id = frame
+            .get("command_id")
+            .and_then(Value::as_u64)
+            .ok_or_else(|| invalid_input("session response is missing command_id"))?;
+        let response_generation = frame
+            .get("session_generation")
+            .and_then(Value::as_u64)
+            .ok_or_else(|| invalid_input("session response is missing session_generation"))?;
+        let Some(pending) = self.pending_session_commands.remove(&command_id) else {
+            if response_generation != self.session_generation {
+                println!("已忽略过期 session response；当前安全代次未改变。");
+                return Ok(());
+            }
+            return Err(invalid_input("session response has no pending command").into());
+        };
+        if response_generation != self.session_generation {
+            if let PendingSessionCommand::Prompt { request_id }
+            | PendingSessionCommand::Queue { request_id, .. } = pending
+            {
+                self.requests.remove(&request_id);
+            }
+            println!("已拒绝过期 session response；当前安全代次未改变。");
+            return Ok(());
+        }
+        let success = frame.get("success").and_then(Value::as_bool) == Some(true);
+        let error = frame
+            .get("error")
+            .and_then(Value::as_str)
+            .unwrap_or("session command failed")
+            .to_owned();
+        match pending {
+            PendingSessionCommand::Prompt { request_id } if !success => {
+                self.requests.remove(&request_id);
+                if self.active_request_id == Some(request_id) {
+                    self.active_request_id = None;
+                }
+                self.agent_cycle_active = false;
+                self.plan_seen_in_cycle = false;
+                if self.cruise.is_active() {
+                    let retrying = self.cruise.record_planner_missing();
+                    self.next_auto_attempt = Instant::now() + AUTO_RETRY_DELAY;
+                    println!(
+                        "上游下一步重试：第 {}/{} 次；本次未开始：{}{}。",
+                        self.cruise.snapshot(Instant::now()).planner_retry_count,
+                        AUTO_RETRY_LIMIT,
+                        error,
+                        if retrying {
+                            "，10 秒后重试"
+                        } else {
+                            "，巡航退出"
+                        }
+                    );
+                    self.print_cruise_status();
+                } else {
+                    println!("上游模型未接受本轮输入：{error}");
+                }
+            }
+            PendingSessionCommand::Prompt { .. } => {}
+            PendingSessionCommand::Queue { request_id, kind } if success => {
+                let queued = frame
+                    .pointer("/data/queued")
+                    .and_then(Value::as_u64)
+                    .unwrap_or(0);
+                println!(
+                    "已加入模型{}队列：request={request_id}，当前排队 {queued}/{TERMINAL_INPUT_QUEUE_LIMIT}。",
+                    kind.label()
+                );
+            }
+            PendingSessionCommand::Queue { request_id, kind } => {
+                self.requests.remove(&request_id);
+                println!("模型{}输入被拒绝：{error}", kind.label());
+            }
+            PendingSessionCommand::Abort if !success => {
+                println!("上游停止请求被拒绝：{error}");
+            }
+            PendingSessionCommand::Abort => {}
+        }
+        Ok(())
     }
 
     fn handle_event(&mut self, frame: Value) -> AppResult<()> {
@@ -1470,7 +1729,8 @@ impl ConsoleApp {
         }
         if frame.get("session_generation").and_then(Value::as_u64) != Some(self.session_generation)
         {
-            return Err(invalid_input("stale session event").into());
+            println!("已忽略过期 session event；当前安全代次未改变。");
+            return Ok(());
         }
         match frame.get("event").and_then(Value::as_str).unwrap_or("") {
             "thinking_start" | "thinking_delta" | "thinking_end" => {
@@ -1521,6 +1781,12 @@ impl ConsoleApp {
                     .ok_or_else(|| invalid_input("plan refers to an unknown request"))?;
                 let plan = ControllerPolicy.validate_response(request, response)?;
                 let decision_basis = describe_decision_basis(&plan, request);
+                let requires_early_abort = matches!(
+                    &plan.action,
+                    ProposedAction::CaptureBoundedIq { .. }
+                        | ProposedAction::SurveyBand { .. }
+                        | ProposedAction::InspectCandidate { .. }
+                );
                 self.plan_seen_in_cycle = true;
                 self.cruise.record_planner_action();
                 println!("已验证计划：{}", describe_plan(&plan));
@@ -1579,10 +1845,10 @@ impl ConsoleApp {
                         }
                     },
                 }
-                if self.agent_cycle_active {
-                    self.command("abort", None)?;
+                if self.agent_cycle_active && requires_early_abort {
+                    self.request_agent_abort()?;
                     println!(
-                        "计划已经 Rust 验证；已结束本轮剩余模型生成，避免阻塞执行后的下一步。"
+                        "可执行计划已经 Rust 验证；已结束本轮剩余模型生成，避免队列中的旧输入越过批准或执行门禁。"
                     );
                 }
             }
@@ -1596,9 +1862,8 @@ impl ConsoleApp {
             }
             "agent_end" => {
                 self.agent_cycle_active = false;
-                if let Some(request_id) = self.active_request_id.take() {
-                    self.requests.remove(&request_id);
-                }
+                self.active_request_id = None;
+                self.requests.clear();
                 if self.cruise.is_active() && !self.plan_seen_in_cycle {
                     let retrying = self.cruise.record_planner_missing();
                     self.next_auto_attempt = Instant::now() + AUTO_RETRY_DELAY;
@@ -2066,7 +2331,8 @@ fn print_help() {
          自动巡航：/auto start [--steps 1–128] [--seconds 10–1800] [--mib 正整数] <任务>\n\
          不填 --mib 时，按步数 × 单动作 IQ 上限自动推导有限预算。\n\
          默认 8 步、120 秒、累计 64 MiB；两类失败各重试 5 次，每次间隔 10 秒\n\
-         会话：/pause 暂停，/resume 继续，/stop 立即停止，/quit 退出"
+         流式输入：普通文本或 /steer 会立即引导当前轮，/follow-up 在本轮后处理；队列最多 4 条\n\
+         会话：/pause 暂停，/resume 继续，/stop 始终优先立即停止，/quit 退出"
     );
 }
 
@@ -2238,6 +2504,80 @@ fn invalid_input(message: impl Into<String>) -> io::Error {
 mod tests {
     use super::*;
 
+    fn test_request(request_id: u64, session_generation: u64) -> PlanRequest {
+        serde_json::from_value(json!({
+            "protocol_version": 1,
+            "request_id": request_id,
+            "session_generation": session_generation,
+            "instruction": "测试流式终端输入",
+            "state": "idle",
+            "observation": {
+                "age_ms": 0,
+                "health": {
+                    "sdr_online": true,
+                    "can_retune": true,
+                    "can_capture_iq": true,
+                    "recognizer_available": false,
+                    "dropped_observations": 0
+                },
+                "candidates": []
+            },
+            "limits": {
+                "min_freq_hz": 70_000_000,
+                "max_freq_hz": 6_000_000_000_u64,
+                "max_span_hz": 6_000_000_000_u64,
+                "max_bandwidth_hz": 30_000_000,
+                "max_dwell_ms": 5_000,
+                "max_iq_samples": 1_048_576,
+                "max_iq_bytes": 4_194_304,
+                "auto_approve_iq_bytes": 262_144,
+                "max_observation_age_ms": 10_000
+            }
+        }))
+        .unwrap()
+    }
+
+    fn test_console() -> (ConsoleApp, UnixStream) {
+        let (writer, peer) = UnixStream::pair().unwrap();
+        let reader = writer.try_clone().unwrap();
+        reader.set_nonblocking(true).unwrap();
+        let template = test_request(1, 1);
+        (
+            ConsoleApp {
+                client: SessionClient {
+                    writer,
+                    reader,
+                    pending: Vec::new(),
+                    command_id: 1,
+                    session_generation: 1,
+                },
+                template,
+                next_request_id: 2,
+                session_generation: 1,
+                pending: None,
+                requests: HashMap::new(),
+                pending_session_commands: HashMap::new(),
+                history: VecDeque::new(),
+                agent_cycle_active: false,
+                active_request_id: None,
+                plan_seen_in_cycle: false,
+                executor: None,
+                active_execution: None,
+                active_sweep: None,
+                sdrd_address: None,
+                sdrd_timeout: Duration::from_secs(1),
+                survey_gain_db: 20,
+                sigmf_directory: None,
+                cruise: CruiseControl::default(),
+                auto_mission: None,
+                auto_next_instruction: None,
+                next_auto_attempt: Instant::now(),
+                deferred_renew: None,
+            },
+            peer,
+        )
+    }
+
     fn reply_plan(action: ProposedAction) -> ValidatedPlan {
         ValidatedPlan {
             request_id: 1,
@@ -2249,6 +2589,143 @@ mod tests {
                 model: "test".to_owned(),
             },
         }
+    }
+
+    #[test]
+    fn bounds_terminal_input_and_prioritizes_stop_when_full() {
+        let (sender, receiver) = mpsc::sync_channel(TERMINAL_INPUT_QUEUE_LIMIT);
+        let stop = AtomicBool::new(false);
+        for index in 0..TERMINAL_INPUT_QUEUE_LIMIT {
+            assert_eq!(
+                enqueue_terminal_input(&sender, &stop, format!("queued {index}")),
+                TerminalEnqueueResult::Queued
+            );
+        }
+        assert_eq!(
+            enqueue_terminal_input(&sender, &stop, "overflow".to_owned()),
+            TerminalEnqueueResult::Full
+        );
+        assert_eq!(
+            enqueue_terminal_input(&sender, &stop, "/stop\n".to_owned()),
+            TerminalEnqueueResult::StopRequested
+        );
+        assert!(stop.load(Ordering::Acquire));
+        assert_eq!(receiver.try_iter().count(), TERMINAL_INPUT_QUEUE_LIMIT);
+        assert_eq!(
+            enqueue_terminal_input(&sender, &stop, "after stop".to_owned()),
+            TerminalEnqueueResult::StopInProgress
+        );
+        stop.store(false, Ordering::Release);
+        drop(receiver);
+        assert_eq!(
+            enqueue_terminal_input(&sender, &stop, "after close".to_owned()),
+            TerminalEnqueueResult::Disconnected
+        );
+    }
+
+    #[test]
+    fn handles_async_prompt_and_queue_acknowledgements() {
+        let (mut app, _peer) = test_console();
+        app.agent_cycle_active = true;
+        app.active_request_id = Some(10);
+        app.requests.insert(10, test_request(10, 1));
+        app.pending_session_commands
+            .insert(41, PendingSessionCommand::Prompt { request_id: 10 });
+        app.handle_session_response(json!({
+            "type": "response",
+            "command_id": 41,
+            "session_generation": 1,
+            "success": true,
+            "data": {"accepted": true}
+        }))
+        .unwrap();
+        assert!(app.agent_cycle_active);
+        assert_eq!(app.active_request_id, Some(10));
+        assert!(app.requests.contains_key(&10));
+
+        app.requests.insert(11, test_request(11, 1));
+        app.pending_session_commands.insert(
+            42,
+            PendingSessionCommand::Queue {
+                request_id: 11,
+                kind: SessionQueueKind::Steer,
+            },
+        );
+        app.handle_session_response(json!({
+            "type": "response",
+            "command_id": 42,
+            "session_generation": 1,
+            "success": true,
+            "data": {"queued": 1}
+        }))
+        .unwrap();
+        assert!(app.requests.contains_key(&11));
+        assert!(app.pending_session_commands.is_empty());
+    }
+
+    #[test]
+    fn fails_closed_without_terminating_on_async_failure_or_stale_frames() {
+        let (mut app, _peer) = test_console();
+        app.agent_cycle_active = true;
+        app.active_request_id = Some(10);
+        app.requests.insert(10, test_request(10, 1));
+        app.pending_session_commands
+            .insert(41, PendingSessionCommand::Prompt { request_id: 10 });
+        app.handle_session_response(json!({
+            "type": "response",
+            "command_id": 41,
+            "session_generation": 1,
+            "success": false,
+            "error": "Planner Worker is busy"
+        }))
+        .unwrap();
+        assert!(!app.agent_cycle_active);
+        assert_eq!(app.active_request_id, None);
+        assert!(!app.requests.contains_key(&10));
+
+        app.session_generation = 2;
+        app.template.session_generation = 2;
+        app.requests.insert(12, test_request(12, 1));
+        app.pending_session_commands.insert(
+            43,
+            PendingSessionCommand::Queue {
+                request_id: 12,
+                kind: SessionQueueKind::FollowUp,
+            },
+        );
+        app.handle_session_response(json!({
+            "type": "response",
+            "command_id": 43,
+            "session_generation": 1,
+            "success": true,
+            "data": {"queued": 1}
+        }))
+        .unwrap();
+        assert!(!app.requests.contains_key(&12));
+        assert_eq!(app.session_generation, 2);
+
+        app.handle_session_response(json!({
+            "type": "response",
+            "command_id": 999,
+            "session_generation": 1,
+            "success": true
+        }))
+        .unwrap();
+        app.handle_event(json!({
+            "type": "event",
+            "event": "agent_end",
+            "session_generation": 1
+        }))
+        .unwrap();
+        assert_eq!(app.session_generation, 2);
+        assert!(app
+            .handle_session_response(json!({
+                "type": "response",
+                "command_id": 999,
+                "session_generation": 2,
+                "success": true
+            }))
+            .is_err());
     }
 
     #[test]

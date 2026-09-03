@@ -82,7 +82,7 @@ const sessionServer = startSessionServer({
           sessionGeneration,
           onPlan,
           onSearchEvent,
-          terminateAfterPlan: false,
+          terminateAfterPlan: true,
         }),
     }),
   onError: (error) => process.stderr.write(`session_socket_error=${safeMessage(error)}\n`),
