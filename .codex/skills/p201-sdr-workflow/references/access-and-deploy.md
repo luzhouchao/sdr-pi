@@ -148,6 +148,17 @@ chmod 0755 /etc/init.d/S60sdrd
 
 Never run recovery when a daemon is already present.
 
+The deployed AGX may run
+`sdrharness-p201-sdrd-recovery.service`/`.timer` to perform exactly this gate.
+That path must keep strict SSH host-key checking and must use SDRD/1, not a
+second `--probe-radio` process, when the daemon is already running. A P201
+reboot currently regenerates its volatile Dropbear host key; a mismatch must
+fail closed until the direct-link MAC, platform, protected BOOT hash and
+persistent release hashes are reverified and the operator approves the new
+pin. Never weaken host-key checking to make recovery unattended. Initializing
+or formatting the vendor QSPI NVM filesystem is outside this workflow unless
+the user explicitly authorizes that persistent destructive action.
+
 ## Receive-only validation record
 
 Before a live sweep, record frequency range/centers, sample rate, RF bandwidth,

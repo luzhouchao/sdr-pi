@@ -6,8 +6,20 @@ PIDFILE=/run/sdrd.pid
 LOGFILE=/tmp/sdrd.log
 EXPECTED_BOOT_SHA256=02c7f8f84f003879fda27021bb243517ccf8e9b85e7404a37db2e4dda1d8b951
 
+pid_count() {
+	pidof sdrd 2>/dev/null | wc -w
+}
+
+listener_count() {
+	netstat -lnt 2>/dev/null | grep -c ':43110 '
+}
+
 start() {
 	printf 'Starting receive-only sdrd: '
+	[ "$(pid_count)" -eq 0 ] && [ "$(listener_count)" -eq 0 ] || {
+		echo 'FAIL (already running or listener occupied)'
+		return 1
+	}
 	[ -x "$DAEMON" ] || { echo 'FAIL (missing daemon)'; return 1; }
 	[ -r "$CONFIG" ] || { echo 'FAIL (missing config)'; return 1; }
 	observed_boot="$(sha256sum /sd/BOOT.bin | awk '{print $1}')"
@@ -29,14 +41,24 @@ start() {
 		return 1
 	}
 	mkdir -p -m 700 /tmp/sdr-agent-dev
+	rm -f "$PIDFILE"
 	start-stop-daemon -S -q -b -m -p "$PIDFILE" -x "$DAEMON" -- \
 		--config "$CONFIG" --serve >"$LOGFILE" 2>&1 || {
 		echo 'FAIL (start)'
 		return 1
 	}
-	sleep 1
-	start-stop-daemon -K -t -q -p "$PIDFILE" -x "$DAEMON" || {
-		echo 'FAIL (not running)'
+	tries=0
+	while [ "$(pid_count)" -ne 1 ] || [ "$(listener_count)" -ne 1 ]; do
+		tries=$((tries + 1))
+		[ "$tries" -lt 11 ] || {
+			echo 'FAIL (single-instance readiness)'
+			return 1
+		}
+		sleep 1
+	done
+	pid="$(pidof sdrd)"
+	[ "$(readlink "/proc/$pid/exe")" = "$DAEMON" ] || {
+		echo 'FAIL (unexpected executable)'
 		return 1
 	}
 	echo 'OK'
@@ -44,15 +66,33 @@ start() {
 
 stop() {
 	printf 'Stopping receive-only sdrd: '
+	if [ "$(pid_count)" -eq 0 ] && [ "$(listener_count)" -eq 0 ]; then
+		rm -f "$PIDFILE"
+		echo 'OK (already stopped)'
+		return 0
+	fi
 	start-stop-daemon -K -q -o -p "$PIDFILE" -x "$DAEMON" -s TERM
+	tries=0
+	while [ "$(pid_count)" -ne 0 ] || [ "$(listener_count)" -ne 0 ]; do
+		tries=$((tries + 1))
+		[ "$tries" -lt 11 ] || {
+			echo 'FAIL (still running)'
+			return 1
+		}
+		sleep 1
+	done
 	rm -f "$PIDFILE"
 	echo 'OK'
 }
 
 status() {
-	if start-stop-daemon -K -t -q -p "$PIDFILE" -x "$DAEMON"; then
+	if [ "$(pid_count)" -eq 1 ] && [ "$(listener_count)" -eq 1 ]; then
 		echo 'sdrd is running'
 		return 0
+	fi
+	if [ "$(pid_count)" -ne 0 ] || [ "$(listener_count)" -ne 0 ]; then
+		echo 'sdrd has inconsistent process/listener state'
+		return 1
 	fi
 	echo 'sdrd is stopped'
 	return 3

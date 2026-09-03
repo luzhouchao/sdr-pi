@@ -71,7 +71,9 @@ Do not install services from an unverified clone. After the AGX is online:
 5. install `config/request.json` as `/etc/sdrharness/request.json`;
 6. install binaries under `/home/jetson/.local/lib/sdrharness/bin/`;
 7. install the systemd templates only after reviewing their paths and user;
-8. start Planner and Web first, then perform read-only SDR observation.
+8. optionally install the P201 recovery oneshot/timer after strict SSH identity
+   and the `/sd/sdr-agent/current` release are verified;
+9. start Planner and Web, then perform read-only SDR observation.
 
 Installing a unit file does not authorize enabling or starting it. Keep both
 units disabled until the private environment, binary hashes, LAN exposure and
@@ -121,6 +123,23 @@ that neither the process nor TCP port 43110 was already active; the AGX
 read-only Controller observation then passed. This does not authorize starting
 a collector or changing radio state. Evidence is in
 [`../../docs/AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](../../docs/AGX_FRAMEWORK_VALIDATION_2026-09-01.md).
+
+## P201 SDRD recovery
+
+`systemd/sdrharness-p201-sdrd-recovery.service` and its timer run the bounded
+AGX-side recovery path. They never start a collector. The script requires the
+mode-`0600` password file and strict pinned host key, serializes itself with a
+runtime flock, accepts only one expected daemon/listener or a fully stopped
+zero/zero state, and uses the retained `/sd/sdr-agent/current/S60sdrd` entry.
+The Web unit wants this oneshot so an AGX/Web restart performs the same check.
+
+P201 currently regenerates its Dropbear key when its RAM root reboots. The
+recovery service intentionally fails closed on that change; verify the direct
+link and P201/release identity before repinning. Do not disable host-key checks.
+Unattended cross-P201-reboot recovery remains blocked until the operator
+explicitly chooses whether to initialize the vendor's blank persistent-key NVM
+filesystem. See
+[`../../docs/SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md`](../../docs/SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md).
 
 ## Local Spark Planner
 

@@ -1,0 +1,30 @@
+[Unit]
+Description=Recover the receive-only P201 sdrd from its persistent release
+After=network-online.target
+Wants=network-online.target
+Before=sdrharness-web.service
+
+[Service]
+Type=oneshot
+User=jetson
+Group=jetson
+RuntimeDirectory=sdrharness-p201-recovery
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=yes
+ExecStart=/home/jetson/.local/lib/sdrharness/scripts/recover-p201-sdrd.sh
+TimeoutStartSec=35
+
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

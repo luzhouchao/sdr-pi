@@ -172,7 +172,11 @@ Always inspect the emitted GLIBC requirements and artifact hash before staging.
 
 Do not start controlled `--serve` until `--check-config`, `--probe`, and the
 read-only `--probe-radio` pass. Ensure port 43110 has no listener before starting
-the retained `/sd` release; persistent reboot startup remains an open gate.
+the retained `/sd` release. The hardened `deploy/S60sdrd` also rejects an
+existing PID/listener and verifies exact single-instance readiness. The AGX
+recovery service can reinstall this persistent entry after a P201 reboot, but
+strict host-key repinning remains necessary while Dropbear keys are volatile;
+unattended cross-reboot startup therefore remains an open gate.
 
 For a host-only socket smoke test, use
 `config/sdrd-loopback-test.conf`; it binds only to `127.0.0.1` and must not be

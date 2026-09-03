@@ -1,7 +1,7 @@
 [Unit]
 Description=AGX SDR Harness web console
-After=network-online.target sdrharness-planner.service
-Wants=network-online.target
+After=network-online.target sdrharness-planner.service sdrharness-p201-sdrd-recovery.service
+Wants=network-online.target sdrharness-p201-sdrd-recovery.service
 Requires=sdrharness-planner.service
 
 [Service]

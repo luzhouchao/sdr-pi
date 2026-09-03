@@ -283,7 +283,17 @@ Evidence:
       release, tested stop path,
       bounded live capture and verified state restoration.
 - [ ] Design and validate safe persistent `sdrd` startup after reboot without
-      modifying the boot image; until then startup remains explicitly manual.
+      modifying the boot image:
+  - [x] Deploy and live-validate the AGX recovery oneshot/timer, strict
+        duplicate-instance gates, normal start, idle abnormal-exit recovery,
+        concurrent-start rejection, current-boot persistence and rollback;
+        see
+        [`SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md).
+  - [ ] Remove the remaining manual host-key repin after a P201 reboot. The
+        real reboot proved that volatile Dropbear keys correctly make strict
+        recovery fail closed; the vendor persistent-key path requires
+        formatting the currently blank QSPI `mtd2` JFFS2 partition, which is a
+        destructive persistent-device decision not yet authorized.
 - [ ] Complete long-duration reconnect and fault-recovery testing on the real
       SDR.
 
