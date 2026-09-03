@@ -89,8 +89,10 @@ deletion removes only the selected indexed result and its managed files.
 
 ## Next validation
 
-- Sustain 5 MS/s and 10 MS/s while measuring CPU, drops, latency and thermal
-  state.
-- Complete long-duration cancellation, reconnect and overload tests.
+- Complete bounded AGX software-acquisition overload testing. The separate
+  sustained 5/10-MS/s aggregate acceptance gate was retired by explicit
+  operator decision on 2026-09-03; this is not a new measured throughput claim.
+- Keep the completed 1,800-second reconnect, cancellation and fault-recovery
+  evidence covered by regression testing.
 - Feed only selected bounded windows to the future CUDA/Mamba recognizer.
 - Keep all processing on AGX; the retired FPGA path must not return.

@@ -1,6 +1,6 @@
 # SDR Agent roadmap
 
-Last reviewed: 2026-09-02
+Last reviewed: 2026-09-03
 
 The authoritative item-level status is
 [`SDR_AGENT_PROJECT_CHECKLIST.md`](SDR_AGENT_PROJECT_CHECKLIST.md).
@@ -10,9 +10,10 @@ The authoritative item-level status is
 - Prove AGX is the sole receive-path owner.
 - Add complete sequence, overflow, dropped-sample, timeout and health metadata.
 - Validate IIO-timeout restoration and full-loop stale/cancel/reconnect recovery.
-- Measure sustained 5 MS/s and 10 MS/s throughput, CPU, latency, drops and
-  thermal behavior.
-- Complete bounded overload and long-duration acquisition tests.
+- Complete bounded AGX software-acquisition overload testing. The separate
+  sustained 5/10-MS/s aggregate acceptance gate was removed by explicit
+  operator decision on 2026-09-03; this does not add a throughput claim beyond
+  the existing measured P201/AGX profile.
 
 ## Stage 2 — local modulation recognition
 

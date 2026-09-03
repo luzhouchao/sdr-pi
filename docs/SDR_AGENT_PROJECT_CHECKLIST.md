@@ -373,8 +373,8 @@ aggregation, result persistence and model-facing summaries.
 - [x] Characterize the current P201/AGX bounded receive profile without raw-IQ
       retention: 2.1–30.72 MS/s profiles applied and restored, but legacy power
       processing reached only about 7 MS/s and base64 inline transport only
-      about 1.87 Mb/s. Keep sustained-operation claims and the 5/10-MS/s item
-      below open; see
+      about 1.87 Mb/s. Keep sustained-operation claims limited to this measured
+      baseline; see
       [`P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md`](P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md).
 - [x] Run a configurable one-shot receive-only initial survey for each new Web
       conversation, defaulting to a 743-point 70 MHz–6 GHz plan at fixed 20 dB;
@@ -382,10 +382,15 @@ aggregation, result persistence and model-facing summaries.
       completion, and live-validate the full real-SDR to OpenCode Go hold loop
       without raw-IQ persistence or repeated scanning after Web restart.
 - [ ] Feed only selected, bounded IQ windows into local recognition.
-- [ ] Validate aggregate mode at sustained 5 MS/s and 10 MS/s with CPU, dropped
-      sample, latency, and thermal measurements.
-- [ ] Complete long-duration acquisition, reconnect, cancellation, and overload
-      tests.
+- [x] Retire the separate sustained 5/10-MS/s aggregate acceptance gate by
+      explicit operator decision on 2026-09-03. This is a scope removal, not a
+      claim that inline transport and AGX aggregation were newly measured at
+      those rates; the characterized P201/AGX profile above remains the measured
+      baseline.
+- [x] Complete the long-duration reconnect, cancellation and fault-recovery
+      portion with the chapter 3 bounded 1,800-second real-SDR run; see
+      [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
+- [ ] Complete bounded AGX software-acquisition overload testing.
 
 Evidence:
 
