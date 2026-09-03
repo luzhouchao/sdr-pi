@@ -1,6 +1,6 @@
 # SDR Agent project checklist
 
-Last reviewed: 2026-09-02
+Last reviewed: 2026-09-03
 
 This is the living source of truth for implementation status. Check an item only
 after the exact wording is implemented and verified. Split partial work into a
@@ -23,8 +23,12 @@ state.
       authorized persistent `sdrd` recovery with duplicate-instance gates, the
       Controller reported online and healthy on 2026-09-01 without acquisition
       or radio/FPGA writes.
-- [ ] Cut SDR acquisition ownership over to AGX only after proving the existing
-      Spectrum collector is stopped or otherwise cannot contend for the radio.
+- [x] Cut SDR acquisition ownership over to AGX after proving the existing
+      Spectrum collector was stopped, disabling its Web, predictor and
+      reboot-resume user units, recovering exactly one retained receive-only
+      `sdrd`, and verifying the deployed AGX Harness is the only enabled RX
+      control path; see
+      [`SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md`](SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md).
 
 - [x] Keep Qwen inference, tokenization, and KV cache on the 4090 llama.cpp
       module for the original Pi deployment baseline; it was later stopped when
@@ -152,6 +156,7 @@ Evidence:
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md`](SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md)
+- [`SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md`](SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md)
 
 ## 2. Planning policy and autonomous loop
 

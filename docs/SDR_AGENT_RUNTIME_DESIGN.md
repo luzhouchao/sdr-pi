@@ -1,6 +1,6 @@
 # SDR Agent runtime design
 
-Last reviewed: 2026-09-02
+Last reviewed: 2026-09-03
 
 ## Current decision
 
@@ -90,8 +90,10 @@ bounded, canonical file reference under the configured spool root.
 - One interactive conversation owns `session.sock`; Web retains at most two
   bounded conversation histories.
 - One active inference lease serializes one-shot and interactive model runs.
-- One receive owner is allowed. Starting Harness acquisition requires proof
-  that no legacy Spectrum collector or direct-IIOD benchmark owns the radio.
+- One receive owner is allowed.  The legacy Spectrum Web, predictor and
+  reboot-resume user units were disabled during the 2026-09-03 cutover; the AGX
+  Harness is the only enabled receive control path.  Any rollback must stop
+  Harness acquisition before re-enabling a legacy direct-IIOD collector.
 - `/stop` cancels the model and active SDR action without waiting for another
   model turn, then advances session generation so stale plans cannot execute.
 - P201 restores LO, sample rate, RF bandwidth, gain mode and channel enables on
