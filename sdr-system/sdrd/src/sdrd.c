@@ -476,6 +476,109 @@ static int format_error(
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
 
+static void normalize_capture_error(
+    sdrd_capture_result_t *result,
+    int rc,
+    uint32_t timeout_ms) {
+  if (result->timeout_ms == 0u) {
+    result->timeout_ms = timeout_ms;
+  }
+  if (rc == -ETIMEDOUT) {
+    result->timed_out = 1;
+    result->health_flags |= SDRD_EXEC_HEALTH_TIMEOUT;
+  } else if (rc == -EOVERFLOW || rc == -EPIPE) {
+    result->overflow = 1;
+    result->health_flags |= SDRD_EXEC_HEALTH_OVERFLOW;
+  } else if (rc == -ECANCELED) {
+    result->health_flags |= SDRD_EXEC_HEALTH_CANCELLED;
+  } else if (result->health_flags == 0u) {
+    result->health_flags = SDRD_EXEC_HEALTH_IO_ERROR;
+  }
+}
+
+static void normalize_summary_error(
+    sdrd_summary_result_t *result,
+    int rc,
+    uint32_t timeout_ms) {
+  if (result->timeout_ms == 0u) {
+    result->timeout_ms = timeout_ms;
+  }
+  if (rc == -ETIMEDOUT) {
+    result->timed_out = 1;
+    result->health_flags |= SDRD_EXEC_HEALTH_TIMEOUT;
+  } else if (rc == -EOVERFLOW || rc == -EPIPE) {
+    result->overflow = 1;
+    result->health_flags |= SDRD_EXEC_HEALTH_OVERFLOW;
+  } else if (rc == -ECANCELED) {
+    result->health_flags |= SDRD_EXEC_HEALTH_CANCELLED;
+  } else if (result->health_flags == 0u) {
+    result->health_flags = SDRD_EXEC_HEALTH_IO_ERROR;
+  }
+  result->status_flags = result->health_flags;
+}
+
+static int format_capture_error(
+    uint64_t request_id,
+    uint64_t generation,
+    const char *code,
+    const sdrd_capture_result_t *result,
+    char *response,
+    size_t response_size) {
+  const int written = snprintf(
+      response,
+      response_size,
+      "{\"schema_version\":1,\"request_id\":%" PRIu64
+      ",\"status\":\"error\",\"error\":\"%s\",\"generation\":%" PRIu64
+      ",\"session_generation\":%" PRIu64 ",\"sequence\":%" PRIu64
+      ",\"dropped_samples\":%" PRIu64 ",\"overflow\":%s"
+      ",\"timeout\":{\"limit_ms\":%u,\"elapsed_us\":%" PRIu64
+      ",\"timed_out\":%s},\"health\":{\"healthy\":false,\"flags\":%u"
+      ",\"source\":\"iio_adapter\"}}\n",
+      request_id,
+      code,
+      generation,
+      generation,
+      result->sequence,
+      result->dropped_samples,
+      result->overflow != 0 ? "true" : "false",
+      result->timeout_ms,
+      result->elapsed_us,
+      result->timed_out != 0 ? "true" : "false",
+      result->health_flags);
+  return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
+}
+
+static int format_summary_error(
+    uint64_t request_id,
+    uint64_t generation,
+    const char *code,
+    const sdrd_summary_result_t *result,
+    char *response,
+    size_t response_size) {
+  const int written = snprintf(
+      response,
+      response_size,
+      "{\"schema_version\":1,\"request_id\":%" PRIu64
+      ",\"status\":\"error\",\"error\":\"%s\",\"generation\":%" PRIu64
+      ",\"session_generation\":%" PRIu64 ",\"sequence\":%" PRIu64
+      ",\"dropped_samples\":%" PRIu64 ",\"overflow\":%s"
+      ",\"timeout\":{\"limit_ms\":%u,\"elapsed_us\":%" PRIu64
+      ",\"timed_out\":%s},\"health\":{\"healthy\":false,\"flags\":%u"
+      ",\"source\":\"iio_adapter\"}}\n",
+      request_id,
+      code,
+      generation,
+      generation,
+      result->sequence,
+      result->dropped_samples,
+      result->overflow != 0 ? "true" : "false",
+      result->timeout_ms,
+      result->elapsed_us,
+      result->timed_out != 0 ? "true" : "false",
+      result->health_flags);
+  return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
+}
+
 void sdrd_session_init(sdrd_session_t *session) {
   if (session != NULL) {
     memset(session, 0, sizeof(*session));
@@ -544,8 +647,9 @@ static int handle_start_session(
   written = snprintf(
       response,
       response_size,
-      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_state\":\"owned\",\"restore_armed\":true}\n",
+      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"session_state\":\"owned\",\"restore_armed\":true}\n",
       request->request_id,
+      generation,
       generation);
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
@@ -611,8 +715,9 @@ static int handle_apply_profile(
     written = snprintf(
         response,
         response_size,
-        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"hardware_gain_db\":%u,\"enabled_channels\":%u}\n",
+        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"hardware_gain_db\":%u,\"enabled_channels\":%u}\n",
         request->request_id,
+        generation,
         generation,
         state.center_hz,
         state.sample_rate_hz,
@@ -624,8 +729,9 @@ static int handle_apply_profile(
     written = snprintf(
         response,
         response_size,
-        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"enabled_channels\":%u}\n",
+        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"enabled_channels\":%u}\n",
         request->request_id,
+        generation,
         generation,
         state.center_hz,
         state.sample_rate_hz,
@@ -650,11 +756,12 @@ static int handle_capture_iq(
   int written;
   memset(&capture, 0, sizeof(capture));
   memset(&result, 0, sizeof(result));
-  if (request_has_fields(request, 7u) != 0 ||
+  if ((request->field_count != 7u && request->field_count != 8u) ||
       parse_u64(request->fields[3], &capture.generation) != 0 ||
       parse_u64(request->fields[4], &capture.sample_count) != 0 ||
       parse_u64(request->fields[5], &capture.max_bytes) != 0 ||
-      valid_feature_id(request->fields[6]) == 0) {
+      valid_feature_id(request->fields[6]) == 0 ||
+      (request->field_count == 8u && parse_u32(request->fields[7], &capture.timeout_ms) != 0)) {
     return format_error(request->request_id, "invalid_arguments", response, response_size);
   }
   if (session->active == 0 || session->profile_applied == 0 ||
@@ -663,6 +770,13 @@ static int handle_capture_iq(
   }
   if (capture.sample_count == 0u || capture.sample_count > UINT64_MAX / 4u) {
     return format_error(request->request_id, "capture_out_of_bounds", response, response_size);
+  }
+  if (capture.timeout_ms == 0u) {
+    capture.timeout_ms = config->iio_timeout_ms;
+  }
+  if (capture.timeout_ms > 5000u) {
+    return format_error(
+        request->request_id, "capture_timeout_out_of_bounds", response, response_size);
   }
   required_bytes = capture.sample_count * 4u;
   if (capture.max_bytes == 0u || capture.max_bytes > config->max_capture_bytes ||
@@ -673,13 +787,17 @@ static int handle_capture_iq(
   rc = radio->capture_iq(radio->context, &capture, &result);
   if (rc != 0) {
     const int restore_rc = sdrd_session_close(session, radio);
-    return format_error(
+    normalize_capture_error(&result, rc, capture.timeout_ms);
+    return format_capture_error(
         request->request_id,
+        capture.generation,
         restore_rc == 0 ? "capture_failed_restored" : "capture_failed_restore_fault",
+        &result,
         response,
         response_size);
   }
   if (result.samples_captured > capture.sample_count || result.bytes_written > capture.max_bytes ||
+      result.timeout_ms == 0u || result.timed_out != 0 ||
       valid_relative_path(result.relative_path) == 0) {
     (void)sdrd_session_close(session, radio);
     return format_error(request->request_id, "adapter_contract_violation", response, response_size);
@@ -687,8 +805,9 @@ static int handle_capture_iq(
   written = snprintf(
       response,
       response_size,
-      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"feature_id\":\"%s\",\"samples_captured\":%" PRIu64 ",\"bytes_written\":%" PRIu64 ",\"sequence\":%" PRIu64 ",\"dropped_samples\":%" PRIu64 ",\"overflow\":%s,\"relative_path\":\"%s\"}\n",
+      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"feature_id\":\"%s\",\"samples_captured\":%" PRIu64 ",\"bytes_written\":%" PRIu64 ",\"sequence\":%" PRIu64 ",\"dropped_samples\":%" PRIu64 ",\"overflow\":%s,\"timeout\":{\"limit_ms\":%u,\"elapsed_us\":%" PRIu64 ",\"timed_out\":%s},\"health\":{\"healthy\":%s,\"flags\":%u,\"source\":\"iio_adapter\"},\"relative_path\":\"%s\"}\n",
       request->request_id,
+      capture.generation,
       capture.generation,
       capture.feature_id,
       result.samples_captured,
@@ -696,6 +815,11 @@ static int handle_capture_iq(
       result.sequence,
       result.dropped_samples,
       result.overflow != 0 ? "true" : "false",
+      result.timeout_ms,
+      result.elapsed_us,
+      result.timed_out != 0 ? "true" : "false",
+      result.health_flags == 0u ? "true" : "false",
+      result.health_flags,
       result.relative_path);
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
@@ -787,11 +911,12 @@ static int handle_capture_iq_inline(
   int written;
   memset(&capture, 0, sizeof(capture));
   memset(&result, 0, sizeof(result));
-  if (request_has_fields(request, 7u) != 0 ||
+  if ((request->field_count != 7u && request->field_count != 8u) ||
       parse_u64(request->fields[3], &capture.generation) != 0 ||
       parse_u64(request->fields[4], &capture.sample_count) != 0 ||
       parse_u64(request->fields[5], &capture.max_bytes) != 0 ||
-      valid_feature_id(request->fields[6]) == 0) {
+      valid_feature_id(request->fields[6]) == 0 ||
+      (request->field_count == 8u && parse_u32(request->fields[7], &capture.timeout_ms) != 0)) {
     return format_error(request->request_id, "invalid_arguments", response, response_size);
   }
   if (session->active == 0 || session->profile_applied == 0 ||
@@ -800,6 +925,13 @@ static int handle_capture_iq_inline(
   }
   if (capture.sample_count == 0u || capture.sample_count > UINT64_MAX / 4u) {
     return format_error(request->request_id, "capture_out_of_bounds", response, response_size);
+  }
+  if (capture.timeout_ms == 0u) {
+    capture.timeout_ms = config->iio_timeout_ms;
+  }
+  if (capture.timeout_ms > 5000u) {
+    return format_error(
+        request->request_id, "capture_timeout_out_of_bounds", response, response_size);
   }
   required_bytes = capture.sample_count * 4u;
   if (capture.max_bytes != required_bytes || required_bytes > SDRD_MAX_INLINE_CAPTURE_BYTES ||
@@ -810,14 +942,18 @@ static int handle_capture_iq_inline(
   rc = radio->capture_iq(radio->context, &capture, &result);
   if (rc != 0) {
     const int restore_rc = sdrd_session_close(session, radio);
-    return format_error(
+    normalize_capture_error(&result, rc, capture.timeout_ms);
+    return format_capture_error(
         request->request_id,
+        capture.generation,
         restore_rc == 0 ? "capture_failed_restored" : "capture_failed_restore_fault",
+        &result,
         response,
         response_size);
   }
   if (result.samples_captured != capture.sample_count || result.bytes_written != required_bytes ||
-      result.dropped_samples != 0u || result.overflow != 0 ||
+      result.dropped_samples != 0u || result.overflow != 0 || result.timeout_ms == 0u ||
+      result.timed_out != 0 || result.health_flags != 0u ||
       valid_relative_path(result.relative_path) == 0) {
     (void)sdrd_session_close(session, radio);
     return format_error(request->request_id, "adapter_contract_violation", response, response_size);
@@ -840,13 +976,25 @@ static int handle_capture_iq_inline(
       response_size,
       "{\"schema_version\":1,\"request_id\":%" PRIu64
       ",\"status\":\"ok\",\"generation\":%" PRIu64
+      ",\"session_generation\":%" PRIu64
       ",\"samples_captured\":%" PRIu64 ",\"bytes_transferred\":%" PRIu64
-      ",\"sequence\":%" PRIu64 ",\"iq_base64\":\"",
+      ",\"sequence\":%" PRIu64 ",\"dropped_samples\":%" PRIu64
+      ",\"overflow\":%s,\"timeout\":{\"limit_ms\":%u,\"elapsed_us\":%" PRIu64
+      ",\"timed_out\":%s},\"health\":{\"healthy\":%s,\"flags\":%u"
+      ",\"source\":\"iio_adapter\"},\"iq_base64\":\"",
       request->request_id,
+      capture.generation,
       capture.generation,
       result.samples_captured,
       result.bytes_written,
-      result.sequence);
+      result.sequence,
+      result.dropped_samples,
+      result.overflow != 0 ? "true" : "false",
+      result.timeout_ms,
+      result.elapsed_us,
+      result.timed_out != 0 ? "true" : "false",
+      result.health_flags == 0u ? "true" : "false",
+      result.health_flags);
   if (written < 0 || (size_t)written >= response_size) {
     rc = -ENOSPC;
   } else {
@@ -919,17 +1067,30 @@ static int handle_capture_power(
     if (restore_rc != 0) {
       code = "power_failed_restore_fault";
     }
-    return format_error(request->request_id, code, response, response_size);
+    normalize_summary_error(&result, rc, summary.timeout_ms);
+    return format_summary_error(
+        request->request_id,
+        summary.generation,
+        code,
+        &result,
+        response,
+        response_size);
   }
   written = snprintf(
       response,
       response_size,
       "{\"schema_version\":1,\"request_id\":%" PRIu64
       ",\"status\":\"ok\",\"generation\":%" PRIu64
+      ",\"session_generation\":%" PRIu64
       ",\"sequence\":%" PRIu64 ",\"aggregate_samples\":%" PRIu64
       ",\"rx0_power_lo\":%u,\"rx0_power_mid\":%u,\"rx0_power_hi\":%u"
-      ",\"rx0_clip_count\":%" PRIu64 ",\"status_flags\":%u,\"elapsed_us\":%" PRIu64 "}\n",
+      ",\"rx0_clip_count\":%" PRIu64 ",\"status_flags\":%u,\"elapsed_us\":%" PRIu64
+      ",\"dropped_samples\":%" PRIu64 ",\"overflow\":%s"
+      ",\"timeout\":{\"limit_ms\":%u,\"elapsed_us\":%" PRIu64
+      ",\"timed_out\":%s},\"health\":{\"healthy\":%s,\"flags\":%u"
+      ",\"source\":\"iio_adapter\"}}\n",
       request->request_id,
+      summary.generation,
       summary.generation,
       result.sequence,
       result.aggregate_samples,
@@ -938,7 +1099,14 @@ static int handle_capture_power(
       result.rx0_power_hi,
       result.rx0_clip_count,
       result.status_flags,
-      result.elapsed_us);
+      result.elapsed_us,
+      result.dropped_samples,
+      result.overflow != 0 ? "true" : "false",
+      result.timeout_ms,
+      result.elapsed_us,
+      result.timed_out != 0 ? "true" : "false",
+      result.health_flags == 0u ? "true" : "false",
+      result.health_flags);
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
 
@@ -959,8 +1127,9 @@ static int handle_execution_status(
   written = snprintf(
       response,
       response_size,
-      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"active\":%s,\"profile_applied\":%s,\"restore_armed\":%s,\"faulted\":%s}\n",
+      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"active\":%s,\"profile_applied\":%s,\"restore_armed\":%s,\"faulted\":%s}\n",
       request->request_id,
+      session->generation,
       session->generation,
       session->active != 0 ? "true" : "false",
       session->profile_applied != 0 ? "true" : "false",
@@ -992,8 +1161,9 @@ static int handle_stop_session(
   written = snprintf(
       response,
       response_size,
-      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"stopped\":true,\"restored\":true}\n",
+      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"stopped\":true,\"restored\":true}\n",
       request->request_id,
+      generation,
       generation);
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }

@@ -158,12 +158,10 @@ impl SdrdWire {
             ));
         }
         if common.status != "ok" {
-            return Err(SdrError::new(
-                "remote_error",
-                common
-                    .error
-                    .unwrap_or_else(|| "SDRD request failed".to_owned()),
-            ));
+            let message = common
+                .error
+                .unwrap_or_else(|| "SDRD request failed".to_owned());
+            return Err(SdrError::with_details("remote_error", message, value));
         }
         serde_json::from_value(value).map_err(|error| SdrError::protocol("response_shape", error))
     }
@@ -313,6 +311,7 @@ struct QuitResponse {
 pub struct SdrError {
     pub code: &'static str,
     pub message: String,
+    pub details: Option<serde_json::Value>,
 }
 
 impl SdrError {
@@ -320,6 +319,19 @@ impl SdrError {
         Self {
             code,
             message: message.into(),
+            details: None,
+        }
+    }
+
+    pub(crate) fn with_details(
+        code: &'static str,
+        message: impl Into<String>,
+        details: serde_json::Value,
+    ) -> Self {
+        Self {
+            code,
+            message: message.into(),
+            details: Some(details),
         }
     }
 
@@ -334,7 +346,11 @@ impl SdrError {
 
 impl fmt::Display for SdrError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{}: {}", self.code, self.message)
+        write!(formatter, "{}: {}", self.code, self.message)?;
+        if let Some(details) = &self.details {
+            write!(formatter, " metadata={details}")?;
+        }
+        Ok(())
     }
 }
 
@@ -404,6 +420,26 @@ mod tests {
         let (address, handle) = mock_server(responses);
         let mut adapter = SdrdAdapter::new(address, Duration::from_secs(1));
         assert_eq!(adapter.observe().unwrap_err().code, "request_id");
+        handle.join().unwrap();
+    }
+
+    #[test]
+    fn preserves_remote_execution_metadata_on_failure() {
+        let responses = vec![
+            "{\"schema_version\":1,\"request_id\":1,\"status\":\"error\",\"error\":\"power_timeout_restored\",\"generation\":7,\"session_generation\":7,\"sequence\":19,\"dropped_samples\":0,\"overflow\":false,\"timeout\":{\"limit_ms\":1,\"elapsed_us\":2048,\"timed_out\":true},\"health\":{\"healthy\":false,\"flags\":4,\"source\":\"iio_adapter\"}}\n",
+        ];
+        let (address, handle) = mock_server(responses);
+        let mut wire = SdrdWire::connect(address, Duration::from_secs(1)).unwrap();
+        let error = wire
+            .request::<serde_json::Value>("CAPTURE_POWER", "7 4096 8 1")
+            .unwrap_err();
+        assert_eq!(error.code, "remote_error");
+        assert_eq!(error.message, "power_timeout_restored");
+        let details = error.details.unwrap();
+        assert_eq!(details["session_generation"], 7);
+        assert_eq!(details["sequence"], 19);
+        assert_eq!(details["timeout"]["timed_out"], true);
+        assert_eq!(details["health"]["flags"], 4);
         handle.join().unwrap();
     }
 

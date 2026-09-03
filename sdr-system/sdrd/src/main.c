@@ -232,8 +232,9 @@ static int handle_cancel_client(
       sizeof(response),
       "{\"schema_version\":1,\"request_id\":%" PRIu64
       ",\"status\":\"ok\",\"generation\":%" PRIu64
-      ",\"cancel_requested\":true}\n",
+      ",\"session_generation\":%" PRIu64 ",\"cancel_requested\":true}\n",
       request_id,
+      generation,
       generation);
   if (written < 0 || (size_t)written >= sizeof(response)) {
     return -ENOSPC;

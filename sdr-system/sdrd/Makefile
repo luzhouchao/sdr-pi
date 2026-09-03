@@ -16,8 +16,9 @@ TEST_SOURCES := $(DAEMON_SOURCES)
 LDLIBS += -ldl -pthread
 DAEMON := $(BUILD_DIR)/sdrd
 TEST := $(BUILD_DIR)/test_sdrd
+LIVE_TIMEOUT_TEST := $(BUILD_DIR)/live_timeout_restore
 
-.PHONY: all test clean
+.PHONY: all test live-timeout-test clean
 
 all: $(DAEMON)
 
@@ -32,6 +33,11 @@ $(TEST): tests/test_sdrd.c $(TEST_SOURCES) include/sdrd.h include/sdrd_iio.h | $
 
 test: $(TEST)
 	$(TEST)
+
+$(LIVE_TIMEOUT_TEST): tests/live_timeout_restore.c $(TEST_SOURCES) include/sdrd.h include/sdrd_iio.h | $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ tests/live_timeout_restore.c $(TEST_SOURCES) $(LDFLAGS) $(LDLIBS)
+
+live-timeout-test: $(LIVE_TIMEOUT_TEST)
 
 clean:
 	rm -rf $(BUILD_DIR)

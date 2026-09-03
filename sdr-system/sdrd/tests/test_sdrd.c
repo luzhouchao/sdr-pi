@@ -86,6 +86,8 @@ static int fake_capture(
   result->samples_captured = request->sample_count;
   result->bytes_written = request->sample_count * 4u;
   result->sequence = 17u;
+  result->timeout_ms = request->timeout_ms != 0u ? request->timeout_ms : 2000u;
+  result->elapsed_us = 500u;
   assert(snprintf(
              result->relative_path,
              sizeof(result->relative_path),
@@ -126,6 +128,7 @@ static int fake_capture_power(
   result->rx0_power_lo = 789u;
   result->rx0_clip_count = 1u;
   result->elapsed_us = 700u;
+  result->timeout_ms = request->timeout_ms;
   return 0;
 }
 
@@ -272,6 +275,7 @@ static void test_controlled_allowlist_and_restore(void) {
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"center_hz\":2400000000") != NULL);
+  assert(strstr(response, "\"session_generation\":1001") != NULL);
   assert(fake.apply_calls == 1u);
   assert(sdrd_handle_request(
              &config,
@@ -307,6 +311,11 @@ static void test_controlled_allowlist_and_restore(void) {
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"bytes_written\":4096") != NULL);
+  assert(strstr(response, "\"sequence\":17") != NULL);
+  assert(strstr(response, "\"dropped_samples\":0") != NULL);
+  assert(strstr(response, "\"overflow\":false") != NULL);
+  assert(strstr(response, "\"timeout\":{\"limit_ms\":2000") != NULL);
+  assert(strstr(response, "\"health\":{\"healthy\":true,\"flags\":0") != NULL);
   assert(strstr(response, "\"relative_path\":\"sdrd-schema-v1/capture-17.iq\"") != NULL);
   assert(fake.capture_calls == 1u);
   assert(sdrd_handle_request(
@@ -318,6 +327,7 @@ static void test_controlled_allowlist_and_restore(void) {
              sizeof(response)) == 0);
   assert(strstr(response, "\"aggregate_samples\":4096") != NULL);
   assert(strstr(response, "\"rx0_power_lo\":789") != NULL);
+  assert(strstr(response, "\"timeout\":{\"limit_ms\":500") != NULL);
   assert(fake.power_calls == 1u);
   assert(sdrd_handle_request(
              &config,
@@ -408,6 +418,8 @@ static void test_disconnect_and_failure_restore(void) {
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "capture_failed_restored") != NULL);
+  assert(strstr(response, "\"timed_out\":true") != NULL);
+  assert(strstr(response, "\"healthy\":false") != NULL);
   assert(session.active == 0 && session.restore_required == 0);
   fake.capture_result = 0;
 
@@ -472,9 +484,12 @@ static void test_inline_iq_transport_and_cleanup(const char *root) {
              response, sizeof(response)) == 0);
   assert(sdrd_handle_request(
              &config, &session, &ops,
-             "SDRD/1 CAPTURE_IQ_INLINE 3 7007 2 8 inline-test", response,
+             "SDRD/1 CAPTURE_IQ_INLINE 3 7007 2 8 inline-test 500", response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"bytes_transferred\":8") != NULL);
+  assert(strstr(response, "\"session_generation\":7007") != NULL);
+  assert(strstr(response, "\"timeout\":{\"limit_ms\":500") != NULL);
+  assert(strstr(response, "\"health\":{\"healthy\":true,\"flags\":0") != NULL);
   assert(strstr(response, "\"iq_base64\":\"AAAAAAAAAAA=\"") != NULL);
   assert(snprintf(path, sizeof(path), "%s/inline-test/capture-17.iq", data_root) > 0);
   assert(access(path, F_OK) != 0);

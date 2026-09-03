@@ -49,6 +49,22 @@ pub trait SdrActionExecutor {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+pub struct ExecutionTimeoutMetadata {
+    pub limit_ms: u32,
+    pub elapsed_us: u64,
+    pub timed_out: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ExecutionHealthMetadata {
+    pub healthy: bool,
+    pub flags: u32,
+    pub source: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct CaptureObservation {
     pub candidate_id: String,
     pub feature_id: String,
@@ -58,6 +74,8 @@ pub struct CaptureObservation {
     pub sequence: u64,
     pub dropped_samples: u64,
     pub overflow: bool,
+    pub timeout: ExecutionTimeoutMetadata,
+    pub health: ExecutionHealthMetadata,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -187,6 +205,7 @@ impl SdrdActionAdapter {
         let execution = (|| {
             let start: StartResponse = wire.request("START_SESSION", &generation.to_string())?;
             if start.generation != generation
+                || start.session_generation != generation
                 || start.session_state != "owned"
                 || !start.restore_armed
             {
@@ -202,6 +221,7 @@ impl SdrdActionAdapter {
             );
             let profile: ProfileResponse = wire.request("APPLY_PROFILE", &profile_arguments)?;
             if profile.generation != generation
+                || profile.session_generation != generation
                 || profile.center_hz != center_hz
                 || profile.sample_rate_hz != sample_rate_hz
                 || profile.rf_bandwidth_hz != rf_bandwidth_hz
@@ -214,13 +234,23 @@ impl SdrdActionAdapter {
                 ));
             }
 
-            let capture_arguments = format!("{generation} {samples} {max_bytes} {feature_id}");
+            let timeout_ms = u32::try_from(self.timeout.as_millis().min(5_000)).unwrap_or(5_000);
+            let capture_arguments =
+                format!("{generation} {samples} {max_bytes} {feature_id} {timeout_ms}");
             let capture: CaptureResponse = wire.request("CAPTURE_IQ", &capture_arguments)?;
-            validate_capture_response(&capture, generation, samples, max_bytes, &feature_id)?;
+            validate_capture_response(
+                &capture,
+                generation,
+                samples,
+                max_bytes,
+                timeout_ms,
+                &feature_id,
+            )?;
 
             let status: StatusResponse =
                 wire.request("EXECUTION_STATUS", &generation.to_string())?;
             if status.generation != generation
+                || status.session_generation != generation
                 || !status.active
                 || !status.profile_applied
                 || !status.restore_armed
@@ -233,7 +263,11 @@ impl SdrdActionAdapter {
             }
 
             let stop: StopResponse = wire.request("STOP_SESSION", &generation.to_string())?;
-            if stop.generation != generation || !stop.stopped || !stop.restored {
+            if stop.generation != generation
+                || stop.session_generation != generation
+                || !stop.stopped
+                || !stop.restored
+            {
                 return Err(SdrError::new(
                     "restore_response",
                     "SDRD did not confirm stop and restoration",
@@ -257,6 +291,8 @@ impl SdrdActionAdapter {
                 sequence: capture.sequence,
                 dropped_samples: capture.dropped_samples,
                 overflow: capture.overflow,
+                timeout: capture.timeout,
+                health: capture.health,
             })
         })();
 
@@ -349,7 +385,10 @@ impl SdrActionExecutor for SdrdActionAdapter {
         let mut wire = SdrdWire::connect(self.address, self.timeout)?;
         let response: CancelResponse =
             wire.request("CANCEL_SESSION", &session_generation.to_string())?;
-        if response.generation != session_generation || !response.cancel_requested {
+        if response.generation != session_generation
+            || response.session_generation != session_generation
+            || !response.cancel_requested
+        {
             return Err(SdrError::new(
                 "cancel_response",
                 "SDRD did not acknowledge the requested generation cancellation",
@@ -388,6 +427,7 @@ fn validate_capture_response(
     generation: u64,
     samples: u64,
     max_bytes: u64,
+    timeout_ms: u32,
     feature_id: &str,
 ) -> Result<(), SdrError> {
     let expected_prefix = format!("{feature_id}/");
@@ -396,12 +436,20 @@ fn validate_capture_response(
         .checked_mul(4)
         .ok_or_else(|| SdrError::new("capture_response", "capture byte count overflow"))?;
     if response.generation != generation
+        || response.session_generation != generation
         || response.feature_id != feature_id
         || response.samples_captured > samples
         || response.bytes_written > max_bytes
         || response.bytes_written != shaped_bytes
         || response.relative_path.contains("..")
         || !response.relative_path.starts_with(&expected_prefix)
+        || response.overflow
+        || response.dropped_samples != 0
+        || response.timeout.limit_ms != timeout_ms
+        || response.timeout.timed_out
+        || !response.health.healthy
+        || response.health.flags != 0
+        || response.health.source != "iio_adapter"
     {
         return Err(SdrError::new(
             "capture_response",
@@ -466,6 +514,7 @@ struct StartResponse {
     #[serde(rename = "status")]
     _status: String,
     generation: u64,
+    session_generation: u64,
     session_state: String,
     restore_armed: bool,
 }
@@ -480,6 +529,7 @@ struct ProfileResponse {
     #[serde(rename = "status")]
     _status: String,
     generation: u64,
+    session_generation: u64,
     center_hz: u64,
     sample_rate_hz: u64,
     rf_bandwidth_hz: u64,
@@ -497,12 +547,15 @@ struct CaptureResponse {
     #[serde(rename = "status")]
     _status: String,
     generation: u64,
+    session_generation: u64,
     feature_id: String,
     samples_captured: u64,
     bytes_written: u64,
     sequence: u64,
     dropped_samples: u64,
     overflow: bool,
+    timeout: ExecutionTimeoutMetadata,
+    health: ExecutionHealthMetadata,
     relative_path: String,
 }
 
@@ -516,6 +569,7 @@ struct StatusResponse {
     #[serde(rename = "status")]
     _status: String,
     generation: u64,
+    session_generation: u64,
     active: bool,
     profile_applied: bool,
     restore_armed: bool,
@@ -532,6 +586,7 @@ struct StopResponse {
     #[serde(rename = "status")]
     _status: String,
     generation: u64,
+    session_generation: u64,
     stopped: bool,
     restored: bool,
 }
@@ -558,6 +613,7 @@ struct CancelResponse {
     #[serde(rename = "status")]
     _status: String,
     generation: u64,
+    session_generation: u64,
     cancel_requested: bool,
 }
 
@@ -601,6 +657,16 @@ mod tests {
                 sequence: 1,
                 dropped_samples: 0,
                 overflow: false,
+                timeout: ExecutionTimeoutMetadata {
+                    limit_ms: 1_000,
+                    elapsed_us: 1_000,
+                    timed_out: false,
+                },
+                health: ExecutionHealthMetadata {
+                    healthy: true,
+                    flags: 0,
+                    source: "iio_adapter".to_owned(),
+                },
             },
             post_execution_sdr: SdrSnapshot {
                 online: true,
@@ -621,11 +687,11 @@ mod tests {
                 vec![
                     "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
                     "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
-                    "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":3,\"session_state\":\"owned\",\"restore_armed\":true}\n",
-                    "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":3,\"center_hz\":433920000,\"sample_rate_hz\":2100000,\"rf_bandwidth_hz\":500000,\"gain_mode\":\"slow_attack\",\"enabled_channels\":1}\n",
-                    "{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":3,\"feature_id\":\"agent-3-7\",\"samples_captured\":4096,\"bytes_written\":16384,\"sequence\":1,\"dropped_samples\":0,\"overflow\":false,\"relative_path\":\"agent-3-7/capture-3-1.ci16\"}\n",
-                    "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":3,\"active\":true,\"profile_applied\":true,\"restore_armed\":true,\"faulted\":false}\n",
-                    "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"generation\":3,\"stopped\":true,\"restored\":true}\n",
+                    "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"session_state\":\"owned\",\"restore_armed\":true}\n",
+                    "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"center_hz\":433920000,\"sample_rate_hz\":2100000,\"rf_bandwidth_hz\":500000,\"gain_mode\":\"slow_attack\",\"enabled_channels\":1}\n",
+                    "{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"feature_id\":\"agent-3-7\",\"samples_captured\":4096,\"bytes_written\":16384,\"sequence\":1,\"dropped_samples\":0,\"overflow\":false,\"timeout\":{\"limit_ms\":1000,\"elapsed_us\":1000,\"timed_out\":false},\"health\":{\"healthy\":true,\"flags\":0,\"source\":\"iio_adapter\"},\"relative_path\":\"agent-3-7/capture-3-1.ci16\"}\n",
+                    "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"active\":true,\"profile_applied\":true,\"restore_armed\":true,\"faulted\":false}\n",
+                    "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"stopped\":true,\"restored\":true}\n",
                     "{\"schema_version\":1,\"request_id\":8,\"status\":\"ok\",\"closing\":true}\n",
                 ],
                 vec![
@@ -702,7 +768,7 @@ mod tests {
             assert_eq!(request, "SDRD/1 CANCEL_SESSION 1 3\n");
             stream
                 .write_all(
-                    b"{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"generation\":3,\"cancel_requested\":true}\n",
+                    b"{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"cancel_requested\":true}\n",
                 )
                 .unwrap();
             stream.flush().unwrap();

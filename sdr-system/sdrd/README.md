@@ -39,8 +39,8 @@ Controlled mode adds only these allowlisted messages:
 ```text
 SDRD/1 START_SESSION <request_id> <generation>
 SDRD/1 APPLY_PROFILE <request_id> <generation> <center_hz> <sample_rate_hz> <rf_bandwidth_hz> <gain_mode> [hardware_gain_db] <enabled_channels>
-SDRD/1 CAPTURE_IQ <request_id> <generation> <sample_count> <max_bytes> <feature_id>
-SDRD/1 CAPTURE_IQ_INLINE <request_id> <generation> <sample_count> <exact_bytes> <feature_id>
+SDRD/1 CAPTURE_IQ <request_id> <generation> <sample_count> <max_bytes> <feature_id> [timeout_ms]
+SDRD/1 CAPTURE_IQ_INLINE <request_id> <generation> <sample_count> <exact_bytes> <feature_id> [timeout_ms]
 SDRD/1 CAPTURE_POWER <request_id> <generation> <frame_samples> <aggregate_frames> <timeout_ms>
 SDRD/1 EXECUTION_STATUS <request_id> <generation>
 SDRD/1 STOP_SESSION <request_id> <generation>
@@ -50,6 +50,23 @@ SDRD/1 CANCEL_SESSION <request_id> <generation>
 Each response is one JSON line carrying the same strictly increasing, nonzero
 request ID. Generations reject stale session actions. `RETUNE` is deliberately
 not allowlisted; `APPLY_PROFILE` is the atomic tuning operation.
+
+Every successful capture/summary result carries the correlated `request_id`
+and `session_generation`, the Adapter capture `sequence`, measured
+`dropped_samples`/`overflow`, and two nested metadata objects:
+
+```json
+{"timeout":{"limit_ms":2000,"elapsed_us":731,"timed_out":false},"health":{"healthy":true,"flags":0,"source":"iio_adapter"}}
+```
+
+The timeout limit is the active IIO or request deadline and `elapsed_us` is
+measured with `CLOCK_MONOTONIC`.  Drop accounting is derived from the actual
+refill shape; `overflow` is asserted only for an Adapter overflow/EPIPE result.
+Health flags describe short refill, overflow, timeout, cancellation, I/O,
+sample-shape, or post-capture radio-state failures.  Healthy is true only when
+the Adapter returned no such flag.  Timeout/capture failures return the same
+metadata together with the restoration-specific error code, and the Rust
+client preserves that object in its error/audit path.
 
 One normal connection exclusively owns execution. `CANCEL_SESSION` is the only
 command accepted on a second connection while that owner is active. It must
@@ -98,6 +115,9 @@ enabled channels.
 `CAPTURE_IQ` returns bounded metadata and a safe path relative to the configured
 development-data root. `CAPTURE_IQ_INLINE` is the deliberately bounded exception
 that transports base64 IQ to AGX and immediately removes the P201 temporary file.
+The AGX sweep path propagates the P201 request/generation, sequence,
+drop/overflow, timeout and health metadata into each `SweepPoint`; it does not
+synthesize zero status or elapsed time after transport.
 
 ## Native build and tests
 
@@ -109,6 +129,14 @@ make -C sdr-system/sdrd all
 sdr-system/sdrd/build/sdrd \
   --config sdr-system/sdrd/config/sdrd-shadow.conf --check-config
 ```
+
+`make live-timeout-test` only builds the explicit-maintenance real-IIO checker;
+it never runs as part of a host test or daemon startup. On P201 it must run only
+after the normal single-instance stop gate proves no `sdrd` PID and no 43110
+listener. The checker uses the production Adapter and SDRD/1 session state
+machine to establish a temporary manual-gain baseline, trigger a bounded IQ
+timeout, verify exact manual-gain restoration, and finally restore the original
+radio state. It is a transient validation artifact, not a second service.
 
 ## ARMv7 builds
 

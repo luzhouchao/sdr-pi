@@ -29,6 +29,16 @@ enum sdrd_health_flag {
   SDRD_HEALTH_CONFIG_INVALID = 1u << 4
 };
 
+enum sdrd_execution_health_flag {
+  SDRD_EXEC_HEALTH_SHORT_REFILL = 1u << 0,
+  SDRD_EXEC_HEALTH_OVERFLOW = 1u << 1,
+  SDRD_EXEC_HEALTH_TIMEOUT = 1u << 2,
+  SDRD_EXEC_HEALTH_CANCELLED = 1u << 3,
+  SDRD_EXEC_HEALTH_IO_ERROR = 1u << 4,
+  SDRD_EXEC_HEALTH_SHAPE_ERROR = 1u << 5,
+  SDRD_EXEC_HEALTH_RADIO_STATE = 1u << 6
+};
+
 typedef struct sdrd_config {
   sdrd_mode_t mode;
   char listen_address[SDRD_MAX_ADDRESS];
@@ -62,6 +72,7 @@ typedef struct sdrd_capture_request {
   uint64_t generation;
   uint64_t sample_count;
   uint64_t max_bytes;
+  uint32_t timeout_ms;
   char feature_id[SDRD_MAX_FEATURE_ID];
 } sdrd_capture_request_t;
 
@@ -71,6 +82,10 @@ typedef struct sdrd_capture_result {
   uint64_t sequence;
   uint64_t dropped_samples;
   int overflow;
+  uint32_t timeout_ms;
+  uint64_t elapsed_us;
+  int timed_out;
+  uint32_t health_flags;
   char relative_path[SDRD_MAX_PATH];
 } sdrd_capture_result_t;
 
@@ -90,6 +105,11 @@ typedef struct sdrd_summary_result {
   uint64_t rx0_clip_count;
   uint32_t status_flags;
   uint64_t elapsed_us;
+  uint64_t dropped_samples;
+  int overflow;
+  uint32_t timeout_ms;
+  int timed_out;
+  uint32_t health_flags;
 } sdrd_summary_result_t;
 
 typedef struct sdrd_radio_ops {

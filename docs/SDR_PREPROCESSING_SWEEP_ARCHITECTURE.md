@@ -46,9 +46,12 @@ explicit center list.
 
 ## AGX aggregation
 
-For every point the software Adapter validates the returned generation, sample
-shape and exact byte count, decodes complex-int16 IQ, checks clipping, computes
-normalized power and records sequence metadata. The engine derives a noise
+For every point the software Adapter validates the returned request and session
+generation, sample shape and exact byte count, decodes complex-int16 IQ, checks
+clipping, computes normalized power and records Adapter sequence,
+drop/overflow, measured timeout/elapsed and health metadata.  It fails closed
+on a stale result, timeout, drop, overflow or unhealthy Adapter result instead
+of synthesizing a healthy zero status on AGX. The engine derives a noise
 baseline, merges adjacent active points and produces bounded candidates for the
 next Planner turn.
 

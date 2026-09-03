@@ -1,3 +1,4 @@
+use crate::execution::{ExecutionHealthMetadata, ExecutionTimeoutMetadata};
 use crate::protocol::{CandidateSummary, HealthSummary, ObservationSummary};
 use crate::sdr::{SdrError, SdrdWire};
 use serde::{Deserialize, Serialize};
@@ -72,16 +73,22 @@ pub struct ValidatedSweepPlan {
 #[serde(deny_unknown_fields)]
 pub struct SweepPoint {
     pub point_index: usize,
+    pub request_id: u64,
+    pub session_generation: u64,
     pub requested_center_hz: u64,
     pub actual_center_hz: u64,
     pub sample_rate_hz: u64,
     pub rf_bandwidth_hz: u64,
     pub sequence: u64,
+    pub dropped_samples: u64,
+    pub overflow: bool,
     pub captured_samples: u64,
     pub band_power_dbfs: f32,
     pub clipped_samples: u64,
     pub status_flags: u32,
     pub elapsed_us: u64,
+    pub timeout: ExecutionTimeoutMetadata,
+    pub health: ExecutionHealthMetadata,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -342,7 +349,10 @@ fn run_sdrd_points(
     let mut session_started = false;
     let execution = (|| {
         let start: StartResponse = wire.request("START_SESSION", &generation.to_string())?;
-        if start.generation != generation || !start.restore_armed {
+        if start.generation != generation
+            || start.session_generation != generation
+            || !start.restore_armed
+        {
             return Err(SweepError::new(
                 "session_start",
                 "SDRD did not arm sweep restoration",
@@ -367,6 +377,7 @@ fn run_sdrd_points(
             };
             let profile: ProfileResponse = wire.request("APPLY_PROFILE", &profile_args)?;
             if profile.generation != generation
+                || profile.session_generation != generation
                 || profile.center_hz.abs_diff(center_hz) > 2
                 || profile.sample_rate_hz != plan.sample_rate_hz
                 || profile.rf_bandwidth_hz != plan.rf_bandwidth_hz
@@ -397,12 +408,23 @@ fn run_sdrd_points(
                 ));
             }
             let feature_id = format!("agx-sweep-{generation}-{point_index}");
-            let capture_args = format!("{generation} {captured_samples} {bytes} {feature_id}");
+            let capture_args = format!(
+                "{generation} {captured_samples} {bytes} {feature_id} {}",
+                plan.point_timeout_ms
+            );
             let capture: InlineCaptureResponse =
                 wire.request("CAPTURE_IQ_INLINE", &capture_args)?;
             if capture.generation != generation
+                || capture.session_generation != generation
                 || capture.samples_captured != captured_samples
                 || capture.bytes_transferred != bytes
+                || capture.dropped_samples != 0
+                || capture.overflow
+                || capture.timeout.limit_ms != plan.point_timeout_ms
+                || capture.timeout.timed_out
+                || !capture.health.healthy
+                || capture.health.flags != 0
+                || capture.health.source != "iio_adapter"
             {
                 return Err(SweepError::new(
                     "agx_capture_shape",
@@ -420,8 +442,8 @@ fn run_sdrd_points(
             let power_lo = power as u32;
             let power_mid = (power >> 32) as u32;
             let power_hi = 0;
-            let status_flags = 0;
-            let elapsed_us = 0;
+            let status_flags = capture.health.flags;
+            let elapsed_us = capture.timeout.elapsed_us;
             if response_generation != generation || status_flags != 0 {
                 return Err(SweepError::new(
                     "summary_quality",
@@ -442,20 +464,30 @@ fn run_sdrd_points(
             }
             points.push(SweepPoint {
                 point_index,
+                request_id: capture.request_id,
+                session_generation: capture.session_generation,
                 requested_center_hz: center_hz,
                 actual_center_hz: profile.center_hz,
                 sample_rate_hz: profile.sample_rate_hz,
                 rf_bandwidth_hz: profile.rf_bandwidth_hz,
                 sequence,
+                dropped_samples: capture.dropped_samples,
+                overflow: capture.overflow,
                 captured_samples,
                 band_power_dbfs: u96_power_dbfs(power_lo, power_mid, power_hi, captured_samples)?,
                 clipped_samples: clipped,
                 status_flags,
                 elapsed_us,
+                timeout: capture.timeout,
+                health: capture.health,
             });
         }
         let stop: StopResponse = wire.request("STOP_SESSION", &generation.to_string())?;
-        if stop.generation != generation || !stop.stopped || !stop.restored {
+        if stop.generation != generation
+            || stop.session_generation != generation
+            || !stop.stopped
+            || !stop.restored
+        {
             return Err(SweepError::new(
                 "restore_response",
                 "SDRD did not confirm sweep restoration",
@@ -887,20 +919,33 @@ fn validate_points(plan: &ValidatedSweepPlan, points: &[SweepPoint]) -> Result<(
             "backend point count does not match the validated plan",
         ));
     }
+    let mut previous_sequence = None;
     for (index, point) in points.iter().enumerate() {
         if point.point_index != index
+            || point.request_id == 0
+            || point.session_generation != plan.session_generation
             || point.requested_center_hz != plan.centers_hz[index]
             || point.actual_center_hz.abs_diff(plan.centers_hz[index]) > 2
             || point.sample_rate_hz != plan.sample_rate_hz
             || point.rf_bandwidth_hz != plan.rf_bandwidth_hz
             || !point.band_power_dbfs.is_finite()
+            || point.dropped_samples != 0
+            || point.overflow
             || point.status_flags != 0
+            || point.timeout.limit_ms == 0
+            || point.timeout.timed_out
+            || point.timeout.elapsed_us != point.elapsed_us
+            || !point.health.healthy
+            || point.health.flags != point.status_flags
+            || point.health.source.is_empty()
+            || previous_sequence.is_some_and(|previous| point.sequence <= previous)
         {
             return Err(SweepError::new(
                 "point_contract",
                 "backend point violates the sweep result contract",
             ));
         }
+        previous_sequence = Some(point.sequence);
     }
     Ok(())
 }
@@ -986,6 +1031,7 @@ fn u96_power_dbfs(lo: u32, mid: u32, hi: u32, samples: u64) -> Result<f32, Sweep
 pub struct SweepError {
     pub code: &'static str,
     pub message: String,
+    pub details: Option<serde_json::Value>,
 }
 
 impl SweepError {
@@ -993,19 +1039,28 @@ impl SweepError {
         Self {
             code,
             message: message.into(),
+            details: None,
         }
     }
 }
 
 impl From<SdrError> for SweepError {
     fn from(error: SdrError) -> Self {
-        Self::new(error.code, error.message)
+        Self {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+        }
     }
 }
 
 impl fmt::Display for SweepError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{}: {}", self.code, self.message)
+        write!(formatter, "{}: {}", self.code, self.message)?;
+        if let Some(details) = &self.details {
+            write!(formatter, " metadata={details}")?;
+        }
+        Ok(())
     }
 }
 
@@ -1069,6 +1124,7 @@ struct StartResponse {
     #[serde(rename = "status")]
     _status: String,
     generation: u64,
+    session_generation: u64,
     #[serde(rename = "session_state")]
     _session_state: String,
     restore_armed: bool,
@@ -1084,6 +1140,7 @@ struct ProfileResponse {
     #[serde(rename = "status")]
     _status: String,
     generation: u64,
+    session_generation: u64,
     center_hz: u64,
     sample_rate_hz: u64,
     rf_bandwidth_hz: u64,
@@ -1099,14 +1156,18 @@ struct ProfileResponse {
 struct InlineCaptureResponse {
     #[serde(rename = "schema_version")]
     _schema_version: u16,
-    #[serde(rename = "request_id")]
-    _request_id: u64,
+    request_id: u64,
     #[serde(rename = "status")]
     _status: String,
     generation: u64,
+    session_generation: u64,
     samples_captured: u64,
     bytes_transferred: u64,
     sequence: u64,
+    dropped_samples: u64,
+    overflow: bool,
+    timeout: ExecutionTimeoutMetadata,
+    health: ExecutionHealthMetadata,
     iq_base64: String,
 }
 
@@ -1120,6 +1181,7 @@ struct StopResponse {
     #[serde(rename = "status")]
     _status: String,
     generation: u64,
+    session_generation: u64,
     stopped: bool,
     restored: bool,
 }
@@ -1148,6 +1210,26 @@ mod tests {
             .unwrap_or_default()
             .as_nanos();
         std::env::temp_dir().join(format!("sdrharness-{label}-{}-{nonce}", std::process::id()))
+    }
+
+    #[test]
+    fn preserves_remote_execution_metadata_in_sweep_errors() {
+        let details = json!({
+            "request_id": 41,
+            "session_generation": 9,
+            "sequence": 12,
+            "dropped_samples": 0,
+            "overflow": false,
+            "timeout": {"limit_ms": 1, "elapsed_us": 2_048, "timed_out": true},
+            "health": {"healthy": false, "flags": 4, "source": "iio_adapter"}
+        });
+        let error = SweepError::from(SdrError::with_details(
+            "remote_error",
+            "capture_failed_restored",
+            details.clone(),
+        ));
+        assert_eq!(error.details, Some(details));
+        assert!(error.to_string().contains("\"timed_out\":true"));
     }
 
     fn test_base64(bytes: &[u8]) -> String {
@@ -1243,16 +1325,30 @@ mod tests {
     fn point(index: usize, center: u64, power: f32) -> SweepPoint {
         SweepPoint {
             point_index: index,
+            request_id: index as u64 + 1,
+            session_generation: 9,
             requested_center_hz: center,
             actual_center_hz: center,
             sample_rate_hz: 3_000_000,
             rf_bandwidth_hz: 2_500_000,
             sequence: index as u64 + 1,
+            dropped_samples: 0,
+            overflow: false,
             captured_samples: 32_768,
             band_power_dbfs: power,
             clipped_samples: 0,
             status_flags: 0,
             elapsed_us: 10_000,
+            timeout: ExecutionTimeoutMetadata {
+                limit_ms: 500,
+                elapsed_us: 10_000,
+                timed_out: false,
+            },
+            health: ExecutionHealthMetadata {
+                healthy: true,
+                flags: 0,
+                source: "replay".into(),
+            },
         }
     }
 
@@ -1350,16 +1446,30 @@ mod tests {
             noise_floor_dbfs: -33.0,
             points: vec![SweepPoint {
                 point_index: 0,
+                request_id: 1,
+                session_generation: 1,
                 requested_center_hz: 2_454_000_000,
                 actual_center_hz: 2_454_000_000,
                 sample_rate_hz: 10_000_000,
                 rf_bandwidth_hz: 10_000_000,
                 sequence: 8,
+                dropped_samples: 0,
+                overflow: false,
                 captured_samples: 4_096,
                 band_power_dbfs: -25.0,
                 clipped_samples: 0,
                 status_flags: 0,
                 elapsed_us: 500,
+                timeout: ExecutionTimeoutMetadata {
+                    limit_ms: 500,
+                    elapsed_us: 500,
+                    timed_out: false,
+                },
+                health: ExecutionHealthMetadata {
+                    healthy: true,
+                    flags: 0,
+                    source: "replay".into(),
+                },
             }],
             candidates: Vec::new(),
             dataset: None,
@@ -1419,14 +1529,14 @@ mod tests {
         let address = listener.local_addr().unwrap();
         let server = thread::spawn(move || {
             let iq = vec![0_u8; 64 * 4];
-            let inline = format!("{{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":9,\"samples_captured\":64,\"bytes_transferred\":256,\"sequence\":45,\"iq_base64\":\"{}\"}}\n", test_base64(&iq));
+            let inline = format!("{{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":9,\"session_generation\":9,\"samples_captured\":64,\"bytes_transferred\":256,\"sequence\":45,\"dropped_samples\":0,\"overflow\":false,\"timeout\":{{\"limit_ms\":500,\"elapsed_us\":500,\"timed_out\":false}},\"health\":{{\"healthy\":true,\"flags\":0,\"source\":\"iio_adapter\"}},\"iq_base64\":\"{}\"}}\n", test_base64(&iq));
             let responses = [
                 "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
                 "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
-                "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":9,\"session_state\":\"owned\",\"restore_armed\":true}\n",
-                "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":9,\"center_hz\":2440000000,\"sample_rate_hz\":3000000,\"rf_bandwidth_hz\":2500000,\"gain_mode\":\"manual\",\"hardware_gain_db\":30,\"enabled_channels\":1}\n",
+                "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":9,\"session_generation\":9,\"session_state\":\"owned\",\"restore_armed\":true}\n",
+                "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":9,\"session_generation\":9,\"center_hz\":2440000000,\"sample_rate_hz\":3000000,\"rf_bandwidth_hz\":2500000,\"gain_mode\":\"manual\",\"hardware_gain_db\":30,\"enabled_channels\":1}\n",
                 inline.as_str(),
-                "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":9,\"stopped\":true,\"restored\":true}\n",
+                "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":9,\"session_generation\":9,\"stopped\":true,\"restored\":true}\n",
                 "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"closing\":true}\n",
             ];
             let (mut stream, _) = listener.accept().unwrap();
@@ -1500,10 +1610,10 @@ mod tests {
             let responses = [
                 "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
                 "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
-                "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":9,\"session_state\":\"owned\",\"restore_armed\":true}\n",
-                "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":9,\"center_hz\":2440000000,\"sample_rate_hz\":3000000,\"rf_bandwidth_hz\":2500000,\"gain_mode\":\"slow_attack\",\"enabled_channels\":1}\n",
+                "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":9,\"session_generation\":9,\"session_state\":\"owned\",\"restore_armed\":true}\n",
+                "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":9,\"session_generation\":9,\"center_hz\":2440000000,\"sample_rate_hz\":3000000,\"rf_bandwidth_hz\":2500000,\"gain_mode\":\"slow_attack\",\"enabled_channels\":1}\n",
                 "{\"schema_version\":1,\"request_id\":5,\"status\":\"error\",\"error\":\"capture_timeout\"}\n",
-                "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":9,\"stopped\":true,\"restored\":true}\n",
+                "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":9,\"session_generation\":9,\"stopped\":true,\"restored\":true}\n",
                 "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"closing\":true}\n",
             ];
             let (mut stream, _) = listener.accept().unwrap();
@@ -1539,14 +1649,14 @@ mod tests {
         let server = thread::spawn(move || {
             let mut iq = vec![0_u8; 64 * 4];
             iq[..2].copy_from_slice(&2047_i16.to_le_bytes());
-            let inline = format!("{{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":9,\"samples_captured\":64,\"bytes_transferred\":256,\"sequence\":46,\"iq_base64\":\"{}\"}}\n", test_base64(&iq));
+            let inline = format!("{{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":9,\"session_generation\":9,\"samples_captured\":64,\"bytes_transferred\":256,\"sequence\":46,\"dropped_samples\":0,\"overflow\":false,\"timeout\":{{\"limit_ms\":500,\"elapsed_us\":500,\"timed_out\":false}},\"health\":{{\"healthy\":true,\"flags\":0,\"source\":\"iio_adapter\"}},\"iq_base64\":\"{}\"}}\n", test_base64(&iq));
             let responses = [
                 "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
                 "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
-                "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":9,\"session_state\":\"owned\",\"restore_armed\":true}\n",
-                "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":9,\"center_hz\":2440000000,\"sample_rate_hz\":3000000,\"rf_bandwidth_hz\":2500000,\"gain_mode\":\"manual\",\"hardware_gain_db\":20,\"enabled_channels\":1}\n",
+                "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":9,\"session_generation\":9,\"session_state\":\"owned\",\"restore_armed\":true}\n",
+                "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":9,\"session_generation\":9,\"center_hz\":2440000000,\"sample_rate_hz\":3000000,\"rf_bandwidth_hz\":2500000,\"gain_mode\":\"manual\",\"hardware_gain_db\":20,\"enabled_channels\":1}\n",
                 inline.as_str(),
-                "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":9,\"stopped\":true,\"restored\":true}\n",
+                "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":9,\"session_generation\":9,\"stopped\":true,\"restored\":true}\n",
                 "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"closing\":true}\n",
             ];
             let (mut stream, _) = listener.accept().unwrap();

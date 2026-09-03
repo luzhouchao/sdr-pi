@@ -97,6 +97,7 @@ struct sdrd_iio_adapter {
   int cancel_requested;
   uint32_t buffer_samples;
   uint32_t retune_settle_ms;
+  uint32_t iio_timeout_ms;
   uint64_t sequence;
   char data_root[SDRD_MAX_PATH];
 };
@@ -268,7 +269,10 @@ static void destroy_buffer(sdrd_iio_adapter_t *adapter, int cancel) {
 
 static int adapter_snapshot(void *context, sdrd_radio_state_t *state) {
   sdrd_iio_adapter_t *adapter = context;
+  char *gain_end = NULL;
+  double gain_value;
   int rc;
+  int written;
   if (adapter == NULL || state == NULL || adapter->buffer != NULL) {
     return -EBUSY;
   }
@@ -290,6 +294,17 @@ static int adapter_snapshot(void *context, sdrd_radio_state_t *state) {
   }
   if (rc != 0) {
     return rc;
+  }
+  errno = 0;
+  gain_value = strtod(state->hardware_gain, &gain_end);
+  if (errno != 0 || gain_end == state->hardware_gain || gain_value != gain_value ||
+      gain_value < -100.0 || gain_value > 100.0) {
+    return -EPROTO;
+  }
+  written = snprintf(
+      state->hardware_gain, sizeof(state->hardware_gain), "%.6f", gain_value);
+  if (written < 0 || (size_t)written >= sizeof(state->hardware_gain)) {
+    return -EPROTO;
   }
   state->scan_channel_mask = get_scan_mask(adapter);
   state->enabled_channels = (state->scan_channel_mask & 0x03u) == 0x03u ? 1u : 0u;
@@ -462,6 +477,33 @@ static int write_all(int fd, const void *data, size_t length) {
   return 0;
 }
 
+static uint64_t elapsed_microseconds(struct timespec started, struct timespec finished);
+
+static void record_capture_failure(
+    sdrd_capture_result_t *result,
+    int rc,
+    struct timespec started) {
+  struct timespec finished;
+  if (result == NULL) {
+    return;
+  }
+  (void)clock_gettime(CLOCK_MONOTONIC, &finished);
+  result->elapsed_us = elapsed_microseconds(started, finished);
+  if (rc == -ETIMEDOUT) {
+    result->timed_out = 1;
+    result->health_flags |= SDRD_EXEC_HEALTH_TIMEOUT;
+  } else if (rc == -EOVERFLOW || rc == -EPIPE) {
+    result->overflow = 1;
+    result->health_flags |= SDRD_EXEC_HEALTH_OVERFLOW;
+  } else if (rc == -ECANCELED) {
+    result->health_flags |= SDRD_EXEC_HEALTH_CANCELLED;
+  } else if (rc == -EPROTO) {
+    result->health_flags |= SDRD_EXEC_HEALTH_SHAPE_ERROR;
+  } else if (rc != 0) {
+    result->health_flags |= SDRD_EXEC_HEALTH_IO_ERROR;
+  }
+}
+
 static int ensure_directory(const char *path) {
   struct stat status;
   if (mkdir(path, 0700) == 0) {
@@ -482,13 +524,21 @@ static int adapter_capture_iq(
   char feature_path[SDRD_MAX_PATH * 2u];
   char full_path[SDRD_MAX_PATH * 2u];
   uint64_t remaining;
+  uint64_t expected_refill_bytes;
+  struct timespec started;
+  struct timespec finished;
   int fd = -1;
   int rc;
   int written;
   if (adapter == NULL || request == NULL || result == NULL) {
     return -EINVAL;
   }
+  memset(result, 0, sizeof(*result));
+  result->timeout_ms = request->timeout_ms != 0u ? request->timeout_ms : adapter->iio_timeout_ms;
+  expected_refill_bytes = (uint64_t)adapter->buffer_samples * 4u;
+  (void)clock_gettime(CLOCK_MONOTONIC, &started);
   if (adapter->api.device_get_sample_size(adapter->rx) != 4) {
+    record_capture_failure(result, -EPROTO, started);
     return -EPROTO;
   }
   rc = ensure_directory(adapter->data_root);
@@ -510,7 +560,7 @@ static int adapter_capture_iq(
     goto failed_directory;
   }
   ++adapter->sequence;
-  memset(result, 0, sizeof(*result));
+  result->sequence = adapter->sequence;
   written = snprintf(
           result->relative_path,
           sizeof(result->relative_path),
@@ -565,6 +615,14 @@ static int adapter_capture_iq(
       goto failed;
     }
     available = (size_t)(end - start);
+    if ((available % 4u) != 0u) {
+      rc = -EPROTO;
+      goto failed;
+    }
+    if ((uint64_t)available < expected_refill_bytes) {
+      result->dropped_samples += (expected_refill_bytes - (uint64_t)available) / 4u;
+      result->health_flags |= SDRD_EXEC_HEALTH_SHORT_REFILL;
+    }
     to_write = available;
     if ((uint64_t)to_write > remaining) {
       to_write = (size_t)remaining;
@@ -574,6 +632,11 @@ static int adapter_capture_iq(
       goto failed;
     }
     remaining -= (uint64_t)to_write;
+    (void)clock_gettime(CLOCK_MONOTONIC, &finished);
+    if (elapsed_microseconds(started, finished) > (uint64_t)result->timeout_ms * 1000u) {
+      rc = -ETIMEDOUT;
+      goto failed;
+    }
   }
   if (close(fd) != 0) {
     fd = -1;
@@ -586,7 +649,11 @@ static int adapter_capture_iq(
   (void)pthread_mutex_unlock(&adapter->cancel_mutex);
   result->samples_captured = request->sample_count;
   result->bytes_written = request->sample_count * 4u;
-  result->sequence = adapter->sequence;
+  (void)clock_gettime(CLOCK_MONOTONIC, &finished);
+  result->elapsed_us = elapsed_microseconds(started, finished);
+  if (get_scan_mask(adapter) != 0x03u) {
+    result->health_flags |= SDRD_EXEC_HEALTH_RADIO_STATE;
+  }
   return 0;
 
 failed:
@@ -598,6 +665,7 @@ failed:
   }
   (void)unlink(full_path);
 failed_directory:
+  record_capture_failure(result, rc, started);
   (void)rmdir(feature_path);
   return rc;
 }
@@ -631,20 +699,32 @@ static int adapter_capture_power(
   if (adapter == NULL || request == NULL || result == NULL || requested_samples == 0u) {
     return -EINVAL;
   }
+  memset(result, 0, sizeof(*result));
+  result->timeout_ms = request->timeout_ms;
+  result->sequence = ++adapter->sequence;
+  (void)clock_gettime(CLOCK_MONOTONIC, &started);
   if (adapter->api.device_get_sample_size(adapter->rx) != 4) {
+    (void)clock_gettime(CLOCK_MONOTONIC, &finished);
+    result->elapsed_us = elapsed_microseconds(started, finished);
+    result->health_flags = SDRD_EXEC_HEALTH_SHAPE_ERROR;
     return -EPROTO;
   }
   if (adapter->buffer == NULL) {
     adapter->buffer = adapter->api.device_create_buffer(adapter->rx, adapter->buffer_samples, false);
     if (adapter->buffer == NULL) {
-      return errno != 0 ? -errno : -EIO;
+      rc = errno != 0 ? -errno : -EIO;
+      (void)clock_gettime(CLOCK_MONOTONIC, &finished);
+      result->elapsed_us = elapsed_microseconds(started, finished);
+      result->health_flags = SDRD_EXEC_HEALTH_IO_ERROR;
+      return rc;
     }
   }
-  memset(result, 0, sizeof(*result));
-  (void)clock_gettime(CLOCK_MONOTONIC, &started);
   (void)pthread_mutex_lock(&adapter->cancel_mutex);
   if (adapter->cancel_requested != 0) {
     (void)pthread_mutex_unlock(&adapter->cancel_mutex);
+    (void)clock_gettime(CLOCK_MONOTONIC, &finished);
+    result->elapsed_us = elapsed_microseconds(started, finished);
+    result->health_flags = SDRD_EXEC_HEALTH_CANCELLED;
     return -ECANCELED;
   }
   adapter->capture_active = 1;
@@ -667,6 +747,10 @@ static int adapter_capture_power(
       break;
     }
     available_samples = (uint64_t)(end - cursor) / 4u;
+    if (available_samples < adapter->buffer_samples) {
+      result->dropped_samples += (uint64_t)adapter->buffer_samples - available_samples;
+      result->health_flags |= SDRD_EXEC_HEALTH_SHORT_REFILL;
+    }
     take = available_samples < remaining ? available_samples : remaining;
     for (index = 0u; index < take; ++index) {
       int16_t i_sample;
@@ -693,17 +777,32 @@ static int adapter_capture_power(
   adapter->capture_active = 0;
   (void)pthread_mutex_unlock(&adapter->cancel_mutex);
   if (rc != 0) {
+    (void)clock_gettime(CLOCK_MONOTONIC, &finished);
+    result->elapsed_us = elapsed_microseconds(started, finished);
+    if (rc == -ETIMEDOUT) {
+      result->timed_out = 1;
+      result->health_flags |= SDRD_EXEC_HEALTH_TIMEOUT;
+    } else if (rc == -EOVERFLOW || rc == -EPIPE) {
+      result->overflow = 1;
+      result->health_flags |= SDRD_EXEC_HEALTH_OVERFLOW;
+    } else if (rc == -ECANCELED) {
+      result->health_flags |= SDRD_EXEC_HEALTH_CANCELLED;
+    } else {
+      result->health_flags |= SDRD_EXEC_HEALTH_IO_ERROR;
+    }
     return rc;
   }
   (void)clock_gettime(CLOCK_MONOTONIC, &finished);
-  ++adapter->sequence;
-  result->sequence = adapter->sequence;
   result->aggregate_samples = requested_samples;
   result->rx0_power_lo = (uint32_t)(power & UINT32_MAX);
   result->rx0_power_mid = (uint32_t)(power >> 32u);
   result->rx0_power_hi = 0u;
   result->rx0_clip_count = clipped;
   result->elapsed_us = elapsed_microseconds(started, finished);
+  if (get_scan_mask(adapter) != 0x03u) {
+    result->health_flags |= SDRD_EXEC_HEALTH_RADIO_STATE;
+  }
+  result->status_flags = result->health_flags;
   return 0;
 }
 
@@ -744,6 +843,7 @@ static int adapter_stop(void *context) {
 
 static int adapter_restore(void *context, const sdrd_radio_state_t *state) {
   sdrd_iio_adapter_t *adapter = context;
+  const char *stage = "sampling_frequency";
   int rc;
   if (adapter == NULL || state == NULL) {
     return -EINVAL;
@@ -752,25 +852,33 @@ static int adapter_restore(void *context, const sdrd_radio_state_t *state) {
   rc = adapter->api.channel_attr_write_longlong(
       adapter->phy_rx0, "sampling_frequency", (long long)state->sample_rate_hz);
   if (rc == 0) {
+    stage = "rf_bandwidth";
     rc = adapter->api.channel_attr_write_longlong(
         adapter->phy_rx0, "rf_bandwidth", (long long)state->rf_bandwidth_hz);
   }
   if (rc == 0) {
+    stage = "gain_control_mode";
     const ssize_t written = adapter->api.channel_attr_write(
         adapter->phy_rx0, "gain_control_mode", state->gain_mode);
     rc = written < 0 ? (int)written : 0;
   }
   if (rc == 0 && strcmp(state->gain_mode, "manual") == 0 && state->hardware_gain[0] != '\0') {
+    stage = "hardwaregain";
     const ssize_t written = adapter->api.channel_attr_write(
         adapter->phy_rx0, "hardwaregain", state->hardware_gain);
     rc = written < 0 ? (int)written : 0;
   }
   if (rc == 0) {
+    stage = "frequency";
     rc = adapter->api.channel_attr_write_longlong(
         adapter->rx_lo, "frequency", (long long)state->center_hz);
   }
   if (rc == 0) {
+    stage = "scan_mask";
     rc = set_scan_mask(adapter, state->scan_channel_mask);
+  }
+  if (rc != 0) {
+    fprintf(stderr, "iio_operation=restore stage=%s rc=%d\n", stage, rc);
   }
   return rc;
 }
@@ -802,6 +910,7 @@ int sdrd_iio_adapter_create(
   adapter->cancel_mutex_initialized = 1;
   adapter->buffer_samples = config->iio_buffer_samples;
   adapter->retune_settle_ms = config->retune_settle_ms;
+  adapter->iio_timeout_ms = config->iio_timeout_ms;
   if (copy_text(adapter->data_root, sizeof(adapter->data_root), config->development_data_root) != 0) {
     set_error(error, error_size, "IIO data root is too long");
     sdrd_iio_adapter_destroy(adapter);

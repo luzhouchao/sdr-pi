@@ -251,7 +251,10 @@ Evidence:
       session-owned RX buffer in the C Adapter.
 - [x] Save and restore LO, sample rate, RF bandwidth, gain mode, and enabled
       channels on success, error, cancellation, and disconnect.
-- [ ] Live-validate the same state restoration path after an IIO timeout.
+- [x] Live-validate the same state restoration path after an IIO timeout,
+      including exact manual-gain recovery with the production IIO Adapter;
+      see
+      [`SDR_AGENT_EXECUTION_METADATA_TIMEOUT_VALIDATION_2026-09-03.md`](SDR_AGENT_EXECUTION_METADATA_TIMEOUT_VALIDATION_2026-09-03.md).
 - [x] Live-validate restoration of LO, sample rate, RF bandwidth, gain mode, and
       scan-channel mask after success and an apply/readback error.
 - [x] Implement and live-validate bounded retune, explicit settle delay, and
@@ -272,8 +275,10 @@ Evidence:
 - [x] Implement and live-validate direct in-flight cancel in `sdrd`.
 - [x] Implement and live-validate explicit post-action stop, buffer teardown,
       and state restoration.
-- [ ] Add sequence, overflow, dropped-sample, timeout, and health metadata to all
-      execution results.
+- [x] Add Adapter-produced sequence, overflow, dropped-sample, timeout, health,
+      request and session-generation metadata to all execution results and
+      preserve failure metadata through AGX errors/audit; see
+      [`SDR_AGENT_EXECUTION_METADATA_TIMEOUT_VALIDATION_2026-09-03.md`](SDR_AGENT_EXECUTION_METADATA_TIMEOUT_VALIDATION_2026-09-03.md).
 - [x] Deploy controlled `sdrd` with a private-link listener, retained `/sd`
       release, tested stop path,
       bounded live capture and verified state restoration.

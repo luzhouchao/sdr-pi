@@ -228,7 +228,11 @@ where
                 self.audit(
                     "execution_failed",
                     &request,
-                    json!({"code": error.code, "message": error.message}),
+                    json!({
+                        "code": error.code,
+                        "message": &error.message,
+                        "metadata": &error.details,
+                    }),
                 )?;
                 return Err(RunnerError::Sdr(error));
             }
@@ -428,6 +432,16 @@ mod tests {
                 sequence: 1,
                 dropped_samples: 0,
                 overflow: false,
+                timeout: crate::execution::ExecutionTimeoutMetadata {
+                    limit_ms: 2_000,
+                    elapsed_us: 1_000,
+                    timed_out: false,
+                },
+                health: crate::execution::ExecutionHealthMetadata {
+                    healthy: true,
+                    flags: 0,
+                    source: "replay".to_owned(),
+                },
             },
             post_execution_sdr: snapshot(),
         }
