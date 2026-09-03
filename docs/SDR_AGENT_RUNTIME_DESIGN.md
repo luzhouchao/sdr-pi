@@ -96,8 +96,12 @@ bounded, canonical file reference under the configured spool root.
 
 ## Ownership and concurrency
 
-- One interactive conversation owns `session.sock`; Web retains at most two
-  bounded conversation histories.
+- The deployment has one trusted human operator. It does not expose separate
+  user identities, authorization domains or concurrent human control paths.
+- Exactly one interactive Controller owns `session.sock`; a second connection
+  is rejected as busy. Web retains at most two bounded conversation histories
+  for the same operator, runs only the selected conversation, and rejects
+  commands addressed to an inactive conversation.
 - One active inference lease serializes one-shot and interactive model runs.
 - One receive owner is allowed.  The legacy Spectrum Web, predictor and
   reboot-resume user units were disabled during the 2026-09-03 cutover; the AGX

@@ -29,7 +29,8 @@ The authoritative item-level status is
 - Add protocol fuzzing and repeatable fault injection.
 - Add log rotation, health monitoring, alerts, update and rollback procedures.
 - Complete a documented 24-hour automatic-cruise soak.
-- Finish bounded session resume and multi-user isolation.
+- Keep bounded session resume and the single-active-control gate covered by
+  regression tests; multi-user control is outside the selected operator model.
 
 ## Stage 4 — emitter identification
 
@@ -40,6 +41,8 @@ handling and cross-day/channel validation.
 
 ## Non-goals
 
-FPGA acceleration, MMIO/UIO, Vivado, `BOOT.bin` changes and transmit support are
-not part of this project. The retired implementation was removed from the
-working tree on 2026-09-02 and remains recoverable from Git history only.
+FPGA acceleration, MMIO/UIO, Vivado, `BOOT.bin` changes, transmit support and
+multi-user concurrent control are not part of this project. The retired FPGA
+implementation was removed from the working tree on 2026-09-02 and remains
+recoverable from Git history only. The Web's two bounded conversations are
+histories for one trusted human operator, not separate user identities.

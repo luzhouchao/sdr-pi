@@ -143,7 +143,14 @@ state.
       hard file/message/context/age limits, and conversation-only restoration
       that excludes approvals, plans, actions, queues and old generations; see
       [`SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md).
-- [ ] Support multiple isolated interactive users or sessions.
+- [x] Enforce the explicitly selected single-trusted-operator model: retain at
+      most two bounded Web conversation histories for that same operator, run
+      only one active interactive Controller, reject a second `session.sock`
+      connection, reject commands against an inactive conversation, and keep
+      the existing global inference and SDR ownership gates. Multi-user
+      identity, authorization and concurrent-control isolation are not project
+      requirements; see
+      [`SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md`](SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md).
 - [x] Live-test OpenCode Go `deepseek-v4-flash` through the deployed Web,
       unchanged Controller interface and real `0600` subscription credential:
       a new conversation produced a Rust-validated health-only `hold` from the
@@ -165,6 +172,7 @@ Evidence:
 - [`SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md`](SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md)
 - [`SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md)
 - [`SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md)
+- [`SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md`](SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md)
 
 ## 2. Planning policy and autonomous loop
 
