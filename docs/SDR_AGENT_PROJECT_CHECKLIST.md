@@ -428,9 +428,14 @@ Evidence:
 - [x] Implement the bounded `ModelPackageLoader` interface, filesystem and
       replay Adapters, manifest/path/size/SHA-256/label validation, and package
       inspection command.
-- [ ] After the Agent framework migration, identify and version the trained
-      Mamba checkpoint, model source, labels, preprocessing, sample-rate policy,
-      precision and acceptance thresholds.
+- [x] Inventory and stage the five D8/Shared-Bi RML2018A canonical `best.pt`
+      candidates (seeds 42--46) outside Git on AGX with exact source/run
+      metadata, byte counts and verified SHA-256 parity; this is candidate
+      artifact staging only and does not enable recognition. See
+      [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md).
+- [ ] Select and version one production Mamba checkpoint from the staged
+      candidates, pin its exact model source, and define labels, preprocessing,
+      sample-rate policy, precision and acceptance thresholds.
 - [ ] Implement the AGX CUDA/Mamba Recognizer Adapter without exposing PyTorch,
       Triton, TensorRT or CUDA details through the Controller interface.
 - [ ] Numerically compare AGX FP16/BF16/FP32 outputs with the training reference
@@ -448,6 +453,7 @@ Evidence:
 
 - [`LOCAL_RECOGNIZER_INTERFACE.md`](LOCAL_RECOGNIZER_INTERFACE.md)
 - [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md)
+- [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
 
 ## 7. Emitter/radiation-source identification
 

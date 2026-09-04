@@ -11,6 +11,9 @@
   current P201-to-AGX sweep and result path.
 - [`LOCAL_RECOGNIZER_INTERFACE.md`](LOCAL_RECOGNIZER_INTERFACE.md): stable
   recognition interface and unfinished CUDA/Mamba backend.
+- [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md):
+  verified NX/B210 inventory and externally staged AGX D8/RML2018A candidate
+  checkpoint handoff.
 - [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md): AGX deployment
   layout and remaining acquisition cutover gate.
 - [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md):

@@ -45,7 +45,10 @@ Planner 可使用本机 Spark-X2.5-4B BF16 或 Web 配置的 OpenAI-compatible �
   Qwen 进程已停止并禁用。
 - 扫频聚合结果可在 Web 独立页面查看和手动删除；原始 IQ 仅在显式开启时按
   每次扫描保存为 SigMF。
-- CUDA/Mamba 调制识别权重和生产推理 Worker 尚未接入。
+- D8/Shared-Bi RML2018A seeds 42--46 候选 checkpoint 已带哈希和运行元数据
+  落到 Git 外的 AGX 独立资产目录；生产 checkpoint 选择、标签/预处理合同和
+  CUDA/Mamba Worker 仍未接入，见
+  [`docs/NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](docs/NX_B210_MAMBA_D8_ASSET_HANDOFF.md)。
 
 ## 目录
 
