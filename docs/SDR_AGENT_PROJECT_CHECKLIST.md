@@ -1,6 +1,6 @@
 # SDR Agent project checklist
 
-Last reviewed: 2026-09-04
+Last reviewed: 2026-09-05
 
 This is the living source of truth for implementation status. Check an item only
 after the exact wording is implemented and verified. Split partial work into a
@@ -487,9 +487,14 @@ aggregation, result persistence and model-facing summaries.
       capture/window/byte/deadline limits, preprocessing ID/hash and quality
       gates. Keep model-specific DSP out of Planner-controlled parameters; see
       [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md).
-- [ ] Live-validate failure during four-window Worker dispatch and direct cancel
+- [x] Live-validate failure during four-window Worker dispatch and direct cancel
       during the new model-ready capture, proving radio restoration and exact
-      AGX/P201 temporary-data cleanup on both paths.
+      AGX/P201 temporary-data cleanup on both paths. A finite Worker exited
+      after window 0 so window 1 failed explicitly and the 32-KiB spool was
+      removed; an independent generation-bound cancel produced
+      `capture_failed_restored`. Both paths restored verified RX1 state and left
+      no transient data; see
+      [`P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md`](P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md).
 - [ ] Select and freeze `rf_preprocess_v1` using training/validation plus
       versioned P201 receive-only domain evidence, covering
       centering/alignment, filtering or resampling, DC policy, amplitude policy,
@@ -515,6 +520,7 @@ Evidence:
 - [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)
+- [`P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md`](P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 5. Input standardization, receive-domain alignment, and evaluation governance

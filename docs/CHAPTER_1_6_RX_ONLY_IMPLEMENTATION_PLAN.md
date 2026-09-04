@@ -1,6 +1,6 @@
 # 第1—6章统一 RX-only 实施规划
 
-最后审查：2026-09-04（Asia/Shanghai）
+最后审查：2026-09-05（Asia/Shanghai）
 
 本文是当前第1—6章实施路线，取代原先只覆盖第4—6章的规划视角。状态使用与
 项目原清单一致的 `- [x]` / `- [ ]`；每一项只有在代码、部署和该项要求的实机
@@ -146,6 +146,11 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       offset 顺序调用 Worker。真实实收完成 3/4 provisional 多数票、射频恢复与
       spool/Worker/P201 临时数据清理；生产 capability 仍为 false。见
       [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)。
+- [x] 四窗口故障路径已实收：Worker 在窗口 0 后退出会让窗口 1 显式失败并删除
+      32-KiB spool；独立 generation-bound cancel 会产生
+      `capture_failed_restored`。两条路径均恢复 P201、删除 AGX/P201 临时数据且
+      保持 capability false；见
+      [`P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md`](P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md)。
 - [x] FPGA 聚合、MMIO、UIO、Vivado 和 `BOOT.bin` 已从当前路线退役。
 
 ### 还未完成
@@ -153,8 +158,6 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
 - [ ] 将当前已经实现和实收的 `integration_only` Target/profile/batch 合同升级为
       production profile；只有第5章冻结 `rf_preprocess_v1` 且新 checkpoint 准入
       后才能替换 admission，Planner 仍只能选择 candidate ID。
-- [ ] 对新的四窗口路径补做 Worker 中途失败和 capture 直接取消两项实机测试，
-      验证两条路径的 AGX/P201 临时数据清理和射频恢复。
 - [ ] 使用 train/validation 与版本化 P201 接收域证据选择并冻结
       `rf_preprocess_v1`，明确频移/重调谐、滤波/重采样、DC、幅度、窗口和质量
       策略；不得在 frozen test 上试凑。
