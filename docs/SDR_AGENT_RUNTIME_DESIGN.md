@@ -89,12 +89,12 @@ AGX computes power, clipping, noise and merged candidates. There is no active
 FPGA/MMIO backend. Protocol-v1 FPGA response fields remain constant false/zero
 only so older deployed clients can parse the wire response.
 
-The current `enabled_channels=1` profile proves one software RX0 complex path
-through IIO `voltage0,1`; it does not identify a front-panel connector. Before
-production recognition, SDRD/1 must probe and fail closed on the fixed
-`RX1 / A_BALANCED` physical-input identity and include it in profile/capture or
-health audit plus end-of-session unchanged validation. It remains a fixed
-Adapter capability, not a Planner-selected or Planner-written RF port.
+The deployed `enabled_channels=1` profile is the single software RX0 complex
+path through IIO `voltage0,1`. SDRD/1 now probes and fails closed on its fixed
+front-panel `RX1 / A_BALANCED` identity, returns that versioned identity in
+capability/health/profile/capture/stop responses, and verifies it unchanged at
+session close. Rust correlates the full identity on every path. It remains a
+fixed Adapter capability, not a Planner-selected or Planner-written RF port.
 
 ### Results
 

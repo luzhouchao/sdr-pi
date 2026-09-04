@@ -102,14 +102,19 @@ candidate markers, scan metrics and optional IQ state. SQLite stores bounded
 summary/index rows; one scan may optionally own one `ci16_le` SigMF pair. Manual
 deletion removes only the selected indexed result and its managed files.
 
-## Next validation
+## Validation status and next work
 
-- Add and live-validate the fixed `RX1 / A_BALANCED` SDRD/1 capability,
-  profile/capture audit field and end-of-session unchanged check; keep it out
-  of Planner parameters.
-- Complete bounded AGX software-acquisition overload testing. The separate
-  sustained 5/10-MS/s aggregate acceptance gate was retired by explicit
-  operator decision on 2026-09-03; this is not a new measured throughput claim.
+- The fixed `RX1 / A_BALANCED` SDRD/1 capability, profile/capture audit field
+  and end-of-session unchanged check are live-validated and remain outside
+  Planner parameters.
+- Bounded AGX software-acquisition overload testing is complete: the current
+  path processed 128 maximum inline frames (32 MiB) without loss, rejected an
+  oversized point before backend work and restored after deadline and client-
+  disconnect failures; see
+  [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md).
+  The separate sustained 5/10-MS/s aggregate acceptance gate remains retired
+  by the explicit 2026-09-03 operator decision; this is not a new continuous-
+  streaming claim.
 - Keep the completed 1,800-second reconnect, cancellation and fault-recovery
   evidence covered by regression testing.
 - Preserve the now-validated selected-window path to the experimental

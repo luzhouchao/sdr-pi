@@ -124,9 +124,9 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
 - [x] 第3章没有剩余实施项；后续不得把物理端口变成 Planner 可选参数，也不得
       把 AGX 聚合或识别下放到 P201。
 
-除这个物理输入身份缺口外，第3章现有有限采集、inline 传输、取消、恢复和长期
-重连能力足以承载第一版 Chapter 4 单/多窗口捕获；不需要在 P201 增加 DSP、聚合
-或模型代码。
+第3章的固定物理输入身份缺口已经关闭。现有有限采集、inline 传输、取消、恢复和
+长期重连能力足以承载 Chapter 4 单/多窗口捕获；不需要在 P201 增加 DSP、聚合或
+模型代码。
 
 ## 第4章：AGX 扫频、候选精查与模型输入
 
@@ -151,6 +151,11 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       `capture_failed_restored`。两条路径均恢复 P201、删除 AGX/P201 临时数据且
       保持 capability false；见
       [`P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md`](P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md)。
+- [x] AGX 软件 acquisition overload 已完成：超 256-KiB 单点计划在接触 backend/
+      射频前拒绝；128 个最大合法窗口共 32 MiB 实收，sequence 连续且 dropped、
+      overflow、clipping、timeout、health/身份错误均为 0；IIO deadline 和 AGX
+      连接中断均恢复，后续 generation 成功，资源有界且无 IQ 残留。见
+      [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md)。
 - [x] FPGA 聚合、MMIO、UIO、Vivado 和 `BOOT.bin` 已从当前路线退役。
 
 ### 还未完成
@@ -161,7 +166,6 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
 - [ ] 使用 train/validation 与版本化 P201 接收域证据选择并冻结
       `rf_preprocess_v1`，明确频移/重调谐、滤波/重采样、DC、幅度、窗口和质量
       策略；不得在 frozen test 上试凑。
-- [ ] 完成仍保留的 AGX 软件 acquisition overload 测试。
 
 ## 第5章：输入标准化、接收域对齐与评测治理
 
@@ -241,7 +245,8 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
   [`app.js`](../raspberry-pi/sdr-agent/web-console/public/app.js) 也没有识别结果
   渲染路径。
 - [`sdrd_iio.c`](../sdr-system/sdrd/src/sdrd_iio.c) 固定启用
-  `voltage0,1` scan pair，但没有读取 `rf_port_select`。
+  `voltage0,1` scan pair，并只读验证 `voltage0` 的 `rf_port_select=A_BALANCED`；
+  [`sdr.rs`](../raspberry-pi/sdr-agent/controller/src/sdr.rs) 对完整 RX1 身份失败关闭。
 
 ## 推荐交付顺序
 

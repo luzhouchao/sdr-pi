@@ -1,6 +1,6 @@
 # SDR Agent roadmap
 
-Last reviewed: 2026-09-04
+Last reviewed: 2026-09-05
 
 The authoritative item-level status is
 [`SDR_AGENT_PROJECT_CHECKLIST.md`](SDR_AGENT_PROJECT_CHECKLIST.md).
@@ -12,11 +12,12 @@ checkbox-based receive-only plan:
 [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md).
 Do not maintain a second copy of its completion state here.
 
-The next dependency chain is: make the fixed P201 RX1/A_BALANCED identity
-fail-closed; freeze the Chapter 4/5 input profile, corpus and preprocessing;
-train and admit the RF-aligned Chapter 6 model; then connect recognition to the
-Chapter 1/2 Runner, Agent and Web loop. The detailed checklist records which
-parts of each dependency are already complete.
+The fixed P201 RX1/A_BALANCED identity and the independent Chapter 4 bounded
+acquisition/overload gates are complete. The next dependency chain is: define
+the Chapter 5 corpus contract and freeze its preprocessing from train/validation
+evidence; let the user train the RF-aligned Chapter 6 model and admit it on AGX;
+then connect recognition to the Chapter 1/2 Runner, Agent and Web loop. The
+detailed checklist records which parts of each dependency are already complete.
 
 ## After Chapter 1–6 — production operations
 

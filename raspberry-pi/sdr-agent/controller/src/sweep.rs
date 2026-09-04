@@ -20,6 +20,7 @@ pub const MAX_POINTS: usize = 768;
 pub const SPECTRAL_SUMMARY_SCHEMA_VERSION: u16 = 1;
 pub const SPECTRAL_SUMMARY_ALGORITHM_ID: &str = "agx_welch_hann_dc_reject_obw99_v1";
 const MAX_DURATION_MS: u64 = 300_000;
+const MAX_INLINE_IQ_BYTES_PER_POINT: u64 = 256 * 1024;
 const ADC_FULL_SCALE: f64 = 2_048.0;
 const MIN_POWER: f64 = 1.0e-20;
 const MAX_PLANNER_CANDIDATE_BANDWIDTH_HZ: u64 = 10_000_000;
@@ -68,6 +69,9 @@ pub struct ValidatedSweepPlan {
     pub point_timeout_ms: u32,
     pub detection_threshold_db: f32,
     pub gain_db: Option<i16>,
+    pub samples_per_point: u64,
+    pub iq_bytes_per_point: u64,
+    pub maximum_iq_bytes: u64,
     pub estimated_duration_ms: u64,
     pub maximum_summary_bytes: u64,
 }
@@ -425,18 +429,8 @@ fn run_sdrd_points(
                 ));
             }
             thread::sleep(Duration::from_millis(plan.settle_ms));
-            let captured_samples = u64::from(plan.frame_samples)
-                .checked_mul(u64::from(plan.aggregate_frames))
-                .ok_or_else(|| SweepError::new("sample_count", "sample count overflow"))?;
-            let bytes = captured_samples
-                .checked_mul(4)
-                .ok_or_else(|| SweepError::new("sample_count", "IQ byte count overflow"))?;
-            if bytes > 256 * 1024 {
-                return Err(SweepError::new(
-                    "agx_capture_size",
-                    "one AGX software-aggregate point exceeds the 256 KiB transport frame",
-                ));
-            }
+            let captured_samples = plan.samples_per_point;
+            let bytes = plan.iq_bytes_per_point;
             let feature_id = format!("agx-sweep-{generation}-{point_index}");
             let capture_args = format!(
                 "{generation} {captured_samples} {bytes} {feature_id} {}",
@@ -1179,6 +1173,21 @@ pub fn validate_plan(plan: &SweepPlan) -> Result<ValidatedSweepPlan, SweepError>
             "settle, frame, aggregate, timeout, or threshold is outside limits",
         ));
     }
+    let samples_per_point = u64::from(plan.frame_samples)
+        .checked_mul(u64::from(plan.aggregate_frames))
+        .ok_or_else(|| SweepError::new("sample_count", "sample count overflow"))?;
+    let iq_bytes_per_point = samples_per_point
+        .checked_mul(4)
+        .ok_or_else(|| SweepError::new("sample_count", "IQ byte count overflow"))?;
+    if iq_bytes_per_point > MAX_INLINE_IQ_BYTES_PER_POINT {
+        return Err(SweepError::new(
+            "agx_capture_size",
+            "one AGX software-aggregate point exceeds the 256 KiB transport frame",
+        ));
+    }
+    let maximum_iq_bytes = iq_bytes_per_point
+        .checked_mul(centers_hz.len() as u64)
+        .ok_or_else(|| SweepError::new("sample_count", "total IQ byte count overflow"))?;
     let point_ms = plan
         .settle_ms
         .checked_add(u64::from(plan.point_timeout_ms))
@@ -1204,6 +1213,9 @@ pub fn validate_plan(plan: &SweepPlan) -> Result<ValidatedSweepPlan, SweepError>
         point_timeout_ms: plan.point_timeout_ms,
         detection_threshold_db: plan.detection_threshold_db,
         gain_db: plan.gain_db,
+        samples_per_point,
+        iq_bytes_per_point,
+        maximum_iq_bytes,
         estimated_duration_ms,
         maximum_summary_bytes: (MAX_POINTS as u64) * 256,
     })
@@ -1996,6 +2008,37 @@ mod tests {
             centers_hz: vec![2_400_000_000, 2_410_000_000],
         };
         assert_eq!(validate_plan(&invalid).unwrap_err().code, "coverage_gap");
+    }
+
+    #[test]
+    fn derives_finite_iq_bounds_and_rejects_point_overload_before_backend() {
+        struct MustNotRunBackend;
+
+        impl SweepBackend for MustNotRunBackend {
+            fn run_points(
+                &mut self,
+                _plan: &ValidatedSweepPlan,
+            ) -> Result<BackendSweep, SweepError> {
+                panic!("an oversized plan must be rejected before the backend is called");
+            }
+        }
+
+        let mut boundary = plan();
+        boundary.frame_samples = 4_096;
+        boundary.aggregate_frames = 16;
+        let validated = validate_plan(&boundary).unwrap();
+        assert_eq!(validated.samples_per_point, 65_536);
+        assert_eq!(validated.iq_bytes_per_point, MAX_INLINE_IQ_BYTES_PER_POINT);
+        assert_eq!(
+            validated.maximum_iq_bytes,
+            validated.centers_hz.len() as u64 * MAX_INLINE_IQ_BYTES_PER_POINT
+        );
+
+        boundary.aggregate_frames = 17;
+        let error = SweepEngine::new(MustNotRunBackend)
+            .run(&boundary)
+            .unwrap_err();
+        assert_eq!(error.code, "agx_capture_size");
     }
 
     #[test]

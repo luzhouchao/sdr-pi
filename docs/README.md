@@ -21,8 +21,11 @@
 - [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md):
   local BF16/Q8 Planner timing and smoke results, Mamba contention evidence,
   MTP/n-gram findings and the local-first/provider-interface decision.
+- [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md):
+  Chapter 4 maximum-window load, pre-hardware overload rejection, bounded
+  resources, timeout/disconnect restoration and exact cleanup evidence.
 - [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md): AGX deployment
-  layout and remaining acquisition cutover gate.
+  layout and completed receive-ownership migration boundary.
 - [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md):
   permanent retired-scope boundary.
 

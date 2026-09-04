@@ -78,8 +78,9 @@ are live-validated. The persistent startup path uses the vendor `mtd2` JFFS2
 key-restore hook and the AGX PID/listener-gated recovery timer without modifying
 the boot image.
 
-Bounded AGX software-acquisition overload behavior and the separate 24-hour
-autonomous soak remain adjacent checklist gates; they do not change the P201
-control-plane ownership boundary. The separate sustained 5/10-MS/s aggregate
-acceptance gate was removed by explicit operator decision on 2026-09-03; this
-scope change does not create a new measured throughput claim.
+Bounded AGX software-acquisition overload behavior was live-validated on
+2026-09-05 with maximum inline frames, timeout and client-disconnect recovery.
+The separate 24-hour autonomous soak remains an adjacent checklist gate; it
+does not change the P201 control-plane ownership boundary. The sustained
+5/10-MS/s aggregate acceptance gate was removed by explicit operator decision
+on 2026-09-03; neither decision creates a continuous-streaming claim.

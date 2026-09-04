@@ -1,13 +1,14 @@
 # AGX SDR Harness migration
 
-Last updated: 2026-09-04
+Last updated: 2026-09-05
 
 ## Decision
 
 Jetson AGX Orin is the primary runtime for the SDR Harness. The intended clone
 root is `/home/jetson/sdrharness`. Raspberry Pi 4B is no longer the target for
-new Agent, acquisition or inference work; its deployed release remains a
-rollback baseline until AGX cutover is live-validated.
+new Agent, acquisition or inference work. AGX receive ownership and the P201
+SDRD/1 acquisition cutover are live-validated; the Pi release remains only a
+rollback baseline.
 
 The migration covered the Agent framework first. CUDA/Mamba remains a separate
 production feature, although the selected D8 checkpoints and complete offline
@@ -67,10 +68,11 @@ Excluded intentionally:
 - AGX `/home/jetson/agent` data, logs, reports and `.runtime` state;
 - Qwen weights and llama.cpp runtime directories.
 
-## First AGX session
+## Historical first-session gates
 
-The first AGX build baseline is recorded. Before production installation or
-acquisition cutover, retain these gates:
+The first AGX build baseline is recorded. These were the installation and
+acquisition-cutover gates; keep them as regression checks even though the
+receive-only cutover is now complete:
 
 1. retain the recorded `uname`, JetPack/L4T, CUDA, TensorRT, PyTorch, memory and
    disk baseline;

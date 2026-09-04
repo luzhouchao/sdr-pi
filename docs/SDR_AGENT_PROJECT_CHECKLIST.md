@@ -509,7 +509,13 @@ aggregation, result persistence and model-facing summaries.
 - [x] Complete the long-duration reconnect, cancellation and fault-recovery
       portion with the chapter 3 bounded 1,800-second real-SDR run; see
       [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
-- [ ] Complete bounded AGX software-acquisition overload testing.
+- [x] Complete bounded AGX software-acquisition overload testing: reject a
+      278,528-byte point before backend/radio work, process 128 consecutive
+      262,144-byte windows (32 MiB total) with continuous sequences and zero
+      drop/overflow/clipping/timeout/health failures, bound AGX/P201 resources,
+      and prove both IIO-deadline and client-disconnect restoration followed by
+      a fresh successful generation; see
+      [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md).
 
 Evidence:
 
@@ -521,6 +527,7 @@ Evidence:
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)
 - [`P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md`](P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md)
+- [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 5. Input standardization, receive-domain alignment, and evaluation governance
@@ -721,18 +728,19 @@ Evidence:
 
 ## Current next milestone
 
-Follow delivery A in
+Delivery A and the independent Chapter 4 acquisition gates are complete. Follow
+delivery B in
 [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md):
-make the fixed P201 `RX1 / A_BALANCED` identity a fail-closed Chapter 3
-capability, then freeze the shared Chapter 4/5 `RecognitionInputProfile` and
-golden fixtures. Do not connect the experimental seed44 path to the production
-Runner first.
+define the Chapter 5 manifest/schema, collect a versioned bounded P201 RX-only
+corpus with explicit label provenance, prove split isolation, and use only
+train/validation evidence to freeze `rf_preprocess_v1`. The Chapter 4
+integration-only profile intentionally remains non-production until that
+contract and a newly admitted checkpoint exist; do not connect seed44 to the
+production Runner first.
 
 The remaining Chapter 1 gaps are recognition rendering, bounded persistence and
 compact Agent feedback. Chapter 2 still lacks live recognizer capability,
 recognition approval/execution/feedback, Worker-aware `/stop`, the shared GPU
-lease and a complete Planner regression. Chapter 3's bounded RX, inline
-transport, cancellation, restoration and long reconnect baseline are complete;
-its newly identified remaining gap is explicit physical RF-input identity and
-end-of-session unchanged verification. FPGA and transmit work are not future
-milestones.
+lease and a complete Planner regression. Chapter 3 is complete, including its
+fixed physical RX1 identity and end-of-session unchanged verification. FPGA,
+transmit work and model retraining by the Agent are not future milestones.
