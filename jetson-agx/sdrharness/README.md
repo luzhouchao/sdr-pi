@@ -13,8 +13,9 @@ copy those implementations into a second tree.
 - Raspberry Pi remains a stopped/standby rollback target after cutover.
 - The Planner uses Pi Agent's provider stack with a Web-managed local or
   third-party OpenAI-compatible Completions or Responses endpoint.
-- CUDA/Mamba model loading is intentionally deferred until the framework is
-  live-validated on AGX.
+- Offline CUDA/Mamba loading and full held-out corpus validation now pass on
+  AGX. Production Worker deployment remains deferred until the RF
+  preprocessing, trusted labels, precision and rejection gates are frozen.
 
 The external recognizer seam remains the bounded request/response contract. A
 future CUDA/Mamba Adapter may use PyTorch, custom CUDA or TensorRT internally;
@@ -176,10 +177,26 @@ The bounded local web-search deployment and real browser/model validation are
 recorded in
 [`../../docs/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md`](../../docs/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md).
 
-## Deferred CUDA recognizer
+## Offline CUDA/Mamba validation and deferred production recognizer
 
 This migration does not install the earlier 1 MiB DS-CNN ONNX model. The future
-production Adapter will target CUDA and the user's trained Mamba model. Model
-definition, weights, labels, preprocessing, precision, batch policy, warm-up,
-CUDA stream policy, numerical references and resource gates will be delivered
-as a separate feature after the Agent framework is stable.
+production Adapter targets CUDA and the user's trained AMC-Mamba D8 model.
+
+The AGX-local, Git-ignored `local-assets/amc-eval/` directory now contains the
+verified RML2018A/HisarMod2019 datasets, selected seed44/seed43 checkpoints,
+fixed split files, minimum frozen model source, Python 3.10 `venv`, locally
+compiled ARM64/sm_87 wheels and complete FP32 evaluation artifacts. Re-run a
+bounded deterministic smoke subset with:
+
+```bash
+local-assets/amc-eval/runtime/venv/bin/python \
+  jetson-agx/sdrharness/scripts/evaluate-amc-mamba.py \
+  --dataset rml2018a --precision fp32 --batch-size 256 --limit 512
+```
+
+This tool reads only the pinned offline corpus and does not contact an SDR.
+Complete accuracy, logits parity, latency, memory and thermal evidence is in
+[`../../docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](../../docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md).
+The production Adapter, bounded queue, RF-to-training preprocessing contract,
+trusted RML class mapping and rejection policy are still pending, so the
+runtime capability remains false.

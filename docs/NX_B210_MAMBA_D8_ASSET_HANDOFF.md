@@ -2,11 +2,11 @@
 
 最后核对：2026-09-04（Asia/Shanghai）
 
-本文是后续对话的快速入口，记录 NX 发射端硬件、4090 训练仓库和已
-落到 AGX 的 RML2018A D8 候选权重。当前状态仅为资产盘点与候选制品
-落盘；另已用有限单音完成 B210 到 P201 RX1 的物理链路确认。尚未发射
-RML2018A 波形、部署生产 Recognizer Worker，也没有打开
-`recognizer_available`。
+本文是后续对话的快速入口，记录 NX 发射端硬件、P201 RX1、4090 训练仓库，
+以及已落到 AGX 的数据集、D8 权重和离线运行环境。有限单音已确认 B210 到
+P201 RX1 的物理链路；AGX 也已严格加载两个 checkpoint 并跑完 RML2018A 与
+HisarMod2019 固定测试集。尚未发射 RML2018A 波形、部署生产 Recognizer
+Worker 或冻结实收 IQ 预处理合同，因此没有打开 `recognizer_available`。
 
 ## 快速定位
 
@@ -20,10 +20,17 @@ RML2018A 波形、部署生产 Recognizer Worker，也没有打开
 | 4090 SSH | AGX SSH alias `4090-via-aliyun` | `lzc@server` 已验证 |
 | Mamba 仓库 | `/data/lzc/mamba`（4090 本机） | GitHub `main` 与本地一致 |
 | Mamba GitHub | `git@github.com:luzhouchao/mamba.git` | 盘点时为 `d8f567d7065baed7e6a6db0b4fe050b1879fc73c` |
-| AGX 候选权重 | `/home/jetson/sdrharness-models/amc_mamba_d8/rml2018a/shared-bi-pr02-seeds42-46` | 5 个 seed、25 个源制品（另有 2 个本地说明/校验文件）、8,735,749 源字节 |
+| 训练 checkpoint 对应源码 | 4090 commit `8bc6fb5dc58e1b83338bdebb2624824f1e6b0798` | clean；D8 推理文件与当前 `main` 无差异 |
+| AGX 离线资产根 | `/home/jetson/sdrharness/local-assets/amc-eval/` | Git 忽略；数据、selected checkpoint、最小源码、venv、wheel、结果均在此 |
+| AGX RML checkpoint | `checkpoints/rml2018a/seed44/best.pt` | 1,691,357 B，SHA-256 `e5a1bccd...`，完整 test 已通过 |
+| AGX Hisar checkpoint | `checkpoints/hisarmod2019/seed43/best.pt` | 1,694,557 B，SHA-256 `714ac46c...`，完整 test 已通过 |
+| AGX 完整结果 | `results/{rml2018a,hisarmod2019}/full-fp32-b256-v1/` | accuracy 0.638248 / 0.714564；含混淆矩阵、逐类、逐 SNR 与性能 |
+| AGX 历史候选权重 | `/home/jetson/sdrharness-models/amc_mamba_d8/rml2018a/shared-bi-pr02-seeds42-46` | 5 个 seed、25 个源制品；保留为 seed 选择审计证据 |
 
-4090 的 Tailscale 路径在本次导入时不可用；这些约 8.7 MB 的小文件按
-`connect-4090-server` 约束经阿里云反向 SSH 路径传输。
+4090 的 Tailscale 路径在候选导入时不可用；候选与本轮 selected checkpoint、
+split 和最小源码均属于小文件，按 `connect-4090-server` 约束经阿里云反向
+SSH 路径传输。两份多 GB 数据集直接从 AGX 所接移动硬盘复制并逐字节校验，
+没有绕 4090 重传。
 
 ### 当前射频配置速查
 
@@ -35,6 +42,8 @@ RML2018A 波形、部署生产 Recognizer Worker，也没有打开
 - 已确认配置：433.920 MHz 中心、B210 2.5 MS/s/500 kHz/70 dB/幅度
   0.2/`+100 kHz` SINE；P201 2.5 MS/s/1 MHz/手动 50 dB。该配置只用于
   有界链路验证，未来 RML2018A 发射仍需单独定义波形缩放、采样率和标签。
+- 现场条件：两端均未接功放，室内约 5 米，使用标称 100 MHz--6 GHz 的
+  弹簧天线；这些条件属于本次证据的一部分，不能脱离它们外推覆盖距离。
 - P201 LED1/LED2 不用于判断接收成功；应检查有界 IQ、预期频点 FFT 峰、
   丢样/溢出/削顶和状态恢复。
 
@@ -53,6 +62,13 @@ NX + B210 --受控测试信号--> P201 RX --有界 IQ--> AGX 第四章预处理
 P201 仍只负责有界 RX 采集与传输。软件聚合、候选选择、DDC、重采样、
 归一化、模型推理和结果持久化都留在 AGX。NX/B210 是独立测试发射端，
 不得把发射能力加入 P201 或 SDR Harness Controller。
+
+### 当前完成度一句话
+
+`B210 RF A/channel 0 -> P201 RX1` 的单音物理链路已经确认，AGX 对原始
+RML/Hisar 文件的 D8 FP32 离线推理也已确认；两者之间的“P201 实收波形 ->
+训练分布输入”仍是缺失环节，不能把两个独立通过的试验合并宣称为端到端
+调制识别已完成。
 
 ## NX B210
 
@@ -132,7 +148,44 @@ RML2018A 模型配置为：
 补零；它没有做单位 RMS 归一化、去直流、重采样或载波同步。因此不能把
 P201 原始 ADC IQ 直接送入该模型并声称与训练分布一致。
 
-## AGX 权重目录
+### AGX 离线 checkpoint 选择
+
+- RML2018A 在查看 test 结果前按验证集规则选择 seed44：它在 clean
+  seeds 43--46 中验证 accuracy 和既定 low-SNR accuracy 最高；
+- HisarMod2019 使用同一 clean 源码的 seed43，26 类；
+- 这是离线实验选择，尚未等同于生产 package promotion。生产选择还要冻结
+  标签、实收预处理、精度与拒识阈值。
+
+两者都使用 `AMCMambaD8`、`d_model=64`、Mamba2 Shared-Bi、1024 点 planar
+IQ。RML 为 134,798 参数，Hisar 因 26 类 head 为 135,054 参数。
+
+## AGX 模型与数据目录
+
+当前自包含的机器本地目录为：
+
+```text
+/home/jetson/sdrharness/local-assets/amc-eval/
+  README.md
+  ASSET_MANIFEST.json
+  datasets/
+    rml2018a/RML2018a.hdf5
+    hisarmod2019/HisarMod2019.01.h5
+  splits/
+    RML2018a_split_seed44_tr700_val150_te150.npz
+    HisarMod2019.01_split_seed43_tr700_val150_te150.npz
+  checkpoints/
+    rml2018a/seed44/{best.pt,config.json,evaluation_summary.json,metrics_*.json}
+    hisarmod2019/seed43/{best.pt,config.json,evaluation_summary.json,metrics_*.json}
+  model-source/8bc6fb5dc58e.../       # 13 个推理依赖文件
+  runtime/{venv,wheels,sources}/
+  results/{rml2018a,hisarmod2019}/
+```
+
+`/local-assets/` 已加入根 `.gitignore`，所以资产便于在当前 AGX 上定位，但
+不会把多 GB 数据、权重、venv 或预测文件提交进 Git。小型、可审计的评测
+入口和标签来源说明保留在受跟踪源码中。
+
+此前五个 RML 候选仍保留在独立历史目录：
 
 目录布局如下：
 
@@ -149,8 +202,9 @@ P201 原始 ADC IQ 直接送入该模型并声称与训练分布一致。
   seed43/ ... seed46/       # 同一结构
 ```
 
-目录权限为 `0750`，已搬运的模型与 JSON 文件权限为 `0640`。`.pt` 与运行
-制品位于 Git 仓库之外，不得提交到 `sdrharness`。
+历史目录权限为 `0750`，模型与 JSON 文件权限为 `0640`。无论位于仓库外的
+历史目录，还是仓库内被忽略的 `local-assets`，`.pt` 与运行制品都不得加入
+Git 历史。
 
 ### 候选 checkpoint
 
@@ -177,24 +231,41 @@ seed44 的验证准确率与既定 low-SNR 指标最高；seed42 的验证 macro
 指定生产 checkpoint。选择规则必须先固定在验证集指标上，不能按测试集
 结果事后挑 seed。
 
+## AGX 离线验证结果
+
+完整固定 test split、FP32、batch 256 的结果如下：
+
+| 数据集 | Test 样本 | AGX accuracy | 4090 记录 | AGX macro-F1 | 4090 记录 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| RML2018A seed44 | 383,387 | 0.638248 | 0.638253 | 0.646611 | 0.646613 |
+| HisarMod2019 seed43 | 117,000 | 0.714564 | 0.714547 | 0.713775 | 0.713763 |
+
+两端另在每套 test split 上等距选择 16 条相同 IQ 比较 logits，argmax 均为
+16/16 一致；RML 最大/平均绝对差为 `2.93e-5 / 3.14e-6`，Hisar 为
+`1.18e-4 / 8.98e-6`。完整资源、逐类、逐 SNR、混淆矩阵、运行命令和哈希见
+[`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)。
+
 ## 尚未满足的生产准入项
 
 这些候选目录不是当前 `ModelPackageLoader` 可直接接纳的生产包，也不能据此
 报告识别可用：
 
-1. RML2018A HDF5 和当前制品没有保存 0--23 的调制类别名称，必须从可信
-   数据集定义冻结标签顺序并生成带哈希的 `labels` 文件；
+1. RML2018A HDF5 和 checkpoint 没有保存 0--23 的调制类别名称；数据集
+   `classes.txt` 已带来源和哈希暂存，但上游公开讨论质疑其与 `Y` 的对应，
+   必须在生产前解决这一可信映射；
 2. 必须明确 P201 捕获的采样率、DDC、抗混叠重采样、窗口对齐、去直流、
    单位 RMS 归一化和异常/静默窗口处理；
 3. 当前训练输入不归一化，而 SDR Harness v1 接口要求单位 RMS planar
    float32，必须用同一 IQ corpus 验证并冻结两者之间的预处理；
-4. 必须选择一个生产 checkpoint，锁定对应源码，并生成 AGX 可验证的模型包；
-5. 必须确定 FP16/BF16/FP32 策略、置信度/拒识阈值与 unknown/noise 策略；
-6. 必须实现有界队列为一的 AGX Worker，并完成同 IQ 数值比较、混淆矩阵、
-   p50/p99、GPU/RSS/CPU、丢弃与温度验证；
+4. 离线 checkpoint 与源码已选择并验证，但仍须生成受
+   `ModelPackageLoader` 约束的生产模型包；
+5. FP32 完整准确率和跨机 logits 已通过，仍须确定 FP16/BF16/FP32 策略、
+   置信度/拒识阈值与 unknown/noise 策略；
+6. 离线混淆矩阵、p50/p99、GPU/RSS/CPU 与温度已测；仍须实现有界队列为一
+   的 AGX Worker，并验证排队、丢弃、取消、并发与 thermal soak；
 7. 所有门禁通过前保持 `recognizer_available=false`。
 
-## 本次导入验证
+## 历史：五候选导入验证
 
 - 4090 源端与 AGX 目标端的 25 个文件逐项 SHA-256 完全一致；
 - 精确总字节数为 8,735,749，文件数 25，符号链接数 0；
@@ -204,3 +275,7 @@ seed44 的验证准确率与既定 low-SNR 指标最高；seed42 的验证 macro
   最终资产目录，原临时路径不存在；
 - 本次没有读取或保存原始 IQ，没有运行模型，没有控制现有 GPU 工作负载，
   也没有执行 RF 发射。
+
+上面这段是五候选导入时的历史记录。本轮离线部署新增的完整证据见
+`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`；本轮运行了模型，但
+仍没有执行 RF 发射或改变 P201/NX 状态。

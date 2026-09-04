@@ -8,6 +8,11 @@
 .ssh/
 secrets/
 
+# Machine-local datasets, model runtimes, weights and evaluation artifacts.
+# Keep these under the workspace for operator convenience, but never commit
+# multi-GB IQ datasets, Python environments or generated predictions.
+/local-assets/
+
 # Rust
 **/target/
 **/node_modules/

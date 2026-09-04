@@ -1,0 +1,35 @@
+{
+  "dataset": "RadioML 2018.01A",
+  "classes": [
+    "32PSK",
+    "16APSK",
+    "32QAM",
+    "FM",
+    "GMSK",
+    "32APSK",
+    "OQPSK",
+    "8ASK",
+    "BPSK",
+    "8PSK",
+    "AM-SSB-SC",
+    "4ASK",
+    "16PSK",
+    "64APSK",
+    "128QAM",
+    "128APSK",
+    "AM-DSB-SC",
+    "AM-SSB-WC",
+    "64QAM",
+    "QPSK",
+    "256QAM",
+    "AM-DSB-WC",
+    "OOK",
+    "16QAM"
+  ],
+  "provenance": {
+    "source": "classes.txt distributed with RadioML 2018.01A",
+    "mirror": "https://huggingface.co/datasets/Katherinezml/RML2018.01A/blob/main/2018.01.OSC.0001_1024x2M.h5/2018.01/classes.txt",
+    "cross_reference": "https://github.com/radioML/dataset/issues/25"
+  },
+  "caveat": "The HDF5 file contains no class-name metadata. Public discussion questions whether the distributed classes.txt order matches Y. Keep this mapping provisional for names; numeric-label accuracy is unaffected until an authoritative mapping or RF replay validation resolves it."
+}

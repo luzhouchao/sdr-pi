@@ -45,10 +45,12 @@ Planner 可使用本机 Spark-X2.5-4B BF16 或 Web 配置的 OpenAI-compatible �
   Qwen 进程已停止并禁用。
 - 扫频聚合结果可在 Web 独立页面查看和手动删除；原始 IQ 仅在显式开启时按
   每次扫描保存为 SigMF。
-- D8/Shared-Bi RML2018A seeds 42--46 候选 checkpoint 已带哈希和运行元数据
-  落到 Git 外的 AGX 独立资产目录；生产 checkpoint 选择、标签/预处理合同和
-  CUDA/Mamba Worker 仍未接入，见
-  [`docs/NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](docs/NX_B210_MAMBA_D8_ASSET_HANDOFF.md)。
+- D8/Shared-Bi RML2018A seeds 42--46 候选已完成盘点；RML seed44 与 Hisar
+  seed43、两套数据集、固定 split、最小推理源码和 AGX `venv` 已整理到 Git
+  忽略的 `local-assets/amc-eval/`。两套完整 FP32 test split 与 4090 logits
+  对照通过，但 RF 预处理合同、可信 RML 类名、低精度策略和生产 Worker
+  仍未完成，见
+  [`docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)。
 
 ## 目录
 

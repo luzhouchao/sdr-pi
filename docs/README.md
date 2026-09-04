@@ -12,8 +12,11 @@
 - [`LOCAL_RECOGNIZER_INTERFACE.md`](LOCAL_RECOGNIZER_INTERFACE.md): stable
   recognition interface and unfinished CUDA/Mamba backend.
 - [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md):
-  verified NX/B210 inventory and externally staged AGX D8/RML2018A candidate
-  checkpoint handoff.
+  quick handoff for the verified NX/B210-to-P201 RX1 path and the AGX-local
+  D8 datasets, checkpoints, runtime and remaining production gates.
+- [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md):
+  complete RML2018A/HisarMod2019 FP32 accuracy, 4090 logits parity and AGX
+  latency/resource evidence; this does not enable the production Recognizer.
 - [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md): AGX deployment
   layout and remaining acquisition cutover gate.
 - [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md):

@@ -440,17 +440,30 @@ Evidence:
       metadata, byte counts and verified SHA-256 parity; this is candidate
       artifact staging only and does not enable recognition. See
       [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md).
+- [x] Stage RML2018A seed44 and HisarMod2019 seed43 with their exact clean D8
+      inference source, fixed splits and datasets under the ignored AGX-local
+      asset root; strictly load both checkpoints and reproduce both complete
+      FP32 test sets. Evidence:
+      [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md).
 - [ ] Select and version one production Mamba checkpoint from the staged
       candidates, pin its exact model source, and define labels, preprocessing,
       sample-rate policy, precision and acceptance thresholds.
 - [ ] Implement the AGX CUDA/Mamba Recognizer Adapter without exposing PyTorch,
       Triton, TensorRT or CUDA details through the Controller interface.
-- [ ] Numerically compare AGX FP16/BF16/FP32 outputs with the training reference
-      on the same IQ corpus.
-- [ ] Measure preprocessing, host/device transfer, warm-up, inference, total
-      p50/p99 latency, CUDA memory, CPU/RSS, drops and thermal behavior.
-- [ ] Validate confusion matrix, total accuracy, and per-class recall before
-      enabling `recognizer_available`.
+- [x] Numerically compare AGX FP32 with the 4090 training environment on the
+      same 16 IQ rows per dataset: both argmax sets agree 16/16 and maximum
+      absolute logits differences are `2.93e-5` (RML) and `1.18e-4` (Hisar).
+- [ ] Compare FP16 and BF16 against the frozen FP32 corpus result and choose the
+      production precision with explicit accuracy/numerical thresholds.
+- [x] Measure offline preprocessing, host/device transfer, warm-up, inference,
+      total p50/p99 latency, CUDA memory, CPU/RSS and thermal behavior for both
+      complete test splits on AGX.
+- [ ] Measure production Worker queue drops, cancellation, concurrency and
+      sustained thermal behavior.
+- [x] Generate offline confusion matrices, total accuracy, macro-F1, per-class
+      precision/recall/F1 and per-SNR accuracy for both complete test splits.
+- [ ] Resolve the disputed RML2018A class-name order and validate the RF input
+      contract and rejection policy before enabling `recognizer_available`.
 - [ ] Deploy the Recognizer Worker with one bounded queue and explicit thread
       limits.
 - [ ] Integrate recognition results into Agent observations and the autonomous
@@ -461,6 +474,7 @@ Evidence:
 - [`LOCAL_RECOGNIZER_INTERFACE.md`](LOCAL_RECOGNIZER_INTERFACE.md)
 - [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md)
 - [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
+- [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
 
 ## 7. Emitter/radiation-source identification
 
