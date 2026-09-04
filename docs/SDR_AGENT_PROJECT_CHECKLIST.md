@@ -381,6 +381,12 @@ aggregation, result persistence and model-facing summaries.
       fail on clipping or gain-readback mismatch, restore radio state, persist
       completion, and live-validate the full real-SDR to OpenCode Go hold loop
       without raw-IQ persistence or repeated scanning after Web restart.
+- [x] Live-validate the independent NX B210 RF A/channel-0 to P201 physical
+      RX1 path at 433.92 MHz with a bounded `+100 kHz` single-tone FFT
+      comparison: the target bin rose 52.875 dB over the stopped-TX control,
+      all captures had zero drops/overflow/clipping, both radios were restored,
+      and transient data was removed; see
+      [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md).
 - [ ] Feed only selected, bounded IQ windows into local recognition.
 - [x] Retire the separate sustained 5/10-MS/s aggregate acceptance gate by
       explicit operator decision on 2026-09-03. This is a scope removal, not a

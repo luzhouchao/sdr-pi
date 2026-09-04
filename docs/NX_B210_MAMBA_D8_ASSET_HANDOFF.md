@@ -4,7 +4,8 @@
 
 本文是后续对话的快速入口，记录 NX 发射端硬件、4090 训练仓库和已
 落到 AGX 的 RML2018A D8 候选权重。当前状态仅为资产盘点与候选制品
-落盘：没有执行 RF 发射，没有部署生产 Recognizer Worker，也没有打开
+落盘；另已用有限单音完成 B210 到 P201 RX1 的物理链路确认。尚未发射
+RML2018A 波形、部署生产 Recognizer Worker，也没有打开
 `recognizer_available`。
 
 ## 快速定位
@@ -15,7 +16,7 @@
 | NX B210 项目 | `/home/wheeltec/b210`（NX 本机） | USB 3.0 与双寄存器回环已通过 |
 | NX B210 skill | `/home/wheeltec/b210/.codex/skills/use-b210/SKILL.md` | 项目局部 skill |
 | B210 已接天线口 | 面板 `RF A / TX/RX` | UHD `channel 0`（运行时显示 `FE-TX2`），TX 灯实测点亮 |
-| P201 已接天线口 | 面板 `RX1`（不是 `TRX1`） | SDRD 软件 RX0 / AD9361 `voltage0,1`，当前输入为 `A_BALANCED` |
+| P201 已接天线口 | 面板 `RX1`（不是 `TRX1`） | SDRD 软件 RX0 / AD9361 `voltage0,1`，当前输入为 `A_BALANCED`；433.92 MHz 空口链路已确认 |
 | 4090 SSH | AGX SSH alias `4090-via-aliyun` | `lzc@server` 已验证 |
 | Mamba 仓库 | `/data/lzc/mamba`（4090 本机） | GitHub `main` 与本地一致 |
 | Mamba GitHub | `git@github.com:luzhouchao/mamba.git` | 盘点时为 `d8f567d7065baed7e6a6db0b4fe050b1879fc73c` |
@@ -23,6 +24,19 @@
 
 4090 的 Tailscale 路径在本次导入时不可用；这些约 8.7 MB 的小文件按
 `connect-4090-server` 约束经阿里云反向 SSH 路径传输。
+
+### 当前射频配置速查
+
+- B210 发射端：NX 上 `MyB210`（serial `2508504`），天线接面板
+  **RF A / TX/RX**，软件必须选 `--channels 0 --ant TX/RX`；UHD 显示
+  `FE-TX2` 是这块克隆板的实际映射，不要据名称改成 channel 1。
+- P201 接收端：天线接面板 **RX1**，不是 `TRX1`/`RX2`；SDRD 使用软件
+  RX0 和 AD9361 `voltage0,1` I/Q，当前 RF 输入读回为 `A_BALANCED`。
+- 已确认配置：433.920 MHz 中心、B210 2.5 MS/s/500 kHz/70 dB/幅度
+  0.2/`+100 kHz` SINE；P201 2.5 MS/s/1 MHz/手动 50 dB。该配置只用于
+  有界链路验证，未来 RML2018A 发射仍需单独定义波形缩放、采样率和标签。
+- P201 LED1/LED2 不用于判断接收成功；应检查有界 IQ、预期频点 FFT 峰、
+  丢样/溢出/削顶和状态恢复。
 
 ## 预期端到端边界
 
@@ -81,11 +95,15 @@ RX0（AD9361 `voltage0,1`），RF 输入读回为 `A_BALANCED`。P201 暴露的
 13--27；每点 8,192 个复数 int16 样本，全部零丢样、零溢出、零削顶且
 `health.source=iio_adapter`/`healthy=true`，证明 P201 RX 采集链路实际工作。
 
-当前空口链路仍未最终确认：正确 RF A/channel 0 下，2.450 GHz、TX gain
-20 dB、数字幅度 0.2 的同步试验中，P201 即时基线为 -62.52387 dBFS，发射
-时为 -62.26420 dBFS，仅增加 0.25967 dB，不足以归因于 B210。后续应以
-正确 channel 0 做受控增益阶梯或保留有界 IQ 做频谱峰值比较，不能把这个
-结果写成“已经收到”。完整记录见
+早期 2.450 GHz、20 dB TX/RX 对照只有 0.25967 dB 的 RMS 变化，单独看并
+不足以确认链路。随后用户把接收天线换到照片确认的 P201 `RX1`，在
+433.920 MHz、P201 50 dB RX gain、B210 70 dB TX gain 下做了有界 FFT
+对照：发射时 sequence 39 在预期 `+100.098 kHz` 处的峰高于中值噪声
+57.246 dB；停发后 sequence 40 只有 4.724 dB。目标频点功率相差
+52.875 dB，噪声中值只相差 0.354 dB；两次均零丢样、零溢出、零削顶并
+恢复无线电状态，NX 也无残留 TX 进程。因此物理链路现已确认是
+`B210 RF A/TX-RX + UHD channel 0 -> P201 RX1`。这仍不代表 RML2018A
+波形与 Mamba 识别链路已经完成。完整记录见
 [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md)。
 
 ## Mamba 模型身份
