@@ -1,0 +1,14 @@
+{
+  "protocol_version": 1,
+  "request_id": 2026090401,
+  "session_generation": 2026090401,
+  "candidate_id": "manual-433920000",
+  "center_hz": 433920000,
+  "sample_rate_hz": 2100000,
+  "rf_bandwidth_hz": 1500000,
+  "gain_db": 50,
+  "settle_ms": 100,
+  "samples_per_channel": 1024,
+  "capture_timeout_ms": 1000,
+  "max_latency_ms": 5000
+}

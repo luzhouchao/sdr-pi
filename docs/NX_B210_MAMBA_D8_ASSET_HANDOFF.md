@@ -5,8 +5,10 @@
 本文是后续对话的快速入口，记录 NX 发射端硬件、P201 RX1、4090 训练仓库，
 以及已落到 AGX 的数据集、D8 权重和离线运行环境。有限单音已确认 B210 到
 P201 RX1 的物理链路；AGX 也已严格加载两个 checkpoint 并跑完 RML2018A 与
-HisarMod2019 固定测试集。尚未发射 RML2018A 波形、部署生产 Recognizer
-Worker 或冻结实收 IQ 预处理合同，因此没有打开 `recognizer_available`。
+HisarMod2019 固定测试集。P201 RX1 的一个 1,024 点有限窗口现已通过 AGX
+实验 Worker 到达 Mamba 并完成清理与射频恢复；但尚未发射 RML2018A 波形、
+部署生产 Recognizer Worker 或冻结可信实收 IQ 预处理合同，因此没有打开
+`recognizer_available`。
 
 ## 快速定位
 
@@ -25,6 +27,7 @@ Worker 或冻结实收 IQ 预处理合同，因此没有打开 `recognizer_avail
 | AGX RML checkpoint | `checkpoints/rml2018a/seed44/best.pt` | 1,691,357 B，SHA-256 `e5a1bccd...`，完整 test 已通过 |
 | AGX Hisar checkpoint | `checkpoints/hisarmod2019/seed43/best.pt` | 1,694,557 B，SHA-256 `714ac46c...`，完整 test 已通过 |
 | AGX 完整结果 | `results/{rml2018a,hisarmod2019}/full-fp32-b256-v1/` | accuracy 0.638248 / 0.714564；含混淆矩阵、逐类、逐 SNR 与性能 |
+| 实验实收链路 | Controller `--mode recognize-live` | P201 sequence 41 → 8,192 B 私有 spool → seed44 Worker → 删除；生产能力仍关闭 |
 | 4090 候选归档 | `.../runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed{42..46}_nw8/` | 五个源权重仍在；AGX 重复副本已在选择 seed44 后清理 |
 
 4090 的 Tailscale 路径在候选导入时不可用；候选与本轮 selected checkpoint、
@@ -47,16 +50,16 @@ SSH 路径传输。两份多 GB 数据集直接从 AGX 所接移动硬盘复制�
 - P201 LED1/LED2 不用于判断接收成功；应检查有界 IQ、预期频点 FFT 峰、
   丢样/溢出/削顶和状态恢复。
 
-## 预期端到端边界
+## 当前实验端到端边界
 
 ```text
 4090 训练仓库与冻结 checkpoint
                   |
                   v
-AGX 外部模型资产 -> 未来 CUDA/Mamba Recognizer Worker
-                                      ^
-                                      |
-NX + B210 --受控测试信号--> P201 RX --有界 IQ--> AGX 第四章预处理
+AGX 外部模型资产 -> experimental CUDA/Mamba Recognizer Worker
+                                         ^
+                                         |
+NX + B210 --未来已知标签波形--> P201 RX --有界 IQ--> AGX 第四章预处理
 ```
 
 P201 仍只负责有界 RX 采集与传输。软件聚合、候选选择、DDC、重采样、
@@ -65,10 +68,12 @@ P201 仍只负责有界 RX 采集与传输。软件聚合、候选选择、DDC�
 
 ### 当前完成度一句话
 
-`B210 RF A/channel 0 -> P201 RX1` 的单音物理链路已经确认，AGX 对原始
-RML/Hisar 文件的 D8 FP32 离线推理也已确认；两者之间的“P201 实收波形 ->
-训练分布输入”仍是缺失环节，不能把两个独立通过的试验合并宣称为端到端
-调制识别已完成。
+`B210 RF A/channel 0 -> P201 RX1` 的单音物理链路、AGX 对原始 RML/Hisar
+文件的 D8 FP32 离线推理，以及一次“P201 实收环境窗口 → 单位 RMS →
+experimental Worker”的软件链路均已分别确认。最后一次没有发射且旧权重的
+单位 RMS 抽样准确率下降，因此只能称为端到端接线通过，不能称为已验证空口
+调制识别。完整实验记录见
+[`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)。
 
 ## NX B210
 

@@ -1,0 +1,44 @@
+[Unit]
+Description=Experimental AGX AMC-Mamba recognizer worker
+After=sdrharness-planner.service
+ConditionPathExists=/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python
+ConditionPathExists=/home/jetson/sdrharness/local-assets/amc-eval/checkpoints/rml2018a/seed44/best.pt
+
+[Service]
+Type=simple
+User=jetson
+Group=jetson
+RuntimeDirectory=sdr-agent
+RuntimeDirectoryMode=0750
+WorkingDirectory=/home/jetson/sdrharness
+Environment=PYTHONNOUSERSITE=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=TRITON_CACHE_DIR=/home/jetson/sdrharness/local-assets/amc-eval/runtime/triton-cache
+ExecStart=/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python /home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc-mamba-worker.py --manifest /home/jetson/sdrharness/jetson-agx/sdrharness/config/amc/rml2018a-d8-seed44.experimental.json --socket /run/sdr-agent/recognizer.sock --spool-root /run/sdr-agent/iq
+ExecStartPost=/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python /home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc-mamba-worker.py --probe-socket /run/sdr-agent/recognizer.sock --probe-timeout-ms 120000
+Restart=on-failure
+RestartSec=3
+TimeoutStartSec=180
+TimeoutStopSec=10
+
+MemoryHigh=2G
+MemoryMax=3G
+CPUQuota=150%
+TasksMax=128
+
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/jetson/sdrharness/local-assets/amc-eval/runtime/triton-cache
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX
+
+# This unit is deliberately not installable/enabled while RF labels,
+# preprocessing and rejection remain experimental. Start it explicitly only
+# for bounded validation, then stop it and verify spool cleanup.

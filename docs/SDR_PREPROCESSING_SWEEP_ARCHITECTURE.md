@@ -94,5 +94,7 @@ deletion removes only the selected indexed result and its managed files.
   operator decision on 2026-09-03; this is not a new measured throughput claim.
 - Keep the completed 1,800-second reconnect, cancellation and fault-recovery
   evidence covered by regression testing.
-- Feed only selected bounded windows to the future CUDA/Mamba recognizer.
+- Preserve the now-validated selected-window path to the experimental
+  CUDA/Mamba Worker, and do not promote it until the RF preprocessing,
+  retraining, label and rejection gates pass.
 - Keep all processing on AGX; the retired FPGA path must not return.

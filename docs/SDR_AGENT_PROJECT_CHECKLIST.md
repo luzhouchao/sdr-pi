@@ -387,7 +387,12 @@ aggregation, result persistence and model-facing summaries.
       all captures had zero drops/overflow/clipping, both radios were restored,
       and transient data was removed; see
       [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md).
-- [ ] Feed only selected, bounded IQ windows into local recognition.
+- [x] Feed only a selected, bounded 1,024-sample IQ window into experimental
+      local recognition, with P201 inline transport, AGX-only preprocessing,
+      private 8,192-byte spool, correlated CUDA/Mamba response, automatic IQ
+      deletion and verified radio restoration. Keep production capability off
+      because labels, RF preprocessing and rejection remain unresolved; see
+      [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md).
 - [x] Retire the separate sustained 5/10-MS/s aggregate acceptance gate by
       explicit operator decision on 2026-09-03. This is a scope removal, not a
       claim that inline transport and AGX aggregation were newly measured at
@@ -405,6 +410,7 @@ Evidence:
 - [`PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md`](PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md)
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 - [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md)
+- [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
 
 ## 5. Retired FPGA route
 
@@ -449,8 +455,10 @@ Evidence:
 - [ ] Select and version one production Mamba checkpoint from the staged
       candidates, pin its exact model source, and define labels, preprocessing,
       sample-rate policy, precision and acceptance thresholds.
-- [ ] Implement the AGX CUDA/Mamba Recognizer Adapter without exposing PyTorch,
-      Triton, TensorRT or CUDA details through the Controller interface.
+- [x] Implement and live-validate the experimental AGX CUDA/Mamba Worker behind
+      the existing backend-neutral Unix Recognizer Adapter without exposing
+      PyTorch, Triton or CUDA objects through the Controller interface; keep it
+      explicitly production-disabled pending the remaining admission gates.
 - [x] Numerically compare AGX FP32 with the 4090 training environment on the
       same 16 IQ rows per dataset: both argmax sets agree 16/16 and maximum
       absolute logits differences are `2.93e-5` (RML) and `1.18e-4` (Hisar).
@@ -465,8 +473,14 @@ Evidence:
       precision/recall/F1 and per-SNR accuracy for both complete test splits.
 - [ ] Resolve the disputed RML2018A class-name order and validate the RF input
       contract and rejection policy before enabling `recognizer_available`.
-- [ ] Deploy the Recognizer Worker with one bounded queue and explicit thread
-      limits.
+- [x] Run the experimental Recognizer Worker on AGX with listen backlog one,
+      one Torch CPU thread, strict asset hashes and a finite request count for
+      the delivery validation, then stop it and remove all feature data; retain
+      a deliberately non-installable systemd template for repeatable bounded
+      tests.
+- [ ] Deploy and enable an admitted production Recognizer Worker with one
+      bounded queue and explicit thread limits after labels, RF preprocessing,
+      precision, rejection, concurrency and thermal gates pass.
 - [ ] Integrate recognition results into Agent observations and the autonomous
       Runner.
 
@@ -476,6 +490,7 @@ Evidence:
 - [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md)
 - [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
 - [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
+- [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
 
 ## 7. Emitter/radiation-source identification
 
@@ -536,7 +551,10 @@ candidate inspection are live-validated with the real SDR and both OpenCode Go
 and the local Spark-X2.5-4B BF16 model. Inline-IQ AGX aggregation, persistent
 Web results and optional SigMF are deployed and live-validated with both
 storage modes, model feedback, browser readback, cancellation, cleanup and
-radio restoration. The next implementation focus is sustained software-path
-throughput/fault testing followed by the CUDA/Mamba recognizer. FPGA image,
-register, DMA and boot work was explicitly retired on 2026-09-02 and is not a
-future milestone.
+radio restoration. A selected 1,024-sample P201 RX1 window now also reaches the
+production-disabled experimental CUDA/Mamba Worker with private spool cleanup
+and radio restoration. The next recognition focus is a frozen RF preprocessing
+and retraining contract, trusted labels, rejection/precision gates and Worker
+queue/concurrency/thermal validation; sustained software-acquisition overload
+testing also remains open. FPGA image, register, DMA and boot work was
+explicitly retired on 2026-09-02 and is not a future milestone.

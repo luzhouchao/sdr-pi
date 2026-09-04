@@ -324,7 +324,7 @@ impl SdrdActionAdapter {
     }
 }
 
-fn observe_after_worker_release(
+pub(crate) fn observe_after_worker_release(
     address: SocketAddr,
     timeout: Duration,
 ) -> Result<SdrSnapshot, SdrError> {

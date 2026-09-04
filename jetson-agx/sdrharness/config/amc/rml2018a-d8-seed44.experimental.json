@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "admission": "experimental_rf_only",
+  "model_id": "rml2018a-d8-seed44-fp32-complex-unit-rms-experimental",
+  "asset_root": "local-assets/amc-eval",
+  "model_source_commit": "8bc6fb5dc58e1b83338bdebb2624824f1e6b0798",
+  "model_source_files": {
+    "models/d2/__init__.py": "d3d5223d8b4f5a5f970d34f071e58a14d05e6bbe49c5ea4cbaa7ea41feff42dc",
+    "models/d2/model.py": "39bfab76e1819ebc75bbff963b3fe9fc8e91905881140ae27558a88d0d08c272",
+    "models/d2/sequence.py": "50dfc6abeb851106c7ead657500b6410ea76d50d26671e4d66edd34e1418c7b7",
+    "models/d3_3/__init__.py": "67e2e8ed2a2be0423e47dd88a8dec89b64609f6fbfc4fa23edc1132669c9af8f",
+    "models/d3_3/model.py": "a1d7be0d64445f7cdee5a091ab42dedf060f7895c9e8203e106bc1c5d93deca2",
+    "models/d3_4/__init__.py": "a2c943333196d308050033cadc8ef679501444d22a55b132a4659f6ed514e10c",
+    "models/d3_4/model.py": "30f325cf66ee85528ae46b42496134508ac0e37f477e93ab47a3104d86acabe8",
+    "models/d8/__init__.py": "29b1858f8725440c97130c2c82d06e42e8d224f8bb19adb0d457b28485ec7a3a",
+    "models/d8/model.py": "4e272a5a9ea62381ecffd17607d418f23d2ebc63c0e5c44dfd54ebb17707ded2",
+    "models/d8/sequence.py": "b28961f40f574ccbd890c7396eccda4bad581b16eadd777988e7b5d185632c00",
+    "utils/model_defaults.py": "6632270d666d9cf8f28bb3063bd459546028c74f8b096532fba7e73e30dc7474"
+  },
+  "checkpoint": {
+    "path": "checkpoints/rml2018a/seed44/best.pt",
+    "bytes": 1691357,
+    "sha256": "e5a1bccdaf4b0290f41b26cb05b8b98565df9d5b07147727d79bbf43f6cb42dd"
+  },
+  "checkpoint_config": {
+    "path": "checkpoints/rml2018a/seed44/config.json",
+    "bytes": 12751,
+    "sha256": "6188ee2865724107019585a13deec41c9aac1e9ccef3c4cca85ef5e396e285fd"
+  },
+  "labels": {
+    "path": "jetson-agx/sdrharness/config/amc/rml2018a-labels.json",
+    "sha256": "0c269924bb74cf23584ad7584808d1bb263cdf03680f723f4cc40f165e6eafc8",
+    "wire_prefix": "provisional:"
+  },
+  "inference": {
+    "model_class": "AMCMambaD8",
+    "model_variant": "amc_mamba_d8",
+    "precision": "fp32",
+    "samples_per_channel": 1024,
+    "sample_rate_hz": 2100000,
+    "normalization": "complex_unit_rms",
+    "remove_dc": false,
+    "resample": false,
+    "alternatives": 8,
+    "threads": 1
+  },
+  "validation": {
+    "normalization_rms_tolerance": 0.001,
+    "minimum_raw_complex_rms_adc": 1.0,
+    "reject_clipped_adc_samples": true
+  },
+  "limitations": {
+    "class_names": "The RML2018A class-name order remains provisional.",
+    "rejection": "No calibrated open-set or low-confidence rejection threshold is enabled.",
+    "sample_rate": "2.1 MS/s is the first controlled over-air replay contract, not a general unknown-signal policy.",
+    "capability": "This manifest must not set recognizer_available=true."
+  }
+}

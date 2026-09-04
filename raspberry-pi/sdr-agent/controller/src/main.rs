@@ -4,6 +4,10 @@ compile_error!("sdr-agent-controller currently targets Linux/Unix only");
 use sdr_agent_controller::execution::{
     ExecutionAuthorization, SdrActionExecutor, SdrdActionAdapter,
 };
+use sdr_agent_controller::live_recognition::{
+    validate_live_plan, LiveRecognitionEngine, LiveRecognitionPlan, SdrdLiveRecognitionCapture,
+    LIVE_RECOGNITION_RAW_BYTES, LIVE_RECOGNITION_SPOOL_BYTES,
+};
 use sdr_agent_controller::planner::UnixPlannerAdapter;
 use sdr_agent_controller::policy::ControllerPolicy;
 use sdr_agent_controller::protocol::{PlanRequest, PlanResponse, ValidatedPlan, MAX_FRAME_BYTES};
@@ -88,10 +92,17 @@ fn run() -> AppResult<()> {
     }
     if !matches!(
         mode.as_str(),
-        "plan" | "observe" | "recognize" | "execute" | "cancel" | "sweep" | "run-once"
+        "plan"
+            | "observe"
+            | "recognize"
+            | "recognize-live"
+            | "execute"
+            | "cancel"
+            | "sweep"
+            | "run-once"
     ) {
         return Err(invalid_input(
-            "--mode must be plan, observe, recognize, execute, cancel, sweep, or run-once",
+            "--mode must be plan, observe, recognize, recognize-live, execute, cancel, sweep, or run-once",
         )
         .into());
     }
@@ -187,6 +198,33 @@ fn run() -> AppResult<()> {
             "{}",
             serde_json::to_string(&recognizer.classify(&request)?)?
         );
+        return Ok(());
+    }
+
+    if mode == "recognize-live" {
+        if instruction.is_some() {
+            return Err(invalid_input("--instruction is valid only in plan mode").into());
+        }
+        let address = sdrd_address
+            .ok_or_else(|| invalid_input("--mode recognize-live requires --sdrd HOST:PORT"))?;
+        let bytes = read_request(&request_path, RECOGNIZER_MAX_FRAME_BYTES)?;
+        let plan: LiveRecognitionPlan = serde_json::from_slice(&bytes)?;
+        validate_live_plan(&plan)?;
+        eprintln!(
+            "validated_live_recognition_plan={} p201_max_bytes={} agx_spool_max_bytes={}",
+            serde_json::to_string(&plan)?,
+            LIVE_RECOGNITION_RAW_BYTES,
+            LIVE_RECOGNITION_SPOOL_BYTES
+        );
+        let capture =
+            SdrdLiveRecognitionCapture::new(address, Duration::from_millis(sdrd_timeout_ms));
+        let recognizer = UnixRecognizerAdapter::new(
+            recognizer_socket,
+            recognizer_spool_root.clone(),
+            Duration::from_millis(recognizer_timeout_ms),
+        );
+        let mut engine = LiveRecognitionEngine::new(capture, recognizer, recognizer_spool_root);
+        println!("{}", serde_json::to_string(&engine.run(&plan)?)?);
         return Ok(());
     }
 

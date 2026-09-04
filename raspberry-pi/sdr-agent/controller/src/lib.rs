@@ -1,5 +1,6 @@
 pub mod autonomy;
 pub mod execution;
+pub mod live_recognition;
 pub mod planner;
 pub mod policy;
 pub mod protocol;

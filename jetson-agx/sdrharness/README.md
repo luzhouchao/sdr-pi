@@ -8,18 +8,19 @@ copy those implementations into a second tree.
 ## Runtime ownership
 
 - AGX owns the Agent, Rust Controller, terminal, Web Console, sweep orchestration
-  and future CUDA recognition Adapter.
+  and the production-disabled experimental CUDA/Mamba recognition Worker.
 - P201 Pro owns the radio through `sdrd` at `192.168.1.10:43110`.
 - Raspberry Pi remains a stopped/standby rollback target after cutover.
 - The Planner uses Pi Agent's provider stack with a Web-managed local or
   third-party OpenAI-compatible Completions or Responses endpoint.
-- Offline CUDA/Mamba loading and full held-out corpus validation now pass on
-  AGX. Production Worker deployment remains deferred until the RF
-  preprocessing, trusted labels, precision and rejection gates are frozen.
+- Offline CUDA/Mamba loading, full held-out corpus validation and one bounded
+  P201 RX1-to-Worker integration capture now pass on AGX. Production Worker
+  deployment remains deferred until the RF preprocessing, trusted labels,
+  precision and rejection gates are frozen.
 
-The external recognizer seam remains the bounded request/response contract. A
-future CUDA/Mamba Adapter may use PyTorch, custom CUDA or TensorRT internally;
-callers must not learn those implementation details.
+The external recognizer seam remains the bounded request/response contract.
+The experimental Worker uses PyTorch/CUDA/Mamba internally without exposing
+runtime objects or model operators through the Controller interface.
 
 ## Clone and offline verification
 
@@ -177,10 +178,11 @@ The bounded local web-search deployment and real browser/model validation are
 recorded in
 [`../../docs/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md`](../../docs/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md).
 
-## Offline CUDA/Mamba validation and deferred production recognizer
+## Experimental CUDA/Mamba validation and deferred production recognizer
 
-This migration does not install the earlier 1 MiB DS-CNN ONNX model. The future
-production Adapter targets CUDA and the user's trained AMC-Mamba D8 model.
+This migration does not install the earlier 1 MiB DS-CNN ONNX model. The
+experimental Adapter targets CUDA and the user's trained AMC-Mamba D8 model;
+it remains explicitly outside production admission.
 
 The AGX-local, Git-ignored `local-assets/amc-eval/` directory now contains the
 verified RML2018A/HisarMod2019 datasets, selected seed44/seed43 checkpoints,
@@ -197,6 +199,23 @@ local-assets/amc-eval/runtime/venv/bin/python \
 This tool reads only the pinned offline corpus and does not contact an SDR.
 Complete accuracy, logits parity, latency, memory and thermal evidence is in
 [`../../docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](../../docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md).
-The production Adapter, bounded queue, RF-to-training preprocessing contract,
-trusted RML class mapping and rejection policy are still pending, so the
-runtime capability remains false.
+
+The strict experimental Worker can be checked without an SDR using:
+
+```bash
+local-assets/amc-eval/runtime/venv/bin/python -B \
+  jetson-agx/sdrharness/scripts/amc-mamba-worker.py --self-test
+```
+
+The Controller also exposes an explicit engineering-only `--mode
+recognize-live` path using
+`raspberry-pi/sdr-agent/controller/config/live-recognition.experimental.example.json`.
+Its one real P201 RX1 capture, preprocessing limitation, result, radio
+restoration and cleanup are recorded in
+[`../../docs/P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](../../docs/P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md).
+
+The systemd template
+`systemd/sdrharness-amc-mamba-experimental.service` has no `[Install]` section
+and must not be enabled. Trusted labels, an RF-to-training preprocessing and
+retraining contract, precision, rejection, concurrency and sustained thermal
+gates are still pending, so the runtime capability remains false.

@@ -714,7 +714,7 @@ fn aggregate_ci16_power(bytes: &[u8], samples: u64) -> Result<(u64, u64), SweepE
     Ok((power, clipped))
 }
 
-fn decode_base64(input: &str) -> Result<Vec<u8>, SweepError> {
+pub(crate) fn decode_base64(input: &str) -> Result<Vec<u8>, SweepError> {
     if input.is_empty() || input.len() % 4 != 0 {
         return Err(SweepError::new("agx_iq_base64", "invalid IQ base64 length"));
     }
