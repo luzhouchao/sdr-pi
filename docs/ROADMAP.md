@@ -13,11 +13,13 @@ checkbox-based receive-only plan:
 Do not maintain a second copy of its completion state here.
 
 The fixed P201 RX1/A_BALANCED identity and the independent Chapter 4 bounded
-acquisition/overload gates are complete. The next dependency chain is: define
-the Chapter 5 corpus contract and freeze its preprocessing from train/validation
-evidence; let the user train the RF-aligned Chapter 6 model and admit it on AGX;
-then connect recognition to the Chapter 1/2 Runner, Agent and Web loop. The
-detailed checklist records which parts of each dependency are already complete.
+acquisition/overload gates are complete, as is the Chapter 5 corpus manifest
+contract. The next dependency chain is: implement the bounded P201 corpus store
+and manual deletion, collect governed rows, prove split isolation and freeze
+preprocessing from train/validation evidence; let the user train the RF-aligned
+Chapter 6 model and admit it on AGX; then connect recognition to the Chapter 1/2
+Runner, Agent and Web loop. The detailed checklist records which parts of each
+dependency are already complete.
 
 ## After Chapter 1–6 — production operations
 

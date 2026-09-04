@@ -1,0 +1,583 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdrharness.local/schemas/amc-corpus-manifest-v1.schema.json",
+  "title": "SDR Harness AMC corpus manifest v1",
+  "description": "One contract for labeled offline windows, P201 RX-only corpus windows and golden vectors. JSONL records use $defs.record.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "schema_id",
+    "manifest_id",
+    "created_at_utc",
+    "status",
+    "corpus_kind",
+    "contract",
+    "split_policy",
+    "assets",
+    "record_index",
+    "governance"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "schema_id": {"const": "amc_corpus_manifest_v1"},
+    "manifest_id": {"$ref": "#/$defs/safeId"},
+    "created_at_utc": {"$ref": "#/$defs/utcTimestamp"},
+    "status": {"enum": ["draft", "frozen"]},
+    "corpus_kind": {
+      "enum": ["labeled_offline", "p201_receive", "golden_vectors", "mixed"]
+    },
+    "contract": {"$ref": "#/$defs/contract"},
+    "split_policy": {"$ref": "#/$defs/splitPolicy"},
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/asset"}
+    },
+    "record_index": {"$ref": "#/$defs/recordIndex"},
+    "governance": {"$ref": "#/$defs/governance"}
+  },
+  "$defs": {
+    "safeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"
+    },
+    "utcTimestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z$"
+    },
+    "calendarDate": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_profile", "preprocessing", "label_space"],
+      "properties": {
+        "input_profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "path", "sha256", "admission"],
+          "properties": {
+            "id": {"$ref": "#/$defs/safeId"},
+            "path": {"$ref": "#/$defs/relativePath"},
+            "sha256": {"$ref": "#/$defs/sha256"},
+            "admission": {"enum": ["integration_only", "production"]}
+          }
+        },
+        "preprocessing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "path", "sha256", "status"],
+          "properties": {
+            "id": {"$ref": "#/$defs/safeId"},
+            "path": {"$ref": "#/$defs/relativePath"},
+            "sha256": {"$ref": "#/$defs/sha256"},
+            "status": {"enum": ["integration_only", "frozen"]}
+          }
+        },
+        "label_space": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "path",
+            "sha256",
+            "numeric_ids_authoritative",
+            "display_names_status"
+          ],
+          "properties": {
+            "id": {"$ref": "#/$defs/safeId"},
+            "path": {"$ref": "#/$defs/relativePath"},
+            "sha256": {"$ref": "#/$defs/sha256"},
+            "numeric_ids_authoritative": {"const": true},
+            "display_names_status": {"enum": ["trusted", "provisional"]}
+          }
+        }
+      }
+    },
+    "splitPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "group_keys", "allowed_splits", "frozen", "test_locked"],
+      "properties": {
+        "strategy": {"const": "group_exclusive"},
+        "group_keys": {
+          "type": "array",
+          "prefixItems": [
+            {"const": "source_sample_id"},
+            {"const": "capture_session_id"},
+            {"const": "capture_day"}
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "allowed_splits": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/splitName"}
+        },
+        "frozen": {"type": "boolean"},
+        "test_locked": {"type": "boolean"}
+      }
+    },
+    "splitName": {
+      "enum": ["train", "validation", "test", "calibration", "receive_domain", "golden"]
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "role",
+        "bytes",
+        "sha256",
+        "storage_class",
+        "manual_delete"
+      ],
+      "properties": {
+        "asset_id": {"$ref": "#/$defs/safeId"},
+        "path": {"$ref": "#/$defs/relativePath"},
+        "role": {
+          "enum": [
+            "iq_dataset",
+            "split_index",
+            "input_profile",
+            "preprocess_spec",
+            "label_table",
+            "capture_plan",
+            "annotation_evidence",
+            "golden_fixture",
+            "raw_iq",
+            "model_tensor"
+          ]
+        },
+        "bytes": {"type": "integer", "minimum": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "storage_class": {
+          "enum": ["repository_metadata", "machine_local_asset", "application_result"]
+        },
+        "manual_delete": {"enum": ["not_applicable", "available", "required"]}
+      }
+    },
+    "recordIndex": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_id", "format", "path", "count", "bytes", "sha256"],
+      "properties": {
+        "schema_id": {"const": "amc_corpus_record_v1"},
+        "format": {"const": "jsonl"},
+        "path": {"$ref": "#/$defs/relativePath"},
+        "count": {"type": "integer", "minimum": 1, "maximum": 10000000},
+        "bytes": {"type": "integer", "minimum": 2},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bulk_iq_in_git",
+        "model_prediction_is_ground_truth",
+        "unlabeled_accuracy_allowed",
+        "manual_delete_required_for_user_results"
+      ],
+      "properties": {
+        "bulk_iq_in_git": {"const": false},
+        "model_prediction_is_ground_truth": {"const": false},
+        "unlabeled_accuracy_allowed": {"const": false},
+        "manual_delete_required_for_user_results": {"const": true}
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_sample_id",
+        "capture_session_id",
+        "capture_day",
+        "parent_record_id",
+        "transforms"
+      ],
+      "properties": {
+        "source_sample_id": {"$ref": "#/$defs/safeId"},
+        "capture_session_id": {
+          "oneOf": [{"$ref": "#/$defs/safeId"}, {"type": "null"}]
+        },
+        "capture_day": {
+          "oneOf": [{"$ref": "#/$defs/calendarDate"}, {"type": "null"}]
+        },
+        "parent_record_id": {
+          "oneOf": [{"$ref": "#/$defs/safeId"}, {"type": "null"}]
+        },
+        "transforms": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {"$ref": "#/$defs/safeId"}
+        }
+      }
+    },
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window_index",
+        "sample_offset",
+        "samples",
+        "bytes",
+        "sample_format",
+        "layout",
+        "endianness",
+        "sha256",
+        "storage"
+      ],
+      "properties": {
+        "window_index": {"type": "integer", "minimum": 0},
+        "sample_offset": {"type": "integer", "minimum": 0},
+        "samples": {"type": "integer", "minimum": 1, "maximum": 16777216},
+        "bytes": {"type": "integer", "minimum": 4, "maximum": 268435456},
+        "sample_format": {"enum": ["ci16_le", "f32_le"]},
+        "layout": {"enum": ["interleaved_iq", "planar_iq"]},
+        "endianness": {"const": "little"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "storage": {"$ref": "#/$defs/windowStorage"}
+      }
+    },
+    "windowStorage": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "asset_id", "dataset_path", "row_index"],
+          "properties": {
+            "kind": {"const": "dataset_row"},
+            "asset_id": {"$ref": "#/$defs/safeId"},
+            "dataset_path": {
+              "type": "string",
+              "pattern": "^/[A-Za-z0-9._/-]{1,255}$"
+            },
+            "row_index": {"type": "integer", "minimum": 0}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "asset_id", "offset_bytes"],
+          "properties": {
+            "kind": {"const": "managed_asset"},
+            "asset_id": {"$ref": "#/$defs/safeId"},
+            "offset_bytes": {"type": "integer", "minimum": 0}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "generator_id", "parameters_sha256"],
+          "properties": {
+            "kind": {"const": "deterministic_generator"},
+            "generator_id": {"$ref": "#/$defs/safeId"},
+            "parameters_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        }
+      ]
+    },
+    "datasetGroundTruth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provenance",
+        "numeric_id",
+        "raw_value",
+        "display_name",
+        "display_name_status",
+        "evidence"
+      ],
+      "properties": {
+        "provenance": {"const": "dataset_ground_truth"},
+        "numeric_id": {"type": "integer", "minimum": 0, "maximum": 65535},
+        "raw_value": {"oneOf": [{"type": "integer"}, {"type": "string", "maxLength": 128}]},
+        "display_name": {"oneOf": [{"type": "string", "minLength": 1, "maxLength": 128}, {"type": "null"}]},
+        "display_name_status": {"enum": ["trusted", "provisional", "absent"]},
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["dataset_id", "dataset_sha256", "label_field", "row_index"],
+          "properties": {
+            "dataset_id": {"$ref": "#/$defs/safeId"},
+            "dataset_sha256": {"$ref": "#/$defs/sha256"},
+            "label_field": {"type": "string", "minLength": 1, "maxLength": 128},
+            "row_index": {"type": "integer", "minimum": 0}
+          }
+        }
+      }
+    },
+    "independentAnnotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provenance",
+        "numeric_id",
+        "display_name",
+        "display_name_status",
+        "evidence"
+      ],
+      "properties": {
+        "provenance": {"const": "independent_annotation"},
+        "numeric_id": {"type": "integer", "minimum": 0, "maximum": 65535},
+        "display_name": {"oneOf": [{"type": "string", "minLength": 1, "maxLength": 128}, {"type": "null"}]},
+        "display_name_status": {"enum": ["trusted", "provisional", "absent"]},
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["annotation_id", "method", "annotated_at_utc", "evidence_sha256"],
+          "properties": {
+            "annotation_id": {"$ref": "#/$defs/safeId"},
+            "method": {
+              "enum": [
+                "known_waveform_schedule",
+                "external_decoder",
+                "instrument_reference",
+                "human_review"
+              ]
+            },
+            "annotated_at_utc": {"$ref": "#/$defs/utcTimestamp"},
+            "evidence_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        }
+      }
+    },
+    "unknownLabel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provenance", "reason"],
+      "properties": {
+        "provenance": {"const": "unknown"},
+        "reason": {
+          "enum": [
+            "no_independent_label",
+            "noise_or_idle",
+            "ambiguous_annotation",
+            "out_of_label_space",
+            "quality_failure"
+          ]
+        }
+      }
+    },
+    "label": {
+      "oneOf": [
+        {"$ref": "#/$defs/datasetGroundTruth"},
+        {"$ref": "#/$defs/independentAnnotation"},
+        {"$ref": "#/$defs/unknownLabel"}
+      ]
+    },
+    "offlineSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "dataset_id",
+        "dataset_asset_id",
+        "dataset_sha256",
+        "split_asset_id",
+        "split_sha256",
+        "row_index",
+        "nominal_snr_db"
+      ],
+      "properties": {
+        "kind": {"const": "offline_dataset"},
+        "dataset_id": {"$ref": "#/$defs/safeId"},
+        "dataset_asset_id": {"$ref": "#/$defs/safeId"},
+        "dataset_sha256": {"$ref": "#/$defs/sha256"},
+        "split_asset_id": {"$ref": "#/$defs/safeId"},
+        "split_sha256": {"$ref": "#/$defs/sha256"},
+        "row_index": {"type": "integer", "minimum": 0},
+        "nominal_snr_db": {"type": "number", "minimum": -200, "maximum": 200}
+      }
+    },
+    "rxInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity_version",
+        "verified",
+        "front_panel_port",
+        "logical_channel",
+        "phy_channel",
+        "scan_i_channel",
+        "scan_q_channel",
+        "rf_port_select",
+        "source"
+      ],
+      "properties": {
+        "identity_version": {"const": 1},
+        "verified": {"const": true},
+        "front_panel_port": {"const": "RX1"},
+        "logical_channel": {"const": "RX0"},
+        "phy_channel": {"const": "voltage0"},
+        "scan_i_channel": {"const": "voltage0"},
+        "scan_q_channel": {"const": "voltage1"},
+        "rf_port_select": {"const": "A_BALANCED"},
+        "source": {"const": "iio_channel_attr"}
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw_rms_dbfs",
+        "measured_snr_db",
+        "clipped_samples",
+        "dropped_samples",
+        "overflow",
+        "health_flags",
+        "healthy"
+      ],
+      "properties": {
+        "raw_rms_dbfs": {"type": "number"},
+        "measured_snr_db": {"type": "number"},
+        "clipped_samples": {"type": "integer", "minimum": 0},
+        "dropped_samples": {"type": "integer", "minimum": 0},
+        "overflow": {"type": "boolean"},
+        "health_flags": {"type": "integer", "minimum": 0, "maximum": 4294967295},
+        "healthy": {"type": "boolean"}
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "user_visible",
+        "result_id",
+        "manual_delete_available",
+        "p201_transient_removed",
+        "agx_temporary_removed"
+      ],
+      "properties": {
+        "user_visible": {"type": "boolean"},
+        "result_id": {"oneOf": [{"$ref": "#/$defs/safeId"}, {"type": "null"}]},
+        "manual_delete_available": {"type": "boolean"},
+        "p201_transient_removed": {"type": "boolean"},
+        "agx_temporary_removed": {"type": "boolean"}
+      }
+    },
+    "p201Source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "capture_session_id",
+        "captured_at_utc",
+        "capture_day",
+        "plan_id",
+        "plan_asset_id",
+        "plan_sha256",
+        "center_hz",
+        "sample_rate_hz",
+        "rf_bandwidth_hz",
+        "gain_mode",
+        "rx_gain_db",
+        "sequence",
+        "samples_captured",
+        "bytes_transferred",
+        "rx_input",
+        "quality",
+        "retention"
+      ],
+      "properties": {
+        "kind": {"const": "p201_receive"},
+        "capture_session_id": {"$ref": "#/$defs/safeId"},
+        "captured_at_utc": {"$ref": "#/$defs/utcTimestamp"},
+        "capture_day": {"$ref": "#/$defs/calendarDate"},
+        "plan_id": {"$ref": "#/$defs/safeId"},
+        "plan_asset_id": {"$ref": "#/$defs/safeId"},
+        "plan_sha256": {"$ref": "#/$defs/sha256"},
+        "center_hz": {"type": "integer", "minimum": 70000000, "maximum": 6000000000},
+        "sample_rate_hz": {"type": "integer", "minimum": 2100000, "maximum": 30720000},
+        "rf_bandwidth_hz": {"type": "integer", "minimum": 200000, "maximum": 30720000},
+        "gain_mode": {"enum": ["manual", "slow_attack"]},
+        "rx_gain_db": {"type": "number", "minimum": 0, "maximum": 73},
+        "sequence": {"type": "integer", "minimum": 1},
+        "samples_captured": {"type": "integer", "minimum": 1},
+        "bytes_transferred": {"type": "integer", "minimum": 4},
+        "rx_input": {"$ref": "#/$defs/rxInput"},
+        "quality": {"$ref": "#/$defs/quality"},
+        "retention": {"$ref": "#/$defs/retention"}
+      }
+    },
+    "tensor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sample_format", "layout", "shape", "bytes", "sha256"],
+      "properties": {
+        "sample_format": {"const": "f32_le"},
+        "layout": {"enum": ["planar_iq", "window_major_planar_iq"]},
+        "shape": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 1},
+          "minItems": 2,
+          "maxItems": 3
+        },
+        "bytes": {"type": "integer", "minimum": 8},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "goldenSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "fixture_id", "fixture_sha256", "expected_tensor"],
+      "properties": {
+        "kind": {"const": "golden_vector"},
+        "fixture_id": {"$ref": "#/$defs/safeId"},
+        "fixture_sha256": {"$ref": "#/$defs/sha256"},
+        "expected_tensor": {"$ref": "#/$defs/tensor"}
+      }
+    },
+    "source": {
+      "oneOf": [
+        {"$ref": "#/$defs/offlineSource"},
+        {"$ref": "#/$defs/p201Source"},
+        {"$ref": "#/$defs/goldenSource"}
+      ]
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "schema_id",
+        "record_id",
+        "split",
+        "lineage",
+        "window",
+        "label",
+        "source"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "schema_id": {"const": "amc_corpus_record_v1"},
+        "record_id": {"$ref": "#/$defs/safeId"},
+        "split": {"$ref": "#/$defs/splitName"},
+        "lineage": {"$ref": "#/$defs/lineage"},
+        "window": {"$ref": "#/$defs/window"},
+        "label": {"$ref": "#/$defs/label"},
+        "source": {"$ref": "#/$defs/source"}
+      }
+    }
+  }
+}

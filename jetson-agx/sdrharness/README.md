@@ -212,6 +212,23 @@ This tool reads only the pinned offline corpus and does not contact an SDR.
 Complete accuracy, logits parity, latency, memory and thermal evidence is in
 [`../../docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](../../docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md).
 
+Chapter 5 corpus metadata now uses the strict
+[`amc_corpus_manifest_v1`](../../docs/AMC_CORPUS_MANIFEST_V1.md) contract. It
+keeps the compact manifest separate from a content-hashed streaming JSONL
+window index and permits only dataset ground truth, independently evidenced
+annotations or explicit unknown labels. Validate a package without loading the
+Mamba runtime:
+
+```bash
+python3 jetson-agx/sdrharness/scripts/validate-amc-corpus-manifest.py \
+  --manifest /path/to/corpus/manifest.json \
+  --asset-root /path/to/corpus \
+  --verify-assets
+```
+
+This command validates metadata and optionally hashes assets; it does not
+capture IQ, transmit, train or infer.
+
 The strict experimental Worker can be checked without an SDR using:
 
 ```bash

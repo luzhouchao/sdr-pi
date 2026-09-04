@@ -552,10 +552,16 @@ recognition; it does not own hardware control or another runtime backend.
 - [x] Distinguish dataset nominal SNR, P201 receive gain, ADC dBFS and measured
       receive SNR, and state that a field window without an independent label is
       unknown/unlabeled rather than model-generated ground truth.
-- [ ] Define one versioned manifest/schema for labeled offline data, P201
-      receive-only corpus rows and golden vectors, including content/profile
-      hashes and explicit `dataset_ground_truth`, `independent_annotation` or
-      `unknown` label provenance.
+- [x] Define and validate `amc_corpus_manifest_v1` plus its streamed
+      `amc_corpus_record_v1` JSONL rows for labeled offline data, P201
+      receive-only corpus windows and golden vectors. The contract pins content,
+      profile, preprocessing, label-space, split and evidence hashes; requires
+      explicit `dataset_ground_truth`, `independent_annotation` or `unknown`;
+      rejects source/label misuse, provisional-name escalation, path/hash
+      tampering and train/test lineage collisions; and validates the existing
+      four-window golden fixture without assigning it a false class. See
+      [`AMC_CORPUS_MANIFEST_V1.md`](AMC_CORPUS_MANIFEST_V1.md) and
+      [`AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md`](AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md).
 - [ ] Build a bounded, versioned P201 receive-only corpus with session/date,
       center, rate, bandwidth, fixed RF input, gain, samples/bytes, quality and
       cleanup metadata; provide a visible manual-delete path and keep bulk IQ
@@ -576,6 +582,8 @@ Evidence:
 - [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
 - [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
+- [`AMC_CORPUS_MANIFEST_V1.md`](AMC_CORPUS_MANIFEST_V1.md)
+- [`AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md`](AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 6. Local Mamba modulation recognition
@@ -731,12 +739,12 @@ Evidence:
 Delivery A and the independent Chapter 4 acquisition gates are complete. Follow
 delivery B in
 [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md):
-define the Chapter 5 manifest/schema, collect a versioned bounded P201 RX-only
-corpus with explicit label provenance, prove split isolation, and use only
-train/validation evidence to freeze `rf_preprocess_v1`. The Chapter 4
-integration-only profile intentionally remains non-production until that
-contract and a newly admitted checkpoint exist; do not connect seed44 to the
-production Runner first.
+implement the application-owned P201 corpus store and visible manual deletion,
+then collect versioned bounded RX-only rows under the now-frozen manifest
+schema, prove split isolation, and use only train/validation evidence to freeze
+`rf_preprocess_v1`. The Chapter 4 integration-only profile intentionally
+remains non-production until that contract and a newly admitted checkpoint
+exist; do not connect seed44 to the production Runner first.
 
 The remaining Chapter 1 gaps are recognition rendering, bounded persistence and
 compact Agent feedback. Chapter 2 still lacks live recognizer capability,

@@ -179,12 +179,15 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       观察，不能用 Mamba 自己的 top-1 反作 accuracy 真值。
 - [x] 已明确数据集名义 SNR、P201 `rx_gain_db`、ADC `raw_rms_dbfs` 和现场
       `estimated_snr_db` 是不同量。
+- [x] 已定义并验证统一的 `amc_corpus_manifest_v1` / 流式 JSONL record 合同，
+      覆盖离线数据、P201 RX-only 窗口和 golden vectors；逐窗口必须显式使用
+      `dataset_ground_truth`、`independent_annotation` 或 `unknown`，同时固定内容、
+      profile、预处理、标签、split 和证据哈希。严格校验器已覆盖来源/标签误用、
+      临时名称升级、路径/哈希篡改、错误 RX 口、未清理冻结记录和 train/test
+      lineage 泄漏；见 [`AMC_CORPUS_MANIFEST_V1.md`](AMC_CORPUS_MANIFEST_V1.md)。
 
 ### 还未完成
 
-- [ ] 定义离线数据、P201 接收语料和 golden vectors 的统一 manifest/schema，
-      每个窗口显式记录 `dataset_ground_truth`、`independent_annotation` 或
-      `unknown` 标签来源。
 - [ ] 建立版本化、有限、可人工删除的 P201 RX-only 语料，记录 session/date、
       profile、端口、增益、频率、样本/字节、质量和内容哈希；大 IQ 不进 Git。
 - [ ] 按 source sample、capture session 和日期隔离 train/val/test，证明裁剪、

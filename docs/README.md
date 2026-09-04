@@ -24,6 +24,11 @@
 - [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md):
   Chapter 4 maximum-window load, pre-hardware overload rejection, bounded
   resources, timeout/disconnect restoration and exact cleanup evidence.
+- [`AMC_CORPUS_MANIFEST_V1.md`](AMC_CORPUS_MANIFEST_V1.md): the normative
+  Chapter 5 manifest/JSONL window contract for offline, P201 RX-only and golden
+  data with explicit label provenance and split lineage.
+- [`AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md`](AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md):
+  strict-validator, negative-matrix and existing golden-fixture evidence.
 - [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md): AGX deployment
   layout and completed receive-ownership migration boundary.
 - [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md):
