@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "schema_id": "rf_preprocess_selection_plan_v1",
+  "plan_id": "rf-preprocess-v1-selection-20260905",
+  "created_at_utc": "2026-09-04T19:03:25Z",
+  "status": "preregistered",
+  "purpose": "Select the Chapter 4-to-6 RF preprocessing and multiwindow training contract without tuning on frozen test data.",
+  "scope": {
+    "target_dataset": "rml2018a",
+    "baseline_checkpoint": "rml2018a-d8-seed44-experimental",
+    "training_or_finetuning": false,
+    "checkpoint_mutation": false,
+    "radio_capture": false,
+    "transmission": false,
+    "production_admission": false
+  },
+  "pinned_inputs": {
+    "dataset": {
+      "path": "local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+      "bytes": 21449148312,
+      "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38"
+    },
+    "split": {
+      "path": "local-assets/amc-eval/splits/RML2018a_split_seed44_tr700_val150_te150.npz",
+      "bytes": 3906249,
+      "sha256": "5b8ccdc0183455445d5beab20f2ed7e553ff616da76a31114f700929607d0792"
+    },
+    "checkpoint": {
+      "path": "local-assets/amc-eval/checkpoints/rml2018a/seed44/best.pt",
+      "bytes": 1691357,
+      "sha256": "e5a1bccdaf4b0290f41b26cb05b8b98565df9d5b07147727d79bbf43f6cb42dd"
+    },
+    "checkpoint_validation_metrics": {
+      "path": "local-assets/amc-eval/checkpoints/rml2018a/seed44/metrics_val.json",
+      "sha256": "8c683ba3d8f1069eff7dbc8eee3b83ef9e7f9c6e767a2a20dc48cc676212aef9"
+    },
+    "split_isolation_evidence": {
+      "path": "docs/AMC_SPLIT_ISOLATION_AUDIT_2026-09-05.json",
+      "sha256": "1266bb64cec6e88aec18c663cf2299cb0ac81ca4f7bf150668f70501cee8a01a"
+    },
+    "receive_domain_manifest": {
+      "path": "/var/lib/sdrharness/web-console/p201-corpus/p201-p201-corpus-20260905-rx1-433m-147/manifest.json",
+      "sha256": "174df3a32cb05304979233cf0eb577a6032011c657fc9ce8cea24c5397851b83"
+    }
+  },
+  "data_access": {
+    "allowed_split_members": ["train", "val"],
+    "train_use": "distribution_statistics_only",
+    "validation_use": "candidate_ranking_calibration_methodology_and_window_ablation",
+    "forbidden_split_members": ["test"],
+    "forbidden_result_paths": [
+      "local-assets/amc-eval/checkpoints/rml2018a/seed44/metrics_test.json",
+      "local-assets/amc-eval/results/rml2018a/full-fp32-b256-v1"
+    ],
+    "historical_test_results_already_exist": true,
+    "historical_test_results_must_not_influence_ranking": true,
+    "unlabeled_receive_domain_accuracy_allowed": false
+  },
+  "fixed_signal_contract": {
+    "input": "P201 RX1/RX0/A_BALANCED interleaved ci16_le",
+    "sample_rate_hz": 2100000,
+    "rf_bandwidth_hz": 1500000,
+    "frequency_alignment": "hardware_retune_to_candidate_center",
+    "digital_frequency_shift": false,
+    "additional_digital_filter": false,
+    "resample": false,
+    "window_samples": 1024,
+    "windowing": "contiguous_non_overlapping_no_taper",
+    "output": "window_major_planar_f32_le"
+  },
+  "transform_candidates": [
+    {
+      "id": "raw_identity",
+      "normalization": "none",
+      "remove_dc": false,
+      "eligibility": "diagnostic_only",
+      "reason": "Reproduces the old HDF5-trained checkpoint but cannot align arbitrary ADC gain."
+    },
+    {
+      "id": "per_window_unit_rms",
+      "normalization": "per_window_complex_unit_rms",
+      "remove_dc": false,
+      "eligibility": "rf_candidate"
+    },
+    {
+      "id": "per_window_dc_unit_rms",
+      "normalization": "per_window_complex_unit_rms",
+      "remove_dc": true,
+      "eligibility": "rf_candidate"
+    },
+    {
+      "id": "four_window_capture_unit_rms",
+      "normalization": "per_four_window_capture_complex_unit_rms",
+      "remove_dc": false,
+      "eligibility": "rf_candidate"
+    },
+    {
+      "id": "four_window_capture_dc_unit_rms",
+      "normalization": "per_four_window_capture_complex_unit_rms",
+      "remove_dc": true,
+      "eligibility": "rf_candidate"
+    }
+  ],
+  "window_ablation": {
+    "counts": [1, 2, 4],
+    "pseudo_session_grouping": "same numeric class and nominal SNR, ordered by immutable validation global row",
+    "aggregators": ["majority_vote", "mean_probability", "mean_logit"],
+    "primary_snr_range_db": [4, 30],
+    "secondary_snr_range_db": [-20, 30],
+    "tie_break": "Choose the smallest window count within 0.25 percentage points of the best primary validation accuracy, then the lowest-byte deterministic aggregator."
+  },
+  "transform_selection": {
+    "amplitude_rule": "Only unit-RMS RF candidates may be selected; raw identity remains a checkpoint-parity diagnostic.",
+    "dc_rule": "Prefer DC preservation when its primary validation accuracy is within 0.25 percentage points of DC removal, because carrier-bearing classes must not be erased without positive evidence.",
+    "normalization_scope_rule": "Prefer per-window normalization when it is within 0.25 percentage points of four-window capture normalization, because it has exact train/runtime parity and bounded independent failure.",
+    "old_checkpoint_caveat": "Accuracy ranks sensitivity of the old checkpoint; it does not by itself make the old checkpoint RF aligned."
+  },
+  "calibration": {
+    "method_candidates": ["identity_softmax", "scalar_temperature"],
+    "partition": "Deterministic disjoint fit/audit pseudo-session groups inside validation only.",
+    "report": ["negative_log_likelihood", "ece_15_bin", "accuracy", "coverage_precision_curve"],
+    "production_numeric_threshold_can_be_frozen": false,
+    "blocker": "The final RF-aligned checkpoint and labeled OOD/known-RF validation evidence do not yet exist."
+  },
+  "receive_domain_use": {
+    "allowed": ["input_integrity", "raw_rms", "dc_fraction", "clipping", "spectral_quality", "window_stability", "model_confidence_observation"],
+    "forbidden": ["accuracy", "class_correctness", "ground_truth", "false_acceptance_rate"]
+  },
+  "resource_and_cleanup": {
+    "temporary_root": "/var/tmp/sdrharness-dev/rf-preprocess-v1-selection-20260905/",
+    "maximum_temporary_bytes": 536870912,
+    "raw_iq_copy_allowed": false,
+    "temporary_predictions_retained": false,
+    "cleanup_required_before_completion": true
+  },
+  "invalidating_conditions": [
+    "Any frozen test member or forbidden test-result path is opened by the selection run.",
+    "Any input hash differs from this plan.",
+    "Any candidate or ranking rule is changed after observing validation results without creating a new plan ID.",
+    "Any unlabeled receive-domain prediction is treated as correctness evidence."
+  ]
+}
