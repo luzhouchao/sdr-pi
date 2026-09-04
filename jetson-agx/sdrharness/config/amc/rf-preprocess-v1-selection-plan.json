@@ -3,6 +3,7 @@
   "schema_id": "rf_preprocess_selection_plan_v1",
   "plan_id": "rf-preprocess-v1-selection-20260905",
   "created_at_utc": "2026-09-04T19:03:25Z",
+  "amended_at_utc": "2026-09-04T19:06:33Z",
   "status": "preregistered",
   "purpose": "Select the Chapter 4-to-6 RF preprocessing and multiwindow training contract without tuning on frozen test data.",
   "scope": {
@@ -30,6 +31,14 @@
       "bytes": 1691357,
       "sha256": "e5a1bccdaf4b0290f41b26cb05b8b98565df9d5b07147727d79bbf43f6cb42dd"
     },
+    "checkpoint_config": {
+      "path": "local-assets/amc-eval/checkpoints/rml2018a/seed44/config.json",
+      "sha256": "6188ee2865724107019585a13deec41c9aac1e9ccef3c4cca85ef5e396e285fd"
+    },
+    "experimental_model_manifest": {
+      "path": "jetson-agx/sdrharness/config/amc/rml2018a-d8-seed44.experimental.json",
+      "sha256": "1b7ad226bf88b8f8d363df384ddcbfb65c83db51b0ec305742be2ad5a082698e"
+    },
     "checkpoint_validation_metrics": {
       "path": "local-assets/amc-eval/checkpoints/rml2018a/seed44/metrics_val.json",
       "sha256": "8c683ba3d8f1069eff7dbc8eee3b83ef9e7f9c6e767a2a20dc48cc676212aef9"
@@ -45,6 +54,10 @@
   },
   "data_access": {
     "allowed_split_members": ["train", "val"],
+    "allowed_split_member_sha256": {
+      "train_le_i64": "0426197a7ba17a4091a37d481bb8cd887a04d06406525978fdc7f669d4d2fa21",
+      "val_le_i64": "e63a1cd6463f84d584edab3cde6b0cfb4e112035a0f456f5eae40e95dfb41181"
+    },
     "train_use": "distribution_statistics_only",
     "validation_use": "candidate_ranking_calibration_methodology_and_window_ablation",
     "forbidden_split_members": ["test"],
@@ -86,18 +99,22 @@
       "id": "per_window_dc_unit_rms",
       "normalization": "per_window_complex_unit_rms",
       "remove_dc": true,
+      "dc_scope": "per_window_complex_mean",
       "eligibility": "rf_candidate"
     },
     {
       "id": "four_window_capture_unit_rms",
       "normalization": "per_four_window_capture_complex_unit_rms",
+      "normalization_group": "four same-label same-SNR validation source rows",
       "remove_dc": false,
       "eligibility": "rf_candidate"
     },
     {
       "id": "four_window_capture_dc_unit_rms",
       "normalization": "per_four_window_capture_complex_unit_rms",
+      "normalization_group": "four same-label same-SNR validation source rows",
       "remove_dc": true,
+      "dc_scope": "per_window_complex_mean",
       "eligibility": "rf_candidate"
     }
   ],
