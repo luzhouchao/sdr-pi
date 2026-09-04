@@ -3,7 +3,7 @@
   "schema_id": "rf_preprocess_selection_plan_v1",
   "plan_id": "rf-preprocess-v1-selection-20260905",
   "created_at_utc": "2026-09-04T19:03:25Z",
-  "amended_at_utc": "2026-09-04T19:06:33Z",
+  "amended_at_utc": "2026-09-04T19:08:38Z",
   "status": "preregistered",
   "purpose": "Select the Chapter 4-to-6 RF preprocessing and multiwindow training contract without tuning on frozen test data.",
   "scope": {
@@ -121,10 +121,16 @@
   "window_ablation": {
     "counts": [1, 2, 4],
     "pseudo_session_grouping": "same numeric class and nominal SNR, ordered by immutable validation global row",
+    "evaluation_population": "All complete four-row pseudo sessions in the full validation split; only each class/SNR tail of zero to three rows may be excluded.",
     "aggregators": ["majority_vote", "mean_probability", "mean_logit"],
+    "aggregator_eligibility": {
+      "majority_vote": "diagnostic_only_without_calibrated_full_scores",
+      "mean_probability": "rf_candidate",
+      "mean_logit": "rf_candidate_and_preferred_within_tolerance_for_scalar_temperature_calibration"
+    },
     "primary_snr_range_db": [4, 30],
     "secondary_snr_range_db": [-20, 30],
-    "tie_break": "Choose the smallest window count within 0.25 percentage points of the best primary validation accuracy, then the lowest-byte deterministic aggregator."
+    "tie_break": "Among calibration-eligible aggregators, choose the smallest window count within 0.25 percentage points of the best primary validation accuracy, then prefer mean_logit within the same tolerance."
   },
   "transform_selection": {
     "amplitude_rule": "Only unit-RMS RF candidates may be selected; raw identity remains a checkpoint-parity diagnostic.",
