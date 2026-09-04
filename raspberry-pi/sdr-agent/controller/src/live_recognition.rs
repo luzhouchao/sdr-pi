@@ -5,7 +5,7 @@ use crate::recognizer::{
     BoundedIqRef, IqFileRef, IqLayout, IqNormalization, IqSampleFormat, LocalRecognizer,
     RecognitionOutput, RecognitionRequest, RecognizerError, RECOGNIZER_PROTOCOL_VERSION,
 };
-use crate::sdr::{SdrError, SdrSnapshot, SdrdWire};
+use crate::sdr::{RxInputIdentity, SdrError, SdrSnapshot, SdrdWire};
 use crate::sweep::{decode_base64, SweepError};
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
@@ -57,6 +57,7 @@ pub struct LiveCaptureSummary {
     pub overflow: bool,
     pub timeout: ExecutionTimeoutMetadata,
     pub health: ExecutionHealthMetadata,
+    pub rx_input: RxInputIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -166,6 +167,10 @@ impl LiveRecognitionCapture for SdrdLiveRecognitionCapture {
             || !capabilities.radio_control
             || !capabilities.raw_iq_capture
             || capabilities.max_capture_bytes < LIVE_RECOGNITION_RAW_BYTES
+            || !capabilities
+                .rx_input
+                .as_ref()
+                .is_some_and(RxInputIdentity::is_fixed_p201_rx1)
         {
             let _: Result<QuitResponse, _> = wire.request("QUIT", "");
             return Err(LiveRecognitionError::new(
@@ -185,6 +190,7 @@ impl LiveRecognitionCapture for SdrdLiveRecognitionCapture {
                 || start.session_generation != generation
                 || start.session_state != "owned"
                 || !start.restore_armed
+                || start.rx_input != capabilities.rx_input
             {
                 return Err(LiveRecognitionError::new(
                     "session_start",
@@ -205,6 +211,7 @@ impl LiveRecognitionCapture for SdrdLiveRecognitionCapture {
                 || profile.gain_mode != "manual"
                 || profile.hardware_gain_db != Some(plan.gain_db)
                 || profile.enabled_channels != 1
+                || profile.rx_input != capabilities.rx_input
             {
                 return Err(LiveRecognitionError::new(
                     "profile_response",
@@ -237,6 +244,7 @@ impl LiveRecognitionCapture for SdrdLiveRecognitionCapture {
                 || !response.health.healthy
                 || response.health.flags != 0
                 || response.health.source != "iio_adapter"
+                || response.rx_input != capabilities.rx_input
             {
                 return Err(LiveRecognitionError::new(
                     "capture_response",
@@ -249,6 +257,7 @@ impl LiveRecognitionCapture for SdrdLiveRecognitionCapture {
                 || stop.session_generation != generation
                 || !stop.stopped
                 || !stop.restored
+                || stop.rx_input != capabilities.rx_input
             {
                 return Err(LiveRecognitionError::new(
                     "restore_response",
@@ -349,6 +358,9 @@ impl LiveRecognitionCapture for SdrdLiveRecognitionCapture {
                 overflow: response.overflow,
                 timeout: response.timeout,
                 health: response.health,
+                rx_input: response
+                    .rx_input
+                    .expect("validated recognition capture identity must be present"),
             },
             iq_ci16_le,
             post_execution_sdr,
@@ -785,6 +797,8 @@ struct CapabilitiesResponse {
     #[serde(rename = "software_summary")]
     _software_summary: bool,
     max_capture_bytes: u64,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
     #[serde(rename = "fpga_backend")]
     _fpga_backend: String,
     #[serde(rename = "fpga_identity_valid")]
@@ -812,6 +826,8 @@ struct StartResponse {
     session_generation: u64,
     session_state: String,
     restore_armed: bool,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
 }
 
 #[derive(Deserialize)]
@@ -831,6 +847,8 @@ struct ProfileResponse {
     gain_mode: String,
     hardware_gain_db: Option<i16>,
     enabled_channels: u32,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
 }
 
 #[derive(Deserialize)]
@@ -850,6 +868,8 @@ struct InlineCaptureResponse {
     overflow: bool,
     timeout: ExecutionTimeoutMetadata,
     health: ExecutionHealthMetadata,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
     iq_base64: String,
 }
 
@@ -866,6 +886,8 @@ struct StopResponse {
     session_generation: u64,
     stopped: bool,
     restored: bool,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
 }
 
 #[derive(Deserialize)]
@@ -913,6 +935,7 @@ mod tests {
             iio_visible: true,
             can_retune: true,
             can_capture_iq: true,
+            rx_input: Some(RxInputIdentity::fixed_p201_rx1_fixture()),
         }
     }
 
@@ -939,6 +962,7 @@ mod tests {
                     flags: 0,
                     source: "iio_adapter".to_owned(),
                 },
+                rx_input: RxInputIdentity::fixed_p201_rx1_fixture(),
             },
             iq_ci16_le: bytes,
             post_execution_sdr: snapshot(),

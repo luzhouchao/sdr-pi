@@ -1,5 +1,5 @@
 use crate::protocol::{ProposedAction, ValidatedPlan};
-use crate::sdr::{SdrEngine, SdrError, SdrSnapshot, SdrdAdapter, SdrdWire};
+use crate::sdr::{RxInputIdentity, SdrEngine, SdrError, SdrSnapshot, SdrdAdapter, SdrdWire};
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::net::SocketAddr;
@@ -76,6 +76,7 @@ pub struct CaptureObservation {
     pub overflow: bool,
     pub timeout: ExecutionTimeoutMetadata,
     pub health: ExecutionHealthMetadata,
+    pub rx_input: RxInputIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -193,6 +194,10 @@ impl SdrdActionAdapter {
             || !capabilities.radio_control
             || !capabilities.raw_iq_capture
             || capabilities.max_capture_bytes < max_bytes
+            || !capabilities
+                .rx_input
+                .as_ref()
+                .is_some_and(RxInputIdentity::is_fixed_p201_rx1)
         {
             return Err(SdrError::new(
                 "execution_capability",
@@ -208,6 +213,7 @@ impl SdrdActionAdapter {
                 || start.session_generation != generation
                 || start.session_state != "owned"
                 || !start.restore_armed
+                || start.rx_input != capabilities.rx_input
             {
                 return Err(SdrError::new(
                     "session_start",
@@ -227,6 +233,7 @@ impl SdrdActionAdapter {
                 || profile.rf_bandwidth_hz != rf_bandwidth_hz
                 || profile.gain_mode != "slow_attack"
                 || profile.enabled_channels != 1
+                || profile.rx_input != capabilities.rx_input
             {
                 return Err(SdrError::new(
                     "profile_response",
@@ -267,6 +274,7 @@ impl SdrdActionAdapter {
                 || stop.session_generation != generation
                 || !stop.stopped
                 || !stop.restored
+                || stop.rx_input != capabilities.rx_input
             {
                 return Err(SdrError::new(
                     "restore_response",
@@ -293,6 +301,9 @@ impl SdrdActionAdapter {
                 overflow: capture.overflow,
                 timeout: capture.timeout,
                 health: capture.health,
+                rx_input: capture
+                    .rx_input
+                    .expect("validated SDRD capture identity must be present"),
             })
         })();
 
@@ -450,6 +461,10 @@ fn validate_capture_response(
         || !response.health.healthy
         || response.health.flags != 0
         || response.health.source != "iio_adapter"
+        || !response
+            .rx_input
+            .as_ref()
+            .is_some_and(RxInputIdentity::is_fixed_p201_rx1)
     {
         return Err(SdrError::new(
             "capture_response",
@@ -490,6 +505,8 @@ struct CapabilitiesResponse {
     #[serde(rename = "software_summary")]
     _software_summary: bool,
     max_capture_bytes: u64,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
     #[serde(rename = "fpga_backend")]
     _fpga_backend: String,
     #[serde(rename = "fpga_identity_valid")]
@@ -517,6 +534,8 @@ struct StartResponse {
     session_generation: u64,
     session_state: String,
     restore_armed: bool,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
 }
 
 #[derive(Deserialize)]
@@ -535,6 +554,8 @@ struct ProfileResponse {
     rf_bandwidth_hz: u64,
     gain_mode: String,
     enabled_channels: u32,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
 }
 
 #[derive(Deserialize)]
@@ -556,6 +577,8 @@ struct CaptureResponse {
     overflow: bool,
     timeout: ExecutionTimeoutMetadata,
     health: ExecutionHealthMetadata,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
     relative_path: String,
 }
 
@@ -589,6 +612,8 @@ struct StopResponse {
     session_generation: u64,
     stopped: bool,
     restored: bool,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
 }
 
 #[derive(Deserialize)]
@@ -667,6 +692,7 @@ mod tests {
                     flags: 0,
                     source: "iio_adapter".to_owned(),
                 },
+                rx_input: RxInputIdentity::fixed_p201_rx1_fixture(),
             },
             post_execution_sdr: SdrSnapshot {
                 online: true,
@@ -675,6 +701,7 @@ mod tests {
                 iio_visible: true,
                 can_retune: true,
                 can_capture_iq: true,
+                rx_input: Some(RxInputIdentity::fixed_p201_rx1_fixture()),
             },
         }
     }
@@ -686,18 +713,18 @@ mod tests {
             let response_groups = vec![
                 vec![
                     "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
-                    "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
-                    "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"session_state\":\"owned\",\"restore_armed\":true}\n",
-                    "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"center_hz\":433920000,\"sample_rate_hz\":2100000,\"rf_bandwidth_hz\":500000,\"gain_mode\":\"slow_attack\",\"enabled_channels\":1}\n",
-                    "{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"feature_id\":\"agent-3-7\",\"samples_captured\":4096,\"bytes_written\":16384,\"sequence\":1,\"dropped_samples\":0,\"overflow\":false,\"timeout\":{\"limit_ms\":1000,\"elapsed_us\":1000,\"timed_out\":false},\"health\":{\"healthy\":true,\"flags\":0,\"source\":\"iio_adapter\"},\"relative_path\":\"agent-3-7/capture-3-1.ci16\"}\n",
+                    "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"},\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
+                    "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"session_state\":\"owned\",\"restore_armed\":true,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}}\n",
+                    "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"center_hz\":433920000,\"sample_rate_hz\":2100000,\"rf_bandwidth_hz\":500000,\"gain_mode\":\"slow_attack\",\"enabled_channels\":1,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}}\n",
+                    "{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"feature_id\":\"agent-3-7\",\"samples_captured\":4096,\"bytes_written\":16384,\"sequence\":1,\"dropped_samples\":0,\"overflow\":false,\"timeout\":{\"limit_ms\":1000,\"elapsed_us\":1000,\"timed_out\":false},\"health\":{\"healthy\":true,\"flags\":0,\"source\":\"iio_adapter\"},\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"},\"relative_path\":\"agent-3-7/capture-3-1.ci16\"}\n",
                     "{\"schema_version\":1,\"request_id\":6,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"active\":true,\"profile_applied\":true,\"restore_armed\":true,\"faulted\":false}\n",
-                    "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"stopped\":true,\"restored\":true}\n",
+                    "{\"schema_version\":1,\"request_id\":7,\"status\":\"ok\",\"generation\":3,\"session_generation\":3,\"stopped\":true,\"restored\":true,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}}\n",
                     "{\"schema_version\":1,\"request_id\":8,\"status\":\"ok\",\"closing\":true}\n",
                 ],
                 vec![
                     "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
-                    "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
-                    "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"healthy\":true,\"health_flags\":0,\"iio_phy_visible\":true,\"iio_rx_visible\":true,\"fpga_configured\":false,\"fpga_mapped\":false,\"fpga_identity_valid\":false,\"session_faulted\":false}\n",
+                    "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"},\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
+                    "{\"schema_version\":1,\"request_id\":3,\"status\":\"ok\",\"healthy\":true,\"health_flags\":0,\"iio_phy_visible\":true,\"iio_rx_visible\":true,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"},\"fpga_configured\":false,\"fpga_mapped\":false,\"fpga_identity_valid\":false,\"session_faulted\":false}\n",
                     "{\"schema_version\":1,\"request_id\":4,\"status\":\"ok\",\"closing\":true}\n",
                 ],
             ];

@@ -104,6 +104,17 @@ const char *sdrd_mode_name(sdrd_mode_t mode) {
   }
 }
 
+int sdrd_rx_input_identity_valid(const sdrd_rx_input_identity_t *identity) {
+  return identity != NULL && identity->identity_version == SDRD_RX_INPUT_IDENTITY_VERSION &&
+         identity->verified != 0 &&
+         strcmp(identity->front_panel_port, SDRD_RX_FRONT_PANEL_PORT) == 0 &&
+         strcmp(identity->logical_channel, SDRD_RX_LOGICAL_CHANNEL) == 0 &&
+         strcmp(identity->phy_channel, SDRD_RX_PHY_CHANNEL) == 0 &&
+         strcmp(identity->scan_i_channel, SDRD_RX_SCAN_I_CHANNEL) == 0 &&
+         strcmp(identity->scan_q_channel, SDRD_RX_SCAN_Q_CHANNEL) == 0 &&
+         strcmp(identity->rf_port_select, SDRD_RX_RF_PORT_SELECT) == 0;
+}
+
 static int set_config_value(
     sdrd_config_t *config,
     const char *key,
@@ -417,13 +428,78 @@ static int request_has_fields(const parsed_request_t *request, size_t count) {
 }
 
 static int radio_ops_available(const sdrd_radio_ops_t *radio) {
-  return radio != NULL && radio->begin_session != NULL && radio->snapshot != NULL &&
+  return radio != NULL && radio->probe_rx_input != NULL && radio->begin_session != NULL &&
+         radio->snapshot != NULL &&
          radio->apply_profile != NULL && radio->capture_iq != NULL && radio->cancel != NULL &&
          radio->stop != NULL && radio->restore != NULL;
 }
 
 static int power_ops_available(const sdrd_radio_ops_t *radio) {
   return radio != NULL && radio->capture_power != NULL;
+}
+
+static void expected_rx_input(
+    sdrd_rx_input_identity_t *identity,
+    int verified) {
+  if (identity == NULL) {
+    return;
+  }
+  memset(identity, 0, sizeof(*identity));
+  identity->identity_version = SDRD_RX_INPUT_IDENTITY_VERSION;
+  identity->verified = verified;
+  (void)copy_text(
+      identity->front_panel_port, sizeof(identity->front_panel_port), SDRD_RX_FRONT_PANEL_PORT);
+  (void)copy_text(
+      identity->logical_channel, sizeof(identity->logical_channel), SDRD_RX_LOGICAL_CHANNEL);
+  (void)copy_text(identity->phy_channel, sizeof(identity->phy_channel), SDRD_RX_PHY_CHANNEL);
+  (void)copy_text(
+      identity->scan_i_channel, sizeof(identity->scan_i_channel), SDRD_RX_SCAN_I_CHANNEL);
+  (void)copy_text(
+      identity->scan_q_channel, sizeof(identity->scan_q_channel), SDRD_RX_SCAN_Q_CHANNEL);
+  (void)copy_text(
+      identity->rf_port_select, sizeof(identity->rf_port_select), SDRD_RX_RF_PORT_SELECT);
+}
+
+static int probe_fixed_rx_input(
+    const sdrd_radio_ops_t *radio,
+    sdrd_rx_input_identity_t *identity) {
+  sdrd_rx_input_identity_t observed;
+  int rc;
+  expected_rx_input(identity, 0);
+  if (radio == NULL || radio->probe_rx_input == NULL) {
+    return -ENODEV;
+  }
+  memset(&observed, 0, sizeof(observed));
+  rc = radio->probe_rx_input(radio->context, &observed);
+  if (rc != 0 || sdrd_rx_input_identity_valid(&observed) == 0) {
+    return rc != 0 ? rc : -EPROTO;
+  }
+  *identity = observed;
+  return 0;
+}
+
+static int format_rx_input_json(
+    const sdrd_rx_input_identity_t *identity,
+    char *output,
+    size_t output_size) {
+  const int verified = sdrd_rx_input_identity_valid(identity);
+  const int written = snprintf(
+      output,
+      output_size,
+      "\"rx_input\":{\"identity_version\":%u,\"verified\":%s,"
+      "\"front_panel_port\":\"%s\",\"logical_channel\":\"%s\","
+      "\"phy_channel\":\"%s\",\"scan_i_channel\":\"%s\","
+      "\"scan_q_channel\":\"%s\",\"rf_port_select\":\"%s\","
+      "\"source\":\"iio_channel_attr\"}",
+      SDRD_RX_INPUT_IDENTITY_VERSION,
+      verified != 0 ? "true" : "false",
+      SDRD_RX_FRONT_PANEL_PORT,
+      SDRD_RX_LOGICAL_CHANNEL,
+      SDRD_RX_PHY_CHANNEL,
+      SDRD_RX_SCAN_I_CHANNEL,
+      SDRD_RX_SCAN_Q_CHANNEL,
+      SDRD_RX_RF_PORT_SELECT);
+  return written < 0 || (size_t)written >= output_size ? -ENOSPC : 0;
 }
 
 static int valid_feature_id(const char *feature_id) {
@@ -588,6 +664,8 @@ void sdrd_session_init(sdrd_session_t *session) {
 int sdrd_session_close(sdrd_session_t *session, const sdrd_radio_ops_t *radio) {
   int stop_rc = 0;
   int restore_rc = 0;
+  int identity_rc = 0;
+  sdrd_rx_input_identity_t identity;
   if (session == NULL) {
     return -EINVAL;
   }
@@ -602,15 +680,28 @@ int sdrd_session_close(sdrd_session_t *session, const sdrd_radio_ops_t *radio) {
   if (session->restore_required != 0) {
     restore_rc = radio->restore(radio->context, &session->saved_state);
   }
+  memset(&identity, 0, sizeof(identity));
+  identity_rc = probe_fixed_rx_input(radio, &identity);
+  if (identity_rc == 0 &&
+      sdrd_rx_input_identity_valid(&session->saved_state.rx_input) != 0 &&
+      memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
+    identity_rc = -EPROTO;
+  }
   session->active = 0;
   session->profile_applied = 0;
-  if (restore_rc == 0) {
+  if (restore_rc == 0 && identity_rc == 0) {
     session->restore_required = 0;
     memset(&session->current_state, 0, sizeof(session->current_state));
   } else {
     session->faulted = 1;
   }
-  return restore_rc != 0 ? restore_rc : stop_rc;
+  if (restore_rc != 0) {
+    return restore_rc;
+  }
+  if (identity_rc != 0) {
+    return identity_rc;
+  }
+  return stop_rc;
 }
 
 static int handle_start_session(
@@ -620,6 +711,8 @@ static int handle_start_session(
     char *response,
     size_t response_size) {
   uint64_t generation;
+  sdrd_rx_input_identity_t identity;
+  char rx_input_json[384];
   int rc;
   int written;
   if (request_has_fields(request, 4u) != 0 ||
@@ -632,8 +725,14 @@ static int handle_start_session(
   if (session->active != 0) {
     return format_error(request->request_id, "session_busy", response, response_size);
   }
-  rc = radio->snapshot(radio->context, &session->saved_state);
+  memset(&identity, 0, sizeof(identity));
+  rc = probe_fixed_rx_input(radio, &identity);
   if (rc != 0) {
+    return format_error(request->request_id, "rx_input_unavailable", response, response_size);
+  }
+  rc = radio->snapshot(radio->context, &session->saved_state);
+  if (rc != 0 || sdrd_rx_input_identity_valid(&session->saved_state.rx_input) == 0 ||
+      memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
     return format_error(request->request_id, "snapshot_failed", response, response_size);
   }
   rc = radio->begin_session(radio->context);
@@ -644,13 +743,18 @@ static int handle_start_session(
   session->active = 1;
   session->profile_applied = 0;
   session->restore_required = 1;
+  if (format_rx_input_json(&identity, rx_input_json, sizeof(rx_input_json)) != 0) {
+    (void)sdrd_session_close(session, radio);
+    return -ENOSPC;
+  }
   written = snprintf(
       response,
       response_size,
-      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"session_state\":\"owned\",\"restore_armed\":true}\n",
+      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"session_state\":\"owned\",\"restore_armed\":true,%s}\n",
       request->request_id,
       generation,
-      generation);
+      generation,
+      rx_input_json);
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
 
@@ -665,6 +769,8 @@ static int handle_apply_profile(
   uint64_t generation;
   uint32_t hardware_gain_db = 0u;
   uint32_t enabled_channels;
+  sdrd_rx_input_identity_t identity;
+  char rx_input_json[384];
   size_t expected_fields;
   int rc;
   int written;
@@ -700,7 +806,20 @@ static int handle_apply_profile(
     (void)snprintf(state.hardware_gain, sizeof(state.hardware_gain), "%u", hardware_gain_db);
   }
   state.enabled_channels = enabled_channels;
+  state.rx_input = session->saved_state.rx_input;
+  memset(&identity, 0, sizeof(identity));
+  rc = probe_fixed_rx_input(radio, &identity);
+  if (rc != 0 || memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
+    (void)sdrd_session_close(session, radio);
+    return format_error(request->request_id, "rx_input_changed", response, response_size);
+  }
   rc = radio->apply_profile(radio->context, &state);
+  if (rc == 0) {
+    rc = probe_fixed_rx_input(radio, &identity);
+    if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
+      rc = -EPROTO;
+    }
+  }
   if (rc != 0) {
     const int restore_rc = sdrd_session_close(session, radio);
     return format_error(
@@ -711,11 +830,15 @@ static int handle_apply_profile(
   }
   session->current_state = state;
   session->profile_applied = 1;
+  if (format_rx_input_json(&identity, rx_input_json, sizeof(rx_input_json)) != 0) {
+    (void)sdrd_session_close(session, radio);
+    return -ENOSPC;
+  }
   if (expected_fields == 10u) {
     written = snprintf(
         response,
         response_size,
-        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"hardware_gain_db\":%u,\"enabled_channels\":%u}\n",
+        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"hardware_gain_db\":%u,\"enabled_channels\":%u,%s}\n",
         request->request_id,
         generation,
         generation,
@@ -724,12 +847,13 @@ static int handle_apply_profile(
         state.rf_bandwidth_hz,
         state.gain_mode,
         hardware_gain_db,
-        state.enabled_channels);
+        state.enabled_channels,
+        rx_input_json);
   } else {
     written = snprintf(
         response,
         response_size,
-        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"enabled_channels\":%u}\n",
+        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"enabled_channels\":%u,%s}\n",
         request->request_id,
         generation,
         generation,
@@ -737,7 +861,8 @@ static int handle_apply_profile(
         state.sample_rate_hz,
         state.rf_bandwidth_hz,
         state.gain_mode,
-        state.enabled_channels);
+        state.enabled_channels,
+        rx_input_json);
   }
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
@@ -751,11 +876,14 @@ static int handle_capture_iq(
     size_t response_size) {
   sdrd_capture_request_t capture;
   sdrd_capture_result_t result;
+  sdrd_rx_input_identity_t identity;
+  char rx_input_json[384];
   uint64_t required_bytes;
   int rc;
   int written;
   memset(&capture, 0, sizeof(capture));
   memset(&result, 0, sizeof(result));
+  memset(&identity, 0, sizeof(identity));
   if ((request->field_count != 7u && request->field_count != 8u) ||
       parse_u64(request->fields[3], &capture.generation) != 0 ||
       parse_u64(request->fields[4], &capture.sample_count) != 0 ||
@@ -784,7 +912,22 @@ static int handle_capture_iq(
     return format_error(request->request_id, "capture_out_of_bounds", response, response_size);
   }
   (void)copy_text(capture.feature_id, sizeof(capture.feature_id), request->fields[6]);
-  rc = radio->capture_iq(radio->context, &capture, &result);
+  rc = probe_fixed_rx_input(radio, &identity);
+  if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
+    rc = -EPROTO;
+  }
+  if (rc == 0) {
+    rc = radio->capture_iq(radio->context, &capture, &result);
+  }
+  if (rc == 0) {
+    rc = probe_fixed_rx_input(radio, &identity);
+    if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
+      rc = -EPROTO;
+    }
+    if (rc != 0) {
+      result.health_flags |= SDRD_EXEC_HEALTH_RADIO_STATE;
+    }
+  }
   if (rc != 0) {
     const int restore_rc = sdrd_session_close(session, radio);
     normalize_capture_error(&result, rc, capture.timeout_ms);
@@ -802,10 +945,14 @@ static int handle_capture_iq(
     (void)sdrd_session_close(session, radio);
     return format_error(request->request_id, "adapter_contract_violation", response, response_size);
   }
+  if (format_rx_input_json(&identity, rx_input_json, sizeof(rx_input_json)) != 0) {
+    (void)sdrd_session_close(session, radio);
+    return -ENOSPC;
+  }
   written = snprintf(
       response,
       response_size,
-      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"feature_id\":\"%s\",\"samples_captured\":%" PRIu64 ",\"bytes_written\":%" PRIu64 ",\"sequence\":%" PRIu64 ",\"dropped_samples\":%" PRIu64 ",\"overflow\":%s,\"timeout\":{\"limit_ms\":%u,\"elapsed_us\":%" PRIu64 ",\"timed_out\":%s},\"health\":{\"healthy\":%s,\"flags\":%u,\"source\":\"iio_adapter\"},\"relative_path\":\"%s\"}\n",
+      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"feature_id\":\"%s\",\"samples_captured\":%" PRIu64 ",\"bytes_written\":%" PRIu64 ",\"sequence\":%" PRIu64 ",\"dropped_samples\":%" PRIu64 ",\"overflow\":%s,\"timeout\":{\"limit_ms\":%u,\"elapsed_us\":%" PRIu64 ",\"timed_out\":%s},\"health\":{\"healthy\":%s,\"flags\":%u,\"source\":\"iio_adapter\"},%s,\"relative_path\":\"%s\"}\n",
       request->request_id,
       capture.generation,
       capture.generation,
@@ -820,6 +967,7 @@ static int handle_capture_iq(
       result.timed_out != 0 ? "true" : "false",
       result.health_flags == 0u ? "true" : "false",
       result.health_flags,
+      rx_input_json,
       result.relative_path);
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
@@ -903,6 +1051,8 @@ static int handle_capture_iq_inline(
     size_t response_size) {
   sdrd_capture_request_t capture;
   sdrd_capture_result_t result;
+  sdrd_rx_input_identity_t identity;
+  char rx_input_json[384];
   char full_path[SDRD_MAX_PATH * 2u];
   char feature_path[SDRD_MAX_PATH * 2u];
   uint64_t required_bytes;
@@ -911,6 +1061,7 @@ static int handle_capture_iq_inline(
   int written;
   memset(&capture, 0, sizeof(capture));
   memset(&result, 0, sizeof(result));
+  memset(&identity, 0, sizeof(identity));
   if ((request->field_count != 7u && request->field_count != 8u) ||
       parse_u64(request->fields[3], &capture.generation) != 0 ||
       parse_u64(request->fields[4], &capture.sample_count) != 0 ||
@@ -939,7 +1090,22 @@ static int handle_capture_iq_inline(
     return format_error(request->request_id, "inline_capture_out_of_bounds", response, response_size);
   }
   (void)copy_text(capture.feature_id, sizeof(capture.feature_id), request->fields[6]);
-  rc = radio->capture_iq(radio->context, &capture, &result);
+  rc = probe_fixed_rx_input(radio, &identity);
+  if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
+    rc = -EPROTO;
+  }
+  if (rc == 0) {
+    rc = radio->capture_iq(radio->context, &capture, &result);
+  }
+  if (rc == 0) {
+    rc = probe_fixed_rx_input(radio, &identity);
+    if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
+      rc = -EPROTO;
+    }
+    if (rc != 0) {
+      result.health_flags |= SDRD_EXEC_HEALTH_RADIO_STATE;
+    }
+  }
   if (rc != 0) {
     const int restore_rc = sdrd_session_close(session, radio);
     normalize_capture_error(&result, rc, capture.timeout_ms);
@@ -957,6 +1123,10 @@ static int handle_capture_iq_inline(
       valid_relative_path(result.relative_path) == 0) {
     (void)sdrd_session_close(session, radio);
     return format_error(request->request_id, "adapter_contract_violation", response, response_size);
+  }
+  if (format_rx_input_json(&identity, rx_input_json, sizeof(rx_input_json)) != 0) {
+    (void)sdrd_session_close(session, radio);
+    return -ENOSPC;
   }
   written = snprintf(full_path, sizeof(full_path), "%s/%s", config->development_data_root,
                      result.relative_path);
@@ -981,7 +1151,7 @@ static int handle_capture_iq_inline(
       ",\"sequence\":%" PRIu64 ",\"dropped_samples\":%" PRIu64
       ",\"overflow\":%s,\"timeout\":{\"limit_ms\":%u,\"elapsed_us\":%" PRIu64
       ",\"timed_out\":%s},\"health\":{\"healthy\":%s,\"flags\":%u"
-      ",\"source\":\"iio_adapter\"},\"iq_base64\":\"",
+      ",\"source\":\"iio_adapter\"},%s,\"iq_base64\":\"",
       request->request_id,
       capture.generation,
       capture.generation,
@@ -994,7 +1164,8 @@ static int handle_capture_iq_inline(
       result.elapsed_us,
       result.timed_out != 0 ? "true" : "false",
       result.health_flags == 0u ? "true" : "false",
-      result.health_flags);
+      result.health_flags,
+      rx_input_json);
   if (written < 0 || (size_t)written >= response_size) {
     rc = -ENOSPC;
   } else {
@@ -1036,10 +1207,13 @@ static int handle_capture_power(
     size_t response_size) {
   sdrd_summary_request_t summary;
   sdrd_summary_result_t result;
+  sdrd_rx_input_identity_t identity;
+  char rx_input_json[384];
   int rc;
   int written;
   memset(&summary, 0, sizeof(summary));
   memset(&result, 0, sizeof(result));
+  memset(&identity, 0, sizeof(identity));
   if (request_has_fields(request, 7u) != 0 ||
       parse_u64(request->fields[3], &summary.generation) != 0 ||
       parse_u32(request->fields[4], &summary.frame_samples) != 0 ||
@@ -1060,7 +1234,23 @@ static int handle_capture_power(
   if (power_ops_available(radio) == 0) {
     return format_error(request->request_id, "software_summary_unavailable", response, response_size);
   }
-  rc = radio->capture_power(radio->context, &summary, &result);
+  rc = probe_fixed_rx_input(radio, &identity);
+  if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
+    rc = -EPROTO;
+  }
+  if (rc == 0) {
+    rc = radio->capture_power(radio->context, &summary, &result);
+  }
+  if (rc == 0) {
+    rc = probe_fixed_rx_input(radio, &identity);
+    if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
+      rc = -EPROTO;
+    }
+    if (rc != 0) {
+      result.health_flags |= SDRD_EXEC_HEALTH_RADIO_STATE;
+      result.status_flags = result.health_flags;
+    }
+  }
   if (rc != 0) {
     const int restore_rc = sdrd_session_close(session, radio);
     const char *code = rc == -ETIMEDOUT ? "power_timeout_restored" : "power_failed_restored";
@@ -1076,6 +1266,10 @@ static int handle_capture_power(
         response,
         response_size);
   }
+  if (format_rx_input_json(&identity, rx_input_json, sizeof(rx_input_json)) != 0) {
+    (void)sdrd_session_close(session, radio);
+    return -ENOSPC;
+  }
   written = snprintf(
       response,
       response_size,
@@ -1088,7 +1282,7 @@ static int handle_capture_power(
       ",\"dropped_samples\":%" PRIu64 ",\"overflow\":%s"
       ",\"timeout\":{\"limit_ms\":%u,\"elapsed_us\":%" PRIu64
       ",\"timed_out\":%s},\"health\":{\"healthy\":%s,\"flags\":%u"
-      ",\"source\":\"iio_adapter\"}}\n",
+      ",\"source\":\"iio_adapter\"},%s}\n",
       request->request_id,
       summary.generation,
       summary.generation,
@@ -1106,7 +1300,8 @@ static int handle_capture_power(
       result.elapsed_us,
       result.timed_out != 0 ? "true" : "false",
       result.health_flags == 0u ? "true" : "false",
-      result.health_flags);
+      result.health_flags,
+      rx_input_json);
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
 
@@ -1145,6 +1340,7 @@ static int handle_stop_session(
     char *response,
     size_t response_size) {
   uint64_t generation;
+  char rx_input_json[384];
   int rc;
   int written;
   if (request_has_fields(request, 4u) != 0 ||
@@ -1158,13 +1354,18 @@ static int handle_stop_session(
   if (rc != 0) {
     return format_error(request->request_id, "stop_or_restore_failed", response, response_size);
   }
+  if (format_rx_input_json(
+          &session->saved_state.rx_input, rx_input_json, sizeof(rx_input_json)) != 0) {
+    return -ENOSPC;
+  }
   written = snprintf(
       response,
       response_size,
-      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"stopped\":true,\"restored\":true}\n",
+      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"generation\":%" PRIu64 ",\"session_generation\":%" PRIu64 ",\"stopped\":true,\"restored\":true,%s}\n",
       request->request_id,
       generation,
-      generation);
+      generation,
+      rx_input_json);
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
 
@@ -1177,6 +1378,8 @@ int sdrd_handle_request(
     size_t response_size) {
   parsed_request_t request;
   sdrd_status_t status;
+  sdrd_rx_input_identity_t rx_input;
+  char rx_input_json[384];
   char error[256];
   int rc;
   int written;
@@ -1214,31 +1417,42 @@ int sdrd_handle_request(
     if (rc != 0) {
       return format_error(request.request_id, "probe_failed", response, response_size);
     }
+    memset(&rx_input, 0, sizeof(rx_input));
+    rc = probe_fixed_rx_input(radio, &rx_input);
+    if (config->mode == SDRD_MODE_CONTROLLED && rc != 0) {
+      status.health_flags |= SDRD_HEALTH_RX_INPUT_IDENTITY_INVALID;
+    }
+    if (format_rx_input_json(&rx_input, rx_input_json, sizeof(rx_input_json)) != 0) {
+      return -ENOSPC;
+    }
     if (strcmp(request.command, "CAPABILITIES") == 0) {
       const int control = config->mode == SDRD_MODE_CONTROLLED && radio_ops_available(radio) != 0 &&
+                          sdrd_rx_input_identity_valid(&rx_input) != 0 &&
                           session->faulted == 0;
       written = snprintf(
           response,
           response_size,
-          "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"mode\":\"%s\",\"iio_visible\":%s,\"radio_control\":%s,\"raw_iq_capture\":%s,\"software_summary\":%s,\"max_capture_bytes\":%" PRIu64 ",\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
+          "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"mode\":\"%s\",\"iio_visible\":%s,\"radio_control\":%s,\"raw_iq_capture\":%s,\"software_summary\":%s,\"max_capture_bytes\":%" PRIu64 ",%s,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
           request.request_id,
           sdrd_mode_name(config->mode),
           status.iio_phy_visible != 0 && status.iio_rx_visible != 0 ? "true" : "false",
           control != 0 ? "true" : "false",
           control != 0 ? "true" : "false",
           control != 0 && power_ops_available(radio) != 0 ? "true" : "false",
-          config->max_capture_bytes);
+          config->max_capture_bytes,
+          rx_input_json);
     } else {
       const int healthy = status.health_flags == 0u && session->faulted == 0;
       written = snprintf(
           response,
           response_size,
-          "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"healthy\":%s,\"health_flags\":%u,\"iio_phy_visible\":%s,\"iio_rx_visible\":%s,\"fpga_configured\":false,\"fpga_mapped\":false,\"fpga_identity_valid\":false,\"session_faulted\":%s}\n",
+          "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"healthy\":%s,\"health_flags\":%u,\"iio_phy_visible\":%s,\"iio_rx_visible\":%s,%s,\"fpga_configured\":false,\"fpga_mapped\":false,\"fpga_identity_valid\":false,\"session_faulted\":%s}\n",
           request.request_id,
           healthy != 0 ? "true" : "false",
           status.health_flags,
           status.iio_phy_visible != 0 ? "true" : "false",
           status.iio_rx_visible != 0 ? "true" : "false",
+          rx_input_json,
           session->faulted != 0 ? "true" : "false");
     }
   } else if (strcmp(request.command, "QUIT") == 0) {

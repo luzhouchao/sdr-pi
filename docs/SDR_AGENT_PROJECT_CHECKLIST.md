@@ -384,15 +384,16 @@ Evidence:
       duplicate-start rejection, sequence/metadata/resource/thermal accounting
       and verified final restoration; see
       [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
-- [ ] Make the fixed production physical input `RX1 / A_BALANCED` a probed,
+- [x] Make the fixed production physical input `RX1 / A_BALANCED` a probed,
       audited and fail-closed SDRD/1 identity, return it with profile/capture or
       health metadata, and verify that it is unchanged on every exit path
-      without exposing a Planner-selectable port write. Today
-      `enabled_channels=1` proves only the software RX0 `voltage0,1` I/Q scan
-      pair; `sdrd` neither reads nor locks `rf_port_select`, so the protocol
-      alone cannot prove which front-panel connector supplied a capture. This
-      does not invalidate the completed photographed/FFT RX1 evidence; it blocks
-      production capability from relying on that out-of-band fact.
+      without exposing a Planner-selectable port write. The Adapter now reads
+      and strictly verifies `voltage0/rf_port_select=A_BALANCED`, correlates it
+      with the software RX0 `voltage0,1` I/Q pair and front-panel RX1, and never
+      writes the selector. It was deployed and live-validated with exact identity
+      propagation, fail-closed mismatch tests, bounded RX, disconnect
+      restoration and transient cleanup; see
+      [`P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md`](P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md).
 
 Evidence:
 
@@ -408,6 +409,7 @@ Evidence:
 - [`SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md`](SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md)
 - [`SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md)
 - [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md)
+- [`P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md`](P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 4. AGX acquisition, candidate refinement, and model input

@@ -17,6 +17,13 @@ extern "C" {
 #define SDRD_MAX_INLINE_CAPTURE_BYTES (256u * 1024u)
 #define SDRD_MAX_RESPONSE (384u * 1024u)
 #define SDRD_MAX_FEATURE_ID 64u
+#define SDRD_RX_INPUT_IDENTITY_VERSION 1u
+#define SDRD_RX_FRONT_PANEL_PORT "RX1"
+#define SDRD_RX_LOGICAL_CHANNEL "RX0"
+#define SDRD_RX_PHY_CHANNEL "voltage0"
+#define SDRD_RX_SCAN_I_CHANNEL "voltage0"
+#define SDRD_RX_SCAN_Q_CHANNEL "voltage1"
+#define SDRD_RX_RF_PORT_SELECT "A_BALANCED"
 
 typedef enum sdrd_mode {
   SDRD_MODE_SHADOW = 0,
@@ -26,6 +33,7 @@ typedef enum sdrd_mode {
 enum sdrd_health_flag {
   SDRD_HEALTH_IIO_PHY_MISSING = 1u << 0,
   SDRD_HEALTH_IIO_RX_MISSING = 1u << 1,
+  SDRD_HEALTH_RX_INPUT_IDENTITY_INVALID = 1u << 2,
   SDRD_HEALTH_CONFIG_INVALID = 1u << 4
 };
 
@@ -58,6 +66,17 @@ typedef struct sdrd_config {
   uint64_t max_capture_bytes;
 } sdrd_config_t;
 
+typedef struct sdrd_rx_input_identity {
+  uint32_t identity_version;
+  int verified;
+  char front_panel_port[16];
+  char logical_channel[16];
+  char phy_channel[16];
+  char scan_i_channel[16];
+  char scan_q_channel[16];
+  char rf_port_select[32];
+} sdrd_rx_input_identity_t;
+
 typedef struct sdrd_radio_state {
   uint64_t center_hz;
   uint32_t sample_rate_hz;
@@ -66,6 +85,7 @@ typedef struct sdrd_radio_state {
   char hardware_gain[32];
   uint32_t enabled_channels;
   uint32_t scan_channel_mask;
+  sdrd_rx_input_identity_t rx_input;
 } sdrd_radio_state_t;
 
 typedef struct sdrd_capture_request {
@@ -114,6 +134,7 @@ typedef struct sdrd_summary_result {
 
 typedef struct sdrd_radio_ops {
   void *context;
+  int (*probe_rx_input)(void *context, sdrd_rx_input_identity_t *identity);
   int (*begin_session)(void *context);
   int (*snapshot)(void *context, sdrd_radio_state_t *state);
   int (*apply_profile)(void *context, const sdrd_radio_state_t *state);
@@ -158,6 +179,7 @@ int sdrd_config_validate(
     char *error,
     size_t error_size);
 const char *sdrd_mode_name(sdrd_mode_t mode);
+int sdrd_rx_input_identity_valid(const sdrd_rx_input_identity_t *identity);
 
 int sdrd_probe_status(
     const sdrd_config_t *config,

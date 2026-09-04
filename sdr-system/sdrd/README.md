@@ -4,6 +4,9 @@
 Buildroot Linux. The deployed configuration remains deliberately read-only:
 
 - it reports `ad9361-phy` and `cf-ad9361-lpc` visibility;
+- controlled mode admits capture only when the read-only AD9361
+  `voltage0/rf_port_select` probe proves the fixed physical path
+  `RX1 / RX0 / A_BALANCED` and the `voltage0,1` I/Q scan pair;
 - it retains constant false/zero FPGA response fields only for SDRD/1 client
   compatibility; no FPGA configuration or implementation remains;
 - it serves a small versioned protocol over a persistent TCP connection;
@@ -68,6 +71,20 @@ the Adapter returned no such flag.  Timeout/capture failures return the same
 metadata together with the restoration-specific error code, and the Rust
 client preserves that object in its error/audit path.
 
+`CAPABILITIES`, `HEALTH`, session start, profile, capture/summary, and stop
+responses carry a versioned `rx_input` object. Its only admitted controlled-mode
+identity is:
+
+```json
+{"identity_version":1,"verified":true,"front_panel_port":"RX1","logical_channel":"RX0","phy_channel":"voltage0","scan_i_channel":"voltage0","scan_q_channel":"voltage1","rf_port_select":"A_BALANCED","source":"iio_channel_attr"}
+```
+
+The Adapter reads `rf_port_select`; it never writes it and the protocol exposes
+no port selector. Missing, unreadable, mismatched, or changed identity disables
+controlled capabilities and fails closed. The identity is checked when the
+Adapter opens, before ownership, around profile and capture work, and after
+stop/restoration on every session exit path.
+
 One normal connection exclusively owns execution. `CANCEL_SESSION` is the only
 command accepted on a second connection while that owner is active. It must
 name the active generation; an early or stale generation fails closed. The
@@ -92,7 +109,8 @@ implementation or configuration path.
 `APPLY_PROFILE` accepts only the configured subset of the verified project
 limits: 70 MHz..6 GHz center frequency, 2.083333..30.72 MS/s sample rate,
 0.2..56 MHz RF bandwidth, RF bandwidth no greater than sample rate, allowlisted
-gain modes, and RX0 only in this slice. `CAPTURE_IQ` requires a safe feature ID,
+gain modes, and the fixed software RX0 / physical RX1 input only in this slice.
+`CAPTURE_IQ` requires a safe feature ID,
 uses four bytes per complex int16 sample, and cannot exceed the configured hard
 cap (64 MiB by default). Adapter results use paths relative to
 `/tmp/sdr-agent-dev`; clients cannot submit an arbitrary output path.
@@ -110,14 +128,15 @@ restore. A failed restore faults the session and prevents new ownership.
 Cancellation interrupts an active libiio buffer refill, or remains latched
 until capture begins, then follows the same capture-failure restoration path.
 The Adapter snapshots and restores LO, sample rate, bandwidth, gain mode, and
-enabled channels.
+enabled channels, while proving that the non-writable-by-this-service RX input
+identity stayed unchanged.
 
 `CAPTURE_IQ` returns bounded metadata and a safe path relative to the configured
 development-data root. `CAPTURE_IQ_INLINE` is the deliberately bounded exception
 that transports base64 IQ to AGX and immediately removes the P201 temporary file.
 The AGX sweep path propagates the P201 request/generation, sequence,
-drop/overflow, timeout and health metadata into each `SweepPoint`; it does not
-synthesize zero status or elapsed time after transport.
+drop/overflow, timeout, health and RX-input identity metadata into each
+`SweepPoint`; it does not synthesize zero status or elapsed time after transport.
 
 ## Native build and tests
 

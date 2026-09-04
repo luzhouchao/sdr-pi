@@ -28,7 +28,7 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
 | --- | --- | --- |
 | 第1章 | Agent、Web、终端、本机 Spark 和扫频结果界面已部署 | 识别状态的展示、持久化、人工删除和紧凑 Agent 反馈 |
 | 第2章 | 扫频、精查、IQ、预算、批准、audit、Planner/SDR stop 已闭环 | 识别 capability、批准、执行、回灌、Worker stop/GPU gate 和完整 Planner 回归 |
-| 第3章 | 有界 RX、inline IQ、取消、恢复和长期重连已完成 | 将物理 `RX1 / A_BALANCED` 变成协议可证明且全程不变的固定输入身份 |
+| 第3章 | 已完成：有界 RX、inline IQ、取消、恢复、长期重连和固定 RX1 身份均已实机验证 | 无；作为第4章输入合同的稳定硬件基线 |
 
 ## 第1章：Agent/Harness 与用户界面
 
@@ -113,14 +113,16 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       完成 1,800 秒、100 次有限采集的真实设备重连/故障验证。
 - [x] 实验路径已用软件 RX0 的 `voltage0,1` I/Q 对从面板 RX1 收到 1,024 个
       complex-int16 样本并传至 AGX；该证据只证明链路接通。
+- [x] 已将生产固定物理输入 `RX1 / A_BALANCED` 实现为 Adapter 只读探测、
+      SDRD/1 可审计且失败关闭的版本化身份；capability、health、profile、capture
+      与 stop 均返回该身份，所有 session 退出路径验证不变，Rust 客户端严格
+      关联，且已完成 ARMv7 部署、有限实收和恢复/清理验证；见
+      [`P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md`](P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md)。
 
 ### 还未完成
 
-- [ ] 把生产固定物理输入 `RX1 / A_BALANCED` 变成可探测、可审计、失败关闭的
-      Chapter 3 合同，并在 profile/capture/health 中返回身份、在所有退出路径
-      验证它没有变化。当前 `enabled_channels=1` 只校验 `voltage0,1` I/Q scan
-      pair，`sdrd` 没有读取或锁定 `rf_port_select`，因此不能单靠协议证明面板
-      端口；该字段保持 Adapter 固定探针，不开放给 Planner 选择或写入。
+- [x] 第3章没有剩余实施项；后续不得把物理端口变成 Planner 可选参数，也不得
+      把 AGX 聚合或识别下放到 P201。
 
 除这个物理输入身份缺口外，第3章现有有限采集、inline 传输、取消、恢复和长期
 重连能力足以承载第一版 Chapter 4 单/多窗口捕获；不需要在 P201 增加 DSP、聚合
@@ -234,7 +236,7 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
 
 ## 推荐交付顺序
 
-- [ ] A：先补第3章 RX1/A_BALANCED 身份合同和全程不变检查，并与第4章
+- [x] A：先补第3章 RX1/A_BALANCED 身份合同和全程不变检查，并与第4章
       `RecognitionInputProfile`/golden fixtures 一起评审。
 - [ ] B：完成第4章候选资格、多窗口 capture 和第5章无泄漏语料/
       `rf_preprocess_v1` 消融。

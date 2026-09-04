@@ -46,11 +46,42 @@ typedef struct fake_radio {
   unsigned int cancel_calls;
   unsigned int stop_calls;
   unsigned int restore_calls;
+  unsigned int probe_rx_input_calls;
   int apply_result;
   int capture_result;
   int restore_result;
+  int probe_rx_input_result;
+  int invalidate_rx_input_after_capture;
   char data_root[SDRD_MAX_PATH];
 } fake_radio_t;
+
+static void set_valid_rx_input(sdrd_rx_input_identity_t *identity) {
+  memset(identity, 0, sizeof(*identity));
+  identity->identity_version = SDRD_RX_INPUT_IDENTITY_VERSION;
+  identity->verified = 1;
+  assert(snprintf(identity->front_panel_port, sizeof(identity->front_panel_port), "%s",
+                  SDRD_RX_FRONT_PANEL_PORT) > 0);
+  assert(snprintf(identity->logical_channel, sizeof(identity->logical_channel), "%s",
+                  SDRD_RX_LOGICAL_CHANNEL) > 0);
+  assert(snprintf(identity->phy_channel, sizeof(identity->phy_channel), "%s",
+                  SDRD_RX_PHY_CHANNEL) > 0);
+  assert(snprintf(identity->scan_i_channel, sizeof(identity->scan_i_channel), "%s",
+                  SDRD_RX_SCAN_I_CHANNEL) > 0);
+  assert(snprintf(identity->scan_q_channel, sizeof(identity->scan_q_channel), "%s",
+                  SDRD_RX_SCAN_Q_CHANNEL) > 0);
+  assert(snprintf(identity->rf_port_select, sizeof(identity->rf_port_select), "%s",
+                  SDRD_RX_RF_PORT_SELECT) > 0);
+}
+
+static int fake_probe_rx_input(void *context, sdrd_rx_input_identity_t *identity) {
+  fake_radio_t *fake = context;
+  ++fake->probe_rx_input_calls;
+  if (fake->probe_rx_input_result != 0) {
+    return fake->probe_rx_input_result;
+  }
+  *identity = fake->state.rx_input;
+  return 0;
+}
 
 static int fake_snapshot(void *context, sdrd_radio_state_t *state) {
   fake_radio_t *fake = context;
@@ -113,6 +144,9 @@ static int fake_capture(
     }
     assert(fclose(stream) == 0);
   }
+  if (fake->invalidate_rx_input_after_capture != 0) {
+    fake->probe_rx_input_result = -EPROTO;
+  }
   return 0;
 }
 
@@ -156,8 +190,12 @@ static int fake_restore(void *context, const sdrd_radio_state_t *state) {
 
 static sdrd_radio_ops_t fake_ops(fake_radio_t *fake) {
   sdrd_radio_ops_t ops;
+  if (sdrd_rx_input_identity_valid(&fake->state.rx_input) == 0) {
+    set_valid_rx_input(&fake->state.rx_input);
+  }
   memset(&ops, 0, sizeof(ops));
   ops.context = fake;
+  ops.probe_rx_input = fake_probe_rx_input;
   ops.begin_session = fake_begin_session;
   ops.snapshot = fake_snapshot;
   ops.apply_profile = fake_apply;
@@ -193,6 +231,8 @@ static void test_shadow_config_and_protocol(const char *root) {
   assert(sdrd_format_response(&config, "SDRD/1 HEALTH 42", response, sizeof(response)) == 0);
   assert(strstr(response, "\"healthy\":true") != NULL);
   assert(strstr(response, "\"iio_phy_visible\":true") != NULL);
+  assert(strstr(response, "\"front_panel_port\":\"RX1\"") != NULL);
+  assert(strstr(response, "\"verified\":false") != NULL);
   assert(sdrd_format_response(&config, "SDRD/1 APPLY_PROFILE 43", response, sizeof(response)) == 0);
   assert(strstr(response, "\"error\":\"read_only_shadow\"") != NULL);
 }
@@ -241,6 +281,8 @@ static void test_controlled_allowlist_and_restore(void) {
   assert(sdrd_handle_request(
              &config, &session, &ops, "SDRD/1 CAPABILITIES 2", response, sizeof(response)) == 0);
   assert(strstr(response, "\"software_summary\":true") != NULL);
+  assert(strstr(response, "\"verified\":true") != NULL);
+  assert(strstr(response, "\"rf_port_select\":\"A_BALANCED\"") != NULL);
   assert(sdrd_handle_request(
              &config,
              &session,
@@ -249,6 +291,7 @@ static void test_controlled_allowlist_and_restore(void) {
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"restore_armed\":true") != NULL);
+  assert(strstr(response, "\"front_panel_port\":\"RX1\"") != NULL);
   assert(fake.snapshot_calls == 1u);
   assert(sdrd_handle_request(
              &config,
@@ -302,6 +345,7 @@ static void test_controlled_allowlist_and_restore(void) {
              sizeof(response)) == 0);
   assert(strstr(response, "\"gain_mode\":\"manual\"") != NULL);
   assert(strstr(response, "\"hardware_gain_db\":30") != NULL);
+  assert(strstr(response, "\"logical_channel\":\"RX0\"") != NULL);
   assert(strcmp(fake.state.hardware_gain, "30") == 0);
   assert(sdrd_handle_request(
              &config,
@@ -317,6 +361,7 @@ static void test_controlled_allowlist_and_restore(void) {
   assert(strstr(response, "\"timeout\":{\"limit_ms\":2000") != NULL);
   assert(strstr(response, "\"health\":{\"healthy\":true,\"flags\":0") != NULL);
   assert(strstr(response, "\"relative_path\":\"sdrd-schema-v1/capture-17.iq\"") != NULL);
+  assert(strstr(response, "\"rf_port_select\":\"A_BALANCED\"") != NULL);
   assert(fake.capture_calls == 1u);
   assert(sdrd_handle_request(
              &config,
@@ -353,11 +398,78 @@ static void test_controlled_allowlist_and_restore(void) {
              response,
              sizeof(response)) == 0);
   assert(strstr(response, "\"restored\":true") != NULL);
+  assert(strstr(response, "\"verified\":true") != NULL);
   assert(fake.stop_calls == 1u);
   assert(fake.restore_calls == 1u);
   assert(fake.state.center_hz == 915000000u);
   assert(session.active == 0);
   assert(session.restore_required == 0);
+}
+
+static void test_rx_input_identity_fails_closed(void) {
+  sdrd_config_t config;
+  sdrd_session_t session;
+  fake_radio_t fake;
+  sdrd_radio_ops_t ops;
+  char response[SDRD_MAX_RESPONSE];
+  memset(&fake, 0, sizeof(fake));
+  fake.state.center_hz = 433920000u;
+  fake.state.sample_rate_hz = 3000000u;
+  fake.state.rf_bandwidth_hz = 2000000u;
+  fake.state.enabled_channels = 1u;
+  fake.state.scan_channel_mask = 3u;
+  assert(snprintf(fake.state.gain_mode, sizeof(fake.state.gain_mode), "slow_attack") > 0);
+  ops = fake_ops(&fake);
+  sdrd_config_defaults(&config);
+  config.mode = SDRD_MODE_CONTROLLED;
+  sdrd_session_init(&session);
+
+  fake.probe_rx_input_result = -EPROTO;
+  assert(sdrd_handle_request(
+             &config, &session, &ops, "SDRD/1 CAPABILITIES 1", response, sizeof(response)) == 0);
+  assert(strstr(response, "\"radio_control\":false") != NULL);
+  assert(strstr(response, "\"verified\":false") != NULL);
+  assert(sdrd_handle_request(
+             &config, &session, &ops, "SDRD/1 HEALTH 2", response, sizeof(response)) == 0);
+  assert(strstr(response, "\"healthy\":false") != NULL);
+  assert(strstr(response, "\"health_flags\":7") != NULL);
+  assert(sdrd_handle_request(
+             &config, &session, &ops, "SDRD/1 START_SESSION 3 9001", response,
+             sizeof(response)) == 0);
+  assert(strstr(response, "\"error\":\"rx_input_unavailable\"") != NULL);
+
+  fake.probe_rx_input_result = 0;
+  assert(sdrd_handle_request(
+             &config, &session, &ops, "SDRD/1 START_SESSION 4 9002", response,
+             sizeof(response)) == 0);
+  fake.probe_rx_input_result = -EPROTO;
+  assert(sdrd_handle_request(
+             &config, &session, &ops,
+             "SDRD/1 APPLY_PROFILE 5 9002 433920000 3000000 2000000 slow_attack 1",
+             response, sizeof(response)) == 0);
+  assert(strstr(response, "\"error\":\"rx_input_changed\"") != NULL);
+  assert(session.active == 0);
+  assert(session.faulted != 0);
+
+  fake.probe_rx_input_result = 0;
+  fake.invalidate_rx_input_after_capture = 0;
+  sdrd_session_init(&session);
+  assert(sdrd_handle_request(
+             &config, &session, &ops, "SDRD/1 START_SESSION 6 9003", response,
+             sizeof(response)) == 0);
+  assert(sdrd_handle_request(
+             &config, &session, &ops,
+             "SDRD/1 APPLY_PROFILE 7 9003 433920000 3000000 2000000 slow_attack 1",
+             response, sizeof(response)) == 0);
+  fake.invalidate_rx_input_after_capture = 1;
+  assert(sdrd_handle_request(
+             &config, &session, &ops,
+             "SDRD/1 CAPTURE_IQ 8 9003 1024 4096 rx-input-change", response,
+             sizeof(response)) == 0);
+  assert(strstr(response, "\"error\":\"capture_failed_restore_fault\"") != NULL);
+  assert(strstr(response, "\"flags\":64") != NULL);
+  assert(session.active == 0);
+  assert(session.faulted != 0);
 }
 
 static void test_disconnect_and_failure_restore(void) {
@@ -522,6 +634,7 @@ int main(void) {
   test_shadow_config_and_protocol(root);
   test_iio_control_limits();
   test_controlled_allowlist_and_restore();
+  test_rx_input_identity_fails_closed();
   test_disconnect_and_failure_restore();
   test_inline_iq_transport_and_cleanup(root);
   remove_test_tree(root);

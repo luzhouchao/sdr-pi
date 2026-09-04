@@ -1,6 +1,6 @@
 use crate::execution::{ExecutionHealthMetadata, ExecutionTimeoutMetadata};
 use crate::protocol::{CandidateSummary, HealthSummary, ObservationSummary};
-use crate::sdr::{SdrError, SdrdWire};
+use crate::sdr::{RxInputIdentity, SdrError, SdrdWire};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::cmp::Ordering;
@@ -89,6 +89,7 @@ pub struct SweepPoint {
     pub elapsed_us: u64,
     pub timeout: ExecutionTimeoutMetadata,
     pub health: ExecutionHealthMetadata,
+    pub rx_input: RxInputIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -331,7 +332,13 @@ fn run_sdrd_points(
         ));
     }
     let capabilities: CapabilitiesResponse = wire.request("CAPABILITIES", "")?;
-    if !capabilities.iio_visible || !capabilities.radio_control {
+    if !capabilities.iio_visible
+        || !capabilities.radio_control
+        || !capabilities
+            .rx_input
+            .as_ref()
+            .is_some_and(RxInputIdentity::is_fixed_p201_rx1)
+    {
         return Err(SweepError::new(
             "radio_capability",
             "SDRD cannot own and retune the receive path",
@@ -352,6 +359,7 @@ fn run_sdrd_points(
         if start.generation != generation
             || start.session_generation != generation
             || !start.restore_armed
+            || start.rx_input != capabilities.rx_input
         {
             return Err(SweepError::new(
                 "session_start",
@@ -388,6 +396,7 @@ fn run_sdrd_points(
                         "slow_attack"
                     }
                 || profile.hardware_gain_db != plan.gain_db
+                || profile.rx_input != capabilities.rx_input
             {
                 return Err(SweepError::new(
                     "profile_response",
@@ -425,6 +434,7 @@ fn run_sdrd_points(
                 || !capture.health.healthy
                 || capture.health.flags != 0
                 || capture.health.source != "iio_adapter"
+                || capture.rx_input != capabilities.rx_input
             {
                 return Err(SweepError::new(
                     "agx_capture_shape",
@@ -480,6 +490,9 @@ fn run_sdrd_points(
                 elapsed_us,
                 timeout: capture.timeout,
                 health: capture.health,
+                rx_input: capture
+                    .rx_input
+                    .expect("validated SDRD inline capture identity must be present"),
             });
         }
         let stop: StopResponse = wire.request("STOP_SESSION", &generation.to_string())?;
@@ -487,6 +500,7 @@ fn run_sdrd_points(
             || stop.session_generation != generation
             || !stop.stopped
             || !stop.restored
+            || stop.rx_input != capabilities.rx_input
         {
             return Err(SweepError::new(
                 "restore_response",
@@ -1100,6 +1114,8 @@ struct CapabilitiesResponse {
     _software_summary: bool,
     #[serde(rename = "max_capture_bytes")]
     _max_capture_bytes: u64,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
     #[serde(rename = "fpga_backend")]
     _fpga_backend: String,
     #[serde(rename = "fpga_identity_valid")]
@@ -1128,6 +1144,8 @@ struct StartResponse {
     #[serde(rename = "session_state")]
     _session_state: String,
     restore_armed: bool,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
 }
 
 #[derive(Deserialize)]
@@ -1149,6 +1167,8 @@ struct ProfileResponse {
     hardware_gain_db: Option<i16>,
     #[serde(rename = "enabled_channels")]
     _enabled_channels: u32,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
 }
 
 #[derive(Deserialize)]
@@ -1168,6 +1188,8 @@ struct InlineCaptureResponse {
     overflow: bool,
     timeout: ExecutionTimeoutMetadata,
     health: ExecutionHealthMetadata,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
     iq_base64: String,
 }
 
@@ -1184,6 +1206,8 @@ struct StopResponse {
     session_generation: u64,
     stopped: bool,
     restored: bool,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
 }
 
 #[derive(Deserialize)]
@@ -1255,6 +1279,29 @@ mod tests {
             });
         }
         output
+    }
+
+    fn with_fixed_rx_input(response: &str) -> String {
+        let mut value: serde_json::Value = serde_json::from_str(response).unwrap();
+        let object = value.as_object_mut().unwrap();
+        let carries_rx_contract = object.get("status").and_then(serde_json::Value::as_str)
+            == Some("ok")
+            && [
+                "radio_control",
+                "session_state",
+                "center_hz",
+                "bytes_transferred",
+                "stopped",
+            ]
+            .iter()
+            .any(|field| object.contains_key(*field));
+        if carries_rx_contract {
+            object.insert(
+                "rx_input".to_owned(),
+                serde_json::to_value(RxInputIdentity::fixed_p201_rx1_fixture()).unwrap(),
+            );
+        }
+        format!("{}\n", serde_json::to_string(&value).unwrap())
     }
 
     fn plan() -> SweepPlan {
@@ -1349,6 +1396,7 @@ mod tests {
                 flags: 0,
                 source: "replay".into(),
             },
+            rx_input: RxInputIdentity::fixed_p201_rx1_fixture(),
         }
     }
 
@@ -1470,6 +1518,7 @@ mod tests {
                     flags: 0,
                     source: "replay".into(),
                 },
+                rx_input: RxInputIdentity::fixed_p201_rx1_fixture(),
             }],
             candidates: Vec::new(),
             dataset: None,
@@ -1550,6 +1599,7 @@ mod tests {
                 if index == 4 {
                     assert!(request.starts_with("SDRD/1 CAPTURE_IQ_INLINE 5 9 64 256 "));
                 }
+                let response = with_fixed_rx_input(response);
                 stream.write_all(response.as_bytes()).unwrap();
                 stream.flush().unwrap();
             }
@@ -1588,6 +1638,7 @@ mod tests {
                 let mut request = String::new();
                 reader.read_line(&mut request).unwrap();
                 assert!(!request.contains("START_SESSION"));
+                let response = with_fixed_rx_input(response);
                 stream.write_all(response.as_bytes()).unwrap();
                 stream.flush().unwrap();
             }
@@ -1624,6 +1675,7 @@ mod tests {
                 if index == 5 {
                     assert!(request.starts_with("SDRD/1 STOP_SESSION 6 9"));
                 }
+                let response = with_fixed_rx_input(response);
                 stream.write_all(response.as_bytes()).unwrap();
                 stream.flush().unwrap();
             }
@@ -1670,6 +1722,7 @@ mod tests {
                 if index == 5 {
                     assert!(request.starts_with("SDRD/1 STOP_SESSION 6 9"));
                 }
+                let response = with_fixed_rx_input(response);
                 stream.write_all(response.as_bytes()).unwrap();
                 stream.flush().unwrap();
             }

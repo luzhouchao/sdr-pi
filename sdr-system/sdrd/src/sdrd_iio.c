@@ -200,6 +200,58 @@ static int read_text_attr(
   return 0;
 }
 
+static void trim_text_attr(char *text) {
+  char *begin;
+  size_t length;
+  if (text == NULL) {
+    return;
+  }
+  begin = text;
+  while (*begin == ' ' || *begin == '\t' || *begin == '\r' || *begin == '\n') {
+    ++begin;
+  }
+  if (begin != text) {
+    memmove(text, begin, strlen(begin) + 1u);
+  }
+  length = strlen(text);
+  while (length > 0u &&
+         (text[length - 1u] == ' ' || text[length - 1u] == '\t' ||
+          text[length - 1u] == '\r' || text[length - 1u] == '\n')) {
+    text[--length] = '\0';
+  }
+}
+
+static int adapter_probe_rx_input(void *context, sdrd_rx_input_identity_t *identity) {
+  sdrd_iio_adapter_t *adapter = context;
+  int rc;
+  if (adapter == NULL || identity == NULL || adapter->phy_rx0 == NULL) {
+    return -EINVAL;
+  }
+  memset(identity, 0, sizeof(*identity));
+  identity->identity_version = SDRD_RX_INPUT_IDENTITY_VERSION;
+  (void)copy_text(
+      identity->front_panel_port, sizeof(identity->front_panel_port), SDRD_RX_FRONT_PANEL_PORT);
+  (void)copy_text(
+      identity->logical_channel, sizeof(identity->logical_channel), SDRD_RX_LOGICAL_CHANNEL);
+  (void)copy_text(identity->phy_channel, sizeof(identity->phy_channel), SDRD_RX_PHY_CHANNEL);
+  (void)copy_text(
+      identity->scan_i_channel, sizeof(identity->scan_i_channel), SDRD_RX_SCAN_I_CHANNEL);
+  (void)copy_text(
+      identity->scan_q_channel, sizeof(identity->scan_q_channel), SDRD_RX_SCAN_Q_CHANNEL);
+  rc = read_text_attr(
+      adapter,
+      adapter->phy_rx0,
+      "rf_port_select",
+      identity->rf_port_select,
+      sizeof(identity->rf_port_select));
+  if (rc != 0) {
+    return rc;
+  }
+  trim_text_attr(identity->rf_port_select);
+  identity->verified = strcmp(identity->rf_port_select, SDRD_RX_RF_PORT_SELECT) == 0;
+  return identity->verified != 0 ? 0 : -EPROTO;
+}
+
 static int read_u64_attr(
     sdrd_iio_adapter_t *adapter,
     struct iio_channel *channel,
@@ -308,7 +360,7 @@ static int adapter_snapshot(void *context, sdrd_radio_state_t *state) {
   }
   state->scan_channel_mask = get_scan_mask(adapter);
   state->enabled_channels = (state->scan_channel_mask & 0x03u) == 0x03u ? 1u : 0u;
-  return 0;
+  return adapter_probe_rx_input(adapter, &state->rx_input);
 }
 
 static int verify_profile(sdrd_iio_adapter_t *adapter, const sdrd_radio_state_t *state) {
@@ -320,7 +372,13 @@ static int verify_profile(sdrd_iio_adapter_t *adapter, const sdrd_radio_state_t 
   char *requested_end = NULL;
   char *observed_end = NULL;
   int rc;
+  sdrd_rx_input_identity_t identity;
   memset(&observed, 0, sizeof(observed));
+  memset(&identity, 0, sizeof(identity));
+  rc = adapter_probe_rx_input(adapter, &identity);
+  if (rc != 0) {
+    return rc;
+  }
   rc = read_u64_attr(adapter, adapter->rx_lo, "frequency", &observed.center_hz);
   if (rc == 0) {
     rc = read_u32_attr(adapter, adapter->phy_rx0, "sampling_frequency", &observed.sample_rate_hz);
@@ -530,13 +588,21 @@ static int adapter_capture_iq(
   int fd = -1;
   int rc;
   int written;
+  sdrd_rx_input_identity_t identity;
   if (adapter == NULL || request == NULL || result == NULL) {
     return -EINVAL;
   }
   memset(result, 0, sizeof(*result));
+  memset(&identity, 0, sizeof(identity));
   result->timeout_ms = request->timeout_ms != 0u ? request->timeout_ms : adapter->iio_timeout_ms;
   expected_refill_bytes = (uint64_t)adapter->buffer_samples * 4u;
   (void)clock_gettime(CLOCK_MONOTONIC, &started);
+  rc = adapter_probe_rx_input(adapter, &identity);
+  if (rc != 0) {
+    record_capture_failure(result, rc, started);
+    result->health_flags |= SDRD_EXEC_HEALTH_RADIO_STATE;
+    return rc;
+  }
   if (adapter->api.device_get_sample_size(adapter->rx) != 4) {
     record_capture_failure(result, -EPROTO, started);
     return -EPROTO;
@@ -654,6 +720,11 @@ static int adapter_capture_iq(
   if (get_scan_mask(adapter) != 0x03u) {
     result->health_flags |= SDRD_EXEC_HEALTH_RADIO_STATE;
   }
+  rc = adapter_probe_rx_input(adapter, &identity);
+  if (rc != 0) {
+    result->health_flags |= SDRD_EXEC_HEALTH_RADIO_STATE;
+    return rc;
+  }
   return 0;
 
 failed:
@@ -696,13 +767,22 @@ static int adapter_capture_power(
   struct timespec started;
   struct timespec finished;
   int rc = 0;
+  sdrd_rx_input_identity_t identity;
   if (adapter == NULL || request == NULL || result == NULL || requested_samples == 0u) {
     return -EINVAL;
   }
   memset(result, 0, sizeof(*result));
+  memset(&identity, 0, sizeof(identity));
   result->timeout_ms = request->timeout_ms;
   result->sequence = ++adapter->sequence;
   (void)clock_gettime(CLOCK_MONOTONIC, &started);
+  rc = adapter_probe_rx_input(adapter, &identity);
+  if (rc != 0) {
+    (void)clock_gettime(CLOCK_MONOTONIC, &finished);
+    result->elapsed_us = elapsed_microseconds(started, finished);
+    result->health_flags = SDRD_EXEC_HEALTH_RADIO_STATE;
+    return rc;
+  }
   if (adapter->api.device_get_sample_size(adapter->rx) != 4) {
     (void)clock_gettime(CLOCK_MONOTONIC, &finished);
     result->elapsed_us = elapsed_microseconds(started, finished);
@@ -802,6 +882,12 @@ static int adapter_capture_power(
   if (get_scan_mask(adapter) != 0x03u) {
     result->health_flags |= SDRD_EXEC_HEALTH_RADIO_STATE;
   }
+  rc = adapter_probe_rx_input(adapter, &identity);
+  if (rc != 0) {
+    result->health_flags |= SDRD_EXEC_HEALTH_RADIO_STATE;
+    result->status_flags = result->health_flags;
+    return rc;
+  }
   result->status_flags = result->health_flags;
   return 0;
 }
@@ -822,8 +908,13 @@ static int adapter_cancel(void *context) {
 
 static int adapter_begin_session(void *context) {
   sdrd_iio_adapter_t *adapter = context;
+  sdrd_rx_input_identity_t identity;
   if (adapter == NULL) {
     return -EINVAL;
+  }
+  memset(&identity, 0, sizeof(identity));
+  if (adapter_probe_rx_input(adapter, &identity) != 0) {
+    return -EPROTO;
   }
   (void)pthread_mutex_lock(&adapter->cancel_mutex);
   adapter->cancel_requested = 0;
@@ -834,17 +925,20 @@ static int adapter_begin_session(void *context) {
 
 static int adapter_stop(void *context) {
   sdrd_iio_adapter_t *adapter = context;
+  sdrd_rx_input_identity_t identity;
   if (adapter == NULL) {
     return -EINVAL;
   }
   destroy_buffer(adapter, adapter->capture_active);
-  return 0;
+  memset(&identity, 0, sizeof(identity));
+  return adapter_probe_rx_input(adapter, &identity);
 }
 
 static int adapter_restore(void *context, const sdrd_radio_state_t *state) {
   sdrd_iio_adapter_t *adapter = context;
   const char *stage = "sampling_frequency";
   int rc;
+  sdrd_rx_input_identity_t identity;
   if (adapter == NULL || state == NULL) {
     return -EINVAL;
   }
@@ -877,6 +971,15 @@ static int adapter_restore(void *context, const sdrd_radio_state_t *state) {
     stage = "scan_mask";
     rc = set_scan_mask(adapter, state->scan_channel_mask);
   }
+  if (rc == 0) {
+    stage = "rx_input_identity";
+    memset(&identity, 0, sizeof(identity));
+    rc = adapter_probe_rx_input(adapter, &identity);
+    if (rc == 0 && sdrd_rx_input_identity_valid(&state->rx_input) != 0 &&
+        memcmp(&identity, &state->rx_input, sizeof(identity)) != 0) {
+      rc = -EPROTO;
+    }
+  }
   if (rc != 0) {
     fprintf(stderr, "iio_operation=restore stage=%s rc=%d\n", stage, rc);
   }
@@ -891,6 +994,7 @@ int sdrd_iio_adapter_create(
   sdrd_iio_adapter_t *adapter;
   size_t index;
   int rc;
+  sdrd_rx_input_identity_t identity;
   if (config == NULL || adapter_output == NULL) {
     set_error(error, error_size, "missing IIO adapter configuration");
     return -EINVAL;
@@ -954,6 +1058,13 @@ int sdrd_iio_adapter_create(
     sdrd_iio_adapter_destroy(adapter);
     return -ENODEV;
   }
+  memset(&identity, 0, sizeof(identity));
+  rc = adapter_probe_rx_input(adapter, &identity);
+  if (rc != 0 || sdrd_rx_input_identity_valid(&identity) == 0) {
+    set_error(error, error_size, "fixed RX1/A_BALANCED input identity is unavailable");
+    sdrd_iio_adapter_destroy(adapter);
+    return rc != 0 ? rc : -EPROTO;
+  }
   *adapter_output = adapter;
   return 0;
 }
@@ -984,6 +1095,7 @@ void sdrd_iio_adapter_ops(sdrd_iio_adapter_t *adapter, sdrd_radio_ops_t *ops) {
     return;
   }
   ops->context = adapter;
+  ops->probe_rx_input = adapter_probe_rx_input;
   ops->begin_session = adapter_begin_session;
   ops->snapshot = adapter_snapshot;
   ops->apply_profile = adapter_apply_profile;

@@ -10,6 +10,50 @@ use std::time::Duration;
 
 const SDRD_SCHEMA_VERSION: u16 = 1;
 const SDRD_MAX_RESPONSE_BYTES: usize = 384 * 1024;
+pub const P201_RX_INPUT_IDENTITY_VERSION: u16 = 1;
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RxInputIdentity {
+    pub identity_version: u16,
+    pub verified: bool,
+    pub front_panel_port: String,
+    pub logical_channel: String,
+    pub phy_channel: String,
+    pub scan_i_channel: String,
+    pub scan_q_channel: String,
+    pub rf_port_select: String,
+    pub source: String,
+}
+
+impl RxInputIdentity {
+    pub fn is_fixed_p201_rx1(&self) -> bool {
+        self.identity_version == P201_RX_INPUT_IDENTITY_VERSION
+            && self.verified
+            && self.front_panel_port == "RX1"
+            && self.logical_channel == "RX0"
+            && self.phy_channel == "voltage0"
+            && self.scan_i_channel == "voltage0"
+            && self.scan_q_channel == "voltage1"
+            && self.rf_port_select == "A_BALANCED"
+            && self.source == "iio_channel_attr"
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fixed_p201_rx1_fixture() -> Self {
+        Self {
+            identity_version: P201_RX_INPUT_IDENTITY_VERSION,
+            verified: true,
+            front_panel_port: "RX1".to_owned(),
+            logical_channel: "RX0".to_owned(),
+            phy_channel: "voltage0".to_owned(),
+            scan_i_channel: "voltage0".to_owned(),
+            scan_q_channel: "voltage1".to_owned(),
+            rf_port_select: "A_BALANCED".to_owned(),
+            source: "iio_channel_attr".to_owned(),
+        }
+    }
+}
 
 pub trait SdrEngine {
     fn observe(&mut self) -> Result<SdrSnapshot, SdrError>;
@@ -24,6 +68,7 @@ pub struct SdrSnapshot {
     pub iio_visible: bool,
     pub can_retune: bool,
     pub can_capture_iq: bool,
+    pub rx_input: Option<RxInputIdentity>,
 }
 
 impl SdrSnapshot {
@@ -202,16 +247,26 @@ impl SdrEngine for SdrdAdapter {
 
         let iio_visible =
             capabilities.iio_visible && health.iio_phy_visible && health.iio_rx_visible;
+        let rx_input_valid = capabilities
+            .rx_input
+            .as_ref()
+            .is_some_and(RxInputIdentity::is_fixed_p201_rx1)
+            && capabilities.rx_input == health.rx_input;
+        let controlled_identity_valid = hello.mode != "controlled" || rx_input_valid;
         Ok(SdrSnapshot {
             online: true,
             healthy: health.healthy
                 && health.health_flags == 0
                 && iio_visible
+                && controlled_identity_valid
                 && !health.session_faulted,
             health_flags: health.health_flags,
             iio_visible,
-            can_retune: capabilities.radio_control,
-            can_capture_iq: capabilities.raw_iq_capture && capabilities.max_capture_bytes > 0,
+            can_retune: capabilities.radio_control && rx_input_valid,
+            can_capture_iq: capabilities.raw_iq_capture
+                && capabilities.max_capture_bytes > 0
+                && rx_input_valid,
+            rx_input: health.rx_input,
         })
     }
 }
@@ -258,6 +313,8 @@ struct CapabilitiesResponse {
     _software_summary: bool,
     #[serde(default)]
     max_capture_bytes: u64,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
     #[serde(rename = "fpga_backend")]
     _fpga_backend: String,
     #[serde(rename = "fpga_identity_valid")]
@@ -285,6 +342,8 @@ struct HealthResponse {
     health_flags: u32,
     iio_phy_visible: bool,
     iio_rx_visible: bool,
+    #[serde(default)]
+    rx_input: Option<RxInputIdentity>,
     #[serde(rename = "fpga_configured")]
     _fpga_configured: bool,
     #[serde(rename = "fpga_mapped")]
@@ -370,6 +429,7 @@ mod tests {
             iio_visible: true,
             can_retune: false,
             can_capture_iq: false,
+            rx_input: None,
         }
     }
 

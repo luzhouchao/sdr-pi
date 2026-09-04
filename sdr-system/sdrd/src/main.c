@@ -471,12 +471,19 @@ int main(int argc, char **argv) {
       return 1;
     }
     printf(
-        "{\"radio_probe\":\"ok\",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"scan_channel_mask\":%u}\n",
+        "{\"radio_probe\":\"ok\",\"center_hz\":%" PRIu64 ",\"sample_rate_hz\":%u,\"rf_bandwidth_hz\":%u,\"gain_mode\":\"%s\",\"scan_channel_mask\":%u,\"rx_input\":{\"identity_version\":%u,\"verified\":true,\"front_panel_port\":\"%s\",\"logical_channel\":\"%s\",\"phy_channel\":\"%s\",\"scan_i_channel\":\"%s\",\"scan_q_channel\":\"%s\",\"rf_port_select\":\"%s\",\"source\":\"iio_channel_attr\"}}\n",
         state.center_hz,
         state.sample_rate_hz,
         state.rf_bandwidth_hz,
         state.gain_mode,
-        state.scan_channel_mask);
+        state.scan_channel_mask,
+        state.rx_input.identity_version,
+        state.rx_input.front_panel_port,
+        state.rx_input.logical_channel,
+        state.rx_input.phy_channel,
+        state.rx_input.scan_i_channel,
+        state.rx_input.scan_q_channel,
+        state.rx_input.rf_port_select);
     sdrd_iio_adapter_destroy(iio_adapter);
     return 0;
   }

@@ -537,7 +537,7 @@ mod tests {
         ControllerState, HealthSummary, PlanResponse, PlanStatus, PlannerMeta, SafetyLimits,
         PROTOCOL_VERSION,
     };
-    use crate::sdr::{ReplaySdrAdapter, SdrSnapshot};
+    use crate::sdr::{ReplaySdrAdapter, RxInputIdentity, SdrSnapshot};
     use crate::sweep::{BackendSweep, ReplaySweepAdapter, SweepPoint};
     #[cfg(unix)]
     use std::io::Read;
@@ -566,6 +566,7 @@ mod tests {
             iio_visible: true,
             can_retune: true,
             can_capture_iq: true,
+            rx_input: Some(RxInputIdentity::fixed_p201_rx1_fixture()),
         }
     }
 
@@ -654,6 +655,7 @@ mod tests {
                     flags: 0,
                     source: "replay".to_owned(),
                 },
+                rx_input: RxInputIdentity::fixed_p201_rx1_fixture(),
             },
             post_execution_sdr: snapshot(),
         }
@@ -692,6 +694,7 @@ mod tests {
                 flags: 0,
                 source: "replay".to_owned(),
             },
+            rx_input: RxInputIdentity::fixed_p201_rx1_fixture(),
         }
     }
 
