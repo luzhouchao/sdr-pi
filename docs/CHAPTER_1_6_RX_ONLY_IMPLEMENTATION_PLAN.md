@@ -140,18 +140,21 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       没有把未测性能写成能力。
 - [x] 一个受限 1,024 点 P201 窗口已经通过 AGX 实验预处理和私有 spool 到达
       Mamba，成功/错误路径均有清理基础。
+- [x] 当前 seed44 已接入版本化 `integration_only` 四窗口合同：精查 IQ 在 AGX
+      生成同窗频谱中心/噪声/SNR/99% 占用带宽和新鲜 `RecognitionTarget`，一次
+      4,096 点 RX1 采集被切成 4 × 1,024 的逐字节可复现输入，并以四个精确
+      offset 顺序调用 Worker。真实实收完成 3/4 provisional 多数票、射频恢复与
+      spool/Worker/P201 临时数据清理；生产 capability 仍为 false。见
+      [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)。
 - [x] FPGA 聚合、MMIO、UIO、Vivado 和 `BOOT.bin` 已从当前路线退役。
 
 ### 还未完成
 
-- [ ] 定义 `RecognitionTarget` 和候选资格判定：source sweep/sequence、时间、
-      精确中心/占用带宽、RX port/gain、强度、噪声、实测 SNR、削顶、丢样、
-      overflow 和 health 必须齐全且新鲜。
-- [ ] 冻结版本化 `RecognitionInputProfile`：初始采样域、RF 带宽、窗口数、字节、
-      deadline、质量门、preprocess ID/hash 均由 Rust/manifest 推导，Planner 只能
-      选择 candidate ID。
-- [ ] 实现有限连续单/多窗口 capture、对齐和 `ModelReadyBatch`，建立逐字节
-      golden fixtures，并验证成功、错误、取消时的 AGX/P201 临时数据清理。
+- [ ] 将当前已经实现和实收的 `integration_only` Target/profile/batch 合同升级为
+      production profile；只有第5章冻结 `rf_preprocess_v1` 且新 checkpoint 准入
+      后才能替换 admission，Planner 仍只能选择 candidate ID。
+- [ ] 对新的四窗口路径补做 Worker 中途失败和 capture 直接取消两项实机测试，
+      验证两条路径的 AGX/P201 临时数据清理和射频恢复。
 - [ ] 使用 train/validation 与版本化 P201 接收域证据选择并冻结
       `rf_preprocess_v1`，明确频移/重调谐、滤波/重采样、DC、幅度、窗口和质量
       策略；不得在 frozen test 上试凑。
@@ -193,6 +196,9 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       引用、request/generation/candidate 关联和严格模型 package loader。
 - [x] 实验 CUDA/Mamba Worker 已按 checkpoint/source/config/label 哈希加载，使用
       backlog 1、单 Torch CPU thread 和有限 request count，且不能安装为生产服务。
+- [x] 当前 seed44 Worker 已消费真实 P201 RX1 的四个连续窗口，逐窗模型哈希一致，
+      输出完整 provisional top-1/alternatives 与一个明确未校准的多数票联调摘要；
+      临时批次在成功/错误路径删除，未开启 `recognizer_available`。
 - [x] seed44/seed43 完整 FP32 离线指标和 AGX/4090 数值 parity 已完成。
 - [x] 已完成一次真实 P201 RX1 → AGX → seed44 实验链路，验证 spool 删除与
       SDR 恢复；无标签环境窗口输出没有被宣称为正确类别。

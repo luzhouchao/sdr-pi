@@ -1,9 +1,11 @@
 pub mod autonomy;
+pub mod batch_recognition;
 pub mod execution;
 pub mod live_recognition;
 pub mod planner;
 pub mod policy;
 pub mod protocol;
+pub mod recognition_input;
 pub mod recognizer;
 pub mod runner;
 pub mod sdr;

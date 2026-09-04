@@ -14,10 +14,11 @@ copy those implementations into a second tree.
 - The Planner defaults to the local Spark-X2.5-4B BF16 endpoint. Pi Agent's
   Web-managed OpenAI-compatible Completions/Responses seam remains available
   for an explicit operator switch; there is no automatic cloud failover.
-- Offline CUDA/Mamba loading, full held-out corpus validation and one bounded
-  P201 RX1-to-Worker integration capture now pass on AGX. Production Worker
-  deployment remains deferred until the RF preprocessing, trusted labels,
-  precision and rejection gates are frozen.
+- Offline CUDA/Mamba loading, full held-out corpus validation, a bounded
+  single-window capture and a versioned 4 × 1,024 P201 RX1-to-seed44 integration
+  capture now pass on AGX. The latter remains explicitly `integration_only`;
+  production Worker deployment is deferred until the RF preprocessing, trusted
+  labels, precision and rejection gates are frozen.
 
 The external recognizer seam remains the bounded request/response contract.
 The experimental Worker uses PyTorch/CUDA/Mamba internally without exposing

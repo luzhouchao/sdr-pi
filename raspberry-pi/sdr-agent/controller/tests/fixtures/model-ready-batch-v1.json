@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "fixture_id": "model-ready-batch-v1-affine-modulo",
+  "profile_id": "rml2018a-d8-current-integration-v1",
+  "profile_sha256": "7d2347550939be13d3ccde84add514ca5b4e549783fbc8e724124b4f0f4358ba",
+  "preprocess_id": "legacy_adc_unit_rms_v0",
+  "preprocess_sha256": "20f2f21b9d01a5163806a2b1e88c2e1ff0975647eb9da27071ea3f1d61a80303",
+  "raw_generator": {
+    "kind": "affine_modulo_ci16_v1",
+    "complex_samples": 4096,
+    "i_expression": "((index * 37 + 11) % 1901) - 950",
+    "q_expression": "((index * 53 + 7) % 1799) - 899"
+  },
+  "raw_bytes": 16384,
+  "raw_sha256": "9ddea8749993725208a8828bc68294396a9a50e4b5a4d242625d462913e518b6",
+  "model_bytes": 32768,
+  "model_bytes_sha256": "30a315ea74bbb39719e58498651f9e54e24d28129e10367d01dc3a602a1275df"
+}

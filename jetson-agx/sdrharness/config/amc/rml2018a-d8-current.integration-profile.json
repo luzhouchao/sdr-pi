@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "profile_id": "rml2018a-d8-current-integration-v1",
+  "admission": "integration_only",
+  "production_enabled": false,
+  "model": {
+    "model_id": "rml2018a-d8-seed44-fp32-complex-unit-rms-experimental",
+    "model_sha256": "e5a1bccdaf4b0290f41b26cb05b8b98565df9d5b07147727d79bbf43f6cb42dd"
+  },
+  "rx": {
+    "front_panel_port": "RX1",
+    "logical_channel": "RX0",
+    "rf_port_select": "A_BALANCED",
+    "sample_rate_hz": 2100000,
+    "rf_bandwidth_hz": 1500000,
+    "gain_db": 50,
+    "settle_ms": 100
+  },
+  "capture": {
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "capture_timeout_ms": 1000,
+    "control_deadline_ms": 5000,
+    "model_deadline_ms": 5000,
+    "raw_bytes_per_complex_sample": 4,
+    "max_total_raw_bytes": 16384,
+    "max_total_model_bytes": 32768
+  },
+  "eligibility": {
+    "maximum_target_age_ms": 5000,
+    "maximum_occupied_bandwidth_hz": 1500000,
+    "minimum_estimated_snr_db": 3.0,
+    "minimum_peak_dbfs": -100.0,
+    "maximum_peak_dbfs": -1.0,
+    "require_zero_dropped_samples": true,
+    "require_no_overflow": true,
+    "require_zero_health_flags": true,
+    "maximum_clipped_samples": 0
+  },
+  "preprocess": {
+    "preprocess_id": "legacy_adc_unit_rms_v0",
+    "spec_path": "jetson-agx/sdrharness/config/amc/legacy-adc-unit-rms-v0.json",
+    "spec_sha256": "20f2f21b9d01a5163806a2b1e88c2e1ff0975647eb9da27071ea3f1d61a80303"
+  },
+  "limitations": {
+    "production": false,
+    "retraining": "Replace this profile only after rf_preprocess_v1 and an RF-aligned checkpoint are frozen.",
+    "labels": "Numeric class IDs are authoritative; RML2018A names remain provisional.",
+    "rejection": "The current checkpoint has no calibrated rejection threshold."
+  }
+}

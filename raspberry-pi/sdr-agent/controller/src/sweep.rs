@@ -17,10 +17,13 @@ use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 pub const MAX_POINTS: usize = 768;
+pub const SPECTRAL_SUMMARY_SCHEMA_VERSION: u16 = 1;
+pub const SPECTRAL_SUMMARY_ALGORITHM_ID: &str = "agx_welch_hann_dc_reject_obw99_v1";
 const MAX_DURATION_MS: u64 = 300_000;
 const ADC_FULL_SCALE: f64 = 2_048.0;
 const MIN_POWER: f64 = 1.0e-20;
 const MAX_PLANNER_CANDIDATE_BANDWIDTH_HZ: u64 = 10_000_000;
+const MAX_SPECTRAL_FFT_SIZE: usize = 4_096;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -84,12 +87,31 @@ pub struct SweepPoint {
     pub overflow: bool,
     pub captured_samples: u64,
     pub band_power_dbfs: f32,
+    pub spectral: SpectralSummary,
     pub clipped_samples: u64,
     pub status_flags: u32,
     pub elapsed_us: u64,
     pub timeout: ExecutionTimeoutMetadata,
     pub health: ExecutionHealthMetadata,
     pub rx_input: RxInputIdentity,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SpectralSummary {
+    pub schema_version: u16,
+    pub algorithm_id: String,
+    pub fft_size: u32,
+    pub segment_count: u32,
+    pub bin_width_hz: f64,
+    pub peak_frequency_hz: u64,
+    pub peak_power_dbfs: f32,
+    pub noise_floor_dbfs: f32,
+    pub measured_snr_db: f32,
+    pub estimated_center_hz: u64,
+    pub occupied_start_hz: u64,
+    pub occupied_stop_hz: u64,
+    pub occupied_bandwidth_hz: u64,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -201,11 +223,10 @@ impl SweepReport {
                     "inspected candidate is absent from the prior observation",
                 )
             })?;
-        let prior_noise_floor_dbfs = candidate.peak_dbfs - candidate.snr_db;
-        candidate.center_hz = point.actual_center_hz;
-        candidate.bandwidth_hz = point.rf_bandwidth_hz;
-        candidate.peak_dbfs = point.band_power_dbfs;
-        candidate.snr_db = (point.band_power_dbfs - prior_noise_floor_dbfs).max(0.0);
+        candidate.center_hz = point.spectral.estimated_center_hz;
+        candidate.bandwidth_hz = point.spectral.occupied_bandwidth_hz;
+        candidate.peak_dbfs = point.spectral.peak_power_dbfs;
+        candidate.snr_db = point.spectral.measured_snr_db;
         candidate.age_ms = 0;
         Ok(ObservationSummary {
             age_ms: 0,
@@ -446,6 +467,12 @@ fn run_sdrd_points(
                 writer.append(point_index, center_hz, &iq)?;
             }
             let (power, clipped) = aggregate_ci16_power(&iq, captured_samples)?;
+            let spectral = spectral_summary_ci16(
+                &iq,
+                captured_samples,
+                profile.center_hz,
+                profile.sample_rate_hz,
+            )?;
             let response_generation = capture.generation;
             let sequence = capture.sequence;
             let aggregate_samples = captured_samples;
@@ -485,6 +512,7 @@ fn run_sdrd_points(
                 overflow: capture.overflow,
                 captured_samples,
                 band_power_dbfs: u96_power_dbfs(power_lo, power_mid, power_hi, captured_samples)?,
+                spectral,
                 clipped_samples: clipped,
                 status_flags,
                 elapsed_us,
@@ -728,6 +756,298 @@ fn aggregate_ci16_power(bytes: &[u8], samples: u64) -> Result<(u64, u64), SweepE
     Ok((power, clipped))
 }
 
+fn spectral_summary_ci16(
+    bytes: &[u8],
+    samples: u64,
+    tuned_center_hz: u64,
+    sample_rate_hz: u64,
+) -> Result<SpectralSummary, SweepError> {
+    let expected = samples
+        .checked_mul(4)
+        .and_then(|value| usize::try_from(value).ok())
+        .ok_or_else(|| SweepError::new("spectral_shape", "IQ byte count overflow"))?;
+    if bytes.len() != expected || samples < 64 || sample_rate_hz == 0 {
+        return Err(SweepError::new(
+            "spectral_shape",
+            "spectral summary requires at least 64 complete complex samples",
+        ));
+    }
+
+    let available = usize::try_from(samples)
+        .map_err(|_| SweepError::new("spectral_shape", "sample count exceeds this host"))?;
+    let fft_size = largest_power_of_two(available.min(MAX_SPECTRAL_FFT_SIZE));
+    if fft_size < 64 {
+        return Err(SweepError::new(
+            "spectral_shape",
+            "spectral FFT size is below the minimum",
+        ));
+    }
+    let segment_count = available / fft_size;
+    let mut averaged_power = vec![0.0_f64; fft_size];
+    let mut window = Vec::with_capacity(fft_size);
+    for index in 0..fft_size {
+        window.push(
+            0.5 - 0.5 * (2.0 * std::f64::consts::PI * index as f64 / (fft_size - 1) as f64).cos(),
+        );
+    }
+    let coherent_sum: f64 = window.iter().sum();
+    let normalization = (coherent_sum * ADC_FULL_SCALE).powi(2);
+    if !normalization.is_finite() || normalization <= 0.0 {
+        return Err(SweepError::new(
+            "spectral_window",
+            "spectral window normalization is invalid",
+        ));
+    }
+
+    for segment_index in 0..segment_count {
+        let start_sample = segment_index * fft_size;
+        let segment = &bytes[start_sample * 4..(start_sample + fft_size) * 4];
+        let mut mean_i = 0.0_f64;
+        let mut mean_q = 0.0_f64;
+        for sample in segment.chunks_exact(4) {
+            mean_i += f64::from(i16::from_le_bytes([sample[0], sample[1]]));
+            mean_q += f64::from(i16::from_le_bytes([sample[2], sample[3]]));
+        }
+        mean_i /= fft_size as f64;
+        mean_q /= fft_size as f64;
+
+        let mut spectrum = Vec::with_capacity(fft_size);
+        for (index, sample) in segment.chunks_exact(4).enumerate() {
+            let i = f64::from(i16::from_le_bytes([sample[0], sample[1]])) - mean_i;
+            let q = f64::from(i16::from_le_bytes([sample[2], sample[3]])) - mean_q;
+            spectrum.push((i * window[index], q * window[index]));
+        }
+        radix2_fft_in_place(&mut spectrum);
+        for (output, (real, imaginary)) in averaged_power.iter_mut().zip(spectrum) {
+            *output += (real * real + imaginary * imaginary) / normalization;
+        }
+    }
+    for power in &mut averaged_power {
+        *power /= segment_count as f64;
+    }
+
+    let mut sorted_noise = averaged_power.clone();
+    sorted_noise.sort_unstable_by(|left, right| left.partial_cmp(right).unwrap_or(Ordering::Equal));
+    let noise_linear = sorted_noise[sorted_noise.len() / 2].max(MIN_POWER);
+    let (peak_index, peak_linear) = averaged_power
+        .iter()
+        .copied()
+        .enumerate()
+        .max_by(|(_, left), (_, right)| left.partial_cmp(right).unwrap_or(Ordering::Equal))
+        .ok_or_else(|| SweepError::new("spectral_empty", "spectral FFT returned no bins"))?;
+    let peak_linear = peak_linear.max(MIN_POWER);
+    let bin_width_hz = sample_rate_hz as f64 / fft_size as f64;
+    let peak_frequency_hz =
+        absolute_bin_frequency(tuned_center_hz, sample_rate_hz, fft_size, peak_index);
+
+    let ordered_indices: Vec<usize> = (fft_size / 2..fft_size).chain(0..fft_size / 2).collect();
+    let ordered_power: Vec<f64> = ordered_indices
+        .iter()
+        .map(|index| averaged_power[*index])
+        .collect();
+    let smoothed_power: Vec<f64> = (0..ordered_power.len())
+        .map(|position| {
+            let start = position.saturating_sub(2);
+            let stop = (position + 2).min(ordered_power.len() - 1);
+            ordered_power[start..=stop].iter().sum::<f64>() / (stop - start + 1) as f64
+        })
+        .collect();
+    let peak_position = ordered_indices
+        .iter()
+        .position(|index| *index == peak_index)
+        .unwrap_or(fft_size / 2);
+    let component_threshold = noise_linear * 4.0;
+    let (component_start, component_stop) = if smoothed_power[peak_position] >= component_threshold
+    {
+        signal_component_bounds(&smoothed_power, peak_position, component_threshold, 8)
+    } else {
+        (peak_position, peak_position)
+    };
+    let excess: Vec<f64> = ordered_power[component_start..=component_stop]
+        .iter()
+        .map(|power| (*power - noise_linear).max(0.0))
+        .collect();
+    let total_excess: f64 = excess.iter().sum();
+    let (lower_offset, upper_offset) = if total_excess > MIN_POWER {
+        let lower_target = total_excess * 0.005;
+        let upper_target = total_excess * 0.995;
+        let mut cumulative = 0.0_f64;
+        let mut lower = 0_usize;
+        let mut upper = excess.len() - 1;
+        let mut lower_found = false;
+        for (position, value) in excess.iter().copied().enumerate() {
+            cumulative += value;
+            if !lower_found && cumulative >= lower_target {
+                lower = position;
+                lower_found = true;
+            }
+            if cumulative >= upper_target {
+                upper = position;
+                break;
+            }
+        }
+        (lower, upper.max(lower))
+    } else {
+        (
+            peak_position - component_start,
+            peak_position - component_start,
+        )
+    };
+    let lower_position = component_start + lower_offset;
+    let upper_position = component_start + upper_offset;
+    let occupied_start_hz = absolute_bin_frequency(
+        tuned_center_hz,
+        sample_rate_hz,
+        fft_size,
+        ordered_indices[lower_position],
+    );
+    let occupied_stop_hz = absolute_bin_frequency(
+        tuned_center_hz,
+        sample_rate_hz,
+        fft_size,
+        ordered_indices[upper_position],
+    );
+    let occupied_bandwidth_hz = (((upper_position - lower_position + 1) as f64) * bin_width_hz)
+        .ceil()
+        .max(1.0) as u64;
+    let estimated_center_hz = occupied_start_hz / 2
+        + occupied_stop_hz / 2
+        + (occupied_start_hz % 2 + occupied_stop_hz % 2) / 2;
+    let peak_power_dbfs = (10.0 * peak_linear.log10()) as f32;
+    let noise_floor_dbfs = (10.0 * noise_linear.log10()) as f32;
+    let measured_snr_db = (peak_power_dbfs - noise_floor_dbfs).max(0.0);
+    if !bin_width_hz.is_finite()
+        || !peak_power_dbfs.is_finite()
+        || !noise_floor_dbfs.is_finite()
+        || !measured_snr_db.is_finite()
+    {
+        return Err(SweepError::new(
+            "spectral_non_finite",
+            "spectral summary produced a non-finite measurement",
+        ));
+    }
+    Ok(SpectralSummary {
+        schema_version: SPECTRAL_SUMMARY_SCHEMA_VERSION,
+        algorithm_id: SPECTRAL_SUMMARY_ALGORITHM_ID.to_owned(),
+        fft_size: fft_size as u32,
+        segment_count: segment_count as u32,
+        bin_width_hz,
+        peak_frequency_hz,
+        peak_power_dbfs,
+        noise_floor_dbfs,
+        measured_snr_db,
+        estimated_center_hz,
+        occupied_start_hz,
+        occupied_stop_hz,
+        occupied_bandwidth_hz,
+    })
+}
+
+fn signal_component_bounds(
+    smoothed_power: &[f64],
+    peak_position: usize,
+    threshold: f64,
+    maximum_gap_bins: usize,
+) -> (usize, usize) {
+    let mut start = peak_position;
+    let mut below = 0_usize;
+    for position in (0..peak_position).rev() {
+        if smoothed_power[position] >= threshold {
+            start = position;
+            below = 0;
+        } else {
+            below += 1;
+            if below > maximum_gap_bins {
+                break;
+            }
+        }
+    }
+    let mut stop = peak_position;
+    below = 0;
+    for (position, power) in smoothed_power
+        .iter()
+        .copied()
+        .enumerate()
+        .skip(peak_position + 1)
+    {
+        if power >= threshold {
+            stop = position;
+            below = 0;
+        } else {
+            below += 1;
+            if below > maximum_gap_bins {
+                break;
+            }
+        }
+    }
+    (start, stop)
+}
+
+fn largest_power_of_two(value: usize) -> usize {
+    if value == 0 {
+        return 0;
+    }
+    1_usize << (usize::BITS - 1 - value.leading_zeros())
+}
+
+fn absolute_bin_frequency(
+    tuned_center_hz: u64,
+    sample_rate_hz: u64,
+    fft_size: usize,
+    bin_index: usize,
+) -> u64 {
+    let signed_bin = if bin_index < fft_size / 2 {
+        bin_index as i64
+    } else {
+        bin_index as i64 - fft_size as i64
+    };
+    let offset_hz = signed_bin as f64 * sample_rate_hz as f64 / fft_size as f64;
+    (tuned_center_hz as f64 + offset_hz)
+        .round()
+        .clamp(0.0, u64::MAX as f64) as u64
+}
+
+fn radix2_fft_in_place(values: &mut [(f64, f64)]) {
+    let length = values.len();
+    debug_assert!(length.is_power_of_two());
+    let mut reversed = 0_usize;
+    for index in 1..length {
+        let mut bit = length >> 1;
+        while reversed & bit != 0 {
+            reversed ^= bit;
+            bit >>= 1;
+        }
+        reversed ^= bit;
+        if index < reversed {
+            values.swap(index, reversed);
+        }
+    }
+    let mut stage_length = 2_usize;
+    while stage_length <= length {
+        let angle = -2.0 * std::f64::consts::PI / stage_length as f64;
+        let (twiddle_imaginary, twiddle_real) = angle.sin_cos();
+        for start in (0..length).step_by(stage_length) {
+            let mut twiddle = (1.0_f64, 0.0_f64);
+            for offset in 0..stage_length / 2 {
+                let even = values[start + offset];
+                let odd = values[start + offset + stage_length / 2];
+                let rotated = (
+                    odd.0 * twiddle.0 - odd.1 * twiddle.1,
+                    odd.0 * twiddle.1 + odd.1 * twiddle.0,
+                );
+                values[start + offset] = (even.0 + rotated.0, even.1 + rotated.1);
+                values[start + offset + stage_length / 2] =
+                    (even.0 - rotated.0, even.1 - rotated.1);
+                twiddle = (
+                    twiddle.0 * twiddle_real - twiddle.1 * twiddle_imaginary,
+                    twiddle.0 * twiddle_imaginary + twiddle.1 * twiddle_real,
+                );
+            }
+        }
+        stage_length *= 2;
+    }
+}
+
 pub(crate) fn decode_base64(input: &str) -> Result<Vec<u8>, SweepError> {
     if input.is_empty() || input.len() % 4 != 0 {
         return Err(SweepError::new("agx_iq_base64", "invalid IQ base64 length"));
@@ -943,6 +1263,7 @@ fn validate_points(plan: &ValidatedSweepPlan, points: &[SweepPoint]) -> Result<(
             || point.sample_rate_hz != plan.sample_rate_hz
             || point.rf_bandwidth_hz != plan.rf_bandwidth_hz
             || !point.band_power_dbfs.is_finite()
+            || !spectral_summary_matches_point(point)
             || point.dropped_samples != 0
             || point.overflow
             || point.status_flags != 0
@@ -962,6 +1283,52 @@ fn validate_points(plan: &ValidatedSweepPlan, points: &[SweepPoint]) -> Result<(
         previous_sequence = Some(point.sequence);
     }
     Ok(())
+}
+
+fn spectral_summary_matches_point(point: &SweepPoint) -> bool {
+    let spectral = &point.spectral;
+    let expected_bin_width = point.sample_rate_hz as f64 / f64::from(spectral.fft_size);
+    let expected_segments = point
+        .captured_samples
+        .checked_div(u64::from(spectral.fft_size))
+        .unwrap_or(0);
+    let half_sample_rate = point.sample_rate_hz / 2;
+    let passband_start = point.actual_center_hz.saturating_sub(half_sample_rate);
+    let passband_stop = point.actual_center_hz.saturating_add(half_sample_rate);
+    let occupied_span = spectral
+        .occupied_stop_hz
+        .saturating_sub(spectral.occupied_start_hz);
+    let expected_center = spectral.occupied_start_hz / 2
+        + spectral.occupied_stop_hz / 2
+        + (spectral.occupied_start_hz % 2 + spectral.occupied_stop_hz % 2) / 2;
+    spectral.schema_version == SPECTRAL_SUMMARY_SCHEMA_VERSION
+        && spectral.algorithm_id == SPECTRAL_SUMMARY_ALGORITHM_ID
+        && (64..=MAX_SPECTRAL_FFT_SIZE as u32).contains(&spectral.fft_size)
+        && spectral.fft_size.is_power_of_two()
+        && spectral.segment_count > 0
+        && u64::from(spectral.segment_count) == expected_segments
+        && spectral.bin_width_hz.is_finite()
+        && (spectral.bin_width_hz - expected_bin_width).abs() <= expected_bin_width * 1.0e-9
+        && spectral.peak_frequency_hz >= passband_start
+        && spectral.peak_frequency_hz <= passband_stop
+        && spectral.estimated_center_hz >= passband_start
+        && spectral.estimated_center_hz <= passband_stop
+        && spectral.occupied_start_hz >= passband_start
+        && spectral.occupied_start_hz <= spectral.occupied_stop_hz
+        && spectral.occupied_stop_hz <= passband_stop
+        && spectral.estimated_center_hz == expected_center
+        && spectral.occupied_bandwidth_hz >= occupied_span.max(1)
+        && spectral.occupied_bandwidth_hz
+            <= occupied_span.saturating_add((spectral.bin_width_hz.ceil() as u64) * 2)
+        && spectral.occupied_bandwidth_hz <= point.sample_rate_hz
+        && spectral.peak_power_dbfs.is_finite()
+        && spectral.noise_floor_dbfs.is_finite()
+        && spectral.measured_snr_db.is_finite()
+        && spectral.measured_snr_db >= 0.0
+        && (spectral.measured_snr_db
+            - (spectral.peak_power_dbfs - spectral.noise_floor_dbfs).max(0.0))
+        .abs()
+            <= 0.001
 }
 
 fn median_power_dbfs(points: &[SweepPoint]) -> Result<f32, SweepError> {
@@ -1383,6 +1750,21 @@ mod tests {
             overflow: false,
             captured_samples: 32_768,
             band_power_dbfs: power,
+            spectral: SpectralSummary {
+                schema_version: SPECTRAL_SUMMARY_SCHEMA_VERSION,
+                algorithm_id: SPECTRAL_SUMMARY_ALGORITHM_ID.into(),
+                fft_size: 1_024,
+                segment_count: 32,
+                bin_width_hz: 3_000_000.0 / 1_024.0,
+                peak_frequency_hz: center,
+                peak_power_dbfs: power,
+                noise_floor_dbfs: power - 10.0,
+                measured_snr_db: 10.0,
+                estimated_center_hz: center,
+                occupied_start_hz: center - 250_000,
+                occupied_stop_hz: center + 250_000,
+                occupied_bandwidth_hz: 500_000,
+            },
             clipped_samples: 0,
             status_flags: 0,
             elapsed_us: 10_000,
@@ -1398,6 +1780,33 @@ mod tests {
             },
             rx_input: RxInputIdentity::fixed_p201_rx1_fixture(),
         }
+    }
+
+    #[test]
+    fn spectral_summary_uses_the_same_iq_window_for_frequency_snr_and_bandwidth() {
+        let center_hz = 433_920_000_u64;
+        let sample_rate_hz = 2_100_000_u64;
+        let fft_size = 4_096_usize;
+        let tone_bin = 400_usize;
+        let mut iq = Vec::with_capacity(fft_size * 4);
+        for index in 0..fft_size {
+            let phase =
+                2.0 * std::f64::consts::PI * tone_bin as f64 * index as f64 / fft_size as f64;
+            let i = (1_000.0 * phase.cos()).round() as i16;
+            let q = (1_000.0 * phase.sin()).round() as i16;
+            iq.extend_from_slice(&i.to_le_bytes());
+            iq.extend_from_slice(&q.to_le_bytes());
+        }
+        let summary =
+            spectral_summary_ci16(&iq, fft_size as u64, center_hz, sample_rate_hz).unwrap();
+        let expected_peak =
+            center_hz + (tone_bin as f64 * sample_rate_hz as f64 / fft_size as f64).round() as u64;
+        assert_eq!(summary.fft_size, 4_096);
+        assert_eq!(summary.segment_count, 1);
+        assert!(summary.peak_frequency_hz.abs_diff(expected_peak) <= 1);
+        assert!(summary.measured_snr_db > 40.0);
+        assert!(summary.estimated_center_hz.abs_diff(expected_peak) <= 2_000);
+        assert!(summary.occupied_bandwidth_hz < 10_000);
     }
 
     #[test]
@@ -1505,6 +1914,21 @@ mod tests {
                 overflow: false,
                 captured_samples: 4_096,
                 band_power_dbfs: -25.0,
+                spectral: SpectralSummary {
+                    schema_version: SPECTRAL_SUMMARY_SCHEMA_VERSION,
+                    algorithm_id: SPECTRAL_SUMMARY_ALGORITHM_ID.into(),
+                    fft_size: 4_096,
+                    segment_count: 1,
+                    bin_width_hz: 10_000_000.0 / 4_096.0,
+                    peak_frequency_hz: 2_455_100_000,
+                    peak_power_dbfs: -25.0,
+                    noise_floor_dbfs: -53.0,
+                    measured_snr_db: 28.0,
+                    estimated_center_hz: 2_455_000_000,
+                    occupied_start_hz: 2_454_500_000,
+                    occupied_stop_hz: 2_455_500_000,
+                    occupied_bandwidth_hz: 1_002_442,
+                },
                 clipped_samples: 0,
                 status_flags: 0,
                 elapsed_us: 500,
@@ -1559,6 +1983,8 @@ mod tests {
             .unwrap();
         assert_eq!(observation.candidates[0].peak_dbfs, -25.0);
         assert_eq!(observation.candidates[0].snr_db, 28.0);
+        assert_eq!(observation.candidates[0].center_hz, 2_455_000_000);
+        assert_eq!(observation.candidates[0].bandwidth_hz, 1_002_442);
         assert_eq!(observation.candidates[0].age_ms, 0);
         assert_eq!(observation.candidates[1].age_ms, 1_150);
     }

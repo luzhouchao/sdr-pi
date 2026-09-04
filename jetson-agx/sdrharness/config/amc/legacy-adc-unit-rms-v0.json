@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "preprocess_id": "legacy_adc_unit_rms_v0",
+  "admission": "integration_only",
+  "input": {
+    "sample_format": "ci16_le",
+    "layout": "interleaved_iq",
+    "adc_bits": 12,
+    "sample_rate_hz": 2100000
+  },
+  "transform": {
+    "frequency_alignment": "hardware_retune_to_candidate_center",
+    "resample": false,
+    "remove_dc": false,
+    "window_samples": 1024,
+    "windowing": "contiguous_non_overlapping",
+    "normalization": "per_window_complex_unit_rms"
+  },
+  "output": {
+    "sample_format": "f32_le",
+    "layout": "window_major_planar_iq",
+    "bytes_per_window": 8192
+  },
+  "quality": {
+    "minimum_raw_complex_rms_adc": 1.0,
+    "reject_clipped_adc_samples": true,
+    "normalization_rms_tolerance": 0.000001
+  },
+  "limitations": {
+    "production": false,
+    "reason": "This reproduces the current seed44 engineering bridge and is not rf_preprocess_v1.",
+    "training_alignment": "The current checkpoint was not trained with this ADC-domain transform."
+  }
+}

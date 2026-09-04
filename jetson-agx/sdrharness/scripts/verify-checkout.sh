@@ -9,6 +9,8 @@ required=(
   "docs/SDR_AGENT_PROJECT_CHECKLIST.md"
   "jetson-agx/sdrharness/config/request.json"
   "jetson-agx/sdrharness/config/amc/rml2018a-d8-seed44.experimental.json"
+  "jetson-agx/sdrharness/config/amc/rml2018a-d8-current.integration-profile.json"
+  "jetson-agx/sdrharness/config/amc/legacy-adc-unit-rms-v0.json"
   "jetson-agx/sdrharness/config/runtime.env.example"
   "jetson-agx/sdrharness/scripts/amc-mamba-worker.py"
   "jetson-agx/sdrharness/systemd/sdrharness-amc-mamba-experimental.service"

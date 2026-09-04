@@ -1,6 +1,7 @@
 #[cfg(not(unix))]
 compile_error!("sdr-agent-controller currently targets Linux/Unix only");
 
+use sdr_agent_controller::batch_recognition::IntegrationBatchRecognitionEngine;
 use sdr_agent_controller::execution::{
     ExecutionAuthorization, SdrActionExecutor, SdrdActionAdapter,
 };
@@ -10,13 +11,19 @@ use sdr_agent_controller::live_recognition::{
 };
 use sdr_agent_controller::planner::UnixPlannerAdapter;
 use sdr_agent_controller::policy::ControllerPolicy;
-use sdr_agent_controller::protocol::{PlanRequest, PlanResponse, ValidatedPlan, MAX_FRAME_BYTES};
+use sdr_agent_controller::protocol::{
+    CandidateSummary, PlanRequest, PlanResponse, ValidatedPlan, MAX_FRAME_BYTES,
+};
+use sdr_agent_controller::recognition_input::{
+    load_recognition_input_profile, validate_recognition_target, RecognitionTarget,
+    SdrdModelReadyBatchCapture, MAX_PROFILE_BYTES,
+};
 use sdr_agent_controller::recognizer::{
     LocalRecognizer, RecognitionRequest, UnixRecognizerAdapter, RECOGNIZER_MAX_FRAME_BYTES,
 };
 use sdr_agent_controller::runner::{ApprovalMode, JsonlAuditAdapter, Runner};
 use sdr_agent_controller::sdr::{SdrEngine, SdrdAdapter};
-use sdr_agent_controller::sweep::{SdrdSoftwareSweepAdapter, SweepEngine, SweepPlan};
+use sdr_agent_controller::sweep::{SdrdSoftwareSweepAdapter, SweepEngine, SweepPlan, SweepReport};
 use sdr_agent_controller::Controller;
 use serde::Deserialize;
 use std::env;
@@ -24,7 +31,8 @@ use std::error::Error;
 use std::fs;
 use std::io::{self, Read};
 use std::net::SocketAddr;
-use std::time::Duration;
+use std::path::PathBuf;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 type AppResult<T> = Result<T, Box<dyn Error>>;
 
@@ -51,6 +59,11 @@ fn run() -> AppResult<()> {
     let mut session_generation = None;
     let mut survey_gain_db = 20_i16;
     let mut sweep_point_timeout_ms = 250_u32;
+    let mut recognition_profile = None;
+    let mut recognition_target = None;
+    let mut repository_root = PathBuf::from(".");
+    let mut request_id = None;
+    let mut now_unix_ms = None;
     let mut args = env::args().skip(1);
     while let Some(flag) = args.next() {
         let value = args
@@ -72,6 +85,11 @@ fn run() -> AppResult<()> {
             "--session-generation" => session_generation = Some(value.parse::<u64>()?),
             "--survey-gain-db" => survey_gain_db = value.parse::<i16>()?,
             "--sweep-point-timeout-ms" => sweep_point_timeout_ms = value.parse::<u32>()?,
+            "--recognition-profile" => recognition_profile = Some(PathBuf::from(value)),
+            "--recognition-target" => recognition_target = Some(PathBuf::from(value)),
+            "--repository-root" => repository_root = PathBuf::from(value),
+            "--request-id" => request_id = Some(value.parse::<u64>()?),
+            "--now-unix-ms" => now_unix_ms = Some(value.parse::<u64>()?),
             _ => return Err(invalid_input(format!("unknown option {flag}")).into()),
         }
     }
@@ -96,15 +114,111 @@ fn run() -> AppResult<()> {
             | "observe"
             | "recognize"
             | "recognize-live"
+            | "derive-recognition-target"
+            | "prepare-recognition-batch"
+            | "recognize-batch-live"
             | "execute"
             | "cancel"
             | "sweep"
             | "run-once"
     ) {
         return Err(invalid_input(
-            "--mode must be plan, observe, recognize, recognize-live, execute, cancel, sweep, or run-once",
+            "--mode must be plan, observe, recognize, recognize-live, derive-recognition-target, prepare-recognition-batch, recognize-batch-live, execute, cancel, sweep, or run-once",
         )
         .into());
+    }
+
+    if mode == "derive-recognition-target" {
+        let bytes = read_request(&request_path, MAX_PROFILE_BYTES as usize)?;
+        let input: RecognitionTargetDerivationInput = serde_json::from_slice(&bytes)?;
+        let target = RecognitionTarget::from_inspection(
+            &input.candidate,
+            &input.report,
+            input.observed_at_unix_ms,
+            input.inspection_gain_db,
+        )?;
+        println!("{}", serde_json::to_string(&target)?);
+        return Ok(());
+    }
+
+    if mode == "prepare-recognition-batch" || mode == "recognize-batch-live" {
+        let mode_name = mode.as_str();
+        let address = sdrd_address.ok_or_else(|| {
+            invalid_input(format!("--mode {mode_name} requires --sdrd HOST:PORT"))
+        })?;
+        let profile_path = recognition_profile.ok_or_else(|| {
+            invalid_input(format!(
+                "--mode {mode_name} requires --recognition-profile PATH"
+            ))
+        })?;
+        let target_path = recognition_target.ok_or_else(|| {
+            invalid_input(format!(
+                "--mode {mode_name} requires --recognition-target PATH"
+            ))
+        })?;
+        let request_id = request_id
+            .ok_or_else(|| invalid_input(format!("--mode {mode_name} requires --request-id N")))?;
+        let session_generation = session_generation.ok_or_else(|| {
+            invalid_input(format!(
+                "--mode {mode_name} requires --session-generation N"
+            ))
+        })?;
+        let now_unix_ms = now_unix_ms.unwrap_or(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .map_err(io::Error::other)?
+                .as_millis()
+                .try_into()
+                .unwrap_or(u64::MAX),
+        );
+        let loaded = load_recognition_input_profile(&repository_root, &profile_path)?;
+        let target_bytes = if target_path.as_os_str() == "-" {
+            read_bounded(
+                io::stdin(),
+                usize::try_from(MAX_PROFILE_BYTES).unwrap_or(64 * 1024),
+            )?
+        } else {
+            read_bounded(
+                fs::File::open(target_path)?,
+                usize::try_from(MAX_PROFILE_BYTES).unwrap_or(64 * 1024),
+            )?
+        };
+        let target: RecognitionTarget = serde_json::from_slice(&target_bytes)?;
+        validate_recognition_target(&loaded, &target, now_unix_ms)?;
+        eprintln!(
+            "validated_recognition_input profile_id={} profile_sha256={} admission={:?} target={} windows={} samples_per_window={} p201_max_bytes={} agx_model_bytes={} control_deadline_ms={} capture_timeout_ms={}",
+            loaded.profile.profile_id,
+            loaded.manifest_sha256,
+            loaded.profile.admission,
+            serde_json::to_string(&target)?,
+            loaded.profile.capture.window_count,
+            loaded.profile.capture.samples_per_window,
+            loaded.profile.capture.max_total_raw_bytes,
+            loaded.profile.capture.max_total_model_bytes,
+            loaded.profile.capture.control_deadline_ms,
+            loaded.profile.capture.capture_timeout_ms,
+        );
+        let mut capture = SdrdModelReadyBatchCapture::new(address);
+        let batch = capture.capture(
+            &loaded,
+            &target,
+            request_id,
+            session_generation,
+            now_unix_ms,
+        )?;
+        if mode == "prepare-recognition-batch" {
+            println!("{}", serde_json::to_string(&batch.summary)?);
+        } else {
+            let recognizer = UnixRecognizerAdapter::new(
+                recognizer_socket,
+                recognizer_spool_root.clone(),
+                Duration::from_millis(recognizer_timeout_ms),
+            );
+            let mut engine =
+                IntegrationBatchRecognitionEngine::new(recognizer, recognizer_spool_root);
+            println!("{}", serde_json::to_string(&engine.run(&loaded, batch)?)?);
+        }
+        return Ok(());
     }
 
     if mode == "run-once" {
@@ -277,6 +391,15 @@ fn run() -> AppResult<()> {
 struct ExecutionInput {
     request: PlanRequest,
     response: PlanResponse,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct RecognitionTargetDerivationInput {
+    candidate: CandidateSummary,
+    report: SweepReport,
+    observed_at_unix_ms: u64,
+    inspection_gain_db: i16,
 }
 
 fn read_request(path: &str, max_bytes: usize) -> AppResult<Vec<u8>> {

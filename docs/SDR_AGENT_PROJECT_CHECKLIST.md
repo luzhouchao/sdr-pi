@@ -460,16 +460,36 @@ aggregation, result persistence and model-facing summaries.
       deletion and verified radio restoration. Keep production capability off
       because labels, RF preprocessing and rejection remain unresolved; see
       [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md).
+- [x] Define and hash-pin the integration-only
+      `rml2018a-d8-current-integration-v1` input profile and
+      `legacy_adc_unit_rms_v0` preprocessing specification: fixed verified
+      RX1 identity, 2.1 MS/s, 1.5 MHz, 50 dB, 4 × 1,024 samples, exact raw/model
+      byte bounds, deadlines and quality gates. Both contracts remain
+      `production_enabled=false`.
+- [x] Compute a versioned AGX `SpectralSummary` from each inspection IQ window
+      and derive a fresh `RecognitionTarget` from the same-window peak,
+      spectral noise, measured SNR, center and connected-component 99% occupied
+      bandwidth, together with request/session/sequence/RX identity and health.
+      The 433.92-MHz live validation rejected the pre-fix over-wide target,
+      then admitted the corrected bounded target without reusing a differently
+      gained sweep noise estimate; see
+      [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md).
+- [x] Implement one continuous bounded 4,096-sample capture, AGX-only split into
+      four exact model-ready windows, byte-reproducible golden fixtures, strict
+      per-window quality/offset metadata and private spool cleanup. A real P201
+      RX1 capture reached the current seed44 Worker through four sequential
+      bounded offsets, returned a 3/4 integration-only vote, restored the radio
+      and left no Worker, socket, spool or P201 transient data; error and direct
+      cancel paths are covered by isolated tests.
 - [ ] Define and version the production Chapter 4-to-6
       `RecognitionInputProfile`: candidate/source correlation, fixed initial
       sample-rate domain, separate RX gain/raw RMS/measured SNR semantics,
       capture/window/byte/deadline limits, preprocessing ID/hash and quality
       gates. Keep model-specific DSP out of Planner-controlled parameters; see
       [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md).
-- [ ] Implement candidate refinement and recognition eligibility, then derive a
-      finite single- or multi-window capture from the admitted profile and
-      produce byte-reproducible `ModelReadyBatch` fixtures with cleanup on
-      success, error and cancellation.
+- [ ] Live-validate failure during four-window Worker dispatch and direct cancel
+      during the new model-ready capture, proving radio restoration and exact
+      AGX/P201 temporary-data cleanup on both paths.
 - [ ] Select and freeze `rf_preprocess_v1` using training/validation plus
       versioned P201 receive-only domain evidence, covering
       centering/alignment, filtering or resampling, DC policy, amplitude policy,
@@ -494,6 +514,7 @@ Evidence:
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 - [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
+- [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 5. Input standardization, receive-domain alignment, and evaluation governance
@@ -579,6 +600,13 @@ Evidence:
       the existing backend-neutral Unix Recognizer Adapter without exposing
       PyTorch, Triton or CUDA objects through the Controller interface; keep it
       explicitly production-disabled pending the remaining admission gates.
+- [x] Connect the current seed44 checkpoint to the versioned four-window
+      integration path: reuse one bounded private model-ready batch through four
+      exact offsets, verify model/profile identity on every response, expose all
+      provisional window outputs plus an explicitly uncalibrated majority-vote
+      summary, and delete the batch on success or error. The real RX1 validation
+      kept `production_recognizer_available=false`; see
+      [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md).
 - [x] Numerically compare AGX FP32 with the 4090 training environment on the
       same 16 IQ rows per dataset: both argmax sets agree 16/16 and maximum
       absolute logits differences are `2.93e-5` (RML) and `1.18e-4` (Hisar).
@@ -633,6 +661,7 @@ Evidence:
 - [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
 - [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
 - [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md)
+- [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 

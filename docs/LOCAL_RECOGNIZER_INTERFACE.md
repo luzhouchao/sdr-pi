@@ -3,9 +3,10 @@
 Date: 2026-08-31; status updated 2026-09-04
 
 > Current status: the backend-neutral Controller seam and an experimental
-> CUDA/Mamba Worker are implemented and have passed one real P201 RX1 end-to-end
-> capture on AGX. Production admission remains disabled because trusted labels,
-> RF preprocessing, precision and rejection gates are not complete.
+> CUDA/Mamba Worker are implemented and have passed real P201 RX1 single-window
+> and versioned four-window end-to-end captures on AGX. Production admission
+> remains disabled because trusted labels, RF preprocessing, precision and
+> rejection gates are not complete.
 
 ## Implemented boundary
 
@@ -52,10 +53,19 @@ does so with `lstat`, canonical-root containment, mode/owner checks and
 ## Experimental RML2018A live profile
 
 The bounded profile currently used only for integration testing is exactly
-1,024 complex samples at 2.1 MS/s, one P201 RX path, planar float32, no DC
-removal and no resampling. P201 complex-int16 ADC codes must have at least one
-code RMS and no 12-bit clipping, then AGX applies per-window complex unit-RMS
-normalization before creating the private 8,192-byte spool file.
+four contiguous, non-overlapping windows of 1,024 complex samples at 2.1 MS/s,
+one P201 RX path, planar float32, no DC removal and no resampling. P201
+complex-int16 ADC codes must have at least one code RMS and no 12-bit clipping,
+then AGX applies per-window complex unit-RMS normalization before creating one
+private 32,768-byte spool file. Four requests reference exact 8,192-byte
+offsets in that same file; all calls are sequential and the file is removed on
+success or failure.
+
+Candidate eligibility is derived from a fresh, fixed-50-dB inspection. Its
+center, occupied bandwidth, peak, spectral noise floor and measured SNR come
+from the same AGX IQ window. The versioned integration profile and preprocessing
+specification are hash-checked before any capture. This removes the earlier
+error of combining a new inspection power with an old sweep noise estimate.
 
 This normalization is not the checkpoint's training transform. On the same
 8,192 held-out RML rows, raw dataset input achieved `63.5986%`, while unit RMS
@@ -115,6 +125,32 @@ sdr-agent-controller \
 The Controller validates and prints the complete plan and exact 4,096-byte
 P201/8,192-byte AGX limits before starting the session. An independent
 `--mode cancel --session-generation N` connection is the direct stop path.
+
+The newer integration-only path first converts one timestamped inspection
+report and updated candidate into a `RecognitionTarget`, then captures and
+classifies the four-window batch:
+
+```bash
+sdr-agent-controller --mode derive-recognition-target --request target-input.json
+
+sdr-agent-controller \
+  --mode recognize-batch-live \
+  --recognition-profile jetson-agx/sdrharness/config/amc/rml2018a-d8-current.integration-profile.json \
+  --recognition-target target.json \
+  --repository-root /home/jetson/sdrharness \
+  --request-id 44002 \
+  --session-generation 20260904045 \
+  --sdrd 192.168.1.10:43110 \
+  --recognizer-socket /run/sdr-agent/recognizer.sock \
+  --recognizer-spool-root /run/sdr-agent/iq
+```
+
+`--recognition-target -` accepts the bounded target on stdin so a fresh target
+does not need to be persisted. The result includes every provisional window
+output and a clearly named integration-only top-1 majority vote. It always
+reports `production_recognizer_available=false`; see
+[`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md).
+
 The Worker template is
 `jetson-agx/sdrharness/systemd/sdrharness-amc-mamba-experimental.service`; it
 has no `[Install]` section and must not be enabled while production admission

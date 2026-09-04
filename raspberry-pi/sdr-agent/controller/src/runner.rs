@@ -538,7 +538,10 @@ mod tests {
         PROTOCOL_VERSION,
     };
     use crate::sdr::{ReplaySdrAdapter, RxInputIdentity, SdrSnapshot};
-    use crate::sweep::{BackendSweep, ReplaySweepAdapter, SweepPoint};
+    use crate::sweep::{
+        BackendSweep, ReplaySweepAdapter, SpectralSummary, SweepPoint,
+        SPECTRAL_SUMMARY_ALGORITHM_ID, SPECTRAL_SUMMARY_SCHEMA_VERSION,
+    };
     #[cfg(unix)]
     use std::io::Read;
     #[cfg(unix)]
@@ -681,6 +684,21 @@ mod tests {
             overflow: false,
             captured_samples: 4_096,
             band_power_dbfs: power_dbfs,
+            spectral: SpectralSummary {
+                schema_version: SPECTRAL_SUMMARY_SCHEMA_VERSION,
+                algorithm_id: SPECTRAL_SUMMARY_ALGORITHM_ID.to_owned(),
+                fft_size: 1_024,
+                segment_count: 4,
+                bin_width_hz: sample_rate_hz as f64 / 1_024.0,
+                peak_frequency_hz: center_hz,
+                peak_power_dbfs: power_dbfs,
+                noise_floor_dbfs: power_dbfs - 10.0,
+                measured_snr_db: 10.0,
+                estimated_center_hz: center_hz,
+                occupied_start_hz: center_hz.saturating_sub(rf_bandwidth_hz / 4),
+                occupied_stop_hz: center_hz.saturating_add(rf_bandwidth_hz / 4),
+                occupied_bandwidth_hz: rf_bandwidth_hz / 2,
+            },
             clipped_samples: 0,
             status_flags: 0,
             elapsed_us: 1_000,
@@ -910,7 +928,7 @@ mod tests {
             .find(|candidate| candidate.id == "candidate-1")
             .unwrap();
         assert_eq!(candidate.peak_dbfs, -25.0);
-        assert_eq!(candidate.snr_db, 5.0);
+        assert_eq!(candidate.snr_db, 10.0);
         assert_eq!(candidate.age_ms, 0);
         let (_, _, audit) = runner.into_parts();
         assert_eq!(
