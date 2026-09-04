@@ -25,7 +25,7 @@ Worker 或冻结实收 IQ 预处理合同，因此没有打开 `recognizer_avail
 | AGX RML checkpoint | `checkpoints/rml2018a/seed44/best.pt` | 1,691,357 B，SHA-256 `e5a1bccd...`，完整 test 已通过 |
 | AGX Hisar checkpoint | `checkpoints/hisarmod2019/seed43/best.pt` | 1,694,557 B，SHA-256 `714ac46c...`，完整 test 已通过 |
 | AGX 完整结果 | `results/{rml2018a,hisarmod2019}/full-fp32-b256-v1/` | accuracy 0.638248 / 0.714564；含混淆矩阵、逐类、逐 SNR 与性能 |
-| AGX 历史候选权重 | `/home/jetson/sdrharness-models/amc_mamba_d8/rml2018a/shared-bi-pr02-seeds42-46` | 5 个 seed、25 个源制品；保留为 seed 选择审计证据 |
+| 4090 候选归档 | `.../runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed{42..46}_nw8/` | 五个源权重仍在；AGX 重复副本已在选择 seed44 后清理 |
 
 4090 的 Tailscale 路径在候选导入时不可用；候选与本轮 selected checkpoint、
 split 和最小源码均属于小文件，按 `connect-4090-server` 约束经阿里云反向
@@ -176,8 +176,8 @@ IQ。RML 为 134,798 参数，Hisar 因 26 类 head 为 135,054 参数。
   checkpoints/
     rml2018a/seed44/{best.pt,config.json,evaluation_summary.json,metrics_*.json}
     hisarmod2019/seed43/{best.pt,config.json,evaluation_summary.json,metrics_*.json}
-  model-source/8bc6fb5dc58e.../       # 13 个推理依赖文件
-  runtime/{venv,wheels,sources}/
+  model-source/8bc6fb5dc58e.../       # 11 个实际导入的推理依赖文件
+  runtime/{venv,wheels,triton-cache}/
   results/{rml2018a,hisarmod2019}/
 ```
 
@@ -185,26 +185,10 @@ IQ。RML 为 134,798 参数，Hisar 因 26 类 head 为 135,054 参数。
 不会把多 GB 数据、权重、venv 或预测文件提交进 Git。小型、可审计的评测
 入口和标签来源说明保留在受跟踪源码中。
 
-此前五个 RML 候选仍保留在独立历史目录：
-
-目录布局如下：
-
-```text
-/home/jetson/sdrharness-models/amc_mamba_d8/rml2018a/shared-bi-pr02-seeds42-46/
-  README.md                 # 本地资产提示（导入后补充）
-  SHA256SUMS                # 本地全量文件校验（导入后补充）
-  seed42/
-    best.pt
-    config.json
-    evaluation_summary.json
-    metrics_val.json
-    metrics_test.json
-  seed43/ ... seed46/       # 同一结构
-```
-
-历史目录权限为 `0750`，模型与 JSON 文件权限为 `0640`。无论位于仓库外的
-历史目录，还是仓库内被忽略的 `local-assets`，`.pt` 与运行制品都不得加入
-Git 历史。
+五候选的指标、训练状态和 SHA-256 作为选择审计保留在下表。选择 seed44 并
+确认它与新目录逐字节一致后，重复的 `/home/jetson/sdrharness-models/` 已清理；
+seeds 42--46 原始制品仍在 4090 上述 run 目录，可按记录的哈希重新拉取。
+`.pt` 与运行制品不得加入 Git 历史。
 
 ### 候选 checkpoint
 
@@ -278,4 +262,6 @@ seed44 的验证准确率与既定 low-SNR 指标最高；seed42 的验证 macro
 
 上面这段是五候选导入时的历史记录。本轮离线部署新增的完整证据见
 `AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`；本轮运行了模型，但
-仍没有执行 RF 发射或改变 P201/NX 状态。
+仍没有执行 RF 发射或改变 P201/NX 状态。2026-09-04 后续整理确认 4090 五个
+源权重仍在且 SHA-256 不变，随后删除 AGX 的五候选重复目录，只保留当前
+`local-assets/amc-eval/` 中的 RML seed44 与 Hisar seed43。

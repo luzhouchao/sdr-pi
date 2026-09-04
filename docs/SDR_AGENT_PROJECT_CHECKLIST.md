@@ -435,10 +435,11 @@ Evidence:
 - [x] Implement the bounded `ModelPackageLoader` interface, filesystem and
       replay Adapters, manifest/path/size/SHA-256/label validation, and package
       inspection command.
-- [x] Inventory and stage the five D8/Shared-Bi RML2018A canonical `best.pt`
-      candidates (seeds 42--46) outside Git on AGX with exact source/run
-      metadata, byte counts and verified SHA-256 parity; this is candidate
-      artifact staging only and does not enable recognition. See
+- [x] Inventory and verify the five D8/Shared-Bi RML2018A canonical `best.pt`
+      candidates (seeds 42--46) with exact source/run metadata, byte counts and
+      SHA-256 parity; after selecting seed44, remove the redundant AGX candidate
+      copies while retaining the audit table and verified 4090 recovery paths.
+      This does not enable recognition. See
       [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md).
 - [x] Stage RML2018A seed44 and HisarMod2019 seed43 with their exact clean D8
       inference source, fixed splits and datasets under the ignored AGX-local

@@ -1,6 +1,6 @@
 # SDR Agent roadmap
 
-Last reviewed: 2026-09-03
+Last reviewed: 2026-09-04
 
 The authoritative item-level status is
 [`SDR_AGENT_PROJECT_CHECKLIST.md`](SDR_AGENT_PROJECT_CHECKLIST.md).
@@ -17,8 +17,10 @@ The authoritative item-level status is
 
 ## Stage 2 — local modulation recognition
 
-- Identify and version the trained Mamba checkpoint, labels, preprocessing,
-  sample-rate policy, precision and acceptance thresholds.
+- Preserve the completed seed44/seed43 D8 source/checkpoint inventory, full
+  FP32 corpus metrics and 4090 same-IQ numerical reference.
+- Resolve the disputed RML labels and define RF preprocessing, sample-rate,
+  precision, rejection and acceptance thresholds.
 - Implement a backend-neutral CUDA Recognizer Worker on AGX.
 - Compare FP16/BF16/FP32 against the training reference and measure end-to-end
   latency, memory, drops and thermals.

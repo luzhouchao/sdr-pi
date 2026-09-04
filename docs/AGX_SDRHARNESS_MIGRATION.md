@@ -1,6 +1,6 @@
 # AGX SDR Harness migration
 
-Last updated: 2026-09-02
+Last updated: 2026-09-04
 
 ## Decision
 
@@ -9,9 +9,11 @@ root is `/home/jetson/sdrharness`. Raspberry Pi 4B is no longer the target for
 new Agent, acquisition or inference work; its deployed release remains a
 rollback baseline until AGX cutover is live-validated.
 
-The migration covers the Agent framework first. CUDA/Mamba recognition is a
-separate later feature. The earlier ultra-light ONNX package is not part of the
-AGX migration bundle and must not be used to open `recognizer_available`.
+The migration covered the Agent framework first. CUDA/Mamba remains a separate
+production feature, although the selected D8 checkpoints and complete offline
+FP32 corpora now pass on AGX. The earlier ultra-light ONNX package is not part
+of the AGX migration bundle and must not be used to open
+`recognizer_available`.
 
 The real AGX clone was natively built and loopback-validated on 2026-09-01.
 After an explicitly authorized recovery of the persistent receive-only `sdrd`,
@@ -27,7 +29,7 @@ AGX operator/Web
       v
 AGX Rust Controller ---- AGX Pi Agent Worker ---- local Spark / model API
       |
-      +---- future Recognizer interface ---- CUDA/Mamba Adapter (deferred)
+      +---- Recognizer interface ---- CUDA/Mamba Adapter (production deferred)
       |
       v
 SDRD/1 client 192.168.1.20 -> 192.168.1.10:43110
@@ -60,7 +62,8 @@ Excluded intentionally:
 - API keys, SSH keys and provider credentials;
 - original RadioML/HisarMod datasets and raw IQ;
 - Python virtual environments, Node modules, Cargo targets and caches;
-- model checkpoints and the discarded small-model staging bundle;
+- tracked model checkpoints, datasets and runtime environments; current
+  machine-local assets live only under ignored `local-assets/amc-eval/`;
 - AGX `/home/jetson/agent` data, logs, reports and `.runtime` state;
 - Qwen weights and llama.cpp runtime directories.
 
@@ -87,17 +90,25 @@ acquisition cutover, retain these gates:
 
 Do not start a second collection simply because the clone and build succeed.
 
-## Deferred CUDA/Mamba feature
+## CUDA/Mamba status and remaining production work
 
-After the framework is stable, define and deliver:
+Completed offline on 2026-09-04:
 
-- the exact trained Mamba checkpoint, model code and SHA-256;
+- selected RML2018A seed44 and HisarMod2019 seed43 checkpoints with exact
+  clean model source and SHA-256;
+- Jetson PyTorch, Mamba2 and causal-conv1d runtime on Orin `sm_87`;
+- complete FP32 test splits, confusion/per-class/per-SNR metrics, latency,
+  memory and thermal measurements;
+- same-IQ FP32 logits comparison against the 4090 training environment.
+
+Still required for production:
+
 - label order and unknown/noise/open-set policy;
 - IQ window, sample-rate/resampling and normalization contract;
-- FP16/BF16/FP32 numerical references;
-- CUDA architecture, PyTorch/mamba-ssm/Triton versions and AGX compatibility;
-- warm-up, batch, CUDA stream, memory, p50/p99 latency and thermal limits;
-- same-IQ comparisons against the training environment;
+- FP16/BF16 comparison and final precision/threshold policy;
+- bounded Worker queue, cancellation, drop accounting and sustained thermals;
 - real P201 calibration and an explicit capability gate.
 
-No model is enabled by this migration document.
+The evidence is in
+[`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md).
+No production model is enabled by this migration document.

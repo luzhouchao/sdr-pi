@@ -15,7 +15,7 @@ HisarMod2019 seed43 checkpoint 均按冻结源码严格加载，两个固定 tes
 ## 范围与安全边界
 
 - 只读取移动硬盘复制到 AGX 的两个 HDF5 数据集和 4090 复制来的模型制品；
-- 没有读取完整训练工程，只冻结 D8 推理依赖的 13 个模型文件；
+- 没有读取完整训练工程，只冻结 D8 实际导入的 11 个模型文件；
 - 没有控制 P201、NX/B210 或执行任何 RF 发射；
 - 没有停止现有 Spark `llama-server`。性能数据是在该进程约 2.56 GiB RSS、
   GPU layers 常驻的正常 AGX 服务环境中测得；
@@ -45,14 +45,14 @@ models/d8/{__init__.py,model.py,sequence.py}
 models/d3_4/{__init__.py,model.py}
 models/d3_3/{__init__.py,model.py}
 models/d2/{__init__.py,model.py,sequence.py}
-models/__init__.py
-utils/{__init__.py,model_defaults.py}
+utils/model_defaults.py
 ```
 
-评测入口不会执行上游顶层 `models/__init__.py` 或 `utils/__init__.py`，而是
-建立仅包含上述冻结推理文件的 namespace package，避免把训练 registry、
-数据增强和训练依赖带入 AGX。每个源文件的独立 SHA-256 记录在完整
-`summary.json` 中。
+评测入口建立仅包含上述冻结推理文件的 namespace package，避免把上游顶层
+package init、训练 registry、数据增强和训练依赖带入 AGX。首次验证时一并
+复制但从未执行的 `models/__init__.py` 与 `utils/__init__.py` 已在整理时删除。
+首次完整结果的 `summary.json` 仍保留当时 13 个文件的哈希作为历史证据；
+当前入口只校验仍实际使用的 11 个文件。
 
 ## AGX 运行环境
 
@@ -164,7 +164,7 @@ RML 的 HDF5 顺序读取为 10.342 s、输入转置/选择为 1.484 s；Hisar �
 
 评测脚本：
 `jetson-agx/sdrharness/scripts/evaluate-amc-mamba.py`，本轮内容 SHA-256 为
-`cdcb367c97a680a6ab912c4a1aac9dc62ac2141e3164232ac565a67e630e9854`。
+`446ced21f5077ab425d3977c08a87b67ec89f2d41975643fa88a845f2223d453`。
 
 ```bash
 local-assets/amc-eval/runtime/venv/bin/python \
@@ -194,15 +194,34 @@ local-assets/amc-eval/runtime/venv/bin/python \
 
 ## 清理与保留
 
-完整结果确认后，以下只为本轮构建/调试产生的目录已按精确 realpath 移入
-桌面回收站，并确认原路径不存在：pip HTTP cache、两个 extension `build/`
-目录及其生成的 `*.egg-info`、RML 512 条 smoke 结果和 Hisar 1,024 条 smoke
-结果，共约 1.19 GiB。失败的公开 GitHub HTTPS clone 未留下 staging 目录。
+完整结果确认后，两个 extension `build/` 与生成的 `*.egg-info`、失败/抽样
+smoke 结果、两个依赖源码 checkout、空的 `cache/`/`reports/`、未执行的两个
+package init，以及重复的五候选 AGX 目录均已按精确路径清理。4090 上的五个
+候选源权重已在删除前重新核对存在与哈希；依赖源码可由表中的 tag/commit
+恢复，selected checkpoint 和两个 wheel 均有本地校验副本。
 
-这些项目可从桌面回收站恢复；没有清空整个回收站。两个完整结果、两套数据
-集、selected checkpoint、split、最小模型源码、可运行 venv 和两个自编译
-wheel 均保留。`local-assets/amc-eval/` 下没有残留 `RUNNING` marker，也没有
-触碰现有 Spark 服务。
+仅本任务产生的回收站条目随后被定向永久删除，共释放 1,291,473,759 字节；
+这些本地副本已不能从回收站恢复，但可从上述 4090 路径、上游 commit 或保留
+wheel 重建。没有清空整个回收站，也没有删除其中既有的其他用户项目。
+
+另按下载时间和 wheel 内容确认并删除本轮 venv 安装产生的 63 个 pip
+`http-v2` 条目及其 self-check（127 个文件、24,814,801 字节）；2026-09-01
+及更早的 49,674,075 字节用户缓存保持不动。两部分累计永久清理
+1,316,288,560 字节。
+
+两个完整结果、两套数据集、selected checkpoint、split、11 个最小模型文件、
+可运行 venv 和两个自编译 wheel 均保留。本轮产生的 86,592,320 字节 Triton
+JIT cache 从共享的 `~/.triton/cache` 归入
+`local-assets/amc-eval/runtime/triton-cache/`；评测入口默认固定到该可再生目录，
+不会再污染用户级缓存。迁移时将 115 个含旧绝对路径的生成型索引改写到新
+目录，并验证 161 个索引中的 1,127 个子文件引用全部存在且未逃逸目录；两套
+16 条严格加载烟测通过，第二次暖缓存复测前后均为 1,298 文件、86,888,880
+字节，索引集合 SHA-256 均为
+`6ae8502c43f8d667a17600e8591213dedfaa55eaaaf17f52c0ec16bc64461676`。
+烟测输出与新增 `__pycache__` 随后已删除。
+
+`local-assets/amc-eval/` 下没有残留 `RUNNING` marker，也没有触碰现有 Spark
+服务或用户其他回收站项目。
 
 ## 尚未满足的生产门禁
 

@@ -24,16 +24,24 @@ from typing import Any, Iterator
 
 import h5py
 import numpy as np
-import torch
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ASSET_ROOT = REPO_ROOT / "local-assets" / "amc-eval"
+
+# Keep generated kernels with this machine-local runtime instead of mixing
+# them into the user's shared ~/.triton cache. An explicit operator override
+# remains available for diagnostics.
+DEFAULT_TRITON_CACHE_DIR = ASSET_ROOT / "runtime" / "triton-cache"
+os.environ.setdefault("TRITON_CACHE_DIR", str(DEFAULT_TRITON_CACHE_DIR))
+
+import torch  # noqa: E402  # cache location must be fixed before Torch imports Triton
+
+
 MODEL_COMMIT = "8bc6fb5dc58e1b83338bdebb2624824f1e6b0798"
 MODEL_BACKEND = "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse"
 
 MODEL_SOURCE_SHA256 = {
-    "models/__init__.py": "d8d02d52268be39de2fe4466dcca8dee9be07407734eebc0f2a6283facb2f135",
     "models/d2/__init__.py": "d3d5223d8b4f5a5f970d34f071e58a14d05e6bbe49c5ea4cbaa7ea41feff42dc",
     "models/d2/model.py": "39bfab76e1819ebc75bbff963b3fe9fc8e91905881140ae27558a88d0d08c272",
     "models/d2/sequence.py": "50dfc6abeb851106c7ead657500b6410ea76d50d26671e4d66edd34e1418c7b7",
@@ -44,7 +52,6 @@ MODEL_SOURCE_SHA256 = {
     "models/d8/__init__.py": "29b1858f8725440c97130c2c82d06e42e8d224f8bb19adb0d457b28485ec7a3a",
     "models/d8/model.py": "4e272a5a9ea62381ecffd17607d418f23d2ebc63c0e5c44dfd54ebb17707ded2",
     "models/d8/sequence.py": "b28961f40f574ccbd890c7396eccda4bad581b16eadd777988e7b5d185632c00",
-    "utils/__init__.py": "fe3d47499fc6c3e0fac498c9a4860fb9ac876f2ff071e9860769a6d1032aa566",
     "utils/model_defaults.py": "6632270d666d9cf8f28bb3063bd459546028c74f8b096532fba7e73e30dc7474",
 }
 
@@ -720,6 +727,7 @@ def main() -> int:
             "mamba_ssm": package_version("mamba-ssm"),
             "causal_conv1d": package_version("causal-conv1d"),
             "triton": package_version("triton"),
+            "triton_cache_dir": str(Path(os.environ["TRITON_CACHE_DIR"]).expanduser().resolve()),
             "transformers": package_version("transformers"),
             "huggingface_hub": package_version("huggingface-hub"),
             "cuda_device": torch.cuda.get_device_name(0),

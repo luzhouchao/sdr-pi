@@ -1,10 +1,10 @@
 # Local recognizer interface
 
-Date: 2026-08-31
+Date: 2026-08-31; status updated 2026-09-04
 
-> Current status (2026-09-02): the backend-neutral Controller seam is
-> implemented on AGX. The production CUDA/Mamba Adapter and trained checkpoint
-> are not yet integrated.
+> Current status: the backend-neutral Controller seam is implemented on AGX.
+> Selected D8 checkpoints and complete offline FP32 corpus validation now pass;
+> the production CUDA/Mamba Adapter is not yet integrated.
 
 ## Implemented boundary
 
@@ -80,11 +80,13 @@ sdr-agent-controller \
 
 ## Next admission slice
 
-The next implementation needs the real trained Mamba checkpoint, pinned source,
-labels, preprocessing, sample-rate policy, precision and an offline IQ corpus.
-The worker starts with a bounded queue of one, then must pass numerical
-comparison, confusion-matrix, replay throughput, p50/p99 latency, GPU memory,
-RSS, CPU and thermal gates before setting `recognizer_available=true`.
+The selected checkpoint, pinned source and offline corpus are now available and
+their FP32 numerical comparison, confusion matrix, p50/p99 latency, GPU memory,
+RSS, CPU and short-run thermal measurements pass. The next implementation must
+resolve trusted RML labels, RF preprocessing/sample-rate policy, low-precision
+and rejection thresholds, then build a bounded queue of one and validate drop,
+cancellation, concurrency and sustained thermal behavior before setting
+`recognizer_available=true`.
 
 ## Existing package-validation seam
 
