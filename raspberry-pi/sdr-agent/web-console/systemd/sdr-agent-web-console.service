@@ -15,6 +15,7 @@ Environment=SDR_WEB_AGENT_BINARY=/opt/sdr-agent/current/bin/sdr-agent
 Environment=SDR_WEB_REQUEST_PATH=/etc/sdr-agent/request.json
 Environment=SDR_WEB_SESSION_SOCKET=/run/sdr-agent/session.sock
 Environment=SDR_WEB_SDRD_ADDRESS=192.168.1.10:43110
+Environment=SDR_WEB_CORPUS_ROOT=/var/lib/sdrharness/web-console/p201-corpus
 ExecStart=/opt/sdr-agent/current/bin/sdr-agent-web-console
 Restart=on-failure
 RestartSec=3

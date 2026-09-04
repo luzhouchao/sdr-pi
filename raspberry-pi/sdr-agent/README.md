@@ -242,6 +242,26 @@ KiB. The UI labels this as `已压缩 N 次`; it is not a model version. Process
 scan results are stored on AGX; raw IQ is retained only when the operator has
 enabled the per-scan SigMF switch.
 
+The top bar also exposes a separate `接收语料` archive for Chapter 5. Each row
+is one immutable `amc_corpus_manifest_v1` P201 RX-only package under
+`/var/lib/sdrharness/web-console/p201-corpus/<result-id>/`; SQLite keeps the
+bounded manifest/record index and searchable summary, while `raw.iq` remains
+outside Git. The detail page shows the fixed `RX1 / RX0 / voltage0,1 /
+A_BALANCED` identity, RF profile, session/day, sequence, content hash and
+quality. Field captures without independent evidence are always `unknown` and
+are never presented as accuracy ground truth.
+
+`GET /api/corpus` and `GET /api/corpus/{result-id}` feed that visible archive.
+`DELETE /api/corpus/{result-id}` is the operator-facing delete path and removes
+both the SQLite row and the exact seven-file managed package after a
+symlink/unknown-file guard. `POST /api/corpus` is intentionally restricted to
+an AGX loopback peer. It accepts at most 384 KiB and only the current bounded
+single-point integration profile (2.1 MS/s, 1.5 MHz, 50 dB, 4,096 complex
+samples); it independently reproduces IQ power, spectrum and clipping before
+an atomic package commit, and requires recorded SDR restoration plus completed
+P201/AGX temporary-data cleanup. LAN clients cannot manufacture receive
+evidence through that write endpoint.
+
 The top bar places a gear-shaped `设置` entry directly beside the LAN live
 connection indicator. It opens a separate settings page instead of expanding
 configuration inside the run console. Model/API selection, upstream model
@@ -293,6 +313,13 @@ cargo test --all-targets
 cargo clippy --all-targets -- -D warnings
 cargo build --locked --release --target aarch64-unknown-linux-musl
 ```
+
+For a bounded local corpus/import validation, controller `sweep` mode accepts
+an absolute `--sigmf-directory`. The same validated finite plan controls the
+file size, the Adapter still restores the radio before returning, and an
+incomplete writer removes its partial pair. Treat that directory as
+development staging: move bytes into the application store through the
+loopback-only corpus admission path, then verify and remove the staging pair.
 
 The one-shot Runner performs one live
 observe-plan-validate-approve-execute-observe cycle and appends a root-only

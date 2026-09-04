@@ -1,9 +1,16 @@
 use axum::{
-    extract::{Path, State},
+    extract::DefaultBodyLimit,
+    extract::{ConnectInfo, Path, State},
     http::{header, StatusCode},
     response::{sse::Event as SseEvent, sse::KeepAlive, Html, IntoResponse, Response, Sse},
     routing::{get, post},
     Json, Router,
+};
+mod corpus;
+
+use corpus::{
+    delete_corpus_result, ingest_corpus_result, initialize_corpus_store, list_corpus_results,
+    load_corpus_result, P201CorpusIngestRequest, MAX_CORPUS_REQUEST_BYTES,
 };
 use rusqlite::{params, Connection, OptionalExtension};
 use sdr_agent_controller::{
@@ -66,6 +73,7 @@ struct Config {
     provider_config_path: PathBuf,
     result_db_path: PathBuf,
     capture_root: PathBuf,
+    corpus_root: PathBuf,
 }
 
 #[derive(Clone)]
@@ -338,6 +346,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::from_env()?;
     initialize_result_database(&config.result_db_path)?;
     initialize_capture_root(&config.capture_root)?;
+    initialize_corpus_store(&config.result_db_path, &config.corpus_root)?;
     let persisted = load_state(&config.state_path)?;
     let (updates, _) = broadcast::channel(512);
     let (shutdown, _) = broadcast::channel(4);
@@ -371,17 +380,26 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             "/api/results/{id}",
             get(get_capture_result).delete(delete_capture_result),
         )
+        .route("/api/corpus", get(list_p201_corpus).post(post_p201_corpus))
+        .route(
+            "/api/corpus/{result_id}",
+            get(get_p201_corpus).delete(delete_p201_corpus),
+        )
         .route("/api/events", get(events))
         .route("/api/sessions", post(create_session))
         .route("/api/sessions/{id}/activate", post(activate_session))
         .route("/api/sessions/{id}/command", post(send_command))
+        .layer(DefaultBodyLimit::max(MAX_CORPUS_REQUEST_BYTES))
         .with_state(state.clone());
 
     println!("SDR Web Console listening on http://{}", config.listen);
     let listener = tokio::net::TcpListener::bind(config.listen).await?;
-    axum::serve(listener, app)
-        .with_graceful_shutdown(shutdown_signal(state.clone()))
-        .await?;
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .with_graceful_shutdown(shutdown_signal(state.clone()))
+    .await?;
     begin_runtime_shutdown(&state).await;
     // The process actor bounds child shutdown at four seconds. Keep the Rust
     // supervisor alive long enough for that cleanup after HTTP has drained.
@@ -419,6 +437,10 @@ impl Config {
                 "SDR_WEB_CAPTURE_ROOT",
                 "/var/lib/sdrharness/web-console/captures",
             ),
+            corpus_root: env_path(
+                "SDR_WEB_CORPUS_ROOT",
+                "/var/lib/sdrharness/web-console/p201-corpus",
+            ),
         })
     }
 }
@@ -447,6 +469,52 @@ async fn styles_css() -> impl IntoResponse {
 
 async fn get_state(State(state): State<AppState>) -> Json<PersistedState> {
     Json(state.inner.lock().await.persisted.clone())
+}
+
+async fn list_p201_corpus(
+    State(state): State<AppState>,
+) -> ApiResult<Json<Vec<corpus::CorpusResultSummary>>> {
+    Ok(Json(list_corpus_results(&state.config.result_db_path)?))
+}
+
+async fn post_p201_corpus(
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
+    State(state): State<AppState>,
+    Json(request): Json<P201CorpusIngestRequest>,
+) -> ApiResult<(StatusCode, Json<corpus::CorpusResultDetail>)> {
+    if !peer.ip().is_loopback() {
+        return Err(ApiError(
+            StatusCode::FORBIDDEN,
+            "P201 语料写入只允许 AGX 本机回环客户端".into(),
+        ));
+    }
+    let detail = ingest_corpus_result(
+        &state.config.result_db_path,
+        &state.config.corpus_root,
+        request,
+    )?;
+    Ok((StatusCode::CREATED, Json(detail)))
+}
+
+async fn get_p201_corpus(
+    State(state): State<AppState>,
+    Path(result_id): Path<String>,
+) -> ApiResult<Json<corpus::CorpusResultDetail>> {
+    Ok(Json(load_corpus_result(
+        &state.config.result_db_path,
+        &result_id,
+    )?))
+}
+
+async fn delete_p201_corpus(
+    State(state): State<AppState>,
+    Path(result_id): Path<String>,
+) -> ApiResult<Json<corpus::CorpusDeleteResult>> {
+    Ok(Json(delete_corpus_result(
+        &state.config.result_db_path,
+        &state.config.corpus_root,
+        &result_id,
+    )?))
 }
 
 async fn list_capture_results(

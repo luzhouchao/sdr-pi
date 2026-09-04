@@ -285,6 +285,34 @@ impl<B: SweepBackend> SweepEngine<B> {
     }
 }
 
+pub fn validate_completed_sweep(
+    plan: &SweepPlan,
+    report: &SweepReport,
+) -> Result<ValidatedSweepPlan, SweepError> {
+    let validated = validate_plan(plan)?;
+    if report.sweep_id != validated.sweep_id
+        || report.session_generation != validated.session_generation
+        || report.estimated_duration_ms != validated.estimated_duration_ms
+        || report.elapsed_ms > MAX_DURATION_MS.saturating_mul(2)
+    {
+        return Err(SweepError::new(
+            "report_contract",
+            "completed sweep identity, duration, or generation does not match its plan",
+        ));
+    }
+    validate_points(&validated, &report.points)?;
+    let noise_floor_dbfs = median_power_dbfs(&report.points)?;
+    if report.noise_floor_dbfs != noise_floor_dbfs
+        || report.candidates != merge_candidates(&validated, &report.points, noise_floor_dbfs)
+    {
+        return Err(SweepError::new(
+            "report_aggregate",
+            "completed sweep aggregate or candidate set is not reproducible from its points",
+        ));
+    }
+    Ok(validated)
+}
+
 pub struct ReplaySweepAdapter {
     sweeps: VecDeque<Result<BackendSweep, SweepError>>,
 }
@@ -460,8 +488,7 @@ fn run_sdrd_points(
             if let Some(writer) = sigmf.as_mut() {
                 writer.append(point_index, center_hz, &iq)?;
             }
-            let (power, clipped) = aggregate_ci16_power(&iq, captured_samples)?;
-            let spectral = spectral_summary_ci16(
+            let (band_power_dbfs, spectral, clipped) = analyze_ci16_window(
                 &iq,
                 captured_samples,
                 profile.center_hz,
@@ -470,9 +497,6 @@ fn run_sdrd_points(
             let response_generation = capture.generation;
             let sequence = capture.sequence;
             let aggregate_samples = captured_samples;
-            let power_lo = power as u32;
-            let power_mid = (power >> 32) as u32;
-            let power_hi = 0;
             let status_flags = capture.health.flags;
             let elapsed_us = capture.timeout.elapsed_us;
             if response_generation != generation || status_flags != 0 {
@@ -505,7 +529,7 @@ fn run_sdrd_points(
                 dropped_samples: capture.dropped_samples,
                 overflow: capture.overflow,
                 captured_samples,
-                band_power_dbfs: u96_power_dbfs(power_lo, power_mid, power_hi, captured_samples)?,
+                band_power_dbfs,
                 spectral,
                 clipped_samples: clipped,
                 status_flags,
@@ -695,7 +719,7 @@ impl SigmfWriter {
     }
 }
 
-fn available_storage_bytes(path: &Path) -> Result<u64, SweepError> {
+pub fn available_storage_bytes(path: &Path) -> Result<u64, SweepError> {
     let path = std::ffi::CString::new(path.as_os_str().as_bytes())
         .map_err(|_| SweepError::new("sigmf_space", "capture directory contains a NUL byte"))?;
     let mut stat = std::mem::MaybeUninit::<libc::statvfs>::uninit();
@@ -748,6 +772,18 @@ fn aggregate_ci16_power(bytes: &[u8], samples: u64) -> Result<(u64, u64), SweepE
         }
     }
     Ok((power, clipped))
+}
+
+pub fn analyze_ci16_window(
+    bytes: &[u8],
+    samples: u64,
+    tuned_center_hz: u64,
+    sample_rate_hz: u64,
+) -> Result<(f32, SpectralSummary, u64), SweepError> {
+    let (power, clipped) = aggregate_ci16_power(bytes, samples)?;
+    let band_power_dbfs = u96_power_dbfs(power as u32, (power >> 32) as u32, 0, samples)?;
+    let spectral = spectral_summary_ci16(bytes, samples, tuned_center_hz, sample_rate_hz)?;
+    Ok((band_power_dbfs, spectral, clipped))
 }
 
 fn spectral_summary_ci16(
@@ -1792,6 +1828,41 @@ mod tests {
             },
             rx_input: RxInputIdentity::fixed_p201_rx1_fixture(),
         }
+    }
+
+    #[test]
+    fn completed_sweep_revalidates_plan_identity_and_aggregate() {
+        let plan = plan();
+        let validated = validate_plan(&plan).unwrap();
+        let points: Vec<_> = validated
+            .centers_hz
+            .iter()
+            .copied()
+            .enumerate()
+            .map(|(index, center)| point(index, center, -70.0 + index as f32 * 2.0))
+            .collect();
+        let backend = BackendSweep {
+            backend: "replay".into(),
+            backend_version: 1,
+            points,
+            dataset: None,
+        };
+        let report = SweepEngine::new(ReplaySweepAdapter::new([Ok(backend)]))
+            .run(&plan)
+            .unwrap();
+        assert_eq!(
+            validate_completed_sweep(&plan, &report)
+                .unwrap()
+                .maximum_iq_bytes,
+            validated.maximum_iq_bytes
+        );
+
+        let mut tampered = report.clone();
+        tampered.noise_floor_dbfs += 1.0;
+        assert_eq!(
+            validate_completed_sweep(&plan, &tampered).unwrap_err().code,
+            "report_aggregate"
+        );
     }
 
     #[test]

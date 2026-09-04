@@ -200,6 +200,35 @@ This metadata rule does not itself authorize transmission. Any later N210 run
 still needs its own bounded, lawful RF procedure and must not add TX actions to
 Agent/Planner.
 
+## AGX application-owned P201 store
+
+The deployed Web console implements the first concrete P201 store at:
+
+```text
+/var/lib/sdrharness/web-console/p201-corpus/<result-id>/
+```
+
+One result directory is a self-contained frozen v1 package containing
+`manifest.json`, `records.jsonl`, `raw.iq`, the exact capture plan and copies of
+the compiled integration profile, preprocessing spec and provisional label
+table. SQLite stores the manifest/record JSON plus bounded searchable metadata;
+the IQ bytes remain only in the application result directory and outside Git.
+
+The ingestion API is loopback-only, capped at 384 KiB, and currently admits
+exactly one 4,096-complex-sample `ci16_le` P201 window at 2.1 MS/s, 1.5 MHz RF
+bandwidth and 50 dB fixed RX gain. It revalidates plan/report correlation,
+recomputes power, spectral quality and clipping from the submitted bytes,
+requires the fixed RX1 identity, zero drops/overflow/health flags, confirmed
+radio restoration and completed P201/AGX transient cleanup. It supports only an
+`unknown` label reason; a later independently annotated N210 experiment needs a
+separate admitted annotation-evidence path.
+
+The visible `接收语料` page reads `GET /api/corpus` and
+`GET /api/corpus/{result-id}`. Its per-record delete button calls
+`DELETE /api/corpus/{result-id}` and removes the database row together with the
+exact managed package. Deletion refuses symlinks or unexpected files instead
+of traversing an untrusted directory.
+
 ## Validator
 
 ```bash

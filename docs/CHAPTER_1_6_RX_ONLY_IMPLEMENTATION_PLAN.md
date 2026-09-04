@@ -185,11 +185,15 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       profile、预处理、标签、split 和证据哈希。严格校验器已覆盖来源/标签误用、
       临时名称升级、路径/哈希篡改、错误 RX 口、未清理冻结记录和 train/test
       lineage 泄漏；见 [`AMC_CORPUS_MANIFEST_V1.md`](AMC_CORPUS_MANIFEST_V1.md)。
+- [x] 已部署 AGX 应用自有的 P201 corpus SQLite/七文件包存储和 `接收语料` 页面；
+      loopback-only 入口只接受当前 2.1 MS/s、1.5 MHz、50 dB、4,096-sample RX1
+      profile，重新计算 IQ 功率/频谱/削顶并要求恢复与临时清理。一次 433.920 MHz
+      实收以 `unknown` 入库，通过完整资产哈希校验和真实页面删除后又按同一内容
+      恢复保留；见
+      [`P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md`](P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md)。
 
 ### 还未完成
 
-- [ ] 建立版本化、有限、可人工删除的 P201 RX-only 语料，记录 session/date、
-      profile、端口、增益、频率、样本/字节、质量和内容哈希；大 IQ 不进 Git。
 - [ ] 按 source sample、capture session 和日期隔离 train/val/test，证明裁剪、
       增强或重复接收副本不跨 split。
 - [ ] 只用 train/validation 完成预处理与窗口数消融，冻结 transform、校准和
@@ -255,8 +259,10 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
 
 - [x] A：先补第3章 RX1/A_BALANCED 身份合同和全程不变检查，并与第4章
       `RecognitionInputProfile`/golden fixtures 一起评审。
-- [ ] B：完成第4章候选资格、多窗口 capture 和第5章无泄漏语料/
-      `rf_preprocess_v1` 消融。
+- [x] B1：完成第4章候选资格/多窗口 capture，以及第5章统一合同、应用自有
+      RX-only 语料存储、完整资产校验和可见人工删除。
+- [ ] B2：证明 offline/receive corpus 的 group-exclusive split 无泄漏，并只用
+      train/validation 与 receive-domain 证据完成 `rf_preprocess_v1` 消融和冻结。
 - [ ] C：在 4090 训练 RF-aligned checkpoint，回到 AGX 完成精度、拒识、资源和
       production Worker 准入。
 - [ ] D：最后接入第1—2章 Runner/Agent/Web，完成 health capability、人工批准、

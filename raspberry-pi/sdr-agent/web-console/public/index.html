@@ -10,6 +10,10 @@
   <header class="topbar">
     <div><p class="eyebrow">AGX CONTROL PLANE</p><h1>SDR Web Console</h1></div>
     <div class="topbar-actions">
+      <button id="corpus-entry" class="settings-entry" type="button" aria-controls="corpus-view" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5C4 5.1 7.6 4 12 4s8 1.1 8 2.5S16.4 9 12 9 4 7.9 4 6.5Zm0 0v5C4 12.9 7.6 14 12 14s8-1.1 8-2.5v-5m-16 5v5C4 17.9 7.6 19 12 19s8-1.1 8-2.5v-5"/></svg>
+        <span id="corpus-entry-label">接收语料</span>
+      </button>
       <button id="settings-entry" class="settings-entry" type="button" aria-controls="settings-view" aria-expanded="false">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Zm8.2 4.8v-2l-2.3-.8a7 7 0 0 0-.6-1.5l1.1-2.2L17 5.1l-2.2 1.1a7 7 0 0 0-1.5-.6L12.5 3h-2l-.8 2.6a7 7 0 0 0-1.5.6L6 5.1 4.6 6.5l1.1 2.2a7 7 0 0 0-.6 1.5l-2.3.8v2l2.3.8a7 7 0 0 0 .6 1.5l-1.1 2.2L6 18.9l2.2-1.1a7 7 0 0 0 1.5.6l.8 2.6h2l.8-2.6a7 7 0 0 0 1.5-.6l2.2 1.1 1.4-1.4-1.1-2.2a7 7 0 0 0 .6-1.5l2.3-.8Z"/></svg>
         <span>设置</span><i id="settings-dirty-dot" aria-label="有未保存修改" hidden></i>
@@ -78,6 +82,41 @@
             </figure>
             <section class="dataset-strip"><div><small>RAW IQ DATASET</small><strong id="dataset-state">本次未保存原始 IQ</strong><p id="dataset-detail">聚合结果仍已保存在 AGX。</p></div></section>
             <section class="candidate-section"><div class="section-heading"><h3>候选信号</h3><span id="candidate-count">0 个</span></div><div class="candidate-table-wrap"><table><thead><tr><th>候选</th><th>中心频率</th><th>带宽</th><th>峰值</th><th>信噪比</th><th>覆盖点数</th></tr></thead><tbody id="candidate-table"></tbody></table></div></section>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="corpus-view" class="page-view results-view" hidden aria-labelledby="corpus-title">
+      <div class="results-heading">
+        <div><p class="eyebrow">P201 RX-ONLY CORPUS</p><h2 id="corpus-title">接收语料</h2><p>每条记录都是一个版本化、内容哈希的 P201 RX1 采集包。没有独立标注的现场 IQ 固定显示为 unknown，不参与准确率。</p></div>
+        <button id="corpus-back" class="ghost-button" type="button">返回运行台</button>
+      </div>
+      <div class="results-workspace">
+        <aside class="results-list-panel">
+          <div class="panel-title"><div><span>语料记录</span><small id="corpus-count">正在载入</small></div></div>
+          <div id="corpus-list" class="results-list"></div>
+        </aside>
+        <section class="result-detail">
+          <div id="corpus-empty" class="results-empty"><strong>还没有 P201 接收语料</strong><p>受控 RX1 采集通过合同校验并完成临时数据清理后，会作为应用结果出现在这里。</p></div>
+          <div id="corpus-content" hidden>
+            <header class="result-titlebar"><div><small>P201 RECEIVE / UNKNOWN</small><h3 id="corpus-result-title">—</h3><p id="corpus-result-time">—</p></div><button id="delete-corpus" class="delete-result" type="button">删除这条语料</button></header>
+            <div class="result-metrics" aria-label="接收语料指标">
+              <div><span>中心频率</span><strong id="corpus-center">—</strong></div><div><span>采样率</span><strong id="corpus-rate">—</strong></div><div><span>RF 带宽</span><strong id="corpus-bandwidth">—</strong></div><div><span>固定增益</span><strong id="corpus-gain">—</strong></div><div><span>原始 RMS</span><strong id="corpus-rms">—</strong></div><div><span>实测 SNR</span><strong id="corpus-snr">—</strong></div>
+            </div>
+            <section class="dataset-strip corpus-dataset"><div><small>APPLICATION-OWNED RAW IQ</small><strong id="corpus-iq-state">—</strong><p id="corpus-iq-detail">—</p></div></section>
+            <section class="corpus-facts" aria-label="语料合同">
+              <div><span>接收口</span><strong>RX1 / RX0 / voltage0,1 / A_BALANCED</strong></div>
+              <div><span>标签来源</span><strong id="corpus-label">unknown</strong></div>
+              <div><span>Profile</span><strong id="corpus-profile">—</strong></div>
+              <div><span>Preprocess</span><strong id="corpus-preprocess">—</strong></div>
+              <div><span>Capture session</span><strong id="corpus-session">—</strong></div>
+              <div><span>Sequence / health</span><strong id="corpus-health">—</strong></div>
+            </section>
+            <div class="corpus-json-grid">
+              <details><summary>manifest.json</summary><pre id="corpus-manifest"></pre></details>
+              <details><summary>amc_corpus_record_v1</summary><pre id="corpus-record"></pre></details>
+            </div>
           </div>
         </section>
       </div>

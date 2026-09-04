@@ -6,9 +6,13 @@ const view = {
   results: [],
   selectedResultId: null,
   selectedResult: null,
+  corpusResults: [],
+  selectedCorpusId: null,
+  selectedCorpus: null,
   settingsDirty: false,
   settingsOpen: false,
   resultsOpen: false,
+  corpusOpen: false,
   reloadTimer: null,
   terminal: document.querySelector('#terminal'),
   sessions: document.querySelector('#sessions'),
@@ -156,9 +160,13 @@ function markSettingsDirty(dirty = true) {
 function showSettings() {
   view.settingsOpen = true;
   view.resultsOpen = false;
+  view.corpusOpen = false;
   document.querySelector('#console-view').hidden = true;
   document.querySelector('#results-view').hidden = true;
+  document.querySelector('#corpus-view').hidden = true;
   document.querySelector('#settings-view').hidden = false;
+  document.querySelector('#corpus-entry').setAttribute('aria-expanded', 'false');
+  document.querySelector('#corpus-entry').classList.remove('active');
   document.querySelector('#settings-entry').setAttribute('aria-expanded', 'true');
   document.querySelector('#settings-entry').classList.add('active');
   document.querySelector('#settings-title').focus?.();
@@ -169,22 +177,45 @@ function showConsole() {
   if (view.settingsDirty) renderProvider();
   view.settingsOpen = false;
   view.resultsOpen = false;
+  view.corpusOpen = false;
   document.querySelector('#settings-view').hidden = true;
   document.querySelector('#results-view').hidden = true;
+  document.querySelector('#corpus-view').hidden = true;
   document.querySelector('#console-view').hidden = false;
   document.querySelector('#settings-entry').setAttribute('aria-expanded', 'false');
   document.querySelector('#settings-entry').classList.remove('active');
+  document.querySelector('#corpus-entry').setAttribute('aria-expanded', 'false');
+  document.querySelector('#corpus-entry').classList.remove('active');
 }
 
 async function showResults() {
   view.settingsOpen = false;
   view.resultsOpen = true;
+  view.corpusOpen = false;
   document.querySelector('#console-view').hidden = true;
   document.querySelector('#settings-view').hidden = true;
+  document.querySelector('#corpus-view').hidden = true;
   document.querySelector('#results-view').hidden = false;
   document.querySelector('#settings-entry').setAttribute('aria-expanded', 'false');
   document.querySelector('#settings-entry').classList.remove('active');
+  document.querySelector('#corpus-entry').setAttribute('aria-expanded', 'false');
+  document.querySelector('#corpus-entry').classList.remove('active');
   try { await loadResults({ selectLatest: true }); } catch (error) { toast(error.message); }
+}
+
+async function showCorpus() {
+  view.settingsOpen = false;
+  view.resultsOpen = false;
+  view.corpusOpen = true;
+  document.querySelector('#console-view').hidden = true;
+  document.querySelector('#settings-view').hidden = true;
+  document.querySelector('#results-view').hidden = true;
+  document.querySelector('#corpus-view').hidden = false;
+  document.querySelector('#settings-entry').setAttribute('aria-expanded', 'false');
+  document.querySelector('#settings-entry').classList.remove('active');
+  document.querySelector('#corpus-entry').setAttribute('aria-expanded', 'true');
+  document.querySelector('#corpus-entry').classList.add('active');
+  try { await loadCorpus({ selectLatest: true }); } catch (error) { toast(error.message); }
 }
 
 function toggleSettings() {
@@ -595,6 +626,110 @@ async function deleteSelectedResult() {
   } catch (error) { toast(error.message); }
 }
 
+async function refreshCorpusCount() {
+  view.corpusResults = await api('/api/corpus');
+  const count = view.corpusResults.length;
+  document.querySelector('#corpus-entry-label').textContent = count ? `接收语料 · ${count}` : '接收语料';
+  return view.corpusResults;
+}
+
+async function loadCorpus({ selectLatest = false } = {}) {
+  await refreshCorpusCount();
+  document.querySelector('#corpus-count').textContent = `${view.corpusResults.length} 条 RX-only 记录`;
+  renderCorpusList();
+  if (!view.corpusResults.length) {
+    view.selectedCorpusId = null;
+    view.selectedCorpus = null;
+    renderCorpusDetail();
+    return;
+  }
+  const selectedStillExists = view.corpusResults.some((result) => result.result_id === view.selectedCorpusId);
+  if (selectLatest || !selectedStillExists) view.selectedCorpusId = view.corpusResults[0].result_id;
+  await selectCorpus(view.selectedCorpusId, { rerenderList: true });
+}
+
+function renderCorpusList() {
+  const list = document.querySelector('#corpus-list');
+  list.replaceChildren();
+  if (!view.corpusResults.length) {
+    const empty = document.createElement('p');
+    empty.className = 'result-list-empty';
+    empty.textContent = '尚无通过合同校验的 P201 RX1 语料。';
+    list.append(empty);
+    return;
+  }
+  for (const result of view.corpusResults) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `result-list-item${result.result_id === view.selectedCorpusId ? ' active' : ''}`;
+    const kind = document.createElement('small');
+    kind.textContent = 'P201 RX1 · UNKNOWN';
+    const title = document.createElement('strong');
+    title.textContent = formatFrequency(result.center_hz);
+    const meta = document.createElement('span');
+    meta.textContent = `${formatDate(result.created_at_ms)} · ${formatBytes(result.iq_bytes)} · seq ${result.sequence}`;
+    button.append(kind, title, meta);
+    button.addEventListener('click', () => selectCorpus(result.result_id));
+    list.append(button);
+  }
+}
+
+async function selectCorpus(resultId, { rerenderList = true } = {}) {
+  view.selectedCorpusId = resultId;
+  if (rerenderList) renderCorpusList();
+  const result = await api(`/api/corpus/${encodeURIComponent(resultId)}`);
+  if (view.selectedCorpusId !== resultId) return;
+  view.selectedCorpus = result;
+  renderCorpusDetail();
+}
+
+function renderCorpusDetail() {
+  const empty = document.querySelector('#corpus-empty');
+  const content = document.querySelector('#corpus-content');
+  if (!view.selectedCorpus) {
+    empty.hidden = false;
+    content.hidden = true;
+    return;
+  }
+  empty.hidden = true;
+  content.hidden = false;
+  const { summary, manifest, record } = view.selectedCorpus;
+  setText('#corpus-result-title', summary.result_id);
+  setText('#corpus-result-time', `${summary.captured_at_utc} · ${summary.capture_day} · application result`);
+  setText('#corpus-center', formatFrequency(summary.center_hz));
+  setText('#corpus-rate', formatFrequencySpan(summary.sample_rate_hz));
+  setText('#corpus-bandwidth', formatFrequencySpan(summary.rf_bandwidth_hz));
+  setText('#corpus-gain', `${summary.rx_gain_db} dB`);
+  setText('#corpus-rms', `${summary.raw_rms_dbfs.toFixed(1)} dBFS`);
+  setText('#corpus-snr', `${summary.measured_snr_db.toFixed(1)} dB`);
+  setText('#corpus-iq-state', `${formatBytes(summary.iq_bytes)} ci16_le · ${summary.samples} complex samples`);
+  setText('#corpus-iq-detail', `SHA-256 ${summary.iq_sha256}；大 IQ 位于 AGX 应用目录且不进入 Git。删除按钮会同时删除 SQLite 记录和完整语料包。`);
+  setText('#corpus-label', `${summary.label_provenance} / ${summary.label_reason}`);
+  setText('#corpus-profile', `${summary.profile_id} · ${shortHash(summary.profile_sha256)}`);
+  setText('#corpus-preprocess', `${summary.preprocess_id} · ${shortHash(summary.preprocess_sha256)}`);
+  setText('#corpus-session', `${summary.capture_session_id} · ${summary.plan_id}`);
+  setText('#corpus-health', `seq ${summary.sequence} · ${summary.healthy ? 'healthy' : 'unhealthy'} · flags ${summary.health_flags} · drop ${summary.dropped_samples}`);
+  document.querySelector('#corpus-manifest').textContent = JSON.stringify(manifest, null, 2);
+  document.querySelector('#corpus-record').textContent = JSON.stringify(record, null, 2);
+}
+
+async function deleteSelectedCorpus() {
+  if (!view.selectedCorpus) return;
+  const { result_id: resultId, iq_bytes: iqBytes } = view.selectedCorpus.summary;
+  if (!window.confirm(`删除接收语料 ${resultId}，并删除 ${formatBytes(iqBytes)} 原始 IQ？此操作无法撤销。`)) return;
+  try {
+    await api(`/api/corpus/${encodeURIComponent(resultId)}`, { method: 'DELETE' });
+    view.selectedCorpus = null;
+    view.selectedCorpusId = null;
+    await loadCorpus({ selectLatest: true });
+    toast('接收语料及原始 IQ 已删除');
+  } catch (error) { toast(error.message); }
+}
+
+function shortHash(value) {
+  return `${value.slice(0, 12)}…`;
+}
+
 function formatDate(value) {
   return new Date(value).toLocaleString('zh-CN', { hour12: false });
 }
@@ -734,6 +869,9 @@ document.querySelector('#preset-opencode').addEventListener('click', presetOpenC
 document.querySelector('#preset-custom').addEventListener('click', clearProviderFields);
 document.querySelector('#settings-entry').addEventListener('click', toggleSettings);
 document.querySelector('#settings-back').addEventListener('click', showConsole);
+document.querySelector('#corpus-entry').addEventListener('click', showCorpus);
+document.querySelector('#corpus-back').addEventListener('click', showConsole);
+document.querySelector('#delete-corpus').addEventListener('click', deleteSelectedCorpus);
 document.querySelector('#sweep-results-entry').addEventListener('click', showResults);
 document.querySelector('#results-back').addEventListener('click', showConsole);
 document.querySelector('#delete-result').addEventListener('click', deleteSelectedResult);
@@ -759,6 +897,6 @@ window.addEventListener('beforeunload', (event) => {
   event.returnValue = '';
 });
 
-Promise.all([loadState({ keepScroll: false }), loadProvider()])
+Promise.all([loadState({ keepScroll: false }), loadProvider(), refreshCorpusCount()])
   .then(connectEvents)
   .catch((error) => toast(error.message));

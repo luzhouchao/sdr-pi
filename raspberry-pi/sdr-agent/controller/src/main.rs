@@ -61,6 +61,7 @@ fn run() -> AppResult<()> {
     let mut sweep_point_timeout_ms = 250_u32;
     let mut recognition_profile = None;
     let mut recognition_target = None;
+    let mut sigmf_directory = None;
     let mut repository_root = PathBuf::from(".");
     let mut request_id = None;
     let mut now_unix_ms = None;
@@ -87,6 +88,7 @@ fn run() -> AppResult<()> {
             "--sweep-point-timeout-ms" => sweep_point_timeout_ms = value.parse::<u32>()?,
             "--recognition-profile" => recognition_profile = Some(PathBuf::from(value)),
             "--recognition-target" => recognition_target = Some(PathBuf::from(value)),
+            "--sigmf-directory" => sigmf_directory = Some(PathBuf::from(value)),
             "--repository-root" => repository_root = PathBuf::from(value),
             "--request-id" => request_id = Some(value.parse::<u64>()?),
             "--now-unix-ms" => now_unix_ms = Some(value.parse::<u64>()?),
@@ -126,6 +128,9 @@ fn run() -> AppResult<()> {
             "--mode must be plan, observe, recognize, recognize-live, derive-recognition-target, prepare-recognition-batch, recognize-batch-live, execute, cancel, sweep, or run-once",
         )
         .into());
+    }
+    if sigmf_directory.is_some() && mode != "sweep" {
+        return Err(invalid_input("--sigmf-directory is valid only in sweep mode").into());
     }
 
     if mode == "derive-recognition-target" {
@@ -270,8 +275,14 @@ fn run() -> AppResult<()> {
             sdrd_address.ok_or_else(|| invalid_input("--mode sweep requires --sdrd HOST:PORT"))?;
         let bytes = read_request(&request_path, MAX_FRAME_BYTES)?;
         let plan: SweepPlan = serde_json::from_slice(&bytes)?;
-        let adapter =
+        let mut adapter =
             SdrdSoftwareSweepAdapter::new(address, Duration::from_millis(sdrd_timeout_ms));
+        if let Some(directory) = sigmf_directory {
+            if !directory.is_absolute() {
+                return Err(invalid_input("--sigmf-directory must be absolute").into());
+            }
+            adapter = adapter.with_sigmf_directory(directory);
+        }
         println!(
             "{}",
             serde_json::to_string(&SweepEngine::new(adapter).run(&plan)?)?

@@ -562,10 +562,14 @@ recognition; it does not own hardware control or another runtime backend.
       four-window golden fixture without assigning it a false class. See
       [`AMC_CORPUS_MANIFEST_V1.md`](AMC_CORPUS_MANIFEST_V1.md) and
       [`AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md`](AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md).
-- [ ] Build a bounded, versioned P201 receive-only corpus with session/date,
+- [x] Build a bounded, versioned P201 receive-only corpus with session/date,
       center, rate, bandwidth, fixed RF input, gain, samples/bytes, quality and
       cleanup metadata; provide a visible manual-delete path and keep bulk IQ
-      outside Git.
+      outside Git. The application-owned SQLite/package store rejects nonlocal
+      writes, metadata/IQ mismatches and incomplete cleanup; a 4,096-sample
+      RX1 row was live-captured, reference-validated, visibly deleted and then
+      restored as an `unknown` application result; see
+      [`P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md`](P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md).
 - [ ] Prove train/validation/test isolation by source sample, capture session
       and day so crops, augmentation or repeated receptions of one source do
       not cross splits.
@@ -584,6 +588,7 @@ Evidence:
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
 - [`AMC_CORPUS_MANIFEST_V1.md`](AMC_CORPUS_MANIFEST_V1.md)
 - [`AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md`](AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md)
+- [`P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md`](P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 6. Local Mamba modulation recognition
@@ -736,15 +741,15 @@ Evidence:
 
 ## Current next milestone
 
-Delivery A and the independent Chapter 4 acquisition gates are complete. Follow
+Delivery A, the independent Chapter 4 acquisition gates, and the first
+application-owned P201 corpus row/manual-delete gate are complete. Continue
 delivery B in
 [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md):
-implement the application-owned P201 corpus store and visible manual deletion,
-then collect versioned bounded RX-only rows under the now-frozen manifest
-schema, prove split isolation, and use only train/validation evidence to freeze
-`rf_preprocess_v1`. The Chapter 4 integration-only profile intentionally
-remains non-production until that contract and a newly admitted checkpoint
-exist; do not connect seed44 to the production Runner first.
+prove train/validation/test group isolation across the retained offline data
+and versioned receive corpus, then use only train/validation plus receive-domain
+evidence to freeze `rf_preprocess_v1`. The Chapter 4 integration-only profile
+intentionally remains non-production until that contract and a newly admitted
+checkpoint exist; do not connect seed44 to the production Runner first.
 
 The remaining Chapter 1 gaps are recognition rendering, bounded persistence and
 compact Agent feedback. Chapter 2 still lacks live recognizer capability,
