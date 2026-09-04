@@ -577,10 +577,19 @@ recognition; it does not own hardware control or another runtime backend.
       intersections; the cross-package P201 audit enforces parent inheritance,
       all three group keys and `receive_domain` for unknown receptions. See
       [`AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md`](AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md).
-- [ ] Use only train/validation plus versioned receive-domain evidence to choose
-      preprocessing, window count, calibration and acceptance thresholds, then
-      freeze them before viewing the held-out test result. Report labeled
-      accuracy separately from unlabeled field quality/confidence/rejection.
+- [x] Pre-register and use only train statistics, complete validation groups and
+      versioned `receive_domain/unknown` evidence to freeze the
+      `rf_preprocess_v1` retraining contract: 2.1 MS/s without software
+      resampling/frequency shift, DC retained, one RMS scale across four
+      contiguous 1,024-sample windows, and mean-logit aggregation. The selection
+      code never loaded the test member/result; labeled validation accuracy and
+      unlabeled P201 quality/confidence remained separate. See
+      [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md).
+- [ ] After the user returns an RF-aligned checkpoint, refit and freeze scalar
+      calibration plus confidence/agreement/SNR/bandwidth acceptance thresholds
+      using validation and independently labeled known-RF/OOD evidence, then
+      perform one locked test admission. The seed44 diagnostic temperature and
+      closed-set coverage curve are explicitly non-production.
 - [ ] Resolve the RML2018A numeric-ID/name-order dispute; until then, retain the
       numeric ID as trusted identity and mark every text name provisional.
 
@@ -594,6 +603,7 @@ Evidence:
 - [`AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md`](AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md)
 - [`P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md`](P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md)
 - [`AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md`](AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md)
+- [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 6. Local Mamba modulation recognition
@@ -747,14 +757,16 @@ Evidence:
 ## Current next milestone
 
 Delivery A, the independent Chapter 4 acquisition gates, the first
-application-owned P201 corpus row/manual-delete gate and source/session/day
-split isolation are complete. Continue delivery B in
-[`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md):
-use only train/validation plus versioned receive-domain evidence to select and
-freeze `rf_preprocess_v1`, calibration and acceptance thresholds before
-consulting held-out test. The Chapter 4 integration-only profile intentionally
-remains non-production until that contract and a newly admitted checkpoint
-exist; do not connect seed44 to the production Runner first.
+application-owned P201 corpus row/manual-delete gate, source/session/day split
+isolation and the validation-only `rf_preprocess_v1` retraining contract are
+complete. The next dependency is the user-owned 4090 retraining/fine-tuning
+handoff described in
+[`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md).
+After a new checkpoint returns, continue delivery C with strict AGX loading,
+validation/known-RF/OOD calibration and thresholds, runtime shared-capture RMS
+plus mean-logit support, and only then a locked test admission. The current
+seed44 integration profile intentionally remains non-production and must not be
+connected to the production Runner.
 
 The remaining Chapter 1 gaps are recognition rendering, bounded persistence and
 compact Agent feedback. Chapter 2 still lacks live recognizer capability,

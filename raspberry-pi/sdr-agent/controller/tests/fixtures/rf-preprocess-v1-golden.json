@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "fixture_id": "rf-preprocess-v1-affine-modulo",
+  "preprocess_id": "rf_preprocess_v1",
+  "preprocess_path": "jetson-agx/sdrharness/config/amc/rf-preprocess-v1.json",
+  "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+  "raw_generator": {
+    "kind": "affine_modulo_ci16_v1",
+    "complex_samples": 4096,
+    "i_expression": "((index * 37 + 11) % 1901) - 950",
+    "q_expression": "((index * 53 + 7) % 1799) - 899"
+  },
+  "raw": {
+    "sample_format": "ci16_le",
+    "layout": "interleaved_iq",
+    "bytes": 16384,
+    "sha256": "9ddea8749993725208a8828bc68294396a9a50e4b5a4d242625d462913e518b6",
+    "capture_complex_rms_adc": 754.9337855122212,
+    "window_complex_rms_adc": [
+      755.633814051158,
+      754.7950130457607,
+      754.5290445712229,
+      754.7768082509143
+    ]
+  },
+  "transform": {
+    "remove_dc": false,
+    "normalization": "four_window_capture_complex_unit_rms",
+    "resample": false,
+    "window_count": 4,
+    "complex_samples_per_window": 1024
+  },
+  "model": {
+    "sample_format": "f32_le",
+    "layout": "window_major_planar_iq",
+    "shape": [4, 2, 1024],
+    "bytes": 32768,
+    "sha256": "937c7c9497ca9f7990ee4256c617d5c57739e66da3da7498de1ab9d1618d2db2",
+    "byte_offsets": [0, 8192, 16384, 24576],
+    "capture_complex_rms": 1.000000000275311,
+    "window_complex_rms": [
+      1.0009272717119504,
+      0.999816179437355,
+      0.9994638724872548,
+      0.9997920653185003
+    ],
+    "capture_rms_tolerance": 0.000001
+  }
+}

@@ -163,9 +163,14 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
 - [ ] 将当前已经实现和实收的 `integration_only` Target/profile/batch 合同升级为
       production profile；只有第5章冻结 `rf_preprocess_v1` 且新 checkpoint 准入
       后才能替换 admission，Planner 仍只能选择 candidate ID。
-- [ ] 使用 train/validation 与版本化 P201 接收域证据选择并冻结
-      `rf_preprocess_v1`，明确频移/重调谐、滤波/重采样、DC、幅度、窗口和质量
-      策略；不得在 frozen test 上试凑。
+- [x] 已预注册并仅用 train 统计、完整 validation 伪会话和版本化 P201
+      `receive_domain/unknown` 证据冻结 `rf_preprocess_v1` 重训合同：硬件重调谐、
+      不做数字频移/额外滤波/重采样、保留 DC、四窗共享 RMS、4 × 1,024 连续窗和
+      mean-logit；选择代码未加载 test，见
+      [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md)。
+- [ ] 新 RF-aligned checkpoint 返回后实现 shared-capture RMS/full-logit runtime，
+      再仅用 validation 与独立标注 known-RF/OOD 证据冻结模型相关的温度、置信度、
+      agreement、SNR、带宽和质量阈值；最后才能做一次 locked test 准入。
 
 ## 第5章：输入标准化、接收域对齐与评测治理
 
@@ -199,9 +204,13 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       0；跨 P201 包审计会拒绝父级血缘改变和三类 group 泄漏，当前唯一
       `receive_domain/unknown` 行不进入准确率。见
       [`AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md`](AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md)。
-- [ ] 只用 train/validation 完成预处理与窗口数消融，冻结 transform、校准和
-      acceptance threshold 后再查看 test；分别报告有标签准确率与无标签现场
-      质量/置信度/拒识，不能混算。
+- [x] 已只用 train/validation 完成五种预处理与 1/2/4 窗、三种聚合消融，冻结
+      四窗共享复数 RMS、保留 DC、4 × 1,024 和 mean-logit 作为重训合同；历史
+      test 虽已存在，但本次工具拒绝加载 test 成员/结果。P201 `unknown` 的质量和
+      置信度单独报告，未混入准确率。
+- [ ] 最终 checkpoint 产生后，用 validation 加独立标注 known-RF/OOD 数据拟合并
+      冻结 calibration 与 acceptance threshold，再查看该 checkpoint 的 locked
+      test；当前 seed44 温度 `2.0251` 只是不可迁移的诊断值。
 - [ ] 解决 RML2018A 数字 ID 到名称顺序争议；解决前数字 ID 是唯一可信类别身份，
       文本名称必须标为 provisional。
 
@@ -266,9 +275,11 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       RX-only 语料存储、完整资产校验和可见人工删除。
 - [x] B2a：证明 offline/receive corpus 的 source sample、capture session、UTC day
       group-exclusive split 无泄漏，并固定派生数据继承规则。
-- [ ] B2b：只用 train/validation 与 receive-domain 证据完成
-      `rf_preprocess_v1`、校准和 acceptance threshold 消融与冻结；冻结前不查看
-      held-out test。
+- [x] B2b：只用 train/validation 与 receive-domain 证据完成
+      `rf_preprocess_v1` 信号变换、窗口数和聚合消融，冻结供 4090 重训的合同；
+      本次选择没有读取 test。
+- [ ] B2c：最终 checkpoint 返回后，只用 validation 与独立标注 known-RF/OOD
+      证据冻结模型相关校准和 acceptance threshold，再执行一次 locked test。
 - [ ] C：在 4090 训练 RF-aligned checkpoint，回到 AGX 完成精度、拒识、资源和
       production Worker 准入。
 - [ ] D：最后接入第1—2章 Runner/Agent/Web，完成 health capability、人工批准、

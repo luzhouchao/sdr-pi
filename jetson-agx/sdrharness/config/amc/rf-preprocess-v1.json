@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "schema_id": "rf_preprocess_spec_v1",
+  "preprocess_id": "rf_preprocess_v1",
+  "status": "frozen_for_retraining",
+  "frozen_at_utc": "2026-09-04T19:37:10Z",
+  "production_enabled": false,
+  "recognizer_available": false,
+  "input": {
+    "source": "P201 Linux/IIO bounded RX",
+    "front_panel_port": "RX1",
+    "logical_channel": "RX0",
+    "rf_port_select": "A_BALANCED",
+    "sample_format": "ci16_le",
+    "layout": "interleaved_iq",
+    "adc_bits": 12,
+    "sample_rate_hz": 2100000,
+    "rf_bandwidth_hz": 1500000,
+    "complex_samples": 4096,
+    "bytes": 16384
+  },
+  "frequency_and_filter": {
+    "frequency_alignment": "hardware_retune_to_candidate_center",
+    "digital_frequency_shift": false,
+    "additional_agx_filter": false,
+    "resample": false,
+    "reason": "RML2018A exposes no physical sample-rate or carrier-parent metadata; v1 does not invent a digital correction and requires future training/replay to use this exact 2.1 MS/s contract."
+  },
+  "amplitude_and_dc": {
+    "remove_dc": false,
+    "normalization": "four_window_capture_complex_unit_rms",
+    "normalization_scope_complex_samples": 4096,
+    "rms_formula": "sqrt(sum_over_capture(I^2+Q^2)/4096)",
+    "scale_formula": "1/capture_complex_rms",
+    "rms_accumulator_dtype": "float64",
+    "output_cast": "float32",
+    "normalized_capture_complex_rms": 1.0,
+    "normalized_capture_rms_tolerance": 0.000001,
+    "individual_window_rms_may_differ_from_one": true,
+    "reason": "Shared capture scaling aligns arbitrary ADC gain while preserving inter-window amplitude. DC is retained because removal reduced seed44 validation sensitivity by 18 to 19 percentage points at nominal SNR >= 4 dB and carrier-bearing classes make removal unsafe without contrary evidence."
+  },
+  "windows": {
+    "count": 4,
+    "complex_samples_per_window": 1024,
+    "selection": "contiguous_non_overlapping_in_capture_order",
+    "taper": "none",
+    "output_sample_format": "f32_le",
+    "output_layout": "window_major_planar_iq",
+    "bytes_per_window": 8192,
+    "total_output_bytes": 32768,
+    "byte_offsets": [0, 8192, 16384, 24576]
+  },
+  "aggregation": {
+    "method": "arithmetic_mean_logits",
+    "window_order": "capture_order",
+    "softmax": "after_mean_logits",
+    "numeric_class_ids_authoritative": true,
+    "display_names_status": "provisional",
+    "reason": "Four-window mean-logit aggregation had the highest preregistered validation accuracy and remains compatible with scalar temperature calibration."
+  },
+  "training_adapter": {
+    "offline_grouping": "four distinct train rows with the same numeric class and nominal SNR",
+    "source_split": "train_only_for_parameter_updates",
+    "validation_grouping": "four distinct validation rows with the same numeric class and nominal SNR",
+    "auto_evaluate_splits_before_admission": ["val"],
+    "frozen_test_loader_enabled_before_admission": false,
+    "source_identity_inheritance_required": true,
+    "augmentation_must_follow_split_assignment": true,
+    "model_input_shape_per_window": [2, 1024],
+    "model_outputs_per_capture": 4,
+    "checkpoint_required_before_production": "new RF-aligned checkpoint trained or fine-tuned with this exact transform"
+  },
+  "quality": {
+    "require_verified_rx1_identity": true,
+    "require_zero_dropped_samples": true,
+    "require_no_overflow": true,
+    "require_zero_health_flags": true,
+    "minimum_raw_capture_complex_rms_adc": 1.0,
+    "maximum_clipped_samples": 0,
+    "estimated_snr_acceptance_threshold_db": null,
+    "occupied_bandwidth_acceptance_threshold_hz": null,
+    "note": "The RMS floor is a numerical/silence guard, not a calibrated signal-presence threshold. Production quality and acceptance thresholds remain blocked."
+  },
+  "calibration": {
+    "method": "scalar_temperature_after_mean_logits",
+    "fit_source": "validation_only",
+    "baseline_seed44_temperature": 2.025112772295143,
+    "baseline_temperature_status": "diagnostic_not_transferable",
+    "production_temperature": null,
+    "production_confidence_threshold": null,
+    "production_window_agreement_threshold": null,
+    "production_unknown_rejection": null,
+    "refit_required_for_final_checkpoint": true,
+    "labeled_ood_or_known_rf_validation_required": true
+  },
+  "golden": {
+    "generator_id": "affine_modulo_ci16_v1",
+    "raw_bytes": 16384,
+    "raw_sha256": "9ddea8749993725208a8828bc68294396a9a50e4b5a4d242625d462913e518b6",
+    "capture_complex_rms_adc": 754.9337855122212,
+    "model_bytes": 32768,
+    "model_sha256": "937c7c9497ca9f7990ee4256c617d5c57739e66da3da7498de1ab9d1618d2db2"
+  },
+  "evidence": {
+    "selection_plan": {
+      "path": "jetson-agx/sdrharness/config/amc/rf-preprocess-v1-selection-plan.json",
+      "sha256": "52320186d17dbd2dade4c8452c0538ea8d3b7a6a55c1caed199fa35d323842bc"
+    },
+    "selection_summary": {
+      "path": "docs/RF_PREPROCESS_V1_SELECTION_AUDIT_2026-09-05.json",
+      "sha256": "b82163e1855b6031f54d5ef3ad35e2f60400386e18002a4e37d9297fb94f5bea"
+    },
+    "reference_implementation": {
+      "path": "jetson-agx/sdrharness/scripts/select-rf-preprocess-validation.py",
+      "sha256": "4b6a17b24305feb4be5a8faf2bf193c412be989e531fddbeabce400daebad578"
+    }
+  },
+  "limitations": {
+    "current_seed44_is_rf_aligned": false,
+    "current_integration_profile_replaced": false,
+    "current_worker_supports_mean_logits": false,
+    "current_controller_supports_shared_capture_rms": false,
+    "rml2018a_physical_sample_rate_known": false,
+    "known_rf_accuracy_available": false,
+    "open_set_false_acceptance_measured": false,
+    "production_blocker": "Retrain or fine-tune, admit the resulting checkpoint, implement shared-capture normalization and full-logit aggregation, then fit calibration/thresholds on validation plus labeled OOD/known-RF evidence."
+  }
+}

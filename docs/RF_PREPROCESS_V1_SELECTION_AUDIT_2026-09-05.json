@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "schema_id": "rf_preprocess_selection_evidence_v1",
+  "run_id": "rf-preprocess-v1-selection-20260905-full",
+  "started_at_utc": "2026-09-04T19:20:50Z",
+  "completed_at_utc": "2026-09-04T19:37:10Z",
+  "status": "pass",
+  "governance": {
+    "selection_plan_sha256": "52320186d17dbd2dade4c8452c0538ea8d3b7a6a55c1caed199fa35d323842bc",
+    "executed_script_sha256": "9b189d70a2ca5df7166b39f22d6c786c9785a7d072f8353adef61d61812a44c8",
+    "full_temporary_result_bytes": 120780,
+    "full_temporary_result_sha256": "3e1fd6b7711d484bda064a55d8b5d7fa31af4d482662b119d56f72608ada18f8",
+    "split_members_loaded": ["train", "val"],
+    "test_member_loaded": false,
+    "test_result_path_opened": false,
+    "historical_test_metrics_used_for_ranking": false,
+    "p201_prediction_used_as_accuracy": false
+  },
+  "assets": {
+    "rml2018a_dataset": {
+      "bytes": 21449148312,
+      "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+      "hash_verified_now": true
+    },
+    "rml2018a_split": {
+      "bytes": 3906249,
+      "sha256": "5b8ccdc0183455445d5beab20f2ed7e553ff616da76a31114f700929607d0792",
+      "train_indices_le_i64_sha256": "0426197a7ba17a4091a37d481bb8cd887a04d06406525978fdc7f669d4d2fa21",
+      "validation_indices_le_i64_sha256": "e63a1cd6463f84d584edab3cde6b0cfb4e112035a0f456f5eae40e95dfb41181"
+    },
+    "seed44_checkpoint": {
+      "sha256": "e5a1bccdaf4b0290f41b26cb05b8b98565df9d5b07147727d79bbf43f6cb42dd",
+      "rf_aligned": false,
+      "selection_role": "sensitivity_baseline_only"
+    },
+    "p201_receive_domain_iq": {
+      "bytes": 16384,
+      "sha256": "19b9b543188e1a3092e29eeed1232da5586a8c10fe9cd2fa21318d6365993ccb",
+      "label_provenance": "unknown"
+    }
+  },
+  "data": {
+    "train_rows_for_statistics": 1789132,
+    "validation_rows": 383385,
+    "class_snr_buckets": 624,
+    "complete_four_window_groups": 95607,
+    "validation_rows_compared_per_transform": 382428,
+    "tail_rows_excluded": 957,
+    "group_first_global_rows_sha256": "6080e6337ba56135b131639765b010efd237808074aab01bee4125972b2834a8",
+    "train_complex_rms": {
+      "p01": 0.9561135685443878,
+      "p50": 1.003898024559021,
+      "p95": 1.9732849955558776,
+      "p99": 10.301360769271843
+    },
+    "train_dc_fraction": {
+      "p01": 0.0005354247282957659,
+      "p50": 0.05458580330014229,
+      "p95": 0.8666561305522917,
+      "p99": 0.9980053120851516
+    }
+  },
+  "raw_identity_parity": {
+    "reference_full_validation_accuracy": 0.6378522894740274,
+    "agx_full_validation_accuracy": 0.6378575061622129,
+    "accuracy_delta": 0.000005216688185538665,
+    "absolute_tolerance": 0.0001,
+    "status": "pass",
+    "rf_candidate": false
+  },
+  "single_window_transform_metrics": {
+    "per_window_unit_rms": {
+      "all_snr_accuracy": 0.5353661342788708,
+      "snr_ge_4_accuracy": 0.7981697720958246
+    },
+    "per_window_dc_unit_rms": {
+      "all_snr_accuracy": 0.4152337171964396,
+      "snr_ge_4_accuracy": 0.6214906059958422
+    },
+    "four_window_capture_unit_rms": {
+      "all_snr_accuracy": 0.5468872572092002,
+      "snr_ge_4_accuracy": 0.8181818181818182
+    },
+    "four_window_capture_dc_unit_rms": {
+      "all_snr_accuracy": 0.4214309621680421,
+      "snr_ge_4_accuracy": 0.6314286269404884
+    }
+  },
+  "mean_logit_window_ablation": {
+    "per_window_unit_rms": [
+      {"windows": 1, "all_snr_accuracy": 0.5353661342788708, "snr_ge_4_accuracy": 0.7981697720958246},
+      {"windows": 2, "all_snr_accuracy": 0.5513979101948602, "snr_ge_4_accuracy": 0.8132079504167558},
+      {"windows": 4, "all_snr_accuracy": 0.5635047642955013, "snr_ge_4_accuracy": 0.8215819230993413}
+    ],
+    "four_window_capture_unit_rms": [
+      {"windows": 1, "all_snr_accuracy": 0.5468872572092002, "snr_ge_4_accuracy": 0.8181818181818182},
+      {"windows": 2, "all_snr_accuracy": 0.5651364439842271, "snr_ge_4_accuracy": 0.8361440867318192},
+      {"windows": 4, "all_snr_accuracy": 0.5797483447864696, "snr_ge_4_accuracy": 0.849229633371544}
+    ]
+  },
+  "selection": {
+    "transform": "four_window_capture_complex_unit_rms",
+    "remove_dc": false,
+    "resample": false,
+    "additional_digital_filter": false,
+    "digital_frequency_shift": false,
+    "window_samples": 1024,
+    "window_count": 4,
+    "aggregation": "mean_logit",
+    "softmax_order": "after_mean_logit",
+    "raw_identity_eligible": false,
+    "old_checkpoint_rf_aligned": false
+  },
+  "experimental_calibration": {
+    "status": "baseline_only_not_frozen",
+    "method": "scalar_temperature",
+    "temperature": 2.025112772295143,
+    "audit_groups": 47812,
+    "identity_nll": 1.5456871756547852,
+    "calibrated_nll": 1.4276753416122558,
+    "identity_ece_15_bin": 0.03852393721095265,
+    "calibrated_ece_15_bin": 0.032031039479232616,
+    "production_temperature_frozen": false,
+    "production_acceptance_threshold_frozen": false
+  },
+  "receive_domain_observation": {
+    "record_id": "p201-p201-corpus-20260905-rx1-433m-147-window-0",
+    "accuracy": null,
+    "correctness": null,
+    "raw_complex_rms_adc_by_window": [
+      3.807373602629508,
+      3.8180032002998634,
+      3.969857129041296,
+      3.9539586571561416
+    ],
+    "raw_dc_fraction_by_window": [
+      0.12423609970436164,
+      0.03671555222891212,
+      0.07267541337904686,
+      0.1049679823406434
+    ],
+    "numeric_top1": 18,
+    "baseline_temperature_confidence": 0.2304776060465626,
+    "prediction_is_ground_truth": false
+  },
+  "performance": {
+    "total_wall_seconds": 979.766078982997,
+    "five_transform_inference_seconds": 875.781258914998,
+    "variant_rows": 1912140,
+    "cuda_peak_allocated_bytes": 2145283072,
+    "cuda_peak_reserved_bytes": 2575302656,
+    "process_max_rss_bytes": 4889874432
+  },
+  "production": {
+    "transform_and_window_contract_frozen_for_retraining": true,
+    "production_checkpoint_available": false,
+    "production_calibration_frozen": false,
+    "production_acceptance_threshold_frozen": false,
+    "recognizer_available": false
+  }
+}
