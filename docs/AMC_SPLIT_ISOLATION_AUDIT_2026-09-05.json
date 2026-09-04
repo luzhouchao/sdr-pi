@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "schema_id": "amc_split_isolation_evidence_v1",
+  "audit_id": "amc-split-isolation-20260905",
+  "audited_at_utc": "2026-09-04T18:52:07Z",
+  "status": "pass",
+  "policy": {
+    "evaluation_splits": ["train", "validation", "test"],
+    "exclusive_group_keys": ["source_sample_id", "capture_session_id", "capture_day"],
+    "capture_day_timezone": "UTC",
+    "offline_source_identity": "dataset_sha256+hdf5_dataset_path+global_row_v1",
+    "derived_records_inherit_all_lineage_keys": true,
+    "unknown_p201_split": "receive_domain",
+    "unknown_p201_accuracy_allowed": false
+  },
+  "full_audit": {
+    "temporary_output_sha256": "c9883dc13f005eafacc94088a7af8b42f00662a328c5ed20c83a10695aaa9b05",
+    "dataset_hashes_verified_now": true,
+    "temporary_output_retained": false
+  },
+  "implementation": {
+    "auditor": {
+      "path": "jetson-agx/sdrharness/scripts/audit-amc-split-isolation.py",
+      "sha256": "f575c3458a1faa03d962088e229456d2655b3f53461b0bca3eff785e4b595870"
+    },
+    "tests": {
+      "path": "jetson-agx/sdrharness/tests/test_amc_split_isolation.py",
+      "sha256": "f2299a9d377a4cebbddfda20e1b5f661eebf0efe486a9cee43b56cf68363e55a",
+      "focused_passed": 13,
+      "combined_passed": 25
+    }
+  },
+  "offline_datasets": [
+    {
+      "name": "rml2018a",
+      "dataset": {
+        "path": "local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+        "bytes": 21449148312,
+        "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+        "hash_verified_now": true,
+        "source_rows": 2555904,
+        "source_dataset_path": "/X"
+      },
+      "split": {
+        "path": "local-assets/amc-eval/splits/RML2018a_split_seed44_tr700_val150_te150.npz",
+        "bytes": 3906249,
+        "sha256": "5b8ccdc0183455445d5beab20f2ed7e553ff616da76a31114f700929607d0792",
+        "seed": 44,
+        "counts": {"train": 1789132, "validation": 383385, "test": 383387},
+        "union_count": 2555904,
+        "missing_count": 0,
+        "internal_duplicate_count": 0,
+        "pairwise_intersection_counts": {
+          "train_validation": 0,
+          "train_test": 0,
+          "validation_test": 0
+        },
+        "assignment_sha256": "84daf0686196c3a0ed04c4d62eb4e5290fabc9f6574676fe8240eddc2f6624ea",
+        "lineage_assignment_sha256": "f61e2648fad39004fc526684584403717a03624a1617aa3b66d930527339acf6"
+      },
+      "retained_training_config": {
+        "sha256": "6188ee2865724107019585a13deec41c9aac1e9ccef3c4cca85ef5e396e285fd",
+        "sequence_samples": 1024,
+        "declared_derived_views_enabled": []
+      }
+    },
+    {
+      "name": "hisarmod2019",
+      "dataset": {
+        "path": "local-assets/amc-eval/datasets/hisarmod2019/HisarMod2019.01.h5",
+        "bytes": 6399126728,
+        "sha256": "b4b2d2dcde17691b09e3d6b1aa91a9fbadd096980d5103a47af18f93ae1b596f",
+        "hash_verified_now": true,
+        "source_rows": 780000,
+        "source_dataset_path": "/X"
+      },
+      "split": {
+        "path": "local-assets/amc-eval/splits/HisarMod2019.01_split_seed43_tr700_val150_te150.npz",
+        "bytes": 1193298,
+        "sha256": "fd79c0ba607b3504180fc0fe4d3cf2bbc367f0a2d4f3cf86691b04d33e518b0a",
+        "seed": 43,
+        "counts": {"train": 546000, "validation": 117000, "test": 117000},
+        "union_count": 780000,
+        "missing_count": 0,
+        "internal_duplicate_count": 0,
+        "pairwise_intersection_counts": {
+          "train_validation": 0,
+          "train_test": 0,
+          "validation_test": 0
+        },
+        "assignment_sha256": "daa2ef3eaebbb96c2c058ed7d5a236eccd8919197bf61776eded495c7f1afd3f",
+        "lineage_assignment_sha256": "9118519fad2b0bab890072927e7ea125c54639e145b7eb5bc8dd5c00dfed6d8a"
+      },
+      "retained_training_config": {
+        "sha256": "38bf3d9d1b1cd7746cd20cd8eb43e684dcb8bd264bf9177dddcfe1271b630960",
+        "sequence_samples": 1024,
+        "declared_derived_views_enabled": []
+      }
+    }
+  ],
+  "p201_corpus": {
+    "root": "/var/lib/sdrharness/web-console/p201-corpus",
+    "package_count": 1,
+    "record_count": 1,
+    "all_package_assets_verified": true,
+    "split_counts": {"receive_domain": 1},
+    "label_provenance_counts": {"unknown": 1},
+    "evaluation_record_count": 0,
+    "unknown_p201_evaluation_count": 0,
+    "derived_record_count": 0,
+    "cross_split_group_collision_counts": {
+      "source_sample_id": 0,
+      "capture_session_id": 0,
+      "capture_day": 0
+    },
+    "retained_package": {
+      "manifest_id": "p201-p201-corpus-20260905-rx1-433m-147",
+      "manifest_sha256": "174df3a32cb05304979233cf0eb577a6032011c657fc9ce8cea24c5397851b83",
+      "record_index_sha256": "541c40067da5d705a5a8e4e4df02f6fd0074d37f1881c0b0925f28227910604b"
+    }
+  },
+  "audit_boundary": {
+    "hdf5_latent_generator_parent_id_available": false,
+    "auditable_offline_source": "one immutable /X global row",
+    "current_baseline_uses_crops_or_augmentation": false,
+    "future_crops_augmentations_and_receptions_require_parent_lineage": true
+  },
+  "scope": {
+    "training_performed": false,
+    "checkpoint_changed": false,
+    "radio_capture_performed": false,
+    "transmission_performed": false,
+    "fpga_used": false
+  }
+}

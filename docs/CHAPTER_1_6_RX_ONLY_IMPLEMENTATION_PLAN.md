@@ -194,8 +194,11 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
 
 ### 还未完成
 
-- [ ] 按 source sample、capture session 和日期隔离 train/val/test，证明裁剪、
-      增强或重复接收副本不跨 split。
+- [x] 已按不可变 HDF5 `/X` 全局行、capture session 和 UTC 日期证明
+      train/validation/test 隔离：两套完整 split 均全覆盖、内部无重复且两两交集为
+      0；跨 P201 包审计会拒绝父级血缘改变和三类 group 泄漏，当前唯一
+      `receive_domain/unknown` 行不进入准确率。见
+      [`AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md`](AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md)。
 - [ ] 只用 train/validation 完成预处理与窗口数消融，冻结 transform、校准和
       acceptance threshold 后再查看 test；分别报告有标签准确率与无标签现场
       质量/置信度/拒识，不能混算。
@@ -261,8 +264,11 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       `RecognitionInputProfile`/golden fixtures 一起评审。
 - [x] B1：完成第4章候选资格/多窗口 capture，以及第5章统一合同、应用自有
       RX-only 语料存储、完整资产校验和可见人工删除。
-- [ ] B2：证明 offline/receive corpus 的 group-exclusive split 无泄漏，并只用
-      train/validation 与 receive-domain 证据完成 `rf_preprocess_v1` 消融和冻结。
+- [x] B2a：证明 offline/receive corpus 的 source sample、capture session、UTC day
+      group-exclusive split 无泄漏，并固定派生数据继承规则。
+- [ ] B2b：只用 train/validation 与 receive-domain 证据完成
+      `rf_preprocess_v1`、校准和 acceptance threshold 消融与冻结；冻结前不查看
+      held-out test。
 - [ ] C：在 4090 训练 RF-aligned checkpoint，回到 AGX 完成精度、拒识、资源和
       production Worker 准入。
 - [ ] D：最后接入第1—2章 Runner/Agent/Web，完成 health capability、人工批准、

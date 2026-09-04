@@ -180,9 +180,20 @@ same `capture_session_id`; one receive day cannot be divided across those three
 evaluation partitions. `calibration`, `receive_domain` and `golden` remain
 separate declared uses and are never silently counted as test accuracy.
 
-Defining this rule does not yet prove the existing full RML/Hisar split files or
-a future P201 corpus are leak-free. That remains the next Chapter 5 validation
-step.
+For retained offline assets, the reproducible source identity is the full
+dataset SHA-256, HDF5 `/X` path and global row. The source containers expose no
+latent generator parent ID, so a global row is the explicit audit boundary;
+all project-created derivatives must retain its exact identity. The AGX
+cross-package audit tool additionally requires unknown P201 rows to remain
+`receive_domain` and verifies parent inheritance and cycles before evaluating
+group ownership.
+
+The complete RML2018A/Hisar split files and current P201 corpus passed this
+audit, including full bulk-asset hashing and independent negative cases for all
+three group keys. See
+[`AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md`](AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md)
+and its
+[`machine-readable summary`](AMC_SPLIT_ISOLATION_AUDIT_2026-09-05.json).
 
 ## N210/B210 truth-source rule
 
@@ -248,3 +259,8 @@ The focused tests are in
 They cover all three provenance variants plus hash/path tampering, label/source
 misuse, provisional-name escalation, P201 identity, frozen cleanup and
 train/test lineage leakage.
+
+Full split and cross-package lineage auditing is provided by
+[`audit-amc-split-isolation.py`](../jetson-agx/sdrharness/scripts/audit-amc-split-isolation.py),
+with focused collision/derivation tests in
+[`test_amc_split_isolation.py`](../jetson-agx/sdrharness/tests/test_amc_split_isolation.py).
