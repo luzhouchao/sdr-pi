@@ -128,6 +128,8 @@ trusted RML labels, retrain or fine-tune against a frozen RF preprocessing and
 sample-rate policy, choose low precision if appropriate, define rejection, and
 validate queue drops, cancellation, concurrency and sustained thermal behavior
 before installing a production Worker or setting `recognizer_available=true`.
+The field ownership and ordered Chapter 4-to-6 delivery gates are maintained in
+[`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md).
 
 ## Existing package-validation seam
 

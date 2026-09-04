@@ -1,6 +1,6 @@
 # AGX software sweep and aggregation architecture
 
-Last reviewed: 2026-09-02
+Last reviewed: 2026-09-04
 
 ## Data path
 
@@ -12,6 +12,9 @@ SweepPlan
    -> AGX power/noise/PSD/candidate aggregation
    -> SQLite summary + optional per-scan SigMF
    -> Planner observation and Web result view
+   -> selected fresh candidate only
+   -> RecognitionTarget + admitted RecognitionInputProfile
+   -> AGX model-ready windows for Chapter 6
 ```
 
 P201 performs receive-only Linux/IIO acquisition and transport. AGX owns all
@@ -61,6 +64,15 @@ Use a coarse-to-fine workflow:
 2. Detect and merge occupied regions on AGX.
 3. Let the Planner choose a bounded candidate inspection profile.
 4. Save or forward IQ only for explicitly selected candidates.
+
+The production recognition handoff is not an arbitrary raw-IQ forward. A
+selected candidate must first pass a bounded fine inspection, source/age and
+quality checks. Rust then derives capture and preprocessing from an admitted
+`RecognitionInputProfile`; Planner continues to choose only the candidate ID.
+The handoff separates `rx_gain_db`, raw RMS, measured SNR and any dataset SNR
+label, and carries the preprocessing ID/hash into the recognition result. The
+full joint plan is in
+[`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md).
 
 The current one-point inline frame is limited by the SDRD/1 response bound;
 there is no project-wide fixed total-scan byte ceiling. Total bytes are derived

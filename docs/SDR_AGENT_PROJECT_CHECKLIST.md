@@ -393,6 +393,20 @@ aggregation, result persistence and model-facing summaries.
       deletion and verified radio restoration. Keep production capability off
       because labels, RF preprocessing and rejection remain unresolved; see
       [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md).
+- [ ] Define and version the production Chapter 4-to-6
+      `RecognitionInputProfile`: candidate/source correlation, fixed initial
+      sample-rate domain, separate RX gain/raw RMS/measured SNR semantics,
+      capture/window/byte/deadline limits, preprocessing ID/hash and quality
+      gates. Keep model-specific DSP out of Planner-controlled parameters; see
+      [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md).
+- [ ] Implement candidate refinement and recognition eligibility, then derive a
+      finite single- or multi-window capture from the admitted profile and
+      produce byte-reproducible `ModelReadyBatch` fixtures with cleanup on
+      success, error and cancellation.
+- [ ] Select and freeze `rf_preprocess_v1` using training/validation plus
+      known-label real-RF evidence, covering centering/alignment, filtering or
+      resampling, DC policy, amplitude policy, window count and quality metrics;
+      do not use the frozen test corpus to choose the transform.
 - [x] Retire the separate sustained 5/10-MS/s aggregate acceptance gate by
       explicit operator decision on 2026-09-03. This is a scope removal, not a
       claim that inline transport and AGX aggregation were newly measured at
@@ -411,8 +425,9 @@ Evidence:
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 - [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
+- [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md)
 
-## 5. Retired FPGA route
+## 5. Retired FPGA route and software-only Chapter 4-to-6 boundary
 
 - [x] Retire FPGA aggregation by explicit user decision and fix production on
       P201 Linux/IIO bounded RX transport plus AGX software aggregation.
@@ -421,10 +436,16 @@ Evidence:
       constant false/zero SDRD/1 compatibility fields, strict acceptance of a
       legacy false Planner-health field, and the retirement decision;
       pre-cleanup evidence remains recoverable from Git history at `59cbb17`.
+- [x] Keep the Chapter 4 acquisition-to-Chapter 6 recognition handoff entirely
+      on AGX software. For a thesis chapter, use this position for RF replay,
+      input alignment and dataset construction; it does not create another
+      runtime backend. See
+      [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md).
 
 Evidence:
 
 - [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md)
+- [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md)
 
 ## 6. Local modulation recognition
 
@@ -452,9 +473,11 @@ Evidence:
       asset root; strictly load both checkpoints and reproduce both complete
       FP32 test sets. Evidence:
       [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md).
-- [ ] Select and version one production Mamba checkpoint from the staged
-      candidates, pin its exact model source, and define labels, preprocessing,
-      sample-rate policy, precision and acceptance thresholds.
+- [ ] Retain seed44 as an experimental baseline, then retrain or fine-tune and
+      select one RF-aligned production Mamba checkpoint using the exact frozen
+      Chapter 4 `rf_preprocess_v1`; pin model source, split, profile, labels,
+      precision, calibration and acceptance thresholds before viewing the
+      frozen test result.
 - [x] Implement and live-validate the experimental AGX CUDA/Mamba Worker behind
       the existing backend-neutral Unix Recognizer Adapter without exposing
       PyTorch, Triton or CUDA objects through the Controller interface; keep it
@@ -473,6 +496,16 @@ Evidence:
       precision/recall/F1 and per-SNR accuracy for both complete test splits.
 - [ ] Resolve the disputed RML2018A class-name order and validate the RF input
       contract and rejection policy before enabling `recognizer_available`.
+- [ ] Extend recognition results beyond candidate/label/confidence with
+      classified/rejected/unavailable/error status, numeric label identity,
+      rejection reason, source sequence, model/profile hashes, window agreement,
+      quality and timing while keeping IQ out of Planner context.
+- [ ] Derive `recognizer_available` from a live Worker health and admitted
+      model/profile parity probe; configuration alone must never advertise it.
+- [ ] Live-validate bounded known-label B210 replay through P201 RX1 across the
+      frozen class/SNR/frequency/session matrix with source-sample split
+      isolation, no forced label for noise/unknown windows, radio restoration
+      and exact temporary-data cleanup.
 - [x] Run the experimental Recognizer Worker on AGX with listen backlog one,
       one Torch CPU thread, strict asset hashes and a finite request count for
       the delivery validation, then stop it and remove all feature data; retain
@@ -481,8 +514,10 @@ Evidence:
 - [ ] Deploy and enable an admitted production Recognizer Worker with one
       bounded queue and explicit thread limits after labels, RF preprocessing,
       precision, rejection, concurrency and thermal gates pass.
-- [ ] Integrate recognition results into Agent observations and the autonomous
-      Runner.
+- [ ] Integrate `RunLocalRecognition` into the Runner through a replay/live
+      `RecognitionEngine`, initially behind operator approval; update Agent/Web
+      observations and audit, cancel SDR and Worker on `/stop`, and reject stale
+      generations before considering autonomous use.
 
 Evidence:
 
@@ -491,6 +526,7 @@ Evidence:
 - [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
 - [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
+- [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md)
 
 ## 7. Emitter/radiation-source identification
 
