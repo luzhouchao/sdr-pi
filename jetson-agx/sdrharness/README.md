@@ -11,8 +11,9 @@ copy those implementations into a second tree.
   and the production-disabled experimental CUDA/Mamba recognition Worker.
 - P201 Pro owns the radio through `sdrd` at `192.168.1.10:43110`.
 - Raspberry Pi remains a stopped/standby rollback target after cutover.
-- The Planner uses Pi Agent's provider stack with a Web-managed local or
-  third-party OpenAI-compatible Completions or Responses endpoint.
+- The Planner defaults to the local Spark-X2.5-4B BF16 endpoint. Pi Agent's
+  Web-managed OpenAI-compatible Completions/Responses seam remains available
+  for an explicit operator switch; there is no automatic cloud failover.
 - Offline CUDA/Mamba loading, full held-out corpus validation and one bounded
   P201 RX1-to-Worker integration capture now pass on AGX. Production Worker
   deployment remains deferred until the RF preprocessing, trusted labels,
@@ -79,10 +80,11 @@ Do not install services from an unverified clone. After the AGX is online:
 
 Installing a unit file does not authorize enabling or starting it. Keep both
 units disabled until the private environment, binary hashes, LAN exposure and
-SDR ownership gate have been reviewed. Before opening a conversation, use the
-Web `MODEL UPLINK` panel to configure API protocol, Base URL, Provider ID,
-Model ID and API Key. OpenCode Go is provided as a quick-fill preset, while
-all fields remain editable for other providers.
+SDR ownership gate have been reviewed. The deployed private selection already
+points to local Spark. To make an explicit provider change for a new
+conversation, use the Web `MODEL UPLINK` panel to configure API protocol, Base
+URL, Provider ID, Model ID and API Key. OpenCode Go is provided as a quick-fill
+preset, while all fields remain editable for other providers.
 
 Use `查询上游模型` after entering the Base URL and API Key to request the
 provider's standard `{Base URL}/models` inventory. If the same Base URL was
@@ -151,6 +153,15 @@ key remain outside this repository under `/home/jetson/Spark/`. The checked-in
 `systemd/spark-x25.service` exposes only `127.0.0.1:8010`, uses a 32,768-token
 context, F16 KV cache and full CUDA layer offload. Qwen is stopped and disabled;
 Spark is the saved Web provider with a 90% context-compaction threshold.
+
+A bounded 2026-09-04 benchmark confirmed that Spark BF16 and seed44 Mamba fit
+in AGX memory together. Deliberately overlapping active inference reduced both
+throughputs by approximately half, so the production data dependency remains
+`Spark plan -> RX/capture -> Mamba -> next Spark turn` while both models may
+stay resident. Community Q8 improved token generation but failed more of the
+small Planner smoke set; MTP was unavailable in both GGUFs and n-gram
+speculation had no stable median gain. BF16 therefore remains the default. See
+[`../../docs/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](../../docs/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
 
 Spark's llama.cpp chat template can emit unbounded assistant prose before a
 required native tool call. The Planner therefore asks this provider for one

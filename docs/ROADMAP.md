@@ -20,21 +20,37 @@ The authoritative item-level status is
 - Preserve the completed seed44/seed43 D8 source/checkpoint inventory, full
   FP32 corpus metrics, 4090 same-IQ numerical reference and the completed
   experimental P201-to-CUDA/Mamba wiring test.
+- Treat the deployed local Spark-X2.5-4B as the Chapter 1–2 Planner: it consumes
+  bounded receive observations and proposes the next RX-only action. Mamba is
+  the Chapter 6 signal classifier; neither model receives hardware authority.
+- Keep BF16 Spark as the local default. Retain the existing operator-selected
+  OpenAI-compatible provider interface without automatic failover; keep the
+  community Q8 build experimental until a larger fixed Planner regression
+  reverses its current 3/5 versus BF16 4/5 smoke result.
 - Jointly version the Chapter 4 acquisition-to-model handoff before further
   model promotion: candidate eligibility, fixed initial sample-rate domain,
   gain/SNR semantics, window alignment, preprocessing and exact byte limits.
-- Build a bounded known-label B210 replay/capture corpus with source-sample,
-  session and day isolation; resolve the disputed RML names while retaining
-  numeric labels as the trusted interim identity.
+- Freeze the labeled offline splits and build a versioned bounded P201
+  receive-only corpus with explicit label provenance, session/day isolation and
+  exact profile hashes. Unlabeled field windows may validate domain shift,
+  quality and rejection, but must not be counted as classification accuracy.
+- Resolve the disputed RML names while retaining numeric labels as the trusted
+  interim identity.
 - Treat seed44 as a historical baseline, freeze `rf_preprocess_v1` using only
   train/validation evidence, then retrain or fine-tune an RF-aligned D8 model on
   4090 instead of promoting the current unit-RMS bridge.
 - Compare FP16/BF16/FP32 on the RF-aligned model and validate closed-set,
   noise/unknown rejection, per-class/SNR accuracy, latency, memory, queue drops,
   cancellation, concurrency and thermals.
+- Keep local Spark and Mamba resident, follow the natural data order `Spark ->
+  Mamba -> Spark`, and extend the inference lease to make that serial order
+  fail-closed under cancellation, late-result and concurrent-input races.
+  Complete sustained deadlines, queue and thermal validation before enabling
+  recognition.
 - Add runtime Worker/profile health probing, then connect the existing
-  `run_local_recognition` action to Runner/Web and enable the capability only
-  after every admission gate passes.
+  `run_local_recognition` action to Runner/Web. Feed its compact stateful result
+  back to Spark for a newly validated receive-only next step, and enable the
+  capability only after every admission gate passes.
 
 The field-level ownership, chapter structure and delivery gates are defined in
 [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md).

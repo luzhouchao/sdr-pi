@@ -1,6 +1,6 @@
 # SDR Agent project checklist
 
-Last reviewed: 2026-09-03
+Last reviewed: 2026-09-04
 
 This is the living source of truth for implementation status. Check an item only
 after the exact wording is implemented and verified. Split partial work into a
@@ -157,6 +157,18 @@ state.
       live SDR observation, `/stop` aborted an active upstream run, and the
       authenticated `/models` query returned 33 model IDs without exposing the
       key.
+- [x] Keep the saved production Planner selection on local Spark-X2.5-4B BF16
+      while retaining the Web-managed OpenAI-compatible Completions/Responses
+      seam for an explicit operator selection on a new conversation. Do not add
+      automatic cloud failover; the provider-independent Rust policy and RX-only
+      authority remain unchanged. The mode-`0600` selection, loopback endpoint
+      and active/enabled service were reverified on 2026-09-04; see
+      [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
+- [ ] Extend the Web and terminal receive-only observation views to render the
+      stateful recognition status, numeric label identity, calibrated
+      confidence/rejection reason, source, model/profile identity, quality and
+      timing without exposing IQ paths or tensors; live-validate that the local
+      Spark-X2.5-4B sees only the compact form required to choose a next step.
 
 Evidence:
 
@@ -255,6 +267,18 @@ Evidence:
       model abort/generation invalidation, stale-result tests and daemon survival
       after a client transport timeout; see
       [`SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
+- [ ] Execute the existing `run_local_recognition { candidate_id }` action in
+      both one-shot and interactive Runners through the admitted Chapter 4
+      profile and production Recognition Worker instead of returning
+      `planned_only`; preserve approval, exact byte/deadline budgets, restored
+      SDR health and the correlated audit chain.
+- [ ] Feed each classified/rejected/unavailable/error recognition observation
+      into the next local Spark-X2.5-4B turn, and validate that Rust permits only
+      a fresh receive-only next step: re-inspect, bounded re-capture/re-recognize,
+      move to another measured candidate, survey, hold, or stop.
+- [ ] Extend the priority `/stop` path to cancel the active recognition request
+      as well as the already-supported Planner and SDR work, then discard every
+      late Worker result whose request ID or session generation is stale.
 
 Evidence:
 
@@ -387,6 +411,8 @@ aggregation, result persistence and model-facing summaries.
       all captures had zero drops/overflow/clipping, both radios were restored,
       and transient data was removed; see
       [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md).
+      Retain this only as historical RX1 port/link evidence; it is not a
+      dependency, runtime component or future acceptance path for Chapters 1–6.
 - [x] Feed only a selected, bounded 1,024-sample IQ window into experimental
       local recognition, with P201 inline transport, AGX-only preprocessing,
       private 8,192-byte spool, correlated CUDA/Mamba response, automatic IQ
@@ -404,9 +430,11 @@ aggregation, result persistence and model-facing summaries.
       produce byte-reproducible `ModelReadyBatch` fixtures with cleanup on
       success, error and cancellation.
 - [ ] Select and freeze `rf_preprocess_v1` using training/validation plus
-      known-label real-RF evidence, covering centering/alignment, filtering or
-      resampling, DC policy, amplitude policy, window count and quality metrics;
-      do not use the frozen test corpus to choose the transform.
+      versioned P201 receive-only domain evidence, covering
+      centering/alignment, filtering or resampling, DC policy, amplitude policy,
+      window count and quality metrics; use labeled offline data for accuracy,
+      treat field windows without independent labels as unknown, and do not use
+      the frozen test corpus to choose the transform.
 - [x] Retire the separate sustained 5/10-MS/s aggregate acceptance gate by
       explicit operator decision on 2026-09-03. This is a scope removal, not a
       claim that inline transport and AGX aggregation were newly measured at
@@ -437,9 +465,9 @@ Evidence:
       legacy false Planner-health field, and the retirement decision;
       pre-cleanup evidence remains recoverable from Git history at `59cbb17`.
 - [x] Keep the Chapter 4 acquisition-to-Chapter 6 recognition handoff entirely
-      on AGX software. For a thesis chapter, use this position for RF replay,
-      input alignment and dataset construction; it does not create another
-      runtime backend. See
+      on AGX software. For a thesis chapter, use this position for input
+      standardization, receive-domain alignment and evaluation-data governance;
+      it does not create another runtime backend. See
       [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md).
 
 Evidence:
@@ -490,8 +518,19 @@ Evidence:
 - [x] Measure offline preprocessing, host/device transfer, warm-up, inference,
       total p50/p99 latency, CUDA memory, CPU/RSS and thermal behavior for both
       complete test splits on AGX.
+- [x] Run bounded short AGX co-residency and deliberate-overlap tests for local
+      Spark BF16/Q8 and seed44 FP32 Mamba: BF16/Mamba fit without OOM but active
+      overlap reduced both throughputs by approximately half. Also record the
+      five-case Planner smoke (BF16 4/5, Q8 3/5), unavailable MTP tensors and
+      unstable/no-median-gain n-gram speculation; retain BF16 as production
+      default and do not count this as sustained Worker validation. See
+      [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
 - [ ] Measure production Worker queue drops, cancellation, concurrency and
       sustained thermal behavior.
+- [ ] Define and live-validate the shared AGX CUDA admission policy for the
+      resident Spark-X2.5-4B Planner and Mamba Worker. For production v1,
+      serialize active inference, bound queue/deadline/memory/thermal use, and
+      prove cancellation releases the gate before a subsequent Planner turn.
 - [x] Generate offline confusion matrices, total accuracy, macro-F1, per-class
       precision/recall/F1 and per-SNR accuracy for both complete test splits.
 - [ ] Resolve the disputed RML2018A class-name order and validate the RF input
@@ -502,10 +541,12 @@ Evidence:
       quality and timing while keeping IQ out of Planner context.
 - [ ] Derive `recognizer_available` from a live Worker health and admitted
       model/profile parity probe; configuration alone must never advertise it.
-- [ ] Live-validate bounded known-label B210 replay through P201 RX1 across the
-      frozen class/SNR/frequency/session matrix with source-sample split
-      isolation, no forced label for noise/unknown windows, radio restoration
-      and exact temporary-data cleanup.
+- [ ] Live-validate the production RX-only candidate-refinement, bounded P201
+      capture and AGX recognition path across a frozen frequency/gain/session
+      matrix, with no forced label for noise or unlabeled field windows, radio
+      restoration and exact temporary-data cleanup. Report closed-set accuracy
+      only from frozen independently labeled datasets/corpora, separately from
+      P201 field-domain quality, confidence and rejection behavior.
 - [x] Run the experimental Recognizer Worker on AGX with listen backlog one,
       one Torch CPU thread, strict asset hashes and a finite request count for
       the delivery validation, then stop it and remove all feature data; retain
@@ -514,10 +555,6 @@ Evidence:
 - [ ] Deploy and enable an admitted production Recognizer Worker with one
       bounded queue and explicit thread limits after labels, RF preprocessing,
       precision, rejection, concurrency and thermal gates pass.
-- [ ] Integrate `RunLocalRecognition` into the Runner through a replay/live
-      `RecognitionEngine`, initially behind operator approval; update Agent/Web
-      observations and audit, cancel SDR and Worker on `/stop`, and reject stale
-      generations before considering autonomous use.
 
 Evidence:
 
@@ -525,6 +562,7 @@ Evidence:
 - [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md)
 - [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
 - [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
+- [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
 - [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md)
 

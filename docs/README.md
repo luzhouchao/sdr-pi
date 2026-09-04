@@ -17,6 +17,9 @@
 - [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md):
   complete RML2018A/HisarMod2019 FP32 accuracy, 4090 logits parity and AGX
   latency/resource evidence; this does not enable the production Recognizer.
+- [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md):
+  local BF16/Q8 Planner timing and smoke results, Mamba contention evidence,
+  MTP/n-gram findings and the local-first/provider-interface decision.
 - [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md): AGX deployment
   layout and remaining acquisition cutover gate.
 - [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md):

@@ -1,6 +1,6 @@
 # SDR Agent runtime design
 
-Last reviewed: 2026-09-03
+Last reviewed: 2026-09-04
 
 ## Current decision
 
@@ -14,11 +14,11 @@ operator / trusted-LAN Web
              v
 AGX Rust Controller <----> AGX Pi Agent Planner Worker
        |                         |
-       |                         +--> local Spark-X2.5-4B BF16
-       |                         +--> configured OpenAI-compatible provider
+       |                         +--> local Spark-X2.5-4B BF16 [default]
+       |                         +--> OpenAI-compatible API [explicit selection]
        |
        +--> result store / optional per-scan SigMF
-       +--> future bounded CUDA recognizer
+       +--> production-disabled bounded CUDA/Mamba recognizer
        |
        v
 SDRD/1 --> P201 sdrd --> Linux/IIO RX
@@ -68,8 +68,12 @@ its own isolated bounded conversation state.
 
 The Web-managed provider configuration supports OpenAI-compatible Completions
 and Responses, an 8,192–1,000,000-token context window and automatic compaction
-at 50–95% (90% by default). The fixed system prompt is never exposed in the Web
-UI. Real upstream reasoning is collapsed by default and omitted when absent.
+at 50–95% (90% by default). The current saved deployment selects the local BF16
+Spark loopback endpoint. The remote API seam remains available for an explicit
+operator change that takes effect on a new conversation; the system does not
+automatically send a local request or observation to an upstream service after
+a failure. The fixed system prompt is never exposed in the Web UI. Real
+upstream reasoning is collapsed by default and omitted when absent.
 
 ### SDR observation and execution
 
@@ -98,10 +102,23 @@ view displays stored traces and provides an indexed manual-delete path.
 LocalRecognizer.classify(BoundedIqRef) -> RecognitionOutput
 ```
 
-The backend-neutral Unix-socket and replay Adapters are implemented. The
-production CUDA/Mamba worker is not yet integrated, so
+The backend-neutral Unix-socket and replay Adapters are implemented. A bounded
+experimental `P201 RX1 -> AGX preprocess -> CUDA/Mamba` path has been validated
+through the standalone `recognize-live` engine, including private spool cleanup
+and radio restoration. It is not connected to the one-shot or interactive
+Runner, has no production rejection/profile admission, and therefore keeps
 `recognizer_available=false`. IQ remains outside Planner JSON and must be a
 bounded, canonical file reference under the configured spool root.
+
+Spark-X2.5-4B is the local receive Planner, while Mamba is the signal
+classifier. Both use AGX CUDA. Their normal data dependency is already serial:
+a Spark planning turn completes before Mamba classification, whose compact
+result is required before the next Spark turn. Both models may remain resident
+throughout. A bounded deliberate-overlap test reached 99% GPU utilization and
+approximately halved both throughputs without OOM, so production must enforce
+the serial invariant rather than depend only on expected call order. Sustained
+queue, cancellation and thermal validation remains incomplete; see
+[`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
 
 ## Ownership and concurrency
 
@@ -112,6 +129,10 @@ bounded, canonical file reference under the configured spool root.
   for the same operator, runs only the selected conversation, and rejects
   commands addressed to an inactive conversation.
 - One active inference lease serializes one-shot and interactive model runs.
+- The current lease covers Planner inference only. Production recognition must
+  extend it, or add an equivalent shared AGX GPU gate, before Mamba capability
+  can become available. This gate protects cancellation, late-result and
+  concurrent-input races; it does not unload either resident model.
 - One receive owner is allowed.  The legacy Spectrum Web, predictor and
   reboot-resume user units were disabled during the 2026-09-03 cutover; the AGX
   Harness is the only enabled receive control path.  Any rollback must stop

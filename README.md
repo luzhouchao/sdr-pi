@@ -15,8 +15,8 @@ operator / trusted-LAN Web Console
                 v
        AGX SDR Harness
   Rust Controller + Pi Agent Planner
-  local Spark / compatible model API
-  acquisition / aggregation / future CUDA recognizer
+  local Spark (default) / operator-selected compatible API
+  acquisition / aggregation / bounded CUDA/Mamba recognizer
                 |
                 v
       SDRD/1 over 192.168.1.x
@@ -26,9 +26,10 @@ operator / trusted-LAN Web Console
 ```
 
 AGX 负责 Agent、控制器、Web、扫频编排、结果存储、预处理和模型接入。当前
-Planner 可使用本机 Spark-X2.5-4B BF16 或 Web 配置的 OpenAI-compatible 上游；
-调制识别仍等待单独的 CUDA/Mamba 后端。P201 SDR 只运行 `sdrd`，负责有界 RX
-采集与传输，并保留独占所有权、限幅、停止和射频状态恢复。
+Planner 默认使用本机 Spark-X2.5-4B BF16；Web 配置的 OpenAI-compatible
+Completions/Responses 接口继续保留为人工选择的 provider，不做自动云端切换。
+实验 CUDA/Mamba Worker 已接通但仍禁止生产启用。P201 SDR 只运行 `sdrd`，负责
+有界 RX 采集与传输，并保留独占所有权、限幅、停止和射频状态恢复。
 
 ## 当前状态
 
@@ -43,6 +44,10 @@ Planner 可使用本机 Spark-X2.5-4B BF16 或 Web 配置的 OpenAI-compatible �
   接口，不得做公网端口映射。
 - 本机 Spark-X2.5-4B BF16 Planner 与受限 Web Search 已接入并实机验证；旧
   Qwen 进程已停止并禁用。
+- Spark BF16 与 Mamba 的短时共存/故意重叠测试证明内存足够，但并行活跃推理
+  会使双方吞吐近似减半；生产闭环保持模型常驻、推理串行。社区 Q8、MTP 和
+  n-gram 结果见
+  [`docs/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](docs/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md)。
 - 扫频聚合结果可在 Web 独立页面查看和手动删除；原始 IQ 仅在显式开启时按
   每次扫描保存为 SigMF。
 - D8/Shared-Bi RML2018A seeds 42--46 候选已完成盘点；RML seed44 与 Hisar
