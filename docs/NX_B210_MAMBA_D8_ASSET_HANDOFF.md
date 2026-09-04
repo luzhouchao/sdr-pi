@@ -14,6 +14,8 @@
 | NX SSH | AGX SSH alias `nx` | `wheeltec@wheeltec` 已验证 |
 | NX B210 项目 | `/home/wheeltec/b210`（NX 本机） | USB 3.0 与双寄存器回环已通过 |
 | NX B210 skill | `/home/wheeltec/b210/.codex/skills/use-b210/SKILL.md` | 项目局部 skill |
+| B210 已接天线口 | 面板 `RF A / TX/RX` | UHD `channel 0`（运行时显示 `FE-TX2`），TX 灯实测点亮 |
+| P201 已接天线口 | 面板 `RX1`（不是 `TRX1`） | SDRD 软件 RX0 / AD9361 `voltage0,1`，当前输入为 `A_BALANCED` |
 | 4090 SSH | AGX SSH alias `4090-via-aliyun` | `lzc@server` 已验证 |
 | Mamba 仓库 | `/data/lzc/mamba`（4090 本机） | GitHub `main` 与本地一致 |
 | Mamba GitHub | `git@github.com:luzhouchao/mamba.git` | 盘点时为 `d8f567d7065baed7e6a6db0b4fe050b1879fc73c` |
@@ -62,6 +64,29 @@ P201 仍只负责有界 RX 采集与传输。软件聚合、候选选择、DDC�
 - `--benchmark` 只覆盖 10 秒、双通道、5 MS/s 的接收测试；
 - RF 发射必须另有明确的频率、采样率、带宽、增益、持续时间、端口/负载、
   物理衰减和合法工作条件。未给出这些参数时不得发射。
+
+### 面板端口与 UHD 通道实测
+
+2026-09-04 的现场照片和指示灯试验确认，当前天线插在 N210/B210 克隆板
+面板左侧 `RF A` 分组的 `TX/RX` 口。对这块板必须使用
+`--channels 0 --ant TX/RX`：UHD 把它显示为 `TX Channel: 0` / `FE-TX2`，
+有限 TX 流运行时用户现场确认 RF A 指示灯点亮。此前仅按 `FE-TX1` 名称选用
+`channel 1` 的假设不适用于当前物理接线；后续 RF A 发射不得沿用该假设。
+
+P201 天线插在面板 `RX1`，不是 `TRX1`。当前 SDRD 单通道接收路径使用软件
+RX0（AD9361 `voltage0,1`），RF 输入读回为 `A_BALANCED`。P201 暴露的
+`led0:blue` 和 `led1:blue` 当前均使用 `heartbeat` trigger，没有证据表明它们
+绑定 Linux/IIO RX buffer。因此前面板灯不亮不能用于判定 P201 没有接收。
+一次 2.4465--2.4535 GHz、15 点的有界 RX1 观察扫频连续返回 sequence
+13--27；每点 8,192 个复数 int16 样本，全部零丢样、零溢出、零削顶且
+`health.source=iio_adapter`/`healthy=true`，证明 P201 RX 采集链路实际工作。
+
+当前空口链路仍未最终确认：正确 RF A/channel 0 下，2.450 GHz、TX gain
+20 dB、数字幅度 0.2 的同步试验中，P201 即时基线为 -62.52387 dBFS，发射
+时为 -62.26420 dBFS，仅增加 0.25967 dB，不足以归因于 B210。后续应以
+正确 channel 0 做受控增益阶梯或保留有界 IQ 做频谱峰值比较，不能把这个
+结果写成“已经收到”。完整记录见
+[`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md)。
 
 ## Mamba 模型身份
 
