@@ -2,6 +2,12 @@
 
 最后核对：2026-09-04（Asia/Shanghai）
 
+> **历史交接记录：** 当前第1—6章不含发射端，也不以 B210/USRP 回放作为运行、
+> 训练或验收依赖。本文中的 B210 配置只保留端口/接线审计价值；任何“后续发射”
+> 表述均已被
+> [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
+> 取代。
+
 本文是后续对话的快速入口，记录 NX 发射端硬件、P201 RX1、4090 训练仓库，
 以及已落到 AGX 的数据集、D8 权重和离线运行环境。有限单音已确认 B210 到
 P201 RX1 的物理链路；AGX 也已严格加载两个 checkpoint 并跑完 RML2018A 与

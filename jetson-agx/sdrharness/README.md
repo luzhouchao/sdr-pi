@@ -230,3 +230,6 @@ The systemd template
 and must not be enabled. Trusted labels, an RF-to-training preprocessing and
 retraining contract, precision, rejection, concurrency and sustained thermal
 gates are still pending, so the runtime capability remains false.
+The current checked Chapter 1–6 order and exact remaining integration gates are
+in
+[`../../docs/CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](../../docs/CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md).

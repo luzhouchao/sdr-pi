@@ -4,16 +4,17 @@
 
 - [`SDR_AGENT_PROJECT_CHECKLIST.md`](SDR_AGENT_PROJECT_CHECKLIST.md): exact
   implementation and validation status.
+- [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md):
+  current checkbox-based Chapter 1–6 receive-only implementation plan and the
+  concise audit of what remains in Chapters 1–3.
 - [`ROADMAP.md`](ROADMAP.md): ordered future work.
 - [`SDR_AGENT_RUNTIME_DESIGN.md`](SDR_AGENT_RUNTIME_DESIGN.md): Agent,
   Controller and Planner boundaries.
 - [`SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md`](SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md):
   current P201-to-AGX sweep and result path.
 - [`LOCAL_RECOGNIZER_INTERFACE.md`](LOCAL_RECOGNIZER_INTERFACE.md): stable
-  recognition interface and unfinished CUDA/Mamba backend.
-- [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md):
-  quick handoff for the verified NX/B210-to-P201 RX1 path and the AGX-local
-  D8 datasets, checkpoints, runtime and remaining production gates.
+  recognition interface and production-disabled experimental CUDA/Mamba
+  Worker.
 - [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md):
   complete RML2018A/HisarMod2019 FP32 accuracy, 4090 logits parity and AGX
   latency/resource evidence; this does not enable the production Recognizer.
@@ -31,6 +32,15 @@ Files with dated `VALIDATION`, `DEPLOYMENT`, `RESULTS` or `BASELINE` names are
 immutable evidence of what was actually tested. They may describe an older
 release, but they are not current instructions. Follow the checklist and the
 current design documents above when they differ.
+
+The former
+[`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md) is retained
+only as superseded design rationale. It is no longer a current plan or status
+source.
+
+[`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md) is a
+historical hardware/model handoff. Its B210 details remain useful port evidence,
+but B210/USRP transmission is not part of the current Chapter 1–6 plan.
 
 The large retired FPGA/Vivado tree, FPGA-only reports, Pi VkFFT experiment and
 superseded research notes were removed from the working tree on 2026-09-02.

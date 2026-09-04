@@ -2,10 +2,16 @@
 
 最后审查：2026-09-04（Asia/Shanghai）
 
+> **已被取代：** 当前第1—6章路线和完成状态统一维护在
+> [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
+> 与权威项目清单中。本文仅保留 2026-09-04 的字段设计和论证背景，不再作为
+> 当前实施顺序或待办状态来源；冲突时以新规划和项目清单为准。
+
 本文以已经部署的第1节 Agent/Harness、第2节接收规划闭环和第3节 P201 Linux
 控制面为基础，把第4节“AGX 采集、聚合与扫频”和第6节“本地调制识别”接成
-同一条可验证的 RX-only 数据闭环。项目清单第5节仍是 FPGA 退役边界，不恢复
-FPGA、MMIO、UIO、Vivado 或 `BOOT.bin` 路线。
+同一条可验证的 RX-only 数据闭环。FPGA 退役边界继续有效；新规划已将第5章
+正式定义为输入标准化与评测治理，仍不恢复 FPGA、MMIO、UIO、Vivado 或
+`BOOT.bin` 路线。
 
 如果“第4—6章”同时指论文正文，建议正文使用下面的叙事结构：
 

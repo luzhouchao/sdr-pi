@@ -7,9 +7,14 @@ after the exact wording is implemented and verified. Split partial work into a
 completed item and a remaining item instead of marking an ambiguous partial
 state.
 
-## 1. Architecture and Agent Harness
+Sections 1–6 are now the unified RX-only chapter plan and replace the earlier
+4-to-6-only planning view. The concise chapter view is
+[`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md);
+this file retains the detailed delivery and evidence ledger.
 
-- [x] Select Jetson AGX Orin as the primary future Agent, acquisition,
+## 1. Agent/Harness and operator interface
+
+- [x] Select Jetson AGX Orin as the primary Agent, acquisition,
       aggregation and CUDA-inference host, with clone root fixed at
       `/home/jetson/sdrharness`.
 - [x] Add AGX-specific non-secret configuration, systemd templates, native build
@@ -164,11 +169,17 @@ state.
       authority remain unchanged. The mode-`0600` selection, loopback endpoint
       and active/enabled service were reverified on 2026-09-04; see
       [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
-- [ ] Extend the Web and terminal receive-only observation views to render the
-      stateful recognition status, numeric label identity, calibrated
-      confidence/rejection reason, source, model/profile identity, quality and
-      timing without exposing IQ paths or tensors; live-validate that the local
-      Spark-X2.5-4B sees only the compact form required to choose a next step.
+- [ ] Extend the Web and terminal receive-only observation views to render
+      classified/rejected/unavailable/error, numeric label identity, trusted or
+      provisional name, calibrated confidence/rejection reason, source,
+      model/profile identity, quality and timing without exposing IQ paths or
+      tensors.
+- [ ] Persist full bounded recognition records in the application result store
+      and add a visible per-record manual-delete path without retaining IQ by
+      default.
+- [ ] Live-validate that local Spark-X2.5-4B sees only a compact recognition
+      summary, explains the result without presenting an unlabeled top-1 as
+      ground truth, and proposes one newly validated receive-only next step.
 
 Evidence:
 
@@ -185,8 +196,9 @@ Evidence:
 - [`SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md)
 - [`SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md)
 - [`SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md`](SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md)
+- [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
-## 2. Planning policy and autonomous loop
+## 2. Receive-only planning policy and autonomous loop
 
 - [x] Define structured actions for hold, band survey, candidate inspection,
       bounded IQ capture, local recognition, and session stop.
@@ -267,6 +279,15 @@ Evidence:
       model abort/generation invalidation, stale-result tests and daemon survival
       after a client transport timeout; see
       [`SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
+- [ ] Replace the Runner/template behavior that inherits
+      `recognizer_available` from the input request with a current
+      Section 6 Worker/profile health result; fail closed on missing, stale or
+      mismatched health.
+- [ ] Freeze recognition approval classification and implement the first
+      production profile behind explicit operator approval in step and cruise
+      modes. Current policy returns `approval_required=false` for
+      `RunLocalRecognition`; do not enable capability until this is corrected
+      and tested.
 - [ ] Execute the existing `run_local_recognition { candidate_id }` action in
       both one-shot and interactive Runners through the admitted Chapter 4
       profile and production Recognition Worker instead of returning
@@ -278,14 +299,22 @@ Evidence:
       move to another measured candidate, survey, hold, or stop.
 - [ ] Extend the priority `/stop` path to cancel the active recognition request
       as well as the already-supported Planner and SDR work, then discard every
-      late Worker result whose request ID or session generation is stale.
+      late Worker result whose request ID or session generation is stale and
+      release the shared Spark/Mamba inference gate before later work.
+- [ ] Build a fixed receive-only Planner regression covering all six actions,
+      numeric limits, recognition statuses, failures and stop races. Require
+      every accepted proposal to pass Rust policy; the current five-case BF16
+      smoke is only 4/5 because one inspection proposed an out-of-range 48 MS/s
+      rate, although Rust rejected it safely. See
+      [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
 
 Evidence:
 
 - [`SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md`](SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md)
 - [`SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md)
+- [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
-## 3. SDR Linux control plane (`sdrd`)
+## 3. P201 Linux/IIO bounded RX control plane (`sdrd`)
 
 - [x] Record the SDR Linux, IIO and network baseline.
 - [x] Implement the C `sdrd` configuration parser, framed SDRD/1 protocol,
@@ -355,6 +384,15 @@ Evidence:
       duplicate-start rejection, sequence/metadata/resource/thermal accounting
       and verified final restoration; see
       [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
+- [ ] Make the fixed production physical input `RX1 / A_BALANCED` a probed,
+      audited and fail-closed SDRD/1 identity, return it with profile/capture or
+      health metadata, and verify that it is unchanged on every exit path
+      without exposing a Planner-selectable port write. Today
+      `enabled_channels=1` proves only the software RX0 `voltage0,1` I/Q scan
+      pair; `sdrd` neither reads nor locks `rf_port_select`, so the protocol
+      alone cannot prove which front-panel connector supplied a capture. This
+      does not invalidate the completed photographed/FFT RX1 evidence; it blocks
+      production capability from relying on that out-of-band fact.
 
 Evidence:
 
@@ -370,8 +408,9 @@ Evidence:
 - [`SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md`](SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md)
 - [`SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md)
 - [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md)
+- [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
-## 4. AGX acquisition, aggregation, and sweep
+## 4. AGX acquisition, candidate refinement, and model input
 
 P201 owns bounded receive-only acquisition and transport. AGX owns software
 aggregation, result persistence and model-facing summaries.
@@ -424,7 +463,7 @@ aggregation, result persistence and model-facing summaries.
       sample-rate domain, separate RX gain/raw RMS/measured SNR semantics,
       capture/window/byte/deadline limits, preprocessing ID/hash and quality
       gates. Keep model-specific DSP out of Planner-controlled parameters; see
-      [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md).
+      [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md).
 - [ ] Implement candidate refinement and recognition eligibility, then derive a
       finite single- or multi-window capture from the admitted profile and
       produce byte-reproducible `ModelReadyBatch` fixtures with cleanup on
@@ -453,9 +492,13 @@ Evidence:
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 - [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
-- [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md)
+- [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
-## 5. Retired FPGA route and software-only Chapter 4-to-6 boundary
+## 5. Input standardization, receive-domain alignment, and evaluation governance
+
+The retired FPGA section is not a vacant implementation chapter. Chapter 5 now
+owns the reproducible data contract between Chapter 4 reception and Chapter 6
+recognition; it does not own hardware control or another runtime backend.
 
 - [x] Retire FPGA aggregation by explicit user decision and fix production on
       P201 Linux/IIO bounded RX transport plus AGX software aggregation.
@@ -464,18 +507,42 @@ Evidence:
       constant false/zero SDRD/1 compatibility fields, strict acceptance of a
       legacy false Planner-health field, and the retirement decision;
       pre-cleanup evidence remains recoverable from Git history at `59cbb17`.
-- [x] Keep the Chapter 4 acquisition-to-Chapter 6 recognition handoff entirely
-      on AGX software. For a thesis chapter, use this position for input
-      standardization, receive-domain alignment and evaluation-data governance;
-      it does not create another runtime backend. See
-      [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md).
+- [x] Define the Chapter 5 role as input standardization, receive-domain
+      alignment and evaluation-data governance for the AGX-only Chapter 4-to-6
+      handoff; no transmit or FPGA path is a data dependency.
+- [x] Inventory the retained RML2018A/HisarMod2019 datasets, fixed splits,
+      selected checkpoints, minimal inference source and exact SHA-256 values
+      under the Git-ignored AGX asset root.
+- [x] Distinguish dataset nominal SNR, P201 receive gain, ADC dBFS and measured
+      receive SNR, and state that a field window without an independent label is
+      unknown/unlabeled rather than model-generated ground truth.
+- [ ] Define one versioned manifest/schema for labeled offline data, P201
+      receive-only corpus rows and golden vectors, including content/profile
+      hashes and explicit `dataset_ground_truth`, `independent_annotation` or
+      `unknown` label provenance.
+- [ ] Build a bounded, versioned P201 receive-only corpus with session/date,
+      center, rate, bandwidth, fixed RF input, gain, samples/bytes, quality and
+      cleanup metadata; provide a visible manual-delete path and keep bulk IQ
+      outside Git.
+- [ ] Prove train/validation/test isolation by source sample, capture session
+      and day so crops, augmentation or repeated receptions of one source do
+      not cross splits.
+- [ ] Use only train/validation plus versioned receive-domain evidence to choose
+      preprocessing, window count, calibration and acceptance thresholds, then
+      freeze them before viewing the held-out test result. Report labeled
+      accuracy separately from unlabeled field quality/confidence/rejection.
+- [ ] Resolve the RML2018A numeric-ID/name-order dispute; until then, retain the
+      numeric ID as trusted identity and mark every text name provisional.
 
 Evidence:
 
 - [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md)
-- [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md)
+- [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
+- [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
+- [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
+- [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
-## 6. Local modulation recognition
+## 6. Local Mamba modulation recognition
 
 - [x] Supersede the Pi-sized production-model direction with a backend-neutral
       AGX recognizer seam and defer the production Adapter to CUDA/Mamba.
@@ -533,8 +600,9 @@ Evidence:
       prove cancellation releases the gate before a subsequent Planner turn.
 - [x] Generate offline confusion matrices, total accuracy, macro-F1, per-class
       precision/recall/F1 and per-SNR accuracy for both complete test splits.
-- [ ] Resolve the disputed RML2018A class-name order and validate the RF input
-      contract and rejection policy before enabling `recognizer_available`.
+- [ ] Consume the Chapter 5 frozen numeric-ID/name table, then validate the RF
+      input contract and rejection policy before enabling
+      `recognizer_available`.
 - [ ] Extend recognition results beyond candidate/label/confidence with
       classified/rejected/unavailable/error status, numeric label identity,
       rejection reason, source sequence, model/profile hashes, window agreement,
@@ -564,7 +632,7 @@ Evidence:
 - [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
 - [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
-- [`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md)
+- [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 7. Emitter/radiation-source identification
 
@@ -616,19 +684,18 @@ Evidence:
 
 ## Current next milestone
 
-Keep the receive-only bounded software sweep isolated from any Spectrum
-collector and preserve the Raspberry Pi rollback path while validating the
-P201-capture/AGX-aggregate cutover. The AGX clone, native build, runtime
-baseline, Planner/Web runtime gate, prior bounded-IQ executor, fixed-gain
-initial survey, automatic `survey_band` feedback loop and step-approved
-candidate inspection are live-validated with the real SDR and both OpenCode Go
-and the local Spark-X2.5-4B BF16 model. Inline-IQ AGX aggregation, persistent
-Web results and optional SigMF are deployed and live-validated with both
-storage modes, model feedback, browser readback, cancellation, cleanup and
-radio restoration. A selected 1,024-sample P201 RX1 window now also reaches the
-production-disabled experimental CUDA/Mamba Worker with private spool cleanup
-and radio restoration. The next recognition focus is a frozen RF preprocessing
-and retraining contract, trusted labels, rejection/precision gates and Worker
-queue/concurrency/thermal validation; sustained software-acquisition overload
-testing also remains open. FPGA image, register, DMA and boot work was
-explicitly retired on 2026-09-02 and is not a future milestone.
+Follow delivery A in
+[`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md):
+make the fixed P201 `RX1 / A_BALANCED` identity a fail-closed Chapter 3
+capability, then freeze the shared Chapter 4/5 `RecognitionInputProfile` and
+golden fixtures. Do not connect the experimental seed44 path to the production
+Runner first.
+
+The remaining Chapter 1 gaps are recognition rendering, bounded persistence and
+compact Agent feedback. Chapter 2 still lacks live recognizer capability,
+recognition approval/execution/feedback, Worker-aware `/stop`, the shared GPU
+lease and a complete Planner regression. Chapter 3's bounded RX, inline
+transport, cancellation, restoration and long reconnect baseline are complete;
+its newly identified remaining gap is explicit physical RF-input identity and
+end-of-session unchanged verification. FPGA and transmit work are not future
+milestones.

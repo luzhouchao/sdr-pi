@@ -89,12 +89,22 @@ AGX computes power, clipping, noise and merged candidates. There is no active
 FPGA/MMIO backend. Protocol-v1 FPGA response fields remain constant false/zero
 only so older deployed clients can parse the wire response.
 
+The current `enabled_channels=1` profile proves one software RX0 complex path
+through IIO `voltage0,1`; it does not identify a front-panel connector. Before
+production recognition, SDRD/1 must probe and fail closed on the fixed
+`RX1 / A_BALANCED` physical-input identity and include it in profile/capture or
+health audit plus end-of-session unchanged validation. It remains a fixed
+Adapter capability, not a Planner-selected or Planner-written RF port.
+
 ### Results
 
-The AGX result store keeps processed sweep points, candidates and recognition
-output in SQLite. When the operator enables raw-IQ retention, one scan writes
-one SigMF metadata/data pair under the managed capture root. The Web aggregate
-view displays stored traces and provides an indexed manual-delete path.
+The AGX result store currently keeps processed sweep points and candidates in
+SQLite. When the operator enables raw-IQ retention, one scan writes one SigMF
+metadata/data pair under the managed capture root. The Web aggregate view
+displays stored traces and provides an indexed manual-delete path. Bounded
+recognition-record persistence and its per-record manual-delete path remain a
+Chapter 1 integration item; current experimental recognition output is not a
+production stored-result capability.
 
 ### Recognition
 
@@ -165,4 +175,6 @@ with which it started.
 The Web service is intentionally bound to trusted-LAN interfaces and has no
 application authentication. It must not be port-forwarded to the Internet.
 Authoritative implementation status and remaining work are in
-[`SDR_AGENT_PROJECT_CHECKLIST.md`](SDR_AGENT_PROJECT_CHECKLIST.md).
+[`SDR_AGENT_PROJECT_CHECKLIST.md`](SDR_AGENT_PROJECT_CHECKLIST.md); the concise
+Chapter 1–6 plan is
+[`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md).

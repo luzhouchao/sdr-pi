@@ -92,5 +92,7 @@ bash jetson-agx/sdrharness/scripts/build-agent-runtime.sh
 - CUDA 模型权重按大小使用 GitHub Release 或其他带 SHA-256 的制品渠道，不直接混入源码历史。
 - 所有能力默认关闭，只有负责的 Adapter 通过实机探测后才能报告可用。
 
-文档入口见 [`docs/README.md`](docs/README.md)，权威进度见
+文档入口见 [`docs/README.md`](docs/README.md)，当前第1—6章勾选式路线见
+[`docs/CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](docs/CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)，
+权威明细进度见
 [`docs/SDR_AGENT_PROJECT_CHECKLIST.md`](docs/SDR_AGENT_PROJECT_CHECKLIST.md)。

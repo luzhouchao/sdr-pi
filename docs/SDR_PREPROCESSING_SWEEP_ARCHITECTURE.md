@@ -26,7 +26,7 @@ The caller supplies either a continuous `start_hz`/`stop_hz`/`step_hz` range or
 an explicit center-frequency list. Each plan also includes:
 
 ```text
-radio:    sample_rate_hz, rf_bandwidth_hz, fixed gain
+radio:    fixed RX1/A_BALANCED identity, sample_rate_hz, rf_bandwidth_hz, gain
 timing:   settle_ms, frame_samples, aggregate_frames, point timeout
 DSP:      window, FFT size, overlap, averages and candidate threshold
 storage:  summary-only or explicitly enabled per-scan SigMF
@@ -42,6 +42,9 @@ The plan is rejected before the first radio write unless:
 - continuous coverage does not leave a gap larger than usable bandwidth;
 - AGX free space is sufficient when IQ retention is enabled;
 - the original radio state can be read for restoration.
+- the Adapter probes the fixed physical RF input identity; this last gate is
+  still pending because current SDRD/1 reports only the software I/Q channel
+  count.
 
 For gap-free unknown-band surveys, begin with
 `step_hz <= 0.8 * rf_bandwidth_hz`. Known channel plans should normally use an
@@ -72,7 +75,7 @@ quality checks. Rust then derives capture and preprocessing from an admitted
 The handoff separates `rx_gain_db`, raw RMS, measured SNR and any dataset SNR
 label, and carries the preprocessing ID/hash into the recognition result. The
 full joint plan is in
-[`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md).
+[`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md).
 
 The current one-point inline frame is limited by the SDRD/1 response bound;
 there is no project-wide fixed total-scan byte ceiling. Total bytes are derived
@@ -84,7 +87,7 @@ Each point or aggregate record should include:
 
 ```text
 sweep_id, point_index, timestamp
-requested_center_hz, actual_center_hz
+requested_center_hz, actual_center_hz, rx_port_identity
 sample_rate_hz, rf_bandwidth_hz, gain_db
 settle_ms, captured_samples, dropped_samples
 noise_floor_dbfs, band_power_dbfs
@@ -101,6 +104,9 @@ deletion removes only the selected indexed result and its managed files.
 
 ## Next validation
 
+- Add and live-validate the fixed `RX1 / A_BALANCED` SDRD/1 capability,
+  profile/capture audit field and end-of-session unchanged check; keep it out
+  of Planner parameters.
 - Complete bounded AGX software-acquisition overload testing. The separate
   sustained 5/10-MS/s aggregate acceptance gate was retired by explicit
   operator decision on 2026-09-03; this is not a new measured throughput claim.
