@@ -7,6 +7,7 @@ use axum::{
     Json, Router,
 };
 mod corpus;
+mod recognition_archive;
 
 use corpus::{
     delete_corpus_result, derive_rf_v1, ingest_corpus_result, initialize_corpus_store,
@@ -346,6 +347,7 @@ async fn main() {
 async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::from_env()?;
     initialize_result_database(&config.result_db_path)?;
+    recognition_archive::initialize(&config.result_db_path)?;
     initialize_capture_root(&config.capture_root)?;
     initialize_corpus_store(&config.result_db_path, &config.corpus_root)?;
     let persisted = load_state(&config.state_path)?;
@@ -376,6 +378,14 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 .delete(delete_provider_config),
         )
         .route("/api/provider/models", post(discover_provider_models))
+        .route(
+            "/api/recognition-results",
+            get(list_recognition_results).post(post_recognition_result),
+        )
+        .route(
+            "/api/recognition-results/{id}",
+            get(get_recognition_result).delete(delete_recognition_result),
+        )
         .route("/api/results", get(list_capture_results))
         .route(
             "/api/results/{id}",
@@ -541,6 +551,68 @@ async fn delete_p201_corpus(
         &state.config.corpus_root,
         &result_id,
     )?))
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct RecognitionPage {
+    before: Option<i64>,
+}
+async fn list_recognition_results(
+    State(state): State<AppState>,
+    axum::extract::Query(page): axum::extract::Query<RecognitionPage>,
+) -> ApiResult<Json<Vec<recognition_archive::Detail>>> {
+    Ok(Json(recognition_archive::list(
+        &state.config.result_db_path,
+        page.before.unwrap_or(i64::MAX),
+    )?))
+}
+async fn post_recognition_result(
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
+    State(state): State<AppState>,
+    headers: axum::http::HeaderMap,
+    body: axum::body::Bytes,
+) -> ApiResult<(StatusCode, Json<recognition_archive::Detail>)> {
+    if headers
+        .get(header::CONTENT_TYPE)
+        .and_then(|h| h.to_str().ok())
+        .map(|v| v.split(';').next().unwrap_or("").trim())
+        != Some("application/json")
+    {
+        return Err(ApiError(
+            StatusCode::UNSUPPORTED_MEDIA_TYPE,
+            "识别导入要求 application/json".into(),
+        ));
+    }
+    if !peer.ip().is_loopback() {
+        return Err(ApiError(
+            StatusCode::FORBIDDEN,
+            "识别回放导入仅允许 AGX 回环客户端".into(),
+        ));
+    }
+    Ok((
+        StatusCode::CREATED,
+        Json(recognition_archive::ingest(
+            &state.config.result_db_path,
+            &body,
+        )?),
+    ))
+}
+async fn get_recognition_result(
+    State(state): State<AppState>,
+    Path(id): Path<i64>,
+) -> ApiResult<Json<recognition_archive::Detail>> {
+    Ok(Json(recognition_archive::load(
+        &state.config.result_db_path,
+        id,
+    )?))
+}
+async fn delete_recognition_result(
+    State(state): State<AppState>,
+    Path(id): Path<i64>,
+) -> ApiResult<Json<serde_json::Value>> {
+    recognition_archive::delete(&state.config.result_db_path, id)?;
+    Ok(Json(serde_json::json!({"deleted":id,"files_deleted":0})))
 }
 
 async fn list_capture_results(

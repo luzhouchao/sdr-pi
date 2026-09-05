@@ -17,7 +17,7 @@ this file retains the detailed delivery and evidence ledger.
 以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
 编号表示范围，不表示施工先后；实际顺序见
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
-S1/S2/V1a/S3 已完成；S4a 共享 GPU 租约源码和隔离实机验证完成，生产服务未替换。
+S1/S2/V1a/S3/S4a 已完成；S6a 结果归档源码和隔离 Web/终端/浏览器验证完成，生产服务未替换。
 
 - [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
 - [x] AGX 扫频/精查、结果存储和 RX 语料基础、split 隔离完成（第1/4/5章）。
@@ -31,7 +31,7 @@ S1/S2/V1a/S3 已完成；S4a 共享 GPU 租约源码和隔离实机验证完成�
   - [ ] S4b：最终代表性负载下的显存/RSS/队列/热稳定性证据。
 - [ ] S5：Runner 识别执行、批准、预算/audit、联合 stop、Spark 回灌及固定 Planner 回归。
 - [ ] S6：用户识别结果交付。
-  - [ ] S6a：完整结果保存/恢复/查看/删除；可先用 replay 或明确实验结果验证。
+  - [x] S6a：完整结果保存/恢复/查看/删除完成源码及隔离 replay/演示验证；复用应用 SQLite，不额外保留 IQ，未部署。
   - [ ] S6b：S5 后真实闭环、浏览器结果和 Spark 紧凑摘要验收。
 - [ ] V1：RF-v1 独立数据证据准备。
   - [x] V1a：版本化派生、独立证据接入、采样/覆盖/校准与验收分组规范完成；隔离 HTTP/浏览器/删除及失败清理验证通过，未部署。
@@ -211,9 +211,20 @@ S1/S2/V1a/S3 已完成；S4a 共享 GPU 租约源码和隔离实机验证完成�
       provisional name, calibrated confidence/rejection reason, source,
       model/profile identity, quality and timing without exposing IQ paths or
       tensors.
-- [ ] Persist full bounded recognition records in the application result store
+  - [x] S6a archive views: Web result-type selection and local terminal client
+        show provenance, four inert demo states, candidate replay/unavailable,
+        numeric/name trust, confidence calibration, source/model identity,
+        quality/timing and manual deletion. Native browser/CLI and cleanup passed;
+        see [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md).
+  - [ ] S5/S6b: live receive-loop terminal/Web observations and actual joined
+        execution/result delivery; archive demonstrations do not complete this.
+- [x] Persist full bounded recognition records in the application result store
       and add a visible per-record manual-delete path without retaining IQ by
-      default.
+      default. S6a reuses the existing SQLite file, revalidates full S2 records,
+      bounds pagination, rejects conflicting/forged imports, and verifies restart
+      restoration and per-record deletion without touching capture/corpus/IQ.
+      Source and isolated native acceptance only; installed services unchanged.
+      See [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md).
 - [ ] Live-validate that local Spark-X2.5-4B sees only a compact recognition
       summary, explains the result without presenting an unlabeled top-1 as
       ground truth, and proposes one newly validated receive-only next step.
@@ -895,9 +906,9 @@ Evidence:
 
 ## Current next milestone
 
-S1/S2/V1a/S3 and S4a shared-lease source/isolated real-model validation are complete.
+S1/S2/V1a/S3/S4a and S6a archive source/isolated native acceptance are complete.
 Installed services remain unchanged and the actual recognizer stays unavailable.
-The next default independent unit is S6a result storage, viewing and deletion. Sustained
+The next default independent unit is S5 Runner execution, joined stop and Planner feedback. Sustained
 resources, Runner/joint stop, actual independent labels, calibration and
 production admission remain open.
 

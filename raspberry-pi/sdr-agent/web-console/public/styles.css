@@ -387,3 +387,15 @@ textarea:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(81,213,23
   .settings-actions { align-items: stretch; flex-wrap: wrap; }
   .settings-actions p { width: 100%; }
 }
+
+.recognition-archive { margin-top: 1rem; }
+.recognition-archive .section-heading p { color: var(--muted); max-width: 52rem; }
+.recognition-meaning { line-height: 1.6; color: var(--muted); }
+.recognition-fields { display: grid; grid-template-columns: minmax(7rem, 1fr) minmax(0, 3fr); gap: .6rem 1rem; font-size: .85rem; }
+.recognition-fields dt { color: var(--muted); }
+.recognition-fields dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 640px) { .recognition-fields { grid-template-columns: 1fr; } }
+
+.archive-tabs { display: flex; gap: .6rem; margin: 1rem 0; }
+.archive-tabs [aria-pressed="true"] { border-color: var(--cyan); color: var(--cyan); }
+.recognition-evidence summary { cursor: pointer; padding: .8rem 0; }

@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "delivery": "S6a",
+  "base_commit": "e8a385268af3dbdecb075826571d309c4949a7ed",
+  "validated_at_utc": "2026-09-05T19:47:25.182956+00:00",
+  "source_sha256": {
+    "raspberry-pi/sdr-agent/controller/src/recognition_input.rs": "6f8abaadc8846d08edcdf52dfdedd84ad1d638553f2fa7ed8654297fd49a72dd",
+    "raspberry-pi/sdr-agent/web-console/public/app.js": "d3ec37b7428601657f4b0db6e245e09037af667f0e950a546d1ebc00b1f980be",
+    "raspberry-pi/sdr-agent/web-console/public/index.html": "4e2992d8cc3666b04fe27c20f21f7d7ecee9a2875057d3600c0f48bd7aeea2da",
+    "raspberry-pi/sdr-agent/web-console/public/styles.css": "febfd28ff5f0308ff93e4b6ce8fb7bbedece8764d9bce7794d0df8938e197325",
+    "raspberry-pi/sdr-agent/web-console/src/main.rs": "ae806215419e08324f25621620743bd56efeac58150575aaaf564ec5b109e65f",
+    "jetson-agx/sdrharness/scripts/recognition-results.py": "845f46b2ac4552b9f432000aca9add7251a4d967752ec2a8ea4fabba7ae80a11",
+    "jetson-agx/sdrharness/scripts/validate-recognition-archive.py": "7b0ffd1862fb991b2d02a2338073cc1873683bc7769793c91d0f5c1146472004",
+    "raspberry-pi/sdr-agent/web-console/src/recognition_archive.rs": "095d9416da25e0790b579df76b5b98d34413f9a9b013e526848ff2cccb25508e"
+  },
+  "log_sha256": {
+    "web-0.log": "41ba7f2d9b778e9c397e03facb1eec2841e1b9cfad7f6ac54a95e6dd9805ab4e",
+    "web-tests.log": "8d043dc90bab6f63a8abc0059ad721d3516a1dd523234e45e310a4bc4ae7e858",
+    "build.log": "4aaa18d17bf0361aaf54b3edfecfbe3804a30f15a37ca4dab7ce7cc64d70c072",
+    "controller-tests.log": "67c97e0b3ab8c69f7dc1eb07dc7b03825c5ff24e1653c99bdea2a5d58eee21be",
+    "controller-clippy.log": "e134c5d69f5e668e58f7645c4701d9e41967b8536c5f0d234b7876c1fc061dc9",
+    "web-2.log": "41ba7f2d9b778e9c397e03facb1eec2841e1b9cfad7f6ac54a95e6dd9805ab4e",
+    "web-1.log": "41ba7f2d9b778e9c397e03facb1eec2841e1b9cfad7f6ac54a95e6dd9805ab4e",
+    "live.log": "537cea7e124667f8d6aa6018f91fbf9636df148652421f9057ea0869c84d2bac",
+    "preliminary-live.log": "6c144718faf2815f7be18e14b0174659ce588f4167193a16fad56ab16cb39c16",
+    "export.log": "ba368b2b1a89ad640bcfeb07cd8f69fb27af25494b0c3829b00ce36707683596",
+    "clippy.log": "17a2bf8b3ac84bbb5e1f3f8c1c8d2e531f9add7f0922ee1bc17f2eb710bb3e58"
+  },
+  "screenshot_sha256": {
+    "archive-mobile.png": "cb2c406a9edb4e8b3c6301eaaa0f0e8c3153f1fc2a30b9e7a521633c06ae7b96",
+    "archive-desktop.png": "e559fb8268f66a5c57f7b0babe5e9fd11b54662663b29a5d0e3a6405797b5636"
+  },
+  "tests": {
+    "web_passed": 31,
+    "controller_library_passed": 89,
+    "terminal_passed": 13,
+    "metadata_fixture_export": "pass",
+    "controller_and_web_all_target_clippy_deny_warnings": "pass",
+    "cargo_fmt": "pass",
+    "javascript_syntax": "pass"
+  },
+  "native_validation": {
+    "schema_version": 1,
+    "status": "pass",
+    "checks": [
+      "five_metadata_imports",
+      "idempotent_retry",
+      "terminal_summary",
+      "tamper_rejected",
+      "production_forgery_rejected",
+      "conflict_no_overwrite",
+      "content_type_duplicate_bound_rejected",
+      "missing_delete",
+      "full_internal_record_retained",
+      "native_restart_restore",
+      "browser_four_states_and_replay",
+      "mobile_no_overflow",
+      "delete_dismiss_preserves",
+      "browser_delete_confirmed",
+      "no_browser_errors",
+      "terminal_manual_delete",
+      "deleted_after_restart",
+      "no_iq_files"
+    ],
+    "port": 35659,
+    "web_sha256": "1a55ec6c017cfab93f206286ded61106fb4b79018b68ba07ce96225fbdd55612",
+    "recognizer_available": false,
+    "rx_bytes": 0,
+    "inference_calls": 0,
+    "cleanup": {
+      "web_pids": [
+        300516,
+        300833,
+        300969
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "archive_rows": 0,
+      "iq_files": 0
+    }
+  },
+  "governance": {
+    "installed_services_changed": false,
+    "recognizer_available": false,
+    "rx_bytes": 0,
+    "inference_calls": 0,
+    "locked_test_read": false,
+    "training": false,
+    "calibration_frozen": false,
+    "acceptance": "archive/replay and inert synthetic demonstration only; not S6b"
+  },
+  "cleanup": {
+    "exact_directory": "/var/tmp/sdrharness-dev/s6a-906a",
+    "active_feature_processes": [],
+    "file_count": 3306,
+    "file_bytes": 1693300578,
+    "port_closed": true,
+    "user_results_corpus_assets_removed": false,
+    "directory_absent_verified": true
+  }
+}

@@ -4,6 +4,9 @@ const view = {
   provider: null,
   providerModels: [],
   results: [],
+  recognitions: [],
+  selectedRecognitionId: null,
+  recognitionEpoch: 0,
   selectedResultId: null,
   selectedResult: null,
   corpusResults: [],
@@ -200,7 +203,7 @@ async function showResults() {
   document.querySelector('#settings-entry').classList.remove('active');
   document.querySelector('#corpus-entry').setAttribute('aria-expanded', 'false');
   document.querySelector('#corpus-entry').classList.remove('active');
-  try { await loadResults({ selectLatest: true }); } catch (error) { toast(error.message); }
+  try { await Promise.all([loadResults({ selectLatest: true }), loadRecognitions()]); } catch (error) { toast(error.message); }
 }
 
 async function showCorpus() {
@@ -901,3 +904,102 @@ window.addEventListener('beforeunload', (event) => {
 Promise.all([loadState({ keepScroll: false }), loadProvider(), refreshCorpusCount()])
   .then(connectEvents)
   .catch((error) => toast(error.message));
+
+
+const recognitionStatuses = { classified: '已分类', rejected: '已拒识', unavailable: '不可用', error: '错误' };
+const recognitionOrigins = { experimental_replay: '实验回放 · 未生产准入', synthetic_fixture: '合成演示 · 非实测结果' };
+async function loadRecognitions(before = '') {
+  const epoch = ++view.recognitionEpoch;
+  const records = await api(`/api/recognition-results${before ? `?before=${before}` : ''}`);
+  if (epoch !== view.recognitionEpoch) return;
+  view.recognitions = records;
+  view.selectedRecognitionId = null;
+  setText('#recognition-count', `${records.length} 条记录 · 每页最多 50 条`);
+  document.querySelector('#recognition-older').hidden = records.length < 50;
+  renderRecognitionList();
+  document.querySelector('#recognition-empty').hidden = records.length > 0;
+  document.querySelector('#recognition-content').hidden = true;
+  if (records.length) await selectRecognition(records[0].id);
+}
+function renderRecognitionList() {
+  const list = document.querySelector('#recognition-list');
+  list.replaceChildren();
+  for (const record of view.recognitions) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `result-list-item${record.id === view.selectedRecognitionId ? ' active' : ''}`;
+    const origin = document.createElement('small');
+    origin.textContent = recognitionOrigins[record.origin] || '未知来源';
+    const title = document.createElement('strong');
+    title.textContent = record.observation.candidate_id;
+    const meta = document.createElement('span');
+    meta.textContent = `${recognitionStatuses[record.observation.status]} · ${formatDate(record.created_at_ms)}`;
+    button.append(origin, title, meta);
+    button.addEventListener('click', () => selectRecognition(record.id).catch(error => toast(error.message)));
+    list.append(button);
+  }
+}
+async function selectRecognition(id) {
+  view.selectedRecognitionId = id;
+  renderRecognitionList();
+  document.querySelector('#recognition-content').hidden = true;
+  const record = await api(`/api/recognition-results/${id}`);
+  if (view.selectedRecognitionId !== id) return;
+  const o = record.observation;
+  document.querySelector('#recognition-empty').hidden = true;
+  document.querySelector('#recognition-content').hidden = false;
+  setText('#recognition-origin', recognitionOrigins[record.origin]);
+  setText('#recognition-candidate', o.candidate_id);
+  setText('#recognition-status', `${recognitionStatuses[o.status]} · ${o.status}`);
+  setText('#recognition-meaning', record.origin === 'synthetic_fixture'
+    ? '以下是合成演示字段，类别、置信度与拒识依据均不代表实际接收或生产准入。'
+    : '这是未准入的实验回放。模型预测不是独立标签，也不是已确认的接收结论。');
+  const fields = document.querySelector('#recognition-fields');
+  fields.replaceChildren();
+  const evidence = document.querySelector('#recognition-evidence');
+  evidence.replaceChildren();
+  const add = (label, value, target = fields) => {
+    const term = document.createElement('dt'); term.textContent = label;
+    const description = document.createElement('dd'); description.textContent = value ?? '—';
+    target.append(term, description);
+  };
+  add('应用会话', record.session_id);
+  add('请求 / 会话代次', `${o.request_id} / ${o.session_generation}`);
+  add('结果时间', formatDate(o.observed_at_unix_ms));
+  add('原因', o.reason);
+  const predicted = o.class || record.experimental_prediction;
+  add(o.class ? '演示类别 ID' : '实验预测 ID', predicted?.numeric_id);
+  add('文本名称可信状态', predicted ? `${predicted.name || '尚无可信名称'} · ${predicted.name_status}` : '无分类名称');
+  add(record.origin === 'synthetic_fixture' ? '演示校准置信度' : '校准置信度', o.calibrated_confidence == null ? '无' : `${(o.calibrated_confidence * 100).toFixed(2)}%`);
+  add('校准状态', o.calibration_status);
+  if (record.uncalibrated_probability != null) add('未校准实验概率', `${(record.uncalibrated_probability * 100).toFixed(2)}% · 不能作为准确率或准入依据`);
+  if (o.identity) for (const [key,value] of Object.entries(o.identity)) add(`身份 · ${key}`, value, evidence);
+  if (o.source) for (const [key,value] of Object.entries(o.source)) add(`来源 · ${key}`, value, evidence);
+  if (o.quality) {
+    add('窗口一致率', `${o.quality.window_count} 窗 · ${(o.quality.window_agreement * 100).toFixed(0)}%`);
+    add('接收质量', `健康 ${o.quality.healthy ? '是' : '否'} · 溢出 ${o.quality.overflow ? '是' : '否'} · 削顶 ${o.quality.clipped_samples} · 丢样 ${o.quality.dropped_samples}`);
+  }
+  if (o.timing) add('耗时', `采集 ${o.timing.capture_us} µs · 推理 ${o.timing.inference_us} µs · Worker 总计 ${o.timing.worker_total_us} µs`);
+  if (o.decision_references) for (const [key,value] of Object.entries(o.decision_references)) add(`演示引用 · ${key}`, `${value.id} · ${value.sha256}`, evidence);
+  add('IQ 保留', '未保留');
+}
+document.querySelector('#recognition-refresh').addEventListener('click', () => loadRecognitions().catch(error => toast(error.message)));
+document.querySelector('#recognition-older').addEventListener('click', () => loadRecognitions(view.recognitions.at(-1)?.id).catch(error => toast(error.message)));
+document.querySelector('#recognition-delete').addEventListener('click', async () => {
+  const id = view.selectedRecognitionId;
+  if (!id || !window.confirm('删除这条识别记录？此操作不会删除原始采集或接收语料。')) return;
+  try {
+    await api(`/api/recognition-results/${id}`, { method: 'DELETE' });
+    if (view.selectedRecognitionId === id) view.selectedRecognitionId = null;
+    await loadRecognitions();
+    toast('识别记录已删除');
+  } catch (error) { toast(error.message); }
+});
+
+for (const kind of ['sweeps', 'recognitions']) {
+  document.querySelector(`#archive-${kind}`).addEventListener('click', () => {
+    document.querySelector('#capture-archive').hidden = kind !== 'sweeps';
+    document.querySelector('#recognition-archive').hidden = kind !== 'recognitions';
+    for (const item of ['sweeps', 'recognitions']) document.querySelector(`#archive-${item}`).setAttribute('aria-pressed', String(item === kind));
+  });
+}

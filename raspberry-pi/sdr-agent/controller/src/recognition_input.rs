@@ -234,7 +234,28 @@ pub fn load_recognition_input_profile(
     )?;
     let spec_bytes = fs::read(&spec_path)
         .map_err(|error| RecognitionInputError::io("preprocess_read", error))?;
-    if sha256_hex(&spec_bytes) != profile.preprocess.spec_sha256 {
+    decode_loaded_profile(profile, manifest_sha256, manifest_path, &spec_bytes)
+}
+
+/// Pinned candidate metadata for archive validation; no model, IQ or filesystem access.
+pub fn frozen_rf_v1_profile() -> Result<LoadedRecognitionInputProfile, RecognitionInputError> {
+    let profile = serde_json::from_slice(RF_V1_PROFILE_BYTES)
+        .map_err(|error| RecognitionInputError::protocol("profile_json", error))?;
+    decode_loaded_profile(
+        profile,
+        sha256_hex(RF_V1_PROFILE_BYTES),
+        PathBuf::from("embedded-rf-v1"),
+        include_bytes!("../../../../jetson-agx/sdrharness/config/amc/rf-preprocess-v1.json"),
+    )
+}
+
+fn decode_loaded_profile(
+    profile: RecognitionInputProfile,
+    manifest_sha256: String,
+    manifest_path: PathBuf,
+    spec_bytes: &[u8],
+) -> Result<LoadedRecognitionInputProfile, RecognitionInputError> {
+    if sha256_hex(spec_bytes) != profile.preprocess.spec_sha256 {
         return Err(RecognitionInputError::new(
             "preprocess_hash",
             "preprocess specification SHA-256 does not match the profile",
@@ -260,7 +281,7 @@ pub fn load_recognition_input_profile(
         spec.quality.normalization_rms_tolerance = 0.000001;
         spec
     } else {
-        serde_json::from_slice(&spec_bytes)
+        serde_json::from_slice(spec_bytes)
             .map_err(|error| RecognitionInputError::protocol("preprocess_json", error))?
     };
     validate_profile(&profile, &preprocess)?;

@@ -25,7 +25,7 @@
   <main>
     <section id="console-view" class="page-view">
       <section class="overview" aria-label="系统状态">
-        <button id="sweep-results-entry" class="status-card status-entry accent-cyan" type="button" aria-controls="results-view"><span>当前扫频 <i>查看聚合结果 →</i></span><strong id="sweep-status">尚无扫频输出</strong></button>
+        <button id="sweep-results-entry" class="status-card status-entry accent-cyan" type="button" aria-controls="results-view"><span>当前扫频 <i>查看采集/识别结果 →</i></span><strong id="sweep-status">尚无扫频输出</strong></button>
         <article class="status-card accent-violet"><span>上游模型最近返回</span><strong id="qwen-status">尚无模型输出</strong></article>
         <article class="status-card accent-amber"><span>控制器</span><strong id="controller-status">等待活动对话</strong></article>
         <article class="status-card accent-green"><span>运行授权</span><strong id="cruise-status">逐步批准模式</strong></article>
@@ -61,10 +61,11 @@
 
     <section id="results-view" class="page-view results-view" hidden aria-labelledby="results-title">
       <div class="results-heading">
-        <div><p class="eyebrow">AGX AGGREGATE ARCHIVE</p><h2 id="results-title">聚合结果</h2><p>每条曲线都来自一次真实 RX 扫频；AGX 保存功率、噪声基线与候选，原始 IQ 仅在设置开启时保留。</p></div>
+        <div><p class="eyebrow">AGX AGGREGATE ARCHIVE</p><h2 id="results-title">采集与识别结果</h2><p>每条曲线都来自一次真实 RX 扫频；AGX 保存功率、噪声基线与候选，原始 IQ 仅在设置开启时保留。</p></div>
         <button id="results-back" class="ghost-button" type="button">返回运行台</button>
       </div>
-      <div class="results-workspace">
+      <div class="archive-tabs" aria-label="结果类型"><button id="archive-sweeps" class="ghost-button" type="button" aria-pressed="true">扫频采集</button><button id="archive-recognitions" class="ghost-button" type="button" aria-pressed="false">识别记录</button></div>
+      <div id="capture-archive" class="results-workspace">
         <aside class="results-list-panel">
           <div class="panel-title"><div><span>采集历史</span><small id="results-count">正在载入</small></div></div>
           <div id="results-list" class="results-list"></div>
@@ -85,6 +86,16 @@
           </div>
         </section>
       </div>
+      <section id="recognition-archive" class="recognition-archive" aria-labelledby="recognition-title" hidden>
+        <div class="section-heading"><div><h3 id="recognition-title">识别记录</h3><p>实验回放与合成演示单独标识，不代表生产准入。仅保存结果，不额外保留 IQ。</p></div><button id="recognition-refresh" class="ghost-button" type="button">最新记录</button></div>
+        <div class="results-workspace">
+          <aside class="results-list-panel"><div class="panel-title"><span id="recognition-count">正在载入</span></div><div id="recognition-list" class="results-list"></div><button id="recognition-older" class="ghost-button" type="button" hidden>更早的记录</button></aside>
+          <section class="result-detail"><p id="recognition-empty">还没有识别记录。</p><div id="recognition-content" hidden>
+            <header class="result-titlebar"><div><small id="recognition-origin"></small><h3 id="recognition-candidate"></h3><p id="recognition-status"></p></div><button id="recognition-delete" class="delete-result" type="button">删除这条识别记录</button></header>
+            <p id="recognition-meaning" class="recognition-meaning"></p><dl id="recognition-fields" class="recognition-fields"></dl><details class="recognition-evidence"><summary>模型、来源与依据</summary><dl id="recognition-evidence" class="recognition-fields"></dl></details>
+          </div></section>
+        </div>
+      </section>
     </section>
 
     <section id="corpus-view" class="page-view results-view" hidden aria-labelledby="corpus-title">

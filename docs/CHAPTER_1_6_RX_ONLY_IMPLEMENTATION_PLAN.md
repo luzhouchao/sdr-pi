@@ -60,12 +60,15 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 
 ### 还未完成
 
-- [ ] 把三字段 `candidate_id/label/confidence` 升级为有状态
-      `RecognitionObservation`，在终端和 Web 展示 classified/rejected/
-      unavailable/error、数字标签、可信名称状态、拒识原因、模型/profile、质量、
-      来源序号和时延，同时不暴露 IQ 路径或张量。
-- [ ] 将完整识别记录写入应用结果存储并提供可见的单条人工删除路径；Planner
-      只接收下一步决策所需的紧凑摘要。
+- [ ] 在实际接收闭环的终端和 Web 展示 classified/rejected/unavailable/error、
+      数字标签、名称可信状态、拒识原因、模型/profile、质量、来源和时延；不暴露
+      IQ 路径或张量。S5/S6b 实际闭环验收尚未完成。
+  - [x] S2 有状态 observation 合同已完成；S6a 已在归档 Web/终端验证全部展示字段，
+        实验回放与合成演示明确分开，未将演示算作生产准入。
+- [x] S6a 将完整识别记录写入既有应用 SQLite，提供可见单条人工删除、分页和
+      重启恢复；只返回有界摘要，不把完整 logits/IQ 送入 Planner。源码及隔离
+      Web/CLI/浏览器验收完成，临时数据已清理，未部署。见
+      [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md)。
 - [ ] 用真实识别结果验证 Spark 能解释当前接收结论并显示下一步理由，而不是把
       模型 top-1 直接写成已确认事实。
 
@@ -278,7 +281,7 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
       `RecognitionObservation`，补齐 classified/rejected/unavailable/error、
       拒识原因和校准状态；只把有界摘要传给 Planner，完整记录保留在 AGX。
       S2 已通过 Rust/Node 合同测试和保留实收报告 replay，并清理临时数据；尚未
-      部署、接入 Runner 或结果存储/UI。见
+      部署或接入 Runner；结果存储/归档 UI 已由 S6a 补上。见
       [`RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md`](RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md)。
 - [x] S1 health/profile/receipt 探测接口和候选失败关闭验证已完成；生产正向
       capability 仍须完整准入和 A1 部署证据。
@@ -310,8 +313,8 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
   `RunLocalRecognition` 要求人工批准，覆盖 step/automatic 两种模式。
 - [`sdr-agent.rs`](../raspberry-pi/sdr-agent/controller/src/bin/sdr-agent.rs) 的交互/
   巡航路径没有识别执行器；
-  [`app.js`](../raspberry-pi/sdr-agent/web-console/public/app.js) 也没有识别结果
-  渲染路径。
+  [`app.js`](../raspberry-pi/sdr-agent/web-console/public/app.js) 已有 S6a 归档结果
+  渲染和删除，实时闭环与 Spark 回灌仍待 S5/S6b。
 - [`sdrd_iio.c`](../sdr-system/sdrd/src/sdrd_iio.c) 固定启用
   `voltage0,1` scan pair，并只读验证 `voltage0` 的 `rf_port_select=A_BALANCED`；
   [`sdr.rs`](../raspberry-pi/sdr-agent/controller/src/sdr.rs) 对完整 RX1 身份失败关闭。

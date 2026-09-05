@@ -275,6 +275,18 @@ with recognition unavailable and installed services unchanged. See
 [`GPU_LEASE_S4A_INTERFACE.md`](GPU_LEASE_S4A_INTERFACE.md) and
 [`GPU_LEASE_S4A_VALIDATION_2026-09-06.md`](GPU_LEASE_S4A_VALIDATION_2026-09-06.md).
 
+## S6a application recognition archive
+
+S6a now persists full bounded S2 records in the existing application SQLite
+file and exposes validated compact archive views in Web and a local terminal
+client. Replay and inert synthetic demos are explicitly nonproduction; current
+candidate classified/rejected production imports are rejected. Restart restore,
+conflict/idempotence, manual deletion and actual browser validation passed,
+without IQ retention or Planner context injection. See
+[`RECOGNITION_ARCHIVE_S6A_INTERFACE.md`](RECOGNITION_ARCHIVE_S6A_INTERFACE.md) and
+[`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md).
+Live Runner persistence and closed-loop acceptance remain S5/S6b.
+
 ## Remaining delivery work
 
 Current completion status is maintained in
