@@ -1839,12 +1839,11 @@ fn validate_persisted_observation(observation: &ObservationSummary) -> ApiResult
         }
     }
     if observation.recognition.as_ref().is_some_and(|recognition| {
-        recognition.candidate_id.is_empty()
-            || recognition.candidate_id.len() >= 64
-            || recognition.label.is_empty()
-            || recognition.label.len() > 128
-            || !recognition.confidence.is_finite()
-            || !(0.0..=1.0).contains(&recognition.confidence)
+        recognition.validate().is_err()
+            || !observation
+                .candidates
+                .iter()
+                .any(|candidate| candidate.id == recognition.candidate_id)
     }) {
         return Err(ApiError(
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -2534,6 +2533,24 @@ async fn begin_runtime_shutdown(state: &AppState) {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn persisted_recognition_uses_s2_contract_without_promoting_history() {
+        let mut observation: super::ObservationSummary = serde_json::from_value(serde_json::json!({
+            "age_ms": 0,
+            "health": {"sdr_online": false, "can_retune": false, "can_capture_iq": false, "recognizer_available": false, "dropped_observations": 0},
+            "candidates": [{"id":"candidate-1","center_hz":433920000,"bandwidth_hz":200000,"peak_dbfs":-30.0,"snr_db":10.0,"age_ms":0}],
+            "recognition": {"schema_version":1,"candidate_id":"candidate-1","request_id":1,"session_generation":2,"observed_at_unix_ms":1,"status":"unavailable","reason":"production_admission_missing","calibration_status":"uncalibrated"}
+        })).unwrap();
+        super::validate_persisted_observation(&observation).unwrap();
+        observation.recognition.as_mut().unwrap().status =
+            sdr_agent_controller::recognition_result::RecognitionStatus::Classified;
+        assert!(super::validate_persisted_observation(&observation).is_err());
+        observation.recognition.as_mut().unwrap().status =
+            sdr_agent_controller::recognition_result::RecognitionStatus::Unavailable;
+        observation.candidates.clear();
+        assert!(super::validate_persisted_observation(&observation).is_err());
+    }
+
     use super::*;
 
     fn temporary_test_directory(label: &str) -> PathBuf {

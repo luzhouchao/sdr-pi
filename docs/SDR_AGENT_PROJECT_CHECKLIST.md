@@ -774,6 +774,9 @@ Evidence:
       candidate profile. Rust/Node tests and retained live-report replay passed;
       temporary test/build data was removed. See
       [`RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md`](RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md).
+      The dependent Web build omission was corrected separately after V1a audit
+      exposed it; 20 isolated Web tests and Clippy pass. See
+      [`RECOGNITION_RESULT_S2_WEB_CORRECTION_2026-09-06.md`](RECOGNITION_RESULT_S2_WEB_CORRECTION_2026-09-06.md).
 - [x] Define and validate `recognizer_admission_v1`, bounded six-gate evidence
       receipts and challenge-correlated `recognizer_health_v1`, including full
       model/profile/preprocess/precision identity, Worker instance and time,
