@@ -1,0 +1,273 @@
+{
+  "schema_version": 1,
+  "delivery": "S3",
+  "base_commit": "c114c72d4649d4a31fcdadcf4b07c7f040f929fa",
+  "validated_at_utc": "2026-09-05T19:02:58.380852+00:00",
+  "source_sha256": {
+    "raspberry-pi/sdr-agent/controller/src/batch_recognition.rs": "b7053e944c0e77d5262635aacd130fc32060298d7dd531f61e6c789dfdf3f481",
+    "raspberry-pi/sdr-agent/controller/src/lib.rs": "5e3ab730adc624aa4b9c37370b66f0a37ee4e22038555b1fffce895c34498dd7",
+    "raspberry-pi/sdr-agent/controller/src/main.rs": "358868a577c0e225700ca2eaa46441ced8bd386d6e0bfb252cdf7a7d2d04a70a",
+    "raspberry-pi/sdr-agent/controller/src/recognizer_admission.rs": "6cb0e671999daf642b0a825c923213e059d23fb49db70fc447e67718e0aa71fa",
+    "jetson-agx/sdrharness/scripts/amc-worker-supervisor.py": "7f7365a6bebbdc4c09c765a4de322946367f30e45c429930b2b36a6697f36827",
+    "jetson-agx/sdrharness/scripts/validate-worker-supervisor.py": "27fd73a76464731dee6314f362df10af08e4b2c604bb14533bd279d07fb2311f",
+    "jetson-agx/sdrharness/systemd/sdrharness-amc-supervisor.candidate.service": "b45398950e82ff9767000c9d8f86c14083ecd01d69f5fe8d9bf9b06b8c0eb93d",
+    "jetson-agx/sdrharness/tests/test_amc_worker_supervisor.py": "631a08f954820837f9410633b6f84fb6c95ff4d943885efa99eb2c5307785235",
+    "raspberry-pi/sdr-agent/controller/src/supervised_recognition.rs": "1bccba6dc0d72c2e37eef7a8a093a61034f7837c93ea6e5a69a8af8a96c38ad6"
+  },
+  "log_sha256": {
+    "build.log": "ef1a5fd6ba8435ab840516e09dc9f7339bb560a50045facdf8964c0f5a2a6e42",
+    "systemd-verify.log": "37b67b8be743b90f4ae72b889efccd27569518b85baa45ab368c5c6438eec3ec",
+    "supervisor-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "supervisor-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "rust-tests.log": "401bb48e0d902cf467ba7d7639c164f944e46e3280a27eb0ce3cfb1daf349454",
+    "live.log": "af0a0767fd7932754770695bb63d934e94b2fc8cee171bc62dde4891198f7618",
+    "tests.log": "acec439c408da5d890ec04b3d7ca575c6a35e1ba8bb433008125b76b19817d52",
+    "preliminary-live.log": "3ce22958ec81ee9d4a3ee63c2826383cf2724e282b29b5ea0a9b1d827f350a50",
+    "export.log": "1774e5c284b6391a959c5a71acedcea05cbd45c64a5d287be27d972ef3a91860",
+    "web-check.log": "f97d0c5311fab2c19b71a0928001cbd0ba869fc5242ea61b9a7131f5fc660681",
+    "clippy.log": "4cf86278c1e6d659943a46a3d7e3da429ac15be90f0f17742e24ef85228e7d3e"
+  },
+  "tests": {
+    "python_lifecycle_passed": 10,
+    "rust_library_passed": 89,
+    "rust_terminal_passed": 13,
+    "fixture_export_passed": true,
+    "clippy_all_targets_deny_warnings": "pass",
+    "web_all_targets_check": "pass",
+    "cargo_fmt": "pass",
+    "systemd_unit_verify_exit_code": 0
+  },
+  "real_worker": {
+    "schema_version": 1,
+    "schema_id": "worker_supervisor_s3_live_validation",
+    "synthetic_input": true,
+    "rx_bytes": 0,
+    "locked_test_read": false,
+    "recognizer_available": false,
+    "model_bytes": 32768,
+    "model_bytes_sha256": "937c7c9497ca9f7990ee4256c617d5c57739e66da3da7498de1ab9d1618d2db2",
+    "controller_sha256": "72f1bf1ed7cb22bd977a28416311a9fe1855049070f8477816a6215a638a5fd5",
+    "stages": [
+      {
+        "stage": "native_success",
+        "result_status": "unavailable",
+        "windows": 4,
+        "timing": {
+          "capture_us": 500,
+          "inference_us": 152112,
+          "worker_total_us": 155640
+        },
+        "health": {
+          "schema_version": 1,
+          "operation": "health",
+          "instance_id": "f3012c1331c050cd9c3397f037cf26cab4bba1b96caf7c7d6a844b5438ef2bd0",
+          "worker_instance_id": "2094ebd2320b8e03699a3c96ff26e3bcd3d86eea0ed3129ade9052e588fc59ca",
+          "ready": true,
+          "recognizer_available": false,
+          "minimum_generation": 1,
+          "active": null,
+          "queue_depth": 0,
+          "queue_capacity": 1,
+          "worker_pid": 290599,
+          "fault": null,
+          "metrics": {
+            "submitted": 1,
+            "completed": 1,
+            "busy": 0,
+            "cancelled": 0,
+            "expired": 0,
+            "failed": 0,
+            "crashes": 0,
+            "restarts": 0,
+            "removed": 1,
+            "queue_wait_us": 4220,
+            "total_us": 166809,
+            "connection_drops": 0,
+            "lock_wait_us": 14
+          }
+        }
+      },
+      {
+        "stage": "deadline_and_restart",
+        "active_status": "deadline",
+        "queued_status": "deadline",
+        "busy_rejected": true,
+        "health": {
+          "schema_version": 1,
+          "operation": "health",
+          "instance_id": "f3012c1331c050cd9c3397f037cf26cab4bba1b96caf7c7d6a844b5438ef2bd0",
+          "worker_instance_id": "7e0a109e52dec15eb0fedf1154c06651b6e5bb60f2dc8cc2676cd8693595aca9",
+          "ready": true,
+          "recognizer_available": false,
+          "minimum_generation": 102,
+          "active": null,
+          "queue_depth": 0,
+          "queue_capacity": 1,
+          "worker_pid": 290661,
+          "fault": null,
+          "metrics": {
+            "submitted": 3,
+            "completed": 1,
+            "busy": 1,
+            "cancelled": 0,
+            "expired": 2,
+            "failed": 0,
+            "crashes": 0,
+            "restarts": 1,
+            "removed": 3,
+            "queue_wait_us": 8292,
+            "total_us": 1494903,
+            "connection_drops": 0,
+            "lock_wait_us": 14
+          }
+        }
+      },
+      {
+        "stage": "success_after_deadline",
+        "result_status": "unavailable",
+        "windows": 4,
+        "timing": {
+          "capture_us": 500,
+          "inference_us": 152337,
+          "worker_total_us": 156085
+        }
+      },
+      {
+        "stage": "native_cancel_confirmed",
+        "health": {
+          "schema_version": 1,
+          "operation": "health",
+          "instance_id": "f3012c1331c050cd9c3397f037cf26cab4bba1b96caf7c7d6a844b5438ef2bd0",
+          "worker_instance_id": "bb2a263c3f606a674feff18f48d76a048666a5f9147ba90ba2f69afaab0d97fe",
+          "ready": true,
+          "recognizer_available": false,
+          "minimum_generation": 104,
+          "active": null,
+          "queue_depth": 0,
+          "queue_capacity": 1,
+          "worker_pid": 290730,
+          "fault": null,
+          "metrics": {
+            "submitted": 6,
+            "completed": 2,
+            "busy": 1,
+            "cancelled": 2,
+            "expired": 2,
+            "failed": 0,
+            "crashes": 0,
+            "restarts": 2,
+            "removed": 6,
+            "queue_wait_us": 19114,
+            "total_us": 1924500,
+            "connection_drops": 0,
+            "lock_wait_us": 14
+          }
+        }
+      },
+      {
+        "stage": "supervisor_restart_cleanup",
+        "health": {
+          "schema_version": 1,
+          "operation": "health",
+          "instance_id": "16cd1c3f8a9f6f2523a6b7106c8a6c1c227efb2d00d1131867a2d2471423abf9",
+          "worker_instance_id": "62f71a6410bc16c59c5dcbdc4d40fe3313c199b176ddfb1a0d1a1543aaf47b78",
+          "ready": true,
+          "recognizer_available": false,
+          "minimum_generation": 1,
+          "active": null,
+          "queue_depth": 0,
+          "queue_capacity": 1,
+          "worker_pid": 290776,
+          "fault": null,
+          "metrics": {
+            "submitted": 0,
+            "completed": 0,
+            "busy": 0,
+            "cancelled": 0,
+            "expired": 0,
+            "failed": 0,
+            "crashes": 0,
+            "restarts": 0,
+            "removed": 2,
+            "queue_wait_us": 0,
+            "total_us": 0,
+            "connection_drops": 0,
+            "lock_wait_us": 12
+          }
+        },
+        "stale_instance_rejected": true
+      },
+      {
+        "stage": "native_success_after_supervisor_restart",
+        "result_status": "unavailable",
+        "windows": 4,
+        "timing": {
+          "capture_us": 500,
+          "inference_us": 151186,
+          "worker_total_us": 154626
+        },
+        "health": {
+          "schema_version": 1,
+          "operation": "health",
+          "instance_id": "16cd1c3f8a9f6f2523a6b7106c8a6c1c227efb2d00d1131867a2d2471423abf9",
+          "worker_instance_id": "62f71a6410bc16c59c5dcbdc4d40fe3313c199b176ddfb1a0d1a1543aaf47b78",
+          "ready": true,
+          "recognizer_available": false,
+          "minimum_generation": 1,
+          "active": null,
+          "queue_depth": 0,
+          "queue_capacity": 1,
+          "worker_pid": 290776,
+          "fault": null,
+          "metrics": {
+            "submitted": 1,
+            "completed": 1,
+            "busy": 0,
+            "cancelled": 0,
+            "expired": 0,
+            "failed": 0,
+            "crashes": 0,
+            "restarts": 0,
+            "removed": 3,
+            "queue_wait_us": 4191,
+            "total_us": 167001,
+            "connection_drops": 0,
+            "lock_wait_us": 12
+          }
+        }
+      }
+    ],
+    "status": "pass",
+    "cleanup": {
+      "worker_pids": [
+        290599,
+        290661,
+        290730,
+        290776
+      ],
+      "workers_dead": true,
+      "sockets_removed": true,
+      "incoming_and_owned_empty": true,
+      "supervisor_exit_codes": [
+        -9,
+        0
+      ]
+    }
+  },
+  "governance": {
+    "installed_services_changed": false,
+    "recognizer_available": false,
+    "locked_test_read": false,
+    "rf_capture_bytes": 0,
+    "training": false,
+    "production_calibration_frozen": false
+  },
+  "cleanup": {
+    "exact_directory": "/var/tmp/sdrharness-dev/s3-906a",
+    "active_feature_processes": [],
+    "file_count": 3266,
+    "file_bytes": 1311175839,
+    "user_results_corpus_assets_removed": false,
+    "directory_absent_verified": true
+  }
+}

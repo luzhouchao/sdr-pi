@@ -11,6 +11,7 @@ pub mod recognizer;
 pub mod recognizer_admission;
 pub mod runner;
 pub mod sdr;
+pub mod supervised_recognition;
 pub mod sweep;
 
 use planner::{Planner, PlannerError};

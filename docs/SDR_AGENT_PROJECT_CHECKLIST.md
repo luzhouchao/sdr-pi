@@ -17,7 +17,7 @@ this file retains the detailed delivery and evidence ledger.
 以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
 编号表示范围，不表示施工先后；实际顺序见
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
-S2 及其 Web 依赖校验修正完成；V1a 工具/规范和隔离 Web 验证完成，生产服务未替换。
+S1/S2/V1a 已完成；S3 生命周期源码和有限真实 Worker 验证完成，生产服务未替换。
 
 - [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
 - [x] AGX 扫频/精查、结果存储和 RX 语料基础、split 隔离完成（第1/4/5章）。
@@ -25,7 +25,7 @@ S2 及其 Web 依赖校验修正完成；V1a 工具/规范和隔离 Web 验证�
 - [x] 共享 RMS/四窗/full-logit/mean-logit runtime、golden 和有限实收故障清理完成。
 - [x] S1：准入/health/人工批准源码、测试及隔离真实 Worker 验证完成；生产服务未替换。
 - [x] S2：统一完整结果与 Planner 紧凑 observation、四状态/校准身份、RF-v1 batch 严格转换和真实报告 replay 完成；生产阈值未冻结，能力仍为 false。
-- [ ] S3：生产 Worker 队列、整批 deadline、取消确认、强杀/重启清理和指标。
+- [x] S3：Worker 单等待位、整批 deadline、取消确认、强杀/重启清理和指标完成源码及有限真实候选验证；未部署，能力仍为 false。
 - [ ] S4：共享 GPU 调度与持续资源验收。
   - [ ] S4a：推理租约、串行执行、取消/故障释放和实机正确性。
   - [ ] S4b：最终代表性负载下的显存/RSS/队列/热稳定性证据。
@@ -764,6 +764,16 @@ Evidence:
       [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
 - [ ] Measure production Worker queue drops, cancellation, concurrency and
       sustained thermal behavior.
+  - [x] S3 lifecycle implementation and finite actual RF-v1 Worker validation:
+        one active/four-window batch plus one waiting slot, whole-batch and
+        independent queue deadlines, reserved control connections, confirmed
+        cancellation, child/supervisor kill and restart fencing, exact orphan
+        cleanup and bounded metrics. Rust replay/health/cancel and negative
+        tests passed; feature processes and temporary data were removed. See
+        [`WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md`](WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md).
+  - [ ] S4b/A1: sustained representative resources/thermal evidence and admitted
+        production lifecycle deployment; finite candidate tests do not complete
+        those conditions.
 - [ ] Define and live-validate the shared AGX CUDA admission policy for the
       resident Spark-X2.5-4B Planner and Mamba Worker. For production v1,
       serialize active inference, bound queue/deadline/memory/thermal use, and
@@ -874,11 +884,11 @@ Evidence:
 
 ## Current next milestone
 
-S2 (including its dependent Web correction) and V1a tools/specification are
-complete. V1a passed isolated native Web/HTTP/browser and deletion validation;
-installed services remain unchanged and the actual recognizer stays unavailable.
-Actual independently reviewed labels/coverage (V1b), calibration and admission
-remain open. The next default independent unit is S3 Worker lifecycle.
+S1/S2/V1a and S3 lifecycle source/isolated real-Worker validation are complete.
+Installed services remain unchanged and the actual recognizer stays unavailable.
+The next default independent unit is S4a shared GPU inference leasing. Sustained
+resources, Runner/joint stop, actual independent labels, calibration and
+production admission remain open.
 
 Execution order, prerequisites and permitted scheduling changes are maintained
 only in

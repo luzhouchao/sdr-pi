@@ -284,6 +284,11 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
       capability 仍须完整准入和 A1 部署证据。
 - [ ] 实现 production Worker queue=1、整批 deadline、cancel/drop 指标、
       crash/restart 清理和持续 thermal soak。
+  - [x] S3 生命周期源码及有限真实 epoch-10 Worker 验证完成：单活动批次/单等待位、
+        整批与独立队列 deadline、取消确认、实例/generation 隔离、进程强杀/重启
+        清理和指标；临时数据已清理。见
+        [`WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md`](WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md)。
+  - [ ] S4b/A1：代表性持续资源/thermal 验收及已准入生产部署；S3 未替换服务。
 - [ ] 让 Spark 与 Mamba 同时常驻但活跃推理严格按 `Spark -> Mamba -> Spark`
       串行；验证取消释放 gate、迟到结果不能污染下一 generation。
 - [ ] 部署可回滚的生产 Worker，并在冻结的频率/增益/session 矩阵上完成 RX-only

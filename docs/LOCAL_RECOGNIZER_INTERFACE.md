@@ -112,9 +112,10 @@ private feature spool and socket. The CLI checks free space and records exact
 capture bounds and paths before radio work. SIGINT/SIGTERM discards a pending
 batch or late Worker reply and cleans the spool after the bounded call;
 `--mode cancel --session-generation N` remains the direct in-flight radio stop.
-Spool unlink failures are explicit errors. Forced process death/restart cleanup,
-production Worker cancellation and the Runner's shared GPU gate are separate
-admission work, not capabilities enabled by this extension.
+Spool unlink failures are explicit errors. The optional S3 supervised path below
+now adds process death/restart cleanup and Worker cancellation. The standalone
+extension does not provide them; Runner integration/shared GPU admission remain
+separate work.
 
 See [`RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md`](RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md)
 for golden, fault-injection and real RX1 evidence.
@@ -244,6 +245,22 @@ for field semantics, compatibility changes and replay/negative-test evidence.
 S2 does not deploy services, execute the production Runner, or implement result
 storage/UI. Old nonempty three-field Planner recognition objects are rejected;
 both protocol sides must be deployed together at A1.
+
+## S3 supervised whole-batch lifecycle
+
+The optional supervised engineering path now owns one active four-window batch
+and one waiting slot, a monotonic whole-batch deadline, reserved control socket,
+confirmed queued/active cancellation, child/supervisor restart fencing and
+verified transient-file cleanup. It wraps the unchanged frozen RF-v1 Worker;
+production capability stays false. The Rust Adapter and receive-free replay/
+health/cancel commands passed finite actual AGX Worker fault validation.
+
+See [`WORKER_SUPERVISOR_S3_INTERFACE.md`](WORKER_SUPERVISOR_S3_INTERFACE.md) and
+[`WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md`](WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md).
+The earlier standalone per-window command remains experimental. Supervised
+callers use `--recognizer-supervisor-root`; they do not bypass the supervisor's
+private child socket. Installed services, shared GPU gating, Runner execution,
+joined SDR/Worker `/stop` and sustained thermal acceptance remain separate work.
 
 ## Remaining delivery work
 

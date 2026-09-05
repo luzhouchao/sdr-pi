@@ -1,0 +1,42 @@
+[Unit]
+Description=Bounded RF-v1 candidate Worker supervisor (not production admission)
+ConditionPathExists=/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python
+ConditionPathExists=/home/jetson/sdrharness/jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=jetson
+Group=jetson
+WorkingDirectory=/home/jetson/sdrharness
+RuntimeDirectory=sdr-agent/recognizer-supervised
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=restart
+Environment=PYTHONNOUSERSITE=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=TRITON_CACHE_DIR=/run/sdr-agent/recognizer-supervised/triton-cache
+Environment=CUDA_CACHE_PATH=/run/sdr-agent/recognizer-supervised/cuda-cache
+ExecStart=/usr/bin/python3 /home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc-worker-supervisor.py --runtime-root /run/sdr-agent/recognizer-supervised --max-batches 128 --max-restarts 4 --lifetime-seconds 600
+Restart=on-failure
+RestartSec=3
+KillMode=control-group
+TimeoutStopSec=10
+UMask=0077
+MemoryHigh=2G
+MemoryMax=3G
+CPUQuota=150%
+TasksMax=128
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX
+
+# Deliberately no [Install]. This finite candidate template was not installed.
+# Production receipt/profile, shared GPU gate and admitted deployment remain separate.

@@ -302,7 +302,7 @@ impl RecognizerCapability for UnixRecognizerCapability {
     }
 }
 
-fn connect_bounded(path: &Path, deadline: Instant) -> Result<UnixStream, &'static str> {
+pub(crate) fn connect_bounded(path: &Path, deadline: Instant) -> Result<UnixStream, &'static str> {
     let path = path.as_os_str().as_bytes();
     // SAFETY: zero is a valid initialization for sockaddr_un; the checked path
     // bytes and AF_UNIX family are filled before connect.

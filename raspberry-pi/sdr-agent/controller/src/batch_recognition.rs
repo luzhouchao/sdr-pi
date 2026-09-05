@@ -116,54 +116,8 @@ impl<R: LocalRecognizer> IntegrationBatchRecognitionEngine<R> {
                         "batch recognition cancelled",
                     ));
                 }
-                let worker_request_id = batch
-                    .summary
-                    .request_id
-                    .checked_add(u64::from(quality.window_index))
-                    .ok_or_else(|| {
-                        BatchRecognitionError::new(
-                            "worker_request_id",
-                            "per-window recognizer request ID overflow",
-                        )
-                    })?;
-                let request = RecognitionRequest {
-                    rf_v1: loaded.is_rf_v1().then(|| RfV1WindowContract {
-                        profile_sha256: loaded.manifest_sha256.clone(),
-                        preprocess_sha256: loaded.profile.preprocess.spec_sha256.clone(),
-                        checkpoint_sha256: loaded.profile.model.model_sha256.clone(),
-                        batch_sha256: batch.summary.model_bytes_sha256.clone(),
-                        batch_request_id: batch.summary.request_id,
-                        source_sweep_id: batch.summary.source_sweep_id.clone(),
-                        source_request_id: batch.summary.source_request_id,
-                        source_session_generation: batch.summary.source_session_generation,
-                        source_sequence: batch.summary.source_sequence,
-                        capture_request_id: batch.summary.capture.sdrd_request_id,
-                        capture_sequence: batch.summary.capture.sequence,
-                        window_index: quality.window_index,
-                    }),
-                    protocol_version: RECOGNIZER_PROTOCOL_VERSION,
-                    request_id: worker_request_id,
-                    session_generation: batch.summary.session_generation,
-                    candidate_id: batch.summary.candidate_id.clone(),
-                    iq: BoundedIqRef {
-                        storage: IqFileRef {
-                            path: path.clone(),
-                            offset_bytes: quality.output_offset_bytes,
-                            length_bytes: quality.output_length_bytes,
-                        },
-                        sample_format: IqSampleFormat::F32Le,
-                        layout: IqLayout::PlanarIq,
-                        normalization: if loaded.is_rf_v1() {
-                            IqNormalization::CaptureUnitRms
-                        } else {
-                            IqNormalization::UnitRms
-                        },
-                        samples_per_channel: batch.summary.samples_per_window,
-                        sample_rate_hz: batch.summary.sample_rate_hz,
-                        center_hz: batch.summary.center_hz,
-                    },
-                    max_latency_ms: loaded.profile.capture.model_deadline_ms,
-                };
+                let request = window_request(loaded, &batch.summary, quality, &path)?;
+                let worker_request_id = request.request_id;
                 let recognition = self.recognizer.classify(&request)?;
                 if cancelled() {
                     return Err(BatchRecognitionError::new(
@@ -217,7 +171,63 @@ impl<R: LocalRecognizer> IntegrationBatchRecognitionEngine<R> {
     }
 }
 
-fn validate_integration_batch(
+pub(crate) fn window_request(
+    loaded: &LoadedRecognitionInputProfile,
+    summary: &ModelReadyBatchSummary,
+    quality: &crate::recognition_input::ModelWindowQuality,
+    path: &str,
+) -> Result<RecognitionRequest, BatchRecognitionError> {
+    let worker_request_id = summary
+        .request_id
+        .checked_add(u64::from(quality.window_index))
+        .ok_or_else(|| {
+            BatchRecognitionError::new(
+                "worker_request_id",
+                "per-window recognizer request ID overflow",
+            )
+        })?;
+    let request = RecognitionRequest {
+        rf_v1: loaded.is_rf_v1().then(|| RfV1WindowContract {
+            profile_sha256: loaded.manifest_sha256.clone(),
+            preprocess_sha256: loaded.profile.preprocess.spec_sha256.clone(),
+            checkpoint_sha256: loaded.profile.model.model_sha256.clone(),
+            batch_sha256: summary.model_bytes_sha256.clone(),
+            batch_request_id: summary.request_id,
+            source_sweep_id: summary.source_sweep_id.clone(),
+            source_request_id: summary.source_request_id,
+            source_session_generation: summary.source_session_generation,
+            source_sequence: summary.source_sequence,
+            capture_request_id: summary.capture.sdrd_request_id,
+            capture_sequence: summary.capture.sequence,
+            window_index: quality.window_index,
+        }),
+        protocol_version: RECOGNIZER_PROTOCOL_VERSION,
+        request_id: worker_request_id,
+        session_generation: summary.session_generation,
+        candidate_id: summary.candidate_id.clone(),
+        iq: BoundedIqRef {
+            storage: IqFileRef {
+                path: path.to_owned(),
+                offset_bytes: quality.output_offset_bytes,
+                length_bytes: quality.output_length_bytes,
+            },
+            sample_format: IqSampleFormat::F32Le,
+            layout: IqLayout::PlanarIq,
+            normalization: if loaded.is_rf_v1() {
+                IqNormalization::CaptureUnitRms
+            } else {
+                IqNormalization::UnitRms
+            },
+            samples_per_channel: summary.samples_per_window,
+            sample_rate_hz: summary.sample_rate_hz,
+            center_hz: summary.center_hz,
+        },
+        max_latency_ms: loaded.profile.capture.model_deadline_ms,
+    };
+    Ok(request)
+}
+
+pub(crate) fn validate_integration_batch(
     loaded: &LoadedRecognitionInputProfile,
     batch: &ModelReadyBatch,
 ) -> Result<(), BatchRecognitionError> {
@@ -518,7 +528,7 @@ impl fmt::Display for BatchRecognitionError {
 impl Error for BatchRecognitionError {}
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
     use crate::execution::{ExecutionHealthMetadata, ExecutionTimeoutMetadata};
     use crate::recognition_input::{
@@ -544,7 +554,7 @@ mod tests {
         .unwrap()
     }
 
-    fn batch(profile: &LoadedRecognitionInputProfile) -> ModelReadyBatch {
+    pub(crate) fn batch(profile: &LoadedRecognitionInputProfile) -> ModelReadyBatch {
         let target = RecognitionTarget {
             schema_version: 1,
             candidate_id: "candidate-1".to_owned(),

@@ -71,6 +71,7 @@ fn run() -> AppResult<()> {
     let mut survey_gain_db = 20_i16;
     let mut sweep_point_timeout_ms = 250_u32;
     let mut recognition_profile = None;
+    let mut supervisor_root: Option<PathBuf> = None;
     let mut recognition_target = None;
     let mut sigmf_directory = None;
     let mut repository_root = PathBuf::from(".");
@@ -98,6 +99,7 @@ fn run() -> AppResult<()> {
             "--session-generation" => session_generation = Some(value.parse::<u64>()?),
             "--survey-gain-db" => survey_gain_db = value.parse::<i16>()?,
             "--sweep-point-timeout-ms" => sweep_point_timeout_ms = value.parse::<u32>()?,
+            "--recognizer-supervisor-root" => supervisor_root = Some(PathBuf::from(value)),
             "--recognition-profile" => recognition_profile = Some(PathBuf::from(value)),
             "--recognition-target" => recognition_target = Some(PathBuf::from(value)),
             "--sigmf-directory" => sigmf_directory = Some(PathBuf::from(value)),
@@ -128,6 +130,9 @@ fn run() -> AppResult<()> {
             | "observe"
             | "recognize"
             | "recognizer-health"
+            | "recognize-supervised-replay"
+            | "recognizer-supervisor-health"
+            | "recognizer-supervisor-cancel"
             | "recognize-live"
             | "derive-recognition-target"
             | "prepare-recognition-batch"
@@ -144,6 +149,70 @@ fn run() -> AppResult<()> {
     }
     if sigmf_directory.is_some() && mode != "sweep" {
         return Err(invalid_input("--sigmf-directory is valid only in sweep mode").into());
+    }
+
+    if mode == "recognize-supervised-replay" {
+        let root = supervisor_root
+            .ok_or_else(|| invalid_input("replay requires --recognizer-supervisor-root"))?;
+        let profile = recognition_profile
+            .ok_or_else(|| invalid_input("replay requires --recognition-profile"))?;
+        let loaded = load_recognition_input_profile(&repository_root, &profile)?;
+        let batch = sdr_agent_controller::supervised_recognition::read_replay(
+            &read_request(&request_path, 65536)?,
+            std::path::Path::new(&recognizer_spool_root),
+        )?;
+        unsafe {
+            libc::signal(
+                libc::SIGINT,
+                cancel_batch_signal as *const () as libc::sighandler_t,
+            );
+            libc::signal(
+                libc::SIGTERM,
+                cancel_batch_signal as *const () as libc::sighandler_t,
+            );
+        }
+        let report = sdr_agent_controller::supervised_recognition::run_supervised_batch(
+            &loaded,
+            batch,
+            &root,
+            || BATCH_CANCELLED.load(std::sync::atomic::Ordering::Relaxed),
+        )?;
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)?
+            .as_millis() as u64;
+        let result = RecognitionResult::from_experimental_batch(&loaded, report, now)
+            .map_err(invalid_input)?;
+        println!(
+            "{}",
+            serde_json::to_string(
+                &serde_json::json!({"mode":"supervised_replay","synthetic_input":true,"result":result})
+            )?
+        );
+        return Ok(());
+    }
+
+    if mode == "recognizer-supervisor-health" || mode == "recognizer-supervisor-cancel" {
+        let root = supervisor_root.ok_or_else(|| {
+            invalid_input("supervisor mode requires --recognizer-supervisor-root")
+        })?;
+        if mode == "recognizer-supervisor-health" {
+            println!(
+                "{}",
+                serde_json::to_string(&sdr_agent_controller::supervised_recognition::health(
+                    &root
+                )?)?
+            );
+        } else {
+            let request: sdr_agent_controller::supervised_recognition::SupervisorCancel =
+                serde_json::from_slice(&read_request(&request_path, 4096)?)?;
+            println!(
+                "{}",
+                serde_json::to_string(&sdr_agent_controller::supervised_recognition::cancel(
+                    &root, &request
+                )?)?
+            );
+        }
+        return Ok(());
     }
 
     if mode == "recognizer-health" {
@@ -227,6 +296,19 @@ fn run() -> AppResult<()> {
             loaded.profile.capture.control_deadline_ms,
             loaded.profile.capture.capture_timeout_ms,
         );
+        if let Some(root) = &supervisor_root {
+            let health = sdr_agent_controller::supervised_recognition::health(root)?;
+            if !loaded.is_rf_v1()
+                || !health.ready
+                || health.fault.is_some()
+                || session_generation < health.minimum_generation
+            {
+                return Err(
+                    invalid_input("supervisor is unavailable for this RF-v1 generation").into(),
+                );
+            }
+            recognizer_spool_root = root.join("incoming").to_string_lossy().into_owned();
+        }
         // Space and exact data paths are recorded before any radio work.
         sdr_agent_controller::batch_recognition::prepare_batch_spool(
             std::path::Path::new(&recognizer_spool_root),
@@ -264,16 +346,25 @@ fn run() -> AppResult<()> {
         if mode == "prepare-recognition-batch" {
             println!("{}", serde_json::to_string(&batch.summary)?);
         } else {
-            let recognizer = UnixRecognizerAdapter::new(
-                recognizer_socket,
-                recognizer_spool_root.clone(),
-                Duration::from_millis(recognizer_timeout_ms),
-            );
-            let mut engine =
-                IntegrationBatchRecognitionEngine::new(recognizer, recognizer_spool_root);
-            let report = engine.run_with_cancel(&loaded, batch, || {
-                BATCH_CANCELLED.load(std::sync::atomic::Ordering::Relaxed)
-            })?;
+            let report = if let Some(root) = &supervisor_root {
+                sdr_agent_controller::supervised_recognition::run_supervised_batch(
+                    &loaded,
+                    batch,
+                    root,
+                    || BATCH_CANCELLED.load(std::sync::atomic::Ordering::Relaxed),
+                )?
+            } else {
+                let recognizer = UnixRecognizerAdapter::new(
+                    recognizer_socket,
+                    recognizer_spool_root.clone(),
+                    Duration::from_millis(recognizer_timeout_ms),
+                );
+                let mut engine =
+                    IntegrationBatchRecognitionEngine::new(recognizer, recognizer_spool_root);
+                engine.run_with_cancel(&loaded, batch, || {
+                    BATCH_CANCELLED.load(std::sync::atomic::Ordering::Relaxed)
+                })?
+            };
             if loaded.is_rf_v1() {
                 let observed_at = std::time::SystemTime::now()
                     .duration_since(std::time::UNIX_EPOCH)?
