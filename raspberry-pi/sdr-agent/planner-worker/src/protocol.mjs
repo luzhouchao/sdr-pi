@@ -1,3 +1,4 @@
+import { validateRecognition } from "./recognition-observation.mjs";
 export const PROTOCOL_VERSION = 1;
 export const MAX_FRAME_BYTES = 32 * 1024;
 export const MAX_INSTRUCTION_BYTES = 1024;
@@ -49,6 +50,14 @@ export function parseRequest(frame) {
   }
   validateObservation(request.observation);
   validateLimits(request.limits);
+  if (request.observation.recognition !== undefined) {
+    validateRecognition(
+      request.observation.recognition,
+      request.session_generation,
+      request.limits.max_observation_age_ms,
+      request.observation.candidates,
+    );
+  }
   return request;
 }
 
@@ -243,17 +252,6 @@ function validateObservation(observation) {
       }
       previousCenterHz = point[0];
     }
-  }
-  if (observation.recognition !== undefined) {
-    requirePlainObject(observation.recognition, "observation.recognition");
-    requireExactKeys(
-      observation.recognition,
-      ["candidate_id", "label", "confidence"],
-      "observation.recognition",
-    );
-    requireText(observation.recognition.candidate_id, "recognition.candidate_id", 64);
-    requireText(observation.recognition.label, "recognition.label", 128);
-    requireFinite(observation.recognition.confidence, "recognition.confidence");
   }
 }
 

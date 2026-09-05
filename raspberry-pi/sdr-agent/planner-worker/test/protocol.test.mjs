@@ -184,3 +184,58 @@ test("forces submit_plan with the OpenAI Responses tool shape", () => {
   });
   assert.equal(Object.hasOwn(payload, "tool_choice"), false);
 });
+
+function recognition() {
+  return {
+    schema_version: 1, candidate_id: "candidate-1", request_id: 6,
+    session_generation: 3, observed_at_unix_ms: Date.now(), status: "unavailable",
+    reason: "production_admission_missing", class: null, calibrated_confidence: null,
+    calibration_status: "uncalibrated", decision_references: null,
+    identity: { model_id: "synthetic-only", checkpoint_sha256: "a".repeat(64),
+      profile_id: "synthetic-profile", profile_sha256: "b".repeat(64),
+      preprocess_id: "rf_preprocess_v1", preprocess_sha256: "c".repeat(64),
+      compute: "cuda_fp16_autocast", aggregation: "float64_arithmetic_mean_logits_then_softmax" },
+    source: { sweep_id: "inspect-1", request_id: 4, session_generation: 3,
+      sequence: 30, capture_request_id: 5, capture_sequence: 31 },
+    quality: { window_count: 4, window_agreement: 0.25, clipped_samples: 0,
+      dropped_samples: 0, overflow: false, healthy: true },
+    timing: { capture_us: 500, worker_total_us: 12, inference_us: 4 },
+  };
+}
+function parseRecognition(r) {
+  const value = request(); value.observation.recognition = r;
+  return parseRequest(JSON.stringify(value));
+}
+test("recognition four states preserve calibrated decision and provisional name semantics", () => {
+  const r = recognition();
+  parseRecognition(r);
+  r.status = "error"; r.reason = "worker_timeout"; parseRecognition(r);
+  r.status = "rejected"; r.reason = "low_confidence";
+  assert.throws(() => parseRecognition(r));
+  const ref = { id: "synthetic-only", sha256: "d".repeat(64) };
+  r.calibration_status = "frozen";
+  r.decision_references = { calibration: ref, rejection: ref, admission: ref };
+  parseRecognition(r);
+  r.status = "classified"; r.reason = null; r.calibrated_confidence = 0.75;
+  r.class = { numeric_id: 1, name: "synthetic", name_status: "provisional", name_evidence: null };
+  parseRecognition(r);
+  r.class.name_status = "verified"; assert.throws(() => parseRecognition(r));
+  r.class.name_evidence = ref; parseRecognition(r);
+  r.class.numeric_id = 24; assert.throws(() => parseRecognition(r));
+});
+test("recognition rejects stale, mixed, oversized and internal Planner data", () => {
+  for (const mutate of [
+    r => r.session_generation++, r => r.observed_at_unix_ms -= 10000,
+    r => r.observed_at_unix_ms += 10000, r => r.candidate_id = "absent",
+    r => r.source.session_generation = 0, r => r.source.capture_sequence = 30,
+    r => r.identity.compute = "fp32", r => r.identity.checkpoint_sha256 = "bad",
+    r => r.identity.path = "/private/model", r => r.logits = [1,2],
+    r => r.tensor = [], r => r.experimental_batch = {}, r => r.iq_path = "/private/iq",
+    r => r.status = "classified", r => r.class = { numeric_id: 1 },
+    r => r.calibrated_confidence = 0.99, r => r.quality.window_agreement = 0.3,
+    r => r.timing.inference_us = 13, r => r.reason = "x".repeat(4097),
+    r => r.reason = "/tmp/worker.log", r => r.status = "ok",
+    r => r.calibration_status = "frozen", r => r.source.extra = true,
+  ]) { const r = recognition(); mutate(r); assert.throws(() => parseRecognition(r)); }
+  assert.throws(() => parseRecognition({ candidate_id: "candidate-1", label: "BPSK", confidence: 0.99 }));
+});

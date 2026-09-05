@@ -271,9 +271,12 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
       完成 golden、故障/取消测试和 RX1 实收与清理；仍为 integration_only。
 - [ ] 实现置信度校准与 noise/unknown/低质量/低置信度拒识，报告 rejection rate、
       false acceptance 和 calibration error；生产准入仍缺独立 known-RF/OOD 标签。
-- [ ] 将已有逐窗 logits/关联字段和 AGX mean-logit 结果汇入统一的
+- [x] 将已有逐窗 logits/关联字段和 AGX mean-logit 结果汇入统一的
       `RecognitionObservation`，补齐 classified/rejected/unavailable/error、
       拒识原因和校准状态；只把有界摘要传给 Planner，完整记录保留在 AGX。
+      S2 已通过 Rust/Node 合同测试和保留实收报告 replay，并清理临时数据；尚未
+      部署、接入 Runner 或结果存储/UI。见
+      [`RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md`](RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md)。
 - [x] S1 health/profile/receipt 探测接口和候选失败关闭验证已完成；生产正向
       capability 仍须完整准入和 A1 部署证据。
 - [ ] 实现 production Worker queue=1、整批 deadline、cancel/drop 指标、
@@ -286,7 +289,8 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 ## 第1—3章审计依据
 
 - [`protocol.rs`](../raspberry-pi/sdr-agent/controller/src/protocol.rs) 的
-  `RecognitionSummary` 当前只有三字段。
+  `RecognitionSummary` 已在 S2 替换为独立的四状态 `RecognitionObservation`，
+  Rust/Node 同步严格校验；部署与真实 Spark 回灌留在 S5/A1。
 - [`runner.rs`](../raspberry-pi/sdr-agent/controller/src/runner.rs) 已通过 S1 实时探测
   生成 `recognizer_available`；识别执行器仍未接入，受控测试的批准计划仍为
   `planned_only`，真实候选因未准入而先被拒绝。

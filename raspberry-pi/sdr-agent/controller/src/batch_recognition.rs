@@ -283,7 +283,7 @@ fn validate_integration_batch(
     Ok(())
 }
 
-fn mean_logit_summary(
+pub(crate) fn mean_logit_summary(
     windows: &[IntegrationWindowRecognition],
 ) -> Result<MeanLogitSummary, BatchRecognitionError> {
     if windows.len() != 4 {
@@ -725,6 +725,15 @@ mod tests {
                 "cancel" => self.cancelled.set(true),
                 _ => {}
             }
+            if self.fault == "none" {
+                let top = if index < 3 { 0 } else { 1 };
+                result.label = format!("provisional:{top:02}");
+                result.confidence = (1.0
+                    / logits
+                        .iter()
+                        .map(|v| (f64::from(*v) - f64::from(logits[top])).exp())
+                        .sum::<f64>()) as f32;
+            }
             result.rf_v1 = Some(crate::recognizer::RfV1WindowOutput {
                 contract,
                 logits,
@@ -777,6 +786,7 @@ mod tests {
             if fault == "none" {
                 let report = result.unwrap();
                 assert!(report.vote.is_none());
+                crate::recognition_result::tests::verify_batch_result(&profile, &report);
                 let mean = report.mean_logit.unwrap();
                 assert_eq!(mean.numeric_class_id, 1);
                 assert_eq!(mean.mean_logits[0], 0.75);

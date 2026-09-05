@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "schema_id": "recognition_result_s2_validation",
+  "date": "2026-09-06",
+  "base_commit": "4e461f1f7ce40f1f6a497ebe1da5a2e0abce502d",
+  "delivery": "S2 only: source/interface and retained real-report replay; no deployment",
+  "verification": {
+    "rust_library_tests_passed": 88,
+    "rust_terminal_tests_passed": 13,
+    "node_tests_passed": 52,
+    "cargo_fmt_check": "pass",
+    "clippy_all_targets_deny_warnings": "pass",
+    "retained_live_batch": "docs/RF_V1_RUNTIME_PARITY_AUDIT_2026-09-05.json#/cases/0/report",
+    "batch_negative_cases": 23,
+    "signed_zero_tie": "pass",
+    "full_candidate_decision_forgery": "rejected",
+    "error_record_roundtrip": "pass",
+    "log_hashes_before_cleanup": {
+      "rust-tests.log": {
+        "sha256": "83f8eceb897ce61a0dadf56edfeeab6bc893b930286fba4aea9012c6abfd3e03",
+        "bytes": 9319
+      },
+      "node-tests.log": {
+        "sha256": "0e56cf3390ab6d2691a2e45a7441fb891e30e2d57c8f43506c19618964f77c23",
+        "bytes": 9458
+      },
+      "clippy.log": {
+        "sha256": "399e038d5cbd99f69e1015b0da5734999fbbef4d25e8c72770aeeb2d4f5d5a6f",
+        "bytes": 173
+      }
+    }
+  },
+  "governance": {
+    "recognizer_available": false,
+    "production_thresholds_frozen": false,
+    "text_names": "provisional",
+    "new_rx_capture": false,
+    "model_or_dataset_loaded": false,
+    "locked_test_read": false,
+    "installed_services_changed": false
+  },
+  "sha256": {
+    "raspberry-pi/sdr-agent/controller/Cargo.toml": "dee55354ab8a2a7ad8e68cc870dabcb21d450143b35e4cbf6a6a6b3118018293",
+    "raspberry-pi/sdr-agent/controller/src/recognition_result.rs": "08b42dd505c2e87ddefc7fe5b1191835c6258f61820b23f8e1097d0bde431cb6",
+    "raspberry-pi/sdr-agent/controller/src/main.rs": "4f82df30fddbe2e3bdd7260dba64c314b3e5eefa496cfe5520e07584d9e103b1",
+    "raspberry-pi/sdr-agent/controller/src/protocol.rs": "004f9cf6bfe04657a49809e148bc4540b1d0bd4bcb7ccf716fdfb56ce72ee459",
+    "raspberry-pi/sdr-agent/controller/src/policy.rs": "58df2adc3d634542c1821a9d31225f4d2bbfdedf36b3fb6c2feeaed72fb4fa17",
+    "raspberry-pi/sdr-agent/controller/src/batch_recognition.rs": "eb1f74c22f708fbb17418e23b139c00af174690fc124c35d384ef42b25c18219",
+    "raspberry-pi/sdr-agent/planner-worker/src/recognition-observation.mjs": "5960c40db37ff789a09c55233dd31bc6bc3af784e632494175405e71dba80db2",
+    "raspberry-pi/sdr-agent/planner-worker/src/protocol.mjs": "672ec011b88f80dc1fd7229f7e6cac0afaffdc22291aa3ca5213d8aead15d635",
+    "raspberry-pi/sdr-agent/planner-worker/src/system-prompt.mjs": "a12faa1687a4373deb6d12fb5603a7fdc87abf061d320ea24f310e4571cd7abe",
+    "raspberry-pi/sdr-agent/planner-worker/test/protocol.test.mjs": "dfe1d969a239be3449e94422d70bbeaee39e8e53a4b070b493be27bdcc3c4550",
+    "docs/RF_V1_RUNTIME_PARITY_AUDIT_2026-09-05.json": "a22f1eda6f626c31c70c757e54ebfacdcdb83b57b040e49cf4a498c9fee2266e",
+    "jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "jetson-agx/sdrharness/config/amc/rf-v1-recognizer-admission.candidate.json": "3c802706d35852e4e1ee45b3db2285b0790a7deac331b8c948c4aa6fc1147b83"
+  },
+  "cleanup": {
+    "verified_at_utc": "2026-09-05T17:03:29.110624+00:00",
+    "resolved_feature_root": "/var/tmp/sdrharness-dev/s2-906c",
+    "initial_root_renamed_to_feature_root": "/var/tmp/sdrharness-dev/s2-20260906-result",
+    "active_feature_executables_before_cleanup": [],
+    "removed": {
+      "files": 2733,
+      "regular_file_bytes": 1240139127
+    },
+    "both_exact_paths_absent": true,
+    "sdr_local_data_created": false,
+    "application_results_or_assets_removed": false,
+    "preliminary_node_provider_temp_config": "Existing tests used /tmp then self-removed; both known prefixes verified absent. Final Node suite used feature TMPDIR."
+  }
+}

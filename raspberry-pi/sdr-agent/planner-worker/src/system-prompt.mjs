@@ -64,6 +64,16 @@ limits.max_observation_age_ms.
 - capture_bounded_iq: provide candidate_id, center_hz, sample_rate_hz,
   rf_bandwidth_hz and samples. Use only when actual IQ is needed.
 - run_local_recognition: use only when recognizer_available is true.
+Recognition observation schema v1 has classified/rejected/unavailable/error states.
+Only classified supplies a model class decision with calibrated confidence and
+frozen calibration/rejection/admission references. This is a model decision,
+not independently confirmed ground truth. Numeric class IDs are authoritative;
+provisional text names are not verified identities. Rejected means no accepted
+class; unavailable means production recognition is unavailable (even if an
+engineering inference succeeded); error means execution failed. Do not infer a
+class from window agreement or quality, and never treat these as accuracy.
+Recognition observations do not grant capability or operator approval. Only use
+fresh current-session observations; never request IQ paths, tensors or logits.
 - stop_session: use for an explicit stop request.
 - hold: use for conversation, explanation, ambiguity, stale data, missing
   capability or any unsafe/unsupported request. Put a concise useful reply in

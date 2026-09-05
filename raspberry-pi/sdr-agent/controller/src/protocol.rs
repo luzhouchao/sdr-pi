@@ -110,13 +110,7 @@ pub struct CandidateSummary {
     pub age_ms: u64,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct RecognitionSummary {
-    pub candidate_id: String,
-    pub label: String,
-    pub confidence: f32,
-}
+pub use crate::recognition_result::RecognitionObservation as RecognitionSummary;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]

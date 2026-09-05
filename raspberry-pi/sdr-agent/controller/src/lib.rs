@@ -6,6 +6,7 @@ pub mod planner;
 pub mod policy;
 pub mod protocol;
 pub mod recognition_input;
+pub mod recognition_result;
 pub mod recognizer;
 pub mod recognizer_admission;
 pub mod runner;

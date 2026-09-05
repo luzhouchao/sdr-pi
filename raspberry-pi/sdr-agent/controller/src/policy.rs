@@ -81,20 +81,20 @@ impl ControllerPolicy {
             }
         }
         if let Some(recognition) = &request.observation.recognition {
+            let now_ms = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_millis() as u64;
             require(
-                valid_label(&recognition.candidate_id, 64),
-                "recognition_candidate_id",
-                "invalid candidate id",
-            )?;
-            require(
-                valid_label(&recognition.label, 128),
-                "recognition_label",
-                "invalid recognition label",
-            )?;
-            require(
-                recognition.confidence.is_finite() && (0.0..=1.0).contains(&recognition.confidence),
-                "recognition_confidence",
-                "must be finite and between zero and one",
+                recognition
+                    .validate_context(
+                        request.session_generation,
+                        now_ms,
+                        request.limits.max_observation_age_ms,
+                    )
+                    .is_ok(),
+                "recognition_contract",
+                "invalid or stale recognition observation",
             )?;
             require(
                 candidate_ids.contains(recognition.candidate_id.as_str()),
@@ -509,7 +509,50 @@ impl Error for PolicyError {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::protocol::{HealthSummary, ObservationSummary, PlannerMeta, RecognitionSummary};
+    use crate::protocol::{HealthSummary, ObservationSummary, PlannerMeta};
+
+    #[test]
+    fn recognition_observation_requires_current_candidate_generation_and_time() {
+        use crate::recognition_result::{
+            CalibrationStatus, RecognitionObservation, RecognitionStatus,
+        };
+        let mut input = request();
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64;
+        input.observation.recognition = Some(RecognitionObservation {
+            schema_version: 1,
+            candidate_id: "candidate-1".into(),
+            request_id: 6,
+            session_generation: 3,
+            observed_at_unix_ms: now,
+            status: RecognitionStatus::Unavailable,
+            reason: Some("worker_absent".into()),
+            class: None,
+            calibrated_confidence: None,
+            calibration_status: CalibrationStatus::Unavailable,
+            decision_references: None,
+            identity: None,
+            source: None,
+            quality: None,
+            timing: None,
+        });
+        ControllerPolicy.validate_request(&input).unwrap();
+        for fault in ["candidate", "generation", "old", "future", "classified"] {
+            let mut bad = input.clone();
+            let r = bad.observation.recognition.as_mut().unwrap();
+            match fault {
+                "candidate" => r.candidate_id = "missing".into(),
+                "generation" => r.session_generation += 1,
+                "old" => r.observed_at_unix_ms -= 100_000,
+                "future" => r.observed_at_unix_ms += 100_000,
+                "classified" => r.status = RecognitionStatus::Classified,
+                _ => unreachable!(),
+            }
+            assert!(ControllerPolicy.validate_request(&bad).is_err(), "{fault}");
+        }
+    }
 
     fn request() -> PlanRequest {
         PlanRequest {
@@ -536,11 +579,7 @@ mod tests {
                     age_ms: 100,
                 }],
                 latest_sweep: None,
-                recognition: Some(RecognitionSummary {
-                    candidate_id: "candidate-1".to_owned(),
-                    label: "unknown".to_owned(),
-                    confidence: 0.4,
-                }),
+                recognition: None,
             },
             limits: SafetyLimits {
                 min_freq_hz: 70_000_000,

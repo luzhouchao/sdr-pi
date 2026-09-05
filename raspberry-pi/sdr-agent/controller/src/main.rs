@@ -18,6 +18,7 @@ use sdr_agent_controller::recognition_input::{
     load_recognition_input_profile, validate_recognition_target, RecognitionTarget,
     SdrdModelReadyBatchCapture, MAX_PROFILE_BYTES,
 };
+use sdr_agent_controller::recognition_result::RecognitionResult;
 use sdr_agent_controller::recognizer::{
     LocalRecognizer, RecognitionRequest, UnixRecognizerAdapter, RECOGNIZER_MAX_FRAME_BYTES,
 };
@@ -270,12 +271,20 @@ fn run() -> AppResult<()> {
             );
             let mut engine =
                 IntegrationBatchRecognitionEngine::new(recognizer, recognizer_spool_root);
-            println!(
-                "{}",
-                serde_json::to_string(&engine.run_with_cancel(&loaded, batch, || {
-                    BATCH_CANCELLED.load(std::sync::atomic::Ordering::Relaxed)
-                })?)?
-            );
+            let report = engine.run_with_cancel(&loaded, batch, || {
+                BATCH_CANCELLED.load(std::sync::atomic::Ordering::Relaxed)
+            })?;
+            if loaded.is_rf_v1() {
+                let observed_at = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)?
+                    .as_millis() as u64;
+                let result =
+                    RecognitionResult::from_experimental_batch(&loaded, report, observed_at)
+                        .map_err(invalid_input)?;
+                println!("{}", serde_json::to_string(&result)?);
+            } else {
+                println!("{}", serde_json::to_string(&report)?);
+            }
         }
         return Ok(());
     }

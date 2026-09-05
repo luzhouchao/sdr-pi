@@ -218,6 +218,33 @@ for the receipt/health schemas, exact verification boundary and live evidence.
 S1 is implemented and isolated-Worker validated; replacing deployed Controller/
 Web/Planner services and validating admitted positive capability remain A1.
 
+## S2 full result and compact observation
+
+RF-v1 `recognize-batch-live` now emits `RecognitionResult` schema v1. Its
+`experimental_batch` preserves the former full report; `experimental_prediction`
+and `uncalibrated_probability` explicitly identify internal experiment output.
+Its separate `observation` is always `unavailable` with
+`reason=production_admission_missing` for this candidate, never production
+`classified`. Numeric IDs remain authoritative and text names provisional.
+Legacy seed44 and the per-window Worker wire contract are unchanged.
+
+`RecognitionObservation` replaces the three-field Planner recognition summary.
+It represents classified/rejected/unavailable/error with explicit calibration
+status, decision/name evidence references, request/session/source correlation,
+model/profile/preprocess identity, bounded quality and component timing. Only
+this allowlisted summary enters PlanningContext; IQ paths/tensors/full logits
+and experimental predictions cannot enter it. Both Rust and Node validate its
+state semantics and freshness. Full imports are limited to 64 KiB, observations
+to 4 KiB, and nested unknown fields fail closed. Production decisions cannot be
+imported under the current candidate profile. Frozen reference verification and
+scientific threshold selection remain later admission work.
+
+See [`RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md`](RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md)
+for field semantics, compatibility changes and replay/negative-test evidence.
+S2 does not deploy services, execute the production Runner, or implement result
+storage/UI. Old nonempty three-field Planner recognition objects are rejected;
+both protocol sides must be deployed together at A1.
+
 ## Remaining delivery work
 
 Current completion status is maintained in

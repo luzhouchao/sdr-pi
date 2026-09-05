@@ -17,14 +17,14 @@ this file retains the detailed delivery and evidence ledger.
 以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
 编号表示范围，不表示施工先后；实际顺序见
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
-本轮按 `7164ad0` 核对状态，仅调整规划，不增加实现/部署完成声明。
+S2 已在 `4e461f1` 基线上完成源码、真实报告 replay 和合同负例验证；生产服务未替换。
 
 - [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
 - [x] AGX 扫频/精查、结果存储和 RX 语料基础、split 隔离完成（第1/4/5章）。
 - [x] RF-v1 预处理、用户训练 epoch-10 checkpoint 的 validation 和 FP16 选择完成。
 - [x] 共享 RMS/四窗/full-logit/mean-logit runtime、golden 和有限实收故障清理完成。
 - [x] S1：准入/health/人工批准源码、测试及隔离真实 Worker 验证完成；生产服务未替换。
-- [ ] S2：统一完整结果与 Planner 紧凑 observation；四状态和校准身份，生产阈值不在此冻结。
+- [x] S2：统一完整结果与 Planner 紧凑 observation、四状态/校准身份、RF-v1 batch 严格转换和真实报告 replay 完成；生产阈值未冻结，能力仍为 false。
 - [ ] S3：生产 Worker 队列、整批 deadline、取消确认、强杀/重启清理和指标。
 - [ ] S4：共享 GPU 调度与持续资源验收。
   - [ ] S4a：推理租约、串行执行、取消/故障释放和实机正确性。
@@ -765,10 +765,15 @@ Evidence:
 - [ ] Consume the Chapter 5 frozen numeric-ID/name table, then validate the RF
       input contract and rejection policy before enabling
       `recognizer_available`.
-- [ ] Extend recognition results beyond candidate/label/confidence with
+- [x] Extend recognition results beyond candidate/label/confidence with
       classified/rejected/unavailable/error status, numeric label identity,
       rejection reason, source sequence, model/profile hashes, window agreement,
-      quality and timing while keeping IQ out of Planner context.
+      quality and timing while keeping IQ out of Planner context. S2 separates
+      the full internal record from a strict 4-KiB observation, revalidates RF-v1
+      batch/logits/quality/timing and rejects production decisions under the
+      candidate profile. Rust/Node tests and retained live-report replay passed;
+      temporary test/build data was removed. See
+      [`RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md`](RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md).
 - [x] Define and validate `recognizer_admission_v1`, bounded six-gate evidence
       receipts and challenge-correlated `recognizer_health_v1`, including full
       model/profile/preprocess/precision identity, Worker instance and time,
@@ -858,15 +863,14 @@ Evidence:
 
 ## Current next milestone
 
-The next independent delivery is **S2: unified recognition result and Planner
-observation contract**. S1 source and isolated real-Worker validation are
-complete; installed production services remain unchanged and the actual
-candidate remains unavailable. See the current status overview at the top of
-this checklist for completed and outstanding units.
+S2 is complete as a source/interface delivery with retained real-report replay
+and negative tests; installed services remain unchanged and the actual candidate
+remains unavailable. The next independent unit in the delivery-order document is
+V1a. S3–S6, independent labels, calibration/rejection and production admission
+remain open; this S2 delivery does not claim their completion.
 
 Execution order, prerequisites and permitted scheduling changes are maintained
 only in
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md).
 Chapter numbering here is a status ledger, not an instruction to implement in
-that order. This document cleanup changed no implementation/deployment status
-and generated no development IQ, processes or staging artifacts.
+that order. S2 cleanup and evidence are recorded in its validation document.
