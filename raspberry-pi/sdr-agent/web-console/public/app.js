@@ -663,7 +663,7 @@ function renderCorpusList() {
     button.type = 'button';
     button.className = `result-list-item${result.result_id === view.selectedCorpusId ? ' active' : ''}`;
     const kind = document.createElement('small');
-    kind.textContent = 'P201 RX1 · UNKNOWN';
+    kind.textContent = `P201 RX1 · ${result.label_provenance} / ${result.label_reason}`;
     const title = document.createElement('strong');
     title.textContent = formatFrequency(result.center_hz);
     const meta = document.createElement('span');
@@ -694,6 +694,7 @@ function renderCorpusDetail() {
   empty.hidden = true;
   content.hidden = false;
   const { summary, manifest, record } = view.selectedCorpus;
+  setText('#corpus-provenance', `P201 RECEIVE / ${summary.label_provenance}`);
   setText('#corpus-result-title', summary.result_id);
   setText('#corpus-result-time', `${summary.captured_at_utc} · ${summary.capture_day} · application result`);
   setText('#corpus-center', formatFrequency(summary.center_hz));
@@ -703,8 +704,8 @@ function renderCorpusDetail() {
   setText('#corpus-rms', `${summary.raw_rms_dbfs.toFixed(1)} dBFS`);
   setText('#corpus-snr', `${summary.measured_snr_db.toFixed(1)} dB`);
   setText('#corpus-iq-state', `${formatBytes(summary.iq_bytes)} ci16_le · ${summary.samples} complex samples`);
-  setText('#corpus-iq-detail', `SHA-256 ${summary.iq_sha256}；大 IQ 位于 AGX 应用目录且不进入 Git。删除按钮会同时删除 SQLite 记录和完整语料包。`);
-  setText('#corpus-label', `${summary.label_provenance} / ${summary.label_reason}`);
+  setText('#corpus-iq-detail', `SHA-256 ${summary.iq_sha256}；大 IQ 位于 AGX 应用目录且不进入 Git。删除按钮会删除此记录和语料包；共享 IQ 仅在最后一条引用删除后释放。`);
+  setText('#corpus-label', `${summary.label_provenance} / ${summary.label_reason}${record.label.numeric_id == null ? '' : ` · 数字 ID ${record.label.numeric_id} · 名称 provisional`} · ${record.split}`);
   setText('#corpus-profile', `${summary.profile_id} · ${shortHash(summary.profile_sha256)}`);
   setText('#corpus-preprocess', `${summary.preprocess_id} · ${shortHash(summary.preprocess_sha256)}`);
   setText('#corpus-session', `${summary.capture_session_id} · ${summary.plan_id}`);
@@ -716,13 +717,13 @@ function renderCorpusDetail() {
 async function deleteSelectedCorpus() {
   if (!view.selectedCorpus) return;
   const { result_id: resultId, iq_bytes: iqBytes } = view.selectedCorpus.summary;
-  if (!window.confirm(`删除接收语料 ${resultId}，并删除 ${formatBytes(iqBytes)} 原始 IQ？此操作无法撤销。`)) return;
+  if (!window.confirm(`删除接收语料 ${resultId}，并移除此记录的 ${formatBytes(iqBytes)} IQ 引用？其他语料的共享 IQ 和分组约束会保留。此操作无法撤销。`)) return;
   try {
     await api(`/api/corpus/${encodeURIComponent(resultId)}`, { method: 'DELETE' });
     view.selectedCorpus = null;
     view.selectedCorpusId = null;
     await loadCorpus({ selectLatest: true });
-    toast('接收语料及原始 IQ 已删除');
+    toast('接收语料及其 IQ 引用已删除');
   } catch (error) { toast(error.message); }
 }
 

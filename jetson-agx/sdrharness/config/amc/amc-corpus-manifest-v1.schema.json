@@ -128,7 +128,7 @@
         "allowed_splits": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 6,
+          "maxItems": 7,
           "uniqueItems": true,
           "items": {"$ref": "#/$defs/splitName"}
         },
@@ -137,7 +137,7 @@
       }
     },
     "splitName": {
-      "enum": ["train", "validation", "test", "calibration", "receive_domain", "golden"]
+      "enum": ["train", "validation", "test", "calibration", "acceptance", "receive_domain", "golden"]
     },
     "asset": {
       "type": "object",
@@ -162,7 +162,9 @@
             "preprocess_spec",
             "label_table",
             "capture_plan",
+            "capture_report",
             "annotation_evidence",
+            "lineage_evidence",
             "golden_fixture",
             "raw_iq",
             "model_tensor"
@@ -330,6 +332,13 @@
     "independentAnnotation": {
       "type": "object",
       "additionalProperties": false,
+      "allOf": [
+        {"if": {"required": ["category"]},
+         "then": {"if": {"properties": {"category": {"const": "known_class"}}},
+                  "then": {"properties": {"numeric_id": {"type": "integer", "maximum": 23}}},
+                  "else": {"properties": {"numeric_id": {"type": "null"}}}},
+         "else": {"properties": {"numeric_id": {"type": "integer"}}}}
+      ],
       "required": [
         "provenance",
         "numeric_id",
@@ -339,7 +348,8 @@
       ],
       "properties": {
         "provenance": {"const": "independent_annotation"},
-        "numeric_id": {"type": "integer", "minimum": 0, "maximum": 65535},
+        "numeric_id": {"type": ["integer", "null"], "minimum": 0, "maximum": 65535},
+        "category": {"enum": ["known_class", "noise_idle", "out_of_label_space", "mixed", "low_quality", "ambiguous"]},
         "display_name": {"oneOf": [{"type": "string", "minLength": 1, "maxLength": 128}, {"type": "null"}]},
         "display_name_status": {"enum": ["trusted", "provisional", "absent"]},
         "evidence": {

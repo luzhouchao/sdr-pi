@@ -113,6 +113,15 @@ class PartitionTests(unittest.TestCase):
 
 
 class LineageTests(unittest.TestCase):
+    def test_calibration_acceptance_groups_are_exclusive(self):
+        for key in ("source_sample_id", "capture_session_id", "capture_day"):
+            a = lineage_record("cal", "calibration", "source-a", session="session-a", day="2026-09-01", source_kind="p201_receive", provenance="independent_annotation")
+            b = lineage_record("accept", "acceptance", "source-b", session="session-b", day="2026-09-02", source_kind="p201_receive", provenance="independent_annotation")
+            audit.audit_lineage_records([a,b])
+            b["lineage"][key] = a["lineage"][key]
+            with self.assertRaises(audit.IsolationError):
+                audit.audit_lineage_records([a,b])
+
     def test_valid_derivative_inherits_source_session_and_day(self) -> None:
         parent = lineage_record(
             "capture-0",

@@ -229,10 +229,13 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
       置信度单独报告，未混入准确率。
 - [x] 最终候选 checkpoint 已返回并完成 AGX FP32 全 validation parity；新温度
       `1.34647` 仅记录为 validation-only candidate，没有误冻结为生产参数。
-- [ ] 为 RF-v1 增加版本化语料派生/导入与独立标签证据接入：当前应用入口仍
+- [x] 为 RF-v1 增加版本化语料派生/导入与独立标签证据接入：当前已安装入口仍
       固定 legacy profile 且仅写 `unknown`。复用已有合同/存储，保留旧包原始
       哈希；新记录严格关联原始 capture、profile/preprocess 和证据来源，继续
-      支持人工删除，不把模型 top-1 或 `unknown` 理由转成独立标签。
+      支持人工删除，不把模型 top-1 或 `unknown` 理由转成独立标签。V1a 源码、
+      采样规范和隔离 Web/HTTP/浏览器/删除验证完成；完整临时数据已清理，未部署。
+      旧包缺失原始 request 报告时只能 unknown 派生，实际标签/覆盖仍属于 V1b。见
+      [`RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md`](RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md)。
 - [ ] 补充独立标注 known-RF/OOD 数据，冻结 calibration 与 acceptance threshold，
       再查看该 checkpoint 的 locked test。
 - [ ] 解决 RML2018A 数字 ID 到名称顺序争议；解决前数字 ID 是唯一可信类别身份，

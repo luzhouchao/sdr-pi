@@ -174,11 +174,11 @@ source_sample_id, capture_session_id, capture_day
 ```
 
 The validator rejects any non-null group value appearing in more than one of
-`train`, `validation` and `test`. Crops, augmentations and repeated windows must
+`train`, `validation`, `test`, `calibration` and `acceptance`. Crops, augmentations and repeated windows must
 inherit the same `source_sample_id`; receptions from one capture must retain the
 same `capture_session_id`; one receive day cannot be divided across those three
-evaluation partitions. `calibration`, `receive_domain` and `golden` remain
-separate declared uses and are never silently counted as test accuracy.
+evaluation partitions. `receive_domain` and `golden` remain separate declared
+uses and are never silently counted as test accuracy.
 
 For retained offline assets, the reproducible source identity is the full
 dataset SHA-256, HDF5 `/X` path and global row. The source containers expose no
@@ -195,21 +195,34 @@ three group keys. See
 and its
 [`machine-readable summary`](AMC_SPLIT_ISOLATION_AUDIT_2026-09-05.json).
 
-## N210/B210 truth-source rule
+## RF-v1 evidence extension (V1a)
 
-N210 remains outside the Chapter 1–6 runtime and outside Planner control. After
-the receive-corpus storage/deletion contract is implemented, a bounded known-
-waveform experiment may use N210 only as an external test signal source.
+The current source adds `capture_report` and `lineage_evidence` asset roles,
+`acceptance` as an explicit split, and a category-aware independent annotation
+variant. Calibration and acceptance now participate in the same group-exclusion
+checks as train/validation/test. P201 unknown rows remain receive_domain only.
 
-For such a row, the immutable transmit waveform/schedule and its capture-time
-correlation become an `annotation_evidence` asset. The P201 label provenance is
-then `independent_annotation` with method `known_waveform_schedule`. Merely
-seeing a peak, knowing what was requested earlier, or accepting Mamba top-1 is
-not sufficient; absent correlated evidence, the row is `unknown`.
+For RF-v1 derived P201 packages, the reference validator checks the frozen
+profile/preprocess and bounded versioned sidecars. `known_class` requires numeric
+ID 0–23; noise/idle, out-of-space, mixed, low-quality and ambiguous categories
+carry no forced numeric class. Every category requires independently correlated
+annotation evidence, except unknown which never enters calibration/acceptance.
+The original offline dataset-ground-truth contract is unchanged.
 
-This metadata rule does not itself authorize transmission. Any later N210 run
-still needs its own bounded, lawful RF procedure and must not add TX actions to
-Agent/Planner.
+Derivation preserves original raw content and parent hashes; it does not copy IQ
+or convert model predictions to labels. New original captures retain a hash-pinned
+request report. Historical packages without that receipt remain eligible only
+for unknown derivation. The existing application table, directory and manual-
+delete path are reused. These tools have isolated Web/HTTP/browser validation;
+the installed Web service remains on its prior release.
+
+The current contract and command line are detailed in
+[`RF_V1_CORPUS_EVIDENCE_INTERFACE.md`](RF_V1_CORPUS_EVIDENCE_INTERFACE.md), and the
+preregistered sampling/coverage/grouping rules in
+[`RF_V1_KNOWN_RF_OOD_SAMPLING_V1.md`](RF_V1_KNOWN_RF_OOD_SAMPLING_V1.md).
+Independent reviewers use external evidence; TX and N210/B210 are not project
+truth-source dependencies or actions. V1a supplies tools/specification, not V1b
+labels, calibrated thresholds or production capability.
 
 ## AGX application-owned P201 store
 
@@ -230,9 +243,9 @@ exactly one 4,096-complex-sample `ci16_le` P201 window at 2.1 MS/s, 1.5 MHz RF
 bandwidth and 50 dB fixed RX gain. It revalidates plan/report correlation,
 recomputes power, spectral quality and clipping from the submitted bytes,
 requires the fixed RX1 identity, zero drops/overflow/health flags, confirmed
-radio restoration and completed P201/AGX transient cleanup. It supports only an
-`unknown` label reason; a later independently annotated N210 experiment needs a
-separate admitted annotation-evidence path.
+radio restoration and completed P201/AGX transient cleanup. The installed legacy entry supports only an
+`unknown` label reason. The V1a source adds the separately validated RF-v1
+derivation/independent-evidence endpoint described above.
 
 The visible `接收语料` page reads `GET /api/corpus` and
 `GET /api/corpus/{result-id}`. Its per-record delete button calls

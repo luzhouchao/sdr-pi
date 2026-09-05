@@ -17,7 +17,7 @@ this file retains the detailed delivery and evidence ledger.
 以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
 编号表示范围，不表示施工先后；实际顺序见
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
-S2 已在 `4e461f1` 基线上完成源码、真实报告 replay 和合同负例验证；生产服务未替换。
+S2 及其 Web 依赖校验修正完成；V1a 工具/规范和隔离 Web 验证完成，生产服务未替换。
 
 - [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
 - [x] AGX 扫频/精查、结果存储和 RX 语料基础、split 隔离完成（第1/4/5章）。
@@ -34,7 +34,7 @@ S2 已在 `4e461f1` 基线上完成源码、真实报告 replay 和合同负例�
   - [ ] S6a：完整结果保存/恢复/查看/删除；可先用 replay 或明确实验结果验证。
   - [ ] S6b：S5 后真实闭环、浏览器结果和 Spark 紧凑摘要验收。
 - [ ] V1：RF-v1 独立数据证据准备。
-  - [ ] V1a：版本化导入/派生、独立证据接入、采样/覆盖/校准与验收分组规范。
+  - [x] V1a：版本化派生、独立证据接入、采样/覆盖/校准与验收分组规范完成；隔离 HTTP/浏览器/删除及失败清理验证通过，未部署。
   - [ ] V1b：获得并审核足够的独立 known-RF/OOD 标签；实际覆盖达到预注册条件。
 - [ ] V2：根据 validation 和独立证据冻结校准/拒识，并完成独立验收。
 - [ ] V3：标签空间与模型准入。
@@ -647,17 +647,25 @@ recognition; it does not own hardware control or another runtime backend.
       aggregate accuracy matched the 4090 exactly at `0.6705575952` and NLL
       differed by only `6.8e-8`; test remained unopened and capability false. See
       [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md).
-- [ ] Add versioned RF-v1 corpus derivation/import and independently annotated
+- [x] Add versioned RF-v1 corpus derivation/import and independently annotated
       evidence ingestion by reusing the existing corpus contract/store. The
       deployed intake still pins the legacy profile and writes only `unknown`;
       preserve historical package hashes, bind every new profile/preprocess and
       label to source evidence, validate source/session/day grouping and retain
       manual deletion. A model prediction or an unknown-reason field is not
-      an independent annotation.
-- [ ] Pre-register the known-RF/OOD coverage and sampling rationale plus separate
+      an independent annotation. Source and isolated native Web/HTTP/browser
+      validation passed; new roots preserve original request reports and older
+      seven-file roots remain unknown-only. Parent hashes and shared IQ survive
+      independent deletion, group constraints persist, and all feature data was
+      cleaned. See [`RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md`](RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md).
+- [x] Pre-register the known-RF/OOD coverage and sampling rationale plus separate
       calibration and acceptance groups before fitting thresholds; track label
       evidence, ambiguous cases and class/name mapping without opening the
-      locked test. Existing unknown receptions alone do not satisfy this gate.
+      locked test. The specification is
+      [`RF_V1_KNOWN_RF_OOD_SAMPLING_V1.md`](RF_V1_KNOWN_RF_OOD_SAMPLING_V1.md),
+      with clustered/effective sample-size rationale and explicit coverage gaps.
+      This completes the tools/specification gate only; actual independently
+      reviewed coverage remains V1b, not supplied by unknown receptions.
 - [ ] Use independently labeled known-RF/OOD evidence with the final checkpoint
       to freeze scalar calibration plus confidence/agreement/SNR/bandwidth
       acceptance thresholds, then perform one locked test admission. The new
@@ -866,14 +874,14 @@ Evidence:
 
 ## Current next milestone
 
-S2 is complete as a source/interface delivery with retained real-report replay
-and negative tests; installed services remain unchanged and the actual candidate
-remains unavailable. The next independent unit in the delivery-order document is
-V1a. S3–S6, independent labels, calibration/rejection and production admission
-remain open; this S2 delivery does not claim their completion.
+S2 (including its dependent Web correction) and V1a tools/specification are
+complete. V1a passed isolated native Web/HTTP/browser and deletion validation;
+installed services remain unchanged and the actual recognizer stays unavailable.
+Actual independently reviewed labels/coverage (V1b), calibration and admission
+remain open. The next default independent unit is S3 Worker lifecycle.
 
 Execution order, prerequisites and permitted scheduling changes are maintained
 only in
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md).
 Chapter numbering here is a status ledger, not an instruction to implement in
-that order. S2 cleanup and evidence are recorded in its validation document.
+that order. Each delivery has its own verification and exact cleanup record.

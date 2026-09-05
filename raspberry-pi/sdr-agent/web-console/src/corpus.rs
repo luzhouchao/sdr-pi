@@ -1,7 +1,9 @@
+mod rf_v1;
 use super::{
     ensure_real_directory, internal_error, now_ms, open_result_database, ApiError, ApiResult,
 };
 use axum::http::StatusCode;
+pub(super) use rf_v1::{derive_rf_v1, RfV1DeriveRequest};
 use rusqlite::{params, OptionalExtension};
 use sdr_agent_controller::{
     recognition_input::sha256_hex,
@@ -33,7 +35,10 @@ const LABEL_BYTES: &[u8] =
 const PROFILE_SHA256: &str = "7d2347550939be13d3ccde84add514ca5b4e549783fbc8e724124b4f0f4358ba";
 const PREPROCESS_SHA256: &str = "20f2f21b9d01a5163806a2b1e88c2e1ff0975647eb9da27071ea3f1d61a80303";
 const LABEL_SHA256: &str = "0c269924bb74cf23584ad7584808d1bb263cdf03680f723f4cc40f165e6eafc8";
-const PACKAGE_FILES: [&str; 7] = [
+const PACKAGE_FILES: [&str; 10] = [
+    "derivation.json",
+    "annotation.json",
+    "source-report.json",
     "capture-plan.json",
     "input-profile.json",
     "labels.json",
@@ -188,7 +193,11 @@ pub(super) fn initialize_corpus_store(database: &Path, root: &Path) -> ApiResult
                created_at_ms INTEGER NOT NULL
              );
              CREATE INDEX IF NOT EXISTS p201_corpus_created
-               ON p201_corpus_results(created_at_ms DESC);",
+               ON p201_corpus_results(created_at_ms DESC);
+             CREATE TABLE IF NOT EXISTS p201_corpus_partition_groups (
+               group_kind TEXT NOT NULL, group_hash TEXT NOT NULL, split TEXT NOT NULL,
+               PRIMARY KEY(group_kind, group_hash)
+             );",
         )
         .map_err(internal_error)?;
     Ok(())
@@ -317,41 +326,10 @@ pub(super) fn ingest_corpus_result(
             "provenance": "unknown",
             "reason": request.label_reason.as_str(),
         },
-        "source": {
-            "kind": "p201_receive",
-            "capture_session_id": request.capture_session_id,
-            "captured_at_utc": request.captured_at_utc,
-            "capture_day": validated.capture_day,
-            "plan_id": request.plan.sweep_id,
-            "plan_asset_id": plan_asset_id,
-            "plan_sha256": plan_sha256,
-            "center_hz": point.actual_center_hz,
-            "sample_rate_hz": point.sample_rate_hz,
-            "rf_bandwidth_hz": point.rf_bandwidth_hz,
-            "gain_mode": "manual",
-            "rx_gain_db": request.plan.gain_db.expect("validated fixed gain"),
-            "sequence": point.sequence,
-            "samples_captured": point.captured_samples,
-            "bytes_transferred": validated.iq.len(),
-            "rx_input": point.rx_input,
-            "quality": {
-                "raw_rms_dbfs": point.band_power_dbfs,
-                "measured_snr_db": point.spectral.measured_snr_db,
-                "clipped_samples": point.clipped_samples,
-                "dropped_samples": point.dropped_samples,
-                "overflow": point.overflow,
-                "health_flags": point.health.flags,
-                "healthy": point.health.healthy,
-            },
-            "retention": {
-                "user_visible": true,
-                "result_id": result_id,
-                "manual_delete_available": true,
-                "p201_transient_removed": true,
-                "agx_temporary_removed": true,
-            },
-        },
+        "source": capture_source(&request, &result_id, &validated.capture_day, &plan_asset_id, &plan_sha256, validated.iq.len()),
     });
+    let source_report_bytes =
+        json_line(&serde_json::to_value(&request.report).map_err(internal_error)?)?;
     let record_bytes = json_line(&record)?;
     let manifest = json!({
         "schema_version": 1,
@@ -393,6 +371,7 @@ pub(super) fn ingest_corpus_result(
             asset("preprocess-integration-v0", "preprocess.json", "preprocess_spec", PREPROCESS_BYTES, "repository_metadata", "not_applicable"),
             asset("labels-provisional-v1", "labels.json", "label_table", LABEL_BYTES, "repository_metadata", "not_applicable"),
             asset(&plan_asset_id, "capture-plan.json", "capture_plan", &capture_plan_bytes, "application_result", "required"),
+            asset("original-source-report", "source-report.json", "capture_report", &source_report_bytes, "application_result", "required"),
             asset(&iq_asset_id, "raw.iq", "raw_iq", &validated.iq, "application_result", "required"),
         ],
         "record_index": {
@@ -410,38 +389,115 @@ pub(super) fn ingest_corpus_result(
             "manual_delete_required_for_user_results": true,
         },
     });
-    let manifest_bytes = pretty_json(&manifest)?;
-    let staging = create_staging_directory(corpus_root, &result_id)?;
+    let connection = open_result_database(database)?;
+    store_package(
+        &connection,
+        corpus_root,
+        &result_id,
+        &manifest,
+        &record,
+        &[
+            ("input-profile.json", PROFILE_BYTES),
+            ("preprocess.json", PREPROCESS_BYTES),
+            ("labels.json", LABEL_BYTES),
+            ("capture-plan.json", &capture_plan_bytes),
+            ("raw.iq", &validated.iq),
+            ("source-report.json", &source_report_bytes),
+        ],
+        None,
+    )?;
+    load_corpus_result(database, &result_id)
+}
+
+fn capture_source(
+    request: &P201CorpusIngestRequest,
+    result_id: &str,
+    capture_day: &str,
+    plan_asset_id: &str,
+    plan_hash: &str,
+    iq_bytes: usize,
+) -> Value {
+    let point = &request.report.points[0];
+    json!({
+        "kind": "p201_receive",
+        "capture_session_id": request.capture_session_id,
+        "captured_at_utc": request.captured_at_utc,
+        "capture_day": capture_day,
+        "plan_id": request.plan.sweep_id,
+        "plan_asset_id": plan_asset_id,
+        "plan_sha256": plan_hash,
+        "center_hz": point.actual_center_hz,
+        "sample_rate_hz": point.sample_rate_hz,
+        "rf_bandwidth_hz": point.rf_bandwidth_hz,
+        "gain_mode": "manual",
+        "rx_gain_db": request.plan.gain_db.expect("validated fixed gain"),
+        "sequence": point.sequence,
+        "samples_captured": point.captured_samples,
+        "bytes_transferred": iq_bytes,
+        "rx_input": point.rx_input,
+        "quality": {
+            "raw_rms_dbfs": point.band_power_dbfs,
+            "measured_snr_db": point.spectral.measured_snr_db,
+            "clipped_samples": point.clipped_samples,
+            "dropped_samples": point.dropped_samples,
+            "overflow": point.overflow,
+            "health_flags": point.health.flags,
+            "healthy": point.health.healthy,
+        },
+        "retention": {
+            "user_visible": true,
+            "result_id": result_id,
+            "manual_delete_available": true,
+            "p201_transient_removed": true,
+            "agx_temporary_removed": true,
+        },
+    })
+}
+
+// Shared legacy and RF-v1 persistence; one SQLite table and one package lifecycle.
+fn store_package(
+    connection: &rusqlite::Connection,
+    corpus_root: &Path,
+    result_id: &str,
+    manifest: &Value,
+    record: &Value,
+    files: &[(&str, &[u8])],
+    iq_link: Option<&Path>,
+) -> ApiResult<()> {
+    let staging = create_staging_directory(corpus_root, result_id)?;
+    let final_directory = corpus_root.join(result_id);
     let mut renamed = false;
-    let write_result = (|| -> ApiResult<()> {
-        write_private_file(&staging.join("input-profile.json"), PROFILE_BYTES)?;
-        write_private_file(&staging.join("preprocess.json"), PREPROCESS_BYTES)?;
-        write_private_file(&staging.join("labels.json"), LABEL_BYTES)?;
-        write_private_file(&staging.join("capture-plan.json"), &capture_plan_bytes)?;
-        write_private_file(&staging.join("raw.iq"), &validated.iq)?;
-        write_private_file(&staging.join("records.jsonl"), &record_bytes)?;
-        write_private_file(&staging.join("manifest.json"), &manifest_bytes)?;
+    let result = (|| -> ApiResult<()> {
+        for (name, data) in files {
+            write_private_file(&staging.join(name), data)?;
+        }
+        if let Some(parent_iq) = iq_link {
+            fs::hard_link(parent_iq, staging.join("raw.iq")).map_err(internal_error)?;
+        }
+        write_private_file(&staging.join("manifest.json"), &pretty_json(manifest)?)?;
+        write_private_file(&staging.join("records.jsonl"), &json_line(record)?)?;
         File::open(&staging)
-            .and_then(|directory| directory.sync_all())
+            .and_then(|d| d.sync_all())
             .map_err(internal_error)?;
-        fs::rename(&staging, &final_directory).map_err(internal_error)?;
+        // create_dir reserves the final name; never replace another result.
+        fs::create_dir(&final_directory).map_err(internal_error)?;
+        if let Err(error) = fs::rename(&staging, &final_directory) {
+            fs::remove_dir(&final_directory).map_err(internal_error)?;
+            return Err(internal_error(error));
+        }
         renamed = true;
         File::open(corpus_root)
-            .and_then(|directory| directory.sync_all())
+            .and_then(|d| d.sync_all())
             .map_err(internal_error)?;
-        Ok(())
-    })();
-    if let Err(error) = write_result {
-        let cleanup_target = if renamed { &final_directory } else { &staging };
-        let _ = cleanup_package_directory(corpus_root, cleanup_target, false);
-        return Err(error);
-    }
-
-    let manifest_json = serde_json::to_string(&manifest).map_err(internal_error)?;
-    let record_json = serde_json::to_string(&record).map_err(internal_error)?;
-    let created_at_ms = now_ms();
-    let insert_result = open_result_database(database)?.execute(
-        "INSERT INTO p201_corpus_results (
+        let source = &record["source"];
+        let quality = &source["quality"];
+        let contract = &manifest["contract"];
+        let label = &record["label"];
+        let manifest_json = serde_json::to_string(manifest).map_err(internal_error)?;
+        let record_json = serde_json::to_string(record).map_err(internal_error)?;
+        connection
+            .execute(
+                "INSERT INTO p201_corpus_results (
            result_id, capture_session_id, captured_at_utc, capture_day, plan_id,
            profile_id, profile_sha256, preprocess_id, preprocess_sha256,
            center_hz, sample_rate_hz, rf_bandwidth_hz, gain_mode, rx_gain_db,
@@ -454,44 +510,54 @@ pub(super) fn ingest_corpus_result(
            ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20,
            ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29, ?30
          )",
-        params![
-            validated.result_id,
-            request.capture_session_id,
-            request.captured_at_utc,
-            validated.capture_day,
-            request.plan.sweep_id,
-            "rml2018a-d8-current-integration-v1",
-            PROFILE_SHA256,
-            "legacy_adc_unit_rms_v0",
-            PREPROCESS_SHA256,
-            to_i64(point.actual_center_hz)?,
-            to_i64(point.sample_rate_hz)?,
-            to_i64(point.rf_bandwidth_hz)?,
-            "manual",
-            f64::from(request.plan.gain_db.expect("validated fixed gain")),
-            to_i64(point.sequence)?,
-            to_i64(point.captured_samples)?,
-            to_i64(validated.iq.len() as u64)?,
-            iq_sha256,
-            f64::from(point.band_power_dbfs),
-            f64::from(point.spectral.measured_snr_db),
-            to_i64(point.clipped_samples)?,
-            to_i64(point.dropped_samples)?,
-            i64::from(point.overflow),
-            i64::from(point.health.flags),
-            i64::from(point.health.healthy),
-            "unknown",
-            request.label_reason.as_str(),
-            manifest_json,
-            record_json,
-            to_i64(created_at_ms)?,
-        ],
-    );
-    if let Err(error) = insert_result {
-        let _ = cleanup_package_directory(corpus_root, &final_directory, true);
-        return Err(internal_error(error));
+                params![
+                    result_id,
+                    source["capture_session_id"].as_str(),
+                    source["captured_at_utc"].as_str(),
+                    source["capture_day"].as_str(),
+                    source["plan_id"].as_str(),
+                    contract["input_profile"]["id"].as_str(),
+                    contract["input_profile"]["sha256"].as_str(),
+                    contract["preprocessing"]["id"].as_str(),
+                    contract["preprocessing"]["sha256"].as_str(),
+                    source["center_hz"].as_i64(),
+                    source["sample_rate_hz"].as_i64(),
+                    source["rf_bandwidth_hz"].as_i64(),
+                    source["gain_mode"].as_str(),
+                    source["rx_gain_db"].as_f64(),
+                    source["sequence"].as_i64(),
+                    record["window"]["samples"].as_i64(),
+                    record["window"]["bytes"].as_i64(),
+                    record["window"]["sha256"].as_str(),
+                    quality["raw_rms_dbfs"].as_f64(),
+                    quality["measured_snr_db"].as_f64(),
+                    quality["clipped_samples"].as_i64(),
+                    quality["dropped_samples"].as_i64(),
+                    quality["overflow"].as_bool(),
+                    quality["health_flags"].as_i64(),
+                    quality["healthy"].as_bool(),
+                    label["provenance"].as_str(),
+                    label["reason"]
+                        .as_str()
+                        .or(label["category"].as_str())
+                        .unwrap_or("independent_annotation"),
+                    manifest_json,
+                    record_json,
+                    to_i64(now_ms())?,
+                ],
+            )
+            .map_err(internal_error)?;
+        Ok(())
+    })();
+    if let Err(error) = result {
+        cleanup_package_directory(
+            corpus_root,
+            if renamed { &final_directory } else { &staging },
+            false,
+        )?;
+        return Err(error);
     }
-    load_corpus_result(database, &result_id)
+    Ok(())
 }
 
 pub(super) fn delete_corpus_result(
@@ -501,7 +567,9 @@ pub(super) fn delete_corpus_result(
 ) -> ApiResult<CorpusDeleteResult> {
     require_safe_id(result_id, 128, "语料结果 ID")?;
     let mut connection = open_result_database(database)?;
-    let transaction = connection.transaction().map_err(internal_error)?;
+    let transaction = connection
+        .transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)
+        .map_err(internal_error)?;
     let exists = transaction
         .query_row(
             "SELECT 1 FROM p201_corpus_results WHERE result_id = ?1",
@@ -532,6 +600,15 @@ pub(super) fn delete_corpus_result(
 fn validate_ingest(
     corpus_root: &Path,
     request: &P201CorpusIngestRequest,
+) -> ApiResult<ValidatedIngest> {
+    let iq = decode_base64(&request.iq_base64)?;
+    validate_ingest_iq(corpus_root, request, iq)
+}
+
+fn validate_ingest_iq(
+    corpus_root: &Path,
+    request: &P201CorpusIngestRequest,
+    iq: Vec<u8>,
 ) -> ApiResult<ValidatedIngest> {
     if request.schema_version != 1 {
         return bad_request("只接受 p201 corpus ingest schema v1");
@@ -596,7 +673,6 @@ fn validate_ingest(
             "AGX 语料目录剩余空间不足".into(),
         ));
     }
-    let iq = decode_base64(&request.iq_base64)?;
     if iq.len() as u64 != validated.maximum_iq_bytes {
         return bad_request("IQ 字节数与有限计划不一致");
     }
@@ -998,7 +1074,7 @@ mod tests {
         output
     }
 
-    fn request() -> P201CorpusIngestRequest {
+    pub(super) fn request() -> P201CorpusIngestRequest {
         let samples = 4_096_u64;
         let center = 433_920_000_u64;
         let rate = 2_100_000_u64;
@@ -1129,7 +1205,7 @@ mod tests {
         assert!(status.success());
 
         let deleted = delete_corpus_result(&database, &corpus, &detail.summary.result_id).unwrap();
-        assert_eq!(deleted.files_deleted, 7);
+        assert_eq!(deleted.files_deleted, 8);
         assert!(!package.exists());
         assert!(list_corpus_results(&database).unwrap().is_empty());
         fs::remove_file(&database).unwrap();

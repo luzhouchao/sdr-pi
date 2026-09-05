@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "schema_id": "rf_v1_evidence_v1a_validation",
+  "date": "2026-09-06",
+  "initial_head": "8bf6ad03a26fb7faec7e63b832e1b39d787dcb79",
+  "s2_corrective_commit": "8fa9105",
+  "delivery": "V1a tools/specification and isolated AGX Web validation only",
+  "verification": {
+    "web_tests_passed": 27,
+    "fixture_export_separately_passed": 1,
+    "python_manifest_tests_passed": 9,
+    "python_split_tests_passed": 14,
+    "python_client_tests_passed": 3,
+    "cargo_fmt": "pass",
+    "clippy_all_targets_deny_warnings": "pass",
+    "javascript_syntax": "pass",
+    "git_diff_check": "pass",
+    "log_hashes": {
+      "web-tests.log": {
+        "sha256": "17433dc239f295493ba15c018134782c104a5238ee24d5793709c95698a34dcd",
+        "bytes": 2959
+      },
+      "clippy.log": {
+        "sha256": "f8856689a8f2a9d4549a0a80a4da9b92497762bd4308aa0b13dc4eb75820b3cd",
+        "bytes": 175
+      },
+      "manifest-tests.log": {
+        "sha256": "987b5b06cb290480b4d980e72f37bbf2477a60bdd0e9dc768573667e7f42e94f",
+        "bytes": 107
+      },
+      "split-tests.log": {
+        "sha256": "62e6bd3a77554540929dd26eab6204ab86056dc07bacce00a71e4482e9f4bcb8",
+        "bytes": 113
+      },
+      "client-tests.log": {
+        "sha256": "95f7e10e2e542dbf90440a42564b454777a3fb34be9656dda220f0dcd8a8a0e7",
+        "bytes": 101
+      },
+      "browser.log": {
+        "sha256": "3cbb68d92b85640e2b1746240f9273ce5694f32a64617d7c34e33d292a692a05",
+        "bytes": 93
+      }
+    },
+    "isolated_web_binary_sha256": "18a587abfb7167f198476e75564bddc9c121ef71c7570b082f9d72c3704aea40",
+    "browser_screenshot_sha256_before_cleanup": "8394e9b40c09ecca2afe806ca7c071f7c04fca4e83ceffd1a038d821aea52710",
+    "browser_and_http": {
+      "synthetic_only": true,
+      "original_manifest_sha256": "55f13033ed70174b54b8f864a360605875b196b6d10f036836db78392f7612b0",
+      "http_imports": 3,
+      "cross_partition_status": 409,
+      "browser_numeric_id": 3,
+      "name_status": "provisional",
+      "browser_errors": [],
+      "shared_inode_verified": true,
+      "parent_unchanged_after_derivation": true,
+      "visible_delete_verified": true,
+      "group_guard_survived_delete": true,
+      "all_synthetic_http_packages_deleted": true,
+      "coverage": {
+        "coverage": {
+          "calibration/known_class/3": {
+            "distinct_days": 1,
+            "distinct_sessions": 1,
+            "records": 1,
+            "unique_iq_captures": 1
+          },
+          "receive_domain/unknown/none": {
+            "distinct_days": 1,
+            "distinct_sessions": 1,
+            "records": 1,
+            "unique_iq_captures": 1
+          }
+        },
+        "group_audit": {
+          "all_package_assets_verified": true,
+          "cross_split_group_collision_counts": {
+            "capture_day": 0,
+            "capture_session_id": 0,
+            "source_sample_id": 0
+          },
+          "derived_lineage_inheritance": "verified",
+          "derived_record_count": 2,
+          "evaluation_record_count": 1,
+          "label_provenance_counts": {
+            "independent_annotation": 1,
+            "unknown": 2
+          },
+          "package_count": 3,
+          "packages": [
+            {
+              "assets_verified": true,
+              "manifest_id": "p201-fixture-session-7",
+              "manifest_sha256": "55f13033ed70174b54b8f864a360605875b196b6d10f036836db78392f7612b0",
+              "package": "p201-fixture-session-7",
+              "record_count": 1,
+              "record_index_sha256": "8546a398a0aa84e7d2bf79409b9802720bcc4d1405968b8058df91d5b30b3da4"
+            },
+            {
+              "assets_verified": true,
+              "manifest_id": "rf-http-calibration",
+              "manifest_sha256": "6b94ca612c85f339101c690ca1c2ee005ae4d5ece055b8bb9df7656a6b2cf08a",
+              "package": "rf-http-calibration",
+              "record_count": 1,
+              "record_index_sha256": "c00179dc8fbbb1019d1212b235a14498ed20d0d4102417b31496f9be6c036955"
+            },
+            {
+              "assets_verified": true,
+              "manifest_id": "rf-http-unknown",
+              "manifest_sha256": "d7af0d5bd54038209790122d56dd4ddec0b4ad1c9c0abb66e5d312230e34336e",
+              "package": "rf-http-unknown",
+              "record_count": 1,
+              "record_index_sha256": "f7596c4e9efbd68073c9a75e3a8c7af8e1e26c374b96d301871d0f1097c64128"
+            }
+          ],
+          "receive_domain_unknown_count": 2,
+          "record_count": 3,
+          "root": "/var/tmp/sdrharness-dev/v1a-906a/http-corpus",
+          "source_counts": {
+            "p201_receive": 3
+          },
+          "split_counts": {
+            "calibration": 1,
+            "receive_domain": 2
+          },
+          "unknown_p201_evaluation_count": 0
+        },
+        "limitation": "Counts are not effective independent sample sizes or proof of annotation correctness. Human evidence/coverage review is required.",
+        "recognizer_available": false,
+        "schema_id": "rf_v1_evidence_coverage_v1",
+        "schema_version": 1,
+        "v1b_complete": false
+      }
+    },
+    "native_server_exit": {
+      "pid": 282508,
+      "exit_code": 0,
+      "configuration": {
+        "SDR_WEB_LISTEN_HOST": "127.0.0.1",
+        "SDR_WEB_LISTEN_PORT": "18787",
+        "SDR_WEB_STATE_PATH": "/var/tmp/sdrharness-dev/v1a-906a/http-state.json",
+        "SDR_WEB_AGENT_BINARY": "/bin/false",
+        "SDR_WEB_REQUEST_PATH": "/var/tmp/sdrharness-dev/v1a-906a/absent-request.json",
+        "SDR_WEB_SESSION_SOCKET": "/var/tmp/sdrharness-dev/v1a-906a/absent.sock",
+        "SDR_WEB_SDRD_ADDRESS": "127.0.0.1:1",
+        "SDR_WEB_PROVIDER_CONFIG_PATH": "/var/tmp/sdrharness-dev/v1a-906a/provider.json",
+        "SDR_WEB_RESULT_DB_PATH": "/var/tmp/sdrharness-dev/v1a-906a/http.sqlite",
+        "SDR_WEB_CAPTURE_ROOT": "/var/tmp/sdrharness-dev/v1a-906a/http-captures",
+        "SDR_WEB_CORPUS_ROOT": "/var/tmp/sdrharness-dev/v1a-906a/http-corpus",
+        "TMPDIR": "/var/tmp/sdrharness-dev/v1a-906a/tmp",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    }
+  },
+  "governance": {
+    "new_rf_capture": false,
+    "model_loaded": false,
+    "locked_test_read": false,
+    "training_or_precision_experiment": false,
+    "installed_services_replaced": false,
+    "user_corpus_or_results_modified": false,
+    "v1a_complete": true,
+    "v1b_complete": false,
+    "production_calibration_or_rejection_frozen": false,
+    "recognizer_available": false,
+    "text_names": "provisional"
+  },
+  "source_sha256": {
+    "docs/AMC_CORPUS_MANIFEST_V1.md": "69a3673c2bca6713dce94c6813a97262b0b2cfe66c58d54fb09d73c874087236",
+    "docs/CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md": "39f8925fe492971626c8cdf0aa45860abb62528c944ccc1858f34bfc38d7ab7c",
+    "docs/RF_V1_CORPUS_EVIDENCE_INTERFACE.md": "8b53a43c6e37a292ffcf1f4a93eb2b97a8c142a20b7fa05b35acaa0023a1171a",
+    "docs/RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md": "e67dad5e4bc536639fb04c6025c00fb4501228f463306f78025b6b1f5e032474",
+    "docs/RF_V1_KNOWN_RF_OOD_SAMPLING_V1.md": "16e0081b0b69d3c088ec9da2942df5bde704976995ddeaaf5bd55875804b8695",
+    "docs/SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md": "1c2e58d9c3d823bb6cd8cd40cf0e169faf5ae85567daf04893c1630e104fff49",
+    "docs/SDR_AGENT_PROJECT_CHECKLIST.md": "eac91f5a1902367f73f992ffe2d8a714a5c7ccab4f090b772e602dc39f048f6f",
+    "jetson-agx/sdrharness/config/amc/amc-corpus-manifest-v1.schema.json": "0ee8635449f898e3301c60651bca1c4a10731c84ea870781e0aaec8a2aae162f",
+    "jetson-agx/sdrharness/scripts/audit-amc-split-isolation.py": "3f883d08356513a44abf91c1f64711d803a072714cdd8fbba578db095ccaee7c",
+    "jetson-agx/sdrharness/scripts/import-rf-v1-corpus.py": "970cee2daf560e5a3c4637cb1269e28865bc8d69636225ffcf5f706b5b277993",
+    "jetson-agx/sdrharness/scripts/summarize-rf-v1-evidence.py": "6592587ef43cc785b22afb7b5625199618804fce22f667a1289bab3e8598aae7",
+    "jetson-agx/sdrharness/scripts/validate-amc-corpus-manifest.py": "eb93000d76533847e18d7b71c06d561b6820bb5cb49202d7790ce277a297879f",
+    "jetson-agx/sdrharness/tests/test_amc_split_isolation.py": "662f5d3a60bceca757e8a7073a208a6aecf6905a70255200419d5f9657565476",
+    "jetson-agx/sdrharness/tests/test_rf_v1_evidence_client.py": "88e44f15a97adbdf35aa45acbbd01eca1720886ea48562cfa3e57f2626a82921",
+    "raspberry-pi/sdr-agent/web-console/public/app.js": "45aa0f9169324ab3f2fad8861771ed141c27461a2c9c586e4c957bfc58b9a43e",
+    "raspberry-pi/sdr-agent/web-console/public/index.html": "0a4ed3f9bc3b382feaa997fe36b815cd44f0022faa94a73cde0768d442126396",
+    "raspberry-pi/sdr-agent/web-console/src/corpus.rs": "014587cec4f27fbc9285775b1dc49b7e452cd92d12dd58e8fda80f7b845a2c35",
+    "raspberry-pi/sdr-agent/web-console/src/corpus/rf_v1.rs": "97867d9ca02e032423c3a65d4598cfa836d3afa21b8e741fbd08f3898f2d67e0",
+    "raspberry-pi/sdr-agent/web-console/src/main.rs": "cf1e61fb90f430fc0923028cbd6a3df17f1a455e2cd8d11a4ac3205677c9ee5c"
+  },
+  "cleanup": {
+    "verified_at_utc": "2026-09-05T17:58:05.291642+00:00",
+    "resolved_feature_root": "/var/tmp/sdrharness-dev/v1a-906a",
+    "active_feature_processes_before_removal": [],
+    "removed": {
+      "regular_files": 2421,
+      "logical_bytes": 1166670198
+    },
+    "exact_root_absent": true,
+    "sdr_transient_created": false,
+    "s2_detached_checkout_and_target_previously_removed": true,
+    "user_results_removed": false
+  }
+}

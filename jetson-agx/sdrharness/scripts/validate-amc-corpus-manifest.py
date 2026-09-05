@@ -35,7 +35,7 @@ SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 RELATIVE_PATH = re.compile(r"^[A-Za-z0-9._/-]{1,512}$")
 DATASET_PATH = re.compile(r"^/[A-Za-z0-9._/-]{1,255}$")
-EVALUATION_SPLITS = {"train", "validation", "test"}
+EVALUATION_SPLITS = {"train", "validation", "test", "calibration", "acceptance"}
 SPLITS = EVALUATION_SPLITS | {"calibration", "receive_domain", "golden"}
 SOURCE_KINDS = {"offline_dataset", "p201_receive", "golden_vector"}
 PROVENANCE = {"dataset_ground_truth", "independent_annotation", "unknown"}
@@ -318,7 +318,7 @@ def validate_split_policy(value: Any, status: str) -> set[str]:
         fail("value", "split_policy.strategy", "must be group_exclusive")
     if policy["group_keys"] != ["source_sample_id", "capture_session_id", "capture_day"]:
         fail("value", "split_policy.group_keys", "must contain the three frozen lineage keys in order")
-    allowed_list = require_list(policy["allowed_splits"], "split_policy.allowed_splits", 1, 6)
+    allowed_list = require_list(policy["allowed_splits"], "split_policy.allowed_splits", 1, 7)
     allowed = {require_enum(value, SPLITS, "split_policy.allowed_splits[]") for value in allowed_list}
     if len(allowed) != len(allowed_list):
         fail("value", "split_policy.allowed_splits", "must not contain duplicates")
@@ -351,7 +351,9 @@ def validate_assets(value: Any, root: Path, verify_assets: bool) -> dict[str, di
                 "preprocess_spec",
                 "label_table",
                 "capture_plan",
+                "capture_report",
                 "annotation_evidence",
+                "lineage_evidence",
                 "golden_fixture",
                 "raw_iq",
                 "model_tensor",
@@ -495,10 +497,17 @@ def validate_label(value: Any, path: str) -> dict[str, Any]:
     elif provenance == "independent_annotation":
         label = exact_object(
             value,
-            {"provenance", "numeric_id", "display_name", "display_name_status", "evidence"},
+            {"provenance", "numeric_id", "display_name", "display_name_status", "evidence"} | ({"category"} if "category" in value else set()),
             path,
         )
-        require_int(label["numeric_id"], f"{path}.numeric_id", 0, 65_535)
+        if "category" in label:
+            category = require_enum(label["category"], {"known_class", "noise_idle", "out_of_label_space", "mixed", "low_quality", "ambiguous"}, f"{path}.category")
+            if category == "known_class":
+                require_int(label["numeric_id"], f"{path}.numeric_id", 0, 23)
+            elif label["numeric_id"] is not None:
+                fail("label", path, "OOD/ambiguous evidence cannot force a numeric class")
+        else:
+            require_int(label["numeric_id"], f"{path}.numeric_id", 0, 65_535)
         evidence = exact_object(
             label["evidence"], {"annotation_id", "method", "annotated_at_utc", "evidence_sha256"}, f"{path}.evidence"
         )
@@ -783,6 +792,10 @@ def validate_record(
         manifest_status,
         f"{path}.source",
     )
+    if "category" in label and not any(a["role"] == "lineage_evidence" for a in assets.values()):
+        fail("label",path,"RF-v1 annotation categories require versioned lineage evidence")
+    if source_kind == "p201_receive" and label["provenance"] == "unknown" and split != "receive_domain":
+        fail("label", path, "unknown P201 rows cannot enter evaluation splits")
     return record_id, source_kind, {"split": split, "lineage": lineage, "provenance": label["provenance"]}
 
 
@@ -899,6 +912,132 @@ def validate_record_index(
     }
 
 
+def validate_rf_v1_derivation(manifest, root, assets, verify_assets):
+    """Validate the versioned sidecar without rewriting historical v1 records."""
+    profile_hash = "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab"
+    preprocess_hash = "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f"
+    label_hash = "0c269924bb74cf23584ad7584808d1bb263cdf03680f723f4cc40f165e6eafc8"
+    contract = manifest["contract"]
+    if (contract["input_profile"] != {"id": "rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1", "path": "input-profile.json", "sha256": profile_hash, "admission": "integration_only"}
+        or contract["preprocessing"] != {"id": "rf_preprocess_v1", "path": "preprocess.json", "sha256": preprocess_hash, "status": "frozen"}
+        or contract["label_space"]["sha256"] != label_hash
+        or contract["label_space"]["display_names_status"] != "provisional"):
+        fail("rf_v1", "contract", "RF-v1 identity is not the frozen candidate")
+
+    def document(value, field, maximum):
+        if not isinstance(value,str) or not value.strip() or len(value.encode()) > maximum or any(ord(c)<32 and c not in "\n\t" for c in value):
+            fail("value",field,"invalid bounded evidence document")
+        return value
+
+    def checked_asset(role, maximum):
+        matches = [a for a in assets.values() if a["role"] == role]
+        if len(matches) != 1:
+            fail("rf_v1", role, "requires exactly one asset")
+        a = matches[0]
+        p = resolve_regular_file(root, a["path"], role)
+        if p.stat().st_size > maximum or p.stat().st_size != a["bytes"] or file_sha256(p) != a["sha256"]:
+            fail("rf_v1", role, "asset size/hash mismatch")
+        return read_bounded_json(p, maximum, role)
+
+    d = exact_object(checked_asset("lineage_evidence", 256 * 1024), {
+        "schema_version", "schema_id", "parent_result_id", "parent_manifest_sha256", "parent_manifest_utf8",
+        "parent_record_sha256", "parent_record_utf8", "source_report", "request_correlation", "raw_iq_sha256", "transform", "iq_storage",
+        "profile_sha256", "preprocess_sha256"}, "derivation")
+    if (d["schema_version"] != 1 or d["schema_id"] != "rf_v1_corpus_derivation_v1" or d["transform"] != "rf_v1_profile_binding_v1"
+        or d["iq_storage"] != "shared_inode_no_copy" or d["profile_sha256"] != profile_hash or d["preprocess_sha256"] != preprocess_hash):
+        fail("rf_v1", "derivation", "unsupported derivation identity")
+    require_id(d["parent_result_id"], "parent_result_id")
+    parent_objects = []
+    for prefix, maximum in [("parent_manifest",128*1024),("parent_record",64*1024)]:
+        text = document(d[prefix+"_utf8"], prefix, maximum)
+        if hashlib.sha256(text.encode()).hexdigest() != d[prefix+"_sha256"]:
+            fail("lineage", prefix, "parent snapshot hash mismatch")
+        parent_objects.append(parse_json_bytes(text.encode(),prefix))
+    pm, parent = parent_objects
+    exact_object(pm, MANIFEST_KEYS, "parent_manifest")
+    if (pm["manifest_id"] != d["parent_result_id"] or pm["status"] != "frozen" or pm["corpus_kind"] != "p201_receive"
+        or pm["contract"]["input_profile"]["sha256"] != "7d2347550939be13d3ccde84add514ca5b4e549783fbc8e724124b4f0f4358ba"
+        or pm["record_index"]["sha256"] != d["parent_record_sha256"] or pm["record_index"]["count"] != 1
+        or pm["record_index"]["bytes"] != len(d["parent_record_utf8"].encode())):
+        fail("lineage", "parent_manifest", "not an original frozen capture")
+    parent_assets = validate_assets(pm["assets"], root, False)
+    validate_record(parent,0,{"receive_domain"},parent_assets,"provisional","frozen")
+    if parent["lineage"]["parent_record_id"] is not None or parent["label"]["provenance"] != "unknown":
+        fail("lineage", "parent_record", "derive revisions from the original unknown root")
+    if manifest["record_index"]["count"] != 1:
+        fail("rf_v1", "record_index", "one complete four-window capture required")
+    record = read_bounded_json(resolve_regular_file(root, manifest["record_index"]["path"], "records"), MAX_RECORD_LINE_BYTES, "records")
+    if record["record_id"] == parent["record_id"] or record["lineage"]["parent_record_id"] != parent["record_id"] or record["lineage"]["transforms"] != [d["transform"]]:
+        fail("lineage", "record", "parent or transform mismatch")
+    for key in ("source_sample_id", "capture_session_id", "capture_day"):
+        if record["lineage"][key] != parent["lineage"][key]:
+            fail("lineage", key, "derived groups must retain parent identity")
+    if record["window"] != parent["window"] or record["window"]["sha256"] != d["raw_iq_sha256"]:
+        fail("lineage", "window", "raw content changed during metadata derivation")
+    source = record["source"]
+    if any(source[k] != parent["source"][k] for k in source if k != "retention"):
+        fail("lineage", "source", "original source cannot be changed")
+    if source["retention"]["result_id"] != manifest["manifest_id"]:
+        fail("lineage", "retention", "wrong application result")
+    raw = assets[record["window"]["storage"]["asset_id"]]
+    if raw["sha256"] != d["raw_iq_sha256"] or raw["bytes"] != 16384 or record["window"]["samples"] != 4096 or record["window"]["storage"]["offset_bytes"] != 0:
+        fail("rf_v1", "raw_iq", "expected complete finite capture and original hash")
+    plan = checked_asset("capture_plan",128*1024)
+    report = d["source_report"]
+    exact_object(report, {"sweep_id","session_generation","backend","backend_version","estimated_duration_ms","elapsed_ms","noise_floor_dbfs","points","candidates","dataset"}, "source_report")
+    if len(report["points"]) != 1 or report["dataset"] is not None or report["backend"] != "agx_iq_software_aggregate" or report["backend_version"] != 1:
+        fail("rf_v1", "source_report", "not a bounded software RX capture")
+    p = report["points"][0]
+    if (report["session_generation"] != plan["sweep"]["session_generation"] or p["session_generation"] != report["session_generation"]
+        or report["sweep_id"] != source["plan_id"] or p["sequence"] != source["sequence"]
+        or p["actual_center_hz"] != source["center_hz"] or p["rx_input"] != source["rx_input"]
+        or p["sample_rate_hz"] != 2100000 or p["rf_bandwidth_hz"] != 1500000
+        or p["captured_samples"] != 4096 or p["dropped_samples"] != 0 or p["overflow"]
+        or not p["health"]["healthy"] or p["health"]["flags"] != 0 or p["timeout"]["timed_out"]):
+        fail("rf_v1", "source_report", "capture/request/session/RX correlation mismatch")
+    require_int(p["request_id"],"request_id",1,1<<63)
+    require_int(p["session_generation"],"session_generation",1,1<<63)
+    original_reports = [a for a in assets.values() if a["role"] == "capture_report"]
+    if original_reports:
+        original = checked_asset("capture_report",128*1024)
+        if original != report or d["request_correlation"] != "original_report_hash_verified":
+            fail("rf_v1","source_report","original report correlation mismatch")
+        if original_reports[0] not in pm["assets"]:
+            fail("rf_v1","source_report","report was not pinned by the original parent")
+    elif d["request_correlation"] != "legacy_reconstructed" or record["label"]["provenance"] != "unknown":
+        fail("rf_v1","source_report","old packages without original request evidence remain unknown")
+    label = record["label"]
+    if label["provenance"] == "unknown":
+        if record["split"] != "receive_domain" or any(a["role"] == "annotation_evidence" for a in assets.values()):
+            fail("label", "unknown", "unknown is not independent evidence")
+        return
+    if label["provenance"] != "independent_annotation" or "category" not in label:
+        fail("label", "provenance", "RF-v1 P201 requires independent evidence or unknown")
+    e = exact_object(checked_asset("annotation_evidence",32*1024), {
+        "schema_version","schema_id","annotation_id","method","reviewer","annotated_at_utc","independent_of_model","ambiguity","basis_report","basis_report_sha256",
+        "source_sample_id","capture_session_id","capture_day","iq_sha256","request_id","session_generation","sequence","profile_sha256","preprocess_sha256","label_space_sha256","category","numeric_id"}, "annotation")
+    if e["schema_version"] != 1 or e["schema_id"] != "rf_v1_independent_annotation_v1" or e["independent_of_model"] is not True:
+        fail("label", "annotation", "requires independently reviewed evidence")
+    require_id(e["reviewer"],"reviewer")
+    require_enum(e["method"],{"external_decoder","instrument_reference","human_review"},"method")
+    document(e["basis_report"],"basis_report",16384)
+    if hashlib.sha256(e["basis_report"].encode()).hexdigest() != e["basis_report_sha256"]:
+        fail("label", "basis_report", "evidence content hash mismatch")
+    for k in ("source_sample_id","capture_session_id","capture_day"):
+        if e[k] != record["lineage"][k]: fail("label",k,"evidence lineage mismatch")
+    for k in ("request_id","session_generation","sequence"):
+        if e[k] != p[k]: fail("label",k,"evidence capture mismatch")
+    for k, expected in [("iq_sha256",d["raw_iq_sha256"]),("profile_sha256",profile_hash),("preprocess_sha256",preprocess_hash),("label_space_sha256",label_hash),("category",label["category"]),("numeric_id",label["numeric_id"])]:
+        if e[k] != expected: fail("label",k,"annotation identity mismatch")
+    for k in ("annotation_id","method","annotated_at_utc"):
+        if e[k] != label["evidence"][k]: fail("label",k,"annotation reference mismatch")
+    if e["ambiguity"] is not None:
+        document(e["ambiguity"],"ambiguity",1024)
+        if record["split"] != "receive_domain": fail("label","ambiguity","ambiguous evidence cannot enter calibration/acceptance")
+    elif e["category"] == "ambiguous":
+        fail("label","ambiguity","must explain ambiguity")
+
+
 def validate_manifest(
     manifest: Any,
     schema: Any,
@@ -928,6 +1067,13 @@ def validate_manifest(
     ):
         fail("governance", "contract.preprocessing.status", "a production profile requires frozen preprocessing")
     allowed_splits = validate_split_policy(value["split_policy"], status)
+    if corpus_kind == "p201_receive" and contract["preprocessing"]["id"] == "rf_preprocess_v1":
+        roles = [a.get("role") for a in require_list(value["assets"],"assets",6,8) if isinstance(a,dict)]
+        base_roles = ["input_profile","preprocess_spec","label_table","capture_plan","raw_iq","lineage_evidence"]
+        if sorted(roles) not in [sorted(base_roles + extras) for extras in [[], ["capture_report"], ["capture_report","annotation_evidence"]]]:
+            fail("rf_v1","assets","unexpected asset roles")
+        if any(type(a.get("bytes")) is not int or not 0 < a["bytes"] <= 256*1024 for a in value["assets"]):
+            fail("rf_v1","assets","unbounded evidence asset")
     assets = validate_assets(value["assets"], root, verify_assets)
     require_contract_asset(contract["input_profile"], "input_profile", assets, "contract.input_profile")
     require_contract_asset(contract["preprocessing"], "preprocess_spec", assets, "contract.preprocessing")
@@ -942,6 +1088,10 @@ def validate_manifest(
         contract["label_space"]["display_names_status"],
         status,
     )
+    if any(a["role"] == "lineage_evidence" for a in assets.values()) and (corpus_kind != "p201_receive" or contract["preprocessing"]["id"] != "rf_preprocess_v1"):
+        fail("rf_v1","lineage_evidence","requires RF-v1 P201 derivation")
+    if corpus_kind == "p201_receive" and contract["preprocessing"]["id"] == "rf_preprocess_v1":
+        validate_rf_v1_derivation(value, root, assets, verify_assets)
     summary.update(
         {
             "schema_id": "amc_corpus_manifest_v1",

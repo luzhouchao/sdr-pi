@@ -9,8 +9,9 @@ use axum::{
 mod corpus;
 
 use corpus::{
-    delete_corpus_result, ingest_corpus_result, initialize_corpus_store, list_corpus_results,
-    load_corpus_result, P201CorpusIngestRequest, MAX_CORPUS_REQUEST_BYTES,
+    delete_corpus_result, derive_rf_v1, ingest_corpus_result, initialize_corpus_store,
+    list_corpus_results, load_corpus_result, P201CorpusIngestRequest, RfV1DeriveRequest,
+    MAX_CORPUS_REQUEST_BYTES,
 };
 use rusqlite::{params, Connection, OptionalExtension};
 use sdr_agent_controller::{
@@ -385,6 +386,10 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             "/api/corpus/{result_id}",
             get(get_p201_corpus).delete(delete_p201_corpus),
         )
+        .route(
+            "/api/corpus/{result_id}/derive-rf-v1",
+            post(post_rf_v1_corpus),
+        )
         .route("/api/events", get(events))
         .route("/api/sessions", post(create_session))
         .route("/api/sessions/{id}/activate", post(activate_session))
@@ -491,6 +496,27 @@ async fn post_p201_corpus(
     let detail = ingest_corpus_result(
         &state.config.result_db_path,
         &state.config.corpus_root,
+        request,
+    )?;
+    Ok((StatusCode::CREATED, Json(detail)))
+}
+
+async fn post_rf_v1_corpus(
+    ConnectInfo(peer): ConnectInfo<SocketAddr>,
+    State(state): State<AppState>,
+    Path(result_id): Path<String>,
+    Json(request): Json<RfV1DeriveRequest>,
+) -> ApiResult<(StatusCode, Json<corpus::CorpusResultDetail>)> {
+    if !peer.ip().is_loopback() {
+        return Err(ApiError(
+            StatusCode::FORBIDDEN,
+            "RF-v1 证据导入只允许 AGX 本机回环客户端".into(),
+        ));
+    }
+    let detail = derive_rf_v1(
+        &state.config.result_db_path,
+        &state.config.corpus_root,
+        &result_id,
         request,
     )?;
     Ok((StatusCode::CREATED, Json(detail)))

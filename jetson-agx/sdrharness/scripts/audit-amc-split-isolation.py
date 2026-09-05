@@ -414,6 +414,7 @@ def audit_lineage_records(records: list[dict[str, Any]]) -> dict[str, Any]:
         "capture_session_id": {},
         "capture_day": {},
     }
+    raw_owners: dict[str, str] = {}
     split_counts: dict[str, int] = {}
     source_counts: dict[str, int] = {}
     provenance_counts: dict[str, int] = {}
@@ -448,8 +449,12 @@ def audit_lineage_records(records: list[dict[str, Any]]) -> dict[str, Any]:
                     "an unknown P201 reception must remain receive_domain and cannot enter train/validation/test",
                 )
             receive_domain_unknown_count += 1
-        if split in EVALUATION_SPLITS:
+        if split in {*EVALUATION_SPLITS, "calibration", "acceptance"}:
             evaluation_record_count += 1
+            iq_hash = record.get("window", {}).get("sha256") if source_kind == "p201_receive" else None
+            if iq_hash is not None:
+                prior = raw_owners.setdefault(iq_hash, split)
+                if prior != split: fail("split_leak", "raw_iq_sha256", "identical IQ cannot cross evaluation partitions")
             for group_key, owners in group_owners.items():
                 group_value = lineage.get(group_key)
                 if group_value is None:
@@ -563,6 +568,7 @@ def audit_p201_corpus(
     package_names = snapshot()
     packages: list[dict[str, Any]] = []
     all_records: list[dict[str, Any]] = []
+    parent_snapshots: dict[str, dict[str, Any]] = {}
     for name in package_names:
         package = resolved_root / name
         manifest_path = package / "manifest.json"
@@ -578,6 +584,12 @@ def audit_p201_corpus(
         if len(records) != contract_summary["record_count"]:
             fail("record_index", str(records_path), "record count changed after contract validation")
         all_records.extend(records)
+        for asset in manifest["assets"]:
+            if asset["role"] == "lineage_evidence":
+                sidecar = contract.read_bounded_json(package / asset["path"],256*1024,"derivation")
+                parent = contract.parse_json_bytes(sidecar["parent_record_utf8"].encode(),"parent")
+                prior = parent_snapshots.setdefault(parent["record_id"],parent)
+                if prior != parent: fail("lineage","parent_snapshot","conflicting immutable parents")
         packages.append(
             {
                 "package": name,
@@ -590,6 +602,12 @@ def audit_p201_corpus(
         )
     if snapshot() != package_names:
         fail("p201_corpus", str(root), "package set changed during the audit")
+    current = {r["record_id"]:r for r in all_records}
+    for parent_id,parent in parent_snapshots.items():
+        if parent_id in current:
+            if current[parent_id] != parent: fail("lineage",parent_id,"stored parent differs from snapshot")
+        else:
+            all_records.append(parent)
     lineage = audit_lineage_records(all_records)
     return {
         "root": str(resolved_root),
