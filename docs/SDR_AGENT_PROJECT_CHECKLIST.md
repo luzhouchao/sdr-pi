@@ -12,6 +12,43 @@ Sections 1–6 are now the unified RX-only chapter plan and replace the earlier
 [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md);
 this file retains the detailed delivery and evidence ledger.
 
+## 当前交付状态速览（2026-09-06）
+
+以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
+编号表示范围，不表示施工先后；实际顺序见
+[`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
+本轮按 `7164ad0` 核对状态，仅调整规划，不增加实现/部署完成声明。
+
+- [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
+- [x] AGX 扫频/精查、结果存储和 RX 语料基础、split 隔离完成（第1/4/5章）。
+- [x] RF-v1 预处理、用户训练 epoch-10 checkpoint 的 validation 和 FP16 选择完成。
+- [x] 共享 RMS/四窗/full-logit/mean-logit runtime、golden 和有限实收故障清理完成。
+- [x] S1：准入/health/人工批准源码、测试及隔离真实 Worker 验证完成；生产服务未替换。
+- [ ] S2：统一完整结果与 Planner 紧凑 observation；四状态和校准身份，生产阈值不在此冻结。
+- [ ] S3：生产 Worker 队列、整批 deadline、取消确认、强杀/重启清理和指标。
+- [ ] S4：共享 GPU 调度与持续资源验收。
+  - [ ] S4a：推理租约、串行执行、取消/故障释放和实机正确性。
+  - [ ] S4b：最终代表性负载下的显存/RSS/队列/热稳定性证据。
+- [ ] S5：Runner 识别执行、批准、预算/audit、联合 stop、Spark 回灌及固定 Planner 回归。
+- [ ] S6：用户识别结果交付。
+  - [ ] S6a：完整结果保存/恢复/查看/删除；可先用 replay 或明确实验结果验证。
+  - [ ] S6b：S5 后真实闭环、浏览器结果和 Spark 紧凑摘要验收。
+- [ ] V1：RF-v1 独立数据证据准备。
+  - [ ] V1a：版本化导入/派生、独立证据接入、采样/覆盖/校准与验收分组规范。
+  - [ ] V1b：获得并审核足够的独立 known-RF/OOD 标签；实际覆盖达到预注册条件。
+- [ ] V2：根据 validation 和独立证据冻结校准/拒识，并完成独立验收。
+- [ ] V3：标签空间与模型准入。
+  - [ ] V3a：解决数字 ID/文本名称映射证据问题；解决前文本仍 provisional。
+  - [ ] V3b：规则冻结后执行一次 locked test；不得用 test 反复调参。
+- [ ] A1：production profile、可回滚部署、RX-only 矩阵验收和真实正向 capability。
+- [ ] O1：持续运行和运维。
+  - [ ] O1a：可重复故障/fuzz、日志/健康告警/升级回滚流程。
+  - [ ] O1b：24 小时完整闭环 soak；不替代人工批准策略或自动触发决策。
+- [ ] 第7章设备/辐射源身份识别：后续独立范围，不计入当前调制识别交付。
+
+真实候选继续 `recognizer_available=false`。软件实现、隔离验证、安装部署和
+科学准入分别记账；小项完成不能使仍缺其余条件的父项被勾选。
+
 ## 1. Agent/Harness and operator interface
 
 - [x] Select Jetson AGX Orin as the primary Agent, acquisition,
@@ -843,10 +880,14 @@ provisional-name state, calibration/rejection references, quality/source/timing
 and a bounded Planner summary. Do not freeze thresholds or label experimental
 uncalibrated results as production classifications.
 
-Then deliver S3 (Worker lifecycle, queue/deadline/cancel/crash cleanup), S4 (shared Spark/Mamba inference lease and
-resource soak), S5 (Runner execution/stop/feedback and Planner regression), and
-S6 (Web/terminal/persistence/manual deletion). Implementation and explicitly
-engineering-only validation can proceed before labels arrive; none implies
+The default execution order is S2 → V1a → S3 → S4a → S6a → S5 → S6b →
+S4b/O1a, then V2/V3b once independent evidence is ready, followed by A1/O1b.
+Start V1b data preparation and V3a label mapping early; V2 may move forward when
+its own prerequisites are met, and S6a may precede GPU work if needed. These
+splits are tracked in the status overview above. Detailed scheduling and
+completion boundaries are in
+[`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md).
+Engineering-only validation can proceed before labels arrive; none implies
 production admission. Current backlog one, batch cancellation and short
 co-residency evidence do not complete the production lifecycle/GPU gates.
 

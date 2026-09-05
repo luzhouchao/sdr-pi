@@ -300,7 +300,7 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
   `voltage0,1` scan pair，并只读验证 `voltage0` 的 `rf_port_select=A_BALANCED`；
   [`sdr.rs`](../raspberry-pi/sdr-agent/controller/src/sdr.rs) 对完整 RX1 身份失败关闭。
 
-## 重新安排后的交付顺序（2026-09-05）
+## 交付范围与依赖（2026-09-06 更新）
 
 历史已完成项保留：
 
@@ -325,8 +325,11 @@ B2c 的校准/test 准入缺口对应下面 V1—V3。C2 拆成以下明确边�
 - [ ] D：Runner/Agent/Web 闭环；实现可提前进行，生产执行只能在 A1 准入后开启。
 - [ ] E：冻结 RX-only 矩阵验收、清理和自动巡航识别准入；不以联调成功代替。
 
-S1 已于 2026-09-06 完成源码、隔离实机 health 验证与清理。软件工作无需等待
-独立标签，接下来按 S2 → S3 → S4 → S5 → S6 逐个交付。
+S1 已于 2026-09-06 完成源码、隔离实机 health 验证与清理。以下 S/V 编号表示
+交付范围，不要求依编号施工。当前下一单元仍为 S2；随后优先前置 V1a 证据工具，
+并将 S6a 结果查看安排在完整 S5 Runner 闭环之前。具体顺序、可调换项和数据
+阻塞处理见
+[`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 数据证据 V1 可同期筹备；这里的两条工作线是依赖安排，不要求并发 Agent。
 所有开发阶段继续使用 replay、合成 golden 或显式 engineering-only RX 路径，
 不得为联调把生产 capability 临时改成 true。
@@ -336,15 +339,15 @@ S1 已于 2026-09-06 完成源码、隔离实机 health 验证与清理。软件
 | S1：准入与批准门（源码/隔离验证已完成） | 定义 `RecognizerAdmission`/版本化 health 合同；能力由当前 Worker 健康、模型/profile/preprocess/精度和准入记录共同决定；修正 step/cruise 识别人工批准 | 缺失、过期、错误哈希、Worker 重启或未准入均失败关闭；request/template 不能自行宣称可用；真实候选仍 false；无需标签数据 |
 | S2：统一识别结果（下一单元） | 内部完整结果与 Planner 紧凑 observation；四种状态、numeric ID、名称可信度、calibration/rejection identity、质量/来源/timing；预留严格的校准包读取 | schema/负例/序列化/上下文边界验证；未校准实验输出不冒充生产 classified；温度和阈值保持未冻结；依赖 S1 的身份合同 |
 | S3：Worker 生命周期 | 明确应用队列边界、整批 deadline、cancel acknowledgement、超时恢复、进程退出/强杀/重启清理、Worker 实例身份和指标 | backlog=1 不作为队列验收；过期/取消任务不能继续占用下一批；迟到结果不能跨 generation/实例；实机故障注入和精确 spool 清理；依赖 S1/S2 |
-| S4：共享 GPU 与资源 | Spark/Mamba 常驻、活跃推理串行；租约获得/释放、取消和崩溃释放；queue/drop/deadline/RSS/显存/温度统计 | 实机证明 `Spark → Mamba → Spark`、故障后可继续、无租约泄漏；按预注册时长/负载做资源 soak；依赖 S3，不能复用短时共存当持续验收 |
-| S5：Runner 执行与反馈 | one-shot/interactive/cruise 识别执行器、人工批准、预算/audit、SDR+Worker stop、观察回灌和新一轮 Spark | 工程模式完成成功/拒识/不可用/错误/取消/迟到结果全链路；固定六动作 Planner 回归另计模型质量与 Rust 安全；依赖 S2—S4；生产仍由 S1 关闭 |
-| S6：用户结果交付 | Web/终端展示四状态及证据；SQLite 完整识别记录、默认不留 IQ、单条人工删除 | 无 IQ 路径/张量进入 Planner；未标注结论不写成已确认事实；真实浏览器、结果恢复/删除和 Spark 摘要验证；依赖 S2/S5 |
+| S4：共享 GPU 与资源 | Spark/Mamba 常驻、活跃推理串行；租约获得/释放、取消和崩溃释放；queue/drop/deadline/RSS/显存/温度统计 | 实机证明 `Spark → Mamba → Spark`、故障后可继续、无租约泄漏；按预注册时长/负载做资源 soak；S4a 依赖 S3；S4b 用最终代表性负载持续验收，不复用短时共存证据 |
+| S5：Runner 执行与反馈 | one-shot/interactive/cruise 识别执行器、人工批准、预算/audit、SDR+Worker stop、观察回灌和新一轮 Spark | 工程模式完成成功/拒识/不可用/错误/取消/迟到结果全链路；固定六动作 Planner 回归另计模型质量与 Rust 安全；依赖 S2/S3/S4a；S4b 持续验收可随后进行，生产仍由 S1 关闭 |
+| S6：用户结果交付 | Web/终端展示四状态及证据；SQLite 完整识别记录、默认不留 IQ、单条人工删除 | 无 IQ 路径/张量进入 Planner；未标注结论不写成已确认事实；真实浏览器、结果恢复/删除和 Spark 摘要验证；S6a 只依赖 S2，可提前交付；S6b 的真实闭环验收依赖 S5/S6a |
 
 | 单元 | 缺失的独立证据与处理 | 完成条件及依赖 |
 | --- | --- | --- |
 | V1：RF-v1 证据接入与独立标签 | 升级现有 legacy/unknown-only 接入口或提供严格导入/派生工具；明确 known-RF 类别、noise/idle、类外信号、混合/低质量覆盖以及 session/day/source 分组 | 标签由用户或独立证据提供；记录依据、审核/歧义和谱域条件；预注册采样矩阵、覆盖/样本量依据、校准集与独立验收集；已有 unknown 包不自动变真值 |
 | V2：校准和拒识 | 在冻结 FP16/mean-logit 下，仅用 validation 与独立校准证据拟合温度及 confidence/agreement/SNR/bandwidth/质量规则 | 独立验收集报告已知类准确率、rejection rate、false acceptance、ECE/NLL 及覆盖限制；失败不靠查看 locked test 调参；依赖 V1/S2 |
-| V3：模型准入 | 处理 numeric-ID/文本名称争议，冻结准入 manifest、calibration 和 acceptance 标识，然后执行一次 locked test | 准入规则在查看结果前冻结；test 失败记录失败并回到候选流程，不反复重调同一 test；任何后续重训仍由用户负责；依赖 V2 |
+| V3：模型准入 | V3a 名称映射证据可提前核对；V3b 在冻结准入 manifest、calibration 和 acceptance 标识后执行一次 locked test | 准入规则在查看结果前冻结；test 失败记录失败并回到候选流程，不反复重调同一 test；任何后续重训仍由用户负责；V3b 依赖 V2/V3a，V3a 不必等待 V2 |
 
 - [ ] A1：S1—S6、V1—V3 证据齐备后，版本化 production profile、部署可回滚
       Worker/Controller，验证实际部署哈希、恢复/清理以及预注册频率/增益/session
