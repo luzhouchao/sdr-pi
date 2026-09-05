@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "schema_id": "rf_aligned_checkpoint_candidate_v1",
+  "status": "candidate_validation_only",
+  "model_id": "rml2018a-d8-rf-v1-ft-batched-seed44-epoch010-fp32-candidate",
+  "asset_root": "local-assets/amc-eval",
+  "production_enabled": false,
+  "recognizer_available": false,
+  "checkpoint": {
+    "path": "checkpoints/rml2018a/rf-v1-ft-batched-seed44/epoch-010.pt",
+    "bytes": 1726724,
+    "sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054"
+  },
+  "delivery": {
+    "training_result": {
+      "path": "checkpoints/rml2018a/rf-v1-ft-batched-seed44/training-result.json",
+      "sha256": "d00504dbadcd8385720de383496dee1baaf0962e7549f0f8f29b2f9ed86e98db"
+    },
+    "completion_hashes": {
+      "path": "checkpoints/rml2018a/rf-v1-ft-batched-seed44/completion-hashes.json",
+      "sha256": "c4852c8dbd83abacb450ef84c64bbdb0063eacf2784c511e2235b2f96322287c"
+    },
+    "selected_checkpoint": {
+      "path": "checkpoints/rml2018a/rf-v1-ft-batched-seed44/selected-checkpoint.json",
+      "sha256": "a1984a0c54bdc317ae0aa826a415f9bcabc90641aa9c64cdc541f1128607ba66"
+    },
+    "input_hashes": {
+      "path": "checkpoints/rml2018a/rf-v1-ft-batched-seed44/hashes.json",
+      "sha256": "ce10d72cb208ae1358b2d2ab06974c3174d33736570e7f6837217374280a41d1"
+    },
+    "training_config": {
+      "path": "checkpoints/rml2018a/rf-v1-ft-batched-seed44/config.json",
+      "sha256": "b4e65447a66ce4d8d2d6a511238a19890c7d967e5106f3ebb0270e597505a364"
+    },
+    "numeric_labels": {
+      "path": "checkpoints/rml2018a/rf-v1-ft-batched-seed44/labels.json",
+      "sha256": "6010b4d39a98c57b5b2f47bcdf8ab9e849dd90190443b00e2916af91198d4e57"
+    },
+    "training_script": {
+      "path": "checkpoints/rml2018a/rf-v1-ft-batched-seed44/rf_train.py",
+      "sha256": "0928529c4fb18ff9e891208a24b334198c773cc071f88ecefc80eb7664a91e1c"
+    },
+    "smoke_script": {
+      "path": "checkpoints/rml2018a/rf-v1-ft-batched-seed44/smoke_checks.py",
+      "sha256": "ce69eb0e466e321f7779573a3616588f871b6d2f45b52ba59ce560e802d03c18"
+    },
+    "launch_script": {
+      "path": "checkpoints/rml2018a/rf-v1-ft-batched-seed44/launch_observed.py",
+      "sha256": "a2bc82eabd712a3fe6c4bf9b76cab3f5f80475eb6a9f110d23981e1e8017efa7"
+    },
+    "training_status": {
+      "path": "checkpoints/rml2018a/rf-v1-ft-batched-seed44/TRAINING_STATUS.md",
+      "sha256": "87bfccc50bd96114d3a2ea7cc3f8f7fbc2ae19cbfefb9c5317ccb38375879a6b"
+    }
+  },
+  "model": {
+    "class": "AMCMambaD8",
+    "variant": "amc_mamba_d8",
+    "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+    "parameters": 134798,
+    "model_source_commit": "8bc6fb5dc58e1b83338bdebb2624824f1e6b0798",
+    "source_identity_manifest": {
+      "path": "jetson-agx/sdrharness/config/amc/rml2018a-d8-seed44.experimental.json",
+      "sha256": "1b7ad226bf88b8f8d363df384ddcbfb65c83db51b0ec305742be2ad5a082698e"
+    },
+    "architecture_config": {
+      "path": "checkpoints/rml2018a/seed44/config.json",
+      "sha256": "6188ee2865724107019585a13deec41c9aac1e9ccef3c4cca85ef5e396e285fd"
+    }
+  },
+  "data": {
+    "dataset": {
+      "path": "datasets/rml2018a/RML2018a.hdf5",
+      "bytes": 21449148312,
+      "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38"
+    },
+    "split": {
+      "path": "splits/RML2018a_split_seed44_tr700_val150_te150.npz",
+      "bytes": 3906249,
+      "sha256": "5b8ccdc0183455445d5beab20f2ed7e553ff616da76a31114f700929607d0792"
+    },
+    "selection_plan": {
+      "path": "jetson-agx/sdrharness/config/amc/rf-preprocess-v1-selection-plan.json",
+      "sha256": "52320186d17dbd2dade4c8452c0538ea8d3b7a6a55c1caed199fa35d323842bc"
+    },
+    "allowed_split_members": ["train", "val"],
+    "forbidden_split_members": ["test"]
+  },
+  "preprocess": {
+    "id": "rf_preprocess_v1",
+    "path": "jetson-agx/sdrharness/config/amc/rf-preprocess-v1.json",
+    "sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "normalization": "four_window_capture_complex_unit_rms",
+    "remove_dc": false,
+    "aggregation": "arithmetic_mean_logits",
+    "softmax": "after_mean_logits"
+  },
+  "training": {
+    "initialization": "seed44_weights_fresh_optimizer",
+    "seed": 44,
+    "selected_epoch": 10,
+    "epochs_completed": 17,
+    "stop_reason": "validation_early_stopping_patience_7",
+    "loss": "cross_entropy_of_four_window_mean_logits",
+    "validation_groups": 95607,
+    "validation_source_rows": 382428,
+    "reference_validation_accuracy": 0.6705575951551664,
+    "reference_validation_nll": 1.0007131779854817,
+    "test_loader_enabled": false
+  },
+  "agx_validation": {
+    "split": "val",
+    "complete_groups_required": 95607,
+    "source_rows_required": 382428,
+    "precision": "fp32",
+    "accuracy_absolute_tolerance": 0.0001,
+    "nll_absolute_tolerance": 0.0001,
+    "full_checkpoint_strict_load_required": true,
+    "all_logits_finite_required": true,
+    "dataset_hash_recheck_required": true,
+    "test_member_must_remain_unloaded": true
+  },
+  "calibration": {
+    "candidate_method": "scalar_temperature_after_mean_logits",
+    "production_temperature": null,
+    "production_confidence_threshold": null,
+    "production_window_agreement_threshold": null,
+    "production_unknown_rejection": null,
+    "known_rf_and_ood_evidence_required": true
+  },
+  "limitations": {
+    "display_names_status": "provisional",
+    "precision_selection_complete": false,
+    "known_rf_accuracy_available": false,
+    "open_set_false_acceptance_measured": false,
+    "runtime_shared_capture_rms_implemented": false,
+    "runtime_full_logit_aggregation_implemented": false,
+    "locked_test_opened_for_this_checkpoint": false,
+    "production_blocker": "AGX validation parity, precision selection, labeled known-RF/OOD calibration and thresholds, runtime parity, Worker admission and one final locked-test evaluation remain required."
+  }
+}

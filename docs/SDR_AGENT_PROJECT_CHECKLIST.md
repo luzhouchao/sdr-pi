@@ -585,11 +585,16 @@ recognition; it does not own hardware control or another runtime backend.
       code never loaded the test member/result; labeled validation accuracy and
       unlabeled P201 quality/confidence remained separate. See
       [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md).
-- [ ] After the user returns an RF-aligned checkpoint, refit and freeze scalar
-      calibration plus confidence/agreement/SNR/bandwidth acceptance thresholds
-      using validation and independently labeled known-RF/OOD evidence, then
-      perform one locked test admission. The seed44 diagnostic temperature and
-      closed-set coverage curve are explicitly non-production.
+- [x] Receive the user-trained epoch-10 RF-aligned checkpoint, retain its full
+      147-entry provenance map in an isolated ignored AGX asset directory, and
+      strictly evaluate all 95,607 grouped validation examples in FP32:
+      aggregate accuracy matched the 4090 exactly at `0.6705575952` and NLL
+      differed by only `6.8e-8`; test remained unopened and capability false. See
+      [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md).
+- [ ] Use independently labeled known-RF/OOD evidence with the final checkpoint
+      to freeze scalar calibration plus confidence/agreement/SNR/bandwidth
+      acceptance thresholds, then perform one locked test admission. The new
+      validation-only temperature candidate `1.34647` remains non-production.
 - [ ] Resolve the RML2018A numeric-ID/name-order dispute; until then, retain the
       numeric ID as trusted identity and mark every text name provisional.
 
@@ -604,6 +609,7 @@ Evidence:
 - [`P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md`](P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md)
 - [`AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md`](AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md)
 - [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md)
+- [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 6. Local Mamba modulation recognition
@@ -632,11 +638,14 @@ Evidence:
       asset root; strictly load both checkpoints and reproduce both complete
       FP32 test sets. Evidence:
       [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md).
-- [ ] Retain seed44 as an experimental baseline, then retrain or fine-tune and
-      select one RF-aligned production Mamba checkpoint using the exact frozen
-      Chapter 4 `rf_preprocess_v1`; pin model source, split, profile, labels,
-      precision, calibration and acceptance thresholds before viewing the
-      frozen test result.
+- [x] Retain seed44 as an experimental baseline and receive the user's
+      validation-selected RF-aligned epoch-10 fine-tuned checkpoint using the
+      exact frozen Chapter 4 `rf_preprocess_v1`. Its source, split, preprocessing,
+      numeric labels, training config and checkpoint are pinned; strict AGX FP32
+      loading and complete validation parity passed without opening test.
+- [ ] Select precision and freeze calibration/acceptance thresholds before
+      promoting epoch 10 from validation-only candidate to an admitted
+      production checkpoint or viewing its frozen test result.
 - [x] Implement and live-validate the experimental AGX CUDA/Mamba Worker behind
       the existing backend-neutral Unix Recognizer Adapter without exposing
       PyTorch, Triton or CUDA objects through the Controller interface; keep it
@@ -704,6 +713,7 @@ Evidence:
 - [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
+- [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 7. Emitter/radiation-source identification
@@ -756,17 +766,14 @@ Evidence:
 
 ## Current next milestone
 
-Delivery A, the independent Chapter 4 acquisition gates, the first
-application-owned P201 corpus row/manual-delete gate, source/session/day split
-isolation and the validation-only `rf_preprocess_v1` retraining contract are
-complete. The next dependency is the user-owned 4090 retraining/fine-tuning
-handoff described in
-[`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md).
-After a new checkpoint returns, continue delivery C with strict AGX loading,
-validation/known-RF/OOD calibration and thresholds, runtime shared-capture RMS
-plus mean-logit support, and only then a locked test admission. The current
-seed44 integration profile intentionally remains non-production and must not be
-connected to the production Runner.
+Delivery A, the independent Chapter 4 acquisition gates, corpus/split controls,
+the frozen `rf_preprocess_v1`, user-owned 4090 retraining and strict complete
+AGX FP32 validation parity are complete. Continue delivery C by pre-registering
+FP16/BF16 comparison against the new FP32 validation baseline, then implement
+runtime shared-capture RMS/full-logit aggregation. Independently labeled
+known-RF/OOD evidence is still required before production calibration,
+acceptance thresholds or one locked-test admission. Both seed44 and the new
+epoch-10 candidate intentionally remain unavailable to the production Runner.
 
 The remaining Chapter 1 gaps are recognition rendering, bounded persistence and
 compact Agent feedback. Chapter 2 still lacks live recognizer capability,

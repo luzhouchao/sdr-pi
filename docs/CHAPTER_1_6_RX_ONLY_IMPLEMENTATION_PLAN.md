@@ -168,9 +168,12 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       不做数字频移/额外滤波/重采样、保留 DC、四窗共享 RMS、4 × 1,024 连续窗和
       mean-logit；选择代码未加载 test，见
       [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md)。
-- [ ] 新 RF-aligned checkpoint 返回后实现 shared-capture RMS/full-logit runtime，
-      再仅用 validation 与独立标注 known-RF/OOD 证据冻结模型相关的温度、置信度、
-      agreement、SNR、带宽和质量阈值；最后才能做一次 locked test 准入。
+- [x] 用户训练的 RF-aligned epoch-10 checkpoint 已独立下载、逐文件核验并在 AGX
+      严格加载；完整 95,607 个 validation 四窗组 accuracy 与 4090 完全一致，NLL
+      差 `6.8e-8`，test 未打开且 capability 保持 false。
+- [ ] 实现 shared-capture RMS/full-logit runtime，再仅用 validation 与独立标注
+      known-RF/OOD 证据冻结温度、置信度、agreement、SNR、带宽和质量阈值；最后
+      才能做一次 locked test 准入。
 
 ## 第5章：输入标准化、接收域对齐与评测治理
 
@@ -208,9 +211,10 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       四窗共享复数 RMS、保留 DC、4 × 1,024 和 mean-logit 作为重训合同；历史
       test 虽已存在，但本次工具拒绝加载 test 成员/结果。P201 `unknown` 的质量和
       置信度单独报告，未混入准确率。
-- [ ] 最终 checkpoint 产生后，用 validation 加独立标注 known-RF/OOD 数据拟合并
-      冻结 calibration 与 acceptance threshold，再查看该 checkpoint 的 locked
-      test；当前 seed44 温度 `2.0251` 只是不可迁移的诊断值。
+- [x] 最终候选 checkpoint 已返回并完成 AGX FP32 全 validation parity；新温度
+      `1.34647` 仅记录为 validation-only candidate，没有误冻结为生产参数。
+- [ ] 补充独立标注 known-RF/OOD 数据，冻结 calibration 与 acceptance threshold，
+      再查看该 checkpoint 的 locked test。
 - [ ] 解决 RML2018A 数字 ID 到名称顺序争议；解决前数字 ID 是唯一可信类别身份，
       文本名称必须标为 provisional。
 
@@ -235,8 +239,10 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
 
 ### 还未完成
 
-- [ ] 使用冻结的 `rf_preprocess_v1` 在 4090 重训或微调并选择 RF-aligned D8
-      checkpoint，在看 frozen test 前锁定源码、split、profile、标签、校准和阈值。
+- [x] 用户已使用冻结的 `rf_preprocess_v1` 在 4090 微调并按 validation 选择 D8
+      epoch 10；AGX 已锁定并验证源码、split、profile、数字标签、训练配置和权重，
+      test 保持锁定。见
+      [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md)。
 - [ ] 在最终 checkpoint 上比较 FP16/BF16/FP32 的完整准确率、argmax/logits
       偏差、时延和资源，选择 AGX 生产精度。
 - [ ] 实现多窗口聚合、置信度校准与 noise/unknown/低质量/低置信度拒识，报告
@@ -280,8 +286,9 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       本次选择没有读取 test。
 - [ ] B2c：最终 checkpoint 返回后，只用 validation 与独立标注 known-RF/OOD
       证据冻结模型相关校准和 acceptance threshold，再执行一次 locked test。
-- [ ] C：在 4090 训练 RF-aligned checkpoint，回到 AGX 完成精度、拒识、资源和
-      production Worker 准入。
+- [x] C1：用户在 4090 完成 RF-aligned checkpoint 训练与 validation 选择；AGX
+      完成独立下载、严格 FP32 加载和完整 validation parity。
+- [ ] C2：在 AGX 完成精度选择、拒识、资源和 production Worker 准入。
 - [ ] D：最后接入第1—2章 Runner/Agent/Web，完成 health capability、人工批准、
       结果回灌、共享 GPU gate、`/stop` 和 stale-result 全链路。
 - [ ] E：按冻结 RX-only 矩阵做一次最终验收和清理，再决定是否允许自动巡航

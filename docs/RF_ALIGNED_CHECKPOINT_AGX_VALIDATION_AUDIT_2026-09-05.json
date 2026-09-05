@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "schema_id": "rf_aligned_checkpoint_agx_validation_evidence_v1",
+  "status": "pass",
+  "started_at_utc": "2026-09-05T10:50:26Z",
+  "completed_at_utc": "2026-09-05T10:54:33Z",
+  "handoff": {
+    "remote_root": "/data/lzc/rf-aligned-batched-20260905",
+    "local_root": "/home/jetson/sdrharness/local-assets/amc-eval/checkpoints/rml2018a/rf-v1-ft-batched-seed44",
+    "transport": "4090-via-aliyun",
+    "files_retained": 11,
+    "local_directory_bytes": 1791823,
+    "all_downloaded_hashes_match_delivery": true
+  },
+  "checkpoint": {
+    "remote_path": "/data/lzc/rf-aligned-batched-20260905/runs/rml2018a/amc_mamba_d8/rf_v1_ft_batched_seed44/epoch-010.pt",
+    "local_path": "local-assets/amc-eval/checkpoints/rml2018a/rf-v1-ft-batched-seed44/epoch-010.pt",
+    "bytes": 1726724,
+    "sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "selected_epoch": 10,
+    "strict_state_dict_load": true,
+    "config_exact": true,
+    "provenance_map_exact": true,
+    "provenance_entries": 147
+  },
+  "training": {
+    "status": "completed",
+    "initialization": "seed44_weights_fresh_optimizer",
+    "epochs_completed": 17,
+    "stop_reason": "validation_early_stopping_patience_7",
+    "wall_seconds": 12552.901614148985,
+    "train_steps": 237507,
+    "loss": "cross_entropy_of_four_window_mean_logits",
+    "validation_groups": 95607,
+    "validation_source_rows": 382428,
+    "selected_validation_accuracy": 0.6705575951551664,
+    "selected_validation_nll": 1.0007131779854817,
+    "test_loader_enabled": false,
+    "production_enabled": false
+  },
+  "pinned_assets": {
+    "candidate_manifest_sha256": "a937fc5eba72cc9cb596eb8d86d87917110a2fedf130436b399ceb513779eeb4",
+    "validator_sha256": "de17bc4fa301b8aea94f4f2076fe9b0b0f738e48430e005ffc4440a49facdb95",
+    "dataset_sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "dataset_hash_reverified_on_agx": true,
+    "split_sha256": "5b8ccdc0183455445d5beab20f2ed7e553ff616da76a31114f700929607d0792",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "model_source_commit": "8bc6fb5dc58e1b83338bdebb2624824f1e6b0798",
+    "model_source_files_verified_on_agx": 11,
+    "training_result_sha256": "d00504dbadcd8385720de383496dee1baaf0962e7549f0f8f29b2f9ed86e98db",
+    "completion_hashes_sha256": "c4852c8dbd83abacb450ef84c64bbdb0063eacf2784c511e2235b2f96322287c",
+    "input_hashes_sha256": "ce10d72cb208ae1358b2d2ab06974c3174d33736570e7f6837217374280a41d1",
+    "numeric_labels_sha256": "6010b4d39a98c57b5b2f47bcdf8ab9e849dd90190443b00e2916af91198d4e57"
+  },
+  "governance": {
+    "split_members_loaded": ["train", "val"],
+    "test_member_loaded": false,
+    "test_result_path_opened": false,
+    "raw_iq_written": false,
+    "numeric_class_ids_authoritative": true,
+    "display_names_status": "provisional",
+    "recognizer_available": false
+  },
+  "model": {
+    "class": "AMCMambaD8",
+    "variant": "amc_mamba_d8",
+    "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+    "parameters": 134798,
+    "precision": "fp32",
+    "agx_device": "Orin",
+    "agx_torch": "2.8.0"
+  },
+  "validation": {
+    "complete_groups": 95607,
+    "source_rows": 382428,
+    "tail_rows_excluded": 957,
+    "accuracy": 0.6705575951551664,
+    "negative_log_likelihood": 1.0007131099700928,
+    "ece_15_bin": 0.02027627205342338,
+    "snr_ge_4_accuracy": 0.9879927723484039,
+    "snr_ge_4_groups": 51469,
+    "old_seed44_same_contract_accuracy": 0.5797483447864696,
+    "old_seed44_same_contract_snr_ge_4_accuracy": 0.849229633371544,
+    "all_snr_absolute_gain": 0.09080925036869676,
+    "snr_ge_4_absolute_gain": 0.1387631389768599
+  },
+  "agx_4090_parity": {
+    "status": "pass",
+    "accuracy_delta": 0.0,
+    "accuracy_absolute_tolerance": 0.0001,
+    "nll_delta": -6.801538887657443e-08,
+    "nll_absolute_tolerance": 0.0001
+  },
+  "window_agreement": {
+    "mean": 0.7520579099655151,
+    "p01": 0.25,
+    "p50": 1.0,
+    "p95": 1.0,
+    "all_four_equal_fraction": 0.5238528559624295,
+    "production_threshold": null
+  },
+  "calibration_candidate": {
+    "status": "validation_candidate_only_not_production",
+    "temperature": 1.3464721297806175,
+    "fit_groups": 47603,
+    "audit_groups": 48004,
+    "audit_identity_nll": 1.0011530841608955,
+    "audit_calibrated_nll": 0.9941795483454038,
+    "audit_identity_ece_15_bin": 0.021244178040842686,
+    "audit_calibrated_ece_15_bin": 0.009539347886757303,
+    "production_temperature_frozen": false,
+    "production_acceptance_threshold_frozen": false,
+    "blocker": "Independently labeled known-RF/OOD evidence is absent."
+  },
+  "performance": {
+    "total_wall_seconds": 247.58516620798036,
+    "inference_seconds": 199.79737428796943,
+    "groups_per_batch": 64,
+    "cuda_peak_allocated_bytes": 581594624,
+    "cuda_peak_reserved_bytes": 792723456,
+    "process_max_rss_bytes": 4352163840
+  },
+  "temporary_result": {
+    "path": "/var/tmp/sdrharness-dev/rf-v1-checkpoint-agx-validation-20260905/full.json",
+    "bytes": 8139,
+    "sha256": "8aeabd6ccff4119c49221487d2b4f5aa505e13a83da887bc82196b8cfd40637f",
+    "feature_directory_bytes_before_cleanup": 12235,
+    "cleanup_verified": true
+  },
+  "production": {
+    "checkpoint_agx_fp32_validation_passed": true,
+    "precision_selected": false,
+    "production_calibration_frozen": false,
+    "production_acceptance_threshold_frozen": false,
+    "runtime_profile_admitted": false,
+    "locked_test_opened": false,
+    "recognizer_available": false
+  }
+}
