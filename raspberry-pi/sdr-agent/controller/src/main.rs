@@ -21,6 +21,9 @@ use sdr_agent_controller::recognition_input::{
 use sdr_agent_controller::recognizer::{
     LocalRecognizer, RecognitionRequest, UnixRecognizerAdapter, RECOGNIZER_MAX_FRAME_BYTES,
 };
+use sdr_agent_controller::recognizer_admission::{
+    refresh_recognizer, RecognizerCapability, UnixRecognizerCapability, DEFAULT_ADMISSION_PATH,
+};
 use sdr_agent_controller::runner::{ApprovalMode, JsonlAuditAdapter, Runner};
 use sdr_agent_controller::sdr::{SdrEngine, SdrdAdapter};
 use sdr_agent_controller::sweep::{SdrdSoftwareSweepAdapter, SweepEngine, SweepPlan, SweepReport};
@@ -56,6 +59,7 @@ fn run() -> AppResult<()> {
     let mut mode = "plan".to_owned();
     let mut sdrd_address = None;
     let mut recognizer_socket = "/run/sdr-agent/recognizer.sock".to_owned();
+    let mut recognizer_admission = PathBuf::from(DEFAULT_ADMISSION_PATH);
     let mut recognizer_spool_root = "/run/sdr-agent/iq".to_owned();
     let mut timeout_ms = 30_000_u64;
     let mut sdrd_timeout_ms = 5_000_u64;
@@ -83,6 +87,7 @@ fn run() -> AppResult<()> {
             "--mode" => mode = value,
             "--sdrd" => sdrd_address = Some(value.parse::<SocketAddr>()?),
             "--recognizer-socket" => recognizer_socket = value,
+            "--recognizer-admission" => recognizer_admission = PathBuf::from(value),
             "--recognizer-spool-root" => recognizer_spool_root = value,
             "--timeout-ms" => timeout_ms = value.parse()?,
             "--sdrd-timeout-ms" => sdrd_timeout_ms = value.parse()?,
@@ -121,6 +126,7 @@ fn run() -> AppResult<()> {
         "plan"
             | "observe"
             | "recognize"
+            | "recognizer-health"
             | "recognize-live"
             | "derive-recognition-target"
             | "prepare-recognition-batch"
@@ -131,12 +137,23 @@ fn run() -> AppResult<()> {
             | "run-once"
     ) {
         return Err(invalid_input(
-            "--mode must be plan, observe, recognize, recognize-live, derive-recognition-target, prepare-recognition-batch, recognize-batch-live, execute, cancel, sweep, or run-once",
+            "--mode must be plan, observe, recognize, recognizer-health, recognize-live, derive-recognition-target, prepare-recognition-batch, recognize-batch-live, execute, cancel, sweep, or run-once",
         )
         .into());
     }
     if sigmf_directory.is_some() && mode != "sweep" {
         return Err(invalid_input("--sigmf-directory is valid only in sweep mode").into());
+    }
+
+    if mode == "recognizer-health" {
+        let mut probe = UnixRecognizerCapability::new(&recognizer_socket, &recognizer_admission);
+        println!(
+            "{}",
+            serde_json::to_string(
+                &probe.observe(request_id.unwrap_or(1), session_generation.unwrap_or(1))
+            )?
+        );
+        return Ok(());
     }
 
     if mode == "derive-recognition-target" {
@@ -296,7 +313,11 @@ fn run() -> AppResult<()> {
             survey_gain_db,
             sweep_point_timeout_ms,
             audit,
-        );
+        )
+        .with_recognizer(UnixRecognizerCapability::new(
+            &recognizer_socket,
+            &recognizer_admission,
+        ));
         println!(
             "{}",
             serde_json::to_string(&runner.run_once(request, approval)?)?
@@ -397,7 +418,11 @@ fn run() -> AppResult<()> {
         let address = sdrd_address
             .ok_or_else(|| invalid_input("--mode execute requires --sdrd HOST:PORT"))?;
         let bytes = read_request(&request_path, MAX_FRAME_BYTES)?;
-        let input: ExecutionInput = serde_json::from_slice(&bytes)?;
+        let mut input: ExecutionInput = serde_json::from_slice(&bytes)?;
+        refresh_recognizer(
+            &mut input.request,
+            &mut UnixRecognizerCapability::new(&recognizer_socket, &recognizer_admission),
+        );
         ControllerPolicy.validate_request(&input.request)?;
         let plan: ValidatedPlan =
             ControllerPolicy.validate_response(&input.request, input.response)?;
@@ -422,13 +447,14 @@ fn run() -> AppResult<()> {
     if let Some(address) = sdrd_address {
         let mut sdr = SdrdAdapter::new(address, Duration::from_millis(sdrd_timeout_ms));
         let snapshot = sdr.observe()?;
-        let recognizer_available = request.observation.health.recognizer_available;
         let dropped_observations = request.observation.health.dropped_observations;
-        request.observation.health =
-            snapshot.planner_health(recognizer_available, dropped_observations);
+        request.observation.health = snapshot.planner_health(false, dropped_observations);
     }
     let planner = UnixPlannerAdapter::new(socket, Duration::from_millis(timeout_ms));
-    let mut controller = Controller::new(planner);
+    let mut controller = Controller::new(planner).with_recognizer(UnixRecognizerCapability::new(
+        &recognizer_socket,
+        &recognizer_admission,
+    ));
     let plan = controller.decide(&request)?;
     println!("{}", serde_json::to_string(&plan)?);
     Ok(())

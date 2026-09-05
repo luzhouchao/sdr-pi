@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "schema_id": "recognizer_admission_live_validation_v1",
+  "controller_sha256": "d0f450141280c69a8ebaa9fd78b89cb0e2286e2948fcde1039b9fe8b7803b585",
+  "admission_sha256": "3c802706d35852e4e1ee45b3db2285b0790a7deac331b8c948c4aa6fc1147b83",
+  "feature_directory": "/var/tmp/sdrharness-dev/s1-906b",
+  "before_worker": {
+    "recognizer_available": false,
+    "reason": "health_unavailable",
+    "request_id": 71001,
+    "session_generation": 20260905071,
+    "observed_at_unix_ms": 1788624148542,
+    "worker_instance_id": null,
+    "admission_sha256": null
+  },
+  "workers": [
+    {
+      "controller_observation": {
+        "recognizer_available": false,
+        "reason": "candidate_not_admitted",
+        "request_id": 71001,
+        "session_generation": 20260905071,
+        "observed_at_unix_ms": 1788624161771,
+        "worker_instance_id": "649cc8a438090a67170c327240f5048f4324858c5fe09888e32f31d7721d6809",
+        "admission_sha256": "3c802706d35852e4e1ee45b3db2285b0790a7deac331b8c948c4aa6fc1147b83"
+      },
+      "health": {
+        "schema_version": 1,
+        "schema_id": "recognizer_health_v1",
+        "protocol_version": 1,
+        "request_id": 71002,
+        "session_generation": 20260905071,
+        "nonce": "4a74a8cf39e5cb71279162390df2be1e1be9c70a99cc36f9dcdfa168706a8cf3",
+        "worker_instance_id": "649cc8a438090a67170c327240f5048f4324858c5fe09888e32f31d7721d6809",
+        "started_at_unix_ms": 1788624161760,
+        "observed_at_unix_ms": 1788624161772,
+        "status": "ready",
+        "identity": {
+          "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+          "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+          "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+          "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+          "compute": "cuda_fp16_autocast",
+          "resident_weight_precision": "fp32",
+          "input_precision": "fp32",
+          "logit_return_precision": "fp32",
+          "sample_rate_hz": 2100000,
+          "window_count": 4,
+          "samples_per_window": 1024,
+          "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+        },
+        "admission_sha256": "3c802706d35852e4e1ee45b3db2285b0790a7deac331b8c948c4aa6fc1147b83",
+        "production_enabled": false
+      },
+      "malformed_enable_request": {
+        "protocol_version": 1,
+        "request_id": 71002,
+        "session_generation": 20260905071,
+        "status": "error",
+        "error": "request_shape: admission health request keys mismatch; missing=[], unknown=['production_enabled']"
+      },
+      "status_toggle_rejected": {
+        "recognizer_available": false,
+        "reason": "admission_incomplete",
+        "request_id": 71001,
+        "session_generation": 20260905071,
+        "observed_at_unix_ms": 1788624161777,
+        "worker_instance_id": null,
+        "admission_sha256": null
+      },
+      "worker_stopped_socket_removed_spool_empty": true
+    },
+    {
+      "controller_observation": {
+        "recognizer_available": false,
+        "reason": "candidate_not_admitted",
+        "request_id": 71001,
+        "session_generation": 20260905071,
+        "observed_at_unix_ms": 1788624176176,
+        "worker_instance_id": "3c83baa4e45e67597576a47bf9fcbb26240961057e6a31128f99ae638a9e961f",
+        "admission_sha256": "3c802706d35852e4e1ee45b3db2285b0790a7deac331b8c948c4aa6fc1147b83"
+      },
+      "worker_stopped_socket_removed_spool_empty": true
+    }
+  ],
+  "rx_bytes": 0,
+  "iq_files_written": 0,
+  "dataset_opened": false,
+  "locked_test_opened": false,
+  "production_recognizer_available": false,
+  "after_worker": {
+    "recognizer_available": false,
+    "reason": "health_unavailable",
+    "request_id": 71001,
+    "session_generation": 20260905071,
+    "observed_at_unix_ms": 1788624177498,
+    "worker_instance_id": null,
+    "admission_sha256": null
+  },
+  "status": "pass",
+  "validated_on_local_date": "2026-09-06",
+  "checks": {
+    "rust_library_tests": 86,
+    "rust_terminal_tests": 13,
+    "python_rf_v1_runtime_tests": 7,
+    "python_legacy_worker_tests": 3,
+    "clippy_warnings_denied": true,
+    "formatting": true
+  },
+  "validation_scope": "S1 source and isolated real AGX Worker health; no installed service replacement",
+  "cleanup": {
+    "verified": true,
+    "remaining_feature_processes": [],
+    "removed": [
+      {
+        "path": "/var/tmp/sdrharness-dev/s1-905a",
+        "bytes": 899724696,
+        "absence_verified": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/s1-906b",
+        "bytes": 6610,
+        "absence_verified": true
+      }
+    ],
+    "p201_transient_directories_created": 0
+  },
+  "final_source_sha256": {
+    "raspberry-pi/sdr-agent/controller/src/recognizer_admission.rs": "7c8a0da260ca6916a06835d8381947bf464f020a06a1985b1b111684d7720fcc",
+    "raspberry-pi/sdr-agent/controller/src/lib.rs": "a76ab4522cdbff2ef8b53499c51bba61aa6052f10ce54b731afbc0739f1f5d84",
+    "raspberry-pi/sdr-agent/controller/src/runner.rs": "463599a10c0170af9f1ed8fc3ad8b52dc9d937dcd7d455c6ff70d700b65c7b30",
+    "raspberry-pi/sdr-agent/controller/src/policy.rs": "50e9c3a50823ffec16499f5932b5aaa157a8a8289e9fdde093fb52b65305a92a",
+    "raspberry-pi/sdr-agent/controller/src/main.rs": "8646c4fcbbe4ad72930958f77ed6c45c0f06a251aec4d91ce3276e02d3541c36",
+    "raspberry-pi/sdr-agent/controller/src/bin/sdr-agent.rs": "b2c09b60befef3864906f0a3387c218cdae05651fb26c65d03be2c782446c23b",
+    "jetson-agx/sdrharness/scripts/amc-mamba-worker.py": "750eef925be33ab925798f49907c0a35a2cf1c5cd9f00672ee64fcda9d0872b5",
+    "jetson-agx/sdrharness/scripts/amc-rf-v1-runtime.py": "a920c4260ce02f824cc1bfad596242330b69dbfdf3008c45be6142d8aa077e82",
+    "jetson-agx/sdrharness/scripts/validate-recognizer-admission.py": "f037810f7eb2f0881ced91df583a8e0ab25f92b65c0930e2c7cffcefea0ab8a3"
+  },
+  "preliminary_validation_sha256": "08d50395d2bc1925e94e67b9544980208dae9636208de9f174624977df220fc3"
+}

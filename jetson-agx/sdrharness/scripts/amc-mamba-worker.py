@@ -16,6 +16,7 @@ import stat
 import sys
 import time
 import types
+import secrets
 from pathlib import Path
 from typing import Any
 
@@ -362,6 +363,13 @@ class RfV1Backend(MambaBackend):
         self.samples_per_channel = 1024
         self.sample_rate_hz = 2_100_000
         self.rms_tolerance = 0.000001
+        admission, self.admission_sha256 = helper.load_admission()
+        self.admission_identity = admission["identity"]
+        if (self.admission_identity["checkpoint_sha256"] != self.model_sha256
+                or self.admission_identity["profile_sha256"] != self.profile_sha256
+                or self.admission_identity["preprocess_sha256"] != self.preprocess_sha256
+                or admission["status"] != "candidate" or admission["evidence"]):
+            raise WorkerError("admission_identity", "candidate receipt differs from loaded assets")
         self.labels = [f"provisional:{index:02d}" for index in range(24)]
         self.active_batch = None
         self.completed_generation = 0
@@ -641,6 +649,36 @@ def health_response(backend: MambaBackend) -> dict[str, Any]:
     }
 
 
+def admission_health_response(payload, backend, instance_id, started_at_unix_ms):
+    request = require_exact_keys(payload, {
+        "protocol_version", "operation", "request_id", "session_generation", "nonce",
+    }, "admission health request")
+    require_int(request["protocol_version"], "protocol_version", 1, 1)
+    if request["operation"] != "admission_health":
+        raise WorkerError("health_request", "unsupported health operation")
+    require_int(request["request_id"], "request_id", 1, 2**64 - 1)
+    require_int(request["session_generation"], "session_generation", 1, 2**64 - 1)
+    nonce = require_text(request["nonce"], "nonce", 64)
+    if len(nonce) != 64 or any(v not in "0123456789abcdef" for v in nonce):
+        raise WorkerError("health_request", "nonce must be a 256-bit lowercase hex challenge")
+    active = getattr(backend, "active_batch", None)
+    if active is not None and time.monotonic() > active[2]:
+        backend.active_batch = None
+        active = None
+    return {
+        "schema_version": 1, "schema_id": "recognizer_health_v1", "protocol_version": 1,
+        "request_id": request["request_id"], "session_generation": request["session_generation"],
+        "nonce": nonce, "worker_instance_id": instance_id, "started_at_unix_ms": started_at_unix_ms,
+        "observed_at_unix_ms": time.time_ns() // 1_000_000,
+        "status": "busy" if active is not None else "ready",
+        "identity": getattr(backend, "admission_identity", None),
+        "admission_sha256": getattr(backend, "admission_sha256", None),
+        # This Worker has no admitted calibration/rejection/runtime release.
+        # Neither a request nor a changed receipt can enable production.
+        "production_enabled": False,
+    }
+
+
 def read_frame(connection: socket.socket) -> bytes:
     frame = bytearray()
     while b"\n" not in frame:
@@ -700,6 +738,8 @@ def serve(
         finally:
             probe.close()
 
+    instance_id = secrets.token_hex(32)
+    started_at_unix_ms = time.time_ns() // 1_000_000
     stop_requested = False
 
     def request_stop(_signum: int, _frame: Any) -> None:
@@ -745,7 +785,9 @@ def serve(
                             request_id = payload["request_id"]
                         if type(payload.get("session_generation")) is int:
                             session_generation = payload["session_generation"]
-                    if isinstance(payload, dict) and "operation" in payload:
+                    if isinstance(payload, dict) and payload.get("operation") == "admission_health":
+                        response = admission_health_response(payload, backend, instance_id, started_at_unix_ms)
+                    elif isinstance(payload, dict) and "operation" in payload:
                         health = require_exact_keys(
                             payload, {"protocol_version", "operation"}, "health request"
                         )

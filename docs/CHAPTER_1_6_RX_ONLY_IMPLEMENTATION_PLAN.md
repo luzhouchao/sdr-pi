@@ -1,6 +1,6 @@
 # 第1—6章统一 RX-only 实施规划
 
-最后审查：2026-09-05（Asia/Shanghai）
+最后审查：2026-09-06（Asia/Shanghai）
 
 本文是当前第1—6章实施路线，取代原先只覆盖第4—6章的规划视角。状态使用与
 项目原清单一致的 `- [x]` / `- [ ]`；每一项只有在代码、部署和该项要求的实机
@@ -30,7 +30,7 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 | 章节 | 已完成的交付边界 | 主要剩余工作 |
 | --- | --- | --- |
 | 第1章 | Agent、Web、终端、Spark 和扫频结果已部署 | 有状态识别结果、持久化/人工删除、紧凑 Agent 反馈 |
-| 第2章 | 扫频/精查/IQ 的批准、执行、预算、恢复和 stop 闭环 | 识别能力来源、人工批准、执行器、Worker-aware stop、结果回灌、固定 Planner 回归 |
+| 第2章 | 扫频/精查/IQ 闭环；S1 能力来源/人工批准代码与隔离验证完成 | 已准入版本部署、识别执行器、Worker-aware stop、结果回灌、固定 Planner 回归 |
 | 第3章 | P201 RX1 身份、有界采集/传输、恢复和长期重连均已实机验证 | 当前范围无新增硬件实施项 |
 | 第4章 | 扫频/精查、共享 RMS、顺序四窗和 golden parity 已实收 | 将 integration-only profile 随模型准入升级为 production |
 | 第5章 | 语料合同/存储、split 隔离、冻结预处理、checkpoint validation 已完成 | RF-v1 独立证据接入、known-RF/OOD 标签、校准/验收隔离、名称映射、locked test |
@@ -89,15 +89,18 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 
 ### 还未完成
 
-- [ ] 由实时 Worker 健康、准入 manifest 和 Chapter 4 profile parity 生成
-      `recognizer_available`；当前 Runner 仍从输入 request 继承该布尔值，不能
-      作为生产能力来源。
-- [ ] 为识别动作冻结批准策略。第一版应进入人工批准门；当前 Rust policy 对
-      `RunLocalRecognition` 返回 `approval_required=false`，在能力开启前必须改正
-      并覆盖 step/automatic 两种模式。
-- [ ] 在 one-shot 和交互 Runner 中调用正式 `RecognitionEngine`；当前 one-shot
-      写入 `planned_only`，交互终端显示“没有生产执行器”，自动巡航会按
-      unsupported action 停止。
+- [x] 已实现 S1 版本化准入/health 合同和当前 Worker 探测，Controller/Runner/
+      terminal 不再继承 request/template 的可用布尔值；缺失、过期、哈希/精度
+      不符及同 generation 的 Worker/准入记录更换均失败关闭。真实候选 health
+      验证和完整临时数据清理已完成，能力仍为 false。见
+      [`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md)。
+- [x] `RunLocalRecognition` 已要求人工批准；step 待批准、cruise 停在批准门、
+      one-shot automatic 拒绝和批准时重新检查均通过测试。
+- [ ] 在 A1 部署已准入版本并实机验收生产能力与批准执行链；S1 只完成源码和
+      隔离 Worker 验证，未替换当前已安装的 Controller/Planner/Web 服务。
+- [ ] 在 one-shot 和交互 Runner 中调用正式 `RecognitionEngine`；真实候选
+      当前因未准入而被拒绝，合成准入测试中的识别计划先经过人工批准门，
+      批准后 one-shot 仍为 `planned_only`，终端仍无生产识别执行器。
 - [ ] 把 classified/rejected/unavailable/error 摘要写回 PlanningContext，启动一轮
       新 Spark turn，并只允许重新精查、有限再捕获/再识别、换候选、继续扫频、
       hold 或 stop。
@@ -271,8 +274,10 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 - [ ] 将已有逐窗 logits/关联字段和 AGX mean-logit 结果汇入统一的
       `RecognitionObservation`，补齐 classified/rejected/unavailable/error、
       拒识原因和校准状态；只把有界摘要传给 Planner，完整记录保留在 AGX。
-- [ ] 实现 production Worker health/profile parity probe、queue=1、deadline、
-      cancel/drop 指标、crash/restart 清理和持续 thermal soak。
+- [x] S1 health/profile/receipt 探测接口和候选失败关闭验证已完成；生产正向
+      capability 仍须完整准入和 A1 部署证据。
+- [ ] 实现 production Worker queue=1、整批 deadline、cancel/drop 指标、
+      crash/restart 清理和持续 thermal soak。
 - [ ] 让 Spark 与 Mamba 同时常驻但活跃推理严格按 `Spark -> Mamba -> Spark`
       串行；验证取消释放 gate、迟到结果不能污染下一 generation。
 - [ ] 部署可回滚的生产 Worker，并在冻结的频率/增益/session 矩阵上完成 RX-only
@@ -282,10 +287,11 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 
 - [`protocol.rs`](../raspberry-pi/sdr-agent/controller/src/protocol.rs) 的
   `RecognitionSummary` 当前只有三字段。
-- [`runner.rs`](../raspberry-pi/sdr-agent/controller/src/runner.rs) 从 request 继承
-  `recognizer_available`，且识别动作落入 `planned_only`。
-- [`policy.rs`](../raspberry-pi/sdr-agent/controller/src/policy.rs) 对
-  `RunLocalRecognition` 当前返回无需批准。
+- [`runner.rs`](../raspberry-pi/sdr-agent/controller/src/runner.rs) 已通过 S1 实时探测
+  生成 `recognizer_available`；识别执行器仍未接入，受控测试的批准计划仍为
+  `planned_only`，真实候选因未准入而先被拒绝。
+- [`policy.rs`](../raspberry-pi/sdr-agent/controller/src/policy.rs) 已对
+  `RunLocalRecognition` 要求人工批准，覆盖 step/automatic 两种模式。
 - [`sdr-agent.rs`](../raspberry-pi/sdr-agent/controller/src/bin/sdr-agent.rs) 的交互/
   巡航路径没有识别执行器；
   [`app.js`](../raspberry-pi/sdr-agent/web-console/public/app.js) 也没有识别结果
@@ -319,15 +325,16 @@ B2c 的校准/test 准入缺口对应下面 V1—V3。C2 拆成以下明确边�
 - [ ] D：Runner/Agent/Web 闭环；实现可提前进行，生产执行只能在 A1 准入后开启。
 - [ ] E：冻结 RX-only 矩阵验收、清理和自动巡航识别准入；不以联调成功代替。
 
-软件工作无需等待独立标签，可按 S1 → S2 → S3 → S4 → S5 → S6 逐个交付。
+S1 已于 2026-09-06 完成源码、隔离实机 health 验证与清理。软件工作无需等待
+独立标签，接下来按 S2 → S3 → S4 → S5 → S6 逐个交付。
 数据证据 V1 可同期筹备；这里的两条工作线是依赖安排，不要求并发 Agent。
 所有开发阶段继续使用 replay、合成 golden 或显式 engineering-only RX 路径，
 不得为联调把生产 capability 临时改成 true。
 
 | 单元 | 交付范围 | 完成条件及依赖 |
 | --- | --- | --- |
-| S1：准入与批准门（下一单元） | 定义 `RecognizerAdmission`/版本化 health 合同；能力由当前 Worker 健康、模型/profile/preprocess/精度和准入记录共同决定；修正 step/cruise 识别人工批准 | 缺失、过期、错误哈希、Worker 重启或未准入均失败关闭；request/template 不能自行宣称可用；真实候选仍 false；无需标签数据 |
-| S2：统一识别结果 | 内部完整结果与 Planner 紧凑 observation；四种状态、numeric ID、名称可信度、calibration/rejection identity、质量/来源/timing；预留严格的校准包读取 | schema/负例/序列化/上下文边界验证；未校准实验输出不冒充生产 classified；温度和阈值保持未冻结；依赖 S1 的身份合同 |
+| S1：准入与批准门（源码/隔离验证已完成） | 定义 `RecognizerAdmission`/版本化 health 合同；能力由当前 Worker 健康、模型/profile/preprocess/精度和准入记录共同决定；修正 step/cruise 识别人工批准 | 缺失、过期、错误哈希、Worker 重启或未准入均失败关闭；request/template 不能自行宣称可用；真实候选仍 false；无需标签数据 |
+| S2：统一识别结果（下一单元） | 内部完整结果与 Planner 紧凑 observation；四种状态、numeric ID、名称可信度、calibration/rejection identity、质量/来源/timing；预留严格的校准包读取 | schema/负例/序列化/上下文边界验证；未校准实验输出不冒充生产 classified；温度和阈值保持未冻结；依赖 S1 的身份合同 |
 | S3：Worker 生命周期 | 明确应用队列边界、整批 deadline、cancel acknowledgement、超时恢复、进程退出/强杀/重启清理、Worker 实例身份和指标 | backlog=1 不作为队列验收；过期/取消任务不能继续占用下一批；迟到结果不能跨 generation/实例；实机故障注入和精确 spool 清理；依赖 S1/S2 |
 | S4：共享 GPU 与资源 | Spark/Mamba 常驻、活跃推理串行；租约获得/释放、取消和崩溃释放；queue/drop/deadline/RSS/显存/温度统计 | 实机证明 `Spark → Mamba → Spark`、故障后可继续、无租约泄漏；按预注册时长/负载做资源 soak；依赖 S3，不能复用短时共存当持续验收 |
 | S5：Runner 执行与反馈 | one-shot/interactive/cruise 识别执行器、人工批准、预算/audit、SDR+Worker stop、观察回灌和新一轮 Spark | 工程模式完成成功/拒识/不可用/错误/取消/迟到结果全链路；固定六动作 Planner 回归另计模型质量与 Rust 安全；依赖 S2—S4；生产仍由 S1 关闭 |
@@ -347,9 +354,9 @@ B2c 的校准/test 准入缺口对应下面 V1—V3。C2 拆成以下明确边�
       健康告警/升级回滚流程、24 小时完整闭环 soak。工时和设备占用按独立单元
       记录；此前 P201 1,800 秒验证不能替代 AGX+Planner+Recognizer 全系统 soak。
 
-本次只重排已有工作并补记 RF-v1 证据接入口缺口，没有执行新采集或模型实验，
-没有为新软件/准入项打完成勾。独立标签未到位不影响 S1—S6 的实现与工程验证，
-但 V2/V3/A1 无法仅靠代码完成，因此不承诺生产上线日期。
+2026-09-05 的重排只改变交付依赖；2026-09-06 的 S1 完成证据另见上述验证
+记录。独立标签未到位不影响 S2—S6 的实现与工程验证，但 V2/V3/A1 无法仅靠
+代码完成，因此不承诺生产上线日期。
 
 ## 范围与保留项
 

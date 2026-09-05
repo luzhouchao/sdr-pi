@@ -1,6 +1,6 @@
 # Local recognizer interface
 
-Date: 2026-08-31; status updated 2026-09-05
+Date: 2026-08-31; status updated 2026-09-06
 
 > Current status: the backend-neutral Controller seam and an experimental
 > CUDA/Mamba Worker are implemented and have passed real P201 RX1 single-window
@@ -199,6 +199,24 @@ The Worker template is
 `jetson-agx/sdrharness/systemd/sdrharness-amc-mamba-experimental.service`; it
 has no `[Install]` section and must not be enabled while production admission
 is false.
+
+## S1 capability and approval boundary
+
+The Controller and terminal now derive recognition availability from
+`RecognizerCapability`, backed by a strict local `RecognizerAdmission` receipt
+and a fresh `admission_health` Worker response. Requests and templates cannot
+assert availability. The probe verifies nonce/request/generation/time, full
+model/profile/preprocess/precision identity and the receipt hash, with bounded
+transport and fail-closed restart/receipt-change invalidation. The real RF-v1
+Worker and shipped candidate receipt remain production-disabled.
+
+`RunLocalRecognition` requires manual approval in step and cruise; an automatic
+request cannot bypass this gate, and terminal approval rechecks capability.
+The production executor is still S5 work. See
+[`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md)
+for the receipt/health schemas, exact verification boundary and live evidence.
+S1 is implemented and isolated-Worker validated; replacing deployed Controller/
+Web/Planner services and validating admitted positive capability remain A1.
 
 ## Next admission slice
 

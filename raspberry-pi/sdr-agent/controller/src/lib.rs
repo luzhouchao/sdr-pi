@@ -7,6 +7,7 @@ pub mod policy;
 pub mod protocol;
 pub mod recognition_input;
 pub mod recognizer;
+pub mod recognizer_admission;
 pub mod runner;
 pub mod sdr;
 pub mod sweep;
@@ -20,6 +21,7 @@ use std::fmt;
 pub struct Controller<P> {
     planner: P,
     policy: ControllerPolicy,
+    recognizer: Box<dyn recognizer_admission::RecognizerCapability>,
 }
 
 impl<P: Planner> Controller<P> {
@@ -27,13 +29,25 @@ impl<P: Planner> Controller<P> {
         Self {
             planner,
             policy: ControllerPolicy,
+            recognizer: Box::new(recognizer_admission::UnavailableRecognizer),
         }
     }
 
+    pub fn with_recognizer(
+        mut self,
+        recognizer: impl recognizer_admission::RecognizerCapability + 'static,
+    ) -> Self {
+        self.recognizer = Box::new(recognizer);
+        self
+    }
+
     pub fn decide(&mut self, request: &PlanRequest) -> Result<ValidatedPlan, ControllerError> {
-        self.policy.validate_request(request)?;
-        let response = self.planner.plan(request)?;
-        Ok(self.policy.validate_response(request, response)?)
+        let mut request = request.clone();
+        recognizer_admission::refresh_recognizer(&mut request, self.recognizer.as_mut());
+        self.policy.validate_request(&request)?;
+        let response = self.planner.plan(&request)?;
+        recognizer_admission::refresh_recognizer(&mut request, self.recognizer.as_mut());
+        Ok(self.policy.validate_response(&request, response)?)
     }
 }
 

@@ -133,6 +133,37 @@ class RuntimeTests(unittest.TestCase):
         self.assertFalse(live.restored_state(state('slow_attack', '71'), state('manual', '71')))
         self.assertFalse(live.restored_state(state('slow_attack', '71'), state('slow_attack', '71', '433920000')))
 
+    def test_admission_health_correlates_loaded_candidate_and_never_enables_it(self):
+        admission, digest = helper.load_admission()
+        b = backend()
+        b.admission_identity = admission['identity']
+        b.admission_sha256 = digest
+        b.production_enabled = True  # Untrusted flag is deliberately ignored.
+        req = {'protocol_version': 1, 'operation': 'admission_health', 'request_id': 7,
+               'session_generation': 3, 'nonce': 'a' * 64}
+        observed = worker.admission_health_response(req, b, 'b' * 64, 1)
+        self.assertFalse(observed['production_enabled'])
+        self.assertEqual(observed['admission_sha256'], digest)
+        self.assertEqual(observed['identity']['checkpoint_sha256'], b.model_sha256)
+        self.assertEqual(observed['identity']['profile_sha256'], b.profile_sha256)
+        self.assertEqual(observed['identity']['resident_weight_precision'], 'fp32')
+        for name in ('request_id', 'session_generation', 'nonce'):
+            self.assertEqual(observed[name], req[name])
+        b.active_batch = ({}, 1, worker.time.monotonic() + 5)
+        self.assertEqual(worker.admission_health_response(req, b, 'b' * 64, 1)['status'], 'busy')
+        b.active_batch = ({}, 1, worker.time.monotonic() - 1)
+        self.assertEqual(worker.admission_health_response(req, b, 'b' * 64, 1)['status'], 'ready')
+
+    def test_admission_health_rejects_malformed_requests(self):
+        req = {'protocol_version': 1, 'operation': 'admission_health', 'request_id': 7,
+               'session_generation': 3, 'nonce': 'a' * 64}
+        for key, value in [('request_id', 0), ('session_generation', 0), ('protocol_version', True),
+                           ('nonce', 'short'), ('operation', 'enable')]:
+            with self.assertRaises(worker.WorkerError):
+                worker.admission_health_response({**req, key: value}, backend(), 'b' * 64, 1)
+        with self.assertRaises(worker.WorkerError):
+            worker.admission_health_response({**req, 'production_enabled': True}, backend(), 'b' * 64, 1)
+
     def test_frozen_golden_reference(self):
         index = np.arange(4096)
         raw = np.stack(((index * 37 + 11) % 1901 - 950, (index * 53 + 7) % 1799 - 899), axis=1).astype('<i2')

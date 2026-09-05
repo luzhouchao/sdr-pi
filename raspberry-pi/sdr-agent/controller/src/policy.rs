@@ -388,7 +388,7 @@ fn validate_action(request: &PlanRequest, action: &ProposedAction) -> Result<boo
                 "local recognizer is not available",
             )?;
             find_candidate(request, candidate_id)?;
-            Ok(false)
+            Ok(true)
         }
     }
 }
@@ -779,5 +779,30 @@ mod tests {
             "unexpected": true
         });
         assert!(serde_json::from_value::<PlanRequest>(value).is_err());
+    }
+    #[test]
+    fn recognition_requires_operator_approval_and_rejects_unavailable() {
+        let mut request = request();
+        let action = ProposedAction::RunLocalRecognition {
+            candidate_id: "candidate-1".to_owned(),
+        };
+        let plan = ControllerPolicy
+            .validate_response(&request, response(&request, action.clone()))
+            .unwrap();
+        assert!(plan.approval_required);
+        assert_eq!(
+            crate::execution::ExecutionAuthorization::automatic(&plan)
+                .unwrap_err()
+                .code,
+            "approval_required"
+        );
+        request.observation.health.recognizer_available = false;
+        assert_eq!(
+            ControllerPolicy
+                .validate_response(&request, response(&request, action))
+                .unwrap_err()
+                .code,
+            "recognizer_unavailable"
+        );
     }
 }

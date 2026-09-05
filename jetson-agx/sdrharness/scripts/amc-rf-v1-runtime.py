@@ -44,3 +44,9 @@ def load_model(profile_path):
     delivery = module.verify_delivery(manifest)
     model, torch, _ = module.verify_checkpoint_and_model(manifest, delivery)
     return profile, candidate, model, torch
+
+
+def load_admission():
+    path = CONFIG / 'rf-v1-recognizer-admission.candidate.json'
+    digest = '3c802706d35852e4e1ee45b3db2285b0790a7deac331b8c948c4aa6fc1147b83'
+    return checked_json(path, digest), digest

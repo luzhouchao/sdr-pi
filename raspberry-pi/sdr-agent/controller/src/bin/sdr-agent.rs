@@ -13,6 +13,10 @@ use sdr_agent_controller::protocol::{
     ControllerState, PlanRequest, PlanResponse, ProposedAction, ValidatedPlan, MAX_FRAME_BYTES,
     MAX_INSTRUCTION_BYTES,
 };
+use sdr_agent_controller::recognizer_admission::{
+    refresh_recognizer, RecognizerCapability, UnixRecognizerCapability, DEFAULT_ADMISSION_PATH,
+    DEFAULT_RECOGNIZER_SOCKET,
+};
 use sdr_agent_controller::sdr::{SdrEngine, SdrError, SdrdAdapter};
 use sdr_agent_controller::sweep::{
     SdrdSoftwareSweepAdapter, SweepEngine, SweepError, SweepFrequencies, SweepPlan, SweepReport,
@@ -90,6 +94,8 @@ fn run() -> AppResult<()> {
         template,
         ConsoleConnectionOptions {
             socket_path: options.socket_path,
+            recognizer_socket: options.recognizer_socket,
+            recognizer_admission: options.recognizer_admission,
             executor,
             sdrd_address: options.sdrd_address,
             sdrd_timeout: Duration::from_millis(options.sdrd_timeout_ms),
@@ -369,6 +375,7 @@ fn parse_bounded_auto_value(
 }
 
 struct ConsoleApp {
+    recognizer: Box<dyn RecognizerCapability>,
     client: SessionClient,
     template: PlanRequest,
     next_request_id: u64,
@@ -398,6 +405,8 @@ struct ConsoleApp {
 
 struct ConsoleConnectionOptions {
     socket_path: PathBuf,
+    recognizer_socket: PathBuf,
+    recognizer_admission: PathBuf,
     executor: Option<SdrdActionAdapter>,
     sdrd_address: Option<SocketAddr>,
     sdrd_timeout: Duration,
@@ -479,10 +488,11 @@ struct InitialSurveyOptions {
 
 impl ConsoleApp {
     fn connect(
-        template: PlanRequest,
+        mut template: PlanRequest,
         options: ConsoleConnectionOptions,
         loaded_session: Option<LoadedTerminalSession>,
     ) -> AppResult<Self> {
+        template.observation.health.recognizer_available = false;
         let generation = template.session_generation;
         let next_request_id = template.request_id;
         let (history, resume_summary) = loaded_session.map_or_else(
@@ -495,6 +505,10 @@ impl ConsoleApp {
             },
         );
         let mut app = Self {
+            recognizer: Box::new(UnixRecognizerCapability::new(
+                options.recognizer_socket,
+                options.recognizer_admission,
+            )),
             client: SessionClient::connect(options.socket_path, generation)?,
             template,
             next_request_id,
@@ -578,6 +592,7 @@ impl ConsoleApp {
             println!("硬件动作正在执行；只能使用 /stop，不能向已结束的模型轮次排队。");
             return Ok(());
         }
+        self.refresh_recognition();
         let request_id = self.next_request_id;
         self.next_request_id = self
             .next_request_id
@@ -663,6 +678,7 @@ impl ConsoleApp {
             .checked_add(1)
             .ok_or_else(|| invalid_input("session generation exhausted"))?;
         self.template.state = state;
+        self.template.observation.health.recognizer_available = false;
         self.template.session_generation = self.session_generation;
         self.pending = None;
         self.requests.clear();
@@ -682,6 +698,18 @@ impl ConsoleApp {
             return Ok(());
         }
         if let Some(plan) = self.pending.take() {
+            if matches!(plan.action, ProposedAction::RunLocalRecognition { .. }) {
+                let mut current = self.template.clone();
+                current.request_id = plan.request_id;
+                current.session_generation = self.session_generation;
+                refresh_recognizer(&mut current, self.recognizer.as_mut());
+                if plan.session_generation != self.session_generation
+                    || !current.observation.health.recognizer_available
+                {
+                    println!("识别批准已失效：当前 Worker 未通过准入或会话已经改变。");
+                    return Ok(());
+                }
+            }
             self.record(format!("approved request {}", plan.request_id));
             match plan.action {
                 ProposedAction::SurveyBand { .. } => self.start_planned_survey(plan)?,
@@ -1202,10 +1230,9 @@ impl ConsoleApp {
             Ok(observation) => {
                 self.record(format!("executed request {request_id}"));
                 self.template.observation.age_ms = 0;
-                self.template.observation.health = observation.post_execution_sdr.planner_health(
-                    self.template.observation.health.recognizer_available,
-                    self.template.observation.health.dropped_observations,
-                );
+                self.template.observation.health = observation
+                    .post_execution_sdr
+                    .planner_health(false, self.template.observation.health.dropped_observations);
                 self.emit_observation()?;
                 println!(
                     "执行结果：request={request_id} 已安全采集 {} 个复数样本（{} 字节）；丢样 {}，溢出 {}，射频状态已恢复。",
@@ -1579,29 +1606,36 @@ impl ConsoleApp {
         self.submit(instruction)
     }
 
+    fn refresh_recognition(&mut self) {
+        let mut request = self.template.clone();
+        request.request_id = self.next_request_id;
+        request.session_generation = self.session_generation;
+        refresh_recognizer(&mut request, self.recognizer.as_mut());
+        self.template.observation.health.recognizer_available =
+            request.observation.health.recognizer_available;
+    }
+
     fn refresh_sdr_health(&mut self, announce_failure: bool) -> AppResult<bool> {
+        self.template.observation.health.recognizer_available = false;
         let Some(address) = self.sdrd_address else {
             if announce_failure {
                 println!("SDR 检查失败：没有配置 SDRD 地址。");
             }
+            self.refresh_recognition();
             return Ok(false);
         };
         let mut observer = SdrdAdapter::new(address, self.sdrd_timeout);
-        match observer.observe() {
+        let result = match observer.observe() {
             Ok(snapshot) if snapshot.online && snapshot.healthy => {
                 self.template.observation.age_ms = 0;
-                self.template.observation.health = snapshot.planner_health(
-                    self.template.observation.health.recognizer_available,
-                    self.template.observation.health.dropped_observations,
-                );
+                self.template.observation.health = snapshot
+                    .planner_health(false, self.template.observation.health.dropped_observations);
                 Ok(true)
             }
             Ok(snapshot) => {
                 self.template.observation.age_ms = 0;
-                self.template.observation.health = snapshot.planner_health(
-                    self.template.observation.health.recognizer_available,
-                    self.template.observation.health.dropped_observations,
-                );
+                self.template.observation.health = snapshot
+                    .planner_health(false, self.template.observation.health.dropped_observations);
                 if announce_failure {
                     println!("SDR 检查未通过：设备有响应，但健康状态异常。");
                 }
@@ -1616,7 +1650,9 @@ impl ConsoleApp {
                 }
                 Ok(false)
             }
-        }
+        };
+        self.refresh_recognition();
+        result
     }
 
     fn print_cruise_status(&self) {
@@ -1845,17 +1881,20 @@ impl ConsoleApp {
                         .cloned()
                         .ok_or_else(|| invalid_input("missing plan"))?,
                 )?;
-                let request = self
+                let mut request = self
                     .requests
                     .get(&response.request_id)
+                    .cloned()
                     .ok_or_else(|| invalid_input("plan refers to an unknown request"))?;
-                let plan = ControllerPolicy.validate_response(request, response)?;
-                let decision_basis = describe_decision_basis(&plan, request);
+                refresh_recognizer(&mut request, self.recognizer.as_mut());
+                let plan = ControllerPolicy.validate_response(&request, response)?;
+                let decision_basis = describe_decision_basis(&plan, &request);
                 let requires_early_abort = matches!(
                     &plan.action,
                     ProposedAction::CaptureBoundedIq { .. }
                         | ProposedAction::SurveyBand { .. }
                         | ProposedAction::InspectCandidate { .. }
+                        | ProposedAction::RunLocalRecognition { .. }
                 );
                 self.plan_seen_in_cycle = true;
                 self.cruise.record_planner_action();
@@ -1872,6 +1911,7 @@ impl ConsoleApp {
                             ProposedAction::CaptureBoundedIq { .. }
                                 | ProposedAction::SurveyBand { .. }
                                 | ProposedAction::InspectCandidate { .. }
+                                | ProposedAction::RunLocalRecognition { .. }
                         ) {
                             if self.pending.is_some() {
                                 return Err(
@@ -1888,7 +1928,7 @@ impl ConsoleApp {
                         println!("该计划到达时巡航已经停止，已作为过期计划忽略，不会执行。")
                     }
                     InteractionMode::AutomaticCruise => match &plan.action {
-                        ProposedAction::CaptureBoundedIq { .. } if plan.approval_required => {
+                        _ if plan.approval_required => {
                             self.pending = Some(plan);
                             self.cruise.stop(CruiseStopReason::ApprovalRequired);
                             println!("自动巡航不会代替人工批准；计划已停在批准门前。");
@@ -1968,7 +2008,8 @@ impl ConsoleApp {
         }
     }
 
-    fn emit_observation(&self) -> AppResult<()> {
+    fn emit_observation(&mut self) -> AppResult<()> {
+        self.refresh_recognition();
         println!(
             "Observation> {}",
             serde_json::to_string(&self.template.observation)?
@@ -2226,6 +2267,8 @@ impl SessionClient {
 
 struct Options {
     socket_path: PathBuf,
+    recognizer_socket: PathBuf,
+    recognizer_admission: PathBuf,
     request_path: PathBuf,
     instruction: Option<String>,
     sdrd_address: Option<SocketAddr>,
@@ -2239,6 +2282,8 @@ struct Options {
 impl Options {
     fn parse() -> AppResult<Self> {
         let mut socket_path = PathBuf::from("/run/sdr-agent/session.sock");
+        let mut recognizer_socket = PathBuf::from(DEFAULT_RECOGNIZER_SOCKET);
+        let mut recognizer_admission = PathBuf::from(DEFAULT_ADMISSION_PATH);
         let mut request_path = PathBuf::from("/etc/sdr-agent/request.json");
         let mut instruction = Vec::new();
         let mut sdrd_address = None;
@@ -2255,6 +2300,18 @@ impl Options {
         let mut args = env::args().skip(1);
         while let Some(arg) = args.next() {
             match arg.as_str() {
+                "--recognizer-socket" => {
+                    recognizer_socket = PathBuf::from(
+                        args.next()
+                            .ok_or_else(|| invalid_input("missing --recognizer-socket value"))?,
+                    )
+                }
+                "--recognizer-admission" => {
+                    recognizer_admission = PathBuf::from(
+                        args.next()
+                            .ok_or_else(|| invalid_input("missing --recognizer-admission value"))?,
+                    )
+                }
                 "--socket" => {
                     socket_path = PathBuf::from(
                         args.next()
@@ -2394,6 +2451,8 @@ impl Options {
         }
         Ok(Self {
             socket_path,
+            recognizer_socket,
+            recognizer_admission,
             request_path,
             instruction,
             sdrd_address,
@@ -2899,6 +2958,9 @@ mod tests {
         let template = test_request(1, 1);
         (
             ConsoleApp {
+                recognizer: Box::new(
+                    sdr_agent_controller::recognizer_admission::UnavailableRecognizer,
+                ),
                 client: SessionClient {
                     writer,
                     reader,
@@ -3298,5 +3360,83 @@ mod tests {
         let reply = describe_agent_reply(&plan, InteractionMode::StepApproval);
         assert!(reply.contains("70000000–90000000 Hz"));
         assert!(reply.contains("请点击批准或输入 /approve"));
+    }
+    struct SyntheticAdmitted;
+    impl RecognizerCapability for SyntheticAdmitted {
+        fn observe(
+            &mut self,
+            request_id: u64,
+            session_generation: u64,
+        ) -> sdr_agent_controller::recognizer_admission::RecognizerCapabilityObservation {
+            sdr_agent_controller::recognizer_admission::RecognizerCapabilityObservation {
+                recognizer_available: true,
+                reason: "synthetic_fixture".to_owned(),
+                request_id,
+                session_generation,
+                observed_at_unix_ms: unix_time_ms().unwrap(),
+                worker_instance_id: Some("a".repeat(64)),
+                admission_sha256: Some("b".repeat(64)),
+            }
+        }
+    }
+
+    #[test]
+    fn terminal_clears_forged_availability_for_prompt_and_queued_context() {
+        let (mut app, _peer) = test_console();
+        app.template.limits.max_span_hz = 5_930_000_000;
+        app.template.observation.health.recognizer_available = true;
+        app.submit("检查状态".to_owned()).unwrap();
+        assert!(!app.requests[&2].observation.health.recognizer_available);
+        app.template.observation.health.recognizer_available = true;
+        app.queue_model_input("补充", SessionQueueKind::FollowUp)
+            .unwrap();
+        assert!(!app.requests[&3].observation.health.recognizer_available);
+    }
+
+    #[test]
+    fn recognition_enters_manual_gate_in_step_and_cruise_and_rechecks_on_approval() {
+        for automatic in [false, true] {
+            let (mut app, _peer) = test_console();
+            app.recognizer = Box::new(SyntheticAdmitted);
+            let mut request = test_request(7, 1);
+            request
+                .observation
+                .candidates
+                .push(sdr_agent_controller::protocol::CandidateSummary {
+                    id: "candidate-1".to_owned(),
+                    center_hz: 433_920_000,
+                    bandwidth_hz: 200_000,
+                    peak_dbfs: -18.0,
+                    snr_db: 16.0,
+                    age_ms: 0,
+                });
+            app.requests.insert(7, request);
+            if automatic {
+                app.cruise
+                    .start(1024 * 1024, 8, 120, Instant::now())
+                    .unwrap();
+            }
+            app.handle_event(
+                json!({"type":"event", "session_generation":1, "event":"plan_proposed", "data":{
+                    "protocol_version":1,"request_id":7,"session_generation":1,"status":"ok",
+                    "action":{"kind":"run_local_recognition","candidate_id":"candidate-1"},
+                    "planner":{"provider":"test","model":"test"}
+                }}),
+            )
+            .unwrap();
+            assert!(app.pending.as_ref().unwrap().approval_required);
+            assert!(app.active_execution.is_none());
+            if automatic {
+                assert_eq!(
+                    app.cruise.snapshot(Instant::now()).stop_reason,
+                    Some(CruiseStopReason::ApprovalRequired)
+                );
+            }
+            app.recognizer =
+                Box::new(sdr_agent_controller::recognizer_admission::UnavailableRecognizer);
+            app.approve().unwrap();
+            assert!(app.pending.is_none());
+            assert!(app.active_execution.is_none());
+        }
     }
 }

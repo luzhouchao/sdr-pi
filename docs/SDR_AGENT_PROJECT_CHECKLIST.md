@@ -1,6 +1,6 @@
 # SDR Agent project checklist
 
-Last reviewed: 2026-09-05
+Last reviewed: 2026-09-06
 
 This is the living source of truth for implementation status. Check an item only
 after the exact wording is implemented and verified. Split partial work into a
@@ -279,15 +279,24 @@ Evidence:
       model abort/generation invalidation, stale-result tests and daemon survival
       after a client transport timeout; see
       [`SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
-- [ ] Replace the Runner/template behavior that inherits
-      `recognizer_available` from the input request with a current
-      Section 6 Worker/profile health result; fail closed on missing, stale or
-      mismatched health.
-- [ ] Freeze recognition approval classification and implement the first
-      production profile behind explicit operator approval in step and cruise
-      modes. Current policy returns `approval_required=false` for
-      `RunLocalRecognition`; do not enable capability until this is corrected
-      and tested.
+- [x] Implement S1 capability sourcing in plain Controller, one-shot Runner,
+      raw execute and terminal prompt/queue/proposal/feedback/approval paths:
+      replace request/template self-assertion with a bounded current Worker and
+      local admission-receipt probe; fail closed on missing/stale/mismatched
+      evidence, Worker restart or receipt changes in the same generation.
+      Source tests and isolated real epoch-10 Worker health validation passed;
+      the candidate stayed unavailable and all feature processes/data/builds
+      were cleaned. See
+      [`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md).
+- [x] Require operator approval for `RunLocalRecognition`; verify that step
+      mode holds the plan, automatic cruise stops at the approval gate,
+      one-shot automatic authorization fails before unsupported dispatch, and
+      terminal approval rechecks current capability/generation. Positive tests
+      use synthetic admitted evidence only; no production recognition executed.
+- [ ] Deploy these Controller/terminal changes as part of the admitted release
+      and live-validate the first production recognition profile behind manual
+      approval in both step and cruise. Installed services were not replaced
+      by the isolated S1 validation; this remains the A1 delivery gate.
 - [ ] Execute the existing `run_local_recognition { candidate_id }` action in
       both one-shot and interactive Runners through the admitted Chapter 4
       profile and production Recognition Worker instead of returning
@@ -723,8 +732,17 @@ Evidence:
       classified/rejected/unavailable/error status, numeric label identity,
       rejection reason, source sequence, model/profile hashes, window agreement,
       quality and timing while keeping IQ out of Planner context.
-- [ ] Derive `recognizer_available` from a live Worker health and admitted
-      model/profile parity probe; configuration alone must never advertise it.
+- [x] Define and validate `recognizer_admission_v1`, bounded six-gate evidence
+      receipts and challenge-correlated `recognizer_health_v1`, including full
+      model/profile/preprocess/precision identity, Worker instance and time,
+      receipt hashes, 250-ms socket deadlines and no stale-success fallback.
+      The real candidate reports `production_enabled=false`; two actual Worker
+      instances, status-only forgery and malformed enable requests were tested.
+      See [`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md).
+- [ ] Live-validate positive production capability from an actually admitted
+      Worker and complete model/calibration/acceptance/runtime/deployment
+      receipts at A1. S1 integrity checks and synthetic passing receipts do not
+      validate the scientific or operational content of future gate reports.
 - [ ] Live-validate the production RX-only candidate-refinement, bounded P201
       capture and AGX recognition path across a frozen frequency/gain/session
       matrix, with no forced label for noise or unlabeled field windows, radio
@@ -810,15 +828,22 @@ shared-capture RMS/full-logit aggregation are complete. Their historical
 completion evidence remains valid; do not repeat precision selection or model
 training as a new milestone.
 
-The **next independent software delivery is S1: Recognizer admission and
-operator approval**. Define the versioned health/admission identity, derive
-capability from current Worker plus admitted assets, remove request/template
-self-assertion of availability, and require recognition approval in both step
-and cruise. Missing/stale/mismatched/unadmitted evidence must fail closed;
-the actual epoch-10 candidate stays unavailable throughout this unit.
+S1 (Recognizer admission and operator approval) was implemented and verified
+on 2026-09-06: production-planning entry points use current admission/Worker
+health, manual recognition approval is enforced in step/cruise, and the real epoch-10
+candidate remains unavailable. The final 86 library/13 terminal/10 Python tests,
+Clippy, real Worker health and exact cleanup passed; installed production
+services were not replaced. See
+[`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md).
 
-Then deliver S2 (unified result/observation contract), S3 (Worker lifecycle,
-queue/deadline/cancel/crash cleanup), S4 (shared Spark/Mamba inference lease and
+The **next independent software delivery is S2: unified recognition result and
+Planner observation contract**. Join existing full-window and aggregate output
+with classified/rejected/unavailable/error, trusted numeric identity,
+provisional-name state, calibration/rejection references, quality/source/timing
+and a bounded Planner summary. Do not freeze thresholds or label experimental
+uncalibrated results as production classifications.
+
+Then deliver S3 (Worker lifecycle, queue/deadline/cancel/crash cleanup), S4 (shared Spark/Mamba inference lease and
 resource soak), S5 (Runner execution/stop/feedback and Planner regression), and
 S6 (Web/terminal/persistence/manual deletion). Implementation and explicitly
 engineering-only validation can proceed before labels arrive; none implies
@@ -836,9 +861,9 @@ may current Adapter health report availability. O1 covers the remaining Section
 
 Detailed deliverables and completion conditions are maintained in
 [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md),
-under the replanned delivery order. No new implementation item was completed by
-this planning review; it produced no development IQ, feature process or staging
-data requiring cleanup.
+under the replanned delivery order. S1 cleanup removed both exact feature roots,
+including all generated binaries, synthetic evidence and Worker logs; it
+created no SDR-local transient data.
 
 Chapter 3 has no new hardware gap. Chapter 7 emitter identity remains a later
 independent scope, not a capability of the modulation classifier. Production

@@ -2,6 +2,9 @@ use crate::execution::{ExecutionAuthorization, ExecutionObservation, SdrActionEx
 use crate::planner::Planner;
 use crate::policy::ControllerPolicy;
 use crate::protocol::{ObservationSummary, PlanRequest, ProposedAction, ValidatedPlan};
+use crate::recognizer_admission::{
+    refresh_recognizer, RecognizerCapability, UnavailableRecognizer,
+};
 use crate::sdr::{SdrEngine, SdrError};
 use crate::sweep::{
     SweepBackend, SweepEngine, SweepError, SweepFrequencies, SweepPlan, SweepReport,
@@ -122,6 +125,7 @@ pub struct Runner<O, P, E, S, A> {
     survey_gain_db: i16,
     sweep_point_timeout_ms: u32,
     audit: A,
+    recognizer: Box<dyn RecognizerCapability>,
 }
 
 impl<O, P, E, S, A> Runner<O, P, E, S, A>
@@ -150,7 +154,18 @@ where
             survey_gain_db,
             sweep_point_timeout_ms,
             audit,
+            recognizer: Box::new(UnavailableRecognizer),
         }
+    }
+
+    pub fn with_recognizer(mut self, recognizer: impl RecognizerCapability + 'static) -> Self {
+        self.recognizer = Box::new(recognizer);
+        self
+    }
+
+    fn refresh_recognition(&mut self, request: &mut PlanRequest) -> Result<(), RunnerError> {
+        let observation = refresh_recognizer(request, self.recognizer.as_mut());
+        self.audit("recognizer_admission", request, json!(observation))
     }
 
     pub fn run_once(
@@ -173,10 +188,9 @@ where
                 return Err(RunnerError::Sdr(error));
             }
         };
-        let recognizer_available = request.observation.health.recognizer_available;
         let dropped_observations = request.observation.health.dropped_observations;
-        request.observation.health =
-            live.planner_health(recognizer_available, dropped_observations);
+        request.observation.health = live.planner_health(false, dropped_observations);
+        self.refresh_recognition(&mut request)?;
         request.observation.age_ms = 0;
         self.audit("input_observation", &request, json!(&request.observation))?;
 
@@ -200,6 +214,7 @@ where
             }
         };
         self.audit("planner_proposal", &request, json!(&response))?;
+        self.refresh_recognition(&mut request)?;
         let plan = match self.policy.validate_response(&request, response) {
             Ok(plan) => plan,
             Err(error) => {
@@ -228,6 +243,14 @@ where
             });
         }
 
+        if plan.approval_required && approval == ApprovalMode::Automatic {
+            self.audit(
+                "authorization_rejected",
+                &request,
+                json!({"code": "approval_required"}),
+            )?;
+            ExecutionAuthorization::automatic(&plan).map_err(RunnerError::Sdr)?;
+        }
         if !matches!(
             plan.action,
             ProposedAction::CaptureBoundedIq { .. }
@@ -274,10 +297,13 @@ where
                 };
                 let mut next_observation = request.observation.clone();
                 next_observation.age_ms = 0;
-                next_observation.health = execution.post_execution_sdr.planner_health(
-                    next_observation.health.recognizer_available,
-                    next_observation.health.dropped_observations,
-                );
+                next_observation.health = execution
+                    .post_execution_sdr
+                    .planner_health(false, next_observation.health.dropped_observations);
+                let mut refreshed = request.clone();
+                self.refresh_recognition(&mut refreshed)?;
+                next_observation.health.recognizer_available =
+                    refreshed.observation.health.recognizer_available;
                 self.audit("execution_observation", &request, json!(&execution))?;
                 Ok(RunReport {
                     status: RunStatus::Executed,
@@ -397,8 +423,10 @@ where
             self.audit_sdr_failure(request, &error)?;
             return Err(RunnerError::Sdr(error));
         }
+        let mut refreshed = request.clone();
+        self.refresh_recognition(&mut refreshed)?;
         let health = post_execution_sdr.planner_health(
-            request.observation.health.recognizer_available,
+            refreshed.observation.health.recognizer_available,
             request.observation.health.dropped_observations,
         );
         let next_observation = match candidate_id.as_deref() {
@@ -776,8 +804,15 @@ mod tests {
         assert_eq!(report.status, RunStatus::AwaitingApproval);
         assert!(report.execution.is_none());
         let (_, _, audit) = runner.into_parts();
-        assert_eq!(audit.events().len(), 4);
-        assert_eq!(audit.events()[3].phase, "awaiting_approval");
+        assert_eq!(
+            audit
+                .events()
+                .iter()
+                .filter(|e| e.phase != "recognizer_admission")
+                .count(),
+            4
+        );
+        assert_eq!(audit.events().last().unwrap().phase, "awaiting_approval");
     }
 
     #[test]
@@ -798,8 +833,18 @@ mod tests {
         assert!(report.next_observation.health.can_capture_iq);
         assert_eq!(report.execution.unwrap().capture.bytes_written, 16_384);
         let (_, _, audit) = runner.into_parts();
-        assert_eq!(audit.events().len(), 5);
-        assert_eq!(audit.events()[4].phase, "execution_observation");
+        assert_eq!(
+            audit
+                .events()
+                .iter()
+                .filter(|e| e.phase != "recognizer_admission")
+                .count(),
+            5
+        );
+        assert_eq!(
+            audit.events().last().unwrap().phase,
+            "execution_observation"
+        );
     }
 
     #[test]
@@ -1105,5 +1150,126 @@ mod tests {
             .events()
             .iter()
             .any(|event| event.phase == "execution_observation"));
+    }
+    struct TestCapability {
+        calls: usize,
+        revoke: bool,
+    }
+    impl RecognizerCapability for TestCapability {
+        fn observe(
+            &mut self,
+            request_id: u64,
+            generation: u64,
+        ) -> crate::recognizer_admission::RecognizerCapabilityObservation {
+            self.calls += 1;
+            crate::recognizer_admission::RecognizerCapabilityObservation {
+                recognizer_available: !self.revoke || self.calls == 1,
+                reason: "synthetic_fixture".to_owned(),
+                request_id,
+                session_generation: generation,
+                observed_at_unix_ms: SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_millis() as u64,
+                worker_instance_id: Some("a".repeat(64)),
+                admission_sha256: Some("b".repeat(64)),
+            }
+        }
+    }
+
+    #[test]
+    fn runner_does_not_trust_input_availability_and_rechecks_after_planning() {
+        for trusted_then_revoked in [false, true] {
+            let mut input = request();
+            input.observation.health.recognizer_available = true;
+            let mut proposal = response(4096);
+            proposal.action = Some(ProposedAction::RunLocalRecognition {
+                candidate_id: "candidate-1".to_owned(),
+            });
+            let mut runner = Runner::new(
+                ReplaySdrAdapter::new([snapshot()]),
+                ReplayPlanner {
+                    response: Some(proposal),
+                },
+                ReplayActionExecutor::new([]),
+                ReplaySweepAdapter::new([]),
+                20,
+                250,
+                MemoryAuditAdapter::default(),
+            );
+            if trusted_then_revoked {
+                runner = runner.with_recognizer(TestCapability {
+                    calls: 0,
+                    revoke: true,
+                });
+            }
+            assert!(
+                matches!(runner.run_once(input, ApprovalMode::Operator), Err(RunnerError::Controller(ControllerError::Policy(error))) if error.code == "recognizer_unavailable")
+            );
+            let (_, _, audit) = runner.into_parts();
+            let last = audit
+                .events()
+                .iter()
+                .rfind(|e| e.phase == "recognizer_admission")
+                .unwrap();
+            assert_eq!(last.payload["recognizer_available"], false);
+            assert_eq!(last.payload["request_id"], 7);
+        }
+    }
+
+    #[test]
+    fn runner_recognition_approval_precedes_unsupported_executor_check() {
+        for mode in [
+            ApprovalMode::Pending,
+            ApprovalMode::Automatic,
+            ApprovalMode::Operator,
+        ] {
+            let mut proposal = response(4096);
+            proposal.action = Some(ProposedAction::RunLocalRecognition {
+                candidate_id: "candidate-1".to_owned(),
+            });
+            let mut runner = Runner::new(
+                ReplaySdrAdapter::new([snapshot()]),
+                ReplayPlanner {
+                    response: Some(proposal),
+                },
+                ReplayActionExecutor::new([]),
+                ReplaySweepAdapter::new([]),
+                20,
+                250,
+                MemoryAuditAdapter::default(),
+            )
+            .with_recognizer(TestCapability {
+                calls: 0,
+                revoke: false,
+            });
+            let result = runner.run_once(request(), mode);
+            match mode {
+                ApprovalMode::Pending => {
+                    assert_eq!(result.unwrap().status, RunStatus::AwaitingApproval)
+                }
+                ApprovalMode::Automatic => assert!(
+                    matches!(result, Err(RunnerError::Sdr(error)) if error.code == "approval_required")
+                ),
+                ApprovalMode::Operator => {
+                    assert_eq!(result.unwrap().status, RunStatus::PlannedOnly)
+                }
+            }
+        }
+    }
+    #[test]
+    fn plain_controller_plan_also_discards_request_supplied_capability() {
+        let mut input = request();
+        input.observation.health.recognizer_available = true;
+        let mut proposal = response(4096);
+        proposal.action = Some(ProposedAction::RunLocalRecognition {
+            candidate_id: "candidate-1".to_owned(),
+        });
+        let mut controller = crate::Controller::new(ReplayPlanner {
+            response: Some(proposal),
+        });
+        assert!(
+            matches!(controller.decide(&input), Err(ControllerError::Policy(error)) if error.code == "recognizer_unavailable")
+        );
     }
 }
