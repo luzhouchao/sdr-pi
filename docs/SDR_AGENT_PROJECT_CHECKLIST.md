@@ -17,7 +17,7 @@ this file retains the detailed delivery and evidence ledger.
 以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
 编号表示范围，不表示施工先后；实际顺序见
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
-S1/S2/V1a 已完成；S3 生命周期源码和有限真实 Worker 验证完成，生产服务未替换。
+S1/S2/V1a/S3 已完成；S4a 共享 GPU 租约源码和隔离实机验证完成，生产服务未替换。
 
 - [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
 - [x] AGX 扫频/精查、结果存储和 RX 语料基础、split 隔离完成（第1/4/5章）。
@@ -27,7 +27,7 @@ S1/S2/V1a 已完成；S3 生命周期源码和有限真实 Worker 验证完成�
 - [x] S2：统一完整结果与 Planner 紧凑 observation、四状态/校准身份、RF-v1 batch 严格转换和真实报告 replay 完成；生产阈值未冻结，能力仍为 false。
 - [x] S3：Worker 单等待位、整批 deadline、取消确认、强杀/重启清理和指标完成源码及有限真实候选验证；未部署，能力仍为 false。
 - [ ] S4：共享 GPU 调度与持续资源验收。
-  - [ ] S4a：推理租约、串行执行、取消/故障释放和实机正确性。
+  - [x] S4a：共享推理租约、串行执行、取消/故障释放和隔离实机正确性完成；未部署，不代表 S4b 完成。
   - [ ] S4b：最终代表性负载下的显存/RSS/队列/热稳定性证据。
 - [ ] S5：Runner 识别执行、批准、预算/audit、联合 stop、Spark 回灌及固定 Planner 回归。
 - [ ] S6：用户识别结果交付。
@@ -778,6 +778,17 @@ Evidence:
       resident Spark-X2.5-4B Planner and Mamba Worker. For production v1,
       serialize active inference, bound queue/deadline/memory/thermal use, and
       prove cancellation releases the gate before a subsequent Planner turn.
+  - [x] S4a shared lease source and finite real candidate validation: inherited
+        cross-process flock covers startup and whole inference; owned Spark
+        gateway and S3 Mamba supervisor serialize active work, reap on cancel/
+        failure before release, and fence parent death. Actual Node Planner →
+        native RF-v1 Mamba → Planner, concurrent waiting, both cancellations and
+        both supervisor SIGKILL/recovery passed; temporary data and processes
+        were removed. See
+        [`GPU_LEASE_S4A_VALIDATION_2026-09-06.md`](GPU_LEASE_S4A_VALIDATION_2026-09-06.md).
+  - [ ] S4b/A1: representative memory/thermal/latency acceptance and coordinated
+        admitted deployment routing all production GPU callers through the
+        same gate. Existing installed endpoints remain outside the candidate.
 - [x] Generate offline confusion matrices, total accuracy, macro-F1, per-class
       precision/recall/F1 and per-SNR accuracy for both complete test splits.
 - [ ] Consume the Chapter 5 frozen numeric-ID/name table, then validate the RF
@@ -884,9 +895,9 @@ Evidence:
 
 ## Current next milestone
 
-S1/S2/V1a and S3 lifecycle source/isolated real-Worker validation are complete.
+S1/S2/V1a/S3 and S4a shared-lease source/isolated real-model validation are complete.
 Installed services remain unchanged and the actual recognizer stays unavailable.
-The next default independent unit is S4a shared GPU inference leasing. Sustained
+The next default independent unit is S6a result storage, viewing and deletion. Sustained
 resources, Runner/joint stop, actual independent labels, calibration and
 production admission remain open.
 

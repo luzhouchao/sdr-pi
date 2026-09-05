@@ -161,3 +161,11 @@ regular direct-child file of exactly 32,768 bytes; it has no dataset/split loade
 remain unavailable/uncalibrated for production. The ignored Rust fixture-export
 test and finite validation script provide reproducible synthetic input without
 checking IQ into Git or accessing locked test.
+
+## S4a optional shared inference lease
+
+The supervisor now accepts `--gpu-lease-root` for a gate shared with the owned
+Spark candidate gateway. This option adds startup and whole-batch serialization,
+with inherited ownership through child/parent death. The default standalone S3
+path remains unchanged. See [`GPU_LEASE_S4A_INTERFACE.md`](GPU_LEASE_S4A_INTERFACE.md)
+for the verified candidate pair and its separate deployment boundary.

@@ -118,7 +118,7 @@ class Job:
 
 class Supervisor:
     def __init__(self, runtime, python, max_batches=128, max_restarts=4, startup_seconds=120,
-                 command_factory=None):
+                 command_factory=None, gpu_lease_root=None):
         self.root, self.python = runtime, python
         self.incoming, self.owned = runtime / 'incoming', runtime / 'owned'
         self.socket, self.worker_socket = runtime / 'supervisor.sock', runtime / 'worker.sock'
@@ -140,6 +140,11 @@ class Supervisor:
         self.control_connections = 0
         self.max_batches, self.max_restarts = max_batches, max_restarts
         self.startup_seconds = startup_seconds
+        self.gpu_lease = None
+        self.gpu_token = None
+        if gpu_lease_root is not None:
+            from gpu_lease import GpuLease
+            self.gpu_lease = GpuLease(gpu_lease_root, 'mamba')
         self.command_factory = command_factory
         data = RECEIPT.read_bytes()
         require(digest(data) == RECEIPT_HASH, 'receipt_hash')
@@ -198,6 +203,9 @@ class Supervisor:
     async def start_worker(self):
         require(self.process is None, 'worker_already_owned')
         require(self.metrics['restarts'] <= self.max_restarts, 'restart_budget')
+        if self.gpu_lease is not None:
+            self.gpu_token = await self.gpu_lease.acquire(
+                time.monotonic() + self.startup_seconds, lambda: self.stopping)
         parent = os.getpid()
 
         def child_setup():
@@ -212,7 +220,7 @@ class Supervisor:
         spawning = asyncio.create_task(asyncio.create_subprocess_exec(
             *command, cwd=ROOT, env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1'},
             stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
-            start_new_session=True, pass_fds=(self.lock,), preexec_fn=child_setup))
+            start_new_session=True, pass_fds=(self.lock,) + (() if self.gpu_lease is None else (self.gpu_lease.fd,)), preexec_fn=child_setup))
         try:
             self.process = await asyncio.shield(spawning)
         except asyncio.CancelledError:
@@ -239,8 +247,14 @@ class Supervisor:
                     and re.fullmatch('[a-f0-9]{64}', h['worker_instance_id']) is not None
                     and abs(h['observed_at_unix_ms'] - time.time_ns() // 1000000) <= 1000, 'worker_health')
             self.health, self.worker_id = h, h['worker_instance_id']
+            self.release_gpu()
             return
         raise ContractError('stopping')
+
+    def release_gpu(self):
+        if self.gpu_token is not None:
+            self.gpu_lease.release(self.gpu_token)
+            self.gpu_token = None
 
     async def kill_worker(self):
         self.health = None
@@ -252,11 +266,15 @@ class Supervisor:
                     pass
             await asyncio.wait_for(self.process.wait(), 2)
             self.process = None
+        self.release_gpu()
         if self.worker_socket.exists():
             require(stat.S_ISSOCK(self.worker_socket.lstat().st_mode), 'worker_socket_type')
             self.worker_socket.unlink()
 
     def status(self):
+        if self.gpu_lease is not None:
+            self.metrics.update({'gpu_'+k:v for k,v in self.gpu_lease.metrics.items()})
+            self.metrics['gpu_held'] = int(self.gpu_lease.held)
         return dict(schema_version=1, operation='health', instance_id=self.instance,
                     worker_instance_id=self.worker_id, ready=bool(self.health and not self.fault and not self.stopping and self.metrics['submitted'] < self.max_batches),
                     recognizer_available=False, minimum_generation=self.minimum_generation,
@@ -460,6 +478,13 @@ class Supervisor:
             self.metrics['queue_wait_us'] += int((time.monotonic()-job.accepted)*1000000)
             status, outputs = 'ok', []
             try:
+                if self.gpu_lease is not None:
+                    from gpu_lease import LeaseError
+                    try:
+                        self.gpu_token = await self.gpu_lease.acquire(
+                            job.deadline, job.cancel.is_set, f'{job.key[0]}:{job.key[1]}')
+                    except LeaseError as error:
+                        raise ContractError(str(error)) from error
                 for i, request in enumerate(job.request['requests']):
                     job.window = i
                     require(time.monotonic() < job.deadline, 'deadline')
@@ -512,6 +537,7 @@ class Supervisor:
                 status = str(error) if str(error) in ('cancelled', 'deadline') else 'worker_error'
             if status != 'ok':
                 await self.invalidate(status, finish_active=False)
+            self.release_gpu()
             self.finish(job, status, outputs)
             self.active = None
 
@@ -569,11 +595,14 @@ class Supervisor:
                     path.unlink()
             os.close(self.lock)
             self.lock = None
+            if self.gpu_lease is not None:
+                self.gpu_lease.close()
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runtime-root',type=Path,required=True)
+    parser.add_argument('--gpu-lease-root',type=Path)
     parser.add_argument('--worker-python',type=Path,default=ROOT/'local-assets/amc-eval/runtime/venv/bin/python')
     parser.add_argument('--max-batches',type=int,default=128)
     parser.add_argument('--max-restarts',type=int,default=4)
@@ -581,7 +610,7 @@ def main():
     args=parser.parse_args()
     require(1 <= args.max_batches <= 10000 and 0 <= args.max_restarts <= 16 and 1 <= args.lifetime_seconds <= 3600,'budget')
     os.umask(0o077)
-    asyncio.run(Supervisor(args.runtime_root,args.worker_python,args.max_batches,args.max_restarts).run(args.lifetime_seconds))
+    asyncio.run(Supervisor(args.runtime_root,args.worker_python,args.max_batches,args.max_restarts,gpu_lease_root=args.gpu_lease_root).run(args.lifetime_seconds))
 
 
 if __name__=='__main__':

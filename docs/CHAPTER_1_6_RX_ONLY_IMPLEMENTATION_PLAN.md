@@ -289,8 +289,12 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
         清理和指标；临时数据已清理。见
         [`WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md`](WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md)。
   - [ ] S4b/A1：代表性持续资源/thermal 验收及已准入生产部署；S3 未替换服务。
-- [ ] 让 Spark 与 Mamba 同时常驻但活跃推理严格按 `Spark -> Mamba -> Spark`
-      串行；验证取消释放 gate、迟到结果不能污染下一 generation。
+- [x] S4a：Spark 与 Mamba 同时常驻但活跃推理按 `Spark -> Mamba -> Spark`
+      串行的源码及隔离实机验证完成；取消先回收实际子进程再释放共享租约，实例/
+      generation 和连接隔离阻止迟到结果回流。共享启动/整批锁、双方强杀恢复、
+      实际 Node Planner 和原生 Mamba replay 通过，临时数据已清理。见
+      [`GPU_LEASE_S4A_VALIDATION_2026-09-06.md`](GPU_LEASE_S4A_VALIDATION_2026-09-06.md)。
+      生产服务未替换；持续资源与所有生产调用统一入 gate 仍属 S4b/A1。
 - [ ] 部署可回滚的生产 Worker，并在冻结的频率/增益/session 矩阵上完成 RX-only
       端到端验收；只有全部准入门通过后才报告 `recognizer_available=true`。
 

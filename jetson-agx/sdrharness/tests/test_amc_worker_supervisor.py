@@ -58,6 +58,7 @@ class LifecycleTests(unittest.IsolatedAsyncioTestCase):
         fake=self.root/'fake.py';fake.write_text(FAKE)
         runtime=self.root/'runtime'
         self.service=sup.Supervisor(runtime,Path(sys.executable),max_restarts=8,startup_seconds=2,
+            gpu_lease_root=self.root/'gate' if getattr(self,'use_gpu_lease',False) else None,
             command_factory=lambda socket,spool:[sys.executable,str(fake),str(socket),str(spool),str(sup.RECEIPT),sup.RECEIPT_HASH])
         self.service.initialize()
         self.server=await asyncio.start_unix_server(self.service.handle,path=str(self.service.socket),limit=sup.FRAME)
@@ -81,6 +82,7 @@ class LifecycleTests(unittest.IsolatedAsyncioTestCase):
         for job in (self.service.active,self.service.pending):
             if job and not job.done.done():self.service.finish(job,'shutdown')
         if self.service.lock is not None:os.close(self.service.lock)
+        if self.service.gpu_lease is not None:self.service.gpu_lease.close()
         self.tmp.cleanup()
 
     async def call(self,q):return await sup.exchange(self.service.socket,q,8,sup.FRAME)

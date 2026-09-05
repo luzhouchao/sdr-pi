@@ -1,0 +1,731 @@
+{
+  "schema_version": 1,
+  "delivery": "S4a",
+  "base_commit": "3264bf9b9f20828fddd21bc623b741ca774af2c5",
+  "validated_at_utc": "2026-09-05T19:24:36.294772+00:00",
+  "source_sha256": {
+    "jetson-agx/sdrharness/scripts/amc-worker-supervisor.py": "88a9758d1a0369b08d2660424a9d22239358c846fe31ae5e0981765b5ac02204",
+    "jetson-agx/sdrharness/tests/test_amc_worker_supervisor.py": "5051b3033d0535f49b7bc04e3c57739193040826fa466dbeadcfceb6036fb316",
+    "jetson-agx/sdrharness/scripts/gpu_lease.py": "cbc8038a375f1c44cf4c16d68c94d19ae146b8b9b496a340603be62340c1e1c7",
+    "jetson-agx/sdrharness/scripts/spark-gpu-gateway.py": "1b04fcd3c63d1142db4f3344e1268b66615c5e91df5e20499cf73d92dca838b4",
+    "jetson-agx/sdrharness/scripts/validate-gpu-lease.py": "c297cc873c5e9b3fb345fa06835167c5377543553ee030fa94b37ffa782806d4",
+    "jetson-agx/sdrharness/tests/test_gpu_lease.py": "e10e9001d92ed6868951c052afb3f7ad2ffde279a19d91f9a5ebd973f901179c",
+    "raspberry-pi/sdr-agent/planner-worker/scripts/validate-gpu-planner.mjs": "6ccc6f7225b6ef744b293610c019a0c7cdb54bb4a7fa08daa2131811b2190e4b"
+  },
+  "spark_asset_sha256": {
+    "/home/jetson/Spark/models/Spark-X2.5-4B.gguf": "8cecf405a41a4a10f833530910c2e13fde9fb39c325c8afc3c5d10e4181e1a14",
+    "/home/jetson/Spark/runtime/llama.cpp/build/bin/llama-server": "62ee53f771427d45443b6ee901961361142c1af1ff9907657d04f281fc766dab"
+  },
+  "log_sha256": {
+    "node-tests.log": "49a91830a8841f520ce5eca45fe8c4392fcb094a780be8fa33ba51b08e3f37a9",
+    "build.log": "2526d82e8f082a3de0cf70515427f1b43a5a63db4871db9062c11796f437975d",
+    "spark-0.log": "e0850ae95d7c1a6a4260078a4c5200bae83c7d44b5f2c194895ea1c8b5fe8754",
+    "mamba-3.log": "5b24299e7336bad4159a200b3fe1708c9fd1b92c960efc548940f93dfcb2ff40",
+    "mamba-1.log": "e1737f6b96771a1b49f85a3383b4d13aa4944f26525cbb7d27106884621d6279",
+    "spark-2.log": "b1feef68a4bc992a0abb4ac57b98612e07e43de3ac97bcd52306143be1ed5f61",
+    "s3-tests.log": "d2c983612b0d76cc3d7aa4a668020703cbac43536a786dc7e2966bd6695b267e",
+    "live.log": "8b618b1addad9b0ad500c14f40b72a5f971db2b91ae05bcdabf245ce47d7d821",
+    "gpu-tests.log": "d5f5635cedf3cf25d7590ac4b0679bc36a13f396e0320d1fae45bfeabf8eace2",
+    "preliminary-live.log": "8b618b1addad9b0ad500c14f40b72a5f971db2b91ae05bcdabf245ce47d7d821",
+    "export.log": "c9d888bbbe60421fb206540124a82ebe5c1379354b1ca3714da29c8c174f33f7"
+  },
+  "tests": {
+    "s4a_python_passed": 22,
+    "standalone_s3_python_passed": 10,
+    "node_planner_passed": 52,
+    "native_build": "pass",
+    "synthetic_fixture_export": "pass",
+    "syntax_checks": "pass"
+  },
+  "real_worker": {
+    "schema_version": 1,
+    "status": "pass",
+    "synthetic_input": true,
+    "rx_bytes": 0,
+    "locked_test_read": false,
+    "recognizer_available": false,
+    "stages": [
+      {
+        "stage": "resident_startup",
+        "spark": {
+          "schema_version": 1,
+          "instance_id": "7a8ec57a547697714cb276ede9b6a8bf0670a4ac2f321b78876b9d43568c23cd",
+          "worker_instance_id": "2f28d94da5740705f3953d4dd483d430c6b91e294ddfa5d3640b6bf1c68b4486",
+          "worker_pid": 294451,
+          "ready": true,
+          "fault": null,
+          "recognizer_available": false,
+          "active": false,
+          "metrics": {
+            "submitted": 0,
+            "completed": 0,
+            "cancelled": 0,
+            "failed": 0,
+            "busy": 0,
+            "restarts": 1
+          },
+          "gpu_held": false,
+          "gpu_metrics": {
+            "acquired": 1,
+            "released": 1,
+            "wait_us": 30,
+            "held_us": 6561099,
+            "cancelled": 0,
+            "expired": 0
+          }
+        },
+        "mamba": {
+          "schema_version": 1,
+          "operation": "health",
+          "instance_id": "1537a85e7065bfe5f4a7a37799b85715c5059e0f203f1071f04ed7dcbdd473a3",
+          "worker_instance_id": "26fcf3ecbe50e582a2a1099ffb80c826395970fd1a8d4505eb188e24618f4bc3",
+          "ready": true,
+          "recognizer_available": false,
+          "minimum_generation": 1,
+          "active": null,
+          "queue_depth": 0,
+          "queue_capacity": 1,
+          "worker_pid": 294477,
+          "fault": null,
+          "metrics": {
+            "submitted": 0,
+            "completed": 0,
+            "busy": 0,
+            "cancelled": 0,
+            "expired": 0,
+            "failed": 0,
+            "crashes": 0,
+            "restarts": 0,
+            "removed": 0,
+            "queue_wait_us": 0,
+            "total_us": 0,
+            "connection_drops": 0,
+            "lock_wait_us": 11,
+            "gpu_acquired": 1,
+            "gpu_released": 1,
+            "gpu_wait_us": 6560081,
+            "gpu_held_us": 13418481,
+            "gpu_cancelled": 0,
+            "gpu_expired": 0,
+            "gpu_held": 0
+          }
+        }
+      },
+      {
+        "stage": "spark_mamba_spark",
+        "first": {
+          "status": "pass",
+          "action": "hold",
+          "adapter": "createSparkJsonPlanningStream",
+          "provider": "spark-local",
+          "recognizer_available": false,
+          "usage": {
+            "input": 76,
+            "output": 12,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "totalTokens": 88,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "total": 0
+            }
+          }
+        },
+        "mamba": {
+          "status": "unavailable",
+          "windows": 4
+        },
+        "second": {
+          "status": "pass",
+          "action": "hold",
+          "adapter": "createSparkJsonPlanningStream",
+          "provider": "spark-local",
+          "recognizer_available": false,
+          "usage": {
+            "input": 5,
+            "output": 12,
+            "cacheRead": 71,
+            "cacheWrite": 0,
+            "totalTokens": 88,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "total": 0
+            }
+          }
+        }
+      },
+      {
+        "stage": "concurrent_serialized",
+        "mamba": {
+          "status": "unavailable",
+          "windows": 4
+        }
+      },
+      {
+        "stage": "mamba_cancel_releases_to_planner",
+        "planner": {
+          "status": "pass",
+          "action": "hold",
+          "adapter": "createSparkJsonPlanningStream",
+          "provider": "spark-local",
+          "recognizer_available": false,
+          "usage": {
+            "input": 5,
+            "output": 12,
+            "cacheRead": 71,
+            "cacheWrite": 0,
+            "totalTokens": 88,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "total": 0
+            }
+          }
+        },
+        "worker_dead": true
+      },
+      {
+        "stage": "spark_cancel_releases_to_mamba",
+        "mamba": {
+          "status": "unavailable",
+          "windows": 4
+        },
+        "worker_dead": true
+      },
+      {
+        "stage": "spark_recovery",
+        "planner": {
+          "status": "pass",
+          "action": "hold",
+          "adapter": "createSparkJsonPlanningStream",
+          "provider": "spark-local",
+          "recognizer_available": false,
+          "usage": {
+            "input": 76,
+            "output": 12,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "totalTokens": 88,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "total": 0
+            }
+          }
+        }
+      },
+      {
+        "stage": "spark_parent_death",
+        "mamba": {
+          "status": "unavailable",
+          "windows": 4
+        },
+        "worker_dead": true
+      },
+      {
+        "stage": "mamba_parent_death",
+        "planner": {
+          "status": "pass",
+          "action": "hold",
+          "adapter": "createSparkJsonPlanningStream",
+          "provider": "spark-local",
+          "recognizer_available": false,
+          "usage": {
+            "input": 76,
+            "output": 12,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "totalTokens": 88,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "total": 0
+            }
+          }
+        },
+        "worker_dead": true
+      },
+      {
+        "stage": "final_recovery",
+        "mamba": {
+          "status": "unavailable",
+          "windows": 4
+        },
+        "planner": {
+          "status": "pass",
+          "action": "hold",
+          "adapter": "createSparkJsonPlanningStream",
+          "provider": "spark-local",
+          "recognizer_available": false,
+          "usage": {
+            "input": 5,
+            "output": 12,
+            "cacheRead": 71,
+            "cacheWrite": 0,
+            "totalTokens": 88,
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "total": 0
+            }
+          }
+        },
+        "mamba_health": {
+          "schema_version": 1,
+          "operation": "health",
+          "instance_id": "97a5a41fd718e92b70bb6cec5cb15f0c4ba3e2e5f1c947e0396453f480ffbb36",
+          "worker_instance_id": "1fae2c41d0cc9b934a23d78f0ae9a924482b6fc89d7e465163ded284fcd6d8da",
+          "ready": true,
+          "recognizer_available": false,
+          "minimum_generation": 1,
+          "active": null,
+          "queue_depth": 0,
+          "queue_capacity": 1,
+          "worker_pid": 294682,
+          "fault": null,
+          "metrics": {
+            "submitted": 1,
+            "completed": 1,
+            "busy": 0,
+            "cancelled": 0,
+            "expired": 0,
+            "failed": 0,
+            "crashes": 0,
+            "restarts": 0,
+            "removed": 2,
+            "queue_wait_us": 4316,
+            "total_us": 169902,
+            "connection_drops": 0,
+            "lock_wait_us": 11,
+            "gpu_acquired": 2,
+            "gpu_released": 2,
+            "gpu_wait_us": 73,
+            "gpu_held_us": 13352390,
+            "gpu_cancelled": 0,
+            "gpu_expired": 0,
+            "gpu_held": 0
+          }
+        },
+        "spark_health": {
+          "schema_version": 1,
+          "instance_id": "cc1b338b271dcb7c6c48087bf7c16ef5b93b4b1910c7c2ba59dc87255895b084",
+          "worker_instance_id": "83e1d261e32b908c5feec23b01dbe12eaaf3ec6c208ce287411331e28282f1e7",
+          "worker_pid": 294652,
+          "ready": true,
+          "fault": null,
+          "recognizer_available": false,
+          "active": false,
+          "metrics": {
+            "submitted": 2,
+            "completed": 2,
+            "cancelled": 0,
+            "failed": 0,
+            "busy": 0,
+            "restarts": 1
+          },
+          "gpu_held": false,
+          "gpu_metrics": {
+            "acquired": 3,
+            "released": 3,
+            "wait_us": 221,
+            "held_us": 9177363,
+            "cancelled": 0,
+            "expired": 0
+          }
+        }
+      }
+    ],
+    "lease_events": [
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 1,
+        "request": "startup",
+        "monotonic_ns": 297294025065218
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 1,
+        "request": "",
+        "monotonic_ns": 297300585855365
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 1,
+        "request": "startup",
+        "monotonic_ns": 297300590560236
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 1,
+        "request": "",
+        "monotonic_ns": 297314008911506
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 2,
+        "request": "1",
+        "monotonic_ns": 297314761287389
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 2,
+        "request": "",
+        "monotonic_ns": 297315989288035
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 2,
+        "request": "100:7",
+        "monotonic_ns": 297316058291534
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 2,
+        "request": "",
+        "monotonic_ns": 297316244360281
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 3,
+        "request": "2",
+        "monotonic_ns": 297317018131232
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 3,
+        "request": "",
+        "monotonic_ns": 297318160143346
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 4,
+        "request": "3",
+        "monotonic_ns": 297318210029158
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 4,
+        "request": "",
+        "monotonic_ns": 297320618181485
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 3,
+        "request": "101:7",
+        "monotonic_ns": 297320618614565
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 3,
+        "request": "",
+        "monotonic_ns": 297320831915736
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 4,
+        "request": "102:200",
+        "monotonic_ns": 297320851184846
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 4,
+        "request": "",
+        "monotonic_ns": 297321059702299
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 5,
+        "request": "startup",
+        "monotonic_ns": 297321110816409
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 5,
+        "request": "",
+        "monotonic_ns": 297334248906573
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 5,
+        "request": "4",
+        "monotonic_ns": 297334249116745
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 5,
+        "request": "",
+        "monotonic_ns": 297335334053389
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 6,
+        "request": "5",
+        "monotonic_ns": 297335409410765
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 6,
+        "request": "",
+        "monotonic_ns": 297336000580582
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 6,
+        "request": "104:7",
+        "monotonic_ns": 297336001897166
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 6,
+        "request": "",
+        "monotonic_ns": 297336218404576
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 7,
+        "request": "6",
+        "monotonic_ns": 297337022320887
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 7,
+        "request": "",
+        "monotonic_ns": 297344842850856
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "c0f79cfbcedf7131c04cc028a433c926",
+        "serial": 8,
+        "request": "7",
+        "monotonic_ns": 297344917480795
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 7,
+        "request": "105:7",
+        "monotonic_ns": 297345338390017
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 7,
+        "request": "",
+        "monotonic_ns": 297345511346063
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "b613ef77ea4c84f5134c0d33f350b1e3",
+        "serial": 1,
+        "request": "startup",
+        "monotonic_ns": 297345715157152
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "b613ef77ea4c84f5134c0d33f350b1e3",
+        "serial": 1,
+        "request": "",
+        "monotonic_ns": 297352433693139
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "314e069175ad8df7237e4507d53169ba",
+        "serial": 8,
+        "request": "106:300",
+        "monotonic_ns": 297352498106249
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "b613ef77ea4c84f5134c0d33f350b1e3",
+        "serial": 2,
+        "request": "1",
+        "monotonic_ns": 297353283388549
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "b613ef77ea4c84f5134c0d33f350b1e3",
+        "serial": 2,
+        "request": "",
+        "monotonic_ns": 297354619335592
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "0913a9324e3550a82bb56d43bade45dd",
+        "serial": 1,
+        "request": "startup",
+        "monotonic_ns": 297354797184200
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "0913a9324e3550a82bb56d43bade45dd",
+        "serial": 1,
+        "request": "",
+        "monotonic_ns": 297367984060661
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "0913a9324e3550a82bb56d43bade45dd",
+        "serial": 2,
+        "request": "110:7",
+        "monotonic_ns": 297368026297835
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "0913a9324e3550a82bb56d43bade45dd",
+        "serial": 2,
+        "request": "",
+        "monotonic_ns": 297368191572390
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "b613ef77ea4c84f5134c0d33f350b1e3",
+        "serial": 3,
+        "request": "2",
+        "monotonic_ns": 297368975315841
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "b613ef77ea4c84f5134c0d33f350b1e3",
+        "serial": 3,
+        "request": "",
+        "monotonic_ns": 297370097603495
+      }
+    ],
+    "lease_intervals": 21,
+    "parent_death_intervals": 2,
+    "cleanup": {
+      "worker_pids": [
+        294451,
+        294477,
+        294553,
+        294605,
+        294652,
+        294682
+      ],
+      "workers_dead": true,
+      "supervisor_exit_codes": [
+        -9,
+        -9,
+        0,
+        0
+      ],
+      "spools_empty": true,
+      "sockets_absent": true,
+      "ports": [
+        44983,
+        48605
+      ]
+    },
+    "model_bytes_sha256": "937c7c9497ca9f7990ee4256c617d5c57739e66da3da7498de1ab9d1618d2db2",
+    "controller_sha256": "72f1bf1ed7cb22bd977a28416311a9fe1855049070f8477816a6215a638a5fd5"
+  },
+  "installed_spark_before_and_after": [
+    "MainPID=1150",
+    "ExecMainStartTimestamp=Wed 2026-09-02 16:35:11 CST",
+    "ActiveState=active"
+  ],
+  "governance": {
+    "installed_services_changed": false,
+    "recognizer_available": false,
+    "locked_test_read": false,
+    "rx_bytes": 0,
+    "training": false,
+    "calibration_frozen": false,
+    "scope": "isolated candidate pair; no global host or deployed serialization claim"
+  },
+  "cleanup": {
+    "exact_directory": "/var/tmp/sdrharness-dev/s4a-906a",
+    "active_feature_processes": [],
+    "file_count": 1731,
+    "file_bytes": 661207802,
+    "candidate_ports_closed": true,
+    "shared_lock_unheld": true,
+    "user_results_corpus_assets_removed": false,
+    "directory_absent_verified": true
+  },
+  "post_validation_formatting": {
+    "path": "jetson-agx/sdrharness/scripts/gpu_lease.py",
+    "change": "Removed one extra blank line at EOF; executable code unchanged",
+    "tested_sha256": "18f2b324fb9b5db7442e11acca28a47c814e28d77215afe9d53c83bcbd3b7c42"
+  }
+}

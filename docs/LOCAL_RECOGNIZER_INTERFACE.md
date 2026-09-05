@@ -259,8 +259,21 @@ See [`WORKER_SUPERVISOR_S3_INTERFACE.md`](WORKER_SUPERVISOR_S3_INTERFACE.md) and
 [`WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md`](WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md).
 The earlier standalone per-window command remains experimental. Supervised
 callers use `--recognizer-supervisor-root`; they do not bypass the supervisor's
-private child socket. Installed services, shared GPU gating, Runner execution,
-joined SDR/Worker `/stop` and sustained thermal acceptance remain separate work.
+private child socket. The optional S4a shared gate is documented below; installed
+services, Runner execution, joined SDR/Worker `/stop` and sustained thermal
+acceptance remain separate work.
+
+## S4a shared GPU lease
+
+The S3 supervisor can now take `--gpu-lease-root` to share one inherited
+cross-process inference lock with the owned Spark candidate gateway. Startup and
+entire four-window inference are serialized; cancellation/failure reaps the real
+model child before release, and parent-death fencing prevents early unlock.
+Actual Node Spark → native Mamba → Spark and both-side cancellation/SIGKILL
+recovery passed isolated AGX validation. This remains a candidate source path,
+with recognition unavailable and installed services unchanged. See
+[`GPU_LEASE_S4A_INTERFACE.md`](GPU_LEASE_S4A_INTERFACE.md) and
+[`GPU_LEASE_S4A_VALIDATION_2026-09-06.md`](GPU_LEASE_S4A_VALIDATION_2026-09-06.md).
 
 ## Remaining delivery work
 
