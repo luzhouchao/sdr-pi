@@ -858,56 +858,15 @@ Evidence:
 
 ## Current next milestone
 
-Replanned on 2026-09-05 against `2d36bc6`. The RX1 control/transport baseline,
-AGX acquisition, corpus/split foundations, frozen `rf_preprocess_v1`, user-owned
-checkpoint training, complete AGX validation, FP16 selection and runtime
-shared-capture RMS/full-logit aggregation are complete. Their historical
-completion evidence remains valid; do not repeat precision selection or model
-training as a new milestone.
+The next independent delivery is **S2: unified recognition result and Planner
+observation contract**. S1 source and isolated real-Worker validation are
+complete; installed production services remain unchanged and the actual
+candidate remains unavailable. See the current status overview at the top of
+this checklist for completed and outstanding units.
 
-S1 (Recognizer admission and operator approval) was implemented and verified
-on 2026-09-06: production-planning entry points use current admission/Worker
-health, manual recognition approval is enforced in step/cruise, and the real epoch-10
-candidate remains unavailable. The final 86 library/13 terminal/10 Python tests,
-Clippy, real Worker health and exact cleanup passed; installed production
-services were not replaced. See
-[`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md).
-
-The **next independent software delivery is S2: unified recognition result and
-Planner observation contract**. Join existing full-window and aggregate output
-with classified/rejected/unavailable/error, trusted numeric identity,
-provisional-name state, calibration/rejection references, quality/source/timing
-and a bounded Planner summary. Do not freeze thresholds or label experimental
-uncalibrated results as production classifications.
-
-The default execution order is S2 → V1a → S3 → S4a → S6a → S5 → S6b →
-S4b/O1a, then V2/V3b once independent evidence is ready, followed by A1/O1b.
-Start V1b data preparation and V3a label mapping early; V2 may move forward when
-its own prerequisites are met, and S6a may precede GPU work if needed. These
-splits are tracked in the status overview above. Detailed scheduling and
-completion boundaries are in
+Execution order, prerequisites and permitted scheduling changes are maintained
+only in
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md).
-Engineering-only validation can proceed before labels arrive; none implies
-production admission. Current backlog one, batch cancellation and short
-co-residency evidence do not complete the production lifecycle/GPU gates.
-
-In a separate dependency chain, V1 adds RF-v1 evidence intake and independently
-labeled known-RF/OOD coverage with isolated calibration/acceptance groups;
-V2 freezes calibration/rejection using that evidence; V3 resolves label-space
-admission and performs the one locked test only after acceptance rules are
-frozen. A1 joins both chains for versioned production profiles, rollback-capable
-deployment and the RX-only frequency/gain/session acceptance matrix. Only then
-may current Adapter health report availability. O1 covers the remaining Section
-8 fault/fuzz, operations and complete 24-hour-loop validation.
-
-Detailed deliverables and completion conditions are maintained in
-[`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md),
-under the replanned delivery order. S1 cleanup removed both exact feature roots,
-including all generated binaries, synthetic evidence and Worker logs; it
-created no SDR-local transient data.
-
-Chapter 3 has no new hardware gap. Chapter 7 emitter identity remains a later
-independent scope, not a capability of the modulation classifier. Production
-calibration and the locked test remain blocked on independent evidence; a
-production date cannot be inferred from code completion. FPGA, transmit work,
-NX offload and model retraining by the Agent remain outside this plan.
+Chapter numbering here is a status ledger, not an instruction to implement in
+that order. This document cleanup changed no implementation/deployment status
+and generated no development IQ, processes or staging artifacts.

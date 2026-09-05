@@ -218,16 +218,13 @@ for the receipt/health schemas, exact verification boundary and live evidence.
 S1 is implemented and isolated-Worker validated; replacing deployed Controller/
 Web/Planner services and validating admitted positive capability remain A1.
 
-## Next admission slice
+## Remaining delivery work
 
-The selected checkpoint, pinned source, offline corpus and experimental
-P201-to-Worker path are now available. The next admission work must resolve
-the provisional RML name mapping, obtain independently labeled known-RF/OOD
-evidence for calibration/rejection, perform the still-locked test admission,
-and validate queue drops, cancellation, concurrency and sustained thermal behavior
-before installing a production Worker or setting `recognizer_available=true`.
-The field ownership and ordered Chapter 1-to-6 delivery gates are maintained in
-[`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md).
+Current completion status is maintained in
+[`SDR_AGENT_PROJECT_CHECKLIST.md`](SDR_AGENT_PROJECT_CHECKLIST.md), and execution
+order in
+[`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md).
+This interface document does not maintain a separate next-step plan.
 
 ## Existing package-validation seam
 
