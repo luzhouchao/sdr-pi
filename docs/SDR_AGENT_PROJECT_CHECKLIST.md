@@ -643,9 +643,13 @@ Evidence:
       exact frozen Chapter 4 `rf_preprocess_v1`. Its source, split, preprocessing,
       numeric labels, training config and checkpoint are pinned; strict AGX FP32
       loading and complete validation parity passed without opening test.
-- [ ] Select precision and freeze calibration/acceptance thresholds before
-      promoting epoch 10 from validation-only candidate to an admitted
-      production checkpoint or viewing its frozen test result.
+- [x] Select and hash-pin FP16 autocast for the epoch-10 validation candidate
+      after complete FP32/FP16/BF16 comparison on AGX. This precision selection
+      does not promote the checkpoint or enable runtime capability; see
+      [`RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md`](RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md).
+- [ ] Freeze calibration and acceptance thresholds before promoting epoch 10
+      from a validation-only candidate to an admitted production checkpoint or
+      viewing its frozen test result.
 - [x] Implement and live-validate the experimental AGX CUDA/Mamba Worker behind
       the existing backend-neutral Unix Recognizer Adapter without exposing
       PyTorch, Triton or CUDA objects through the Controller interface; keep it
@@ -660,8 +664,10 @@ Evidence:
 - [x] Numerically compare AGX FP32 with the 4090 training environment on the
       same 16 IQ rows per dataset: both argmax sets agree 16/16 and maximum
       absolute logits differences are `2.93e-5` (RML) and `1.18e-4` (Hisar).
-- [ ] Compare FP16 and BF16 against the frozen FP32 corpus result and choose the
-      production precision with explicit accuracy/numerical thresholds.
+- [x] Compare FP16 and BF16 against the frozen FP32 complete-validation result
+      with preregistered accuracy, high-SNR accuracy, NLL, argmax, logit,
+      probability, speed and memory gates. FP16 passed every gate and delivered
+      1.2254x median throughput; BF16 was rejected for numerical divergence.
 - [x] Measure offline preprocessing, host/device transfer, warm-up, inference,
       total p50/p99 latency, CUDA memory, CPU/RSS and thermal behavior for both
       complete test splits on AGX.
@@ -714,6 +720,7 @@ Evidence:
 - [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)
 - [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
 - [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md)
+- [`RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md`](RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 7. Emitter/radiation-source identification
@@ -768,10 +775,10 @@ Evidence:
 
 Delivery A, the independent Chapter 4 acquisition gates, corpus/split controls,
 the frozen `rf_preprocess_v1`, user-owned 4090 retraining and strict complete
-AGX FP32 validation parity are complete. Continue delivery C by pre-registering
-FP16/BF16 comparison against the new FP32 validation baseline, then implement
-runtime shared-capture RMS/full-logit aggregation. Independently labeled
-known-RF/OOD evidence is still required before production calibration,
+AGX FP32 validation parity and preregistered FP32/FP16/BF16 precision selection
+are complete; FP16 is frozen for the candidate. Continue delivery C by
+implementing runtime shared-capture RMS/full-logit aggregation. Independently
+labeled known-RF/OOD evidence is still required before production calibration,
 acceptance thresholds or one locked-test admission. Both seed44 and the new
 epoch-10 candidate intentionally remain unavailable to the production Runner.
 

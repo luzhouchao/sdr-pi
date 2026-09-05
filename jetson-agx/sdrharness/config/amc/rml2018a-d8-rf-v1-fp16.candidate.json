@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "schema_id": "rf_v1_inference_candidate_v1",
+  "status": "precision_selected_runtime_not_admitted",
+  "profile_id": "rml2018a-d8-rf-v1-epoch010-fp16-candidate",
+  "production_enabled": false,
+  "recognizer_available": false,
+  "base_candidate": {
+    "path": "jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1-ft-batched-seed44.candidate.json",
+    "sha256": "a937fc5eba72cc9cb596eb8d86d87917110a2fedf130436b399ceb513779eeb4"
+  },
+  "checkpoint": {
+    "path": "local-assets/amc-eval/checkpoints/rml2018a/rf-v1-ft-batched-seed44/epoch-010.pt",
+    "bytes": 1726724,
+    "sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054"
+  },
+  "preprocess": {
+    "id": "rf_preprocess_v1",
+    "path": "jetson-agx/sdrharness/config/amc/rf-preprocess-v1.json",
+    "sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "input": "P201 RX1/RX0/A_BALANCED ci16_le",
+    "sample_rate_hz": 2100000,
+    "rf_bandwidth_hz": 1500000,
+    "capture_complex_samples": 4096,
+    "remove_dc": false,
+    "normalization": "four_window_capture_complex_unit_rms",
+    "windows": 4,
+    "complex_samples_per_window": 1024,
+    "layout": "window_major_planar_float32"
+  },
+  "inference": {
+    "model_class": "AMCMambaD8",
+    "model_variant": "amc_mamba_d8",
+    "resident_weight_precision": "fp32",
+    "compute": "cuda_fp16_autocast",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "complete_logits_per_window_required": true,
+    "aggregation": "float64_arithmetic_mean_logits",
+    "softmax": "after_mean_logits",
+    "window_order": "capture_order",
+    "queue_limit": 1
+  },
+  "validation": {
+    "split": "val",
+    "groups": 95607,
+    "source_rows": 382428,
+    "accuracy": 0.6705262166996141,
+    "snr_ge_4_accuracy": 0.9880316306903184,
+    "negative_log_likelihood": 1.0006860494613647,
+    "ece_15_bin": 0.02031873059287632,
+    "argmax_agreement_with_fp32": 0.9986821048667984,
+    "accuracy_delta_from_fp32": -0.00003137845555234442,
+    "snr_ge_4_accuracy_delta_from_fp32": 0.000038858341914527195,
+    "mean_logit_absolute_difference_p99": 0.013516249731183053,
+    "mean_logit_absolute_difference_max": 0.10078781843185425,
+    "probability_absolute_difference_p99": 0.00045809284224936216,
+    "probability_absolute_difference_max": 0.020085840013449374,
+    "all_preregistered_numeric_gates_passed": true,
+    "locked_test_opened": false
+  },
+  "performance": {
+    "benchmark_scope": "precomputed host planar float32 through H2D, model, float32 logits and D2H",
+    "benchmark_groups": 4096,
+    "median_groups_per_second": 710.2974483659445,
+    "fp32_median_groups_per_second": 579.628155794363,
+    "median_throughput_ratio_to_fp32": 1.2254364134407916,
+    "full_validation_total_seconds": 161.27928001398686,
+    "full_validation_preprocess_seconds": 24.838870242936537,
+    "full_validation_model_transfer_seconds": 134.96855672547827,
+    "cuda_peak_allocated_bytes": 244296704,
+    "cuda_peak_reserved_bytes": 792723456
+  },
+  "selection_evidence": {
+    "plan": {
+      "path": "jetson-agx/sdrharness/config/amc/rf-v1-precision-selection-plan.json",
+      "sha256": "552c2a16505bf9ced2d8ab1190fe2cb1b9b8d104cee2b94d9b8c8f108d287306"
+    },
+    "implementation": {
+      "path": "jetson-agx/sdrharness/scripts/select-rf-v1-precision.py",
+      "sha256": "e6f906beffa45f663b00ed8f587e8a7c1684e647d85954f9b5385ebd4e8d07ff"
+    },
+    "temporary_result_sha256": "b58c1b5e096ca11fc2bf1972de92d05724789abeac52d829ff54ccf39136836a"
+  },
+  "calibration": {
+    "production_temperature": null,
+    "production_confidence_threshold": null,
+    "production_window_agreement_threshold": null,
+    "production_unknown_rejection": null,
+    "known_rf_and_ood_evidence_required": true
+  },
+  "limitations": {
+    "bf16_selected": false,
+    "bf16_rejection_reason": "Failed preregistered argmax-agreement, logit p99/max and probability-max gates.",
+    "runtime_shared_capture_rms_implemented": false,
+    "runtime_complete_logit_aggregation_implemented": false,
+    "worker_cancel_thermal_admitted": false,
+    "known_rf_accuracy_available": false,
+    "open_set_false_acceptance_measured": false,
+    "production_blocker": "Implement and validate runtime v1 parity, then obtain independently labeled known-RF/OOD calibration and rejection evidence before locked test and Worker admission."
+  }
+}

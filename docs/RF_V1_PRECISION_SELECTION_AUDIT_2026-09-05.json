@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "schema_id": "rf_v1_precision_selection_evidence_v1",
+  "status": "pass",
+  "started_at_utc": "2026-09-05T11:10:21Z",
+  "completed_at_utc": "2026-09-05T11:22:26Z",
+  "preregistration": {
+    "plan_path": "jetson-agx/sdrharness/config/amc/rf-v1-precision-selection-plan.json",
+    "plan_sha256": "552c2a16505bf9ced2d8ab1190fe2cb1b9b8d104cee2b94d9b8c8f108d287306",
+    "implementation_path": "jetson-agx/sdrharness/scripts/select-rf-v1-precision.py",
+    "implementation_sha256": "e6f906beffa45f663b00ed8f587e8a7c1684e647d85954f9b5385ebd4e8d07ff",
+    "thresholds_changed_after_observation": false,
+    "selection_rule_changed_after_observation": false
+  },
+  "pinned_assets": {
+    "base_candidate_sha256": "a937fc5eba72cc9cb596eb8d86d87917110a2fedf130436b399ceb513779eeb4",
+    "fp16_candidate_path": "jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1-fp16.candidate.json",
+    "fp16_candidate_sha256": "35ff99719ab845f33dc7ca2d0e7b666e4f40721ca64a6dd615a671ec6c084f40",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "dataset_sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "dataset_hash_reverified_during_run": true,
+    "split_sha256": "5b8ccdc0183455445d5beab20f2ed7e553ff616da76a31114f700929607d0792",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "fp32_validation_audit_sha256": "f4ebf515b789c8b7a05045a8ed572dfcf1e5dd621cc182527d44e8e152a5b82b"
+  },
+  "governance": {
+    "split_members_loaded": [
+      "train",
+      "val"
+    ],
+    "test_member_loaded": false,
+    "test_result_path_opened": false,
+    "historical_test_results_used": false,
+    "checkpoint_mutated": false,
+    "training_performed": false,
+    "raw_iq_written": false,
+    "per_group_logits_written": false,
+    "production_calibration_changed": false,
+    "recognizer_available": false
+  },
+  "validation_population": {
+    "split": "val",
+    "complete_groups": 95607,
+    "source_rows": 382428,
+    "tail_rows_excluded": 957,
+    "windows_per_group": 4,
+    "complex_samples_per_window": 1024,
+    "groups_per_batch": 64,
+    "aggregation": "float64 arithmetic mean of four complete logits, then float64 softmax"
+  },
+  "full_validation": {
+    "fp32": {
+      "compute": "CUDA FP32 with TF32 disabled",
+      "accuracy": 0.6705575951551664,
+      "snr_ge_4_accuracy": 0.9879927723484039,
+      "snr_ge_4_groups": 51469,
+      "negative_log_likelihood": 1.0007131099700928,
+      "ece_15_bin": 0.020276270146027363,
+      "top1_confidence_mean": 0.6908338665962219,
+      "top1_confidence_p50": 0.9993762373924255,
+      "total_seconds": 190.4581966859987,
+      "preprocess_seconds": 24.755601543351077,
+      "model_transfer_seconds": 164.23480835405644,
+      "cuda_peak_allocated_bytes": 437152768,
+      "cuda_peak_reserved_bytes": 792723456
+    },
+    "fp16": {
+      "compute": "FP32 resident weights with CUDA FP16 autocast",
+      "accuracy": 0.6705262166996141,
+      "snr_ge_4_accuracy": 0.9880316306903184,
+      "snr_ge_4_groups": 51469,
+      "negative_log_likelihood": 1.0006860494613647,
+      "ece_15_bin": 0.02031873059287632,
+      "top1_confidence_mean": 0.6908448934555054,
+      "top1_confidence_p50": 0.999377429485321,
+      "total_seconds": 161.27928001398686,
+      "preprocess_seconds": 24.838870242936537,
+      "model_transfer_seconds": 134.96855672547827,
+      "cuda_peak_allocated_bytes": 244296704,
+      "cuda_peak_reserved_bytes": 792723456
+    },
+    "bf16": {
+      "compute": "FP32 resident weights with CUDA BF16 autocast",
+      "accuracy": 0.6707144874329285,
+      "snr_ge_4_accuracy": 0.9881870640579766,
+      "snr_ge_4_groups": 51469,
+      "negative_log_likelihood": 1.0002386569976807,
+      "ece_15_bin": 0.020060286483721632,
+      "top1_confidence_mean": 0.6907747387886047,
+      "top1_confidence_p50": 0.999375581741333,
+      "total_seconds": 171.29297154099913,
+      "preprocess_seconds": 25.16321229940513,
+      "model_transfer_seconds": 144.64707097050268,
+      "cuda_peak_allocated_bytes": 244296704,
+      "cuda_peak_reserved_bytes": 792723456
+    }
+  },
+  "numeric_comparisons_to_fp32": {
+    "fp16": {
+      "accuracy_delta": -0.00003137845555234442,
+      "snr_ge_4_accuracy_delta": 0.000038858341914527195,
+      "negative_log_likelihood_delta": -0.000027060508728027344,
+      "argmax_agreement": 0.9986821048667984,
+      "mean_logit_absolute_difference_p99": 0.013516249731183053,
+      "mean_logit_absolute_difference_max": 0.10078781843185425,
+      "probability_absolute_difference_p99": 0.00045809284224936216,
+      "probability_absolute_difference_max": 0.020085840013449374,
+      "checks": {
+        "accuracy": true,
+        "snr_ge_4_accuracy": true,
+        "negative_log_likelihood": true,
+        "argmax_agreement": true,
+        "logit_p99": true,
+        "logit_max": true,
+        "probability_p99": true,
+        "probability_max": true
+      },
+      "numeric_eligible": true
+    },
+    "bf16": {
+      "accuracy_delta": 0.00015689227776205517,
+      "snr_ge_4_accuracy_delta": 0.000194291709572747,
+      "negative_log_likelihood_delta": -0.0004744529724121094,
+      "argmax_agreement": 0.9905969228194589,
+      "mean_logit_absolute_difference_p99": 0.14196511525660757,
+      "mean_logit_absolute_difference_max": 2.06391953676939,
+      "probability_absolute_difference_p99": 0.0037339102041225383,
+      "probability_absolute_difference_max": 0.2142369175913122,
+      "checks": {
+        "accuracy": true,
+        "snr_ge_4_accuracy": true,
+        "negative_log_likelihood": true,
+        "argmax_agreement": false,
+        "logit_p99": false,
+        "logit_max": false,
+        "probability_p99": true,
+        "probability_max": false
+      },
+      "numeric_eligible": false
+    }
+  },
+  "performance_benchmark": {
+    "scope": "4096 precomputed host planar-float32 groups through H2D, model, float32 logits and D2H",
+    "group_positions_sha256": "822c3f9adc51017a14bb25372d8ebb2fdfa039c1aed238f3e6323f6852b30273",
+    "interleaved_rounds": 3,
+    "fp32": {
+      "round_groups_per_second": [
+        559.304759441882,
+        579.628155794363,
+        579.6464824214346
+      ],
+      "median_groups_per_second": 579.628155794363,
+      "median_ratio_to_fp32": 1.0
+    },
+    "fp16": {
+      "round_groups_per_second": [
+        710.5422886996647,
+        709.6999759573582,
+        710.2974483659445
+      ],
+      "median_groups_per_second": 710.2974483659445,
+      "median_ratio_to_fp32": 1.2254364134407916,
+      "speed_gate_passed": true,
+      "memory_gate_passed": true
+    },
+    "bf16": {
+      "round_groups_per_second": [
+        662.2514876322892,
+        662.4942466307133,
+        663.2813714969532
+      ],
+      "median_groups_per_second": 662.4942466307133,
+      "median_ratio_to_fp32": 1.1429642263026107,
+      "speed_gate_passed": true,
+      "memory_gate_passed": true
+    }
+  },
+  "selection": {
+    "selected": "fp16",
+    "eligible_low_precisions": [
+      "fp16"
+    ],
+    "fp16_all_preregistered_gates_passed": true,
+    "bf16_all_preregistered_gates_passed": false,
+    "bf16_rejection_reason": "Failed argmax-agreement, mean-logit p99/max and probability-max gates despite passing aggregate accuracy, NLL, speed and memory gates.",
+    "effect": "Freeze FP16 autocast for the epoch-10 candidate only; runtime profile and production recognition remain unadmitted."
+  },
+  "resource_and_cleanup": {
+    "total_wall_seconds": 725.4329996370361,
+    "process_max_rss_bytes": 5345988608,
+    "temporary_result_path": "/var/tmp/sdrharness-dev/rf-v1-precision-selection-20260905/full.json",
+    "temporary_result_bytes": 13106,
+    "temporary_result_sha256": "b58c1b5e096ca11fc2bf1972de92d05724789abeac52d829ff54ccf39136836a",
+    "feature_directory_bytes_before_cleanup": 17202,
+    "cleanup_verified": true
+  },
+  "production": {
+    "candidate_precision_selected": "fp16",
+    "precision_selection_complete": true,
+    "runtime_shared_capture_rms_implemented": false,
+    "runtime_complete_logit_aggregation_implemented": false,
+    "production_calibration_frozen": false,
+    "production_acceptance_thresholds_frozen": false,
+    "known_rf_and_ood_evidence_available": false,
+    "runtime_profile_admitted": false,
+    "locked_test_opened": false,
+    "recognizer_available": false
+  }
+}

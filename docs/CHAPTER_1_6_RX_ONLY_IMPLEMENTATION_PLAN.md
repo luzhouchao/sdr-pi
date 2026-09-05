@@ -243,8 +243,10 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       epoch 10；AGX 已锁定并验证源码、split、profile、数字标签、训练配置和权重，
       test 保持锁定。见
       [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md)。
-- [ ] 在最终 checkpoint 上比较 FP16/BF16/FP32 的完整准确率、argmax/logits
-      偏差、时延和资源，选择 AGX 生产精度。
+- [x] 已在最终 checkpoint 上按预注册门限比较 FP16/BF16/FP32 的完整 validation
+      准确率、argmax/logits/probability 偏差、吞吐和显存；FP16 全部门限通过，
+      固定为候选推理精度，BF16 因数值偏差淘汰，test 与生产能力仍保持关闭。见
+      [`RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md`](RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md)。
 - [ ] 实现多窗口聚合、置信度校准与 noise/unknown/低质量/低置信度拒识，报告
       rejection rate、false acceptance 和 calibration error。
 - [ ] 扩展 Worker 输出为 classified/rejected/unavailable/error、数字标签、
