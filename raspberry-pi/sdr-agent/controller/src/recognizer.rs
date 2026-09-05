@@ -28,6 +28,36 @@ pub struct RecognitionRequest {
     pub candidate_id: String,
     pub iq: BoundedIqRef,
     pub max_latency_ms: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rf_v1: Option<RfV1WindowContract>,
+}
+
+/// Complete capture and inspection lineage, echoed unchanged by the Worker.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RfV1WindowContract {
+    pub profile_sha256: String,
+    pub preprocess_sha256: String,
+    pub checkpoint_sha256: String,
+    pub batch_sha256: String,
+    pub batch_request_id: u64,
+    pub source_sweep_id: String,
+    pub source_request_id: u64,
+    pub source_session_generation: u64,
+    pub source_sequence: u64,
+    pub capture_request_id: u64,
+    pub capture_sequence: u64,
+    pub window_index: u16,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RfV1WindowOutput {
+    pub contract: RfV1WindowContract,
+    pub request_id: u64,
+    pub session_generation: u64,
+    pub compute: String,
+    pub logits: Vec<f32>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -66,6 +96,7 @@ pub enum IqLayout {
 #[serde(rename_all = "snake_case")]
 pub enum IqNormalization {
     UnitRms,
+    CaptureUnitRms,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -78,6 +109,8 @@ pub struct RecognitionOutput {
     pub alternatives: Vec<RecognitionAlternative>,
     pub backend: RecognizerBackend,
     pub timing: RecognitionTiming,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rf_v1: Option<RfV1WindowOutput>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -256,6 +289,49 @@ fn validate_request(
             "max latency must be between 1 and 5000 ms",
         ));
     }
+    if let Some(contract) = &request.rf_v1 {
+        if request.request_id == 0
+            || request.session_generation == 0
+            || contract
+                .batch_request_id
+                .checked_add(u64::from(contract.window_index))
+                != Some(request.request_id)
+            || contract.window_index >= 4
+            || contract.source_request_id == 0
+            || contract.source_session_generation == 0
+            || contract.source_sequence == 0
+            || contract.capture_request_id == 0
+            || contract.capture_sequence == 0
+            || request.iq.normalization != IqNormalization::CaptureUnitRms
+            || request.iq.storage.offset_bytes != u64::from(contract.window_index) * 8192
+            || request.iq.samples_per_channel != 1024
+        {
+            return Err(RecognizerError::new(
+                "rf_v1_request",
+                "RF-v1 window/source contract mismatch",
+            ));
+        }
+        require_text(&contract.source_sweep_id, 128, "source_sweep_id")?;
+        for hash in [
+            &contract.profile_sha256,
+            &contract.preprocess_sha256,
+            &contract.checkpoint_sha256,
+            &contract.batch_sha256,
+        ] {
+            if hash.len() != 64
+                || !hash
+                    .bytes()
+                    .all(|v| v.is_ascii_digit() || (b'a'..=b'f').contains(&v))
+            {
+                return Err(RecognizerError::new("rf_v1_request", "invalid SHA-256"));
+            }
+        }
+    } else if request.iq.normalization == IqNormalization::CaptureUnitRms {
+        return Err(RecognizerError::new(
+            "rf_v1_request",
+            "capture normalization requires RF-v1 contract",
+        ));
+    }
     let samples = request.iq.samples_per_channel;
     if !(256..=RECOGNIZER_MAX_SAMPLES_PER_CHANNEL).contains(&samples) || !samples.is_power_of_two()
     {
@@ -398,10 +474,26 @@ fn validate_response(
     }
 }
 
-fn validate_output(
+pub(crate) fn validate_output(
     request: &RecognitionRequest,
     output: &RecognitionOutput,
 ) -> Result<(), RecognizerError> {
+    match (&request.rf_v1, &output.rf_v1) {
+        (Some(expected), Some(actual))
+            if expected == &actual.contract
+                && actual.request_id == request.request_id
+                && actual.session_generation == request.session_generation
+                && actual.compute == "cuda_fp16_autocast"
+                && actual.logits.len() == 24
+                && actual.logits.iter().all(|value| value.is_finite()) => {}
+        (None, None) => {}
+        _ => {
+            return Err(RecognizerError::new(
+                "rf_v1_response",
+                "RF-v1 logits or correlation mismatch",
+            ))
+        }
+    }
     if output.candidate_id != request.candidate_id {
         return Err(RecognizerError::new(
             "candidate_id",
@@ -526,6 +618,7 @@ mod tests {
 
     fn request(path: String) -> RecognitionRequest {
         RecognitionRequest {
+            rf_v1: None,
             protocol_version: RECOGNIZER_PROTOCOL_VERSION,
             request_id: 7,
             session_generation: 3,
@@ -549,6 +642,7 @@ mod tests {
 
     fn output() -> RecognitionOutput {
         RecognitionOutput {
+            rf_v1: None,
             candidate_id: "candidate-1".to_owned(),
             label: "GFSK".to_owned(),
             confidence: 0.91,

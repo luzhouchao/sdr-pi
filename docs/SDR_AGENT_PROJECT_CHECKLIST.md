@@ -495,12 +495,22 @@ aggregation, result persistence and model-facing summaries.
       `capture_failed_restored`. Both paths restored verified RX1 state and left
       no transient data; see
       [`P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md`](P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md).
-- [ ] Select and freeze `rf_preprocess_v1` using training/validation plus
-      versioned P201 receive-only domain evidence, covering
-      centering/alignment, filtering or resampling, DC policy, amplitude policy,
-      window count and quality metrics; use labeled offline data for accuracy,
-      treat field windows without independent labels as unknown, and do not use
-      the frozen test corpus to choose the transform.
+- [x] Freeze `rf_preprocess_v1` using train/validation and versioned unknown
+      P201 evidence: hardware retune, no digital shift/filter/resampling, DC
+      retained, shared 4,096-sample complex RMS, four contiguous 1,024-sample
+      windows and mean logits. Selection did not open test; see
+      [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md).
+- [x] Implement the independently hash-pinned integration-only RF-v1 runtime
+      profile with shared-capture RMS and ordered float32 windows, reproduce the
+      frozen offline golden bytes exactly, and live-validate the epoch-10 FP16
+      Worker/full-logit AGX aggregation path. Success, Worker exit and direct
+      capture cancel restore P201 RX1 and remove spool; all feature processes,
+      ten P201 transient directories, three AGX feature roots and build staging
+      were cleaned and verified. See
+      [`RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md`](RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md).
+- [ ] Freeze independently labeled known-RF/OOD calibration and production
+      acceptance thresholds before promoting the runtime profile; numerical
+      RMS guards and development target gates are not calibrated acceptance.
 - [x] Retire the separate sustained 5/10-MS/s aggregate acceptance gate by
       explicit operator decision on 2026-09-03. This is a scope removal, not a
       claim that inline transport and AGX aggregation were newly measured at
@@ -661,6 +671,15 @@ Evidence:
       summary, and delete the batch on success or error. The real RX1 validation
       kept `production_recognizer_available=false`; see
       [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md).
+- [x] Run the RF-aligned epoch-10 Worker with FP32 resident weights and the
+      frozen FP16 autocast, return all 24 FP32 logits per ordered window, and
+      aggregate them using float64 arithmetic mean followed by softmax on AGX.
+      Strict request/source/capture/session/profile/preprocess/checkpoint/batch
+      correlation, finite full-logit shape, replay/order rejection and bounded
+      cancellation cleanup passed unit and live RX-only validation. Keep all
+      probabilities uncalibrated, numeric IDs authoritative, names provisional
+      and capability false; see
+      [`RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md`](RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md).
 - [x] Numerically compare AGX FP32 with the 4090 training environment on the
       same 16 IQ rows per dataset: both argmax sets agree 16/16 and maximum
       absolute logits differences are `2.93e-5` (RML) and `1.18e-4` (Hisar).
@@ -776,9 +795,11 @@ Evidence:
 Delivery A, the independent Chapter 4 acquisition gates, corpus/split controls,
 the frozen `rf_preprocess_v1`, user-owned 4090 retraining and strict complete
 AGX FP32 validation parity and preregistered FP32/FP16/BF16 precision selection
-are complete; FP16 is frozen for the candidate. Continue delivery C by
-implementing runtime shared-capture RMS/full-logit aggregation. Independently
-labeled known-RF/OOD evidence is still required before production calibration,
+are complete; FP16 is frozen for the candidate. Runtime shared-capture RMS,
+complete logits and float64 mean-logit aggregation are now implemented and
+live-validated with failure/cancel cleanup. Continue delivery C with the
+remaining Worker admission gates; independently labeled known-RF/OOD evidence
+is still required before production calibration,
 acceptance thresholds or one locked-test admission. Both seed44 and the new
 epoch-10 candidate intentionally remain unavailable to the production Runner.
 

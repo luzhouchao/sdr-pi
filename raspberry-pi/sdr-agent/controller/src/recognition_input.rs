@@ -21,6 +21,11 @@ pub const RECOGNITION_INPUT_SCHEMA_VERSION: u16 = 1;
 pub const MODEL_READY_BATCH_SCHEMA_VERSION: u16 = 1;
 pub const MAX_PROFILE_BYTES: u64 = 64 * 1024;
 pub const MAX_INLINE_RAW_BYTES: u64 = 256 * 1024;
+pub const RF_V1_PREPROCESS_SHA256: &str =
+    "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f";
+pub const RF_V1_PROFILE_BYTES: &[u8] = include_bytes!(
+    "../../../../jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json"
+);
 const ADC_FULL_SCALE: f64 = 2_048.0;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -174,6 +179,10 @@ pub struct LoadedRecognitionInputProfile {
 }
 
 impl LoadedRecognitionInputProfile {
+    pub fn is_rf_v1(&self) -> bool {
+        self.profile.preprocess.preprocess_id == "rf_preprocess_v1"
+    }
+
     pub fn production_ready(&self) -> bool {
         self.profile.admission == ProfileAdmission::Production
             && self.profile.production_enabled
@@ -231,8 +240,29 @@ pub fn load_recognition_input_profile(
             "preprocess specification SHA-256 does not match the profile",
         ));
     }
-    let preprocess: PreprocessSpec = serde_json::from_slice(&spec_bytes)
+    let preprocess: PreprocessSpec = if profile.preprocess.preprocess_id == "rf_preprocess_v1" {
+        // The frozen document has a richer offline schema. Accept only its exact
+        // bytes and the independently pinned runtime profile, then adapt internally.
+        if profile.preprocess.spec_sha256 != RF_V1_PREPROCESS_SHA256
+            || manifest_sha256 != sha256_hex(RF_V1_PROFILE_BYTES)
+        {
+            return Err(RecognitionInputError::new(
+                "rf_v1_identity",
+                "RF-v1 profile identity changed",
+            ));
+        }
+        let mut spec: PreprocessSpec = serde_json::from_slice(include_bytes!(
+            "../../../../jetson-agx/sdrharness/config/amc/legacy-adc-unit-rms-v0.json"
+        ))
         .map_err(|error| RecognitionInputError::protocol("preprocess_json", error))?;
+        spec.preprocess_id = "rf_preprocess_v1".to_owned();
+        spec.transform.normalization = "four_window_capture_complex_unit_rms".to_owned();
+        spec.quality.normalization_rms_tolerance = 0.000001;
+        spec
+    } else {
+        serde_json::from_slice(&spec_bytes)
+            .map_err(|error| RecognitionInputError::protocol("preprocess_json", error))?
+    };
     validate_profile(&profile, &preprocess)?;
     Ok(LoadedRecognitionInputProfile {
         profile,
@@ -374,7 +404,12 @@ fn validate_profile(
         || preprocess.transform.remove_dc
         || preprocess.transform.window_samples != capture.samples_per_window
         || preprocess.transform.windowing != "contiguous_non_overlapping"
-        || preprocess.transform.normalization != "per_window_complex_unit_rms"
+        || preprocess.transform.normalization
+            != if profile.preprocess.preprocess_id == "rf_preprocess_v1" {
+                "four_window_capture_complex_unit_rms"
+            } else {
+                "per_window_complex_unit_rms"
+            }
         || preprocess.output.sample_format != "f32_le"
         || preprocess.output.layout != "window_major_planar_iq"
         || preprocess.output.bytes_per_window != u64::from(capture.samples_per_window) * 8
@@ -588,6 +623,8 @@ pub struct ModelReadyBatchSummary {
     pub candidate_id: String,
     pub source_sweep_id: String,
     pub source_sequence: u64,
+    pub source_request_id: u64,
+    pub source_session_generation: u64,
     pub profile_id: String,
     pub profile_sha256: String,
     pub profile_admission: ProfileAdmission,
@@ -645,6 +682,31 @@ pub fn build_model_ready_batch(
             "captured IQ metadata or byte shape violates the admitted profile",
         ));
     }
+    if target.source_request_id == 0
+        || target.source_session_generation == 0
+        || target.source_sequence == 0
+        || target.source_sweep_id.is_empty()
+    {
+        return Err(RecognitionInputError::new(
+            "source_correlation",
+            "missing inspection source identity",
+        ));
+    }
+    let capture_power: f64 = raw_ci16_le
+        .chunks_exact(4)
+        .map(|sample| {
+            let i = f64::from(i16::from_le_bytes([sample[0], sample[1]]));
+            let q = f64::from(i16::from_le_bytes([sample[2], sample[3]]));
+            i * i + q * q
+        })
+        .sum();
+    let capture_rms = (capture_power / loaded.total_complex_samples() as f64).sqrt();
+    if loaded.is_rf_v1() && capture_rms < 1.0 {
+        return Err(RecognitionInputError::new(
+            "raw_rms",
+            "capture is below the numerical RMS floor",
+        ));
+    }
     let samples_per_window = loaded.profile.capture.samples_per_window as usize;
     let raw_bytes_per_window = samples_per_window * 4;
     let model_bytes_per_window = samples_per_window * 8;
@@ -676,7 +738,8 @@ pub fn build_model_ready_batch(
         let sample_count = samples_per_window as f64;
         let raw_complex_rms_adc = (power / sample_count).sqrt();
         if !raw_complex_rms_adc.is_finite()
-            || raw_complex_rms_adc < loaded.preprocess.quality.minimum_raw_complex_rms_adc
+            || (!loaded.is_rf_v1()
+                && raw_complex_rms_adc < loaded.preprocess.quality.minimum_raw_complex_rms_adc)
         {
             return Err(RecognitionInputError::new(
                 "raw_rms",
@@ -689,7 +752,12 @@ pub fn build_model_ready_batch(
                 "one recognition window contains clipped ADC samples",
             ));
         }
-        let normalization_scale = 1.0 / raw_complex_rms_adc;
+        let normalization_scale = 1.0
+            / if loaded.is_rf_v1() {
+                capture_rms
+            } else {
+                raw_complex_rms_adc
+            };
         let output_offset_bytes = model_bytes.len() as u64;
         let mut normalized_power = 0.0_f64;
         for values in [&i_values, &q_values] {
@@ -700,8 +768,9 @@ pub fn build_model_ready_batch(
             }
         }
         let normalized_complex_rms = (normalized_power / sample_count).sqrt();
-        if (normalized_complex_rms - 1.0).abs()
-            > loaded.preprocess.quality.normalization_rms_tolerance
+        if !loaded.is_rf_v1()
+            && (normalized_complex_rms - 1.0).abs()
+                > loaded.preprocess.quality.normalization_rms_tolerance
         {
             return Err(RecognitionInputError::new(
                 "normalization",
@@ -713,8 +782,10 @@ pub fn build_model_ready_batch(
         windows.push(ModelWindowQuality {
             window_index: window_index as u16,
             raw_complex_rms_adc,
-            raw_rms_dbfs: 20.0 * (raw_complex_rms_adc / ADC_FULL_SCALE).log10(),
-            raw_dc_fraction: (mean_i * mean_i + mean_q * mean_q).sqrt() / raw_complex_rms_adc,
+            raw_rms_dbfs: 20.0
+                * (raw_complex_rms_adc.max(f64::MIN_POSITIVE) / ADC_FULL_SCALE).log10(),
+            raw_dc_fraction: (mean_i * mean_i + mean_q * mean_q).sqrt()
+                / raw_complex_rms_adc.max(f64::MIN_POSITIVE),
             normalization_scale,
             normalized_complex_rms,
             clipped_samples,
@@ -731,6 +802,18 @@ pub fn build_model_ready_batch(
             "model-ready batch count, byte length or clipping exceeds the profile",
         ));
     }
+    if loaded.is_rf_v1() {
+        let power: f64 = model_bytes
+            .chunks_exact(4)
+            .map(|v| f64::from(f32::from_le_bytes(v.try_into().unwrap())).powi(2))
+            .sum();
+        if ((power / 4096.0).sqrt() - 1.0).abs() > 0.000001 {
+            return Err(RecognitionInputError::new(
+                "normalization",
+                "capture RMS parity failed",
+            ));
+        }
+    }
     let model_bytes_sha256 = sha256_hex(&model_bytes);
     Ok(ModelReadyBatch {
         summary: ModelReadyBatchSummary {
@@ -740,6 +823,8 @@ pub fn build_model_ready_batch(
             candidate_id: target.candidate_id.clone(),
             source_sweep_id: target.source_sweep_id.clone(),
             source_sequence: target.source_sequence,
+            source_request_id: target.source_request_id,
+            source_session_generation: target.source_session_generation,
             profile_id: loaded.profile.profile_id.clone(),
             profile_sha256: loaded.manifest_sha256.clone(),
             profile_admission: loaded.profile.admission,
@@ -1387,6 +1472,65 @@ mod tests {
             bytes.extend_from_slice(&q.to_le_bytes());
         }
         bytes
+    }
+
+    #[test]
+    fn rf_v1_matches_frozen_offline_golden_and_preserves_window_amplitude_and_dc() {
+        let root = repository_root();
+        let loaded = load_recognition_input_profile(
+            &root,
+            &root.join("jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json"),
+        )
+        .unwrap();
+        let raw = raw_fixture(&loaded);
+        let capture = capture(&loaded, &target());
+        let batch = build_model_ready_batch(
+            &loaded,
+            &target(),
+            50,
+            capture.session_generation,
+            capture.clone(),
+            &raw,
+        )
+        .unwrap();
+        assert_eq!(
+            batch.summary.model_bytes_sha256,
+            "937c7c9497ca9f7990ee4256c617d5c57739e66da3da7498de1ab9d1618d2db2"
+        );
+        assert!(!loaded.production_ready());
+        let scales: Vec<_> = batch
+            .summary
+            .windows
+            .iter()
+            .map(|w| w.normalization_scale)
+            .collect();
+        assert!(scales.iter().all(|s| *s == scales[0]));
+        let mut dc = Vec::new();
+        for amplitude in [0_i16, 100, 200, 400] {
+            for _ in 0..1024 {
+                dc.extend_from_slice(&amplitude.to_le_bytes());
+                dc.extend_from_slice(&0_i16.to_le_bytes());
+            }
+        }
+        let batch = build_model_ready_batch(
+            &loaded,
+            &target(),
+            50,
+            capture.session_generation,
+            capture,
+            &dc,
+        )
+        .unwrap();
+        assert_eq!(batch.summary.windows[0].normalized_complex_rms, 0.0);
+        assert!(
+            (batch.summary.windows[2].normalized_complex_rms
+                / batch.summary.windows[1].normalized_complex_rms
+                - 2.0)
+                .abs()
+                < 1e-6
+        );
+        assert_eq!(batch.summary.windows[3].raw_dc_fraction, 1.0);
+        assert!(serde_json::to_string(&batch.summary).is_ok());
     }
 
     fn base64(bytes: &[u8]) -> String {

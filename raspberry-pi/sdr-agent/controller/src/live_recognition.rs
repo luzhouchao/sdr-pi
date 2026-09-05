@@ -402,6 +402,7 @@ where
         ));
         let mut transient = TransientIqFile::create(spool_path, &planar_f32)?;
         let request = RecognitionRequest {
+            rf_v1: None,
             protocol_version: RECOGNIZER_PROTOCOL_VERSION,
             request_id: plan.request_id,
             session_generation: plan.session_generation,
@@ -980,6 +981,7 @@ mod tests {
 
     fn output() -> RecognitionOutput {
         RecognitionOutput {
+            rf_v1: None,
             candidate_id: "candidate-1".to_owned(),
             label: "provisional:08:BPSK".to_owned(),
             confidence: 0.75,

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import importlib
+import importlib.util
 import json
 import math
 import os
@@ -345,6 +346,91 @@ class MambaBackend:
         return ranked, inference_us
 
 
+class RfV1Backend(MambaBackend):
+    def __init__(self, profile_path: Path) -> None:
+        helper_path = Path(__file__).with_name("amc-rf-v1-runtime.py")
+        spec = importlib.util.spec_from_file_location("amc_rf_v1_runtime", helper_path)
+        helper = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(helper)
+        torch.set_num_threads(1)
+        torch.set_num_interop_threads(1)
+        self.profile, candidate, self.model, _ = helper.load_model(profile_path)
+        self.profile_sha256 = helper.PROFILE_SHA256
+        self.preprocess_sha256 = candidate["preprocess"]["sha256"]
+        self.model_sha256 = candidate["checkpoint"]["sha256"]
+        self.model_id = self.profile["model"]["model_id"]
+        self.samples_per_channel = 1024
+        self.sample_rate_hz = 2_100_000
+        self.rms_tolerance = 0.000001
+        self.labels = [f"provisional:{index:02d}" for index in range(24)]
+        self.active_batch = None
+        self.completed_generation = 0
+        self.completed_request = 0
+        sample = np.stack((np.ones(1024, dtype=np.float32), np.zeros(1024, dtype=np.float32)))
+        for _ in range(2):
+            self.classify_logits(sample)
+
+    def classify_logits(self, iq):
+        started = time.perf_counter_ns()
+        tensor = torch.from_numpy(iq).unsqueeze(0).cuda(non_blocking=False)
+        with torch.inference_mode(), torch.autocast("cuda", dtype=torch.float16):
+            logits = self.model(tensor)
+        values = logits.float().cpu().numpy()[0]
+        if values.shape != (24,) or not np.isfinite(values).all():
+            raise WorkerError("logits", "expected 24 finite FP32 logits")
+        return values.tolist(), (time.perf_counter_ns() - started) // 1_000
+
+    def classify(self, iq):
+        logits, elapsed = self.classify_logits(iq)
+        values = np.asarray(logits, dtype=np.float64)
+        probabilities = np.exp(values - values.max())
+        probabilities /= probabilities.sum()
+        indices = np.argsort(-probabilities, kind="stable")[:9]
+        return [(self.labels[index], float(probabilities[index])) for index in indices], elapsed
+
+    def accept_window(self, request):
+        contract = request["rf_v1"]
+        identity = {key: value for key, value in contract.items() if key != "window_index"}
+        identity.update(session_generation=request["session_generation"], candidate_id=request["candidate_id"],
+                        path=request["iq"]["storage"]["path"], center_hz=request["iq"]["center_hz"])
+        index = contract["window_index"]
+        now = time.monotonic()
+        if self.active_batch is not None and now > self.active_batch[2]:
+            self.active_batch = None
+        if index == 0:
+            if self.active_batch is not None:
+                raise WorkerError("window_order", "another batch is active")
+            if (request["session_generation"], contract["batch_request_id"]) <= (self.completed_generation, self.completed_request):
+                raise WorkerError("window_order", "stale or replayed batch")
+            self.completed_generation = request["session_generation"]
+            self.completed_request = contract["batch_request_id"]
+        elif self.active_batch is None or self.active_batch[:2] != (identity, index):
+            raise WorkerError("window_order", "missing, reordered or unrelated window")
+        self.active_batch = (identity, index + 1, now + 5.0) if index < 3 else None
+
+
+def validate_rf_v1(request, backend):
+    contract = require_exact_keys(request["rf_v1"], {
+        "profile_sha256", "preprocess_sha256", "checkpoint_sha256", "batch_sha256",
+        "batch_request_id", "source_sweep_id", "source_request_id", "source_session_generation",
+        "source_sequence", "capture_request_id", "capture_sequence", "window_index",
+    }, "rf_v1")
+    for key, expected in (("profile_sha256", backend.profile_sha256),
+                          ("preprocess_sha256", backend.preprocess_sha256),
+                          ("checkpoint_sha256", backend.model_sha256)):
+        if contract[key] != expected:
+            raise WorkerError("rf_v1_hash", f"{key} differs from loaded assets")
+    digest = contract["batch_sha256"]
+    if not isinstance(digest, str) or len(digest) != 64 or any(v not in "0123456789abcdef" for v in digest):
+        raise WorkerError("rf_v1_hash", "invalid batch hash")
+    for key in ("batch_request_id", "source_request_id", "source_session_generation", "source_sequence", "capture_request_id", "capture_sequence"):
+        require_int(contract[key], key, 1, 2**64 - 1)
+    require_text(contract["source_sweep_id"], "source_sweep_id", 128)
+    index = require_int(contract["window_index"], "window_index", 0, 3)
+    if request["request_id"] != contract["batch_request_id"] + index or request["iq"]["storage"]["offset_bytes"] != index * 8192:
+        raise WorkerError("window_order", "request/offset does not match capture order")
+
+
 def prepare_spool_root(path: Path) -> Path:
     if not path.is_absolute():
         raise WorkerError("spool_root", "spool root must be absolute")
@@ -371,7 +457,7 @@ def validate_request(payload: Any, backend: MambaBackend) -> dict[str, Any]:
             "candidate_id",
             "iq",
             "max_latency_ms",
-        },
+        } | ({"rf_v1"} if hasattr(backend, "profile_sha256") else set()),
         "request",
     )
     if request["protocol_version"] != 1:
@@ -405,13 +491,16 @@ def validate_request(payload: Any, backend: MambaBackend) -> dict[str, Any]:
         raise WorkerError("iq_offset", "IQ byte offset must be float32 aligned")
     if iq["sample_format"] != "f32_le" or iq["layout"] != "planar_iq":
         raise WorkerError("iq_format", "worker requires little-endian planar float32 IQ")
-    if iq["normalization"] != "unit_rms":
+    expected_normalization = "capture_unit_rms" if hasattr(backend, "profile_sha256") else "unit_rms"
+    if iq["normalization"] != expected_normalization:
         raise WorkerError("iq_normalization", "worker requires complex unit-RMS IQ")
     if iq["samples_per_channel"] != backend.samples_per_channel:
         raise WorkerError("iq_samples", "worker requires exactly 1024 samples per channel")
     if iq["sample_rate_hz"] != backend.sample_rate_hz:
         raise WorkerError("iq_sample_rate", "worker requires exactly 2.1 MS/s")
     require_int(iq["center_hz"], "center_hz", 70_000_000, 6_000_000_000)
+    if hasattr(backend, "profile_sha256"):
+        validate_rf_v1(request, backend)
     return request
 
 
@@ -433,6 +522,11 @@ def load_iq(request: dict[str, Any], spool_root: Path, tolerance: float) -> np.n
         raise WorkerError("iq_permissions", "IQ file must be private and owned by this user")
     offset = storage["offset_bytes"]
     length = storage["length_bytes"]
+    rf = request.get("rf_v1")
+    if rf is not None:
+        if metadata.st_size != 32768:
+            raise WorkerError("iq_length", "RF-v1 needs the exact complete 32-KiB capture")
+        offset, length = 0, 32768
     if offset + length > metadata.st_size:
         raise WorkerError("iq_range", "IQ range exceeds the file length")
     flags = os.O_RDONLY | os.O_CLOEXEC
@@ -460,13 +554,18 @@ def load_iq(request: dict[str, Any], spool_root: Path, tolerance: float) -> np.n
         if "descriptor" in locals():
             os.close(descriptor)
     data = b"".join(chunks)
-    iq = np.frombuffer(data, dtype="<f4").copy().reshape(2, -1)
+    if rf is not None and hashlib.sha256(data).hexdigest() != rf["batch_sha256"]:
+        raise WorkerError("iq_hash", "model-ready capture hash changed")
+    iq = np.frombuffer(data, dtype="<f4").copy().reshape((-1, 2, 1024) if rf is not None else (2, -1))
     if not np.isfinite(iq).all():
         raise WorkerError("iq_non_finite", "IQ contains a non-finite float32 value")
-    rms = float(np.sqrt(np.mean(np.square(iq[0]) + np.square(iq[1]))))
+    if rf is not None:
+        rms = float(np.sqrt(np.square(iq.astype(np.float64)).sum() / 4096.0))
+    else:
+        rms = float(np.sqrt(np.mean(np.square(iq[0]) + np.square(iq[1]))))
     if not math.isfinite(rms) or abs(rms - 1.0) > tolerance:
         raise WorkerError("iq_normalization", f"complex IQ RMS {rms:.9f} is outside tolerance")
-    return iq
+    return iq[rf["window_index"]] if rf is not None else iq
 
 
 def classify_request(
@@ -480,7 +579,20 @@ def classify_request(
     preprocess_started = time.perf_counter_ns()
     iq = np.ascontiguousarray(iq, dtype=np.float32)
     preprocess_us = (time.perf_counter_ns() - preprocess_started) // 1_000
-    ranked, inference_us = backend.classify(iq)
+    rf_output = None
+    if request.get("rf_v1") is not None:
+        backend.accept_window(request)
+        logits, inference_us = backend.classify_logits(iq)
+        values = np.asarray(logits, dtype=np.float64)
+        probabilities = np.exp(values - values.max())
+        probabilities /= probabilities.sum()
+        indices = np.argsort(-probabilities, kind="stable")[:9]
+        ranked = [(backend.labels[index], float(probabilities[index])) for index in indices]
+        rf_output = {"contract": request["rf_v1"], "request_id": request["request_id"],
+                     "session_generation": request["session_generation"],
+                     "compute": "cuda_fp16_autocast", "logits": logits}
+    else:
+        ranked, inference_us = backend.classify(iq)
     total_us = (time.perf_counter_ns() - total_started) // 1_000
     if total_us > request["max_latency_ms"] * 1_000:
         raise WorkerError("deadline", "recognition exceeded the requested latency limit")
@@ -491,6 +603,7 @@ def classify_request(
         "session_generation": request["session_generation"],
         "status": "ok",
         "output": {
+            **({"rf_v1": rf_output} if rf_output is not None else {}),
             "candidate_id": request["candidate_id"],
             "label": primary[0],
             "confidence": primary[1],
@@ -523,7 +636,7 @@ def health_response(backend: MambaBackend) -> dict[str, Any]:
         "model_sha256": backend.model_sha256,
         "samples_per_channel": backend.samples_per_channel,
         "sample_rate_hz": backend.sample_rate_hz,
-        "normalization": "complex_unit_rms",
+        "normalization": "four_window_capture_complex_unit_rms" if hasattr(backend, "profile_sha256") else "complex_unit_rms",
         "production_enabled": False,
     }
 
@@ -696,7 +809,7 @@ def probe_socket(socket_path: Path, timeout_ms: int) -> int:
                 or health["readiness"] != "experimental"
                 or health["samples_per_channel"] != 1024
                 or health["sample_rate_hz"] != 2_100_000
-                or health["normalization"] != "complex_unit_rms"
+                or health["normalization"] not in ("complex_unit_rms", "four_window_capture_complex_unit_rms")
                 or health["production_enabled"] is not False
             ):
                 raise WorkerError("health_response", "worker health contract mismatch")
@@ -712,6 +825,7 @@ def probe_socket(socket_path: Path, timeout_ms: int) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--rf-v1-profile", type=Path)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--socket", type=Path, default=DEFAULT_SOCKET)
     parser.add_argument("--spool-root", type=Path, default=DEFAULT_SPOOL_ROOT)
@@ -731,7 +845,9 @@ def main() -> int:
     if args.probe_socket is not None:
         return probe_socket(args.probe_socket, args.probe_timeout_ms)
     os.umask(0o077)
-    backend = MambaBackend(args.manifest)
+    if args.rf_v1_profile is not None and args.max_requests <= 0:
+        raise WorkerError("arguments", "RF-v1 candidate requires a finite positive max-requests")
+    backend = RfV1Backend(args.rf_v1_profile) if args.rf_v1_profile is not None else MambaBackend(args.manifest)
     if args.self_test:
         phase = np.arange(backend.samples_per_channel, dtype=np.float32)
         phase *= np.float32(2.0 * math.pi / 32.0)

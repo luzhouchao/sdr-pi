@@ -171,9 +171,13 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
 - [x] 用户训练的 RF-aligned epoch-10 checkpoint 已独立下载、逐文件核验并在 AGX
       严格加载；完整 95,607 个 validation 四窗组 accuracy 与 4090 完全一致，NLL
       差 `6.8e-8`，test 未打开且 capability 保持 false。
-- [ ] 实现 shared-capture RMS/full-logit runtime，再仅用 validation 与独立标注
-      known-RF/OOD 证据冻结温度、置信度、agreement、SNR、带宽和质量阈值；最后
-      才能做一次 locked test 准入。
+- [x] 已实现并实收 RF-v1 shared-capture RMS/full-logit runtime：单次 4,096
+      点共享 RMS、保留 DC、四窗顺序、FP16 autocast/FP32 常驻权重、每窗完整
+      logits 和 AGX float64 mean-logit 后 softmax；冻结 golden hash 一致，来源/
+      请求/session/哈希严格关联，成功、Worker 退出和取消均恢复并清理。见
+      [`RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md`](RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md)。
+- [ ] 仅用 validation 与独立标注 known-RF/OOD 证据冻结温度、置信度、agreement、
+      SNR、带宽和质量阈值；最后才能做一次 locked test 准入。
 
 ## 第5章：输入标准化、接收域对齐与评测治理
 
@@ -247,8 +251,10 @@ P201 不发射，Agent 没有发射动作，NX/B210/USRP 不属于当前运行�
       准确率、argmax/logits/probability 偏差、吞吐和显存；FP16 全部门限通过，
       固定为候选推理精度，BF16 因数值偏差淘汰，test 与生产能力仍保持关闭。见
       [`RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md`](RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md)。
-- [ ] 实现多窗口聚合、置信度校准与 noise/unknown/低质量/低置信度拒识，报告
-      rejection rate、false acceptance 和 calibration error。
+- [x] 已实现 epoch-10 FP16 四窗完整 logits、严格合同关联及 AGX mean-logit 聚合，
+      完成 golden、故障/取消测试和 RX1 实收与清理；仍为 integration_only。
+- [ ] 实现置信度校准与 noise/unknown/低质量/低置信度拒识，报告 rejection rate、
+      false acceptance 和 calibration error；生产准入仍缺独立 known-RF/OOD 标签。
 - [ ] 扩展 Worker 输出为 classified/rejected/unavailable/error、数字标签、
       provisional/可信名称、alternatives、source、model/profile hash、质量、
       window agreement 和完整 timing。

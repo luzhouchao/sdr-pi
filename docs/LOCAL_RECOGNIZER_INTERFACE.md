@@ -1,12 +1,12 @@
 # Local recognizer interface
 
-Date: 2026-08-31; status updated 2026-09-04
+Date: 2026-08-31; status updated 2026-09-05
 
 > Current status: the backend-neutral Controller seam and an experimental
 > CUDA/Mamba Worker are implemented and have passed real P201 RX1 single-window
 > and versioned four-window end-to-end captures on AGX. Production admission
-> remains disabled because trusted labels, RF preprocessing, precision and
-> rejection gates are not complete.
+> remains disabled pending independent known-RF/OOD calibration, rejection and
+> production Worker admission. RF-v1 runtime parity and FP16 selection are complete.
 
 ## Implemented boundary
 
@@ -50,7 +50,7 @@ type and range checks before reading the file. The experimental Python Worker
 does so with `lstat`, canonical-root containment, mode/owner checks and
 `O_NOFOLLOW` plus inode/device revalidation.
 
-## Experimental RML2018A live profile
+## Legacy seed44 experimental live profile
 
 The bounded profile currently used only for integration testing is exactly
 four contiguous, non-overlapping windows of 1,024 complex samples at 2.1 MS/s,
@@ -74,6 +74,50 @@ experiments, not accuracy decaying with repeated inference. The transform is
 retained only as an explicit bridge from uncalibrated ADC codes to the old
 checkpoint. A production model must be retrained or fine-tuned using the frozen
 RF transform and then re-evaluated on the complete split.
+
+## RF-v1 epoch-10 runtime extension
+
+The independent `rml2018a-d8-rf-v1.runtime-profile.json` remains
+`integration_only`. It pins the epoch-10 checkpoint and the exact frozen
+`rf_preprocess_v1` specification. The frozen FP16 candidate and offline
+specification remain immutable evidence snapshots.
+
+AGX divides all 4,096 complex samples by one float64 capture RMS, preserves DC,
+and emits four ordered planar-float32 windows without digital frequency shift,
+filtering or resampling. A silent individual window is permitted if the whole
+capture clears the numerical RMS floor; individual window RMS values need not
+be one. The full capture's normalized RMS must be within `1e-6` of one.
+
+For this profile, each v1 request must include `rf_v1: RfV1WindowContract` and
+`iq.normalization=capture_unit_rms`. The extension joins profile/preprocess/
+checkpoint/batch SHA-256, parent batch request, inspection sweep/request/
+generation/sequence, capture request/sequence and window index. The Worker
+checks all 32,768 spool bytes and their RMS on every call, requires exact
+`0,8192,16384,24576` offsets, and rejects missing/reordered/mixed or replayed
+windows. Its single active batch has a five-second inter-window expiry.
+
+The response echoes that contract plus request/generation, records
+`compute=cuda_fp16_autocast`, and returns 24 complete FP32 logits in numeric
+class-ID order. FP32 weights remain resident. The AGX report has `mean_logit`
+instead of the legacy `vote`: it averages complete logits in float64 and then
+applies a stable softmax. `window_agreement` counts window argmax values equal
+to the aggregate argmax. These probabilities are explicitly uncalibrated;
+there is no admitted temperature, rejection threshold or field accuracy claim.
+Names remain provisional, and `production_recognizer_available=false`.
+
+Use the existing `recognize-batch-live` command with the new runtime profile
+and start `amc-mamba-worker.py --rf-v1-profile PATH --max-requests N` with a
+positive finite request limit (health requests count). Use one dedicated
+private feature spool and socket. The CLI checks free space and records exact
+capture bounds and paths before radio work. SIGINT/SIGTERM discards a pending
+batch or late Worker reply and cleans the spool after the bounded call;
+`--mode cancel --session-generation N` remains the direct in-flight radio stop.
+Spool unlink failures are explicit errors. Forced process death/restart cleanup,
+production Worker cancellation and the Runner's shared GPU gate are separate
+admission work, not capabilities enabled by this extension.
+
+See [`RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md`](RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md)
+for golden, fault-injection and real RX1 evidence.
 
 ## Framing and validation
 
@@ -160,9 +204,9 @@ is false.
 
 The selected checkpoint, pinned source, offline corpus and experimental
 P201-to-Worker path are now available. The next admission work must resolve
-trusted RML labels, retrain or fine-tune against a frozen RF preprocessing and
-sample-rate policy, choose low precision if appropriate, define rejection, and
-validate queue drops, cancellation, concurrency and sustained thermal behavior
+the provisional RML name mapping, obtain independently labeled known-RF/OOD
+evidence for calibration/rejection, perform the still-locked test admission,
+and validate queue drops, cancellation, concurrency and sustained thermal behavior
 before installing a production Worker or setting `recognizer_available=true`.
 The field ownership and ordered Chapter 1-to-6 delivery gates are maintained in
 [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md).

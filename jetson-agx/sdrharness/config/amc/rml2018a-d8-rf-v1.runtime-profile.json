@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "profile_id": "rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1",
+  "admission": "integration_only",
+  "production_enabled": false,
+  "model": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "model_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054"
+  },
+  "rx": {
+    "front_panel_port": "RX1",
+    "logical_channel": "RX0",
+    "rf_port_select": "A_BALANCED",
+    "sample_rate_hz": 2100000,
+    "rf_bandwidth_hz": 1500000,
+    "gain_db": 50,
+    "settle_ms": 100
+  },
+  "capture": {
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "capture_timeout_ms": 1000,
+    "control_deadline_ms": 5000,
+    "model_deadline_ms": 5000,
+    "raw_bytes_per_complex_sample": 4,
+    "max_total_raw_bytes": 16384,
+    "max_total_model_bytes": 32768
+  },
+  "eligibility": {
+    "maximum_target_age_ms": 5000,
+    "maximum_occupied_bandwidth_hz": 1500000,
+    "minimum_estimated_snr_db": 3.0,
+    "minimum_peak_dbfs": -100.0,
+    "maximum_peak_dbfs": -1.0,
+    "require_zero_dropped_samples": true,
+    "require_no_overflow": true,
+    "require_zero_health_flags": true,
+    "maximum_clipped_samples": 0
+  },
+  "preprocess": {
+    "preprocess_id": "rf_preprocess_v1",
+    "spec_path": "jetson-agx/sdrharness/config/amc/rf-preprocess-v1.json",
+    "spec_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f"
+  },
+  "limitations": {
+    "production": false,
+    "retraining": "User-trained epoch 10; frozen FP16 autocast candidate, FP32 resident weights. Runtime integration only.",
+    "labels": "Numeric class IDs are authoritative; RML2018A names remain provisional.",
+    "rejection": "Eligibility values are development capture gates only, not calibrated production acceptance thresholds; no production temperature or rejection policy."
+  }
+}

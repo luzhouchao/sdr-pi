@@ -1,0 +1,820 @@
+{
+  "schema_version": 1,
+  "schema_id": "rf_v1_runtime_validation_audit_v1",
+  "status": "pass",
+  "date": "2026-09-05",
+  "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+  "runtime_profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "live_controller_sha256": "7874c21377c8a2e2c9942e584d9a6b9a8c2bf694a6f44e1c214f318698504535",
+  "frozen_candidate_sha256": "35ff99719ab845f33dc7ca2d0e7b666e4f40721ca64a6dd615a671ec6c084f40",
+  "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+  "golden_model_bytes_sha256": "937c7c9497ca9f7990ee4256c617d5c57739e66da3da7498de1ab9d1618d2db2",
+  "planned_maximum_rx_bytes_all_runs": 196608,
+  "spool_maximum_bytes": 32768,
+  "runs": [
+    {
+      "feature_directory": "/var/tmp/sdrharness-dev/rf1-905a",
+      "free_bytes_before": 809992896512,
+      "planned_maximum_rx_bytes": 98304
+    },
+    {
+      "feature_directory": "/var/tmp/sdrharness-dev/rf1-905b",
+      "free_bytes_before": 809992564736,
+      "planned_maximum_rx_bytes": 65536
+    },
+    {
+      "feature_directory": "/var/tmp/sdrharness-dev/rf1-905c",
+      "free_bytes_before": 809865129984,
+      "planned_maximum_rx_bytes": 32768
+    }
+  ],
+  "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n2400000000\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n18000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nslow_attack\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n71.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+  "cases": [
+    {
+      "case": "success",
+      "target": {
+        "schema_version": 1,
+        "candidate_id": "rf-v1-runtime-unknown",
+        "source_sweep_id": "rf1-202609051510",
+        "source_session_generation": 202609051510,
+        "source_request_id": 5,
+        "source_sequence": 148,
+        "observed_at_unix_ms": 1788620244434,
+        "center_hz": 433331169,
+        "occupied_bandwidth_hz": 3077,
+        "inspection_gain_db": 50,
+        "peak_dbfs": -59.524067,
+        "noise_floor_dbfs": -91.46442,
+        "estimated_snr_db": 31.94035,
+        "clipped_samples": 0,
+        "dropped_samples": 0,
+        "overflow": false,
+        "health_flags": 0,
+        "health_source": "iio_adapter",
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        }
+      },
+      "inspection_sequence": 148,
+      "exit_code": 0,
+      "capture_validation": "validated_recognition_input profile_id=rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1 profile_sha256=6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab admission=IntegrationOnly target={\"schema_version\":1,\"candidate_id\":\"rf-v1-runtime-unknown\",\"source_sweep_id\":\"rf1-202609051510\",\"source_session_generation\":202609051510,\"source_request_id\":5,\"source_sequence\":148,\"observed_at_unix_ms\":1788620244434,\"center_hz\":433331169,\"occupied_bandwidth_hz\":3077,\"inspection_gain_db\":50,\"peak_dbfs\":-59.524067,\"noise_floor_dbfs\":-91.46442,\"estimated_snr_db\":31.94035,\"clipped_samples\":0,\"dropped_samples\":0,\"overflow\":false,\"health_flags\":0,\"health_source\":\"iio_adapter\",\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}} windows=4 samples_per_window=1024 p201_max_bytes=16384 agx_model_bytes=32768 control_deadline_ms=5000 capture_timeout_ms=1000\nvalidated_batch_spool path=/var/tmp/sdrharness-dev/rf1-905a/iq max_bytes=32768 available_bytes=809992880128\nvalidated_rx_plan center_hz=433331169 sample_rate_hz=2100000 rf_bandwidth_hz=1500000 gain_db=50 settle_ms=100 points=1 capture_samples=4096 estimated_max_ms=21100 p201_directory=/tmp/sdr-agent-dev/agx-model-batch-202609051511-50001 stop=controller_cancel_generation_202609051511\nvalidated_batch_spool path=/var/tmp/sdrharness-dev/rf1-905a/iq max_bytes=32768 available_bytes=809992880128\n",
+      "cancel": null,
+      "report": {
+        "schema_version": 1,
+        "status": "ok",
+        "admission": "integration_only",
+        "production_enabled": false,
+        "production_recognizer_available": false,
+        "result_semantics": "unlabeled per-window predictions are integration evidence, not ground truth",
+        "batch": {
+          "schema_version": 1,
+          "request_id": 50001,
+          "session_generation": 202609051511,
+          "candidate_id": "rf-v1-runtime-unknown",
+          "source_sweep_id": "rf1-202609051510",
+          "source_sequence": 148,
+          "source_request_id": 5,
+          "source_session_generation": 202609051510,
+          "profile_id": "rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1",
+          "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+          "profile_admission": "integration_only",
+          "preprocess_id": "rf_preprocess_v1",
+          "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+          "window_count": 4,
+          "samples_per_window": 1024,
+          "sample_rate_hz": 2100000,
+          "center_hz": 433331169,
+          "raw_bytes": 16384,
+          "model_bytes": 32768,
+          "model_bytes_sha256": "040ef7fd162462ac983096a98f9c88705f70e5ba598872ab3c78c194eb9632bc",
+          "windows": [
+            {
+              "window_index": 0,
+              "raw_complex_rms_adc": 4.334409922353907,
+              "raw_rms_dbfs": -53.48799940848717,
+              "raw_dc_fraction": 0.5546560008257382,
+              "normalization_scale": 0.22320255468992234,
+              "normalized_complex_rms": 0.9674513644701428,
+              "clipped_samples": 0,
+              "output_offset_bytes": 0,
+              "output_length_bytes": 8192
+            },
+            {
+              "window_index": 1,
+              "raw_complex_rms_adc": 4.583854137077226,
+              "raw_rms_dbfs": -53.00198325637591,
+              "raw_dc_fraction": 0.5820178102015049,
+              "normalization_scale": 0.22320255468992234,
+              "normalized_complex_rms": 1.023127949430583,
+              "clipped_samples": 0,
+              "output_offset_bytes": 8192,
+              "output_length_bytes": 8192
+            },
+            {
+              "window_index": 2,
+              "raw_complex_rms_adc": 4.63449194896269,
+              "raw_rms_dbfs": -52.90655640529187,
+              "raw_dc_fraction": 0.6056360230239667,
+              "normalization_scale": 0.22320255468992234,
+              "normalized_complex_rms": 1.034430438975277,
+              "clipped_samples": 0,
+              "output_offset_bytes": 16384,
+              "output_length_bytes": 8192
+            },
+            {
+              "window_index": 3,
+              "raw_complex_rms_adc": 4.360354952581269,
+              "raw_rms_dbfs": -53.43616216128764,
+              "raw_dc_fraction": 0.47993434970079857,
+              "normalization_scale": 0.22320255468992234,
+              "normalized_complex_rms": 0.9732423595757873,
+              "clipped_samples": 0,
+              "output_offset_bytes": 24576,
+              "output_length_bytes": 8192
+            }
+          ],
+          "capture": {
+            "sdrd_request_id": 5,
+            "session_generation": 202609051511,
+            "sequence": 149,
+            "center_hz": 433331169,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "gain_db": 50,
+            "samples_captured": 4096,
+            "bytes_transferred": 16384,
+            "dropped_samples": 0,
+            "overflow": false,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 3895,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        },
+        "windows": [
+          {
+            "window_index": 0,
+            "worker_request_id": 50001,
+            "output_offset_bytes": 0,
+            "output_length_bytes": 8192,
+            "recognition": {
+              "candidate_id": "rf-v1-runtime-unknown",
+              "label": "provisional:18",
+              "confidence": 0.9308541,
+              "alternatives": [
+                {
+                  "label": "provisional:17",
+                  "confidence": 0.06902992
+                },
+                {
+                  "label": "provisional:22",
+                  "confidence": 6.8864385e-05
+                },
+                {
+                  "label": "provisional:07",
+                  "confidence": 2.100245e-05
+                },
+                {
+                  "label": "provisional:06",
+                  "confidence": 6.7720453e-06
+                },
+                {
+                  "label": "provisional:14",
+                  "confidence": 6.1165397e-06
+                },
+                {
+                  "label": "provisional:02",
+                  "confidence": 5.976309e-06
+                },
+                {
+                  "label": "provisional:04",
+                  "confidence": 3.2216165e-06
+                },
+                {
+                  "label": "provisional:20",
+                  "confidence": 1.2836624e-06
+                }
+              ],
+              "backend": {
+                "runtime": "pytorch-cuda-mamba2",
+                "runtime_version": "torch-2.8.0",
+                "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+                "model_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+                "threads": 1
+              },
+              "timing": {
+                "map_us": 1338,
+                "preprocess_us": 12,
+                "inference_us": 190038,
+                "total_us": 191951
+              },
+              "rf_v1": {
+                "contract": {
+                  "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+                  "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+                  "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+                  "batch_sha256": "040ef7fd162462ac983096a98f9c88705f70e5ba598872ab3c78c194eb9632bc",
+                  "batch_request_id": 50001,
+                  "source_sweep_id": "rf1-202609051510",
+                  "source_request_id": 5,
+                  "source_session_generation": 202609051510,
+                  "source_sequence": 148,
+                  "capture_request_id": 5,
+                  "capture_sequence": 149,
+                  "window_index": 0
+                },
+                "request_id": 50001,
+                "session_generation": 202609051511,
+                "compute": "cuda_fp16_autocast",
+                "logits": [
+                  -6.3867188,
+                  -3.3398438,
+                  0.2705078,
+                  -5.3125,
+                  -0.3474121,
+                  -2.9785156,
+                  0.3955078,
+                  1.5273438,
+                  -3.5820312,
+                  -3.0410156,
+                  -5.5507812,
+                  -1.8378906,
+                  -4.5039062,
+                  -5.375,
+                  0.29370117,
+                  -3.6757812,
+                  -3.6152344,
+                  9.625,
+                  12.2265625,
+                  -1.8935547,
+                  -1.2675781,
+                  -3.8164062,
+                  2.7148438,
+                  -3.5898438
+                ]
+              }
+            }
+          },
+          {
+            "window_index": 1,
+            "worker_request_id": 50002,
+            "output_offset_bytes": 8192,
+            "output_length_bytes": 8192,
+            "recognition": {
+              "candidate_id": "rf-v1-runtime-unknown",
+              "label": "provisional:18",
+              "confidence": 0.9999841,
+              "alternatives": [
+                {
+                  "label": "provisional:02",
+                  "confidence": 1.0451491e-05
+                },
+                {
+                  "label": "provisional:07",
+                  "confidence": 2.9136334e-06
+                },
+                {
+                  "label": "provisional:17",
+                  "confidence": 1.2654357e-06
+                },
+                {
+                  "label": "provisional:14",
+                  "confidence": 4.840723e-07
+                },
+                {
+                  "label": "provisional:22",
+                  "confidence": 2.3776833e-07
+                },
+                {
+                  "label": "provisional:01",
+                  "confidence": 1.9615673e-07
+                },
+                {
+                  "label": "provisional:16",
+                  "confidence": 1.4864638e-07
+                },
+                {
+                  "label": "provisional:06",
+                  "confidence": 1.0571533e-07
+                }
+              ],
+              "backend": {
+                "runtime": "pytorch-cuda-mamba2",
+                "runtime_version": "torch-2.8.0",
+                "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+                "model_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+                "threads": 1
+              },
+              "timing": {
+                "map_us": 675,
+                "preprocess_us": 4,
+                "inference_us": 43487,
+                "total_us": 44482
+              },
+              "rf_v1": {
+                "contract": {
+                  "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+                  "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+                  "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+                  "batch_sha256": "040ef7fd162462ac983096a98f9c88705f70e5ba598872ab3c78c194eb9632bc",
+                  "batch_request_id": 50001,
+                  "source_sweep_id": "rf1-202609051510",
+                  "source_request_id": 5,
+                  "source_session_generation": 202609051510,
+                  "source_sequence": 148,
+                  "capture_request_id": 5,
+                  "capture_sequence": 149,
+                  "window_index": 1
+                },
+                "request_id": 50002,
+                "session_generation": 202609051511,
+                "compute": "cuda_fp16_autocast",
+                "logits": [
+                  -3.6367188,
+                  1.5712891,
+                  5.546875,
+                  -4.1445312,
+                  -0.0030574799,
+                  -1.1777344,
+                  0.953125,
+                  4.2695312,
+                  -1.8388672,
+                  -0.49658203,
+                  -4.8046875,
+                  -0.46142578,
+                  -5.7773438,
+                  -4.1914062,
+                  2.4746094,
+                  -2.1894531,
+                  1.2939453,
+                  3.4355469,
+                  17.015625,
+                  -2.7753906,
+                  -2.7089844,
+                  -4.9414062,
+                  1.7636719,
+                  -5.4609375
+                ]
+              }
+            }
+          },
+          {
+            "window_index": 2,
+            "worker_request_id": 50003,
+            "output_offset_bytes": 16384,
+            "output_length_bytes": 8192,
+            "recognition": {
+              "candidate_id": "rf-v1-runtime-unknown",
+              "label": "provisional:18",
+              "confidence": 0.9828452,
+              "alternatives": [
+                {
+                  "label": "provisional:17",
+                  "confidence": 0.016976973
+                },
+                {
+                  "label": "provisional:14",
+                  "confidence": 5.24227e-05
+                },
+                {
+                  "label": "provisional:02",
+                  "confidence": 3.1795975e-05
+                },
+                {
+                  "label": "provisional:20",
+                  "confidence": 2.8418348e-05
+                },
+                {
+                  "label": "provisional:22",
+                  "confidence": 2.490825e-05
+                },
+                {
+                  "label": "provisional:04",
+                  "confidence": 1.7844637e-05
+                },
+                {
+                  "label": "provisional:07",
+                  "confidence": 1.2300411e-05
+                },
+                {
+                  "label": "provisional:16",
+                  "confidence": 4.1993326e-06
+                }
+              ],
+              "backend": {
+                "runtime": "pytorch-cuda-mamba2",
+                "runtime_version": "torch-2.8.0",
+                "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+                "model_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+                "threads": 1
+              },
+              "timing": {
+                "map_us": 599,
+                "preprocess_us": 5,
+                "inference_us": 37830,
+                "total_us": 38710
+              },
+              "rf_v1": {
+                "contract": {
+                  "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+                  "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+                  "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+                  "batch_sha256": "040ef7fd162462ac983096a98f9c88705f70e5ba598872ab3c78c194eb9632bc",
+                  "batch_request_id": 50001,
+                  "source_sweep_id": "rf1-202609051510",
+                  "source_request_id": 5,
+                  "source_session_generation": 202609051510,
+                  "source_sequence": 148,
+                  "capture_request_id": 5,
+                  "capture_sequence": 149,
+                  "window_index": 2
+                },
+                "request_id": 50003,
+                "session_generation": 202609051511,
+                "compute": "cuda_fp16_autocast",
+                "logits": [
+                  -4.515625,
+                  -1.9228516,
+                  1.4501953,
+                  -5.5390625,
+                  0.8725586,
+                  -4.3867188,
+                  -1.6738281,
+                  0.5004883,
+                  -5.140625,
+                  -2.9550781,
+                  -5.359375,
+                  -1.8730469,
+                  -3.8105469,
+                  -5.0546875,
+                  1.9501953,
+                  -2.6464844,
+                  -0.57421875,
+                  7.7304688,
+                  11.7890625,
+                  -2.4023438,
+                  1.3378906,
+                  -4.875,
+                  1.2060547,
+                  -3.6953125
+                ]
+              }
+            }
+          },
+          {
+            "window_index": 3,
+            "worker_request_id": 50004,
+            "output_offset_bytes": 24576,
+            "output_length_bytes": 8192,
+            "recognition": {
+              "candidate_id": "rf-v1-runtime-unknown",
+              "label": "provisional:18",
+              "confidence": 0.9081758,
+              "alternatives": [
+                {
+                  "label": "provisional:22",
+                  "confidence": 0.07058026
+                },
+                {
+                  "label": "provisional:02",
+                  "confidence": 0.01544398
+                },
+                {
+                  "label": "provisional:14",
+                  "confidence": 0.0032246134
+                },
+                {
+                  "label": "provisional:04",
+                  "confidence": 0.0014477806
+                },
+                {
+                  "label": "provisional:17",
+                  "confidence": 0.0009644298
+                },
+                {
+                  "label": "provisional:16",
+                  "confidence": 5.1438386e-05
+                },
+                {
+                  "label": "provisional:20",
+                  "confidence": 4.722557e-05
+                },
+                {
+                  "label": "provisional:07",
+                  "confidence": 4.1473417e-05
+                }
+              ],
+              "backend": {
+                "runtime": "pytorch-cuda-mamba2",
+                "runtime_version": "torch-2.8.0",
+                "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+                "model_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+                "threads": 1
+              },
+              "timing": {
+                "map_us": 570,
+                "preprocess_us": 4,
+                "inference_us": 37576,
+                "total_us": 38412
+              },
+              "rf_v1": {
+                "contract": {
+                  "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+                  "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+                  "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+                  "batch_sha256": "040ef7fd162462ac983096a98f9c88705f70e5ba598872ab3c78c194eb9632bc",
+                  "batch_request_id": 50001,
+                  "source_sweep_id": "rf1-202609051510",
+                  "source_request_id": 5,
+                  "source_session_generation": 202609051510,
+                  "source_sequence": 148,
+                  "capture_request_id": 5,
+                  "capture_sequence": 149,
+                  "window_index": 3
+                },
+                "request_id": 50004,
+                "session_generation": 202609051511,
+                "compute": "cuda_fp16_autocast",
+                "logits": [
+                  -6.3554688,
+                  -2.5019531,
+                  6.3945312,
+                  -4.4570312,
+                  4.0273438,
+                  -3.6621094,
+                  -1.5175781,
+                  0.47460938,
+                  -2.8378906,
+                  -3.0703125,
+                  -5.4375,
+                  -2.6171875,
+                  -2.2441406,
+                  -5.1445312,
+                  4.828125,
+                  -3.9550781,
+                  0.6899414,
+                  3.6210938,
+                  10.46875,
+                  -1.5576172,
+                  0.6044922,
+                  -3.8828125,
+                  7.9140625,
+                  -5.4257812
+                ]
+              }
+            }
+          }
+        ],
+        "mean_logit": {
+          "method": "float64_arithmetic_mean_logits_then_softmax",
+          "numeric_class_id": 18,
+          "mean_logits": [
+            -5.2236328125,
+            -1.54833984375,
+            3.41552734375,
+            -4.86328125,
+            1.1373581886291504,
+            -3.05126953125,
+            -0.460693359375,
+            1.6929931640625,
+            -3.349853515625,
+            -2.3907470703125,
+            -5.2880859375,
+            -1.6973876953125,
+            -4.083984375,
+            -4.94140625,
+            2.38665771484375,
+            -3.11669921875,
+            -0.5513916015625,
+            6.10302734375,
+            12.875,
+            -2.1572265625,
+            -0.508544921875,
+            -4.37890625,
+            3.399658203125,
+            -4.54296875
+          ],
+          "probabilities": [
+            1.3780814972036648e-08,
+            5.43793932338235e-07,
+            7.784208963382296e-05,
+            1.975939289664912e-08,
+            7.9766069566647e-06,
+            1.209818684374332e-07,
+            1.61359011185552e-06,
+            1.3903604222033908e-05,
+            8.975257361819904e-08,
+            2.3419711854220135e-07,
+            1.2920617359991473e-08,
+            4.6849363828308354e-07,
+            4.3074270340661444e-08,
+            1.8274451070338645e-08,
+            2.7821598787901085e-05,
+            1.1331947014883295e-07,
+            1.4736809779159267e-06,
+            0.0011438811569538022,
+            0.9986452994838426,
+            2.958000311232629e-07,
+            1.5381955630623334e-06,
+            3.207266045439096e-08,
+            7.661655239702976e-05,
+            2.721971339588528e-08
+          ],
+          "window_agreement": 1.0,
+          "calibrated": false,
+          "display_names_status": "provisional"
+        },
+        "transient_iq_removed": true
+      },
+      "radio_restored": true,
+      "spool_empty": true,
+      "p201_transients_absent": true
+    },
+    {
+      "case": "worker_exit",
+      "target": {
+        "schema_version": 1,
+        "candidate_id": "rf-v1-runtime-unknown",
+        "source_sweep_id": "rf1-202609051530",
+        "source_session_generation": 202609051530,
+        "source_request_id": 5,
+        "source_sequence": 152,
+        "observed_at_unix_ms": 1788620418107,
+        "center_hz": 433331938,
+        "occupied_bandwidth_hz": 3589,
+        "inspection_gain_db": 50,
+        "peak_dbfs": -59.996128,
+        "noise_floor_dbfs": -91.273346,
+        "estimated_snr_db": 31.277218,
+        "clipped_samples": 0,
+        "dropped_samples": 0,
+        "overflow": false,
+        "health_flags": 0,
+        "health_source": "iio_adapter",
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        }
+      },
+      "inspection_sequence": 152,
+      "exit_code": 1,
+      "capture_validation": "validated_recognition_input profile_id=rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1 profile_sha256=6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab admission=IntegrationOnly target={\"schema_version\":1,\"candidate_id\":\"rf-v1-runtime-unknown\",\"source_sweep_id\":\"rf1-202609051530\",\"source_session_generation\":202609051530,\"source_request_id\":5,\"source_sequence\":152,\"observed_at_unix_ms\":1788620418107,\"center_hz\":433331938,\"occupied_bandwidth_hz\":3589,\"inspection_gain_db\":50,\"peak_dbfs\":-59.996128,\"noise_floor_dbfs\":-91.273346,\"estimated_snr_db\":31.277218,\"clipped_samples\":0,\"dropped_samples\":0,\"overflow\":false,\"health_flags\":0,\"health_source\":\"iio_adapter\",\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}} windows=4 samples_per_window=1024 p201_max_bytes=16384 agx_model_bytes=32768 control_deadline_ms=5000 capture_timeout_ms=1000\nvalidated_batch_spool path=/var/tmp/sdrharness-dev/rf1-905b/iq max_bytes=32768 available_bytes=809992544256\nvalidated_rx_plan center_hz=433331938 sample_rate_hz=2100000 rf_bandwidth_hz=1500000 gain_db=50 settle_ms=100 points=1 capture_samples=4096 estimated_max_ms=21100 p201_directory=/tmp/sdr-agent-dev/agx-model-batch-202609051531-50001 stop=controller_cancel_generation_202609051531\nvalidated_batch_spool path=/var/tmp/sdrharness-dev/rf1-905b/iq max_bytes=32768 available_bytes=809992544256\ncontroller_error=connect: No such file or directory (os error 2)\n",
+      "cancel": null,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n2400000000\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n18000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nslow_attack\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n71.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "radio_restored": true,
+      "spool_empty": true,
+      "p201_transients_absent": true
+    },
+    {
+      "case": "capture_cancel",
+      "target": {
+        "schema_version": 1,
+        "candidate_id": "rf-v1-runtime-unknown",
+        "source_sweep_id": "rf1-202609051550",
+        "source_session_generation": 202609051550,
+        "source_request_id": 5,
+        "source_sequence": 156,
+        "observed_at_unix_ms": 1788620530743,
+        "center_hz": 433330913,
+        "occupied_bandwidth_hz": 1539,
+        "inspection_gain_db": 50,
+        "peak_dbfs": -59.88446,
+        "noise_floor_dbfs": -91.40189,
+        "estimated_snr_db": 31.517433,
+        "clipped_samples": 0,
+        "dropped_samples": 0,
+        "overflow": false,
+        "health_flags": 0,
+        "health_source": "iio_adapter",
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        }
+      },
+      "inspection_sequence": 156,
+      "exit_code": 1,
+      "capture_validation": "validated_recognition_input profile_id=rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1 profile_sha256=6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab admission=IntegrationOnly target={\"schema_version\":1,\"candidate_id\":\"rf-v1-runtime-unknown\",\"source_sweep_id\":\"rf1-202609051550\",\"source_session_generation\":202609051550,\"source_request_id\":5,\"source_sequence\":156,\"observed_at_unix_ms\":1788620530743,\"center_hz\":433330913,\"occupied_bandwidth_hz\":1539,\"inspection_gain_db\":50,\"peak_dbfs\":-59.88446,\"noise_floor_dbfs\":-91.40189,\"estimated_snr_db\":31.517433,\"clipped_samples\":0,\"dropped_samples\":0,\"overflow\":false,\"health_flags\":0,\"health_source\":\"iio_adapter\",\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}} windows=4 samples_per_window=1024 p201_max_bytes=16384 agx_model_bytes=32768 control_deadline_ms=5000 capture_timeout_ms=1000\nvalidated_batch_spool path=/var/tmp/sdrharness-dev/rf1-905c/iq max_bytes=32768 available_bytes=809865125888\nvalidated_rx_plan center_hz=433330913 sample_rate_hz=2100000 rf_bandwidth_hz=1500000 gain_db=50 settle_ms=100 points=1 capture_samples=4096 estimated_max_ms=21100 p201_directory=/tmp/sdr-agent-dev/agx-model-batch-202609051551-50001 stop=controller_cancel_generation_202609051551\ncontroller_error=remote_error: capture_failed_restored\n",
+      "cancel": {
+        "session_generation": 202609051551,
+        "cancel_requested": true
+      },
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n2400000000\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n18000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nslow_attack\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n71.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "radio_restored": true,
+      "spool_empty": true,
+      "p201_transients_absent": true
+    }
+  ],
+  "validation_harness_corrections": [
+    "First Worker-exit run stopped at overly strict equality of autonomous slow_attack hardware gain (71 to 49 dB); fixed LO/rate/bandwidth/mode/port/scan/buffer state matched. Capture and spool were already restored/removed. Repeated only the failure case to retain complete evidence.",
+    "First cancellation attempt preceded START_SESSION; driver initially treated stale_or_missing_session as fatal. Its finally path stopped the owned capture. Added bounded retry only for that expected not-yet-owned response, then repeated only cancellation."
+  ],
+  "governance": {
+    "locked_test_opened": false,
+    "full_precision_experiment_repeated": false,
+    "training_performed": false,
+    "recognizer_available": false,
+    "production_calibration_frozen": false,
+    "label_truth": "unknown",
+    "numeric_ids_authoritative": true,
+    "display_names": "provisional"
+  },
+  "checks": {
+    "rust_library_tests": 73,
+    "rust_terminal_tests": 11,
+    "python_worker_tests": 3,
+    "python_runtime_tests": 5,
+    "clippy_warnings_denied": true
+  },
+  "cleanup": {
+    "verified": true,
+    "feature_processes_remaining": [],
+    "p201_transient_directories_absent": [
+      "/tmp/sdr-agent-dev/agx-sweep-202609051510-0",
+      "/tmp/sdr-agent-dev/agx-sweep-202609051512-0",
+      "/tmp/sdr-agent-dev/agx-sweep-202609051530-0",
+      "/tmp/sdr-agent-dev/agx-sweep-202609051532-0",
+      "/tmp/sdr-agent-dev/agx-sweep-202609051550-0",
+      "/tmp/sdr-agent-dev/agx-model-batch-202609051511-50001",
+      "/tmp/sdr-agent-dev/agx-model-batch-202609051513-50011",
+      "/tmp/sdr-agent-dev/agx-model-batch-202609051531-50001",
+      "/tmp/sdr-agent-dev/agx-model-batch-202609051533-50011",
+      "/tmp/sdr-agent-dev/agx-model-batch-202609051551-50001"
+    ],
+    "removed": [
+      {
+        "path": "/var/tmp/sdrharness-dev/rf1-905a",
+        "bytes": 44846,
+        "absence_verified": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rf1-905b",
+        "bytes": 6579,
+        "absence_verified": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rf1-905c",
+        "bytes": 5673,
+        "absence_verified": true
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/controller/target",
+        "bytes": 781338486,
+        "absence_verified": true
+      },
+      {
+        "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/__pycache__/validate-rf-v1-runtime-live.cpython-310.pyc",
+        "bytes": 10485,
+        "absence_verified": true
+      }
+    ]
+  },
+  "radio_final": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n2400000000\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n18000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nslow_attack\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n71.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+  "final_source_sha256": {
+    "jetson-agx/sdrharness/scripts/amc-mamba-worker.py": "42c549d3c66cbf29f1bb5c17206b48b96073b127969b4e353f338d8a76c12446",
+    "jetson-agx/sdrharness/scripts/amc-rf-v1-runtime.py": "a8a2353c05ddc3eb353279991e674b5ef2a4c13d599ae63fbad912844da46bd9",
+    "jetson-agx/sdrharness/scripts/validate-rf-v1-runtime-live.py": "b28631867f4f013a00561fd27052d940b87a81654a76a82e9b6b15030b93b81a",
+    "raspberry-pi/sdr-agent/controller/src/recognition_input.rs": "89c71a4852606be09f67b67bd89fc52db299a988fcd491d85a924a1a04dd1c31",
+    "raspberry-pi/sdr-agent/controller/src/recognizer.rs": "75db64fd400b96afaadd20cb1aaf63d1e1544ebe6b551fe2d09ad57b7dc8794c",
+    "raspberry-pi/sdr-agent/controller/src/batch_recognition.rs": "b982eab31b59e546e0430e44746ebf96d6d11702402cb9216e728876cc93adc8",
+    "raspberry-pi/sdr-agent/controller/src/main.rs": "b8af1a59fa9b9255ae7c76a1b981fa2d2680cbcd31114fb304f0d2e9f597c516"
+  }
+}

@@ -36,6 +36,12 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 type AppResult<T> = Result<T, Box<dyn Error>>;
 
+static BATCH_CANCELLED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+extern "C" fn cancel_batch_signal(_signal: libc::c_int) {
+    BATCH_CANCELLED.store(true, std::sync::atomic::Ordering::Relaxed);
+}
+
 fn main() {
     if let Err(error) = run() {
         eprintln!("controller_error={error}");
@@ -203,6 +209,29 @@ fn run() -> AppResult<()> {
             loaded.profile.capture.control_deadline_ms,
             loaded.profile.capture.capture_timeout_ms,
         );
+        // Space and exact data paths are recorded before any radio work.
+        sdr_agent_controller::batch_recognition::prepare_batch_spool(
+            std::path::Path::new(&recognizer_spool_root),
+            loaded.profile.capture.max_total_model_bytes,
+        )?;
+        eprintln!("validated_rx_plan center_hz={} sample_rate_hz={} rf_bandwidth_hz={} gain_db={} settle_ms={} points=1 capture_samples={} estimated_max_ms={} p201_directory=/tmp/sdr-agent-dev/agx-model-batch-{}-{} stop=controller_cancel_generation_{}",
+            target.center_hz, loaded.profile.rx.sample_rate_hz, loaded.profile.rx.rf_bandwidth_hz,
+            loaded.profile.rx.gain_db, loaded.profile.rx.settle_ms, loaded.total_complex_samples(),
+            loaded.profile.rx.settle_ms + loaded.profile.capture.capture_timeout_ms + 4 * loaded.profile.capture.model_deadline_ms,
+            session_generation, request_id, session_generation);
+        // A bounded capture restores before returning; signals then discard the
+        // batch, or an in-flight Worker reply, and still execute spool cleanup.
+        // Immediate radio stop remains the generation-bound cancel command.
+        unsafe {
+            libc::signal(
+                libc::SIGINT,
+                cancel_batch_signal as *const () as libc::sighandler_t,
+            );
+            libc::signal(
+                libc::SIGTERM,
+                cancel_batch_signal as *const () as libc::sighandler_t,
+            );
+        }
         let mut capture = SdrdModelReadyBatchCapture::new(address);
         let batch = capture.capture(
             &loaded,
@@ -211,6 +240,9 @@ fn run() -> AppResult<()> {
             session_generation,
             now_unix_ms,
         )?;
+        if BATCH_CANCELLED.load(std::sync::atomic::Ordering::Relaxed) {
+            return Err(invalid_input("batch cancelled after restored capture").into());
+        }
         if mode == "prepare-recognition-batch" {
             println!("{}", serde_json::to_string(&batch.summary)?);
         } else {
@@ -221,7 +253,12 @@ fn run() -> AppResult<()> {
             );
             let mut engine =
                 IntegrationBatchRecognitionEngine::new(recognizer, recognizer_spool_root);
-            println!("{}", serde_json::to_string(&engine.run(&loaded, batch)?)?);
+            println!(
+                "{}",
+                serde_json::to_string(&engine.run_with_cancel(&loaded, batch, || {
+                    BATCH_CANCELLED.load(std::sync::atomic::Ordering::Relaxed)
+                })?)?
+            );
         }
         return Ok(());
     }

@@ -4,7 +4,8 @@ use crate::recognition_input::{
 };
 use crate::recognizer::{
     BoundedIqRef, IqFileRef, IqLayout, IqNormalization, IqSampleFormat, LocalRecognizer,
-    RecognitionOutput, RecognitionRequest, RecognizerError, RECOGNIZER_PROTOCOL_VERSION,
+    RecognitionOutput, RecognitionRequest, RecognizerError, RfV1WindowContract,
+    RECOGNIZER_PROTOCOL_VERSION,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -49,8 +50,23 @@ pub struct IntegrationBatchRecognitionReport {
     pub result_semantics: String,
     pub batch: ModelReadyBatchSummary,
     pub windows: Vec<IntegrationWindowRecognition>,
-    pub vote: IntegrationVoteSummary,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub vote: Option<IntegrationVoteSummary>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mean_logit: Option<MeanLogitSummary>,
     pub transient_iq_removed: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct MeanLogitSummary {
+    pub method: String,
+    pub numeric_class_id: usize,
+    pub mean_logits: Vec<f64>,
+    pub probabilities: Vec<f64>,
+    pub window_agreement: f64,
+    pub calibrated: bool,
+    pub display_names_status: String,
 }
 
 pub struct IntegrationBatchRecognitionEngine<R> {
@@ -71,8 +87,19 @@ impl<R: LocalRecognizer> IntegrationBatchRecognitionEngine<R> {
         loaded: &LoadedRecognitionInputProfile,
         batch: ModelReadyBatch,
     ) -> Result<IntegrationBatchRecognitionReport, BatchRecognitionError> {
+        self.run_with_cancel(loaded, batch, || false)
+    }
+
+    /// Cancellation discards in-flight replies and removes the spool before return.
+    /// LocalRecognizer must finish within its bounded request deadline.
+    pub fn run_with_cancel(
+        &mut self,
+        loaded: &LoadedRecognitionInputProfile,
+        batch: ModelReadyBatch,
+        cancelled: impl Fn() -> bool,
+    ) -> Result<IntegrationBatchRecognitionReport, BatchRecognitionError> {
         validate_integration_batch(loaded, &batch)?;
-        let spool_root = ensure_private_spool_root(&self.spool_root)?;
+        let spool_root = prepare_batch_spool(&self.spool_root, batch.summary.model_bytes)?;
         let spool_path = spool_root.join(format!(
             "recognition-batch-{}-{}.f32",
             batch.summary.session_generation, batch.summary.request_id
@@ -81,57 +108,97 @@ impl<R: LocalRecognizer> IntegrationBatchRecognitionEngine<R> {
         let path = transient.path().to_string_lossy().into_owned();
         let mut windows = Vec::with_capacity(batch.summary.windows.len());
 
-        for quality in &batch.summary.windows {
-            let worker_request_id = batch
-                .summary
-                .request_id
-                .checked_add(u64::from(quality.window_index))
-                .ok_or_else(|| {
-                    BatchRecognitionError::new(
-                        "worker_request_id",
-                        "per-window recognizer request ID overflow",
-                    )
-                })?;
-            let request = RecognitionRequest {
-                protocol_version: RECOGNIZER_PROTOCOL_VERSION,
-                request_id: worker_request_id,
-                session_generation: batch.summary.session_generation,
-                candidate_id: batch.summary.candidate_id.clone(),
-                iq: BoundedIqRef {
-                    storage: IqFileRef {
-                        path: path.clone(),
-                        offset_bytes: quality.output_offset_bytes,
-                        length_bytes: quality.output_length_bytes,
+        let dispatch = (|| {
+            for quality in &batch.summary.windows {
+                if cancelled() {
+                    return Err(BatchRecognitionError::new(
+                        "cancelled",
+                        "batch recognition cancelled",
+                    ));
+                }
+                let worker_request_id = batch
+                    .summary
+                    .request_id
+                    .checked_add(u64::from(quality.window_index))
+                    .ok_or_else(|| {
+                        BatchRecognitionError::new(
+                            "worker_request_id",
+                            "per-window recognizer request ID overflow",
+                        )
+                    })?;
+                let request = RecognitionRequest {
+                    rf_v1: loaded.is_rf_v1().then(|| RfV1WindowContract {
+                        profile_sha256: loaded.manifest_sha256.clone(),
+                        preprocess_sha256: loaded.profile.preprocess.spec_sha256.clone(),
+                        checkpoint_sha256: loaded.profile.model.model_sha256.clone(),
+                        batch_sha256: batch.summary.model_bytes_sha256.clone(),
+                        batch_request_id: batch.summary.request_id,
+                        source_sweep_id: batch.summary.source_sweep_id.clone(),
+                        source_request_id: batch.summary.source_request_id,
+                        source_session_generation: batch.summary.source_session_generation,
+                        source_sequence: batch.summary.source_sequence,
+                        capture_request_id: batch.summary.capture.sdrd_request_id,
+                        capture_sequence: batch.summary.capture.sequence,
+                        window_index: quality.window_index,
+                    }),
+                    protocol_version: RECOGNIZER_PROTOCOL_VERSION,
+                    request_id: worker_request_id,
+                    session_generation: batch.summary.session_generation,
+                    candidate_id: batch.summary.candidate_id.clone(),
+                    iq: BoundedIqRef {
+                        storage: IqFileRef {
+                            path: path.clone(),
+                            offset_bytes: quality.output_offset_bytes,
+                            length_bytes: quality.output_length_bytes,
+                        },
+                        sample_format: IqSampleFormat::F32Le,
+                        layout: IqLayout::PlanarIq,
+                        normalization: if loaded.is_rf_v1() {
+                            IqNormalization::CaptureUnitRms
+                        } else {
+                            IqNormalization::UnitRms
+                        },
+                        samples_per_channel: batch.summary.samples_per_window,
+                        sample_rate_hz: batch.summary.sample_rate_hz,
+                        center_hz: batch.summary.center_hz,
                     },
-                    sample_format: IqSampleFormat::F32Le,
-                    layout: IqLayout::PlanarIq,
-                    normalization: IqNormalization::UnitRms,
-                    samples_per_channel: batch.summary.samples_per_window,
-                    sample_rate_hz: batch.summary.sample_rate_hz,
-                    center_hz: batch.summary.center_hz,
-                },
-                max_latency_ms: loaded.profile.capture.model_deadline_ms,
-            };
-            let recognition = self.recognizer.classify(&request)?;
-            if recognition.backend.model_id != loaded.profile.model.model_id
-                || recognition.backend.model_sha256 != loaded.profile.model.model_sha256
-            {
-                return Err(BatchRecognitionError::new(
-                    "model_identity",
-                    "recognizer output does not match the integration profile checkpoint",
-                ));
+                    max_latency_ms: loaded.profile.capture.model_deadline_ms,
+                };
+                let recognition = self.recognizer.classify(&request)?;
+                if cancelled() {
+                    return Err(BatchRecognitionError::new(
+                        "cancelled",
+                        "late result discarded after cancellation",
+                    ));
+                }
+                crate::recognizer::validate_output(&request, &recognition)?;
+                if recognition.backend.model_id != loaded.profile.model.model_id
+                    || recognition.backend.model_sha256 != loaded.profile.model.model_sha256
+                {
+                    return Err(BatchRecognitionError::new(
+                        "model_identity",
+                        "recognizer output does not match the integration profile checkpoint",
+                    ));
+                }
+                windows.push(IntegrationWindowRecognition {
+                    window_index: quality.window_index,
+                    worker_request_id,
+                    output_offset_bytes: quality.output_offset_bytes,
+                    output_length_bytes: quality.output_length_bytes,
+                    recognition,
+                });
             }
-            windows.push(IntegrationWindowRecognition {
-                window_index: quality.window_index,
-                worker_request_id,
-                output_offset_bytes: quality.output_offset_bytes,
-                output_length_bytes: quality.output_length_bytes,
-                recognition,
-            });
-        }
 
-        let vote = integration_vote(&windows)?;
+            Ok(())
+        })();
+        // Explicit cleanup on both outcomes: never hide a failed unlink in Drop.
         transient.remove()?;
+        dispatch?;
+        let (vote, mean_logit) = if loaded.is_rf_v1() {
+            (None, Some(mean_logit_summary(&windows)?))
+        } else {
+            (Some(integration_vote(&windows)?), None)
+        };
         Ok(IntegrationBatchRecognitionReport {
             schema_version: INTEGRATION_BATCH_RECOGNITION_SCHEMA_VERSION,
             status: "ok".to_owned(),
@@ -144,6 +211,7 @@ impl<R: LocalRecognizer> IntegrationBatchRecognitionEngine<R> {
             batch: batch.summary,
             windows,
             vote,
+            mean_logit,
             transient_iq_removed: true,
         })
     }
@@ -163,7 +231,17 @@ fn validate_integration_batch(
             "the temporary batch engine accepts integration-only profiles",
         ));
     }
-    if batch.summary.profile_id != loaded.profile.profile_id
+    if batch.summary.schema_version != 1
+        || batch.summary.request_id == 0
+        || batch.summary.session_generation == 0
+        || batch.summary.capture.session_generation != batch.summary.session_generation
+        || !batch.summary.capture.rx_input.is_fixed_p201_rx1()
+        || batch.summary.source_request_id == 0
+        || batch.summary.source_session_generation == 0
+        || batch.summary.source_sequence == 0
+        || batch.summary.source_sweep_id.is_empty()
+        || batch.summary.raw_bytes != loaded.profile.capture.max_total_raw_bytes
+        || batch.summary.profile_id != loaded.profile.profile_id
         || batch.summary.profile_sha256 != loaded.manifest_sha256
         || batch.summary.preprocess_id != loaded.profile.preprocess.preprocess_id
         || batch.summary.preprocess_sha256 != loaded.profile.preprocess.spec_sha256
@@ -205,6 +283,65 @@ fn validate_integration_batch(
     Ok(())
 }
 
+fn mean_logit_summary(
+    windows: &[IntegrationWindowRecognition],
+) -> Result<MeanLogitSummary, BatchRecognitionError> {
+    if windows.len() != 4 {
+        return Err(BatchRecognitionError::new(
+            "logit_count",
+            "exactly four full-logit windows required",
+        ));
+    }
+    let mut mean_logits = vec![0.0_f64; 24];
+    let mut window_top1 = Vec::new();
+    for window in windows {
+        let output = window
+            .recognition
+            .rf_v1
+            .as_ref()
+            .ok_or_else(|| BatchRecognitionError::new("logits", "missing full logits"))?;
+        if output.logits.len() != 24 || output.logits.iter().any(|v| !v.is_finite()) {
+            return Err(BatchRecognitionError::new(
+                "logits",
+                "expected 24 finite logits",
+            ));
+        }
+        let mut top = 0;
+        for (index, value) in output.logits.iter().enumerate() {
+            mean_logits[index] += f64::from(*value) / 4.0;
+            if *value > output.logits[top] {
+                top = index;
+            }
+        }
+        window_top1.push(top);
+    }
+    let mut numeric_class_id = 0;
+    for index in 1..24 {
+        if mean_logits[index] > mean_logits[numeric_class_id] {
+            numeric_class_id = index;
+        }
+    }
+    let mut probabilities: Vec<f64> = mean_logits
+        .iter()
+        .map(|v| (v - mean_logits[numeric_class_id]).exp())
+        .collect();
+    let sum: f64 = probabilities.iter().sum();
+    probabilities.iter_mut().for_each(|v| *v /= sum);
+    Ok(MeanLogitSummary {
+        method: "float64_arithmetic_mean_logits_then_softmax".to_owned(),
+        numeric_class_id,
+        mean_logits,
+        probabilities,
+        window_agreement: window_top1
+            .iter()
+            .filter(|v| **v == numeric_class_id)
+            .count() as f64
+            / 4.0,
+        calibrated: false,
+        display_names_status: "provisional".to_owned(),
+    })
+}
+
 fn integration_vote(
     windows: &[IntegrationWindowRecognition],
 ) -> Result<IntegrationVoteSummary, BatchRecognitionError> {
@@ -239,6 +376,28 @@ fn integration_vote(
         agreement_ratio: f32::from(top1_vote_count) / f32::from(window_count),
         mean_voter_confidence: (confidence_sum / f64::from(top1_vote_count)) as f32,
     })
+}
+
+pub fn prepare_batch_spool(
+    path: &Path,
+    required_bytes: u64,
+) -> Result<PathBuf, BatchRecognitionError> {
+    let root = ensure_private_spool_root(path)?;
+    let available = crate::sweep::available_storage_bytes(&root)
+        .map_err(|error| BatchRecognitionError::new("spool_space", error.to_string()))?;
+    if required_bytes == 0 || available < required_bytes {
+        return Err(BatchRecognitionError::new(
+            "spool_space",
+            "insufficient space for exact finite batch",
+        ));
+    }
+    eprintln!(
+        "validated_batch_spool path={} max_bytes={} available_bytes={}",
+        root.display(),
+        required_bytes,
+        available
+    );
+    Ok(root)
 }
 
 fn ensure_private_spool_root(path: &Path) -> Result<PathBuf, BatchRecognitionError> {
@@ -294,7 +453,9 @@ impl TransientBatchFile {
             .open(&path)
             .map_err(|error| BatchRecognitionError::io("create_spool_file", error))?;
         if let Err(error) = file.write_all(bytes).and_then(|_| file.flush()) {
-            let _ = fs::remove_file(&path);
+            fs::remove_file(&path).map_err(|cleanup| {
+                BatchRecognitionError::io("remove_partial_spool_file", cleanup)
+            })?;
             return Err(BatchRecognitionError::io("write_spool_file", error));
         }
         Ok(Self {
@@ -445,6 +606,7 @@ mod tests {
         confidence: f32,
     ) -> RecognitionOutput {
         RecognitionOutput {
+            rf_v1: None,
             candidate_id: "candidate-1".to_owned(),
             label: label.to_owned(),
             confidence,
@@ -494,9 +656,12 @@ mod tests {
         let mut engine = IntegrationBatchRecognitionEngine::new(recognizer, &root);
         let report = engine.run(&profile, batch).unwrap();
         assert_eq!(report.windows.len(), 4);
-        assert_eq!(report.vote.top1_label, "provisional:03:test-a");
-        assert_eq!(report.vote.top1_vote_count, 3);
-        assert_eq!(report.vote.agreement_ratio, 0.75);
+        assert_eq!(
+            report.vote.as_ref().unwrap().top1_label,
+            "provisional:03:test-a"
+        );
+        assert_eq!(report.vote.as_ref().unwrap().top1_vote_count, 3);
+        assert_eq!(report.vote.as_ref().unwrap().agreement_ratio, 0.75);
         assert!(!report.production_recognizer_available);
         assert!(report.transient_iq_removed);
         assert_eq!(fs::read_dir(&root).unwrap().count(), 0);
@@ -515,6 +680,134 @@ mod tests {
         assert_eq!(
             engine.run(&profile, batch).unwrap_err().code,
             "model_identity"
+        );
+        assert_eq!(fs::read_dir(&root).unwrap().count(), 0);
+        fs::remove_dir(root).unwrap();
+    }
+    struct LogitRecognizer {
+        profile: LoadedRecognitionInputProfile,
+        fault: &'static str,
+        cancelled: std::rc::Rc<std::cell::Cell<bool>>,
+    }
+
+    impl LocalRecognizer for LogitRecognizer {
+        fn classify(
+            &mut self,
+            request: &RecognitionRequest,
+        ) -> Result<RecognitionOutput, RecognizerError> {
+            let index = request.rf_v1.as_ref().unwrap().window_index;
+            if self.fault == "worker_exit" && index == 1 {
+                return Err(RecognizerError {
+                    code: "connect",
+                    message: "worker exited".to_owned(),
+                });
+            }
+            let mut result = output(&self.profile, "provisional:00", 0.5);
+            let mut logits = vec![0.0; 24];
+            // Three votes for 0, but the full-logit mean correctly selects 1.
+            if index < 3 {
+                logits[0] = 1.0;
+            } else {
+                logits[1] = 12.0;
+            }
+            let mut contract = request.rf_v1.clone().unwrap();
+            match self.fault {
+                "profile" => contract.profile_sha256 = "0".repeat(64),
+                "preprocess" => contract.preprocess_sha256 = "0".repeat(64),
+                "checkpoint" => contract.checkpoint_sha256 = "0".repeat(64),
+                "batch" => contract.batch_sha256 = "0".repeat(64),
+                "source" => contract.source_request_id += 1,
+                "order" => contract.window_index += 1,
+                "short_logits" => {
+                    logits.pop();
+                }
+                "nan" => logits[0] = f32::NAN,
+                "cancel" => self.cancelled.set(true),
+                _ => {}
+            }
+            result.rf_v1 = Some(crate::recognizer::RfV1WindowOutput {
+                contract,
+                logits,
+                request_id: request.request_id + u64::from(self.fault == "request"),
+                session_generation: request.session_generation + u64::from(self.fault == "session"),
+                compute: if self.fault == "precision" {
+                    "fp32"
+                } else {
+                    "cuda_fp16_autocast"
+                }
+                .to_owned(),
+            });
+            Ok(result)
+        }
+    }
+
+    #[test]
+    fn rf_v1_full_logits_correlation_cancel_and_cleanup() {
+        let repo = repository_root();
+        let profile = load_recognition_input_profile(
+            &repo,
+            &repo.join("jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json"),
+        )
+        .unwrap();
+        for fault in [
+            "none",
+            "worker_exit",
+            "profile",
+            "preprocess",
+            "checkpoint",
+            "batch",
+            "source",
+            "order",
+            "short_logits",
+            "nan",
+            "cancel",
+            "request",
+            "session",
+            "precision",
+        ] {
+            let cancelled = std::rc::Rc::new(std::cell::Cell::new(false));
+            let recognizer = LogitRecognizer {
+                profile: profile.clone(),
+                fault,
+                cancelled: cancelled.clone(),
+            };
+            let root = private_directory(fault);
+            let mut engine = IntegrationBatchRecognitionEngine::new(recognizer, &root);
+            let result = engine.run_with_cancel(&profile, batch(&profile), || cancelled.get());
+            if fault == "none" {
+                let report = result.unwrap();
+                assert!(report.vote.is_none());
+                let mean = report.mean_logit.unwrap();
+                assert_eq!(mean.numeric_class_id, 1);
+                assert_eq!(mean.mean_logits[0], 0.75);
+                assert_eq!(mean.mean_logits[1], 3.0);
+                assert_eq!(mean.window_agreement, 0.25);
+                assert!((mean.probabilities.iter().sum::<f64>() - 1.0).abs() < 1e-14);
+                assert!(!mean.calibrated);
+            } else {
+                assert!(result.is_err(), "{fault}");
+            }
+            assert_eq!(fs::read_dir(&root).unwrap().count(), 0, "{fault}");
+            fs::remove_dir(root).unwrap();
+        }
+    }
+
+    #[test]
+    fn rf_v1_rejects_reordered_batch_before_creating_spool() {
+        let repo = repository_root();
+        let profile = load_recognition_input_profile(
+            &repo,
+            &repo.join("jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json"),
+        )
+        .unwrap();
+        let mut batch = batch(&profile);
+        batch.summary.windows.swap(0, 1);
+        let root = private_directory("reordered");
+        let mut engine =
+            IntegrationBatchRecognitionEngine::new(ReplayRecognizerAdapter::new([]), &root);
+        assert_eq!(
+            engine.run(&profile, batch).unwrap_err().code,
+            "batch_offsets"
         );
         assert_eq!(fs::read_dir(&root).unwrap().count(), 0);
         fs::remove_dir(root).unwrap();
