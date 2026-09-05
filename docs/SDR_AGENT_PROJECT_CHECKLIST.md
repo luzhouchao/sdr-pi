@@ -601,6 +601,17 @@ recognition; it does not own hardware control or another runtime backend.
       aggregate accuracy matched the 4090 exactly at `0.6705575952` and NLL
       differed by only `6.8e-8`; test remained unopened and capability false. See
       [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md).
+- [ ] Add versioned RF-v1 corpus derivation/import and independently annotated
+      evidence ingestion by reusing the existing corpus contract/store. The
+      deployed intake still pins the legacy profile and writes only `unknown`;
+      preserve historical package hashes, bind every new profile/preprocess and
+      label to source evidence, validate source/session/day grouping and retain
+      manual deletion. A model prediction or an unknown-reason field is not
+      an independent annotation.
+- [ ] Pre-register the known-RF/OOD coverage and sampling rationale plus separate
+      calibration and acceptance groups before fitting thresholds; track label
+      evidence, ambiguous cases and class/name mapping without opening the
+      locked test. Existing unknown receptions alone do not satisfy this gate.
 - [ ] Use independently labeled known-RF/OOD evidence with the final checkpoint
       to freeze scalar calibration plus confidence/agreement/SNR/bandwidth
       acceptance thresholds, then perform one locked test admission. The new
@@ -792,20 +803,45 @@ Evidence:
 
 ## Current next milestone
 
-Delivery A, the independent Chapter 4 acquisition gates, corpus/split controls,
-the frozen `rf_preprocess_v1`, user-owned 4090 retraining and strict complete
-AGX FP32 validation parity and preregistered FP32/FP16/BF16 precision selection
-are complete; FP16 is frozen for the candidate. Runtime shared-capture RMS,
-complete logits and float64 mean-logit aggregation are now implemented and
-live-validated with failure/cancel cleanup. Continue delivery C with the
-remaining Worker admission gates; independently labeled known-RF/OOD evidence
-is still required before production calibration,
-acceptance thresholds or one locked-test admission. Both seed44 and the new
-epoch-10 candidate intentionally remain unavailable to the production Runner.
+Replanned on 2026-09-05 against `2d36bc6`. The RX1 control/transport baseline,
+AGX acquisition, corpus/split foundations, frozen `rf_preprocess_v1`, user-owned
+checkpoint training, complete AGX validation, FP16 selection and runtime
+shared-capture RMS/full-logit aggregation are complete. Their historical
+completion evidence remains valid; do not repeat precision selection or model
+training as a new milestone.
 
-The remaining Chapter 1 gaps are recognition rendering, bounded persistence and
-compact Agent feedback. Chapter 2 still lacks live recognizer capability,
-recognition approval/execution/feedback, Worker-aware `/stop`, the shared GPU
-lease and a complete Planner regression. Chapter 3 is complete, including its
-fixed physical RX1 identity and end-of-session unchanged verification. FPGA,
-transmit work and model retraining by the Agent are not future milestones.
+The **next independent software delivery is S1: Recognizer admission and
+operator approval**. Define the versioned health/admission identity, derive
+capability from current Worker plus admitted assets, remove request/template
+self-assertion of availability, and require recognition approval in both step
+and cruise. Missing/stale/mismatched/unadmitted evidence must fail closed;
+the actual epoch-10 candidate stays unavailable throughout this unit.
+
+Then deliver S2 (unified result/observation contract), S3 (Worker lifecycle,
+queue/deadline/cancel/crash cleanup), S4 (shared Spark/Mamba inference lease and
+resource soak), S5 (Runner execution/stop/feedback and Planner regression), and
+S6 (Web/terminal/persistence/manual deletion). Implementation and explicitly
+engineering-only validation can proceed before labels arrive; none implies
+production admission. Current backlog one, batch cancellation and short
+co-residency evidence do not complete the production lifecycle/GPU gates.
+
+In a separate dependency chain, V1 adds RF-v1 evidence intake and independently
+labeled known-RF/OOD coverage with isolated calibration/acceptance groups;
+V2 freezes calibration/rejection using that evidence; V3 resolves label-space
+admission and performs the one locked test only after acceptance rules are
+frozen. A1 joins both chains for versioned production profiles, rollback-capable
+deployment and the RX-only frequency/gain/session acceptance matrix. Only then
+may current Adapter health report availability. O1 covers the remaining Section
+8 fault/fuzz, operations and complete 24-hour-loop validation.
+
+Detailed deliverables and completion conditions are maintained in
+[`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md),
+under the replanned delivery order. No new implementation item was completed by
+this planning review; it produced no development IQ, feature process or staging
+data requiring cleanup.
+
+Chapter 3 has no new hardware gap. Chapter 7 emitter identity remains a later
+independent scope, not a capability of the modulation classifier. Production
+calibration and the locked test remain blocked on independent evidence; a
+production date cannot be inferred from code completion. FPGA, transmit work,
+NX offload and model retraining by the Agent remain outside this plan.
