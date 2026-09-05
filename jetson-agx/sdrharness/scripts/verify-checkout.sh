@@ -20,6 +20,7 @@ required=(
   "jetson-agx/sdrharness/config/amc/legacy-adc-unit-rms-v0.json"
   "jetson-agx/sdrharness/config/amc/rf-preprocess-v1-selection-plan.json"
   "jetson-agx/sdrharness/config/amc/rf-preprocess-v1.json"
+  "jetson-agx/sdrharness/config/amc/rf-v1-precision-selection-plan.json"
   "jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1-ft-batched-seed44.candidate.json"
   "jetson-agx/sdrharness/config/amc/amc-corpus-manifest-v1.schema.json"
   "jetson-agx/sdrharness/config/runtime.env.example"

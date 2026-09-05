@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "schema_id": "rf_v1_precision_selection_plan_v1",
+  "plan_id": "rf-v1-precision-selection-20260905",
+  "created_at": "2026-09-05T19:02:57+08:00",
+  "status": "preregistered",
+  "purpose": "Select FP32, FP16 autocast or BF16 autocast for the RF-aligned D8 candidate on complete grouped validation without opening locked test.",
+  "scope": {
+    "training": false,
+    "checkpoint_mutation": false,
+    "radio_capture": false,
+    "transmission": false,
+    "production_admission": false,
+    "allowed_split": "val",
+    "forbidden_split": "test"
+  },
+  "pinned_inputs": {
+    "candidate_manifest": {
+      "path": "jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1-ft-batched-seed44.candidate.json",
+      "sha256": "a937fc5eba72cc9cb596eb8d86d87917110a2fedf130436b399ceb513779eeb4"
+    },
+    "fp32_validation_audit": {
+      "path": "docs/RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_AUDIT_2026-09-05.json",
+      "sha256": "f4ebf515b789c8b7a05045a8ed572dfcf1e5dd621cc182527d44e8e152a5b82b"
+    },
+    "checkpoint": {
+      "path": "local-assets/amc-eval/checkpoints/rml2018a/rf-v1-ft-batched-seed44/epoch-010.pt",
+      "bytes": 1726724,
+      "sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054"
+    },
+    "dataset": {
+      "path": "local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+      "bytes": 21449148312,
+      "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38"
+    },
+    "split": {
+      "path": "local-assets/amc-eval/splits/RML2018a_split_seed44_tr700_val150_te150.npz",
+      "bytes": 3906249,
+      "sha256": "5b8ccdc0183455445d5beab20f2ed7e553ff616da76a31114f700929607d0792"
+    },
+    "preprocess": {
+      "path": "jetson-agx/sdrharness/config/amc/rf-preprocess-v1.json",
+      "sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f"
+    }
+  },
+  "evaluation": {
+    "precisions_in_fixed_order": ["fp32", "fp16", "bf16"],
+    "implementation": {
+      "fp32": "FP32 model and operations with TF32 disabled",
+      "fp16": "FP32 resident weights with CUDA FP16 autocast",
+      "bf16": "FP32 resident weights with CUDA BF16 autocast"
+    },
+    "groups": 95607,
+    "source_rows": 382428,
+    "samples_per_group": 4096,
+    "windows_per_group": 4,
+    "groups_per_batch": 64,
+    "preprocessing": "rf_preprocess_v1 shared-capture complex RMS with DC retained",
+    "aggregation": "float64 arithmetic mean of four complete logits followed by float64 softmax",
+    "warmup_batches_per_precision": 5,
+    "all_logits_must_be_finite": true,
+    "store_per_group_logits": false
+  },
+  "numeric_eligibility_gates": {
+    "validation_accuracy_degradation_max": 0.001,
+    "snr_ge_4_accuracy_degradation_max": 0.001,
+    "negative_log_likelihood_increase_max": 0.005,
+    "argmax_agreement_with_fp32_min": 0.995,
+    "mean_logit_absolute_difference_p99_max": 0.1,
+    "mean_logit_absolute_difference_max": 1.0,
+    "probability_absolute_difference_p99_max": 0.005,
+    "probability_absolute_difference_max": 0.05
+  },
+  "performance_benchmark": {
+    "groups": 4096,
+    "selection": "evenly spaced immutable complete-group positions",
+    "rounds": 3,
+    "orders": [
+      ["fp32", "fp16", "bf16"],
+      ["fp16", "bf16", "fp32"],
+      ["bf16", "fp32", "fp16"]
+    ],
+    "synchronize_before_and_after": true,
+    "minimum_median_throughput_gain_over_fp32": 0.1,
+    "maximum_reserved_memory_increase_bytes": 67108864
+  },
+  "selection_rule": {
+    "fallback": "fp32",
+    "steps": [
+      "Reject a low precision that fails any numeric, finite-logit or memory gate.",
+      "Reject a low precision whose median benchmark throughput gain over FP32 is below 10 percent.",
+      "Among remaining candidates, retain those within 5 percent of the fastest median throughput.",
+      "Among retained candidates, maximize full-validation argmax agreement with FP32.",
+      "Treat agreement within 0.001 absolute as tied, then prefer BF16 over FP16 for exponent range."
+    ],
+    "production_effect": "The result may freeze candidate inference precision but cannot enable recognizer_available or replace missing known-RF/OOD rejection and runtime admission gates."
+  },
+  "governance": {
+    "allowed_npz_members": ["train", "val"],
+    "forbidden_npz_members": ["test"],
+    "forbidden_result_paths": [
+      "local-assets/amc-eval/checkpoints/rml2018a/seed44/metrics_test.json",
+      "local-assets/amc-eval/results/rml2018a/full-fp32-b256-v1"
+    ],
+    "historical_test_results_must_not_influence_selection": true,
+    "production_calibration_remains_null": true,
+    "recognizer_available_remains_false": true
+  },
+  "resource_and_cleanup": {
+    "temporary_root": "/var/tmp/sdrharness-dev/rf-v1-precision-selection-20260905/",
+    "maximum_temporary_bytes": 67108864,
+    "minimum_available_memory_bytes": 12884901888,
+    "raw_iq_written": false,
+    "per_group_logits_written": false,
+    "cleanup_required_before_completion": true
+  },
+  "invalidating_conditions": [
+    "Any test member or test-result path is opened.",
+    "Any pinned input hash changes.",
+    "Any threshold, benchmark population or selection rule changes after low-precision results are observed without a new plan ID.",
+    "Any precision result is used to enable production recognition before the remaining admission gates pass."
+  ]
+}
