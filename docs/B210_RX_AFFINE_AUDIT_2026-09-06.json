@@ -1,0 +1,1516 @@
+{
+  "schema_id": "b210_affine_exploration_audit_v1",
+  "baseline_commit": "4bb14681154e3884449c0af228ab01999ac6e490",
+  "maximum_rx_bytes": 1572840,
+  "actual_rx_bytes": 1572840,
+  "maximum_tx_nominal_seconds": 20,
+  "recognizer_available": false,
+  "independent_labels": 0,
+  "qualified_bidirectional_validation": false,
+  "registered_source_gate_passed": false,
+  "execution_scope_amended_before_model_inference": true,
+  "links": {
+    "tone": {
+      "status": "transport_completed_pending_signal_analysis",
+      "generation": 1788693988892,
+      "feature_directory": "/var/tmp/sdrharness-dev/b210-affine-tone-906f",
+      "mode": "tone",
+      "max_rx_bytes": 786420,
+      "max_tx_samples": 25000000,
+      "tx_nominal_seconds": 10,
+      "center_hz": 2440000000,
+      "rate_sps": 2500000,
+      "bandwidth_hz": 1000000,
+      "tx_gain_db": 70,
+      "rx_gain_db": 40,
+      "rx_input": "RX1/RX0/A_BALANCED",
+      "antenna_connection": true,
+      "recognizer_available": false,
+      "locked_test_read": false,
+      "controller_sha256": "b4db3a34b4a58171eace00c89924d8d79fc4e419ab12652cfa9141525338f9af",
+      "free_bytes": 808886566912,
+      "sdrd_pid": "17136",
+      "plans": [
+        {
+          "sweep_id": "b210-baseline-1788693988892",
+          "session_generation": 1788693988892,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2500000,
+          "rf_bandwidth_hz": 1000000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "b210-during-tx-1788693988893",
+          "session_generation": 1788693988893,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2500000,
+          "rf_bandwidth_hz": 1000000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "b210-after-tx-1788693988894",
+          "session_generation": 1788693988894,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2500000,
+          "rf_bandwidth_hz": 1000000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        }
+      ],
+      "baseline": {
+        "sweep_id": "b210-baseline-1788693988892",
+        "session_generation": 1788693988892,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 3589,
+        "noise_floor_dbfs": -41.468185,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788693988892,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2500000,
+            "rf_bandwidth_hz": 1000000,
+            "sequence": 259,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -41.468185,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 610.3515625,
+              "peak_frequency_hz": 2439511108,
+              "peak_power_dbfs": -68.60424,
+              "noise_floor_dbfs": -84.26797,
+              "measured_snr_db": 15.663727,
+              "estimated_center_hz": 2439513855,
+              "occupied_start_hz": 2439495850,
+              "occupied_stop_hz": 2439531860,
+              "occupied_bandwidth_hz": 36622
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 27981,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 27981,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-affine-tone-906f/baseline/b210-baseline-1788693988892-1788693988892-1788693989401990838.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-affine-tone-906f/baseline/b210-baseline-1788693988892-1788693988892-1788693989401990838.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_command": "timeout --signal=INT --kill-after=2s 35s /usr/lib/uhd/examples/tx_waveforms --args type=b200,serial=2508504 --channels 0 --ant TX/RX --freq 2440000000 --rate 2500000 --bw 500000 --gain 70 --wave-type SINE --wave-freq 100000 --ampl 0.2 --nsamps 25000000",
+      "tx_remote_owner_pid": 20121,
+      "tx_remote_child_pid": 20122,
+      "tone_ready_agx_ns": 1788693996621570802,
+      "during_tx": {
+        "sweep_id": "b210-during-tx-1788693988893",
+        "session_generation": 1788693988893,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 3596,
+        "noise_floor_dbfs": -35.469994,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788693988893,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2500000,
+            "rf_bandwidth_hz": 1000000,
+            "sequence": 260,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -35.469994,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 610.3515625,
+              "peak_frequency_hz": 2440103760,
+              "peak_power_dbfs": -37.222317,
+              "noise_floor_dbfs": -81.069046,
+              "measured_snr_db": 43.84673,
+              "estimated_center_hz": 2440103454,
+              "occupied_start_hz": 2440102539,
+              "occupied_stop_hz": 2440104370,
+              "occupied_bandwidth_hz": 2442
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 28006,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 28006,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-affine-tone-906f/during-tx/b210-during-tx-1788693988893-1788693988893-1788693996631710023.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-affine-tone-906f/during-tx/b210-during-tx-1788693988893-1788693988893-1788693996631710023.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_exit_code": 0,
+      "after_tx": {
+        "sweep_id": "b210-after-tx-1788693988894",
+        "session_generation": 1788693988894,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 3604,
+        "noise_floor_dbfs": -55.97949,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788693988894,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2500000,
+            "rf_bandwidth_hz": 1000000,
+            "sequence": 261,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -55.97949,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 610.3515625,
+              "peak_frequency_hz": 2439495850,
+              "peak_power_dbfs": -82.48269,
+              "noise_floor_dbfs": -91.40494,
+              "measured_snr_db": 8.922249,
+              "estimated_center_hz": 2439494018,
+              "occupied_start_hz": 2439490967,
+              "occupied_stop_hz": 2439497070,
+              "occupied_bandwidth_hz": 6714
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 27990,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 27990,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-affine-tone-906f/after-tx/b210-after-tx-1788693988894-1788693988894-1788694006487236329.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-affine-tone-906f/after-tx/b210-after-tx-1788693988894-1788693988894-1788694006487236329.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "remote_tx_stopped": true,
+      "restoration_errors": [],
+      "local_process_exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "radio_before_sha256": "d1a18ef0da25d582b9223b2900a2a9db22475c7245737cd9f1ed7d4954c668c6",
+      "radio_after_sha256": "d1a18ef0da25d582b9223b2900a2a9db22475c7245737cd9f1ed7d4954c668c6"
+    },
+    "rml": {
+      "status": "transport_completed_pending_signal_analysis",
+      "generation": 1788694132342,
+      "feature_directory": "/var/tmp/sdrharness-dev/b210-affine-906f",
+      "mode": "rml",
+      "max_rx_bytes": 786420,
+      "max_tx_samples": 21000000,
+      "tx_nominal_seconds": 10,
+      "center_hz": 2440000000,
+      "rate_sps": 2100000,
+      "bandwidth_hz": 1500000,
+      "tx_gain_db": 70,
+      "rx_gain_db": 40,
+      "rx_input": "RX1/RX0/A_BALANCED",
+      "antenna_connection": true,
+      "recognizer_available": false,
+      "locked_test_read": false,
+      "controller_sha256": "b4db3a34b4a58171eace00c89924d8d79fc4e419ab12652cfa9141525338f9af",
+      "free_bytes": 808850731008,
+      "sdrd_pid": "17136",
+      "plans": [
+        {
+          "sweep_id": "b210-baseline-1788694132342",
+          "session_generation": 1788694132342,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "b210-during-tx-1788694132343",
+          "session_generation": 1788694132343,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "b210-after-tx-1788694132344",
+          "session_generation": 1788694132344,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        }
+      ],
+      "baseline": {
+        "sweep_id": "b210-baseline-1788694132342",
+        "session_generation": 1788694132342,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 4098,
+        "noise_floor_dbfs": -39.47438,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788694132342,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "sequence": 262,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -39.47438,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 512.6953125,
+              "peak_frequency_hz": 2439534473,
+              "peak_power_dbfs": -64.45561,
+              "noise_floor_dbfs": -75.72327,
+              "measured_snr_db": 11.267654,
+              "estimated_center_hz": 2439534729,
+              "occupied_start_hz": 2439531396,
+              "occupied_stop_hz": 2439538062,
+              "occupied_bandwidth_hz": 7178
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 32969,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 32969,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-affine-906f/baseline/b210-baseline-1788694132342-1788694132342-1788694132851513146.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-affine-906f/baseline/b210-baseline-1788694132342-1788694132342-1788694132851513146.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_ready": {
+        "event": "ready",
+        "pid": 20240,
+        "child_pid": 20241
+      },
+      "go_unix_ns": 1788694143674530886,
+      "tx_start_ack_agx_ns": 1788694143711422080,
+      "rx_active_observed_agx_ns": 1788694144202952845,
+      "during_tx": {
+        "sweep_id": "b210-during-tx-1788694132343",
+        "session_generation": 1788694132343,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 4082,
+        "noise_floor_dbfs": -39.84688,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788694132343,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "sequence": 263,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -39.84688,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 512.6953125,
+              "peak_frequency_hz": 2440003076,
+              "peak_power_dbfs": -43.100918,
+              "noise_floor_dbfs": -86.0156,
+              "measured_snr_db": 42.914684,
+              "estimated_center_hz": 2440003589,
+              "occupied_start_hz": 2439890283,
+              "occupied_stop_hz": 2440116895,
+              "occupied_bandwidth_hz": 227125
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 34286,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 34286,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-affine-906f/during-tx/b210-during-tx-1788694132343-1788694132343-1788694140446233193.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-affine-906f/during-tx/b210-during-tx-1788694132343-1788694132343-1788694140446233193.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_result": {
+        "status": "sent",
+        "payload_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+        "bytes_written": 168000000,
+        "max_samples": 21000000,
+        "rate_sps": 2100000,
+        "nominal_seconds": 10,
+        "child_pid": 20241,
+        "go_unix_ns": 1788694143760185561,
+        "feed_seconds": 9.96560844600026,
+        "uhd_log_sha256": "36f91539c931c169c1b6798c6109b2c35b33d26924cb197e0d90f0205ab7629a",
+        "uhd_async_markers": [
+          "S"
+        ]
+      },
+      "after_tx": {
+        "sweep_id": "b210-after-tx-1788694132344",
+        "session_generation": 1788694132344,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 4115,
+        "noise_floor_dbfs": -41.101284,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788694132344,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "sequence": 264,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -41.101284,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 512.6953125,
+              "peak_frequency_hz": 2440147656,
+              "peak_power_dbfs": -60.5143,
+              "noise_floor_dbfs": -74.63492,
+              "measured_snr_db": 14.120617,
+              "estimated_center_hz": 2440147656,
+              "occupied_start_hz": 2440146631,
+              "occupied_stop_hz": 2440148682,
+              "occupied_bandwidth_hz": 2564
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 32969,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 32969,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-affine-906f/after-tx/b210-after-tx-1788694132344-1788694132344-1788694153951369816.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-affine-906f/after-tx/b210-after-tx-1788694132344-1788694132344-1788694153951369816.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "remote_tx_stopped": true,
+      "restoration_errors": [],
+      "local_process_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "radio_before_sha256": "d1a18ef0da25d582b9223b2900a2a9db22475c7245737cd9f1ed7d4954c668c6",
+      "radio_after_sha256": "d1a18ef0da25d582b9223b2900a2a9db22475c7245737cd9f1ed7d4954c668c6"
+    }
+  },
+  "source_analysis": {
+    "schema_version": 1,
+    "tone": {
+      "cases": {
+        "baseline": {
+          "iq_sha256": "c1025c08725e9dd9088bd3338310e323651361e5d17709ef99c5f35d749d55b3",
+          "peak_offset_hz": 95025.55886167698,
+          "target_region_peak_dbfs": -99.6814599106281,
+          "spectral_median_dbfs": -114.06443829214453,
+          "same_observed_bin_dbfs": -111.98881271989364
+        },
+        "during-tx": {
+          "iq_sha256": "d31d55261e1095d9f688a018262f2c57a648a944d816224aaf1dc4de46f245bc",
+          "peak_offset_hz": 103456.16845960176,
+          "target_region_peak_dbfs": -59.987202167565805,
+          "spectral_median_dbfs": -120.80429915777655,
+          "same_observed_bin_dbfs": -59.987202167565805
+        },
+        "after-tx": {
+          "iq_sha256": "6bad1227bf20198bd65e6662ef0a877511659f7e87de2c419bb84ecd003ab8cd",
+          "peak_offset_hz": 96322.57572289617,
+          "target_region_peak_dbfs": -117.31287730350257,
+          "spectral_median_dbfs": -129.66643372834505,
+          "same_observed_bin_dbfs": -123.27665028058762
+        }
+      },
+      "frequency_difference_hz": 3456.1684596017585
+    },
+    "source_99_percent_half_width_hz": 125000,
+    "alignment_method": "median best lag in first seven during-TX windows; apply unchanged to last eight and both TX-off controls",
+    "interpretation": "exploratory source-specific RF link evidence, not model accuracy or independent RF admission",
+    "raw_broadband_test_replaced": false,
+    "recognizer_preprocess_modified": false,
+    "cases": {
+      "baseline": {
+        "iq_sha256": "f62f36a6e5b37c83fea8ce9d4d5bef0c1491a25e65132e4ce056c41cd787a4cc",
+        "fixed_lag": 776,
+        "later_eight_fixed_lag_correlations": [
+          -0.007896096736853321,
+          -0.009720942304880105,
+          -0.0390117239104658,
+          0.01655689533440448,
+          0.013170773706722228,
+          0.007843459731704019,
+          0.01814064950572762,
+          -0.04160921316507013
+        ],
+        "later_eight_fixed_lag_median": -2.6318502574651167e-05,
+        "all_window_best_lag_median": 0.1386535691171354,
+        "all_window_best_lags": [
+          3115,
+          3952,
+          2462,
+          3018,
+          1864,
+          2639,
+          538,
+          2286,
+          2133,
+          3059,
+          596,
+          1451,
+          1428,
+          206,
+          3286
+        ]
+      },
+      "during-tx": {
+        "iq_sha256": "0dfc5e1b14d7a26a5d462c3cbab58adeb689b34b402bfa429fabd12a0bea10fe",
+        "fixed_lag": 776,
+        "later_eight_fixed_lag_correlations": [
+          0.3396911732113744,
+          0.33964225996403585,
+          0.3378859810013177,
+          0.34253063490616487,
+          0.335777233526683,
+          0.3357565506866379,
+          0.3476773568345226,
+          0.3468189529166091
+        ],
+        "later_eight_fixed_lag_median": 0.3396667165877051,
+        "all_window_best_lag_median": 0.34128141476403073,
+        "all_window_best_lags": [
+          776,
+          776,
+          776,
+          776,
+          776,
+          776,
+          776,
+          776,
+          776,
+          776,
+          776,
+          776,
+          776,
+          776,
+          776
+        ]
+      },
+      "after-tx": {
+        "iq_sha256": "e5042958f006271f9aac0dea4b4bfa5b6671be157d40aa301bb45e17b7d34eed",
+        "fixed_lag": 776,
+        "later_eight_fixed_lag_correlations": [
+          -0.00497864874766352,
+          -0.016578004158288334,
+          0.057104300993928964,
+          -0.05068497679443056,
+          -0.0023284173927061768,
+          0.023821518884898436,
+          0.008131827823762714,
+          -0.02145271504751729
+        ],
+        "later_eight_fixed_lag_median": -0.0036535330701848484,
+        "all_window_best_lag_median": 0.12163483666751475,
+        "all_window_best_lags": [
+          99,
+          3011,
+          158,
+          687,
+          2907,
+          2780,
+          1687,
+          65,
+          2807,
+          2870,
+          2098,
+          3741,
+          171,
+          1371,
+          2568
+        ]
+      }
+    },
+    "engineering_controls": {
+      "schema_id": "b210_rx40_engineering_controls_v1",
+      "limits": {
+        "tone_control_margin_db": 20.0,
+        "tone_spectral_margin_db": 20.0,
+        "during_correlation_minimum": 0.5,
+        "off_correlation_absolute_maximum": 0.2,
+        "source_control_margin_minimum": 0.3
+      },
+      "tone": {
+        "passed": true,
+        "control_margins_db": [
+          52.00161055232784,
+          63.28944811302181
+        ],
+        "spectral_margin_db": 60.81709699021075
+      },
+      "source_passed": false,
+      "passed": false,
+      "during_correlation": 0.3396667165877051,
+      "maximum_off_absolute_correlation": 0.0036535330701848484,
+      "source_control_margin": 0.33601318351752024,
+      "independent_labels": 0,
+      "recognizer_available": false,
+      "rf_v1_50db_acceptance": false
+    }
+  },
+  "original_failed_preparation": {
+    "schema_id": "b210_affine_preparation_v1",
+    "source_receipt": {
+      "source_tile_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+      "parent_iq_sha256": "0dfc5e1b14d7a26a5d462c3cbab58adeb689b34b402bfa429fabd12a0bea10fe",
+      "received_slice_sha256": "24eded81fc5d53c7cf2fef7349abe3515723c5a01c7ddac5a52cfafbc22be523",
+      "source_rows": [
+        102400,
+        102401,
+        102403,
+        102404
+      ],
+      "source_nominal_class_id": 0,
+      "dataset_nominal_snr_db": 30,
+      "selected_complex_offset": 28672,
+      "source_circular_lag": 776,
+      "alignment_chosen_before_model": true,
+      "selected_source_diagnostic_correlation": 0.3396911732113744,
+      "control_assessment": {
+        "schema_id": "b210_rx40_engineering_controls_v1",
+        "limits": {
+          "tone_control_margin_db": 20.0,
+          "tone_spectral_margin_db": 20.0,
+          "during_correlation_minimum": 0.5,
+          "off_correlation_absolute_maximum": 0.2,
+          "source_control_margin_minimum": 0.3
+        },
+        "tone": {
+          "passed": true,
+          "control_margins_db": [
+            52.00161055232784,
+            63.28944811302181
+          ],
+          "spectral_margin_db": 60.81709699021075
+        },
+        "source_passed": false,
+        "passed": false,
+        "during_correlation": 0.3396667165877051,
+        "maximum_off_absolute_correlation": 0.0036535330701848484,
+        "source_control_margin": 0.33601318351752024,
+        "independent_labels": 0,
+        "recognizer_available": false,
+        "rf_v1_50db_acceptance": false
+      },
+      "receiver": {
+        "gain_db": 40,
+        "center_hz": 2440000000,
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "parent_native_point": {
+          "point_index": 0,
+          "request_id": 5,
+          "session_generation": 1788694132343,
+          "requested_center_hz": 2440000000,
+          "actual_center_hz": 2440000000,
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "sequence": 263,
+          "dropped_samples": 0,
+          "overflow": false,
+          "captured_samples": 65535,
+          "band_power_dbfs": -39.84688,
+          "spectral": {
+            "schema_version": 1,
+            "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+            "fft_size": 4096,
+            "segment_count": 15,
+            "bin_width_hz": 512.6953125,
+            "peak_frequency_hz": 2440003076,
+            "peak_power_dbfs": -43.100918,
+            "noise_floor_dbfs": -86.0156,
+            "measured_snr_db": 42.914684,
+            "estimated_center_hz": 2440003589,
+            "occupied_start_hz": 2439890283,
+            "occupied_stop_hz": 2440116895,
+            "occupied_bandwidth_hz": 227125
+          },
+          "clipped_samples": 0,
+          "status_flags": 0,
+          "elapsed_us": 34286,
+          "timeout": {
+            "limit_ms": 1000,
+            "elapsed_us": 34286,
+            "timed_out": false
+          },
+          "health": {
+            "healthy": true,
+            "flags": 0,
+            "source": "iio_adapter"
+          },
+          "rx_input": {
+            "identity_version": 1,
+            "verified": true,
+            "front_panel_port": "RX1",
+            "logical_channel": "RX0",
+            "phy_channel": "voltage0",
+            "scan_i_channel": "voltage0",
+            "scan_q_channel": "voltage1",
+            "rf_port_select": "A_BALANCED",
+            "source": "iio_channel_attr"
+          }
+        }
+      },
+      "spectral_snr_scope": "parent 65535 samples; not AWGN SNR or exact selected-window SNR"
+    },
+    "source_control_passed": false,
+    "tone_cfo_hz": 3456.1684596017585,
+    "source_half_width_hz": 125000,
+    "estimates": {
+      "method": "prefix-only source-referenced lag, residual phase-rate and affine fit",
+      "parameter_complex_samples": 28672,
+      "lag": 776,
+      "phase_window_coherence": [
+        0.6729371094870282,
+        0.6736416632722809,
+        0.672013993659913,
+        0.6697908894900781,
+        0.6675954513795409,
+        0.6683071315319614,
+        0.6708682548317885
+      ],
+      "phase_fit_rmse_rad": 0.020100488446426545,
+      "residual_frequency_hz": -83.64944828730025,
+      "residual_gate_passed": true,
+      "phase_alias_period_hz": 512.6953125,
+      "affine": {
+        "gain": [
+          -50.862887478264284,
+          159.2370896642458
+        ],
+        "bias": [
+          14.26380821407708,
+          -6.589396764693197
+        ],
+        "gain_only": [
+          -80.71865755356846,
+          112.13167034037119
+        ],
+        "condition": 10.738171292533327,
+        "fit_samples": 28672,
+        "bias_to_source_rms": 0.942836251369824
+      }
+    },
+    "heldout_validation": [],
+    "model_complex_offset": 28672,
+    "model_parameters_fitted_from_raw_prefix_only": true,
+    "model_inputs": {
+      "source_band": {
+        "sha256": "bc2a553e7b2d3e3730a064a17e615f0c07165a038c85f6728e93510b40984f7a",
+        "bytes": 32768
+      },
+      "received_raw": {
+        "sha256": "c13308e29cd88bc798337a2473c05ea5680086a109cafd5c3b0f126682298329",
+        "bytes": 32768
+      },
+      "received_tone_band": {
+        "sha256": "7579ed112119eb2f68ecf1d9b7cc804116f5464809bcd00ea7d6b0f0dfbfc546",
+        "bytes": 32768
+      }
+    },
+    "envelope": {
+      "source_band": {
+        "p05": 0.038750442676246166,
+        "p95": 1.7951865792274475
+      },
+      "received_raw": {
+        "p05": 0.2431703805923462,
+        "p95": 1.909796565771103
+      },
+      "received_tone_band": {
+        "p05": 0.24914804100990295,
+        "p95": 2.0017178058624268
+      }
+    },
+    "recognizer_available": false,
+    "independent_labels": 0,
+    "production_profile_compatible": false,
+    "interpretation": "known-source channel diagnostic; never remove the source genuine mean as if it were bias"
+  },
+  "exploratory_preparation": {
+    "schema_id": "b210_affine_preparation_v1",
+    "source_receipt": {
+      "source_tile_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+      "parent_iq_sha256": "0dfc5e1b14d7a26a5d462c3cbab58adeb689b34b402bfa429fabd12a0bea10fe",
+      "received_slice_sha256": "24eded81fc5d53c7cf2fef7349abe3515723c5a01c7ddac5a52cfafbc22be523",
+      "source_rows": [
+        102400,
+        102401,
+        102403,
+        102404
+      ],
+      "source_nominal_class_id": 0,
+      "dataset_nominal_snr_db": 30,
+      "selected_complex_offset": 28672,
+      "source_circular_lag": 776,
+      "alignment_chosen_before_model": true,
+      "selected_source_diagnostic_correlation": 0.3396911732113744,
+      "control_assessment": {
+        "schema_id": "b210_rx40_engineering_controls_v1",
+        "limits": {
+          "tone_control_margin_db": 20.0,
+          "tone_spectral_margin_db": 20.0,
+          "during_correlation_minimum": 0.5,
+          "off_correlation_absolute_maximum": 0.2,
+          "source_control_margin_minimum": 0.3
+        },
+        "tone": {
+          "passed": true,
+          "control_margins_db": [
+            52.00161055232784,
+            63.28944811302181
+          ],
+          "spectral_margin_db": 60.81709699021075
+        },
+        "source_passed": false,
+        "passed": false,
+        "during_correlation": 0.3396667165877051,
+        "maximum_off_absolute_correlation": 0.0036535330701848484,
+        "source_control_margin": 0.33601318351752024,
+        "independent_labels": 0,
+        "recognizer_available": false,
+        "rf_v1_50db_acceptance": false
+      },
+      "receiver": {
+        "gain_db": 40,
+        "center_hz": 2440000000,
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "parent_native_point": {
+          "point_index": 0,
+          "request_id": 5,
+          "session_generation": 1788694132343,
+          "requested_center_hz": 2440000000,
+          "actual_center_hz": 2440000000,
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "sequence": 263,
+          "dropped_samples": 0,
+          "overflow": false,
+          "captured_samples": 65535,
+          "band_power_dbfs": -39.84688,
+          "spectral": {
+            "schema_version": 1,
+            "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+            "fft_size": 4096,
+            "segment_count": 15,
+            "bin_width_hz": 512.6953125,
+            "peak_frequency_hz": 2440003076,
+            "peak_power_dbfs": -43.100918,
+            "noise_floor_dbfs": -86.0156,
+            "measured_snr_db": 42.914684,
+            "estimated_center_hz": 2440003589,
+            "occupied_start_hz": 2439890283,
+            "occupied_stop_hz": 2440116895,
+            "occupied_bandwidth_hz": 227125
+          },
+          "clipped_samples": 0,
+          "status_flags": 0,
+          "elapsed_us": 34286,
+          "timeout": {
+            "limit_ms": 1000,
+            "elapsed_us": 34286,
+            "timed_out": false
+          },
+          "health": {
+            "healthy": true,
+            "flags": 0,
+            "source": "iio_adapter"
+          },
+          "rx_input": {
+            "identity_version": 1,
+            "verified": true,
+            "front_panel_port": "RX1",
+            "logical_channel": "RX0",
+            "phy_channel": "voltage0",
+            "scan_i_channel": "voltage0",
+            "scan_q_channel": "voltage1",
+            "rf_port_select": "A_BALANCED",
+            "source": "iio_channel_attr"
+          }
+        }
+      },
+      "spectral_snr_scope": "parent 65535 samples; not AWGN SNR or exact selected-window SNR"
+    },
+    "source_control_passed": false,
+    "tone_cfo_hz": 3456.1684596017585,
+    "source_half_width_hz": 125000,
+    "estimates": {
+      "method": "prefix-only source-referenced lag, residual phase-rate and affine fit",
+      "parameter_complex_samples": 28672,
+      "lag": 776,
+      "phase_window_coherence": [
+        0.6729371094870282,
+        0.6736416632722809,
+        0.672013993659913,
+        0.6697908894900781,
+        0.6675954513795409,
+        0.6683071315319614,
+        0.6708682548317885
+      ],
+      "phase_fit_rmse_rad": 0.020100488446426545,
+      "residual_frequency_hz": -83.64944828730025,
+      "residual_gate_passed": true,
+      "phase_alias_period_hz": 512.6953125,
+      "affine": {
+        "gain": [
+          -50.862887478264284,
+          159.2370896642458
+        ],
+        "bias": [
+          14.26380821407708,
+          -6.589396764693197
+        ],
+        "gain_only": [
+          -80.71865755356846,
+          112.13167034037119
+        ],
+        "condition": 10.738171292533327,
+        "fit_samples": 28672,
+        "bias_to_source_rms": 0.942836251369824
+      }
+    },
+    "heldout_validation": [
+      {
+        "complex_offset": 28672,
+        "gain_only_residual_fraction": 0.5556874214956875,
+        "affine_residual_fraction": 0.0717992437330597,
+        "centered_coherence": 0.9438152387183745
+      },
+      {
+        "complex_offset": 32768,
+        "gain_only_residual_fraction": 0.5436297800330392,
+        "affine_residual_fraction": 0.016604720494129598,
+        "centered_coherence": 0.9962176561066253
+      },
+      {
+        "complex_offset": 36864,
+        "gain_only_residual_fraction": 0.543566765702334,
+        "affine_residual_fraction": 0.02014902120275689,
+        "centered_coherence": 0.9975501290475509
+      },
+      {
+        "complex_offset": 40960,
+        "gain_only_residual_fraction": 0.5490469188219054,
+        "affine_residual_fraction": 0.03239477665239342,
+        "centered_coherence": 0.9972375502353699
+      },
+      {
+        "complex_offset": 45056,
+        "gain_only_residual_fraction": 0.5524144851145234,
+        "affine_residual_fraction": 0.03651986745685329,
+        "centered_coherence": 0.9975132510702166
+      },
+      {
+        "complex_offset": 49152,
+        "gain_only_residual_fraction": 0.55268962987955,
+        "affine_residual_fraction": 0.036871649156372165,
+        "centered_coherence": 0.9965129392294225
+      },
+      {
+        "complex_offset": 53248,
+        "gain_only_residual_fraction": 0.5440501538719293,
+        "affine_residual_fraction": 0.029262168184658658,
+        "centered_coherence": 0.9976376231535226
+      },
+      {
+        "complex_offset": 57344,
+        "gain_only_residual_fraction": 0.5426833580093078,
+        "affine_residual_fraction": 0.024809856616792716,
+        "centered_coherence": 0.997924650268793
+      }
+    ],
+    "model_complex_offset": 28672,
+    "model_parameters_fitted_from_raw_prefix_only": true,
+    "model_inputs": {
+      "source_band": {
+        "sha256": "bc2a553e7b2d3e3730a064a17e615f0c07165a038c85f6728e93510b40984f7a",
+        "bytes": 32768
+      },
+      "source_gain_phase": {
+        "sha256": "cb11aeef8d7fe2e83e593fd43576f56e005e6e7e94caeeacd3c0b8ba1feaef07",
+        "bytes": 32768
+      },
+      "source_with_bias": {
+        "sha256": "f8804ddfe9c37f2705862a9bfa8eb54582aa4026c8266fead324cf01c8e17779",
+        "bytes": 32768
+      },
+      "received_raw": {
+        "sha256": "c13308e29cd88bc798337a2473c05ea5680086a109cafd5c3b0f126682298329",
+        "bytes": 32768
+      },
+      "received_tone_band": {
+        "sha256": "7579ed112119eb2f68ecf1d9b7cc804116f5464809bcd00ea7d6b0f0dfbfc546",
+        "bytes": 32768
+      },
+      "received_residual_band": {
+        "sha256": "e5fbf7bd6ea44d996637af27507e801624665a8c4059efc46f29393ce622aea7",
+        "bytes": 32768
+      },
+      "received_debiased": {
+        "sha256": "8af8911b9c5f78f5bd318c98adfcf377e2c12b7668f4fe80ed98f8268b108668",
+        "bytes": 32768
+      }
+    },
+    "envelope": {
+      "source_band": {
+        "p05": 0.038750442676246166,
+        "p95": 1.7951865792274475
+      },
+      "source_gain_phase": {
+        "p05": 0.03875043988227844,
+        "p95": 1.7951865494251251
+      },
+      "source_with_bias": {
+        "p05": 0.2451532669365406,
+        "p95": 1.9821594059467316
+      },
+      "received_raw": {
+        "p05": 0.2431703805923462,
+        "p95": 1.909796565771103
+      },
+      "received_tone_band": {
+        "p05": 0.24914804100990295,
+        "p95": 2.0017178058624268
+      },
+      "received_residual_band": {
+        "p05": 0.24914804473519325,
+        "p95": 2.0017178058624268
+      },
+      "received_debiased": {
+        "p05": 0.06974786706268787,
+        "p95": 1.7744840681552887
+      }
+    },
+    "recognizer_available": false,
+    "independent_labels": 0,
+    "production_profile_compatible": false,
+    "interpretation": "known-source channel diagnostic; never remove the source genuine mean as if it were bias",
+    "source_gate_failure_exploration": true,
+    "original_failed_preparation_sha256": "95ead20bcded8585c7ab624087a2feec88cb20fdb35fe16e215fe0e7bfdfa6b5",
+    "qualified_bidirectional_validation": false
+  },
+  "inference": {
+    "schema_id": "b210_affine_inference_v1",
+    "status": "comparison_completed",
+    "preparation_sha256": "c0967bcd4fdca7d37a1941ecc630ce6c412193c18a417ee748e6dced095c3389",
+    "actual_experiment_windows": 28,
+    "maximum_experiment_windows": 28,
+    "backend_warmup_windows": 2,
+    "source_control_passed": false,
+    "source_gate_failure_exploration": true,
+    "qualified_bidirectional_validation": false,
+    "recognizer_available": false,
+    "independent_labels": 0,
+    "production_profile_compatible": false,
+    "result_semantics": "known-source bidirectional bias diagnostic; not production classification",
+    "results": {
+      "source_band": {
+        "numeric_id": 0,
+        "window_numeric_ids": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "uncalibrated_probability": 0.9999605412271583,
+        "name_status": "provisional",
+        "mean_logits_sha256": "3bcdc544e1ae8bb325946f4d01c5af4384fe8a1601b2433726dfa3d283428c24",
+        "model_input_sha256": "bc2a553e7b2d3e3730a064a17e615f0c07165a038c85f6728e93510b40984f7a",
+        "inference_us": 154027,
+        "nominal_source_id_agreement": true
+      },
+      "source_gain_phase": {
+        "numeric_id": 0,
+        "window_numeric_ids": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "uncalibrated_probability": 0.9999072918796903,
+        "name_status": "provisional",
+        "mean_logits_sha256": "92e49aaa0060d75d6abf9a1c1c108d7ecf669f6c6fdd1ba4a16df5ede7fc43f9",
+        "model_input_sha256": "cb11aeef8d7fe2e83e593fd43576f56e005e6e7e94caeeacd3c0b8ba1feaef07",
+        "inference_us": 148636,
+        "nominal_source_id_agreement": true
+      },
+      "source_with_bias": {
+        "numeric_id": 18,
+        "window_numeric_ids": [
+          18,
+          16,
+          18,
+          18
+        ],
+        "uncalibrated_probability": 0.997865592288158,
+        "name_status": "provisional",
+        "mean_logits_sha256": "15a6a6e2a18ddd52461af12c942d33dd579b16096e93283e8ed452c8f4b3f4d0",
+        "model_input_sha256": "f8804ddfe9c37f2705862a9bfa8eb54582aa4026c8266fead324cf01c8e17779",
+        "inference_us": 153736,
+        "nominal_source_id_agreement": false
+      },
+      "received_raw": {
+        "numeric_id": 18,
+        "window_numeric_ids": [
+          9,
+          1,
+          2,
+          18
+        ],
+        "uncalibrated_probability": 0.6313447516674021,
+        "name_status": "provisional",
+        "mean_logits_sha256": "a576854cca0c11492ae64cd86f6158d6cef48ed013acafa3e5d93d67bb0b2bc8",
+        "model_input_sha256": "c13308e29cd88bc798337a2473c05ea5680086a109cafd5c3b0f126682298329",
+        "inference_us": 153823,
+        "nominal_source_id_agreement": false
+      },
+      "received_tone_band": {
+        "numeric_id": 18,
+        "window_numeric_ids": [
+          18,
+          0,
+          2,
+          18
+        ],
+        "uncalibrated_probability": 0.9806458739438191,
+        "name_status": "provisional",
+        "mean_logits_sha256": "b9d9a8b94e32d48b7232d169d3b9c3c460a3764a96c7b6b6ed0880343f02cf30",
+        "model_input_sha256": "7579ed112119eb2f68ecf1d9b7cc804116f5464809bcd00ea7d6b0f0dfbfc546",
+        "inference_us": 149169,
+        "nominal_source_id_agreement": false
+      },
+      "received_residual_band": {
+        "numeric_id": 18,
+        "window_numeric_ids": [
+          18,
+          16,
+          18,
+          18
+        ],
+        "uncalibrated_probability": 0.975135621297595,
+        "name_status": "provisional",
+        "mean_logits_sha256": "9b31dea6f6388f639e8a6440ca0632ce8eb47f4958865f533365bbba7912ea82",
+        "model_input_sha256": "e5fbf7bd6ea44d996637af27507e801624665a8c4059efc46f29393ce622aea7",
+        "inference_us": 147157,
+        "nominal_source_id_agreement": false
+      },
+      "received_debiased": {
+        "numeric_id": 0,
+        "window_numeric_ids": [
+          0,
+          0,
+          2,
+          2
+        ],
+        "uncalibrated_probability": 0.7064054123394029,
+        "name_status": "provisional",
+        "mean_logits_sha256": "5eb5ca4b73f5e8e2ef13658596a2e08575f48c8143bce2f950720517780200b1",
+        "model_input_sha256": "8af8911b9c5f78f5bd318c98adfcf377e2c12b7668f4fe80ed98f8268b108668",
+        "inference_us": 146768,
+        "nominal_source_id_agreement": true
+      }
+    },
+    "identity": {
+      "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+      "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+      "compute": "cuda_fp16_autocast",
+      "resident_weight_precision": "fp32",
+      "input_precision": "fp32",
+      "logit_return_precision": "fp32",
+      "sample_rate_hz": 2100000,
+      "window_count": 4,
+      "samples_per_window": 1024,
+      "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+    },
+    "compute": "cuda_fp16_autocast_fp32_weights",
+    "gpu_lease": {
+      "acquired": 1,
+      "released": 1,
+      "wait_us": 39,
+      "held_us": 61507832,
+      "cancelled": 0,
+      "expired": 0
+    }
+  },
+  "plot": {
+    "all_model_input_hashes_verified": true,
+    "numpy_version": "1.21.5",
+    "matplotlib_version": "3.5.1",
+    "source_control_passed": false,
+    "qualified_bidirectional_validation": false
+  },
+  "tx_result": {
+    "status": "sent",
+    "payload_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+    "bytes_written": 168000000,
+    "max_samples": 21000000,
+    "rate_sps": 2100000,
+    "nominal_seconds": 10,
+    "child_pid": 20241,
+    "go_unix_ns": 1788694143760185561,
+    "feed_seconds": 9.96560844600026,
+    "uhd_log_sha256": "36f91539c931c169c1b6798c6109b2c35b33d26924cb197e0d90f0205ab7629a",
+    "uhd_async_markers": [
+      "S"
+    ],
+    "child_exit_code": 0,
+    "child_stopped": true
+  },
+  "final_radio_state": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+  "radio_snapshot_storage": "Identical before/after snapshots deduplicated to this value plus per-link hashes",
+  "final_sdrd_readback": "17136\n77d98a005305a4b7531fc3f133e9b4af521e60b065b29fcc304b4c7db80c45ae  /sd/sdr-agent/current/sdrd\n",
+  "p201_temporary_paths_verified_absent": [
+    "/tmp/sdr-agent-dev/agx-sweep-1788693988892-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788693988893-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788693988894-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788694132342-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788694132343-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788694132344-0"
+  ],
+  "nx_feature_processes_and_fifo_absent": true,
+  "tests": {
+    "passed": 35,
+    "final_input_verification": {
+      "original_failed_preparation_unchanged": true,
+      "exploratory_preparation_unchanged": true,
+      "all_model_input_hashes_unchanged": true,
+      "default_second_model_run_rejected": true
+    },
+    "python_ast_valid": true
+  },
+  "evidence_hashes": {
+    "tone": {
+      "after-tx-report.json": "a7bd2ea1ba5f66f50262b8d74fb41e05e8120db10150c010bd00b5e0444522f4",
+      "during-tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "baseline-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "after-tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "link-summary.json": "4ed68853306be326301efa729f4241be3180b153717028f4fd542fa87d92a058",
+      "tx-uhd.log": "db28eca2ab1a434462743727d38fb36683e67b1f9b7674cd52a4b696fb73a2a4",
+      "live.log": "1f87eec5aa3700569dfdb777269eb65f831ba863607303bbaf2e69c21b596110",
+      "tone-assessment.json": "15c16e727389b7ad32838ef6949659889b73aedc4ebd286fb6504a93a19ac498",
+      "link-started.json": "417b768ad783ed2a77192cd2659bf4b5c6b4e488b71802a68d55e3230960798a",
+      "baseline-report.json": "ea5f96fd4212de772a117e65c12c479b178ef7e45d0c2f3c4597ac992f18a6ff",
+      "during-tx-report.json": "e6202f8b8ef24e5e6e1a3eec38ed7e8811170671c6000028c72fff4debec25b5"
+    },
+    "rml": {
+      "preparation.log": "95ead20bcded8585c7ab624087a2feec88cb20fdb35fe16e215fe0e7bfdfa6b5",
+      "after-tx-report.json": "201ce1bb363a6e568c04ed45da22578d2b3ea7922f87310d21e71e8d5135f2d1",
+      "source-matched-analysis.json": "b8a92df212dd3c7890a09bc368c0cc5345a0e862339efb96c9ed5d6a66e26a70",
+      "tx-summary.json": "0f5bb1a3ce4e32bed72200c519a622a5c1a051173cfa75b232ff6869609cf233",
+      "affine-exploratory-inference.json": "758d60b9578de6ee263c6688187e72c9ad072bb40ebe3ff064d65097d2a004ab",
+      "build.log": "49d4f1b43b2431ad9df3419e00a3cebeb928602b1a78f167050f37cc415e2dbd",
+      "during-tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "baseline-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source-export.log": "0d9a53b4575efc0b4b94bc65e4ececf13c82a5b1c34d32cd19ae0adbaefb2d22",
+      "affine-exploratory-prepared.json": "c0967bcd4fdca7d37a1941ecc630ce6c412193c18a417ee748e6dced095c3389",
+      "after-tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "link-summary.json": "b447c666c92d605e5186c06d8842efc49c9f47af3840de32f3d0a4260a9b78e4",
+      "affine-prepared.json": "95ead20bcded8585c7ab624087a2feec88cb20fdb35fe16e215fe0e7bfdfa6b5",
+      "tests-final.log": "bdb6918ca02fd193847872a252ac8c0a83bb8a05243260c1c3a95eaa178d2ed4",
+      "tx-stdout.log": "84dc10be2ec3208d6623c40ae31e9611e57008b5c484ce7a33cb6f90e86512c5",
+      "final-input-verification.json": "9afcd18bf504ab35a14746557c216c16708b00f43c74fb46540be48d8fdbf666",
+      "tx-uhd.log": "36f91539c931c169c1b6798c6109b2c35b33d26924cb197e0d90f0205ab7629a",
+      "plot.log": "bd1c4547a25a172308e3cd2cb059d24f97a29b5a7c8120bced470f12d114c79d",
+      "source-analysis.log": "b8a92df212dd3c7890a09bc368c0cc5345a0e862339efb96c9ed5d6a66e26a70",
+      "live.log": "e4769508d0197dd2c77e8ce93579dc4db550fa243fe8edbf74961037651d081e",
+      "duplicate-model-rejected.log": "cf6afb215284d926649106612ed1fd270da0ce4374e540c9913a09716c9c5e0f",
+      "transmission-plan.json": "3ee6f5983b781fbbc352753014782a5a1e5f1810c9eab4c60ec76dfb364c8c1f",
+      "exploratory-preparation.log": "c0967bcd4fdca7d37a1941ecc630ce6c412193c18a417ee748e6dced095c3389",
+      "tests.log": "88f44b2bc71f08a91d64f1107fa26d6cee2edebaba751a0ee867fa9ca78ed880",
+      "link-started.json": "b21374ce8f95f01090aa6729f6836c075f288ec09f9b491a2528f6223ca91990",
+      "baseline-report.json": "274a2bb42ef1be6999ebb7b1fe63df6740a7e278535849582d15fefe607b4373",
+      "affine-inference-started.json": "d9984a14c4b668e8aee6409a870cb4c2a0b03066a739b32c55b4ea9a65a3b8f8",
+      "inference.log": "245557b5e944fbd14d5df686d4e490830ebb708cb462bb15382678a7b4898105",
+      "during-tx-report.json": "43b15752943f724af741e0e3045b66f9ed0bae89e75da555173dee16036ee606"
+    }
+  },
+  "source_code_sha256": "df5a2531615de293c1a0780ccf30f880a3da56faf3c7b2bfcd01652fcaa6114e",
+  "figure_sha256": "73e8ab8debbb9665278694bffbfde1bf08a3cd10df1cab4d4522106e2383c6a1",
+  "cleanup": {
+    "verified": true,
+    "agx_removed_directories": [
+      "/var/tmp/sdrharness-dev/b210-affine-906f",
+      "/var/tmp/sdrharness-dev/b210-affine-tone-906f"
+    ],
+    "nx_removed_directories": [
+      "/var/tmp/sdrharness-dev/b210-affine-906f",
+      "/var/tmp/sdrharness-dev/b210-affine-tone-906f"
+    ],
+    "test_directory_verified_absent": "/var/tmp/sdrharness-dev/b210-control-test-391093",
+    "feature_processes_absent": true,
+    "p201_transients_verified_absent": [
+      "/tmp/sdr-agent-dev/agx-sweep-1788693988892-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788693988893-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788693988894-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788694132342-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788694132343-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788694132344-0"
+    ],
+    "all_retained_evidence_hashes_verified_before_removal": true,
+    "user_corpus_and_application_results_untouched": true,
+    "production_services_unchanged": true
+  }
+}

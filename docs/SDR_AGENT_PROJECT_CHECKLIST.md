@@ -575,6 +575,18 @@ aggregation, result persistence and model-facing summaries.
         raised low-amplitude envelope and posthoc residual phase drift retained
         as hypotheses, not a fix. 29 tests, 24 model windows and exact cleanup
         verified. See [RX fidelity validation](B210_RX_FIDELITY_VALIDATION_2026-09-06.md).
+  - [x] Prefix-only complex gain/bias diagnostic tools and bounded RX40 posthoc
+        exploration completed. Original source-envelope gate failed (0.340 < 0.5)
+        and remains failed; explicit exploration produced source+b ID 0→18 and
+        received-b aggregate ID 18→0, with two received windows still ID 2.
+        35 tests, 28 experimental model windows, radio restoration and exact
+        AGX/NX feature cleanup verified. This is known-source exploration, not
+        blind compensation, hardware root-cause attribution or production repair.
+        See [affine exploration validation](B210_RX_AFFINE_VALIDATION_2026-09-06.md).
+  - [ ] Qualify the source-reference bidirectional bias validation: the original
+        source-association gate failed; exploratory improvements cannot replace
+        that prerequisite. Register an appropriate independent source-association
+        check before a new bounded validation; retain this run's failed gate.
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the
