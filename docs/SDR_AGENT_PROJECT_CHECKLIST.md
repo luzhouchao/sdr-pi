@@ -625,8 +625,18 @@ aggregation, result persistence and model-facing summaries.
           47/17 of 512 segments exceed the same exploratory 14.058-ADC-RMS line.
           This is two short captures, not background population statistics or
           evidence identifying a particular radio/interferer; see the pointwise record.
-    - [ ] Isolate the carrier-related component and time-varying phase through
-          controlled single-variable comparisons with the same 1024-sample source.
+    - [x] Isolate the dominant carrier-related component with the same 1024
+          source and registered TX LO offsets 0/+250 kHz/0/−250 kHz/0: the extra
+          line follows both signed offsets and returns at zero, while the source-
+          center bias drops about 43 dB. This supports TX LO leakage/feedthrough,
+          not a damaged-component diagnosis or classifier repair. 82 tests,
+          18 real captures, radio restoration and exact cleanup verified; see
+          [LO-offset validation](B210_LO_OFFSET_VALIDATION_2026-09-06.md).
+    - [ ] Identify remaining time-varying phase and stopped/background excursions;
+          LO separation does not remove these effects or establish their origin.
+    - [ ] Validate source fidelity with TX LO leakage suppressed or outside the
+          effective receive signal band before a fresh paired classifier test;
+          ±250 kHz separation remains inside the current RX bandwidth.
     - [ ] Qualify fresh 1024-source controls before further bidirectional
           bias/classifier validation; no retrospective acceptance of failed captures.
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture

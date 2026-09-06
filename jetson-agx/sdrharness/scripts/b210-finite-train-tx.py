@@ -24,7 +24,7 @@ def transmit(root):
         assert plan[key] == value, key
     configuration = (plan['tx_samples'], plan['tx_nominal_seconds'], plan['tx_gain_db'], plan['complex_peak'])
     version=plan.get('schema_version',1)
-    if version==2:
+    if version in (2,3):
         assert plan['source_unit_samples']==1024 and plan['payload_bytes']==8192
         assert plan['rows']==[102400] and plan['tx_unit_count']==20480 and plan['uhd_spb']==1024
         assert configuration==(20971520,10,70,0.2), 'unregistered single-row transmission plan'
@@ -34,6 +34,13 @@ def transmit(root):
         assert configuration in ((2100000, 1, 0, 0.1), (2100000, 1, 40, 0.1),
                                  (21000000, 10, 70, 0.2)), 'unregistered transmission plan'
         spb=10000
+    offset=plan.get('tx_lo_offset_hz',0)
+    if version==3:
+        assert type(offset) is int and offset in (-250000,0,250000), 'unregistered LO offset'
+        assert plan['tx_requested_lo_hz']==2440000000+offset
+        assert plan['diagnostic_contract']=='b210_1024_lo_offset_v1'
+    else:
+        assert offset==0, 'LO offset requires version 3'
     payload = (root / 'train-tile.fc32').read_bytes()
     assert len(payload) == plan['payload_bytes'] and hashlib.sha256(payload).hexdigest() == plan['payload_sha256']
     fifo = root / 'tx.fc32.fifo'
@@ -42,6 +49,7 @@ def transmit(root):
     fd = None
     audit = dict(status='failed',payload_sha256=plan['payload_sha256'],bytes_written=0,
                  max_samples=plan['tx_samples'],rate_sps=2100000,nominal_seconds=plan['tx_nominal_seconds'])
+    if version==3:audit.update(tx_lo_offset_hz=offset,tx_requested_lo_hz=2440000000+offset)
     # Signal handlers unwind finally; closing stdin before GO also aborts.
     def abort(signum, frame):
         raise RuntimeError('stop signal ' + str(signum))
@@ -52,6 +60,7 @@ def transmit(root):
                 '--file',str(fifo),'--type','float','--spb',str(spb),'--rate','2100000',
                 '--freq','2440000000','--gain',str(plan['tx_gain_db']),'--ant','TX/RX','--bw','1500000',
                 '--channel','0','--subdev','A:A']
+        if version==3:args.extend(['--lo-offset',str(offset)])
         with (root / 'tx-uhd.log').open('x') as log:
             child = subprocess.Popen(args,stdout=log,stderr=subprocess.STDOUT)
         audit['child_pid'] = child.pid

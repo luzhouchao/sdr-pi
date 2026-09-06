@@ -17,7 +17,7 @@ spec.loader.exec_module(tx)
 
 
 class FiniteTxTests(unittest.TestCase):
-    def run_case(self, go=True, tamper=False, extended=False, invalid=False, single=False, bad_unit=False):
+    def run_case(self, go=True, tamper=False, extended=False, invalid=False, single=False, bad_unit=False, lo_offset=None, bad_version=False):
         # Caller supplies the feature TMPDIR; no files touch user results.
         root = Path(tempfile.mkdtemp(prefix='fifo-',dir=os.environ['TMPDIR']))
         payload = bytes(range(256))*(32 if single else 128)
@@ -31,6 +31,10 @@ class FiniteTxTests(unittest.TestCase):
             plan.update(schema_version=2,payload_bytes=8192,source_unit_samples=4096 if bad_unit else 1024,
                         rows=[102400],tx_unit_count=20480,uhd_spb=1024,
                         tx_samples=20971520,tx_nominal_seconds=10,tx_gain_db=70,complex_peak=0.2)
+        if lo_offset is not None:
+            plan.update(schema_version=2 if bad_version else 3,tx_lo_offset_hz=lo_offset,
+                        tx_requested_lo_hz=2440000000+lo_offset,diagnostic_contract='b210_1024_lo_offset_v1')
+        bad_offset=lo_offset is not None and (lo_offset not in (-250000,0,250000) or bad_version)
         if invalid:
             plan['tx_samples'] += 1
         (root/'transmission-plan.json').write_text(json.dumps(plan))
@@ -42,6 +46,7 @@ class FiniteTxTests(unittest.TestCase):
         def fake_uhd(args, **kwargs):
             self.assertNotIn('--repeat',args)
             self.assertEqual(args[args.index('--spb')+1],'1024' if single else '10000')
+            if lo_offset is not None:self.assertEqual(args[args.index('--lo-offset')+1],str(lo_offset))
             fifo=args[args.index('--file')+1]
             child=real_popen([sys.executable,'-c',
                 'import sys,hashlib,json; f=open(sys.argv[1],"rb"); h=hashlib.sha256(); n=0\n'
@@ -56,12 +61,12 @@ class FiniteTxTests(unittest.TestCase):
                  patch.object(tx.select,'select',fake_select), \
                  patch.object(tx.os,'read',lambda fd,n: (b'GO\n' if go else b'') if fd==0 else original_read(fd,n)), \
                  patch.object(tx.signal,'signal'):
-                if not go or tamper or invalid or bad_unit:
+                if not go or tamper or invalid or bad_unit or bad_offset:
                     with self.assertRaises(AssertionError):tx.transmit(root)
                 else:tx.transmit(root)
             self.assertFalse((root/'tx.fc32.fifo').exists())
             self.assertTrue(all(p.poll() is not None for p in launched))
-            if tamper or invalid or bad_unit:
+            if tamper or invalid or bad_unit or bad_offset:
                 self.assertFalse(launched)
             elif go:
                 result=json.loads((root/'tx-uhd.log').read_text())
@@ -77,6 +82,13 @@ class FiniteTxTests(unittest.TestCase):
                 if child.poll() is None:child.kill();child.wait()
             import shutil
             shutil.rmtree(root)
+
+    def test_registered_lo_offsets_preserve_payload_and_bound(self):
+        for offset in (-250000,0,250000):self.run_case(single=True,lo_offset=offset)
+
+    def test_lo_offset_fails_closed_before_uhd(self):
+        self.run_case(single=True,lo_offset=1000000)
+        self.run_case(single=True,lo_offset=250000,bad_version=True)
 
     def test_optimized_python_refuses_before_hardware_setup(self):
         result=subprocess.run([sys.executable,'-O',str(SCRIPT)],capture_output=True,text=True,timeout=3)
