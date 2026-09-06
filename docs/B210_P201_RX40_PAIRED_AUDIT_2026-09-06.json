@@ -1,0 +1,1230 @@
+{
+  "schema_id": "b210_rx40_controls_and_paired_iq_v1",
+  "baseline_commit": "f676e06ad9bf8be77ec8769f53dfeca4e480fab9",
+  "independent_labels": 0,
+  "recognizer_available": false,
+  "rf_v1_50db_acceptance": false,
+  "first_tone_failure_preserved": true,
+  "maximum_tx_nominal_seconds": 30,
+  "maximum_rx_bytes": 2359260,
+  "actual_saved_rx_bytes": 1834980,
+  "links": {
+    "failed_tone": {
+      "status": "failed",
+      "generation": 1788688586543,
+      "feature_directory": "/var/tmp/sdrharness-dev/b210-control-tone-906b",
+      "mode": "tone",
+      "max_rx_bytes": 786420,
+      "max_tx_samples": 25000000,
+      "tx_nominal_seconds": 10,
+      "center_hz": 2440000000,
+      "rate_sps": 2500000,
+      "bandwidth_hz": 1000000,
+      "tx_gain_db": 70,
+      "rx_gain_db": 40,
+      "rx_input": "RX1/RX0/A_BALANCED",
+      "antenna_connection": true,
+      "recognizer_available": false,
+      "locked_test_read": false,
+      "controller_sha256": "b4db3a34b4a58171eace00c89924d8d79fc4e419ab12652cfa9141525338f9af",
+      "free_bytes": 808737308672,
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "17136",
+      "plans": [
+        {
+          "sweep_id": "b210-baseline-1788688586543",
+          "session_generation": 1788688586543,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2500000,
+          "rf_bandwidth_hz": 1000000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        }
+      ],
+      "baseline": {
+        "sweep_id": "b210-baseline-1788688586543",
+        "session_generation": 1788688586543,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 3601,
+        "noise_floor_dbfs": -41.01431,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788688586543,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2500000,
+            "rf_bandwidth_hz": 1000000,
+            "sequence": 246,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -41.01431,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 610.3515625,
+              "peak_frequency_hz": 2439494019,
+              "peak_power_dbfs": -64.25354,
+              "noise_floor_dbfs": -80.76642,
+              "measured_snr_db": 16.512878,
+              "estimated_center_hz": 2439522095,
+              "occupied_start_hz": 2439484253,
+              "occupied_stop_hz": 2439559937,
+              "occupied_bandwidth_hz": 76294
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 27998,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 27998,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-control-tone-906b/baseline/b210-baseline-1788688586543-1788688586543-1788688587053027627.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-control-tone-906b/baseline/b210-baseline-1788688586543-1788688586543-1788688587053027627.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_command": "timeout --signal=INT --kill-after=2s 35s /usr/lib/uhd/examples/tx_waveforms --args type=b200,serial=2508504 --channels 0 --ant TX/RX --freq 2440000000 --rate 2500000 --bw 500000 --gain 70 --wave-type SINE --wave-freq 100000 --ampl 0.2 --nsamps 25000000",
+      "tx_remote_owner_pid": 17943,
+      "failure": "AssertionError: cat: /proc/17943/task/17943/children: 没有那个文件或目录\n",
+      "remote_tx_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "restoration_errors": [],
+      "local_process_exit_codes": [
+        0,
+        255
+      ]
+    },
+    "tone": {
+      "status": "transport_completed_pending_signal_analysis",
+      "generation": 1788688794795,
+      "feature_directory": "/var/tmp/sdrharness-dev/b210-control-tone-retry-906b",
+      "mode": "tone",
+      "max_rx_bytes": 786420,
+      "max_tx_samples": 25000000,
+      "tx_nominal_seconds": 10,
+      "center_hz": 2440000000,
+      "rate_sps": 2500000,
+      "bandwidth_hz": 1000000,
+      "tx_gain_db": 70,
+      "rx_gain_db": 40,
+      "rx_input": "RX1/RX0/A_BALANCED",
+      "antenna_connection": true,
+      "recognizer_available": false,
+      "locked_test_read": false,
+      "controller_sha256": "b4db3a34b4a58171eace00c89924d8d79fc4e419ab12652cfa9141525338f9af",
+      "free_bytes": 808686374912,
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "17136",
+      "plans": [
+        {
+          "sweep_id": "b210-baseline-1788688794795",
+          "session_generation": 1788688794795,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2500000,
+          "rf_bandwidth_hz": 1000000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "b210-during-tx-1788688794796",
+          "session_generation": 1788688794796,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2500000,
+          "rf_bandwidth_hz": 1000000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "b210-after-tx-1788688794797",
+          "session_generation": 1788688794797,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2500000,
+          "rf_bandwidth_hz": 1000000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        }
+      ],
+      "baseline": {
+        "sweep_id": "b210-baseline-1788688794795",
+        "session_generation": 1788688794795,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 3617,
+        "noise_floor_dbfs": -35.358974,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788688794795,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2500000,
+            "rf_bandwidth_hz": 1000000,
+            "sequence": 247,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -35.358974,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 610.3515625,
+              "peak_frequency_hz": 2439508667,
+              "peak_power_dbfs": -58.162033,
+              "noise_floor_dbfs": -73.69732,
+              "measured_snr_db": 15.535286,
+              "estimated_center_hz": 2439512024,
+              "occupied_start_hz": 2439484863,
+              "occupied_stop_hz": 2439539185,
+              "occupied_bandwidth_hz": 54932
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 28013,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 28013,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-control-tone-retry-906b/baseline/b210-baseline-1788688794795-1788688794795-1788688795312929058.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-control-tone-retry-906b/baseline/b210-baseline-1788688794795-1788688794795-1788688795312929058.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_command": "timeout --signal=INT --kill-after=2s 35s /usr/lib/uhd/examples/tx_waveforms --args type=b200,serial=2508504 --channels 0 --ant TX/RX --freq 2440000000 --rate 2500000 --bw 500000 --gain 70 --wave-type SINE --wave-freq 100000 --ampl 0.2 --nsamps 25000000",
+      "tx_remote_owner_pid": 18307,
+      "tx_remote_child_pid": 18308,
+      "tone_ready_agx_ns": 1788688802627818263,
+      "during_tx": {
+        "sweep_id": "b210-during-tx-1788688794796",
+        "session_generation": 1788688794796,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 3603,
+        "noise_floor_dbfs": -35.275978,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788688794796,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2500000,
+            "rf_bandwidth_hz": 1000000,
+            "sequence": 248,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -35.275978,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 610.3515625,
+              "peak_frequency_hz": 2440103760,
+              "peak_power_dbfs": -36.25636,
+              "noise_floor_dbfs": -86.40141,
+              "measured_snr_db": 50.145054,
+              "estimated_center_hz": 2440103454,
+              "occupied_start_hz": 2440102539,
+              "occupied_stop_hz": 2440104370,
+              "occupied_bandwidth_hz": 2442
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 27980,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 27980,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-control-tone-retry-906b/during-tx/b210-during-tx-1788688794796-1788688794796-1788688802637422677.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-control-tone-retry-906b/during-tx/b210-during-tx-1788688794796-1788688794796-1788688802637422677.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_exit_code": 0,
+      "after_tx": {
+        "sweep_id": "b210-after-tx-1788688794797",
+        "session_generation": 1788688794797,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 3606,
+        "noise_floor_dbfs": -41.04387,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788688794797,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2500000,
+            "rf_bandwidth_hz": 1000000,
+            "sequence": 249,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -41.04387,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 610.3515625,
+              "peak_frequency_hz": 2439774170,
+              "peak_power_dbfs": -59.08551,
+              "noise_floor_dbfs": -76.45506,
+              "measured_snr_db": 17.369553,
+              "estimated_center_hz": 2439742432,
+              "occupied_start_hz": 2439693604,
+              "occupied_stop_hz": 2439791260,
+              "occupied_bandwidth_hz": 98267
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 27906,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 27906,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-control-tone-retry-906b/after-tx/b210-after-tx-1788688794797-1788688794797-1788688812521027981.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-control-tone-retry-906b/after-tx/b210-after-tx-1788688794797-1788688794797-1788688812521027981.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "remote_tx_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "restoration_errors": [],
+      "local_process_exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "rml": {
+      "status": "transport_completed_pending_signal_analysis",
+      "generation": 1788688849787,
+      "feature_directory": "/var/tmp/sdrharness-dev/b210-control-906b",
+      "mode": "rml",
+      "max_rx_bytes": 786420,
+      "max_tx_samples": 21000000,
+      "tx_nominal_seconds": 10,
+      "center_hz": 2440000000,
+      "rate_sps": 2100000,
+      "bandwidth_hz": 1500000,
+      "tx_gain_db": 70,
+      "rx_gain_db": 40,
+      "rx_input": "RX1/RX0/A_BALANCED",
+      "antenna_connection": true,
+      "recognizer_available": false,
+      "locked_test_read": false,
+      "controller_sha256": "b4db3a34b4a58171eace00c89924d8d79fc4e419ab12652cfa9141525338f9af",
+      "free_bytes": 808671707136,
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "17136",
+      "plans": [
+        {
+          "sweep_id": "b210-baseline-1788688849787",
+          "session_generation": 1788688849787,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "b210-during-tx-1788688849788",
+          "session_generation": 1788688849788,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "b210-after-tx-1788688849789",
+          "session_generation": 1788688849789,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        }
+      ],
+      "baseline": {
+        "sweep_id": "b210-baseline-1788688849787",
+        "session_generation": 1788688849787,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 4117,
+        "noise_floor_dbfs": -33.985817,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788688849787,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "sequence": 250,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -33.985817,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 512.6953125,
+              "peak_frequency_hz": 2440048706,
+              "peak_power_dbfs": -60.329838,
+              "noise_floor_dbfs": -75.59698,
+              "measured_snr_db": 15.267139,
+              "estimated_center_hz": 2440063061,
+              "occupied_start_hz": 2439930786,
+              "occupied_stop_hz": 2440195337,
+              "occupied_bandwidth_hz": 265064
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 32967,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 32967,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-control-906b/baseline/b210-baseline-1788688849787-1788688849787-1788688850292905177.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-control-906b/baseline/b210-baseline-1788688849787-1788688849787-1788688850292905177.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_ready": {
+        "event": "ready",
+        "pid": 18412,
+        "child_pid": 18413
+      },
+      "go_unix_ns": 1788688861166283065,
+      "tx_start_ack_agx_ns": 1788688861257955910,
+      "rx_active_observed_agx_ns": 1788688861695399488,
+      "during_tx": {
+        "sweep_id": "b210-during-tx-1788688849788",
+        "session_generation": 1788688849788,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 4106,
+        "noise_floor_dbfs": -38.267143,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788688849788,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "sequence": 251,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -38.267143,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 512.6953125,
+              "peak_frequency_hz": 2440003589,
+              "peak_power_dbfs": -40.512794,
+              "noise_floor_dbfs": -86.92242,
+              "measured_snr_db": 46.409622,
+              "estimated_center_hz": 2440003589,
+              "occupied_start_hz": 2439895923,
+              "occupied_stop_hz": 2440111255,
+              "occupied_bandwidth_hz": 215845
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 33868,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 33868,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-control-906b/during-tx/b210-during-tx-1788688849788-1788688849788-1788688857934357568.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-control-906b/during-tx/b210-during-tx-1788688849788-1788688849788-1788688857934357568.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_result": {
+        "status": "sent",
+        "payload_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+        "bytes_written": 168000000,
+        "max_samples": 21000000,
+        "rate_sps": 2100000,
+        "nominal_seconds": 10,
+        "child_pid": 18413,
+        "go_unix_ns": 1788688861285341883,
+        "feed_seconds": 9.96619322799961,
+        "uhd_log_sha256": "36f91539c931c169c1b6798c6109b2c35b33d26924cb197e0d90f0205ab7629a",
+        "uhd_async_markers": [
+          "S"
+        ]
+      },
+      "after_tx": {
+        "sweep_id": "b210-after-tx-1788688849789",
+        "session_generation": 1788688849789,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 4119,
+        "noise_floor_dbfs": -41.52284,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788688849789,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "sequence": 252,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -41.52284,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 512.6953125,
+              "peak_frequency_hz": 2439544727,
+              "peak_power_dbfs": -63.90352,
+              "noise_floor_dbfs": -76.48704,
+              "measured_snr_db": 12.583519,
+              "estimated_center_hz": 2439544726,
+              "occupied_start_hz": 2439543188,
+              "occupied_stop_hz": 2439546265,
+              "occupied_bandwidth_hz": 3589
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 32985,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 32985,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-control-906b/after-tx/b210-after-tx-1788688849789-1788688849789-1788688871305252778.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-control-906b/after-tx/b210-after-tx-1788688849789-1788688849789-1788688871305252778.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "remote_tx_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "restoration_errors": [],
+      "local_process_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "source_analysis": {
+    "schema_version": 1,
+    "tone": {
+      "cases": {
+        "baseline": {
+          "iq_sha256": "34ebccb7a8a0167650cd8c3c085b3be75ec530a3d13ea6f493bbcf927534fc9c",
+          "peak_offset_hz": 97505.14991989016,
+          "target_region_peak_dbfs": -94.4468239991279,
+          "spectral_median_dbfs": -108.83626372441799,
+          "same_observed_bin_dbfs": -107.10108478200223
+        },
+        "during-tx": {
+          "iq_sha256": "2841539e8a7c5f66713323879b6081099eb87a3d9c1debf925e1288d2a49135e",
+          "peak_offset_hz": 103532.46356908524,
+          "target_region_peak_dbfs": -59.570123041966816,
+          "spectral_median_dbfs": -121.81061191739234,
+          "same_observed_bin_dbfs": -59.570123041966816
+        },
+        "after-tx": {
+          "iq_sha256": "7f0f7ddb119bb12120e2b41abb27d75abb7f1f5e153c6b7bd4db58a83ebfbff9",
+          "peak_offset_hz": 100099.18364232854,
+          "target_region_peak_dbfs": -99.54298937043765,
+          "spectral_median_dbfs": -115.9837040307026,
+          "same_observed_bin_dbfs": -105.6655862340524
+        }
+      },
+      "frequency_difference_hz": 3532.4635690852447
+    },
+    "source_99_percent_half_width_hz": 125000,
+    "alignment_method": "median best lag in first seven during-TX windows; apply unchanged to last eight and both TX-off controls",
+    "interpretation": "exploratory source-specific RF link evidence, not model accuracy or independent RF admission",
+    "raw_broadband_test_replaced": false,
+    "recognizer_preprocess_modified": false,
+    "cases": {
+      "baseline": {
+        "iq_sha256": "bee56c261ead6f955466fa37e4ce387ed26c58db6ef7113af3755728dd8725a2",
+        "fixed_lag": 3152,
+        "later_eight_fixed_lag_correlations": [
+          0.028394219956719525,
+          -0.016020848898764248,
+          0.05346465040118008,
+          0.021498384345374467,
+          -0.05273702579442689,
+          0.015505912664499879,
+          -0.00021256473224275964,
+          -0.06196527181777906
+        ],
+        "later_eight_fixed_lag_median": 0.00764667396612856,
+        "all_window_best_lag_median": 0.13149217803263388,
+        "all_window_best_lags": [
+          1092,
+          1605,
+          1555,
+          3182,
+          2410,
+          2481,
+          3941,
+          3116,
+          583,
+          1695,
+          3027,
+          3487,
+          1981,
+          773,
+          3940
+        ]
+      },
+      "during-tx": {
+        "iq_sha256": "b63fa3b81ba528d87d537bb196ff2a89f83fc6efae1d89cbf832d14457535d03",
+        "fixed_lag": 3152,
+        "later_eight_fixed_lag_correlations": [
+          0.659596255259067,
+          0.6611171331118121,
+          0.6545659249068709,
+          0.6582084528307582,
+          0.6556466782769951,
+          0.6581610332453447,
+          0.6593890743549345,
+          0.6576002817660881
+        ],
+        "later_eight_fixed_lag_median": 0.6581847430380514,
+        "all_window_best_lag_median": 0.6582604619091568,
+        "all_window_best_lags": [
+          3152,
+          3152,
+          3152,
+          3152,
+          3152,
+          3152,
+          3152,
+          3152,
+          3152,
+          3152,
+          3152,
+          3152,
+          3152,
+          3152,
+          3152
+        ]
+      },
+      "after-tx": {
+        "iq_sha256": "0d7bc0b151de781236766297dcda39eeab94c724ed6a829efbdd19fe14c3b0cd",
+        "fixed_lag": 3152,
+        "later_eight_fixed_lag_correlations": [
+          -0.008993175341848106,
+          0.04346230093344577,
+          0.08969074721773836,
+          -0.03900134243850275,
+          -0.043698036684472925,
+          0.049532134946953195,
+          0.03060808160232687,
+          0.057074534431970705
+        ],
+        "later_eight_fixed_lag_median": 0.03703519126788632,
+        "all_window_best_lag_median": 0.13587438704445104,
+        "all_window_best_lags": [
+          4019,
+          2399,
+          1948,
+          2959,
+          1092,
+          343,
+          2159,
+          2514,
+          1947,
+          2623,
+          2497,
+          216,
+          741,
+          705,
+          3094
+        ]
+      }
+    },
+    "engineering_controls": {
+      "schema_id": "b210_rx40_engineering_controls_v1",
+      "limits": {
+        "tone_control_margin_db": 20.0,
+        "tone_spectral_margin_db": 20.0,
+        "during_correlation_minimum": 0.5,
+        "off_correlation_absolute_maximum": 0.2,
+        "source_control_margin_minimum": 0.3
+      },
+      "tone": {
+        "passed": true,
+        "control_margins_db": [
+          47.530961740035416,
+          46.09546319208558
+        ],
+        "spectral_margin_db": 62.24048887542552
+      },
+      "source_passed": true,
+      "passed": true,
+      "during_correlation": 0.6581847430380514,
+      "maximum_off_absolute_correlation": 0.03703519126788632,
+      "source_control_margin": 0.6211495517701651,
+      "independent_labels": 0,
+      "recognizer_available": false,
+      "rf_v1_50db_acceptance": false
+    }
+  },
+  "paired_comparison": {
+    "source_tile_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+    "parent_iq_sha256": "b63fa3b81ba528d87d537bb196ff2a89f83fc6efae1d89cbf832d14457535d03",
+    "received_slice_sha256": "42e76eb9792f88a3c27a0d0ea35b60411459b787e73ff7c7bf5666e018610ce0",
+    "source_rows": [
+      102400,
+      102401,
+      102403,
+      102404
+    ],
+    "source_nominal_class_id": 0,
+    "dataset_nominal_snr_db": 30,
+    "selected_complex_offset": 28672,
+    "source_circular_lag": 3152,
+    "alignment_chosen_before_model": true,
+    "selected_source_diagnostic_correlation": 0.659596255259067,
+    "control_assessment": {
+      "schema_id": "b210_rx40_engineering_controls_v1",
+      "limits": {
+        "tone_control_margin_db": 20.0,
+        "tone_spectral_margin_db": 20.0,
+        "during_correlation_minimum": 0.5,
+        "off_correlation_absolute_maximum": 0.2,
+        "source_control_margin_minimum": 0.3
+      },
+      "tone": {
+        "passed": true,
+        "control_margins_db": [
+          47.530961740035416,
+          46.09546319208558
+        ],
+        "spectral_margin_db": 62.24048887542552
+      },
+      "source_passed": true,
+      "passed": true,
+      "during_correlation": 0.6581847430380514,
+      "maximum_off_absolute_correlation": 0.03703519126788632,
+      "source_control_margin": 0.6211495517701651,
+      "independent_labels": 0,
+      "recognizer_available": false,
+      "rf_v1_50db_acceptance": false
+    },
+    "receiver": {
+      "gain_db": 40,
+      "center_hz": 2440000000,
+      "sample_rate_hz": 2100000,
+      "rf_bandwidth_hz": 1500000,
+      "parent_native_point": {
+        "point_index": 0,
+        "request_id": 5,
+        "session_generation": 1788688849788,
+        "requested_center_hz": 2440000000,
+        "actual_center_hz": 2440000000,
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "sequence": 251,
+        "dropped_samples": 0,
+        "overflow": false,
+        "captured_samples": 65535,
+        "band_power_dbfs": -38.267143,
+        "spectral": {
+          "schema_version": 1,
+          "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+          "fft_size": 4096,
+          "segment_count": 15,
+          "bin_width_hz": 512.6953125,
+          "peak_frequency_hz": 2440003589,
+          "peak_power_dbfs": -40.512794,
+          "noise_floor_dbfs": -86.92242,
+          "measured_snr_db": 46.409622,
+          "estimated_center_hz": 2440003589,
+          "occupied_start_hz": 2439895923,
+          "occupied_stop_hz": 2440111255,
+          "occupied_bandwidth_hz": 215845
+        },
+        "clipped_samples": 0,
+        "status_flags": 0,
+        "elapsed_us": 33868,
+        "timeout": {
+          "limit_ms": 1000,
+          "elapsed_us": 33868,
+          "timed_out": false
+        },
+        "health": {
+          "healthy": true,
+          "flags": 0,
+          "source": "iio_adapter"
+        },
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        }
+      }
+    },
+    "spectral_snr_scope": "parent 65535 samples; not AWGN SNR or exact selected-window SNR",
+    "schema_id": "b210_source_received_offline_pair_v1",
+    "status": "comparison_completed",
+    "recognizer_available": false,
+    "independent_labels": 0,
+    "name_status": "provisional",
+    "result_semantics": "offline_diagnostic_outside_runtime_rx_profile",
+    "runtime_rx_profile_compatible": false,
+    "runtime_profile_gain_db": 50,
+    "model_preprocessing_modified": false,
+    "inference_windows": 12,
+    "backend_warmup_windows": 2,
+    "digital_frequency_shift_applied_to_model_input": false,
+    "additional_filter_applied": false,
+    "results": {
+      "source_original_order": {
+        "numeric_id": 0,
+        "uncalibrated_probability": 0.9999619074390019,
+        "window_numeric_ids": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "mean_logits_sha256": "df617843e50e5a05917f0ad84a5ac3abb1d3a7e141e8b0f54954ff1752e851d9",
+        "model_input_sha256": "efcd28fdb1795fbe97d6e2a59ca69ea6f2d515bb3db6673f92515489b31ada3a",
+        "raw_complex_rms": 0.10019381246843356,
+        "raw_units": "tx_fc32",
+        "raw_dc_fraction": 0.352083793192852,
+        "inference_us": 156549,
+        "nominal_source_id_agreement": true
+      },
+      "source_receive_aligned": {
+        "numeric_id": 0,
+        "uncalibrated_probability": 0.9999607682076603,
+        "window_numeric_ids": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "mean_logits_sha256": "9afefbc8ae476da86befb134907b46846253eb41d57a2c4dee70e00ac849bb0a",
+        "model_input_sha256": "5dec874c4c34ba05c1007baeb34bd5751c84369bb03937101e39c5e2829cfc96",
+        "raw_complex_rms": 0.10019381246843355,
+        "raw_units": "tx_fc32",
+        "raw_dc_fraction": 0.35208379319285205,
+        "inference_us": 169294,
+        "nominal_source_id_agreement": true
+      },
+      "received_unmodified": {
+        "numeric_id": 18,
+        "uncalibrated_probability": 0.9709044653698585,
+        "window_numeric_ids": [
+          9,
+          17,
+          18,
+          18
+        ],
+        "mean_logits_sha256": "980e4f42adb4097eeeed9803bdff724a122b74aa5c98298ada51be3a4d64e342",
+        "model_input_sha256": "b498c7814d609d9e11b083f75c607b8e2601f68e10a88bd324ed3253864b3c14",
+        "raw_complex_rms": 24.73088553244202,
+        "raw_units": "adc_ci16",
+        "raw_dc_fraction": 0.036054765243039605,
+        "inference_us": 168345,
+        "nominal_source_id_agreement": false
+      }
+    },
+    "identity": {
+      "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+      "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+      "compute": "cuda_fp16_autocast",
+      "resident_weight_precision": "fp32",
+      "input_precision": "fp32",
+      "logit_return_precision": "fp32",
+      "sample_rate_hz": 2100000,
+      "window_count": 4,
+      "samples_per_window": 1024,
+      "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+    },
+    "compute": "cuda_fp16_autocast_fp32_weights",
+    "gpu_lease": {
+      "acquired": 1,
+      "released": 1,
+      "wait_us": 34,
+      "held_us": 60568561,
+      "cancelled": 0,
+      "expired": 0
+    }
+  },
+  "tx_result": {
+    "status": "sent",
+    "payload_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+    "bytes_written": 168000000,
+    "max_samples": 21000000,
+    "rate_sps": 2100000,
+    "nominal_seconds": 10,
+    "child_pid": 18413,
+    "go_unix_ns": 1788688861285341883,
+    "feed_seconds": 9.96619322799961,
+    "uhd_log_sha256": "36f91539c931c169c1b6798c6109b2c35b33d26924cb197e0d90f0205ab7629a",
+    "uhd_async_markers": [
+      "S"
+    ],
+    "child_exit_code": 0,
+    "child_stopped": true
+  },
+  "nx_no_rf_test": {
+    "nx_proc_children_unavailable_reproduced": true,
+    "ps_child_query_verified": true,
+    "active_feature_rejected": true,
+    "stopped_feature_accepted": true,
+    "test_used_sleep_only": true
+  },
+  "final_radio_state": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+  "final_sdrd_readback": "17136\n77d98a005305a4b7531fc3f133e9b4af521e60b065b29fcc304b4c7db80c45ae  /sd/sdr-agent/current/sdrd\n",
+  "p201_temporary_paths_verified_absent": [
+    "/tmp/sdr-agent-dev/agx-sweep-1788688586543-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788688794795-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788688794796-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788688794797-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788688849787-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788688849788-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788688849789-0"
+  ],
+  "all_three_nx_feature_processes_and_fifo_absent": true,
+  "tests": {
+    "python_tests_passed": 17,
+    "rf_v1_golden_bytes_match": true,
+    "python_ast_valid": true,
+    "logs_sha256": {
+      "tests": "1c410f3f10eb553a5b4f16de8ae534b81f8569d636672c53c138355234038952",
+      "build": "ac1ee0d80a89832a674106e91cfabf64e4409a2de18f41c44e0a94ce6df39b08"
+    },
+    "final_three_model_inputs_byte_identical": true
+  },
+  "evidence_hashes": {
+    "failed_tone": {
+      "baseline-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "link-summary.json": "8ee3e1335c0a425f1a54780f1dd10860fd87957b0d1e47d8ae0b4ad03ab8256e",
+      "live.log": "4210a3051ac2e0f1007930f9019019900684bd02a648615f60f4587039ceb35f",
+      "link-started.json": "7fe0ca57b5df5a65af313db57d73d058807d02472721f11b900582639174adb8",
+      "baseline-report.json": "58191e80cdebedc68fb43e28b3fbda9e155906fb74d376780118a6cdf3cc7f57"
+    },
+    "tone": {
+      "after-tx-report.json": "58e8def0740756602ab2ebed2542c6ef4f1c6ccdfd562ced1b455b3cc27e2f5d",
+      "during-tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "baseline-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "after-tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "link-summary.json": "a522ed448cb7e5c462744158ced8fdcd59f792243f4ddab1f26f0427744a1bd1",
+      "tx-uhd.log": "0a06b00034256ce2594a3473de7c96dd2f32608faa125e54591525fe5c774f17",
+      "live.log": "e59e466608032a5fc54b9657be829716d055c2216fc1f6a1f972927a96aed569",
+      "tone-assessment.json": "fe40d1441924a3716f92ef612de5b827c336f51ab1bcab5ccc3027983316795d",
+      "link-started.json": "2f5da227b3499a1b459798cdc403840f2cb72802aab3aa32f225e560b1ed3e59",
+      "baseline-report.json": "994c7899a05c0c109a9bcbd25d0d4f23c3205dc70f7c4d2044896802c854c937",
+      "during-tx-report.json": "2987d046acda1dda5e3c004bd0edf4e4a86bf7ca1fc69674b560e15f66bb0629"
+    },
+    "rml": {
+      "after-tx-report.json": "fcdb33714f8b4958f2a69079ee20bc145bd928cf1585632b5a2846ba7b5afc61",
+      "source-matched-analysis.json": "94a31a5e156a3ead166a8e87483680cf0d57041fab884c18a91d56e3dae5441f",
+      "tx-summary.json": "6c15d00510da2179146958fef21c692dba6a7f90181d26f9ec392bef2e57c277",
+      "build.log": "ac1ee0d80a89832a674106e91cfabf64e4409a2de18f41c44e0a94ce6df39b08",
+      "during-tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "baseline-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "after-tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "link-summary.json": "9944b7835ea57b806851836bf2529cc8a817ccb078cf8b6d9d363dd73d66e3ac",
+      "analysis.log": "94a31a5e156a3ead166a8e87483680cf0d57041fab884c18a91d56e3dae5441f",
+      "tests-final.log": "1c410f3f10eb553a5b4f16de8ae534b81f8569d636672c53c138355234038952",
+      "paired-comparison.json": "ff5eebce5a728254773dfc7ec713ba6915bb4c1937a87bcf2b9f187fbf487113",
+      "nx-no-rf-test.json": "71e51655ff2f8eee1f87f1218cfef7b0e534a10b87eeaa459b5ede4e9c1af734",
+      "tx-stdout.log": "598e8f31e6fb5bb46ad14caf5d40f58fbddde2732104640592268c092397caeb",
+      "comparison.log": "05d3a580d08981beedcd6fed8faa412b1182bfe27c28c0f67a580550f46610b2",
+      "tx-uhd.log": "36f91539c931c169c1b6798c6109b2c35b33d26924cb197e0d90f0205ab7629a",
+      "live.log": "d04a149981f124fac69e59ec8d21bafee98f0b7d643cefe56b1b0bb231f43541",
+      "transmission-plan.json": "3ee6f5983b781fbbc352753014782a5a1e5f1810c9eab4c60ec76dfb364c8c1f",
+      "tests.log": "3859a6eb1b74212c32398c2023c0dec6666c01645befb99437b087f050e38a1f",
+      "link-started.json": "71a5909070c08a95cd48225487d42934c9cc4a552a4e1bb167ffce0eb6882678",
+      "baseline-report.json": "1be4ee51737c3f9c91d70f1e7b87e86a35dc4c638501d5e152c6816e7f2f5b91",
+      "source-plan.log": "0d9a53b4575efc0b4b94bc65e4ececf13c82a5b1c34d32cd19ae0adbaefb2d22",
+      "during-tx-report.json": "189a114729fa35769068e21e6f40a3670941224f2ef0a406dff51620ad1c1ba6"
+    }
+  },
+  "cleanup": {
+    "verified": true,
+    "agx_and_nx_removed_directories": [
+      "/var/tmp/sdrharness-dev/b210-control-906b",
+      "/var/tmp/sdrharness-dev/b210-control-tone-906b",
+      "/var/tmp/sdrharness-dev/b210-control-tone-retry-906b"
+    ],
+    "test_directory_verified_absent": "/var/tmp/sdrharness-dev/b210-control-test-384466",
+    "local_and_remote_feature_processes_absent": true,
+    "user_results_deleted": false,
+    "production_services_changed": false
+  }
+}

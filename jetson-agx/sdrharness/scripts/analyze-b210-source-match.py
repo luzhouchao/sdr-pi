@@ -64,13 +64,46 @@ def envelope_correlations(iq,reference,frequency_difference,half_width):
     return cc
 
 
-def main():
-    p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--directory',type=Path,required=True)
-    a=p.parse_args();root=a.directory
-    assert root.resolve()==root and root.parent==Path('/var/tmp/sdrharness-dev')
-    tone=tone_metrics(root/'tone')
-    tile=np.fromfile(root/'train-tile.fc32',dtype='<f4').reshape(-1,2)
+# Fixed before RX40 control acquisition; engineering source checks only.
+CONTROL_LIMITS = dict(tone_control_margin_db=20., tone_spectral_margin_db=20.,
+                      during_correlation_minimum=.5, off_correlation_absolute_maximum=.2,
+                      source_control_margin_minimum=.3)
+
+
+def assess_tone(tone):
+    cases=tone['cases'];during=cases['during-tx']
+    differences=[during['same_observed_bin_dbfs']-cases[tag]['same_observed_bin_dbfs']
+                 for tag in ('baseline','after-tx')]
+    spectral=during['same_observed_bin_dbfs']-during['spectral_median_dbfs']
+    values=[*differences,spectral,tone['frequency_difference_hz']]
+    if not np.isfinite(values).all():raise ValueError('nonfinite tone evidence')
+    return dict(passed=min(differences)>=CONTROL_LIMITS['tone_control_margin_db']
+                and spectral>=CONTROL_LIMITS['tone_spectral_margin_db'],
+                control_margins_db=differences,spectral_margin_db=spectral)
+
+
+def assess_controls(result):
+    tone=assess_tone(result['tone']);cases=result['cases']
+    during=cases['during-tx']['later_eight_fixed_lag_median']
+    off=[abs(cases[tag]['later_eight_fixed_lag_median']) for tag in ('baseline','after-tx')]
+    if not np.isfinite([during,*off]).all():raise ValueError('nonfinite source evidence')
+    source_pass=(during>=CONTROL_LIMITS['during_correlation_minimum']
+                 and max(off)<=CONTROL_LIMITS['off_correlation_absolute_maximum']
+                 and during-max(off)>=CONTROL_LIMITS['source_control_margin_minimum'])
+    return dict(schema_id='b210_rx40_engineering_controls_v1',limits=CONTROL_LIMITS.copy(),
+                tone=tone,source_passed=source_pass,passed=bool(tone['passed'] and source_pass),
+                during_correlation=during,maximum_off_absolute_correlation=max(off),
+                source_control_margin=during-max(off),independent_labels=0,
+                recognizer_available=False,rf_v1_50db_acceptance=False)
+
+
+def analyze(root,tone_directory):
+    tone=tone_metrics(tone_directory)
+    raw_tile=(root/'train-tile.fc32').read_bytes()
+    plan=json.loads((root/'transmission-plan.json').read_text())
+    assert len(raw_tile)==32768 and hashlib.sha256(raw_tile).hexdigest()==plan['payload_sha256']
+    assert plan['split']=='train' and plan['locked_test_read'] is False
+    tile=np.frombuffer(raw_tile,dtype='<f4').reshape(-1,2)
     reference=tile[:,0]+1j*tile[:,1]
     half_width=source_bandwidth(reference)
     # The band comes from source IQ alone; frequency difference comes from the
@@ -92,6 +125,20 @@ def main():
         alignment_method='median best lag in first seven during-TX windows; apply unchanged to last eight and both TX-off controls',
         interpretation='exploratory source-specific RF link evidence, not model accuracy or independent RF admission',
         raw_broadband_test_replaced=False,recognizer_preprocess_modified=False,cases=cases)
+    return result
+
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--directory',type=Path,required=True)
+    p.add_argument('--tone-directory',type=Path,help='Separate existing tone feature; no IQ copy required')
+    p.add_argument('--assess-controls',action='store_true',help='Apply preregistered RX40 engineering gates')
+    a=p.parse_args();root=a.directory
+    assert root.resolve()==root and root.parent==Path('/var/tmp/sdrharness-dev')
+    tone_directory=a.tone_directory or root/'tone'
+    assert tone_directory.resolve()==tone_directory
+    result=analyze(root,tone_directory)
+    if a.assess_controls:result['engineering_controls']=assess_controls(result)
     (root/'source-matched-analysis.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result,indent=2))
 

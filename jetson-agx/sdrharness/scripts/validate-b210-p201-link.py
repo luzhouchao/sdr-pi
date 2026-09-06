@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import shlex
 import signal
 import time
 
@@ -19,14 +20,39 @@ SCRIPTS = Path(__file__).parent
 spec = importlib.util.spec_from_file_location('rf_rx', SCRIPTS / 'validate-rf-v1-runtime-live.py')
 rf = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(rf)
-NX = ['ssh','-F','/home/jetson/.ssh/config','-o','ConnectTimeout=5','nx']
+NX = ['ssh','-F','/home/jetson/.ssh/config','-o','ConnectTimeout=20','-o','ServerAliveInterval=5','-o','ServerAliveCountMax=3','nx']
 
 
-async def run(feature, binary, mode="rml"):
+def remote_absence_command(feature,owner,child):
+    # NX kernel omits /proc/PID/task/PID/children. Inspect exact argv/cwd instead;
+    # this also detects orphaned UHD children after the timeout/helper exits.
+    code = """import os
+from pathlib import Path
+root=Path(ROOT)
+assert not (root/'tx.fc32.fifo').exists()
+for pid in Path('/proc').iterdir():
+    if not pid.name.isdigit():continue
+    try:
+        args=(pid/'cmdline').read_bytes().split(b'\\0')
+        cwd=(pid/'cwd').resolve(strict=True)
+    except (OSError,RuntimeError):continue
+    assert int(pid.name) not in PIDS
+    assert cwd != root
+    assert str(root/'b210-finite-train-tx.py').encode() not in args
+    assert str(root/'tx.fc32.fifo').encode() not in args
+""".replace('ROOT',repr(str(feature))).replace('PIDS',repr([p for p in (owner,child) if p is not None]))
+    return 'python3 -c '+shlex.quote(code)
+
+
+async def run(feature, binary, mode="rml", rx_gain_db=50):
     assert feature.resolve() == feature and feature.parent == Path('/var/tmp/sdrharness-dev')
     assert feature.name.startswith('b210-') and feature.name.replace('-', '').isalnum()
+    assert mode in ('rml', 'tone') and rx_gain_db in (40, 50)
     audit_path = feature / 'link-summary.json'
     assert not audit_path.exists(), 'refusing to overwrite evidence'
+    # Exclusive attempt receipt prevents concurrent/repeated RF starts, even after a crash.
+    with (feature / 'link-started.json').open('x') as receipt:
+        json.dump({'mode':mode,'rx_gain_db':rx_gain_db,'started_at_ns':time.time_ns()},receipt)
     tx_plan = (dict(tx_gain_db=70) if mode == 'tone' else
                json.loads((feature / 'transmission-plan.json').read_text()))
     assert tx_plan['tx_gain_db'] in ((70,) if mode == 'tone' else (0, 40, 70))
@@ -37,7 +63,7 @@ async def run(feature, binary, mode="rml"):
     audit = dict(status='failed',generation=generation,feature_directory=str(feature),
                  mode=mode,max_rx_bytes=786420,max_tx_samples=(25000000 if mode == "tone" else tx_plan["tx_samples"]),tx_nominal_seconds=(10 if mode == "tone" else tx_plan["tx_nominal_seconds"]),
                  center_hz=2440000000,rate_sps=rate,bandwidth_hz=rx_bw,
-                 tx_gain_db=tx_plan['tx_gain_db'],rx_gain_db=50,rx_input='RX1/RX0/A_BALANCED',
+                 tx_gain_db=tx_plan['tx_gain_db'],rx_gain_db=rx_gain_db,rx_input='RX1/RX0/A_BALANCED',
                  antenna_connection=True,recognizer_available=False,locked_test_read=False,
                  controller_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
                  free_bytes=shutil.disk_usage(feature).free)
@@ -65,19 +91,26 @@ async def run(feature, binary, mode="rml"):
     async def capture(tag, gen):
         plan = dict(sweep_id=f'b210-{tag}-{gen}',session_generation=gen,
                     frequencies=dict(kind='centers',centers_hz=[2440000000]),
-                    sample_rate_hz=rate,rf_bandwidth_hz=rx_bw,gain_db=50,
+                    sample_rate_hz=rate,rf_bandwidth_hz=rx_bw,gain_db=rx_gain_db,
                     settle_ms=500,frame_samples=65535,aggregate_frames=1,
                     point_timeout_ms=1000,detection_threshold_db=12.)
         audit.setdefault('plans',[]).append(plan)
-        print(json.dumps(dict(event='validated_rx_plan',plan=plan,max_bytes=262140,
+        print(json.dumps(dict(event='rx_plan',plan=plan,max_bytes=262140,estimated_duration_ms=1500,
+                             free_bytes=shutil.disk_usage(feature).free,agx_directory=str(feature/tag),
                              sdr_directory=f'/tmp/sdr-agent-dev/agx-sweep-{gen}-0',
                              stop=f'Controller --mode cancel --session-generation {gen}')),flush=True)
+        assert shutil.disk_usage(feature).free > 262140+8*1024*1024
         path = feature/tag
         path.mkdir(mode=0o700)
         process = await asyncio.create_subprocess_exec(str(binary),'--mode','sweep','--sdrd','192.168.1.10:43110',
                     '--sigmf-directory',str(path),stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE)
         processes.append(process)
-        out,err = await asyncio.wait_for(process.communicate(json.dumps(plan).encode()),15)
+        try:
+            out,err = await asyncio.wait_for(process.communicate(json.dumps(plan).encode()),15)
+        except BaseException:
+            try:await command([binary,'--mode','cancel','--sdrd','192.168.1.10:43110','--session-generation',gen],timeout=6)
+            except Exception as error:audit.setdefault('cancel_errors',[]).append(str(error))
+            raise
         (feature/f'{tag}-stderr.log').write_bytes(err)
         assert process.returncode == 0, err.decode()[-2000:]
         result = json.loads(out)
@@ -86,6 +119,16 @@ async def run(feature, binary, mode="rml"):
         return result
     print(json.dumps({k:v for k,v in audit.items() if k!='radio_before'}),flush=True)
     tx = None
+    remote_pid = None
+    remote_child = None
+    async def stop_remote():
+        if remote_pid is None:return
+        # RML helper unwinds FIFO/UHD in finally. Tone timeout forwards INT to UHD.
+        if mode == 'rml':
+            identity=f'case "$(tr "\\000" " " < /proc/{remote_pid}/cmdline)" in *"{feature}/b210-finite-train-tx.py"*) kill -TERM {remote_pid};; *) exit 1;; esac'
+        else:
+            identity=f'test "$(readlink /proc/{remote_pid}/cwd)" = "{feature}" && case "$(tr "\\000" " " < /proc/{remote_pid}/cmdline)" in *timeout*tx_waveforms*) kill -INT {remote_pid};; *) exit 1;; esac'
+        await command([*NX,f'if test -d /proc/{remote_pid}; then {identity}; fi'],timeout=25)
     try:
         audit['baseline'] = await capture('baseline',generation)
         if mode == 'tone':
@@ -100,9 +143,14 @@ async def run(feature, binary, mode="rml"):
             audit['tx_command'] = tx_args
             print(json.dumps(dict(event='finite_tone_plan',command=tx_args,
                                   max_tx_samples=25000000,nominal_seconds=10)),flush=True)
-            tx = await asyncio.create_subprocess_exec(*NX,tx_args,stdout=asyncio.subprocess.PIPE,
+            owned_args=f'cd {feature} && echo TX_OWNER $$ && exec '+tx_args
+            tx = await asyncio.create_subprocess_exec(*NX,owned_args,stdout=asyncio.subprocess.PIPE,
                                                      stderr=asyncio.subprocess.STDOUT)
             processes.append(tx)
+            owner=(await asyncio.wait_for(tx.stdout.readline(),25)).decode().strip().split()
+            assert len(owner)==2 and owner[0]=='TX_OWNER' and owner[1].isdigit()
+            remote_pid=int(owner[1]);assert remote_pid>1
+            audit['tx_remote_owner_pid']=remote_pid
             prefix = b''
             deadline = time.monotonic()+25
             while b'Press Ctrl' not in prefix:
@@ -111,7 +159,11 @@ async def run(feature, binary, mode="rml"):
                 line = await asyncio.wait_for(tx.stdout.readline(),remaining)
                 assert line, prefix.decode()[-2000:]
                 prefix += line
+                (feature/'tx-uhd.log').write_bytes(prefix)
                 assert len(prefix) <= 16384, 'tone log bound'
+            children=(await command([*NX,f'ps -o pid= --ppid {remote_pid}'],timeout=25)).split()
+            assert len(children)==1 and children[0].isdigit()
+            remote_child=int(children[0]);audit['tx_remote_child_pid']=remote_child
             audit['tone_ready_agx_ns'] = time.time_ns()
             audit['during_tx'] = await capture('during-tx',generation+1)
             rest = await asyncio.wait_for(tx.stdout.read(),15)
@@ -130,6 +182,8 @@ async def run(feature, binary, mode="rml"):
         line = await asyncio.wait_for(tx.stdout.readline(),45)
         assert json.loads(line)['event'] == 'ready', line.decode()
         audit['tx_ready'] = json.loads(line)
+        remote_pid=audit['tx_ready']['pid'];remote_child=audit['tx_ready']['child_pid']
+        assert type(remote_pid) is int and type(remote_child) is int and remote_pid>1 and remote_child>1
         # A bounded, already-connected read-only sampler catches the short
         # retune/settle window without SSH startup latency.
         sampler_cmd = 'echo WATCHING; n=0; while test "$n" -lt 1000; do v=$(cat /sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency); if test "$v" -ge 2439999900 && test "$v" -le 2440000100; then echo APPLIED; break; fi; n=$((n+1)); usleep 10000; done; n=0; while test "$n" -lt 200; do v=$(cat /sys/bus/iio/devices/iio:device3/buffer/enable); if test "$v" = 1; then echo RX_ACTIVE; exit 0; fi; n=$((n+1)); usleep 10000; done; exit 1'
@@ -160,14 +214,28 @@ async def run(feature, binary, mode="rml"):
         assert audit['tx_result']['status']=='sent' and audit['tx_result']['bytes_written']==tx_plan['tx_samples']*8
         audit['after_tx']=await capture('after-tx',generation+2)
         audit['status']='transport_completed_pending_signal_analysis'
+    except BaseException as error:
+        audit['failure']=f'{type(error).__name__}: {error}'
+        raise
     finally:
+        errors=[]
+        if tx is not None and tx.returncode is None:
+            try:await stop_remote()
+            except Exception as error:errors.append('direct TX stop: '+str(error))
         for process in reversed(processes):
             if process.returncode is None:
                 process.terminate()
                 try:await asyncio.wait_for(process.wait(),5)
                 except asyncio.TimeoutError:process.kill();await process.wait()
-        errors=[]
         try:
+            if remote_pid is not None:
+                for _ in range(10):
+                    try:
+                        await command([*NX,remote_absence_command(feature,remote_pid,remote_child)],timeout=25)
+                        audit['remote_tx_stopped']=True
+                        break
+                    except AssertionError:await asyncio.sleep(.2)
+                else:errors.append('remote TX process or FIFO remains')
             audit['radio_after']=await radio()
             if not rf.restored_state(before,audit['radio_after']):errors.append('radio restoration mismatch')
             if (await command([*rf.SSH,'pidof sdrd'])).strip()!=daemon:errors.append('daemon changed')
@@ -186,5 +254,10 @@ if __name__=='__main__':
     p.add_argument('--directory',type=Path,required=True)
     p.add_argument('--controller',type=Path,required=True)
     p.add_argument('--mode',choices=['rml','tone'],default='rml')
+    p.add_argument('--rx-gain-db',type=int,choices=[40,50],default=50,help='40 dB is link diagnostic only; frozen RF-v1 remains 50 dB')
     a=p.parse_args()
-    asyncio.run(run(a.directory,a.controller,a.mode))
+    async def main():
+        task=asyncio.current_task()
+        for sig in (signal.SIGINT,signal.SIGTERM):asyncio.get_running_loop().add_signal_handler(sig,task.cancel)
+        await run(a.directory,a.controller,a.mode,a.rx_gain_db)
+    asyncio.run(main())

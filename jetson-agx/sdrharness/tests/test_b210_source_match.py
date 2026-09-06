@@ -45,4 +45,39 @@ class SourceMatchTests(unittest.TestCase):
                 self.assertGreater(cases['during-tx']['same_observed_bin_dbfs']-cases[tag]['same_observed_bin_dbfs'],50)
 
 
+
+
+class RegisteredControlTests(unittest.TestCase):
+    def evidence(self):
+        return dict(tone=dict(frequency_difference_hz=3500.,cases={
+            'during-tx':dict(same_observed_bin_dbfs=-60.,spectral_median_dbfs=-95.),
+            'baseline':dict(same_observed_bin_dbfs=-90.),
+            'after-tx':dict(same_observed_bin_dbfs=-91.)}),cases={
+            'during-tx':dict(later_eight_fixed_lag_median=.7),
+            'baseline':dict(later_eight_fixed_lag_median=.02),
+            'after-tx':dict(later_eight_fixed_lag_median=-.03)})
+
+    def test_complete_controls_only_admit_engineering_signal_check(self):
+        result=match.assess_controls(self.evidence())
+        self.assertTrue(result['passed'])
+        self.assertFalse(result['rf_v1_50db_acceptance'])
+        self.assertFalse(result['recognizer_available'])
+        self.assertEqual(result['independent_labels'],0)
+
+    def test_weak_source_or_interfering_control_fails(self):
+        for tag,value in [('during-tx',.49),('baseline',.21),('after-tx',-.21)]:
+            evidence=self.evidence()
+            evidence['cases'][tag]['later_eight_fixed_lag_median']=value
+            self.assertFalse(match.assess_controls(evidence)['passed'])
+        evidence=self.evidence()
+        evidence['tone']['cases']['after-tx']['same_observed_bin_dbfs']=-70.
+        self.assertFalse(match.assess_controls(evidence)['passed'])
+
+    def test_missing_or_nonfinite_control_cannot_pass(self):
+        evidence=self.evidence();del evidence['cases']['after-tx']
+        with self.assertRaises(KeyError):match.assess_controls(evidence)
+        evidence=self.evidence();evidence['cases']['during-tx']['later_eight_fixed_lag_median']=float('nan')
+        with self.assertRaises(ValueError):match.assess_controls(evidence)
+
+
 if __name__=='__main__':unittest.main()

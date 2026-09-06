@@ -557,6 +557,12 @@ aggregation, result persistence and model-facing summaries.
         using one authorized 2.440 GHz B210/P201 pilot; tests and exact cleanup
         complete. No production deployment or independent labels. See
         [pilot validation](B210_P201_RF_V1_PILOT_VALIDATION_2026-09-06.md).
+  - [x] Separate RX40 engineering controls and user-requested paired source/RX
+        model diagnostic completed: tone/RML TX-off checks pass fixed gates;
+        original and aligned source predict ID 0, unmodified received IQ ID 18.
+        NX child-query compatibility, finite stop/cleanup, 17 tests and exact
+        feature cleanup verified. This is not RF-v1 50 dB acceptance or V1b.
+        See [RX40 paired validation](B210_P201_RX40_PAIRED_VALIDATION_2026-09-06.md).
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the
