@@ -1,0 +1,290 @@
+{
+  "schema_id": "b210_source_sensitivity_v1",
+  "status": "sensitivity_comparison_completed",
+  "rf_operations": 0,
+  "historical_audit_sha256": "1d3c01a3f26e3661295b2a72facd87d3d72d1510bb279e1afd3344fbbc84b432",
+  "historical_receive_result_recomputed": false,
+  "source_tile_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+  "source_rows": [
+    102400,
+    102401,
+    102403,
+    102404
+  ],
+  "source_split": "train",
+  "source_nominal_id": 0,
+  "dataset_nominal_snr_db": 30,
+  "source_phase_start_is_synthetic": true,
+  "current_frequency_measured": false,
+  "independent_labels": 0,
+  "recognizer_available": false,
+  "production_preprocess_changed": false,
+  "production_profile_compatible": false,
+  "model_precision_experiment": false,
+  "interpretation": "single_source_synthetic_sensitivity_not_RF_causal_proof",
+  "registered_experiment_windows": 28,
+  "backend_warmup_windows": 2,
+  "results": {
+    "source_original": {
+      "perturbation": {
+        "impairment": "none",
+        "circular_lag": 0
+      },
+      "numeric_id": 0,
+      "name_status": "provisional",
+      "window_numeric_ids": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "uncalibrated_probability": 0.9999619074390019,
+      "nominal_source_id_agreement": true,
+      "inference_us": 150053,
+      "raw_input_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+      "model_input_sha256": "efcd28fdb1795fbe97d6e2a59ca69ea6f2d515bb3db6673f92515489b31ada3a",
+      "mean_logits_sha256": "df617843e50e5a05917f0ad84a5ac3abb1d3a7e141e8b0f54954ff1752e851d9",
+      "raw_complex_rms": 0.10019381246843356,
+      "raw_dc_fraction": 0.352083793192852,
+      "historical_mean_logits_reproduced": true
+    },
+    "source_aligned": {
+      "perturbation": {
+        "impairment": "none",
+        "circular_lag": 3152
+      },
+      "numeric_id": 0,
+      "name_status": "provisional",
+      "window_numeric_ids": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "uncalibrated_probability": 0.9999607682076603,
+      "nominal_source_id_agreement": true,
+      "inference_us": 149613,
+      "raw_input_sha256": "5436b39cea11b7677f51af824c954bc0f54b6c4ec6aadf631964b3b18329d8df",
+      "model_input_sha256": "5dec874c4c34ba05c1007baeb34bd5751c84369bb03937101e39c5e2829cfc96",
+      "mean_logits_sha256": "9afefbc8ae476da86befb134907b46846253eb41d57a2c4dee70e00ac849bb0a",
+      "raw_complex_rms": 0.10019381246843355,
+      "raw_dc_fraction": 0.35208379319285205,
+      "historical_mean_logits_reproduced": true
+    },
+    "aligned_cfo_positive": {
+      "perturbation": {
+        "impairment": "cfo",
+        "frequency_hz": 3532.4635690852447,
+        "initial_phase_rad": 0
+      },
+      "numeric_id": 0,
+      "name_status": "provisional",
+      "window_numeric_ids": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "uncalibrated_probability": 0.9999252534511277,
+      "nominal_source_id_agreement": true,
+      "inference_us": 151057,
+      "raw_input_sha256": "519ae2e0f71ed514f4960b6ea2a518b9b7cadcc5eed42af72461947f7adaa2ee",
+      "model_input_sha256": "6543c294760f85b11443ec4d456d4ae8fdb9d1dacc0084f88fa931d66a2a8dc1",
+      "mean_logits_sha256": "c7ab404be44c91a9278775108c4bd9a7c52e51838c53911a68f31fd79740d42d",
+      "raw_complex_rms": 0.10019381238241391,
+      "raw_dc_fraction": 0.01740307845300197
+    },
+    "aligned_cfo_negative": {
+      "perturbation": {
+        "impairment": "cfo",
+        "frequency_hz": -3532.4635690852447,
+        "initial_phase_rad": 0
+      },
+      "numeric_id": 0,
+      "name_status": "provisional",
+      "window_numeric_ids": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "uncalibrated_probability": 0.9999376607434105,
+      "nominal_source_id_agreement": true,
+      "inference_us": 151521,
+      "raw_input_sha256": "126151a4abd2f8042636e8465325caed9938afea1cea4960279b7c54dc85b620",
+      "model_input_sha256": "d6fe4e93151adcb9cdb8225ea95bc6fa0a939c1099c1a89543a9026d2998eb81",
+      "mean_logits_sha256": "7f532c450638010b661e1fdbdcec6d3f636ec379cce233dcfaae2b86d759a12c",
+      "raw_complex_rms": 0.10019381244657023,
+      "raw_dc_fraction": 0.03541368728366696
+    },
+    "aligned_phase90": {
+      "perturbation": {
+        "impairment": "constant_phase",
+        "phase_rad": 1.5707963267948966
+      },
+      "numeric_id": 0,
+      "name_status": "provisional",
+      "window_numeric_ids": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "uncalibrated_probability": 0.9999546393729675,
+      "nominal_source_id_agreement": true,
+      "inference_us": 148942,
+      "raw_input_sha256": "9775bddd8a8854c267201be546d2316c66d053f9e13793684d28b961891c66fd",
+      "model_input_sha256": "dcbd083987cea7a3b31beee06ed022d5ba4f8cd8e1a49fde8e332cba7e25ec83",
+      "mean_logits_sha256": "70fd33db3727de89dde3da36ebbf2c4f346103867a5ac144fa7fab12191f1f2e",
+      "raw_complex_rms": 0.10019381246843355,
+      "raw_dc_fraction": 0.35208379319285205
+    },
+    "aligned_awgn20": {
+      "perturbation": {
+        "impairment": "added_awgn",
+        "seed": 20260906,
+        "requested_component_ratio_db": 20,
+        "actual_component_ratio_db": 20.000000026659038,
+        "total_snr_known": false
+      },
+      "numeric_id": 0,
+      "name_status": "provisional",
+      "window_numeric_ids": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "uncalibrated_probability": 0.999978121825651,
+      "nominal_source_id_agreement": true,
+      "inference_us": 147238,
+      "raw_input_sha256": "e5a09bce0cd1583dab5ba9832a70f0eaf20ae85105eef58de03b4195d01b7c65",
+      "model_input_sha256": "bb2da9e7402071badf31cc4063609ba7858dc576b3c0de53e18adb8fa800fa21",
+      "mean_logits_sha256": "ad2ef72ef470ae1e18b18f18b755669f3dd32584eeb0d1fb6ddad8b9ab16f63b",
+      "raw_complex_rms": 0.10075582330630245,
+      "raw_dc_fraction": 0.35041233127783217
+    },
+    "aligned_awgn10": {
+      "perturbation": {
+        "impairment": "added_awgn",
+        "seed": 20260906,
+        "requested_component_ratio_db": 10,
+        "actual_component_ratio_db": 9.99999998425395,
+        "total_snr_known": false
+      },
+      "numeric_id": 0,
+      "name_status": "provisional",
+      "window_numeric_ids": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "uncalibrated_probability": 0.9999858832084723,
+      "nominal_source_id_agreement": true,
+      "inference_us": 147085,
+      "raw_input_sha256": "c2d3b0ee4e26a0f5e7d4a55627303a02b3ef4dd664f7f0d19ee158f5c4d86d96",
+      "model_input_sha256": "5deb88ec0d6ac34796cd99a1df05c48c9b044393edfc36d4bf3a5433f95d524e",
+      "mean_logits_sha256": "f3e69b1faafaa0f1773f969e7b0dc9ccbd4cea1c6395847288e5d802a01264b7",
+      "raw_complex_rms": 0.105272788155297,
+      "raw_dc_fraction": 0.33598474438730364
+    }
+  },
+  "identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "compute": "cuda_fp16_autocast_fp32_weights",
+  "case_order": [
+    "source_original",
+    "source_aligned",
+    "aligned_cfo_positive",
+    "aligned_cfo_negative",
+    "aligned_phase90",
+    "aligned_awgn20",
+    "aligned_awgn10"
+  ],
+  "gpu_lease": {
+    "acquired": 1,
+    "released": 1,
+    "wait_us": 32,
+    "held_us": 62239548,
+    "cancelled": 0,
+    "expired": 0
+  },
+  "baseline_commit": "3743c3b25edfd00ac53fbf844b881746e1666565",
+  "preregistered_plan_sha256": "9f85815ada6b67758921628b90feebd18c0e0cef521f8ef7bd395507c0ead653",
+  "source_export": {
+    "schema_version": 1,
+    "split": "train",
+    "train_member_sha256": "0426197a7ba17a4091a37d481bb8cd887a04d06406525978fdc7f669d4d2fa21",
+    "dataset_path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "rows": [
+      102400,
+      102401,
+      102403,
+      102404
+    ],
+    "class_id": 0,
+    "name_status": "provisional",
+    "dataset_nominal_snr_db": 30,
+    "source_iq_sha256": "59c8106dc7bd33978f3010121bc5bfde1d545ff27e556deac7306493fa1631e5",
+    "payload_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+    "payload_bytes": 32768,
+    "amplitude_scale": 0.07039332889300712,
+    "complex_peak": 0.2,
+    "center_hz": 2440000000,
+    "rate_sps": 2100000,
+    "bandwidth_hz": 1500000,
+    "tx_gain_db": 70,
+    "tx_samples": 21000000,
+    "tx_nominal_seconds": 10,
+    "tx_channel": 0,
+    "tx_antenna": "TX/RX",
+    "waveform": "four separate train snippets concatenated and cyclically repeated",
+    "physical_dataset_sample_rate_known": false,
+    "locked_test_read": false,
+    "receiver_label": "unknown until independently correlated and reviewed",
+    "recognizer_available": false
+  },
+  "initial_gpu_process_completed": true,
+  "evidence_hashes": {
+    "source-export.log": "0d9a53b4575efc0b4b94bc65e4ececf13c82a5b1c34d32cd19ae0adbaefb2d22",
+    "sensitivity.log": "02f1a798f24ffb3b1db5ce112ec5c837cd297d67fbf276815eb9474c2ad9f2b0",
+    "inference-started.json": "e2f3e1c466a0567cfe813cbeb4e1723164b0bdde930e3e2a081730c137d82871",
+    "transmission-plan.json": "3ee6f5983b781fbbc352753014782a5a1e5f1810c9eab4c60ec76dfb364c8c1f",
+    "tests.log": "e2fecfc0628fde6d527a6360670672ebb6d7c5fad217120bb38f5dbb5a055d03",
+    "source-sensitivity.json": "385f72dea10fe0082bb7cb45fd836f68753f9de0e8b36f020a375b114b890464",
+    "train-tile.fc32": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e"
+  },
+  "source_code_hashes": {
+    "jetson-agx/sdrharness/scripts/diagnose-b210-source-sensitivity.py": "079e87e00bec6489526926877302e6fc8f5a0dbb4a47a8994ac608d0c9ab0f3f",
+    "jetson-agx/sdrharness/scripts/compare-b210-source-received.py": "b53ffc32cab65eb437da424a97d28e84852987e25767c51d66852561abff3825"
+  },
+  "tests": {
+    "passed": 22,
+    "source_baseline_input_hashes_reproduced": true,
+    "source_baseline_mean_logit_hashes_reproduced": true,
+    "python_ast_valid": true
+  },
+  "conclusion": "None of these seven single-source cases reproduced historical received ID18; not a proof excluding real RF impairments or interactions.",
+  "cleanup": {
+    "verified": true,
+    "feature_processes_absent": true,
+    "removed_agx_directory": "/var/tmp/sdrharness-dev/b210-source-sensitivity-906d",
+    "test_directory_verified_absent": "/var/tmp/sdrharness-dev/b210-control-test-385238",
+    "rf_devices_accessed": false,
+    "user_results_deleted": false,
+    "production_services_changed": false
+  }
+}

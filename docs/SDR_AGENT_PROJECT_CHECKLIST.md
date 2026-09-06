@@ -563,6 +563,12 @@ aggregation, result persistence and model-facing summaries.
         NX child-query compatibility, finite stop/cleanup, 17 tests and exact
         feature cleanup verified. This is not RF-v1 50 dB acceptance or V1b.
         See [RX40 paired validation](B210_P201_RX40_PAIRED_VALIDATION_2026-09-06.md).
+  - [x] Offline single-source sensitivity to historical ±3.53 kHz CFO, +90°
+        phase and fixed-realization added AWGN ratios 20/10 dB tested: all seven
+        cases remain ID 0; both source baseline mean-logit hashes reproduce.
+        Preserve this negative result, not an exclusion of actual RF impairments.
+        22 tests, bounded AGX inference and exact cleanup completed. See
+        [source sensitivity validation](B210_SOURCE_SENSITIVITY_VALIDATION_2026-09-06.md).
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the
