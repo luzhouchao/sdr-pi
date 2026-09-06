@@ -114,8 +114,8 @@ batch or late Worker reply and cleans the spool after the bounded call;
 `--mode cancel --session-generation N` remains the direct in-flight radio stop.
 Spool unlink failures are explicit errors. The optional S3 supervised path below
 now adds process death/restart cleanup and Worker cancellation. The standalone
-extension does not provide them; Runner integration/shared GPU admission remain
-separate work.
+extension does not provide them; S5 engineering Runner integration and S4a GPU
+serialization are documented below, while production admission remains separate.
 
 See [`RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md`](RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md)
 for golden, fault-injection and real RX1 evidence.
@@ -213,7 +213,8 @@ Worker and shipped candidate receipt remain production-disabled.
 
 `RunLocalRecognition` requires manual approval in step and cruise; an automatic
 request cannot bypass this gate, and terminal approval rechecks capability.
-The production executor is still S5 work. See
+S5 now supplies an explicit engineering executor; admitted production deployment
+remains A1. See
 [`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md)
 for the receipt/health schemas, exact verification boundary and live evidence.
 S1 is implemented and isolated-Worker validated; replacing deployed Controller/
@@ -260,8 +261,8 @@ See [`WORKER_SUPERVISOR_S3_INTERFACE.md`](WORKER_SUPERVISOR_S3_INTERFACE.md) and
 The earlier standalone per-window command remains experimental. Supervised
 callers use `--recognizer-supervisor-root`; they do not bypass the supervisor's
 private child socket. The optional S4a shared gate is documented below; installed
-services, Runner execution, joined SDR/Worker `/stop` and sustained thermal
-acceptance remain separate work.
+services and sustained thermal acceptance remain separate work. S5 now supplies
+engineering Runner execution and joined SDR/Worker `/stop`.
 
 ## S4a shared GPU lease
 
@@ -285,7 +286,8 @@ conflict/idempotence, manual deletion and actual browser validation passed,
 without IQ retention or Planner context injection. See
 [`RECOGNITION_ARCHIVE_S6A_INTERFACE.md`](RECOGNITION_ARCHIVE_S6A_INTERFACE.md) and
 [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md).
-Live Runner persistence and closed-loop acceptance remain S5/S6b.
+S5 now provides live engineering Runner persistence. Browser closed-loop acceptance
+remains S6b.
 
 ## Remaining delivery work
 
@@ -307,3 +309,12 @@ length and streaming SHA-256, and validates label count and uniqueness.
 The version-one manifest is strict `key=value` text with no unknown or duplicate
 keys. The production CUDA/Mamba package contract may replace its old
 ONNX-specific fields while preserving the Rust request/result boundary.
+
+## S5 engineering integration
+
+The explicit engineering Runner now integrates S3/S4a/S6a, with operator approval,
+cruise budgets, joined cancellation and one automatic compact Spark feedback turn.
+Source tests, bounded real RX/Worker/Spark validation and exact cleanup passed,
+without enabling production capability or replacing installed services. See
+[interface](RUNNER_RECOGNITION_S5_INTERFACE.md) and
+[validation](RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md).

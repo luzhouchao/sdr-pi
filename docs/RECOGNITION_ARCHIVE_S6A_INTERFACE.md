@@ -24,7 +24,7 @@ The request is a strict object of at most 66,560 bytes:
 digits, dots, underscores or hyphens). It does not authorize or resume an active
 Controller conversation. The full result itself remains bounded at 64 KiB.
 Typed deserialization rejects duplicate/unknown fields and invalid status
-semantics. Origin has only two permitted values:
+semantics. The current source accepts three nonproduction origins (the third is added by S5):
 
 - `experimental_replay`: validates the entire result using the existing S2
   candidate validator, including frozen RF-v1 profile/preprocess/model identity,
@@ -32,6 +32,9 @@ semantics. Origin has only two permitted values:
   Classified/rejected production decisions are rejected under this candidate.
   Unavailable/error records are allowed; uncalibrated predictions remain clearly
   experimental and never become independent labels.
+- `engineering_rx`: S5 bounded live RX output; applies the same strict S2
+  candidate validation as replay, with explicit live experimental provenance.
+  It cannot import production classified/rejected decisions.
 - `synthetic_fixture`: inert demonstrations of the four display states. It
   forbids experimental batches/probabilities/predictions, requires a `synthetic-`
   candidate/source prefix, provisional nameless classes and `synthetic-only`
@@ -69,7 +72,7 @@ Endpoints:
 | `GET /api/recognition-results` | Latest 50 validated summaries, descending ID. |
 | `GET /api/recognition-results?before=ID` | Up to 50 older records; no unbounded list. |
 | `GET /api/recognition-results/ID` | Validated archive detail; 404 if absent. |
-| `POST /api/recognition-results` | Loopback-only bounded replay/demo import; 201 on success or identical retry. |
+| `POST /api/recognition-results` | Loopback-only bounded experimental/demo import; 201 on success or identical retry. |
 | `DELETE /api/recognition-results/ID` | Delete one row; 404 if absent; zero files removed. |
 
 Deletion does not parse a possibly corrupt payload, so an unreadable record is
@@ -104,6 +107,6 @@ endpoints and oversized bodies/responses; it reads only the explicitly selected
 JSON import file. `delete ID` is an explicit operator action. There is no silent
 automatic retention cleanup of user records.
 
-The interactive Controller/Runner's live recognition persistence and joined
-stop remain S5. Actual closed-loop Web/Planner acceptance remains S6b. The
+S5 now supplies interactive Controller/Runner live engineering persistence and
+joined stop. Actual closed-loop Web acceptance remains S6b. The
 installed Web binary/provider settings are unchanged by this source delivery.

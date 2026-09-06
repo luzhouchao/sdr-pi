@@ -379,22 +379,23 @@ pub fn run_supervised_batch(
         .map_err(|e| BatchRecognitionError::new("supervisor_result", e))?;
         Ok(report)
     })();
-    let result = if result.is_err() && owned.exists() {
+    drop(file);
+    // Remove producer-owned incoming first: a later atomic handoff can no longer
+    // race the ownership check below. If rename already won, only the service
+    // may remove owned IQ, and cancellation must be confirmed there.
+    match fs::remove_file(&path) {
+        Ok(()) => {}
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+        Err(_) => return Err(error("spool_cleanup")),
+    }
+    if result.is_err() && owned.exists() {
         match cancel(root, &cancel_request) {
             Ok(_) => result,
             Err(e) => Err(e),
         }
     } else {
         result
-    };
-    drop(file);
-    // The service alone removes transferred/owned IQ after reaping. Incoming is still ours.
-    match fs::remove_file(&path) {
-        Ok(()) => {}
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
-        Err(_) => return Err(error("spool_cleanup")),
     }
-    result
 }
 
 /// Explicit engineering replay seam: only a bounded private direct-child fixture,
@@ -520,7 +521,14 @@ mod tests {
         )
         .unwrap();
         for fault in [
-            "none", "request", "worker", "spool", "logits", "cancel", "busy",
+            "none",
+            "request",
+            "worker",
+            "spool",
+            "logits",
+            "cancel",
+            "busy",
+            "late_handoff",
         ] {
             let root = std::env::temp_dir().join(format!("s3r-{}-{fault}", std::process::id()));
             fs::create_dir(&root).unwrap();
@@ -557,7 +565,6 @@ mod tests {
                     return;
                 }
                 let owned = runtime.join("owned").join(path.file_name().unwrap());
-                fs::rename(path, &owned).unwrap();
                 let mut reply = BatchReply {
                     schema_version: 1,
                     operation: "submit".into(),
@@ -569,7 +576,20 @@ mod tests {
                     spool_removed: true,
                     outputs: Vec::new(),
                 };
-                if fault == "cancel" {
+                if fault == "late_handoff" {
+                    flag.store(true, Ordering::SeqCst);
+                    let mut byte = [0u8; 1];
+                    assert_eq!(stream.read(&mut byte).unwrap(), 0);
+                    // Simulate acceptance racing the client's disconnected RPC.
+                    match fs::rename(path, &owned) {
+                        Ok(()) => {}
+                        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return,
+                        Err(e) => panic!("{e}"),
+                    }
+                } else {
+                    fs::rename(path, &owned).unwrap();
+                }
+                if fault == "cancel" || fault == "late_handoff" {
                     flag.store(true, Ordering::SeqCst);
                     let mut cancellation = accept(&control);
                     let c = read(&mut cancellation);

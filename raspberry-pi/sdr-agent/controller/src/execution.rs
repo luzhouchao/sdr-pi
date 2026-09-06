@@ -412,7 +412,7 @@ impl SdrActionExecutor for SdrdActionAdapter {
     }
 }
 
-fn validate_authorization(
+pub(crate) fn validate_authorization(
     plan: &ValidatedPlan,
     authorization: &ExecutionAuthorization,
 ) -> Result<(), SdrError> {

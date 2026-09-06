@@ -907,7 +907,7 @@ Promise.all([loadState({ keepScroll: false }), loadProvider(), refreshCorpusCoun
 
 
 const recognitionStatuses = { classified: '已分类', rejected: '已拒识', unavailable: '不可用', error: '错误' };
-const recognitionOrigins = { experimental_replay: '实验回放 · 未生产准入', synthetic_fixture: '合成演示 · 非实测结果' };
+const recognitionOrigins = { engineering_rx: '实收实验 · 未生产准入', experimental_replay: '实验回放 · 未生产准入', synthetic_fixture: '合成演示 · 非实测结果' };
 async function loadRecognitions(before = '') {
   const epoch = ++view.recognitionEpoch;
   const records = await api(`/api/recognition-results${before ? `?before=${before}` : ''}`);
@@ -953,6 +953,7 @@ async function selectRecognition(id) {
   setText('#recognition-status', `${recognitionStatuses[o.status]} · ${o.status}`);
   setText('#recognition-meaning', record.origin === 'synthetic_fixture'
     ? '以下是合成演示字段，类别、置信度与拒识依据均不代表实际接收或生产准入。'
+    : record.origin === 'engineering_rx' ? '这是未准入的实收实验。模型预测不是独立标签，也不是已确认的接收结论。'
     : '这是未准入的实验回放。模型预测不是独立标签，也不是已确认的接收结论。');
   const fields = document.querySelector('#recognition-fields');
   fields.replaceChildren();

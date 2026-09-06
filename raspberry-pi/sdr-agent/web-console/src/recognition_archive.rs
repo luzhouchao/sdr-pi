@@ -14,6 +14,7 @@ pub const MAX_IMPORT_BYTES: usize = MAX_RESULT_BYTES + 1024;
 #[serde(rename_all = "snake_case")]
 pub enum Origin {
     ExperimentalReplay,
+    EngineeringRx,
     SyntheticFixture,
 }
 #[derive(Debug, Deserialize, Serialize)]
@@ -58,7 +59,9 @@ fn validate(input: &Import) -> ApiResult<()> {
     }
     let profile = frozen_rf_v1_profile().map_err(internal_error)?;
     match input.origin {
-        Origin::ExperimentalReplay => input.result.validate(&profile).map_err(|e| bad(&e))?,
+        Origin::ExperimentalReplay | Origin::EngineeringRx => {
+            input.result.validate(&profile).map_err(|e| bad(&e))?
+        }
         Origin::SyntheticFixture => {
             // Inert demonstrations can exercise all four UI states, but can
             // neither carry actual model outputs nor claim real decision evidence.
@@ -387,6 +390,32 @@ mod tests {
         assert_eq!(list(&path, i64::MAX).unwrap().len(), 4);
         std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
     }
+    #[test]
+    fn engineering_rx_origin_is_preserved_and_never_enables_production() {
+        let path = database("engineering-rx");
+        let mut input = replay();
+        input.origin = Origin::EngineeringRx;
+        let record = ingest(&path, &serde_json::to_vec(&input).unwrap()).unwrap();
+        assert_eq!(record.origin, Origin::EngineeringRx);
+        assert!(!record.production_result);
+        assert!(!record.iq_retained);
+        assert_eq!(
+            load(&path, record.id).unwrap().origin,
+            Origin::EngineeringRx
+        );
+        input.origin = Origin::ExperimentalReplay;
+        assert_eq!(
+            ingest(&path, &serde_json::to_vec(&input).unwrap())
+                .unwrap_err()
+                .0,
+            StatusCode::CONFLICT
+        );
+        let mut forged = fixture(RecognitionStatus::Classified);
+        forged.origin = Origin::EngineeringRx;
+        assert!(ingest(&path, &serde_json::to_vec(&forged).unwrap()).is_err());
+        std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
+
     #[test]
     fn tamper_unknown_fields_duplicate_keys_limits_and_corrupt_delete() {
         let path = database("invalid");

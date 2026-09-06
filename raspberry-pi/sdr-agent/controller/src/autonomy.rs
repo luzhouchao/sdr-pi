@@ -227,6 +227,31 @@ impl CruiseControl {
         }
     }
 
+    /// Approval waits remain part of the original cruise duration budget.
+    pub fn recognition_deadline(
+        &self,
+        now: Instant,
+        bytes: u64,
+    ) -> Result<Option<Instant>, CruiseStopReason> {
+        if self.mode != InteractionMode::AutomaticCruise {
+            return Ok(None);
+        }
+        if self.completed_steps >= self.max_steps {
+            return Err(CruiseStopReason::StepBudgetExhausted);
+        }
+        let deadline = self
+            .started_at
+            .and_then(|started| started.checked_add(self.max_duration))
+            .ok_or(CruiseStopReason::DurationBudgetExhausted)?;
+        if now >= deadline {
+            return Err(CruiseStopReason::DurationBudgetExhausted);
+        }
+        if bytes > self.remaining_iq_bytes() {
+            return Err(CruiseStopReason::ByteBudgetExhausted);
+        }
+        Ok(Some(deadline))
+    }
+
     pub fn remaining_iq_bytes(&self) -> u64 {
         self.max_iq_bytes.saturating_sub(self.used_iq_bytes)
     }
@@ -276,6 +301,33 @@ impl CruiseControl {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn recognition_approval_preserves_all_cruise_budgets() {
+        let now = Instant::now();
+        let mut cruise = CruiseControl::default();
+        assert_eq!(cruise.recognition_deadline(now, 32768), Ok(None));
+        cruise.start(65536, 2, 10, now).unwrap();
+        cruise.stop(CruiseStopReason::ApprovalRequired);
+        assert_eq!(
+            cruise.recognition_deadline(now, 32768),
+            Ok(Some(now + Duration::from_secs(10)))
+        );
+        assert_eq!(
+            cruise.recognition_deadline(now + Duration::from_secs(10), 32768),
+            Err(CruiseStopReason::DurationBudgetExhausted)
+        );
+        assert_eq!(
+            cruise.recognition_deadline(now, 65537),
+            Err(CruiseStopReason::ByteBudgetExhausted)
+        );
+        cruise.record_execution(32768);
+        cruise.record_execution(32768);
+        assert_eq!(
+            cruise.recognition_deadline(now, 32768),
+            Err(CruiseStopReason::StepBudgetExhausted)
+        );
+    }
 
     #[test]
     fn sdr_and_planner_retries_are_independent_and_stop_on_fifth_failure() {

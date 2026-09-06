@@ -13,6 +13,9 @@ use sdr_agent_controller::protocol::{
     ControllerState, PlanRequest, PlanResponse, ProposedAction, ValidatedPlan, MAX_FRAME_BYTES,
     MAX_INSTRUCTION_BYTES,
 };
+use sdr_agent_controller::recognition_execution::{
+    EngineeringRecognition, RecognitionCancellation, RecognitionExecutionReport, MAX_RX_BYTES,
+};
 use sdr_agent_controller::recognizer_admission::{
     refresh_recognizer, RecognizerCapability, UnixRecognizerCapability, DEFAULT_ADMISSION_PATH,
     DEFAULT_RECOGNIZER_SOCKET,
@@ -97,6 +100,8 @@ fn run() -> AppResult<()> {
             recognizer_socket: options.recognizer_socket,
             recognizer_admission: options.recognizer_admission,
             executor,
+            engineering_recognition: options.engineering_recognition,
+            recognition_audit_path: options.recognition_audit_path,
             sdrd_address: options.sdrd_address,
             sdrd_timeout: Duration::from_millis(options.sdrd_timeout_ms),
             survey_gain_db: options.survey_gain_db,
@@ -186,6 +191,17 @@ fn run() -> AppResult<()> {
             Err(RecvTimeoutError::Disconnected) => break,
         }
     }
+    if app.active_recognition.is_some() {
+        app.stop("退出前停止识别")?;
+        let deadline = Instant::now() + Duration::from_secs(35);
+        while app.active_recognition.is_some() {
+            if Instant::now() >= deadline {
+                return Err(invalid_input("recognition shutdown remains unconfirmed").into());
+            }
+            app.poll()?;
+            thread::sleep(EVENT_POLL_INTERVAL);
+        }
+    }
     app.close()?;
     Ok(())
 }
@@ -271,6 +287,7 @@ fn handle_input(app: &mut ConsoleApp, input: &str) -> AppResult<bool> {
                 Err(error) => println!("自动巡航参数无效：{error}"),
             }
         }
+        _ if input.starts_with("/recognize ") => app.propose_recognition(input[11..].trim())?,
         _ if input.starts_with('/') => println!("未知命令；输入 /help 查看可用命令。"),
         _ if app.agent_cycle_active => {
             app.queue_model_input(input, SessionQueueKind::Steer)?
@@ -390,6 +407,9 @@ struct ConsoleApp {
     executor: Option<SdrdActionAdapter>,
     active_execution: Option<ActiveExecution>,
     active_sweep: Option<ActiveSweep>,
+    active_recognition: Option<ActiveRecognition>,
+    engineering_recognition: Option<EngineeringRecognition>,
+    recognition_audit_path: Option<PathBuf>,
     sdrd_address: Option<SocketAddr>,
     sdrd_timeout: Duration,
     survey_gain_db: i16,
@@ -403,7 +423,16 @@ struct ConsoleApp {
     resume_summary: Option<String>,
 }
 
+struct ActiveRecognition {
+    request_id: u64,
+    session_generation: u64,
+    cancellation: RecognitionCancellation,
+    worker: JoinHandle<Result<RecognitionExecutionReport, SdrError>>,
+}
+
 struct ConsoleConnectionOptions {
+    engineering_recognition: Option<EngineeringRecognition>,
+    recognition_audit_path: Option<PathBuf>,
     socket_path: PathBuf,
     recognizer_socket: PathBuf,
     recognizer_admission: PathBuf,
@@ -523,6 +552,9 @@ impl ConsoleApp {
             executor: options.executor,
             active_execution: None,
             active_sweep: None,
+            active_recognition: None,
+            engineering_recognition: options.engineering_recognition,
+            recognition_audit_path: options.recognition_audit_path,
             sdrd_address: options.sdrd_address,
             sdrd_timeout: options.sdrd_timeout,
             survey_gain_db: options.survey_gain_db,
@@ -540,7 +572,10 @@ impl ConsoleApp {
     }
 
     fn submit(&mut self, instruction: String) -> AppResult<()> {
-        if self.active_execution.is_some() || self.active_sweep.is_some() || self.agent_cycle_active
+        if self.active_execution.is_some()
+            || self.active_sweep.is_some()
+            || self.active_recognition.is_some()
+            || self.agent_cycle_active
         {
             println!("当前步骤尚未结束；可输入 /stop 立即停止，或等待完成后再提交新指令。");
             return Ok(());
@@ -588,7 +623,10 @@ impl ConsoleApp {
             println!("停止请求正在处理；{}不会进入旧 generation。", kind.label());
             return Ok(());
         }
-        if self.active_execution.is_some() || self.active_sweep.is_some() {
+        if self.active_execution.is_some()
+            || self.active_sweep.is_some()
+            || self.active_recognition.is_some()
+        {
             println!("硬件动作正在执行；只能使用 /stop，不能向已结束的模型轮次排队。");
             return Ok(());
         }
@@ -665,7 +703,10 @@ impl ConsoleApp {
     }
 
     fn renew(&mut self, state: ControllerState, message: &str) -> AppResult<()> {
-        if self.active_execution.is_some() || self.active_sweep.is_some() || self.agent_cycle_active
+        if self.active_execution.is_some()
+            || self.active_sweep.is_some()
+            || self.active_recognition.is_some()
+            || self.agent_cycle_active
         {
             return Err(invalid_input(
                 "cannot renew the session while a planning or hardware step is active",
@@ -680,6 +721,7 @@ impl ConsoleApp {
         self.template.state = state;
         self.template.observation.health.recognizer_available = false;
         self.template.session_generation = self.session_generation;
+        self.template.observation.recognition = None;
         self.pending = None;
         self.requests.clear();
         self.pending_session_commands.clear();
@@ -693,7 +735,14 @@ impl ConsoleApp {
     }
 
     fn approve(&mut self) -> AppResult<()> {
-        if self.active_execution.is_some() || self.active_sweep.is_some() {
+        if self.agent_cycle_active {
+            println!("等待模型结束确认后再批准；原计划仍保留。");
+            return Ok(());
+        }
+        if self.active_execution.is_some()
+            || self.active_sweep.is_some()
+            || self.active_recognition.is_some()
+        {
             println!("已有硬件动作正在执行。");
             return Ok(());
         }
@@ -704,7 +753,8 @@ impl ConsoleApp {
                 current.session_generation = self.session_generation;
                 refresh_recognizer(&mut current, self.recognizer.as_mut());
                 if plan.session_generation != self.session_generation
-                    || !current.observation.health.recognizer_available
+                    || (self.engineering_recognition.is_none()
+                        && !current.observation.health.recognizer_available)
                 {
                     println!("识别批准已失效：当前 Worker 未通过准入或会话已经改变。");
                     return Ok(());
@@ -718,10 +768,225 @@ impl ConsoleApp {
                     let authorization = ExecutionAuthorization::operator_approved(&plan);
                     self.start_execution(plan, authorization)?;
                 }
+                ProposedAction::RunLocalRecognition { .. } => self.start_recognition(plan)?,
                 _ => println!("request={} 没有可批准的生产执行动作。", plan.request_id),
             }
         } else {
             println!("没有等待批准的计划。")
+        }
+        Ok(())
+    }
+
+    fn audit_recognition(
+        &self,
+        phase: &'static str,
+        request_id: u64,
+        generation: u64,
+        payload: Value,
+    ) -> AppResult<()> {
+        use sdr_agent_controller::runner::{AuditEvent, AuditSink, JsonlAuditAdapter};
+        if let Some(path) = &self.recognition_audit_path {
+            let mut sink = JsonlAuditAdapter::open(path)?;
+            sink.append(&AuditEvent{schema_version:1,timestamp_unix_ms:u128::from(sdr_agent_controller::recognition_execution::now_ms()),phase,request_id,session_generation:generation,payload})?;
+        } else if self.engineering_recognition.is_some() {
+            return Err(invalid_input("engineering recognition audit is required").into());
+        }
+        Ok(())
+    }
+
+    fn propose_recognition(&mut self, candidate_id: &str) -> AppResult<()> {
+        if self.agent_cycle_active
+            || self.active_execution.is_some()
+            || self.active_sweep.is_some()
+            || self.active_recognition.is_some()
+            || self.pending.is_some()
+        {
+            println!("当前步骤尚未结束，不能加入工程识别。");
+            return Ok(());
+        }
+        let Some(config) = self.engineering_recognition.clone() else {
+            println!("工程识别入口未配置；生产能力仍关闭。");
+            return Ok(());
+        };
+        if !self.refresh_sdr_health(true)? {
+            return Ok(());
+        }
+        let mut request = self.template.clone();
+        request.request_id = self.next_request_id;
+        request.session_generation = self.session_generation;
+        request.instruction = format!("人工请求工程识别候选 {candidate_id}");
+        let response: PlanResponse = serde_json::from_value(
+            json!({"protocol_version":1,"request_id":request.request_id,"session_generation":request.session_generation,"status":"ok","planner":{"provider":"operator-engineering","model":"rf-v1"},"action":{"kind":"run_local_recognition","candidate_id":candidate_id}}),
+        )?;
+        let plan = config.validate_plan(&request, response)?;
+        self.next_request_id = self
+            .next_request_id
+            .checked_add(1)
+            .ok_or_else(|| invalid_input("request exhausted"))?;
+        self.audit_recognition(
+            "recognition_proposed",
+            plan.request_id,
+            plan.session_generation,
+            json!({"plan":plan,"maximum_rx_bytes":MAX_RX_BYTES,"engineering_only":true}),
+        )?;
+        self.pending = Some(plan);
+        if self.cruise.is_active() {
+            self.cruise.stop(CruiseStopReason::ApprovalRequired);
+            self.print_cruise_status();
+        }
+        println!("工程识别等待人工批准：{} 字节上限（新鲜精查 + 四窗采集），生产能力仍为 false；/approve 或 /reject。",MAX_RX_BYTES);
+        Ok(())
+    }
+
+    fn start_recognition(&mut self, plan: ValidatedPlan) -> AppResult<()> {
+        let Some(config) = self.engineering_recognition.clone() else {
+            println!("识别执行器未配置。");
+            return Ok(());
+        };
+        let address = self
+            .sdrd_address
+            .ok_or_else(|| invalid_input("recognition requires SDRD"))?;
+        let mut request = self.template.clone();
+        request.request_id = plan.request_id;
+        request.session_generation = self.session_generation;
+        let cancellation = match self
+            .cruise
+            .recognition_deadline(Instant::now(), MAX_RX_BYTES)
+        {
+            Ok(Some(deadline)) => RecognitionCancellation::with_deadline(deadline),
+            Ok(None) => RecognitionCancellation::default(),
+            Err(reason) => {
+                self.cruise.stop(reason);
+                self.print_cruise_status();
+                return Ok(());
+            }
+        };
+        config.preflight(&request, &plan)?;
+        let authorization = ExecutionAuthorization::operator_approved(&plan);
+        let signal = cancellation.clone();
+        let request_id = plan.request_id;
+        let session_generation = plan.session_generation;
+        self.audit_recognition(
+            "recognition_authorized",
+            request_id,
+            session_generation,
+            json!({"plan":plan,"maximum_rx_bytes":MAX_RX_BYTES,"engineering_only":true}),
+        )?;
+        let worker = thread::spawn(move || {
+            config.execute(address, &request, &plan, &authorization, &signal)
+        });
+        self.active_recognition = Some(ActiveRecognition {
+            request_id,
+            session_generation,
+            cancellation,
+            worker,
+        });
+        self.template.state = ControllerState::Recognizing;
+        self.template.observation.recognition = None;
+
+        if self.cruise.mode() == InteractionMode::AutomaticCruise {
+            self.cruise.record_execution(MAX_RX_BYTES);
+        }
+        self.record(format!("recognition authorized request {request_id} maximum_rx_bytes={MAX_RX_BYTES} engineering_only=true"));
+        println!("工程识别 request={request_id} 已开始；/stop 将联合停止并等待恢复确认。");
+        Ok(())
+    }
+
+    fn poll_recognition(&mut self) -> AppResult<()> {
+        if !self
+            .active_recognition
+            .as_ref()
+            .is_some_and(|a| a.worker.is_finished())
+        {
+            return Ok(());
+        }
+        let active = self
+            .active_recognition
+            .take()
+            .ok_or_else(|| invalid_input("recognition owner missing"))?;
+        let result = active
+            .worker
+            .join()
+            .map_err(|_| invalid_input("recognition worker panicked"))?;
+        if active.cancellation.deadline_expired() {
+            self.cruise.stop(CruiseStopReason::DurationBudgetExhausted);
+        }
+        if active.cancellation.cancelled() || active.session_generation != self.session_generation {
+            let restored = result.is_ok() || matches!(&result,Err(e) if e.code=="cancelled");
+            self.audit_recognition(
+                "recognition_cancelled",
+                active.request_id,
+                active.session_generation,
+                json!({"restored":restored,"late_result_discarded":true}),
+            )?;
+            self.record(format!(
+                "recognition cancelled request {} restored={restored}",
+                active.request_id
+            ));
+            let state = if restored {
+                ControllerState::Holding
+            } else {
+                ControllerState::Faulted
+            };
+            let message = self
+                .deferred_renew
+                .take()
+                .map(|(_, m)| m)
+                .unwrap_or_else(|| "识别已停止，迟到结果已丢弃".into());
+            if self.agent_cycle_active {
+                self.deferred_renew = Some((state, message));
+            } else {
+                self.renew(state, &message)?;
+            }
+            return Ok(());
+        }
+        match result {
+            Ok(report) => {
+                if report.request_id != active.request_id
+                    || report.session_generation != active.session_generation
+                {
+                    return Err(invalid_input("stale recognition report").into());
+                }
+                self.audit_recognition("recognition_observation",active.request_id,active.session_generation,json!({"observation":report.result.observation,"archive_id":report.archive_id,"archive_error":report.archive_error,"restored":report.post_execution_sdr.healthy}))?;
+                self.template.state = ControllerState::Idle;
+                self.template.observation = report.next_observation;
+                self.emit_observation()?;
+                self.record(format!(
+                    "recognition completed request {} archive_id={:?} archive_error={:?}",
+                    active.request_id, report.archive_id, report.archive_error
+                ));
+                println!(
+                    "RecognitionObservation> {}",
+                    serde_json::to_string(&report.result.observation)?
+                );
+                println!("识别工程结果：生产状态 {:?}，归档 {:?}，归档错误 {:?}；实验 top-1 不作为独立标签。",report.result.observation.status,report.archive_id,report.archive_error);
+                self.auto_next_instruction = None;
+                self.audit_recognition(
+                    "recognition_feedback_requested",
+                    active.request_id,
+                    active.session_generation,
+                    json!({"feedback_request_id":self.next_request_id,"engineering_only":true}),
+                )?;
+                // Submit one planning turn even when step mode or the cruise
+                // approval gate has stopped automatic execution. Its proposal
+                // still follows the normal step/cruise authorization policy.
+                self.submit("请依据最新紧凑识别摘要给出一个受限 RX 下一步。当前状态若为 unavailable 或 error，只返回 hold 并解释原因；未标注实验预测不能称为已确认分类。".into())?;
+            }
+            Err(error) => {
+                self.template.state = ControllerState::Faulted;
+                self.cruise.stop(CruiseStopReason::Fault);
+                self.record(format!(
+                    "recognition failed request {}: {}",
+                    active.request_id, error.code
+                ));
+                self.audit_recognition(
+                    "recognition_failed",
+                    active.request_id,
+                    active.session_generation,
+                    json!({"code":error.code}),
+                )?;
+                println!("识别失败：{error}");
+            }
         }
         Ok(())
     }
@@ -758,7 +1023,10 @@ impl ConsoleApp {
     }
 
     fn start_initial_survey(&mut self, options: InitialSurveyOptions) -> AppResult<()> {
-        if self.active_execution.is_some() || self.active_sweep.is_some() || self.agent_cycle_active
+        if self.active_execution.is_some()
+            || self.active_sweep.is_some()
+            || self.active_recognition.is_some()
+            || self.agent_cycle_active
         {
             return Err(
                 invalid_input("cannot start initial survey while another step is active").into(),
@@ -817,7 +1085,10 @@ impl ConsoleApp {
     }
 
     fn start_planned_survey(&mut self, plan: ValidatedPlan) -> AppResult<()> {
-        if self.active_execution.is_some() || self.active_sweep.is_some() {
+        if self.active_execution.is_some()
+            || self.active_sweep.is_some()
+            || self.active_recognition.is_some()
+        {
             return Err(
                 invalid_input("cannot start planned survey while another step is active").into(),
             );
@@ -913,7 +1184,10 @@ impl ConsoleApp {
     }
 
     fn start_candidate_inspection(&mut self, plan: ValidatedPlan) -> AppResult<()> {
-        if self.active_execution.is_some() || self.active_sweep.is_some() {
+        if self.active_execution.is_some()
+            || self.active_sweep.is_some()
+            || self.active_recognition.is_some()
+        {
             return Err(
                 invalid_input("cannot inspect a candidate while another step is active").into(),
             );
@@ -1299,6 +1573,12 @@ impl ConsoleApp {
             }
             println!("已要求上游停止当前生成；收到结束确认后会使旧计划失效。");
         }
+        if let Some(active) = &self.active_recognition {
+            active.cancellation.cancel();
+            self.deferred_renew = Some((ControllerState::Holding, message.to_owned()));
+            println!("已请求联合停止 SDR/Worker；回收和恢复确认前不接受新动作。");
+            return Ok(());
+        }
         if self.active_sweep.is_some() {
             return self.stop_sweep(message);
         }
@@ -1478,7 +1758,8 @@ impl ConsoleApp {
         }
         let had_active_step = self.agent_cycle_active
             || self.active_execution.is_some()
-            || self.active_sweep.is_some();
+            || self.active_sweep.is_some()
+            || self.active_recognition.is_some();
         if had_active_step {
             self.stop("已切换到逐步人工批准模式")?;
         }
@@ -1502,7 +1783,10 @@ impl ConsoleApp {
         if mission.is_empty() || mission.len() > 700 || mission.chars().any(char::is_control) {
             return Err(invalid_input("自动巡航任务必须为 1–700 字节的单行文本").into());
         }
-        if self.agent_cycle_active || self.active_execution.is_some() || self.active_sweep.is_some()
+        if self.agent_cycle_active
+            || self.active_execution.is_some()
+            || self.active_sweep.is_some()
+            || self.active_recognition.is_some()
         {
             println!("当前步骤尚未结束；请先 /stop，再启动新的自动巡航。");
             return Ok(());
@@ -1539,6 +1823,7 @@ impl ConsoleApp {
     }
 
     fn poll(&mut self) -> AppResult<()> {
+        self.poll_recognition()?;
         while let Some(frame) = self.client.try_read()? {
             self.handle_frame(frame)?;
         }
@@ -1547,6 +1832,7 @@ impl ConsoleApp {
         if !self.agent_cycle_active
             && self.active_execution.is_none()
             && self.active_sweep.is_none()
+            && self.active_recognition.is_none()
         {
             if let Some((state, message)) = self.deferred_renew.take() {
                 self.renew(state, &message)?;
@@ -1564,6 +1850,7 @@ impl ConsoleApp {
             if self.agent_cycle_active
                 || self.active_execution.is_some()
                 || self.active_sweep.is_some()
+                || self.active_recognition.is_some()
             {
                 self.stop("自动巡航达到时长上限")?;
             }
@@ -1572,6 +1859,7 @@ impl ConsoleApp {
         if self.agent_cycle_active
             || self.active_execution.is_some()
             || self.active_sweep.is_some()
+            || self.active_recognition.is_some()
             || self.pending.is_some()
             || Instant::now() < self.next_auto_attempt
         {
@@ -1613,6 +1901,7 @@ impl ConsoleApp {
         refresh_recognizer(&mut request, self.recognizer.as_mut());
         self.template.observation.health.recognizer_available =
             request.observation.health.recognizer_available;
+        self.template.observation.recognition = request.observation.recognition;
     }
 
     fn refresh_sdr_health(&mut self, announce_failure: bool) -> AppResult<bool> {
@@ -1683,7 +1972,10 @@ impl ConsoleApp {
     }
 
     fn close(&mut self) -> AppResult<()> {
-        if self.active_execution.is_some() || self.active_sweep.is_some() || self.agent_cycle_active
+        if self.active_execution.is_some()
+            || self.active_sweep.is_some()
+            || self.active_recognition.is_some()
+            || self.agent_cycle_active
         {
             self.stop("终端关闭，硬件动作已停止")?;
         }
@@ -1887,7 +2179,11 @@ impl ConsoleApp {
                     .cloned()
                     .ok_or_else(|| invalid_input("plan refers to an unknown request"))?;
                 refresh_recognizer(&mut request, self.recognizer.as_mut());
-                let plan = ControllerPolicy.validate_response(&request, response)?;
+                let plan = if let Some(config) = &self.engineering_recognition {
+                    config.validate_plan(&request, response)?
+                } else {
+                    ControllerPolicy.validate_response(&request, response)?
+                };
                 let decision_basis = describe_decision_basis(&plan, &request);
                 let requires_early_abort = matches!(
                     &plan.action,
@@ -2266,6 +2562,8 @@ impl SessionClient {
 }
 
 struct Options {
+    engineering_recognition: Option<EngineeringRecognition>,
+    recognition_audit_path: Option<PathBuf>,
     socket_path: PathBuf,
     recognizer_socket: PathBuf,
     recognizer_admission: PathBuf,
@@ -2281,6 +2579,9 @@ struct Options {
 
 impl Options {
     fn parse() -> AppResult<Self> {
+        let mut engineering_root = None;
+        let mut recognition_audit_path = None;
+        let mut recognition_archive = None;
         let mut socket_path = PathBuf::from("/run/sdr-agent/session.sock");
         let mut recognizer_socket = PathBuf::from(DEFAULT_RECOGNIZER_SOCKET);
         let mut recognizer_admission = PathBuf::from(DEFAULT_ADMISSION_PATH);
@@ -2300,6 +2601,25 @@ impl Options {
         let mut args = env::args().skip(1);
         while let Some(arg) = args.next() {
             match arg.as_str() {
+                "--recognition-audit" => {
+                    recognition_audit_path =
+                        Some(PathBuf::from(args.next().ok_or_else(|| {
+                            invalid_input("missing recognition audit path")
+                        })?))
+                }
+                "--engineering-recognition-root" => {
+                    engineering_root = Some(PathBuf::from(
+                        args.next()
+                            .ok_or_else(|| invalid_input("missing engineering root"))?,
+                    ))
+                }
+                "--recognition-archive" => {
+                    recognition_archive = Some(
+                        args.next()
+                            .ok_or_else(|| invalid_input("missing archive address"))?
+                            .parse::<SocketAddr>()?,
+                    )
+                }
                 "--recognizer-socket" => {
                     recognizer_socket = PathBuf::from(
                         args.next()
@@ -2449,7 +2769,26 @@ impl Options {
         {
             return Err(invalid_input("--session-state must be an absolute path or off").into());
         }
+        let engineering_recognition = match (engineering_root, recognition_archive) {
+            (Some(root), Some(archive))
+                if sdrd_address.is_some()
+                    && recognition_audit_path
+                        .as_ref()
+                        .is_some_and(|p| p.is_absolute()) =>
+            {
+                Some(EngineeringRecognition::new(root, archive)?)
+            }
+            (None, None) => None,
+            _ => {
+                return Err(invalid_input(
+                    "engineering recognition requires root, archive, absolute recognition audit path and SDRD address together",
+                )
+                .into())
+            }
+        };
         Ok(Self {
+            engineering_recognition,
+            recognition_audit_path,
             socket_path,
             recognizer_socket,
             recognizer_admission,
@@ -2490,8 +2829,9 @@ fn print_help() {
          人工模式：/mode manual，/approve 批准当前步骤，/reject 拒绝当前步骤\n\
          自动巡航：/auto start [--steps 1–128] [--seconds 10–1800] [--mib 正整数] <任务>\n\
          不填 --mib 时，按步数 × 单动作 IQ 上限自动推导有限预算。\n\
-         默认 8 步、120 秒、累计 64 MiB；两类失败各重试 5 次，每次间隔 10 秒\n\
+         默认 8 步、120 秒；累计字节预算按当前限制推导。两类失败各重试 5 次，每次间隔 10 秒\n\
          流式输入：普通文本或 /steer 会立即引导当前轮，/follow-up 在本轮后处理；队列最多 4 条\n\
+         工程识别：配置后 /recognize <候选ID>，仍须 /approve；不会开启生产能力。\n\
          会话：/pause 暂停，/resume 继续，/stop 始终优先立即停止，/quit 退出"
     );
 }
@@ -2981,6 +3321,9 @@ mod tests {
                 executor: None,
                 active_execution: None,
                 active_sweep: None,
+                active_recognition: None,
+                engineering_recognition: None,
+                recognition_audit_path: None,
                 sdrd_address: None,
                 sdrd_timeout: Duration::from_secs(1),
                 survey_gain_db: 20,
@@ -2995,6 +3338,171 @@ mod tests {
             },
             peer,
         )
+    }
+
+    fn synthetic_recognition_report(app: &ConsoleApp) -> RecognitionExecutionReport {
+        use sdr_agent_controller::recognition_result::{
+            CalibrationStatus, RecognitionObservation, RecognitionResult, RecognitionStatus,
+        };
+        let mut next = app.template.observation.clone();
+        let observation = RecognitionObservation {
+            schema_version: 1,
+            candidate_id: "synthetic-candidate".into(),
+            request_id: 1,
+            session_generation: 1,
+            observed_at_unix_ms: sdr_agent_controller::recognition_execution::now_ms(),
+            status: RecognitionStatus::Error,
+            reason: Some("synthetic_late".into()),
+            class: None,
+            calibrated_confidence: None,
+            calibration_status: CalibrationStatus::Unavailable,
+            decision_references: None,
+            identity: None,
+            source: None,
+            quality: None,
+            timing: None,
+        };
+        next.recognition = Some(observation.clone());
+        RecognitionExecutionReport {
+            engineering_only: true,
+            maximum_rx_bytes: MAX_RX_BYTES,
+            request_id: 1,
+            session_generation: 1,
+            result: RecognitionResult {
+                schema_version: 1,
+                observation,
+                experimental_prediction: None,
+                uncalibrated_probability: None,
+                experimental_batch: None,
+            },
+            archive_id: Some(1),
+            archive_error: None,
+            post_execution_sdr: sdr_agent_controller::sdr::SdrSnapshot {
+                online: true,
+                healthy: true,
+                health_flags: 0,
+                iio_visible: true,
+                can_retune: true,
+                can_capture_iq: true,
+                rx_input: None,
+            },
+            next_observation: next,
+        }
+    }
+
+    #[test]
+    fn completed_recognition_starts_one_compact_feedback_turn_in_step_mode() {
+        use std::io::{BufRead, BufReader};
+        let (mut app, peer) = test_console();
+        app.template.limits.max_span_hz = 5_930_000_000;
+        app.template.observation.candidates.push(
+            sdr_agent_controller::protocol::CandidateSummary {
+                id: "synthetic-candidate".into(),
+                center_hz: 433_920_000,
+                bandwidth_hz: 200_000,
+                peak_dbfs: -30.0,
+                snr_db: 10.0,
+                age_ms: 0,
+            },
+        );
+        let report = synthetic_recognition_report(&app);
+        app.active_recognition = Some(ActiveRecognition {
+            request_id: 1,
+            session_generation: 1,
+            cancellation: RecognitionCancellation::default(),
+            worker: thread::spawn(move || Ok(report)),
+        });
+        let deadline = Instant::now() + Duration::from_secs(2);
+        while !app
+            .active_recognition
+            .as_ref()
+            .unwrap()
+            .worker
+            .is_finished()
+        {
+            assert!(Instant::now() < deadline);
+            thread::sleep(Duration::from_millis(1));
+        }
+        app.poll_recognition().unwrap();
+        assert!(app.agent_cycle_active);
+        assert_eq!(app.active_request_id, Some(2));
+        assert!(app.active_recognition.is_none());
+        assert!(app.active_execution.is_none());
+        assert!(app.active_sweep.is_none());
+        assert_eq!(app.cruise.mode(), InteractionMode::StepApproval);
+        assert!(!app.template.observation.health.recognizer_available);
+        let request = &app.requests[&2];
+        assert_eq!(
+            request.observation.recognition.as_ref().unwrap().request_id,
+            1
+        );
+        let wire = serde_json::to_string(request).unwrap();
+        assert!(!wire.contains("experimental_batch"));
+        assert!(!wire.contains("logits"));
+        assert!(!wire.contains("iq_path"));
+        peer.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
+        let mut reader = BufReader::new(peer);
+        let mut line = String::new();
+        reader.read_line(&mut line).unwrap();
+        assert!(line.contains("prompt"));
+        app.poll_recognition().unwrap();
+        assert_eq!(app.next_request_id, 3);
+    }
+
+    #[test]
+    fn recognition_stop_retains_owner_and_discards_late_result_before_renew() {
+        let (mut app, mut peer) = test_console();
+        app.cruise.start(65536, 2, 60, Instant::now()).unwrap();
+        let signal = RecognitionCancellation::default();
+        let (release, wait) = mpsc::channel();
+        let report = synthetic_recognition_report(&app);
+        app.active_recognition = Some(ActiveRecognition {
+            request_id: 1,
+            session_generation: 1,
+            cancellation: signal.clone(),
+            worker: thread::spawn(move || {
+                wait.recv_timeout(Duration::from_secs(2)).unwrap();
+                Ok(report)
+            }),
+        });
+        app.stop("test stop").unwrap();
+        assert!(signal.cancelled());
+        assert_eq!(app.session_generation, 1);
+        assert!(app.active_recognition.is_some());
+        assert!(!app.cruise.is_active());
+        assert!(app.renew(ControllerState::Holding, "too early").is_err());
+        app.submit("must not execute".into()).unwrap();
+        app.start_auto("must not restart", 2, 60, Some(65536))
+            .unwrap();
+        assert_eq!(app.session_generation, 1);
+        assert_eq!(app.next_request_id, 2);
+        peer.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
+        let acknowledger = thread::spawn(move || {
+            use std::io::{BufRead, BufReader};
+            let mut reader = BufReader::new(peer.try_clone().unwrap());
+            for _ in 0..2 {
+                let mut line = String::new();
+                reader.read_line(&mut line).unwrap();
+                let q: Value = serde_json::from_str(&line).unwrap();
+                let reply = json!({"type":"response","command_id":q["command_id"],"session_generation":q["session_generation"],"success":true,"data":{}});
+                writeln!(peer, "{}", reply).unwrap();
+            }
+        });
+        release.send(()).unwrap();
+        while !app
+            .active_recognition
+            .as_ref()
+            .unwrap()
+            .worker
+            .is_finished()
+        {
+            thread::sleep(Duration::from_millis(1));
+        }
+        app.poll_recognition().unwrap();
+        acknowledger.join().unwrap();
+        assert_eq!(app.session_generation, 2);
+        assert!(app.template.observation.recognition.is_none());
+        assert!(app.active_recognition.is_none());
     }
 
     fn reply_plan(action: ProposedAction) -> ValidatedPlan {
@@ -3391,6 +3899,49 @@ mod tests {
         app.queue_model_input("补充", SessionQueueKind::FollowUp)
             .unwrap();
         assert!(!app.requests[&3].observation.health.recognizer_available);
+    }
+
+    #[test]
+    fn engineering_step_and_cruise_proposals_cannot_skip_operator_approval() {
+        for automatic in [false, true] {
+            let (mut app, _peer) = test_console();
+            let mut request = test_request(7, 1);
+            request.limits.max_span_hz = 5_930_000_000;
+            request
+                .observation
+                .candidates
+                .push(sdr_agent_controller::protocol::CandidateSummary {
+                    id: "candidate-1".into(),
+                    center_hz: 433_920_000,
+                    bandwidth_hz: 200_000,
+                    peak_dbfs: -20.0,
+                    snr_db: 10.0,
+                    age_ms: 0,
+                });
+            app.template = request.clone();
+            app.requests.insert(7, request);
+            app.engineering_recognition = Some(
+                EngineeringRecognition::new(
+                    PathBuf::from("/missing-s5"),
+                    "127.0.0.1:9".parse().unwrap(),
+                )
+                .unwrap(),
+            );
+            if automatic {
+                app.cruise.start(65536, 2, 60, Instant::now()).unwrap();
+            }
+            app.handle_event(json!({"type":"event","session_generation":1,"event":"plan_proposed","data":{"protocol_version":1,"request_id":7,"session_generation":1,"status":"ok","planner":{"provider":"synthetic-regression","model":"fixture"},"action":{"kind":"run_local_recognition","candidate_id":"candidate-1"}}})).unwrap();
+            assert!(app.pending.as_ref().unwrap().approval_required);
+            assert!(app.active_recognition.is_none());
+            assert!(!app.template.observation.health.recognizer_available);
+            if automatic {
+                assert!(!app.cruise.is_active());
+                assert_eq!(
+                    app.cruise.snapshot(Instant::now()).stop_reason,
+                    Some(CruiseStopReason::ApprovalRequired)
+                );
+            }
+        }
     }
 
     #[test]

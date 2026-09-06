@@ -169,3 +169,11 @@ Spark candidate gateway. This option adds startup and whole-batch serialization,
 with inherited ownership through child/parent death. The default standalone S3
 path remains unchanged. See [`GPU_LEASE_S4A_INTERFACE.md`](GPU_LEASE_S4A_INTERFACE.md)
 for the verified candidate pair and its separate deployment boundary.
+
+## S5 native handoff cancellation correction
+
+On a failed native submit, close/remove producer-owned incoming before checking
+service-owned IQ. This prevents a later rename from racing a completed ownership
+check. If handoff already won, cancellation and owned cleanup must be confirmed
+by the service. The wire contract is unchanged; the delayed-handoff regression
+is part of the S5 candidate validation.

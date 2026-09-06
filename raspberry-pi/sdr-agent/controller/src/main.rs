@@ -72,6 +72,8 @@ fn run() -> AppResult<()> {
     let mut sweep_point_timeout_ms = 250_u32;
     let mut recognition_profile = None;
     let mut supervisor_root: Option<PathBuf> = None;
+    let mut engineering_root: Option<PathBuf> = None;
+    let mut recognition_archive: Option<SocketAddr> = None;
     let mut recognition_target = None;
     let mut sigmf_directory = None;
     let mut repository_root = PathBuf::from(".");
@@ -99,6 +101,8 @@ fn run() -> AppResult<()> {
             "--session-generation" => session_generation = Some(value.parse::<u64>()?),
             "--survey-gain-db" => survey_gain_db = value.parse::<i16>()?,
             "--sweep-point-timeout-ms" => sweep_point_timeout_ms = value.parse::<u32>()?,
+            "--engineering-recognition-root" => engineering_root = Some(PathBuf::from(value)),
+            "--recognition-archive" => recognition_archive = Some(value.parse()?),
             "--recognizer-supervisor-root" => supervisor_root = Some(PathBuf::from(value)),
             "--recognition-profile" => recognition_profile = Some(PathBuf::from(value)),
             "--recognition-target" => recognition_target = Some(PathBuf::from(value)),
@@ -151,6 +155,20 @@ fn run() -> AppResult<()> {
         return Err(invalid_input("--sigmf-directory is valid only in sweep mode").into());
     }
 
+    let engineering = match (engineering_root, recognition_archive) {
+        (Some(root), Some(archive)) if matches!(mode.as_str(), "run-once" | "execute") => Some(
+            sdr_agent_controller::recognition_execution::EngineeringRecognition::new(
+                root, archive,
+            )?,
+        ),
+        (None, None) => None,
+        _ => {
+            return Err(invalid_input(
+                "engineering recognition requires root and archive in run-once or execute mode",
+            )
+            .into())
+        }
+    };
     if mode == "recognize-supervised-replay" {
         let root = supervisor_root
             .ok_or_else(|| invalid_input("replay requires --recognizer-supervisor-root"))?;
@@ -418,10 +436,17 @@ fn run() -> AppResult<()> {
             &recognizer_socket,
             &recognizer_admission,
         ));
-        println!(
-            "{}",
-            serde_json::to_string(&runner.run_once(request, approval)?)?
-        );
+        let result = if let Some(config) = engineering {
+            let cancel =
+                sdr_agent_controller::recognition_execution::RecognitionCancellation::default();
+            runner = runner.with_engineering_recognition(config, address, cancel.clone());
+            with_recognition_signals(address, request.session_generation, cancel, || {
+                runner.run_once(request, approval)
+            })?
+        } else {
+            runner.run_once(request, approval)?
+        };
+        println!("{}", serde_json::to_string(&result)?);
         return Ok(());
     }
 
@@ -524,13 +549,49 @@ fn run() -> AppResult<()> {
             &mut UnixRecognizerCapability::new(&recognizer_socket, &recognizer_admission),
         );
         ControllerPolicy.validate_request(&input.request)?;
-        let plan: ValidatedPlan =
-            ControllerPolicy.validate_response(&input.request, input.response)?;
+        let plan: ValidatedPlan = if let Some(config) = &engineering {
+            config.validate_plan(&input.request, input.response)?
+        } else {
+            ControllerPolicy.validate_response(&input.request, input.response)?
+        };
         let authorization = if execution_approval.as_deref() == Some("operator") {
             ExecutionAuthorization::operator_approved(&plan)
         } else {
             ExecutionAuthorization::automatic(&plan)?
         };
+        if let Some(config) = engineering {
+            if matches!(
+                plan.action,
+                sdr_agent_controller::protocol::ProposedAction::RunLocalRecognition { .. }
+            ) {
+                let cancel =
+                    sdr_agent_controller::recognition_execution::RecognitionCancellation::default();
+                let signal = cancel.clone();
+                use sdr_agent_controller::runner::{AuditEvent, AuditSink};
+                let mut audit = JsonlAuditAdapter::open(&audit_log)?;
+                let event = |phase, payload| AuditEvent {
+                    schema_version: 1,
+                    timestamp_unix_ms: u128::from(
+                        sdr_agent_controller::recognition_execution::now_ms(),
+                    ),
+                    phase,
+                    request_id: plan.request_id,
+                    session_generation: plan.session_generation,
+                    payload,
+                };
+                audit.append(&event("recognition_authorized",serde_json::json!({"plan":plan,"engineering_only":true,"maximum_rx_bytes":sdr_agent_controller::recognition_execution::MAX_RX_BYTES})))?;
+                let outcome =
+                    with_recognition_signals(address, plan.session_generation, cancel, || {
+                        config.execute(address, &input.request, &plan, &authorization, &signal)
+                    });
+                match &outcome {
+                    Ok(report)=>audit.append(&event("recognition_observation",serde_json::json!({"observation":report.result.observation,"archive_id":report.archive_id,"archive_error":report.archive_error})))?,
+                    Err(error)=>audit.append(&event("recognition_failed",serde_json::json!({"message":error.to_string().chars().take(512).collect::<String>()})))?,
+                }
+                println!("{}", serde_json::to_string(&outcome?)?);
+                return Ok(());
+            }
+        }
         let mut executor = SdrdActionAdapter::new(address, Duration::from_millis(sdrd_timeout_ms));
         println!(
             "{}",
@@ -558,6 +619,46 @@ fn run() -> AppResult<()> {
     let plan = controller.decide(&request)?;
     println!("{}", serde_json::to_string(&plan)?);
     Ok(())
+}
+
+fn with_recognition_signals<T, E: std::error::Error + 'static>(
+    address: SocketAddr,
+    generation: u64,
+    cancel: sdr_agent_controller::recognition_execution::RecognitionCancellation,
+    work: impl FnOnce() -> Result<T, E>,
+) -> AppResult<T> {
+    use std::sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    };
+    unsafe {
+        libc::signal(
+            libc::SIGINT,
+            cancel_batch_signal as *const () as libc::sighandler_t,
+        );
+        libc::signal(
+            libc::SIGTERM,
+            cancel_batch_signal as *const () as libc::sighandler_t,
+        );
+    }
+    let done = Arc::new(AtomicBool::new(false));
+    let finished = done.clone();
+    let monitor = std::thread::spawn(move || {
+        while !finished.load(Ordering::Acquire) {
+            if BATCH_CANCELLED.load(Ordering::Acquire) {
+                cancel.cancel();
+                let mut adapter = SdrdActionAdapter::new(address, Duration::from_millis(250));
+                let _ = adapter.cancel(generation);
+            }
+            std::thread::sleep(Duration::from_millis(10));
+        }
+    });
+    let result = work();
+    done.store(true, Ordering::Release);
+    monitor
+        .join()
+        .map_err(|_| invalid_input("recognition signal monitor panicked"))?;
+    result.map_err(|e| e.into())
 }
 
 #[derive(Deserialize)]

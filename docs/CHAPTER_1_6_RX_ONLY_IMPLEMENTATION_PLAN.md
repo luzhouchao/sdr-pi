@@ -30,7 +30,7 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 | 章节 | 已完成的交付边界 | 主要剩余工作 |
 | --- | --- | --- |
 | 第1章 | Agent、Web、终端、Spark 和扫频结果已部署 | 有状态识别结果、持久化/人工删除、紧凑 Agent 反馈 |
-| 第2章 | 扫频/精查/IQ 闭环；S1 能力来源/人工批准代码与隔离验证完成 | 已准入版本部署、识别执行器、Worker-aware stop、结果回灌、固定 Planner 回归 |
+| 第2章 | S1 与 S5 工程 Runner/联合 stop/自动回灌/固定回归完成隔离实机验证 | 已准入版本部署、生产执行与浏览器闭环验收 |
 | 第3章 | P201 RX1 身份、有界采集/传输、恢复和长期重连均已实机验证 | 当前范围无新增硬件实施项 |
 | 第4章 | 扫频/精查、共享 RMS、顺序四窗和 golden parity 已实收 | 将 integration-only profile 随模型准入升级为 production |
 | 第5章 | 语料合同/存储、split 隔离、冻结预处理、checkpoint validation 已完成 | RF-v1 独立证据接入、known-RF/OOD 标签、校准/验收隔离、名称映射、locked test |
@@ -62,7 +62,7 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 
 - [ ] 在实际接收闭环的终端和 Web 展示 classified/rejected/unavailable/error、
       数字标签、名称可信状态、拒识原因、模型/profile、质量、来源和时延；不暴露
-      IQ 路径或张量。S5/S6b 实际闭环验收尚未完成。
+      IQ 路径或张量。S5 原生 Runner 回灌已完成；S6b 浏览器实际闭环验收尚未完成。
   - [x] S2 有状态 observation 合同已完成；S6a 已在归档 Web/终端验证全部展示字段，
         实验回放与合成演示明确分开，未将演示算作生产准入。
 - [x] S6a 将完整识别记录写入既有应用 SQLite，提供可见单条人工删除、分页和
@@ -101,18 +101,16 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
       one-shot automatic 拒绝和批准时重新检查均通过测试。
 - [ ] 在 A1 部署已准入版本并实机验收生产能力与批准执行链；S1 只完成源码和
       隔离 Worker 验证，未替换当前已安装的 Controller/Planner/Web 服务。
-- [ ] 在 one-shot 和交互 Runner 中调用正式 `RecognitionEngine`；真实候选
-      当前因未准入而被拒绝，合成准入测试中的识别计划先经过人工批准门，
-      批准后 one-shot 仍为 `planned_only`，终端仍无生产识别执行器。
-- [ ] 把 classified/rejected/unavailable/error 摘要写回 PlanningContext，启动一轮
-      新 Spark turn，并只允许重新精查、有限再捕获/再识别、换候选、继续扫频、
-      hold 或 stop。
-- [ ] 扩展 `/stop`，同时取消 active SDR capture 和 Recognition Worker，按
-      request ID/session generation 丢弃迟到结果，并让取消可靠释放共享 GPU
-      inference lease。
-- [ ] 建立固定 Planner 回归集，覆盖六类动作、边界、故障和识别结果。当前短烟测
-      BF16 仅 4/5 通过（一次产生越界 48 MS/s，虽被 Rust 安全拒绝），不能把
-      “Policy 拒绝成功”当成 Planner 质量已经完成。
+- [ ] 在 A1 部署已准入 production profile/Worker；普通生产路径仍因准入缺失而拒绝识别。
+  - [x] S5 显式工程执行器已接入 one-shot/execute/交互 Runner，人工批准后执行新鲜
+        精查、RF-v1 四窗、S3/S4a 与 S6a 归档，预算/audit/恢复和精确清理已验证。
+- [x] S5 将紧凑 observation 写回 PlanningContext，并自动启动一次 Spark 规划轮；
+      真实 unavailable 及明确合成的其余状态回归通过，后续仍须正常批准；不宣称
+      生产 classified/rejected 已实收准入。见 [S5 验证](RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md)。
+- [x] S5 联合 `/stop`、generation-bound RX cancel、Worker 回收/共享租约释放和
+      迟到结果隔离已完成源码及有限实机验证；生产服务未替换。
+- [x] 六动作/边界/状态/故障测试与八项真实 Spark 固定回归通过；每个接受提案
+      均经 Rust policy 验证，不再以旧 4/5 短烟测作为当前完成证据。
 
 ## 第3章：P201 Linux/IIO 有界 RX 控制面
 
@@ -281,7 +279,7 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
       `RecognitionObservation`，补齐 classified/rejected/unavailable/error、
       拒识原因和校准状态；只把有界摘要传给 Planner，完整记录保留在 AGX。
       S2 已通过 Rust/Node 合同测试和保留实收报告 replay，并清理临时数据；尚未
-      部署或接入 Runner；结果存储/归档 UI 已由 S6a 补上。见
+      部署；结果存储/归档 UI 已由 S6a 补上，工程 Runner 已由 S5 接入。见
       [`RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md`](RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md)。
 - [x] S1 health/profile/receipt 探测接口和候选失败关闭验证已完成；生产正向
       capability 仍须完整准入和 A1 部署证据。
@@ -305,16 +303,16 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 
 - [`protocol.rs`](../raspberry-pi/sdr-agent/controller/src/protocol.rs) 的
   `RecognitionSummary` 已在 S2 替换为独立的四状态 `RecognitionObservation`，
-  Rust/Node 同步严格校验；部署与真实 Spark 回灌留在 S5/A1。
+  Rust/Node 同步严格校验；S5 已完成真实 Spark 回灌，生产部署留在 A1。
 - [`runner.rs`](../raspberry-pi/sdr-agent/controller/src/runner.rs) 已通过 S1 实时探测
-  生成 `recognizer_available`；识别执行器仍未接入，受控测试的批准计划仍为
-  `planned_only`，真实候选因未准入而先被拒绝。
+  生成 `recognizer_available`；S5 显式工程入口已实际执行，普通生产路径仍因
+  未准入而拒绝，未配置工程执行器时不伪装执行成功。
 - [`policy.rs`](../raspberry-pi/sdr-agent/controller/src/policy.rs) 已对
   `RunLocalRecognition` 要求人工批准，覆盖 step/automatic 两种模式。
 - [`sdr-agent.rs`](../raspberry-pi/sdr-agent/controller/src/bin/sdr-agent.rs) 的交互/
-  巡航路径没有识别执行器；
+  巡航路径已接 S5 工程执行器、批准/预算和联合 stop；
   [`app.js`](../raspberry-pi/sdr-agent/web-console/public/app.js) 已有 S6a 归档结果
-  渲染和删除，实时闭环与 Spark 回灌仍待 S5/S6b。
+  渲染和删除，S5 已完成原生自动回灌，实际浏览器闭环仍待 S6b。
 - [`sdrd_iio.c`](../sdr-system/sdrd/src/sdrd_iio.c) 固定启用
   `voltage0,1` scan pair，并只读验证 `voltage0` 的 `rf_port_select=A_BALANCED`；
   [`sdr.rs`](../raspberry-pi/sdr-agent/controller/src/sdr.rs) 对完整 RX1 身份失败关闭。

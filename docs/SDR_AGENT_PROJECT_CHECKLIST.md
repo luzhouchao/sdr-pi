@@ -17,7 +17,7 @@ this file retains the detailed delivery and evidence ledger.
 以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
 编号表示范围，不表示施工先后；实际顺序见
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
-S1/S2/V1a/S3/S4a 已完成；S6a 结果归档源码和隔离 Web/终端/浏览器验证完成，生产服务未替换。
+S1/S2/V1a/S3/S4a/S6a 已完成；S5 Runner 源码和隔离真实 RX/Worker/Spark 验证及清理完成，生产服务未替换。
 
 - [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
 - [x] AGX 扫频/精查、结果存储和 RX 语料基础、split 隔离完成（第1/4/5章）。
@@ -29,7 +29,7 @@ S1/S2/V1a/S3/S4a 已完成；S6a 结果归档源码和隔离 Web/终端/浏览�
 - [ ] S4：共享 GPU 调度与持续资源验收。
   - [x] S4a：共享推理租约、串行执行、取消/故障释放和隔离实机正确性完成；未部署，不代表 S4b 完成。
   - [ ] S4b：最终代表性负载下的显存/RSS/队列/热稳定性证据。
-- [ ] S5：Runner 识别执行、批准、预算/audit、联合 stop、Spark 回灌及固定 Planner 回归。
+- [x] S5：Runner 工程识别执行、人工批准、预算/audit、联合 stop、自动 Spark 回灌及固定回归完成源码与有限实机验证；精确清理完成，生产能力仍为 false。见 [S5 验证](RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md)。
 - [ ] S6：用户识别结果交付。
   - [x] S6a：完整结果保存/恢复/查看/删除完成源码及隔离 replay/演示验证；复用应用 SQLite，不额外保留 IQ，未部署。
   - [ ] S6b：S5 后真实闭环、浏览器结果和 Spark 紧凑摘要验收。
@@ -216,8 +216,11 @@ S1/S2/V1a/S3/S4a 已完成；S6a 结果归档源码和隔离 Web/终端/浏览�
         numeric/name trust, confidence calibration, source/model identity,
         quality/timing and manual deletion. Native browser/CLI and cleanup passed;
         see [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md).
-  - [ ] S5/S6b: live receive-loop terminal/Web observations and actual joined
-        execution/result delivery; archive demonstrations do not complete this.
+  - [x] S5: native live receive-loop terminal observation, joined execution,
+        engineering archive and automatic compact Spark feedback passed finite
+        real validation and cleanup; installed services remain unchanged.
+  - [ ] S6b: actual browser receive-loop result recovery/display/delete acceptance;
+        archive demos and native Runner checks do not complete this.
 - [x] Persist full bounded recognition records in the application result store
       and add a visible per-record manual-delete path without retaining IQ by
       default. S6a reuses the existing SQLite file, revalidates full S2 records,
@@ -225,9 +228,11 @@ S1/S2/V1a/S3/S4a 已完成；S6a 结果归档源码和隔离 Web/终端/浏览�
       restoration and per-record deletion without touching capture/corpus/IQ.
       Source and isolated native acceptance only; installed services unchanged.
       See [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md).
-- [ ] Live-validate that local Spark-X2.5-4B sees only a compact recognition
-      summary, explains the result without presenting an unlabeled top-1 as
-      ground truth, and proposes one newly validated receive-only next step.
+- [x] S5 isolated live Spark validation: only the compact real unavailable
+      observation enters one automatic feedback turn, explaining missing admission
+      and producing a Rust-validated hold without claiming an unlabeled class.
+      Explicit synthetic error/classified/rejected regression remains nonproduction.
+      See [S5 validation](RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md).
 
 Evidence:
 
@@ -350,20 +355,31 @@ Evidence:
       profile and production Recognition Worker instead of returning
       `planned_only`; preserve approval, exact byte/deadline budgets, restored
       SDR health and the correlated audit chain.
+  - [x] S5 explicit engineering executor now performs fresh RX and supervised
+        four-window recognition in one-shot/raw-execute/terminal paths, preserving
+        manual approval, original cruise budgets, audit and restored health;
+        source/finite native acceptance and exact cleanup passed.
+  - [ ] A1 admitted production profile, deployment and positive capability.
 - [ ] Feed each classified/rejected/unavailable/error recognition observation
       into the next local Spark-X2.5-4B turn, and validate that Rust permits only
       a fresh receive-only next step: re-inspect, bounded re-capture/re-recognize,
       move to another measured candidate, survey, hold, or stop.
-- [ ] Extend the priority `/stop` path to cancel the active recognition request
+  - [x] S5 source integration, automatic real unavailable feedback and explicitly
+        synthetic other-state Spark regression passed; no IQ/tensors/full logits
+        enter Planner. Archived observations are not re-dated or reused across generations.
+  - [ ] S6b/A1 admitted real classified/rejected UI and deployed-loop acceptance.
+- [x] Extend the priority `/stop` path to cancel the active recognition request
       as well as the already-supported Planner and SDR work, then discard every
       late Worker result whose request ID or session generation is stale and
-      release the shared Spark/Mamba inference gate before later work.
-- [ ] Build a fixed receive-only Planner regression covering all six actions,
-      numeric limits, recognition statuses, failures and stop races. Require
-      every accepted proposal to pass Rust policy; the current five-case BF16
-      smoke is only 4/5 because one inspection proposed an out-of-range 48 MS/s
-      rate, although Rust rejected it safely. See
-      [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
+      release the shared Spark/Mamba inference gate before later work. S5 finite
+      actual RX and blocked-Worker cancellation passed; 34 lease events had no
+      overlap or remaining owner. Installed services unchanged.
+- [x] S5 fixed receive-only Planner regression: six-action policy/limits/status/
+      stop-race tests and eight actual Spark cases passed, with every accepted
+      proposal passing Rust policy. Recognition unavailable correctly yields hold;
+      classified/rejected inputs are explicitly synthetic. This replaces the old
+      4/5 smoke as current bounded regression evidence, not as production admission.
+      See [S5 validation](RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md).
 
 Evidence:
 
@@ -924,11 +940,11 @@ Evidence:
 
 ## Current next milestone
 
-S1/S2/V1a/S3/S4a and S6a archive source/isolated native acceptance are complete.
+S1/S2/V1a/S3/S4a/S6a and S5 source/isolated native acceptance are complete.
 Installed services remain unchanged and the actual recognizer stays unavailable.
-The next default independent unit is S5 Runner execution, joined stop and Planner feedback. Sustained
-resources, Runner/joint stop, actual independent labels, calibration and
-production admission remain open.
+The next default independent unit is S6b actual browser closed-loop acceptance.
+Sustained resources, actual independent labels, calibration and production
+admission remain open.
 
 Execution order, prerequisites and permitted scheduling changes are maintained
 only in

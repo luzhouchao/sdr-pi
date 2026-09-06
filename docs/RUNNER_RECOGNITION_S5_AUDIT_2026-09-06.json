@@ -1,0 +1,820 @@
+{
+  "schema_version": 1,
+  "delivery": "S5",
+  "source_baseline": "dcc7a485319184a05ddc11fe00b9129b7bf74762",
+  "initial_s5_baseline": "134c479780fbd45bb3702a75dd54eb8c8a368385",
+  "source_sha256": {
+    "raspberry-pi/sdr-agent/controller/src/autonomy.rs": "d995a7c96a4f53bd31639120420543441c0b8268b892903ebf9b063a134eccf3",
+    "raspberry-pi/sdr-agent/controller/src/bin/sdr-agent.rs": "a4606fada7bfb497dcd62e1d0836ce5b00e2882fecfbac2fdb2137bc0e82c325",
+    "raspberry-pi/sdr-agent/controller/src/execution.rs": "9eb606bbd8e96416bb72669bd45a2dbeb43d7421424903b903f60261ab984fa5",
+    "raspberry-pi/sdr-agent/controller/src/lib.rs": "42c15586fd447dbf05702302506cfb84cdeb0fc1f99d2fc619293d78fab69acb",
+    "raspberry-pi/sdr-agent/controller/src/main.rs": "7a869ecd4d724d2618127bf3c1e3476b1626d1b6a833a36db0fd1894381a15b2",
+    "raspberry-pi/sdr-agent/controller/src/policy.rs": "39a18e9c10872067923ca0cd3a4a9751ce9378ae947e29a9411c694533b820f1",
+    "raspberry-pi/sdr-agent/controller/src/recognizer_admission.rs": "1ee248109807e2320e21b10113ca0eebe0594b830a59819047591173f5cb5d8e",
+    "raspberry-pi/sdr-agent/controller/src/runner.rs": "09b874e9b89c1a697ca3cc04c3e47504e02f44fc9d87ef5a242b42f85174d655",
+    "raspberry-pi/sdr-agent/controller/src/supervised_recognition.rs": "6919d85309fb4170550c5f80d0d4abf2d58dbd781482075c33deaf1eb16bb12b",
+    "raspberry-pi/sdr-agent/web-console/public/app.js": "fb5b92b443c11fdcd80290b5d1821bd2942ba62c16aa21368c5056efe772c220",
+    "raspberry-pi/sdr-agent/web-console/public/index.html": "0f0c2d5e3a1ddeabb5c6930697673e611fbea5647db7c60259dfd97bc5fa503e",
+    "raspberry-pi/sdr-agent/web-console/src/recognition_archive.rs": "770f09117adc8cfb57e14fe7ad064415135be5b4b47cba509a047c1d2cfdeab9",
+    "raspberry-pi/sdr-agent/controller/src/recognition_execution.rs": "1142c2ed41e9bdcafd8cfc809e6f9f817c1cd24f4ba37b667578f7a0dc035c2a",
+    "jetson-agx/sdrharness/scripts/validate-runner-recognition.py": "6fcf92c0012d115971cf3b422c7b903babcf084c6e483c67fafc262adb060907"
+  },
+  "binary_sha256": {
+    "sdr-agent-controller": "d1929e04c858a321090d3a1009ea4354983c52d6041d2b8b8d607c73f9475c3f",
+    "sdr-agent": "d6f091a3a1cf01c34599bb345c51c4e27038a808bdff6969626d9c51c1a107e8",
+    "sdr-agent-web-console": "551d3ade07fcc4bd920b8c2401565300e7707b1d2c411bab8a4c645027237a1f"
+  },
+  "log_sha256": {
+    "tests-delivery.log": "b18337ac0d1419fc9117873961be5453e494030446f18638fd95f22bfa480cf2",
+    "web-tests-delivery.log": "72469b68e97860677c8bb31b42dbf6ed6755852e0cdbac6c222e2f1d32368001",
+    "node-tests-delivery.log": "eb1f59443499ffd79fa060af589c47bc5774f18c255d7d506e2507ec30bcd11c",
+    "clippy-delivery.log": "4bb299aa23e1fbcefb6a0254ff909241d96ece1fac11af29b8f0fc956dd8729f",
+    "web-clippy-delivery.log": "4f27ac380b22e1d975eee20ce727fa8cbc09061177f6253af0777fd4de7b7506",
+    "build-delivery.log": "e39276722c598ecc3fd09fa2b0c7947b5ee5edf2bcd9c6cd6100ad422b9689de",
+    "web-build-delivery.log": "c8479d5bcbc52b2c0cf58c70ba22a7fb971b72bac43d5d26b398b322944e53d7",
+    "live-delivery.log": "b42ace3f753ac03dfd7a8b56109ce15e8f8e56ed011b4fb7eece1fd096c78d9f",
+    "console.log": "40a13fd6e9285e8650986576b1624998d1817c260684c2c88d990e6040b89966",
+    "one-shot.log": "0a82d365e08a8d2404c6a52a54a61f9dc1d5b38a69f70b01d532cd7edeebc7f4",
+    "model-cancel.log": "36305b0e64c18a4f489db2f6d67c04a9b8348d38705fe37b4e17389901b6029d",
+    "rx-cancel.log": "dca32439aebd25583b0f5fa57677d569f3b48605aea99639d1de0911735e519e",
+    "mamba.log": "265e79837db3aa3a824371ee4842e537ed9621f1dbfaebc7a12f275863e2f31b",
+    "spark.log": "48e115ecabd1eb53956b3042e45e4524371bad92cff586f071268184a4469f5a",
+    "node.log": "469caa03814f820010d49160f46bdb9b50fd2e7a32a5c3116abd23c120ee60bc",
+    "failed-feedback-field-check.log": "9d3d7e71536d37bafebe3bd36a6bbc1dcf79e00f0af1d7a1bb454f9469e48cd4",
+    "failed-external-iio-1788663700223.log": "c0ea07ac0242b18f0b7838ec20a63eecba1f7fef7882ffb4454b450bef50c0a4",
+    "passed-before-automatic-feedback.log": "0f2bb2947cbeefe3edfbb9107ed2be294609fda3fd217ca9899d9e6d02304029"
+  },
+  "tests": {
+    "controller_library_passed": 96,
+    "terminal_passed": 16,
+    "web_passed": 32,
+    "node_passed": 52,
+    "existing_ignored": 3,
+    "clippy_warnings_denied": true
+  },
+  "live": {
+    "schema_version": 1,
+    "generation": 1788672799762,
+    "delivery": "S5",
+    "recognizer_available": false,
+    "locked_test_read": false,
+    "training": false,
+    "frequency_hz": 433920000,
+    "sample_rate_hz": 2100000,
+    "rf_bandwidth_hz": 1500000,
+    "gain_db": 50,
+    "settle_ms": 100,
+    "initial_inspection_samples": 4096,
+    "max_recognition_executions": 5,
+    "maximum_total_rx_bytes": 180224,
+    "maximum_model_spool_bytes": 32768,
+    "free_bytes_before": 806755053568,
+    "feature_directory": "/var/tmp/sdrharness-dev/s5-906a",
+    "sdrd_pid": "17136",
+    "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "cases": [
+      {
+        "case": "one_shot_pending",
+        "executed": false
+      },
+      {
+        "case": "one_shot_automatic",
+        "executed": false
+      },
+      {
+        "case": "one_shot_operator",
+        "observation": {
+          "schema_version": 1,
+          "candidate_id": "s5-live-candidate",
+          "request_id": 10,
+          "session_generation": 1788672799764,
+          "observed_at_unix_ms": 1788672831010,
+          "status": "unavailable",
+          "reason": "production_admission_missing",
+          "class": null,
+          "calibrated_confidence": null,
+          "calibration_status": "uncalibrated",
+          "decision_references": null,
+          "identity": {
+            "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+            "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+            "profile_id": "rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1",
+            "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+            "preprocess_id": "rf_preprocess_v1",
+            "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+            "compute": "cuda_fp16_autocast",
+            "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+          },
+          "source": {
+            "sweep_id": "recognition-inspect-10",
+            "request_id": 5,
+            "session_generation": 1788672799764,
+            "sequence": 215,
+            "capture_request_id": 5,
+            "capture_sequence": 216
+          },
+          "quality": {
+            "window_count": 4,
+            "window_agreement": 1.0,
+            "clipped_samples": 0,
+            "dropped_samples": 0,
+            "overflow": false,
+            "healthy": true
+          },
+          "timing": {
+            "capture_us": 3750,
+            "worker_total_us": 313941,
+            "inference_us": 309175
+          }
+        },
+        "archive_id": 11
+      },
+      {
+        "case": "one_shot_worker_cancel",
+        "late_result_discarded": true
+      },
+      {
+        "case": "one_shot_rx_cancel",
+        "profile_observed_hz": 433328862,
+        "radio_restored": true
+      },
+      {
+        "case": "interactive_worker_stop",
+        "old_generation": 1788672799767,
+        "renewed_generation": 1788672799768,
+        "late_result_discarded": true
+      },
+      {
+        "case": "interactive_approve_execute_feedback",
+        "archive_rows": 2,
+        "recognizer_available": false,
+        "automatic_feedback": true,
+        "feedback_request_id": 2
+      },
+      {
+        "case": "fixed_spark_regression",
+        "results": [
+          {
+            "case": "hold",
+            "synthetic_recognition_fixture": true,
+            "action": {
+              "kind": "hold",
+              "reason": "当前识别未准入：recognizer_available 为 false，且最新识别状态为 error（synthetic_regression），无法给出已确认的模型分类决策。"
+            },
+            "approval_required": false
+          },
+          {
+            "case": "stop",
+            "synthetic_recognition_fixture": false,
+            "action": {
+              "kind": "stop_session",
+              "reason": "用户请求停止会话。"
+            },
+            "approval_required": false
+          },
+          {
+            "case": "inspect",
+            "synthetic_recognition_fixture": false,
+            "action": {
+              "kind": "inspect_candidate",
+              "candidate_id": "s5-live-candidate",
+              "center_hz": 433328862,
+              "sample_rate_hz": 2100000,
+              "rf_bandwidth_hz": 1500000,
+              "dwell_ms": 100
+            },
+            "approval_required": false
+          },
+          {
+            "case": "capture",
+            "synthetic_recognition_fixture": false,
+            "action": {
+              "kind": "capture_bounded_iq",
+              "candidate_id": "s5-live-candidate",
+              "center_hz": 433328862,
+              "sample_rate_hz": 2100000,
+              "rf_bandwidth_hz": 1500000,
+              "samples": 4096
+            },
+            "approval_required": false
+          },
+          {
+            "case": "survey",
+            "synthetic_recognition_fixture": false,
+            "action": {
+              "kind": "survey_band",
+              "start_hz": 433000000,
+              "stop_hz": 434000000,
+              "step_hz": 1000000,
+              "sample_rate_hz": 2100000,
+              "rf_bandwidth_hz": 1500000,
+              "dwell_ms": 5
+            },
+            "approval_required": false
+          },
+          {
+            "case": "recognition_unavailable",
+            "synthetic_recognition_fixture": false,
+            "action": {
+              "kind": "hold",
+              "reason": "识别能力为 false，未准入，不执行 run_local_recognition。"
+            },
+            "approval_required": false
+          },
+          {
+            "case": "synthetic_classified",
+            "synthetic_recognition_fixture": true,
+            "action": {
+              "kind": "hold",
+              "reason": "这是合成 classified 摘要回归，不能当作实测或生产准入事实。"
+            },
+            "approval_required": false
+          },
+          {
+            "case": "synthetic_rejected",
+            "synthetic_recognition_fixture": true,
+            "action": {
+              "kind": "hold",
+              "reason": "拒识演示不支持真实分类结论。"
+            },
+            "approval_required": false
+          }
+        ]
+      }
+    ],
+    "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "archive_summary": [
+      {
+        "id": 12,
+        "origin": "engineering_rx",
+        "status": "unavailable",
+        "production_result": false,
+        "iq_retained": false
+      },
+      {
+        "id": 11,
+        "origin": "engineering_rx",
+        "status": "unavailable",
+        "production_result": false,
+        "iq_retained": false
+      }
+    ],
+    "status": "pass",
+    "radio_final": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "sdrd_pid_after": "17136",
+    "p201_directories": [
+      "/tmp/sdr-agent-dev/agx-model-batch-1788672799764-10",
+      "/tmp/sdr-agent-dev/agx-model-batch-1788672799765-10",
+      "/tmp/sdr-agent-dev/agx-model-batch-1788672799766-10",
+      "/tmp/sdr-agent-dev/agx-model-batch-1788672799767-1",
+      "/tmp/sdr-agent-dev/agx-model-batch-1788672799767-3",
+      "/tmp/sdr-agent-dev/agx-sweep-1788672799762-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788672799764-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788672799765-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788672799766-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788672799767-0"
+    ],
+    "control_sockets_removed": [
+      "/run/user/1000/sdrharness/s5-906a-planner.sock",
+      "/run/user/1000/sdrharness/s5-906a-session.sock"
+    ],
+    "process_exit_codes": [
+      0,
+      0,
+      0,
+      -15,
+      1,
+      1,
+      0,
+      0
+    ],
+    "worker_pids": [
+      343133,
+      343169,
+      343224,
+      343416
+    ],
+    "cleanup": {
+      "feature_processes_stopped": true,
+      "remote_checks_passed": true,
+      "errors": []
+    }
+  },
+  "automatic_feedback_request": {
+    "protocol_version": 1,
+    "request_id": 2,
+    "session_generation": 1788672799767,
+    "instruction": "请依据最新紧凑识别摘要给出一个受限 RX 下一步。当前状态若为 unavailable 或 error，只返回 hold 并解释原因；未标注实验预测不能称为已确认分类。",
+    "state": "idle",
+    "observation": {
+      "age_ms": 0,
+      "health": {
+        "sdr_online": true,
+        "can_retune": true,
+        "can_capture_iq": true,
+        "recognizer_available": false,
+        "dropped_observations": 0
+      },
+      "candidates": [
+        {
+          "id": "s5-live-candidate",
+          "center_hz": 433330143,
+          "bandwidth_hz": 7178,
+          "peak_dbfs": -60.499035,
+          "snr_db": 32.012974,
+          "age_ms": 0
+        }
+      ],
+      "recognition": {
+        "schema_version": 1,
+        "candidate_id": "s5-live-candidate",
+        "request_id": 1,
+        "session_generation": 1788672799767,
+        "observed_at_unix_ms": 1788672863427,
+        "status": "unavailable",
+        "reason": "production_admission_missing",
+        "class": null,
+        "calibrated_confidence": null,
+        "calibration_status": "uncalibrated",
+        "decision_references": null,
+        "identity": {
+          "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+          "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+          "profile_id": "rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1",
+          "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+          "preprocess_id": "rf_preprocess_v1",
+          "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+          "compute": "cuda_fp16_autocast",
+          "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+        },
+        "source": {
+          "sweep_id": "recognition-inspect-1",
+          "request_id": 5,
+          "session_generation": 1788672799767,
+          "sequence": 220,
+          "capture_request_id": 5,
+          "capture_sequence": 221
+        },
+        "quality": {
+          "window_count": 4,
+          "window_agreement": 0.5,
+          "clipped_samples": 0,
+          "dropped_samples": 0,
+          "overflow": false,
+          "healthy": true
+        },
+        "timing": {
+          "capture_us": 3743,
+          "worker_total_us": 331042,
+          "inference_us": 325661
+        }
+      }
+    },
+    "limits": {
+      "min_freq_hz": 70000000,
+      "max_freq_hz": 6000000000,
+      "max_span_hz": 5930000000,
+      "max_bandwidth_hz": 2100000,
+      "max_dwell_ms": 1000,
+      "max_iq_samples": 4096,
+      "max_iq_bytes": 32768,
+      "auto_approve_iq_bytes": 32768,
+      "max_observation_age_ms": 60000
+    }
+  },
+  "automatic_feedback_output": [
+    "已验证计划：保持当前状态：当前识别状态为 unavailable，且未提供已确认分类，因此不能执行 RX 下一步。",
+    "Agent> 当前识别状态为 unavailable，且未提供已确认分类，因此不能执行 RX 下一步。"
+  ],
+  "gpu_lease": {
+    "events": [
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 1,
+        "request": "startup",
+        "monotonic_ns": 333968747369595
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 1,
+        "request": "",
+        "monotonic_ns": 333981897756476
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 1,
+        "request": "startup",
+        "monotonic_ns": 333981902012587
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 1,
+        "request": "",
+        "monotonic_ns": 333988175639322
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 2,
+        "request": "1788672799764:10",
+        "monotonic_ns": 333999056276375
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 2,
+        "request": "",
+        "monotonic_ns": 333999380474718
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 3,
+        "request": "1788672799765:10",
+        "monotonic_ns": 334006788317702
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 3,
+        "request": "",
+        "monotonic_ns": 334006956619278
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 4,
+        "request": "startup",
+        "monotonic_ns": 334007007790073
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 4,
+        "request": "",
+        "monotonic_ns": 334020248199612
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 5,
+        "request": "1788672799767:1",
+        "monotonic_ns": 334031457381352
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 5,
+        "request": "",
+        "monotonic_ns": 334031798079594
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 2,
+        "request": "1",
+        "monotonic_ns": 334032169908857
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 2,
+        "request": "",
+        "monotonic_ns": 334036344541467
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 6,
+        "request": "1788672799767:3",
+        "monotonic_ns": 334043962095801
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 6,
+        "request": "",
+        "monotonic_ns": 334044144627164
+      },
+      {
+        "event": "acquire",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 7,
+        "request": "startup",
+        "monotonic_ns": 334044195629052
+      },
+      {
+        "event": "release",
+        "owner": "mamba",
+        "instance": "571d0b7fe552f1adf89af257899f8816",
+        "serial": 7,
+        "request": "",
+        "monotonic_ns": 334057181521503
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 3,
+        "request": "2",
+        "monotonic_ns": 334057490469088
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 3,
+        "request": "",
+        "monotonic_ns": 334061253546000
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 4,
+        "request": "3",
+        "monotonic_ns": 334061287854481
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 4,
+        "request": "",
+        "monotonic_ns": 334062935693380
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 5,
+        "request": "4",
+        "monotonic_ns": 334062971551225
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 5,
+        "request": "",
+        "monotonic_ns": 334069035832834
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 6,
+        "request": "5",
+        "monotonic_ns": 334069067592377
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 6,
+        "request": "",
+        "monotonic_ns": 334075242154252
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 7,
+        "request": "6",
+        "monotonic_ns": 334075269016156
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 7,
+        "request": "",
+        "monotonic_ns": 334082464556060
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 8,
+        "request": "7",
+        "monotonic_ns": 334082486967206
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 8,
+        "request": "",
+        "monotonic_ns": 334084771319284
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 9,
+        "request": "8",
+        "monotonic_ns": 334084797999446
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 9,
+        "request": "",
+        "monotonic_ns": 334087623910915
+      },
+      {
+        "event": "acquire",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 10,
+        "request": "9",
+        "monotonic_ns": 334087664528223
+      },
+      {
+        "event": "release",
+        "owner": "spark",
+        "instance": "6a84a74b80555cd7b37f402f388d7e1c",
+        "serial": 10,
+        "request": "",
+        "monotonic_ns": 334090082133324
+      }
+    ],
+    "overlaps": 0,
+    "active_at_end": 0
+  },
+  "prior_attempts": [
+    {
+      "file": "failed-external-iio-1788663700223.json",
+      "sha256": "92eb1fd56425765ff2b93442e82c4fbd10def45ca4c3e2001ac911c832acb32d",
+      "status": "failed",
+      "generation": 1788663700223,
+      "failure": null
+    },
+    {
+      "file": "live-summary-1788672098587.json",
+      "sha256": "7cd5d1a18dd08cb3f9df41acb0f1f8218467eaf31474b991981e115ffe47aae5",
+      "status": "pass",
+      "generation": 1788672098587,
+      "failure": null
+    },
+    {
+      "file": "live-summary-1788672630638.json",
+      "sha256": "ee6224a8eea6006e8856bb10d4f7cde9facfdbd8dae3259bc60697eb50dae846",
+      "status": "failed",
+      "generation": 1788672630638,
+      "failure": "AssertionError: "
+    },
+    {
+      "file": "preliminary-control-read.json",
+      "sha256": "8ef12ee41d6834a57f94ac2630e528313f6f9d1ac7ae28b509cb6324e349895a",
+      "status": "preliminary",
+      "generation": null,
+      "failure": null
+    },
+    {
+      "file": "preliminary-node-path.json",
+      "sha256": "f358ae862dbab247995864b116eb1316206fe74ef2cf5f6ee9f1b5c624b5f7b4",
+      "status": "preliminary",
+      "generation": null,
+      "failure": null
+    },
+    {
+      "file": "preliminary-passed.json",
+      "sha256": "f5000f719e1ae3b3c1195aea70148ed01d41d1b3a4bd692cbe7cdb312bde57f3",
+      "status": "pass",
+      "generation": null,
+      "failure": null
+    },
+    {
+      "file": "preliminary-rx-window.json",
+      "sha256": "b3cef9883a4b1959dd9cc09609d6eaf62794580e4e3ea91434a1ecd54f5b54e3",
+      "status": "failed",
+      "generation": null,
+      "failure": null
+    },
+    {
+      "file": "preliminary-wait-budget.json",
+      "sha256": "3631ca91e1bcc1a8eab0fe42c1cb6887d548f3b7d7febef3bf4192f6b028ba31",
+      "status": "preliminary",
+      "generation": null,
+      "failure": null
+    }
+  ],
+  "all_recorded_p201_directories": [
+    "/tmp/sdr-agent-dev/agx-model-batch-1788657760741-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788657985628-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788657985629-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788658421486-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788658421487-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788658421488-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788658761450-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788658761451-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788658761452-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788658761453-1",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788658761453-3",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672098589-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672098590-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672098591-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672098592-1",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672098592-3",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672630640-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672630641-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672630642-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672630643-1",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672799764-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672799765-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672799766-10",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672799767-1",
+    "/tmp/sdr-agent-dev/agx-model-batch-1788672799767-3",
+    "/tmp/sdr-agent-dev/agx-sweep-1788657760739-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788657760741-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788657985626-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788657985628-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788657985629-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788658421484-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788658421486-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788658421487-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788658421488-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788658761448-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788658761450-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788658761451-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788658761452-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788658761453-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788663700223-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672098587-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672098589-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672098590-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672098591-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672098592-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672630638-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672630640-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672630641-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672630642-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672630643-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672799762-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672799764-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672799765-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672799766-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788672799767-0"
+  ],
+  "recognizer_available": false,
+  "locked_test_read": false,
+  "training": false,
+  "installed_services_replaced": false,
+  "cleanup": {
+    "verified": true,
+    "agx_directory_removed": "/var/tmp/sdrharness-dev/s5-906a",
+    "removed_contents": "feature builds, temporary IQ/spool, test SQLite/results, logs, private keys/provider fixtures and CUDA/Triton caches; bounded evidence retained in repository",
+    "control_sockets_absent": [
+      "/run/user/1000/sdrharness/s5-906a-planner.sock",
+      "/run/user/1000/sdrharness/s5-906a-session.sock"
+    ],
+    "p201_recorded_directories_absent": 55,
+    "feature_processes_absent": true,
+    "radio_final": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "health_final": {
+      "online": true,
+      "healthy": true,
+      "health_flags": 0,
+      "iio_visible": true,
+      "can_retune": true,
+      "can_capture_iq": true,
+      "rx_input": {
+        "identity_version": 1,
+        "verified": true,
+        "front_panel_port": "RX1",
+        "logical_channel": "RX0",
+        "phy_channel": "voltage0",
+        "scan_i_channel": "voltage0",
+        "scan_q_channel": "voltage1",
+        "rf_port_select": "A_BALANCED",
+        "source": "iio_channel_attr"
+      }
+    },
+    "sdrd_sha256": "77d98a005305a4b7531fc3f133e9b4af521e60b065b29fcc304b4c7db80c45ae",
+    "user_data_removed": false,
+    "installed_services_replaced": false
+  }
+}

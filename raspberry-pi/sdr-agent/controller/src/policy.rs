@@ -110,6 +110,26 @@ impl ControllerPolicy {
         request: &PlanRequest,
         response: PlanResponse,
     ) -> Result<ValidatedPlan, PolicyError> {
+        self.validate_response_mode(request, response, false)
+    }
+
+    // Host-selected engineering entry only. No wire field can enable this and
+    // the PlanningContext capability bit is never changed.
+    pub(crate) fn validate_engineering_response(
+        &self,
+        request: &PlanRequest,
+        response: PlanResponse,
+    ) -> Result<ValidatedPlan, PolicyError> {
+        self.validate_request(request)?;
+        self.validate_response_mode(request, response, true)
+    }
+
+    fn validate_response_mode(
+        &self,
+        request: &PlanRequest,
+        response: PlanResponse,
+        engineering: bool,
+    ) -> Result<ValidatedPlan, PolicyError> {
         require(
             response.protocol_version == PROTOCOL_VERSION,
             "response_protocol_version",
@@ -156,7 +176,7 @@ impl ControllerPolicy {
         let action = response.action.ok_or_else(|| {
             PolicyError::new("planner_missing_action", "planner returned no action")
         })?;
-        let approval_required = validate_action(request, &action)?;
+        let approval_required = validate_action_mode(request, &action, engineering)?;
 
         Ok(ValidatedPlan {
             request_id: request.request_id,
@@ -235,7 +255,11 @@ fn validate_candidate(
     )
 }
 
-fn validate_action(request: &PlanRequest, action: &ProposedAction) -> Result<bool, PolicyError> {
+fn validate_action_mode(
+    request: &PlanRequest,
+    action: &ProposedAction,
+    engineering: bool,
+) -> Result<bool, PolicyError> {
     if request.state == ControllerState::Faulted
         && !matches!(
             action,
@@ -383,11 +407,27 @@ fn validate_action(request: &PlanRequest, action: &ProposedAction) -> Result<boo
         }
         ProposedAction::RunLocalRecognition { candidate_id } => {
             require(
-                request.observation.health.recognizer_available,
+                request.observation.health.recognizer_available || engineering,
                 "recognizer_unavailable",
                 "local recognizer is not available",
             )?;
-            find_candidate(request, candidate_id)?;
+            let candidate = find_candidate(request, candidate_id)?;
+            if engineering {
+                require_sdr_capability(request, true, true)?;
+                require(
+                    request.limits.max_iq_bytes >= 32768
+                        && request.limits.max_iq_samples >= 4096
+                        && request.limits.max_bandwidth_hz >= 2_100_000
+                        && request.limits.max_dwell_ms >= 100,
+                    "recognition_budget",
+                    "engineering recognition needs two bounded 4096-sample RX captures",
+                )?;
+                require(
+                    candidate.bandwidth_hz <= 1_500_000,
+                    "recognition_bandwidth",
+                    "candidate exceeds RF-v1 bandwidth",
+                )?;
+            }
             Ok(true)
         }
     }
@@ -490,7 +530,7 @@ pub struct PolicyError {
 }
 
 impl PolicyError {
-    fn new(code: &'static str, message: impl Into<String>) -> Self {
+    pub(crate) fn new(code: &'static str, message: impl Into<String>) -> Self {
         Self {
             code,
             message: message.into(),

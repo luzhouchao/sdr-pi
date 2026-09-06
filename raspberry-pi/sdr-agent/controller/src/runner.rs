@@ -2,6 +2,9 @@ use crate::execution::{ExecutionAuthorization, ExecutionObservation, SdrActionEx
 use crate::planner::Planner;
 use crate::policy::ControllerPolicy;
 use crate::protocol::{ObservationSummary, PlanRequest, ProposedAction, ValidatedPlan};
+use crate::recognition_execution::{
+    EngineeringRecognition, RecognitionCancellation, RecognitionExecutionReport,
+};
 use crate::recognizer_admission::{
     refresh_recognizer, RecognizerCapability, UnavailableRecognizer,
 };
@@ -16,6 +19,7 @@ use std::error::Error;
 use std::fmt;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
+use std::net::SocketAddr;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
@@ -48,6 +52,8 @@ pub struct RunReport {
     pub execution: Option<ExecutionObservation>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sweep: Option<SweepReport>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub recognition: Option<RecognitionExecutionReport>,
     pub next_observation: ObservationSummary,
 }
 
@@ -126,6 +132,8 @@ pub struct Runner<O, P, E, S, A> {
     sweep_point_timeout_ms: u32,
     audit: A,
     recognizer: Box<dyn RecognizerCapability>,
+    engineering_recognition: Option<(EngineeringRecognition, SocketAddr)>,
+    recognition_cancellation: RecognitionCancellation,
 }
 
 impl<O, P, E, S, A> Runner<O, P, E, S, A>
@@ -155,11 +163,24 @@ where
             sweep_point_timeout_ms,
             audit,
             recognizer: Box::new(UnavailableRecognizer),
+            engineering_recognition: None,
+            recognition_cancellation: RecognitionCancellation::default(),
         }
     }
 
     pub fn with_recognizer(mut self, recognizer: impl RecognizerCapability + 'static) -> Self {
         self.recognizer = Box::new(recognizer);
+        self
+    }
+
+    pub fn with_engineering_recognition(
+        mut self,
+        config: EngineeringRecognition,
+        address: SocketAddr,
+        cancellation: RecognitionCancellation,
+    ) -> Self {
+        self.engineering_recognition = Some((config, address));
+        self.recognition_cancellation = cancellation;
         self
     }
 
@@ -215,7 +236,14 @@ where
         };
         self.audit("planner_proposal", &request, json!(&response))?;
         self.refresh_recognition(&mut request)?;
-        let plan = match self.policy.validate_response(&request, response) {
+        let validation = if let Some((config, _)) = &self.engineering_recognition {
+            config
+                .validate_plan(&request, response)
+                .map_err(|e| crate::policy::PolicyError::new(e.code, e.message))
+        } else {
+            self.policy.validate_response(&request, response)
+        };
+        let plan = match validation {
             Ok(plan) => plan,
             Err(error) => {
                 self.audit(
@@ -227,6 +255,13 @@ where
             }
         };
         self.audit("validated_plan", &request, json!(&plan))?;
+        if self.recognition_cancellation.cancelled() {
+            self.audit("cancelled", &request, json!({"late_plan_discarded":true}))?;
+            return Err(RunnerError::Sdr(SdrError::new(
+                "cancelled",
+                "plan discarded after cancellation",
+            )));
+        }
 
         if plan.approval_required && approval == ApprovalMode::Pending {
             self.audit(
@@ -239,6 +274,7 @@ where
                 plan,
                 execution: None,
                 sweep: None,
+                recognition: None,
                 next_observation: request.observation,
             });
         }
@@ -250,6 +286,42 @@ where
                 json!({"code": "approval_required"}),
             )?;
             ExecutionAuthorization::automatic(&plan).map_err(RunnerError::Sdr)?;
+        }
+        if matches!(plan.action, ProposedAction::RunLocalRecognition { .. }) {
+            if let Some((config, address)) = self.engineering_recognition.clone() {
+                let authorization = ExecutionAuthorization::operator_approved(&plan);
+                // Pending/automatic have already been stopped by the approval gate.
+                if approval != ApprovalMode::Operator {
+                    return Err(RunnerError::Sdr(SdrError::new(
+                        "approval_required",
+                        "engineering recognition requires operator approval",
+                    )));
+                }
+                self.audit("recognition_authorized",&request,json!({"engineering_only":true,"maximum_rx_bytes":crate::recognition_execution::MAX_RX_BYTES}))?;
+                let outcome = config.execute(
+                    address,
+                    &request,
+                    &plan,
+                    &authorization,
+                    &self.recognition_cancellation,
+                );
+                let result = match outcome {
+                    Ok(result) => result,
+                    Err(error) => {
+                        self.audit_sdr_failure(&request, &error)?;
+                        return Err(RunnerError::Sdr(error));
+                    }
+                };
+                self.audit("recognition_observation",&request,json!({"observation":result.result.observation,"archive_id":result.archive_id,"archive_error":result.archive_error,"maximum_rx_bytes":result.maximum_rx_bytes,"restored_health":result.post_execution_sdr.healthy}))?;
+                return Ok(RunReport {
+                    status: RunStatus::Executed,
+                    plan,
+                    execution: None,
+                    sweep: None,
+                    next_observation: result.next_observation.clone(),
+                    recognition: Some(result),
+                });
+            }
         }
         if !matches!(
             plan.action,
@@ -267,6 +339,7 @@ where
                 plan,
                 execution: None,
                 sweep: None,
+                recognition: None,
                 next_observation: request.observation,
             });
         }
@@ -310,6 +383,7 @@ where
                     plan,
                     execution: Some(execution),
                     sweep: None,
+                    recognition: None,
                     next_observation,
                 })
             }
@@ -462,6 +536,7 @@ where
             plan,
             execution: None,
             sweep: Some(report),
+            recognition: None,
             next_observation,
         })
     }
@@ -1257,6 +1332,62 @@ mod tests {
             }
         }
     }
+    #[test]
+    fn engineering_runner_keeps_capability_false_and_requires_approval_before_dispatch() {
+        for mode in [
+            ApprovalMode::Pending,
+            ApprovalMode::Automatic,
+            ApprovalMode::Operator,
+        ] {
+            let mut proposal = response(4096);
+            proposal.action = Some(ProposedAction::RunLocalRecognition {
+                candidate_id: "candidate-1".into(),
+            });
+            let config = EngineeringRecognition::new(
+                std::env::temp_dir().join("s5-no-supervisor"),
+                "127.0.0.1:9".parse().unwrap(),
+            )
+            .unwrap();
+            let mut runner = Runner::new(
+                ReplaySdrAdapter::new([snapshot()]),
+                ReplayPlanner {
+                    response: Some(proposal),
+                },
+                ReplayActionExecutor::new([]),
+                ReplaySweepAdapter::new([]),
+                20,
+                250,
+                MemoryAuditAdapter::default(),
+            )
+            .with_engineering_recognition(
+                config,
+                "127.0.0.1:9".parse().unwrap(),
+                RecognitionCancellation::default(),
+            );
+            let result = runner.run_once(request(), mode);
+            match mode {
+                ApprovalMode::Pending => {
+                    assert_eq!(result.unwrap().status, RunStatus::AwaitingApproval)
+                }
+                ApprovalMode::Automatic => assert!(
+                    matches!(result,Err(RunnerError::Sdr(e)) if e.code=="approval_required")
+                ),
+                ApprovalMode::Operator => {
+                    assert!(matches!(result,Err(RunnerError::Sdr(e)) if e.code=="supervisor_root"))
+                }
+            }
+            let (_, _, audit) = runner.into_parts();
+            assert!(!audit.events().iter().any(|e| e.phase == "planned_only"));
+            for e in audit
+                .events()
+                .iter()
+                .filter(|e| e.phase == "recognizer_admission")
+            {
+                assert_eq!(e.payload["recognizer_available"], false);
+            }
+        }
+    }
+
     #[test]
     fn plain_controller_plan_also_discards_request_supplied_capability() {
         let mut input = request();

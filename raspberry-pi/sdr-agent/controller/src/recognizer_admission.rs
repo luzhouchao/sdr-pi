@@ -153,6 +153,16 @@ pub fn refresh_recognizer(
     request: &mut PlanRequest,
     probe: &mut dyn RecognizerCapability,
 ) -> RecognizerCapabilityObservation {
+    if request.observation.recognition.as_ref().is_some_and(|o| {
+        o.validate_context(
+            request.session_generation,
+            now_ms(),
+            request.limits.max_observation_age_ms,
+        )
+        .is_err()
+    }) {
+        request.observation.recognition = None;
+    }
     request.observation.health.recognizer_available = false;
     let mut result = probe.observe(request.request_id, request.session_generation);
     let now = now_ms();
