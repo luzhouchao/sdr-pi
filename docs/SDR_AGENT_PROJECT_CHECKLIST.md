@@ -607,10 +607,17 @@ aggregation, result persistence and model-facing summaries.
           tests and exact cleanup pass. This qualifies only the numerical
           candidate, not live RF or production calibration; see
           [source v4 validation](B210_SOURCE_V4_VALIDATION_2026-09-06.md).
-    - [ ] Integrate the fixed v4 candidate into a newly registered bounded
-          2.440-GHz RX40 source/bias validation with real tone/off controls,
-          raw hash/source/capture/RX identity and restoration evidence; retain
-          historical failed gates and keep production admission closed.
+    - [x] Integrate fixed v4 with sealed raw/report/SigMF/source identity and
+          model preflight; execute the registered 2.440-GHz RX40 tone/RML pair.
+          Six bounded captures pass native quality/identity and restoration checks, but source
+          qualification fails on window 15 (coherence 0.413 < 0.6) amid short
+          raw-power excursions; no model/warmup ran. 64 tests and exact AGX/NX
+          cleanup complete; see
+          [v4 live validation](B210_V4_LIVE_VALIDATION_2026-09-06.md).
+    - [ ] Characterize the intermittent power excursions with a registered
+          bounded stopped-TX background comparison.
+    - [ ] Qualify fresh source controls before further bidirectional bias/model
+          validation; no retrospective acceptance of the failed v4 capture.
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the

@@ -174,9 +174,11 @@ def plot(feature,destination,exploratory_source_failure):
                           source_control_passed=current['source_control_passed'],qualified_bidirectional_validation=inference['qualified_bidirectional_validation'])))
 
 
-async def infer(feature,exploratory_source_failure=False):
-    current,tensors=prepare(feature,exploratory_source_failure)
-    prefix='affine-exploratory' if exploratory_source_failure else 'affine'
+async def infer(feature,exploratory_source_failure=False,*,prepare_function=None,prefix_override=None):
+    current,tensors=(prepare_function or prepare)(feature,exploratory_source_failure)
+    prefix=prefix_override or ('affine-exploratory' if exploratory_source_failure else 'affine')
+    assert prefix in ('affine','affine-exploratory','v4-affine')
+    assert len(tensors)<=7, 'registered model-window budget'
     preparation_path=feature/(prefix+'-prepared.json')
     assert current==json.loads(preparation_path.read_text()),'prepared inputs changed'
     output=feature/(prefix+'-inference.json');assert not output.exists()
