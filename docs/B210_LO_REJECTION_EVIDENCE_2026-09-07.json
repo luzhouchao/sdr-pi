@@ -1,0 +1,498 @@
+{
+  "schema_id": "sdrharness_retained_diagnostic_evidence_v1",
+  "date": "2026-09-07",
+  "purpose": "Reproduce LO rejection and investigate failed stopped-background controls without another RF capture.",
+  "necessity": "Keep the sealed zero/fix1/fix2 matrix including failed controls plus its tone CFO reference; validator requires native report/SigMF/source identities. No other IQ copy is retained.",
+  "roots": [
+    "/var/tmp/sdrharness-dev/b210-reject-907m",
+    "/var/tmp/sdrharness-dev/b210-reject-tone-907m",
+    "/var/tmp/sdrharness-dev/b210-reject-zero-907m",
+    "/var/tmp/sdrharness-dev/b210-reject-fix1-907m",
+    "/var/tmp/sdrharness-dev/b210-reject-fix2-907m"
+  ],
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-907m/seal.json",
+      "bytes": 10595,
+      "sha256": "c5149e85538c10d1dbf776795bd80dbbd1aa610f3bd8b672cf1f6788c0bfd608"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/after-tx/b210-after-tx-1788712376145-1788712376145-1788712397839938504.sigmf-data",
+      "bytes": 262140,
+      "sha256": "2bdace31139b7eb50f78df92b620f25b07e0cbfc8fd5739d29fd62fdd4b30b6e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/after-tx/b210-after-tx-1788712376145-1788712376145-1788712397839938504.sigmf-meta",
+      "bytes": 487,
+      "sha256": "e3b8a249a120419c83d0020a0acc93ba4ad2851610dab676e1b7b54101cfa4a0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/after-tx-report.json",
+      "bytes": 2228,
+      "sha256": "ee0bdbb3e2c7fc32fa367afc4b85679f41de9aa6941ea473b63ef1bc960ec6c5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/baseline/b210-baseline-1788712376143-1788712376143-1788712376660603000.sigmf-data",
+      "bytes": 262140,
+      "sha256": "39c420daee927375fc143adef6f39b12c037768eeac3352ff7500f82fe18d4ce"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/baseline/b210-baseline-1788712376143-1788712376143-1788712376660603000.sigmf-meta",
+      "bytes": 487,
+      "sha256": "b44ff2beeca0ae6ccb0190aa8cfd58207ae5ca64930d3ad916fec3a57d545982"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/baseline-report.json",
+      "bytes": 2230,
+      "sha256": "674389feff141e5f2f82d0937774fc31771a1ecc7bcfd4189c0b7344ae3a9772"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/during-tx/b210-during-tx-1788712376144-1788712376144-1788712384491371697.sigmf-data",
+      "bytes": 262140,
+      "sha256": "25025171d8d9ac7c9b9eadf538961a0db0618d10fca4781b012daf69be35161e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/during-tx/b210-during-tx-1788712376144-1788712376144-1788712384491371697.sigmf-meta",
+      "bytes": 487,
+      "sha256": "04def4e4803c4f47f121bede9f8702049725476acf20529262a28a7e9b59f45b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/during-tx-report.json",
+      "bytes": 2231,
+      "sha256": "c72583741f81119fffbcba2666ecd4c92193815caf0267031f39192d361a1062"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/link-summary.json",
+      "bytes": 12298,
+      "sha256": "aad821e8e885ad674178c94e22d248d88931ea421dd93e07e91d948724a2a2f7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/train-tile.fc32",
+      "bytes": 8192,
+      "sha256": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/transmission-plan.json",
+      "bytes": 1281,
+      "sha256": "42d0b4be2f3fca163ce828b2a572ab0cd2566e40b4578c6201cefdf8f577fc6e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/tx-summary.json",
+      "bytes": 554,
+      "sha256": "6bce9586d01f14ca656eda31272a63aadd7797ff97cf3f29003f9254e9b70f60"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix1-907m/tx-uhd.log",
+      "bytes": 1539,
+      "sha256": "f7e23cb44569b1e5ef672788a49699eaa360be421679ef5f5960fd99ed7db587"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/after-tx/b210-after-tx-1788712404116-1788712404116-1788712426069331432.sigmf-data",
+      "bytes": 262140,
+      "sha256": "7b9792f809d4fcb097cf87bec9422cc6740228918b2c23508bb81139cb6acdcd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/after-tx/b210-after-tx-1788712404116-1788712404116-1788712426069331432.sigmf-meta",
+      "bytes": 487,
+      "sha256": "5f10cfa3f6441b0a03b91c35b7963649ac5c07c2942129caba3bcba973b9294c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/after-tx-report.json",
+      "bytes": 2232,
+      "sha256": "923728d542cd3061b82922a72646d726cbd6650d95ef6f40df2243c0f06e4450"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/baseline/b210-baseline-1788712404114-1788712404114-1788712404629081014.sigmf-data",
+      "bytes": 262140,
+      "sha256": "d0c3ae94f9fbc15117d9d90ec0c19e49c034f88a19bbc90f42fabc2899091423"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/baseline/b210-baseline-1788712404114-1788712404114-1788712404629081014.sigmf-meta",
+      "bytes": 487,
+      "sha256": "03f1045de9020abb20ce62e239b6ececda257c6728b22087318261202623dd2c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/baseline-report.json",
+      "bytes": 2229,
+      "sha256": "e1bef116a22308dcc58473f800743e21876e32d4b1bcd992842b4dc4740c7b41"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/during-tx/b210-during-tx-1788712404115-1788712404115-1788712412671780455.sigmf-data",
+      "bytes": 262140,
+      "sha256": "34844b26c38b092f3d46d45bfaea22494b3d396ba78f9d45ed247414bed9803d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/during-tx/b210-during-tx-1788712404115-1788712404115-1788712412671780455.sigmf-meta",
+      "bytes": 487,
+      "sha256": "1286d0e590bad8f826e87d4172ef55a5d228acb047bcb8bb2f8b0489bb6731e5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/during-tx-report.json",
+      "bytes": 2232,
+      "sha256": "0efc825da4a0952847f6fcb6aed4cd10c74f09efbe509e975a93da29c4c25259"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/link-summary.json",
+      "bytes": 12302,
+      "sha256": "ba4cc1bc8ad42fc35addbc80e5315292f52a2b7ae7be70e4aa3726db5f5e6cd1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/train-tile.fc32",
+      "bytes": 8192,
+      "sha256": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/transmission-plan.json",
+      "bytes": 1281,
+      "sha256": "42d0b4be2f3fca163ce828b2a572ab0cd2566e40b4578c6201cefdf8f577fc6e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/tx-summary.json",
+      "bytes": 554,
+      "sha256": "1060b0f8ef26c36eb10b3533fa34e731e74b7bf1033d2bee12f120c953375f0c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-fix2-907m/tx-uhd.log",
+      "bytes": 1539,
+      "sha256": "f7e23cb44569b1e5ef672788a49699eaa360be421679ef5f5960fd99ed7db587"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-tone-907m/after-tx/b210-after-tx-1788712325620-1788712325620-1788712343193360439.sigmf-data",
+      "bytes": 262140,
+      "sha256": "2299fbfafc46e3e6581f459498d77d8fcdbebae51679d0c99bb15611ec4399fb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-tone-907m/after-tx/b210-after-tx-1788712325620-1788712325620-1788712343193360439.sigmf-meta",
+      "bytes": 487,
+      "sha256": "e457177fd21c303a2b69c01f24b55b15a354d2bf6545ff1ce921c512c7798de8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-tone-907m/after-tx-report.json",
+      "bytes": 2230,
+      "sha256": "cd03344f3411dcdad06d7b9853fca6772aa5a47811e27c5fd61a79f14a15b634"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-tone-907m/baseline/b210-baseline-1788712325618-1788712325618-1788712326140543703.sigmf-data",
+      "bytes": 262140,
+      "sha256": "615bf4d45a2dbaca597131c0ae6aa3a0954ff6122aeb80ada228bba19ede6322"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-tone-907m/baseline/b210-baseline-1788712325618-1788712325618-1788712326140543703.sigmf-meta",
+      "bytes": 487,
+      "sha256": "72d1c5bf0a474658c54f555bd02c84509b850e3317edd222536ac4675f9f8e2e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-tone-907m/baseline-report.json",
+      "bytes": 2228,
+      "sha256": "04abcbffd3017d097c85d48518753b37e9a8da031ab57e72a70af704120bd603"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-tone-907m/during-tx/b210-during-tx-1788712325619-1788712325619-1788712333380010015.sigmf-data",
+      "bytes": 262140,
+      "sha256": "25fba074b9768b04a3dea9842ba3ac59ea93f2cd4decb8d8ef77c672961dbac0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-tone-907m/during-tx/b210-during-tx-1788712325619-1788712325619-1788712333380010015.sigmf-meta",
+      "bytes": 487,
+      "sha256": "c9d159b13099b74434598dba35dce528f424b74a7dbcbfd0c5dee934311d88b9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-tone-907m/during-tx-report.json",
+      "bytes": 2235,
+      "sha256": "d508dc1ca5cef8112cb95a45f9fbeeeb9acb42cb6c406da8e408b32afe6bb19c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-tone-907m/link-summary.json",
+      "bytes": 11925,
+      "sha256": "01c24dd8d40bf854df69e4dd5568733802938c20460e9e16a47754b549e4bed4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/after-tx/b210-after-tx-1788712348498-1788712348498-1788712369984832474.sigmf-data",
+      "bytes": 262140,
+      "sha256": "f574556ecffc0c704b887b3b86519d9a586efe2530112c729a68c28ed16586ce"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/after-tx/b210-after-tx-1788712348498-1788712348498-1788712369984832474.sigmf-meta",
+      "bytes": 487,
+      "sha256": "64ab34ec1da70644608027ed37e7fa5449d15b9e3aa7a4fcb08f5e12bad20cd7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/after-tx-report.json",
+      "bytes": 2230,
+      "sha256": "581d77ebf3e1358f971baf5c5806fc22a237196dc9fc01440ecaa6c0bf3d42a4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/baseline/b210-baseline-1788712348496-1788712348496-1788712349007221915.sigmf-data",
+      "bytes": 262140,
+      "sha256": "8859d01556cfed5f5fb80b15f654bd07fdd2833c6d0c452ee5a314994881bbba"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/baseline/b210-baseline-1788712348496-1788712348496-1788712349007221915.sigmf-meta",
+      "bytes": 487,
+      "sha256": "51028d054dc3f4168a74e72e48864919cc253df0573bcbd6d25cc576d58814e9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/baseline-report.json",
+      "bytes": 2229,
+      "sha256": "592a5a10e8184fd794b401c70428b9f631434a20756bab53fb7345c05664485b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/during-tx/b210-during-tx-1788712348497-1788712348497-1788712356652349501.sigmf-data",
+      "bytes": 262140,
+      "sha256": "717d05206c5089c4ee76d9b3c9ffe04f8e9b181bf19a9753d4a13916af36777b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/during-tx/b210-during-tx-1788712348497-1788712348497-1788712356652349501.sigmf-meta",
+      "bytes": 487,
+      "sha256": "7fe8ffeb608b4715603c8fd33320a86a9fc10bfd1fb1f5b79a705e2eef3be9b6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/during-tx-report.json",
+      "bytes": 2235,
+      "sha256": "207dcfc7f2b2b1cb73c4d367da5e32b4aa4d28f06587da3b9f2948ad8a2f001b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/link-summary.json",
+      "bytes": 12298,
+      "sha256": "8bee4c07d1ece627c5a1c505069746e9fa02f092722c5e76905f2a46d9d8b288"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/train-tile.fc32",
+      "bytes": 8192,
+      "sha256": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/transmission-plan.json",
+      "bytes": 1276,
+      "sha256": "4d515e397ec6a5b91aeb39aa04d457a317e2d7ffe0457f5ea9dff2a10911936c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/tx-summary.json",
+      "bytes": 549,
+      "sha256": "3e181cc7edf4756fabd6567e3f7779d4d62ed5c02a94260b170b5b6318341bf1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-reject-zero-907m/tx-uhd.log",
+      "bytes": 1539,
+      "sha256": "16a8e370e5b7125bc389271d4e0eb12b70dd2662d9f721765c5f06af1dfaff20"
+    }
+  ],
+  "logical_bytes": 3272399,
+  "unique_file_bytes": 3256015,
+  "raw_rx_iq_bytes": 3145680,
+  "source_payload_storage": "Three sealed source paths share one 8192-byte inode.",
+  "identity": {
+    "captures": {
+      "tone": {
+        "hashes": {
+          "link-summary.json": "01c24dd8d40bf854df69e4dd5568733802938c20460e9e16a47754b549e4bed4",
+          "baseline/b210-baseline-1788712325618-1788712325618-1788712326140543703.sigmf-data": "615bf4d45a2dbaca597131c0ae6aa3a0954ff6122aeb80ada228bba19ede6322",
+          "baseline/b210-baseline-1788712325618-1788712325618-1788712326140543703.sigmf-meta": "72d1c5bf0a474658c54f555bd02c84509b850e3317edd222536ac4675f9f8e2e",
+          "baseline-report.json": "04abcbffd3017d097c85d48518753b37e9a8da031ab57e72a70af704120bd603",
+          "during-tx/b210-during-tx-1788712325619-1788712325619-1788712333380010015.sigmf-data": "25fba074b9768b04a3dea9842ba3ac59ea93f2cd4decb8d8ef77c672961dbac0",
+          "during-tx/b210-during-tx-1788712325619-1788712325619-1788712333380010015.sigmf-meta": "c9d159b13099b74434598dba35dce528f424b74a7dbcbfd0c5dee934311d88b9",
+          "during-tx-report.json": "d508dc1ca5cef8112cb95a45f9fbeeeb9acb42cb6c406da8e408b32afe6bb19c",
+          "after-tx/b210-after-tx-1788712325620-1788712325620-1788712343193360439.sigmf-data": "2299fbfafc46e3e6581f459498d77d8fcdbebae51679d0c99bb15611ec4399fb",
+          "after-tx/b210-after-tx-1788712325620-1788712325620-1788712343193360439.sigmf-meta": "e457177fd21c303a2b69c01f24b55b15a354d2bf6545ff1ce921c512c7798de8",
+          "after-tx-report.json": "cd03344f3411dcdad06d7b9853fca6772aa5a47811e27c5fd61a79f14a15b634"
+        },
+        "captures": [
+          {
+            "tag": "baseline",
+            "sweep_id": "b210-baseline-1788712325618",
+            "session_generation": 1788712325618,
+            "request_id": 5,
+            "sequence": 295,
+            "iq_sha256": "615bf4d45a2dbaca597131c0ae6aa3a0954ff6122aeb80ada228bba19ede6322"
+          },
+          {
+            "tag": "during-tx",
+            "sweep_id": "b210-during-tx-1788712325619",
+            "session_generation": 1788712325619,
+            "request_id": 5,
+            "sequence": 296,
+            "iq_sha256": "25fba074b9768b04a3dea9842ba3ac59ea93f2cd4decb8d8ef77c672961dbac0"
+          },
+          {
+            "tag": "after-tx",
+            "sweep_id": "b210-after-tx-1788712325620",
+            "session_generation": 1788712325620,
+            "request_id": 5,
+            "sequence": 297,
+            "iq_sha256": "2299fbfafc46e3e6581f459498d77d8fcdbebae51679d0c99bb15611ec4399fb"
+          }
+        ],
+        "sdrd_pid": "17136"
+      },
+      "cases": {
+        "zero": {
+          "hashes": {
+            "link-summary.json": "8bee4c07d1ece627c5a1c505069746e9fa02f092722c5e76905f2a46d9d8b288",
+            "baseline/b210-baseline-1788712348496-1788712348496-1788712349007221915.sigmf-data": "8859d01556cfed5f5fb80b15f654bd07fdd2833c6d0c452ee5a314994881bbba",
+            "baseline/b210-baseline-1788712348496-1788712348496-1788712349007221915.sigmf-meta": "51028d054dc3f4168a74e72e48864919cc253df0573bcbd6d25cc576d58814e9",
+            "baseline-report.json": "592a5a10e8184fd794b401c70428b9f631434a20756bab53fb7345c05664485b",
+            "during-tx/b210-during-tx-1788712348497-1788712348497-1788712356652349501.sigmf-data": "717d05206c5089c4ee76d9b3c9ffe04f8e9b181bf19a9753d4a13916af36777b",
+            "during-tx/b210-during-tx-1788712348497-1788712348497-1788712356652349501.sigmf-meta": "7fe8ffeb608b4715603c8fd33320a86a9fc10bfd1fb1f5b79a705e2eef3be9b6",
+            "during-tx-report.json": "207dcfc7f2b2b1cb73c4d367da5e32b4aa4d28f06587da3b9f2948ad8a2f001b",
+            "after-tx/b210-after-tx-1788712348498-1788712348498-1788712369984832474.sigmf-data": "f574556ecffc0c704b887b3b86519d9a586efe2530112c729a68c28ed16586ce",
+            "after-tx/b210-after-tx-1788712348498-1788712348498-1788712369984832474.sigmf-meta": "64ab34ec1da70644608027ed37e7fa5449d15b9e3aa7a4fcb08f5e12bad20cd7",
+            "after-tx-report.json": "581d77ebf3e1358f971baf5c5806fc22a237196dc9fc01440ecaa6c0bf3d42a4"
+          },
+          "captures": [
+            {
+              "tag": "baseline",
+              "sweep_id": "b210-baseline-1788712348496",
+              "session_generation": 1788712348496,
+              "request_id": 5,
+              "sequence": 298,
+              "iq_sha256": "8859d01556cfed5f5fb80b15f654bd07fdd2833c6d0c452ee5a314994881bbba"
+            },
+            {
+              "tag": "during-tx",
+              "sweep_id": "b210-during-tx-1788712348497",
+              "session_generation": 1788712348497,
+              "request_id": 5,
+              "sequence": 299,
+              "iq_sha256": "717d05206c5089c4ee76d9b3c9ffe04f8e9b181bf19a9753d4a13916af36777b"
+            },
+            {
+              "tag": "after-tx",
+              "sweep_id": "b210-after-tx-1788712348498",
+              "session_generation": 1788712348498,
+              "request_id": 5,
+              "sequence": 300,
+              "iq_sha256": "f574556ecffc0c704b887b3b86519d9a586efe2530112c729a68c28ed16586ce"
+            }
+          ],
+          "sdrd_pid": "17136",
+          "source_hashes": {
+            "transmission-plan.json": "4d515e397ec6a5b91aeb39aa04d457a317e2d7ffe0457f5ea9dff2a10911936c",
+            "train-tile.fc32": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9",
+            "tx-summary.json": "3e181cc7edf4756fabd6567e3f7779d4d62ed5c02a94260b170b5b6318341bf1",
+            "tx-uhd.log": "16a8e370e5b7125bc389271d4e0eb12b70dd2662d9f721765c5f06af1dfaff20"
+          }
+        },
+        "fix1": {
+          "hashes": {
+            "link-summary.json": "aad821e8e885ad674178c94e22d248d88931ea421dd93e07e91d948724a2a2f7",
+            "baseline/b210-baseline-1788712376143-1788712376143-1788712376660603000.sigmf-data": "39c420daee927375fc143adef6f39b12c037768eeac3352ff7500f82fe18d4ce",
+            "baseline/b210-baseline-1788712376143-1788712376143-1788712376660603000.sigmf-meta": "b44ff2beeca0ae6ccb0190aa8cfd58207ae5ca64930d3ad916fec3a57d545982",
+            "baseline-report.json": "674389feff141e5f2f82d0937774fc31771a1ecc7bcfd4189c0b7344ae3a9772",
+            "during-tx/b210-during-tx-1788712376144-1788712376144-1788712384491371697.sigmf-data": "25025171d8d9ac7c9b9eadf538961a0db0618d10fca4781b012daf69be35161e",
+            "during-tx/b210-during-tx-1788712376144-1788712376144-1788712384491371697.sigmf-meta": "04def4e4803c4f47f121bede9f8702049725476acf20529262a28a7e9b59f45b",
+            "during-tx-report.json": "c72583741f81119fffbcba2666ecd4c92193815caf0267031f39192d361a1062",
+            "after-tx/b210-after-tx-1788712376145-1788712376145-1788712397839938504.sigmf-data": "2bdace31139b7eb50f78df92b620f25b07e0cbfc8fd5739d29fd62fdd4b30b6e",
+            "after-tx/b210-after-tx-1788712376145-1788712376145-1788712397839938504.sigmf-meta": "e3b8a249a120419c83d0020a0acc93ba4ad2851610dab676e1b7b54101cfa4a0",
+            "after-tx-report.json": "ee0bdbb3e2c7fc32fa367afc4b85679f41de9aa6941ea473b63ef1bc960ec6c5"
+          },
+          "captures": [
+            {
+              "tag": "baseline",
+              "sweep_id": "b210-baseline-1788712376143",
+              "session_generation": 1788712376143,
+              "request_id": 5,
+              "sequence": 301,
+              "iq_sha256": "39c420daee927375fc143adef6f39b12c037768eeac3352ff7500f82fe18d4ce"
+            },
+            {
+              "tag": "during-tx",
+              "sweep_id": "b210-during-tx-1788712376144",
+              "session_generation": 1788712376144,
+              "request_id": 5,
+              "sequence": 302,
+              "iq_sha256": "25025171d8d9ac7c9b9eadf538961a0db0618d10fca4781b012daf69be35161e"
+            },
+            {
+              "tag": "after-tx",
+              "sweep_id": "b210-after-tx-1788712376145",
+              "session_generation": 1788712376145,
+              "request_id": 5,
+              "sequence": 303,
+              "iq_sha256": "2bdace31139b7eb50f78df92b620f25b07e0cbfc8fd5739d29fd62fdd4b30b6e"
+            }
+          ],
+          "sdrd_pid": "17136",
+          "source_hashes": {
+            "transmission-plan.json": "42d0b4be2f3fca163ce828b2a572ab0cd2566e40b4578c6201cefdf8f577fc6e",
+            "train-tile.fc32": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9",
+            "tx-summary.json": "6bce9586d01f14ca656eda31272a63aadd7797ff97cf3f29003f9254e9b70f60",
+            "tx-uhd.log": "f7e23cb44569b1e5ef672788a49699eaa360be421679ef5f5960fd99ed7db587"
+          }
+        },
+        "fix2": {
+          "hashes": {
+            "link-summary.json": "ba4cc1bc8ad42fc35addbc80e5315292f52a2b7ae7be70e4aa3726db5f5e6cd1",
+            "baseline/b210-baseline-1788712404114-1788712404114-1788712404629081014.sigmf-data": "d0c3ae94f9fbc15117d9d90ec0c19e49c034f88a19bbc90f42fabc2899091423",
+            "baseline/b210-baseline-1788712404114-1788712404114-1788712404629081014.sigmf-meta": "03f1045de9020abb20ce62e239b6ececda257c6728b22087318261202623dd2c",
+            "baseline-report.json": "e1bef116a22308dcc58473f800743e21876e32d4b1bcd992842b4dc4740c7b41",
+            "during-tx/b210-during-tx-1788712404115-1788712404115-1788712412671780455.sigmf-data": "34844b26c38b092f3d46d45bfaea22494b3d396ba78f9d45ed247414bed9803d",
+            "during-tx/b210-during-tx-1788712404115-1788712404115-1788712412671780455.sigmf-meta": "1286d0e590bad8f826e87d4172ef55a5d228acb047bcb8bb2f8b0489bb6731e5",
+            "during-tx-report.json": "0efc825da4a0952847f6fcb6aed4cd10c74f09efbe509e975a93da29c4c25259",
+            "after-tx/b210-after-tx-1788712404116-1788712404116-1788712426069331432.sigmf-data": "7b9792f809d4fcb097cf87bec9422cc6740228918b2c23508bb81139cb6acdcd",
+            "after-tx/b210-after-tx-1788712404116-1788712404116-1788712426069331432.sigmf-meta": "5f10cfa3f6441b0a03b91c35b7963649ac5c07c2942129caba3bcba973b9294c",
+            "after-tx-report.json": "923728d542cd3061b82922a72646d726cbd6650d95ef6f40df2243c0f06e4450"
+          },
+          "captures": [
+            {
+              "tag": "baseline",
+              "sweep_id": "b210-baseline-1788712404114",
+              "session_generation": 1788712404114,
+              "request_id": 5,
+              "sequence": 304,
+              "iq_sha256": "d0c3ae94f9fbc15117d9d90ec0c19e49c034f88a19bbc90f42fabc2899091423"
+            },
+            {
+              "tag": "during-tx",
+              "sweep_id": "b210-during-tx-1788712404115",
+              "session_generation": 1788712404115,
+              "request_id": 5,
+              "sequence": 305,
+              "iq_sha256": "34844b26c38b092f3d46d45bfaea22494b3d396ba78f9d45ed247414bed9803d"
+            },
+            {
+              "tag": "after-tx",
+              "sweep_id": "b210-after-tx-1788712404116",
+              "session_generation": 1788712404116,
+              "request_id": 5,
+              "sequence": 306,
+              "iq_sha256": "7b9792f809d4fcb097cf87bec9422cc6740228918b2c23508bb81139cb6acdcd"
+            }
+          ],
+          "sdrd_pid": "17136",
+          "source_hashes": {
+            "transmission-plan.json": "42d0b4be2f3fca163ce828b2a572ab0cd2566e40b4578c6201cefdf8f577fc6e",
+            "train-tile.fc32": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9",
+            "tx-summary.json": "1060b0f8ef26c36eb10b3533fa34e731e74b7bf1033d2bee12f120c953375f0c",
+            "tx-uhd.log": "f7e23cb44569b1e5ef672788a49699eaa360be421679ef5f5960fd99ed7db587"
+          }
+        }
+      }
+    },
+    "source_payload_sha256": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9",
+    "source_rows": [
+      102400
+    ],
+    "profile": "engineering_RX40_2.1MSps_1.5MHz_2440MHz",
+    "filter": {
+      "schema_id": "b210_separated_lo_fixed_fir_v1",
+      "sample_rate_hz": 2100000,
+      "tx_lo_offset_hz": 250000,
+      "taps": 257,
+      "cutoff_hz": 175000,
+      "kaiser_beta": 8.0,
+      "raw_halo_samples": 128,
+      "coefficients_sha256": "d0e12014bedae088b71366497299adc3a1be0a45cf622e9cbb346d4ea0c8c8be",
+      "passband_max_amplitude_error": 6.72315640199983e-05,
+      "stopband_max_db": -86.48358432113642,
+      "source_mean_preserved": true,
+      "production_enabled": false
+    },
+    "model_windows": 0,
+    "independent_labels": 0,
+    "recognizer_available": false
+  },
+  "validation_record": "docs/B210_LO_REJECTION_VALIDATION_2026-09-07.md",
+  "verify_command": "PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 python3 jetson-agx/sdrharness/scripts/repair-b210-lo-leakage.py --verify-retained",
+  "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/b210-reject-907m /var/tmp/sdrharness-dev/b210-reject-tone-907m /var/tmp/sdrharness-dev/b210-reject-zero-907m /var/tmp/sdrharness-dev/b210-reject-fix1-907m /var/tmp/sdrharness-dev/b210-reject-fix2-907m",
+  "deletion_note": "Explicit manual deletion only; then update this inventory and checklist to mark raw replay unavailable. This command touches only this retained diagnostic package, not application results."
+}

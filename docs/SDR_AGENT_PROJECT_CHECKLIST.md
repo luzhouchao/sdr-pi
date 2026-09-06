@@ -634,9 +634,17 @@ aggregation, result persistence and model-facing summaries.
           [LO-offset validation](B210_LO_OFFSET_VALIDATION_2026-09-06.md).
     - [ ] Identify remaining time-varying phase and stopped/background excursions;
           LO separation does not remove these effects or establish their origin.
-    - [ ] Validate source fidelity with TX LO leakage suppressed or outside the
-          effective receive signal band before a fresh paired classifier test;
-          ±250 kHz separation remains inside the current RX bandwidth.
+    - [x] Implement and live-validate an engineering +250-kHz LO / fixed 257-tap
+          FIR rejection path: two captures suppress the LO band by 94.63/94.75 dB,
+          preserve 99.9066% source power and show fixed-window source coherence
+          0.997–0.999. Zero-offset rejection is approximately 0 dB. All three
+          registered model blocks fail stopped-background gates, so model/warmup
+          remain 0; this is not production RF-v1 or classification repair.
+          89 tests and independent verification of 587,511 filtered samples pass.
+          Non-evidence data and NX/P201 copies cleaned; per the new operator
+          retention rule, 53 inventoried files (~3.3 MB) remain for sealed replay.
+          See [LO rejection validation](B210_LO_REJECTION_VALIDATION_2026-09-07.md)
+          and [retained evidence](B210_LO_REJECTION_EVIDENCE_2026-09-07.json).
     - [ ] Qualify fresh 1024-source controls before further bidirectional
           bias/classifier validation; no retrospective acceptance of failed captures.
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture

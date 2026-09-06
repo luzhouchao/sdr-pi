@@ -88,13 +88,32 @@ during development without asking again, subject to all of these constraints:
    Such results must have a visible manual-delete path and must not be removed
    by development cleanup unless the user selected them for deletion.
 8. At the end of each feature, stop all feature processes, verify the exact
-   resolved feature-directory paths, delete those directories and workstation
-   staging artifacts, and report what was removed. A feature is not complete
-   and its checklist item must not be checked until cleanup is verified.
+   resolved feature-directory paths, and delete all temporary data and workstation
+   staging artifacts except the minimum diagnostic evidence explicitly inventoried
+   under rule 10. Report what was removed and what was retained. A feature is not
+   complete and its checklist item must not be checked until cleanup and the
+   retained-evidence inventory are verified.
 9. Treat each completed feature as its own delivery unit: after tests pass,
    temporary data cleanup is verified, and the checklist is updated, create a
    focused commit and push it to the configured Git remote promptly. Do not
    defer several completed features into one unrelated batch.
+10. Necessary evidence for diagnosing a concrete problem may be retained after
+    delivery (operator instruction, 2026-09-07). Keep only the minimum evidence
+    needed to reproduce or review the finding; this is not blanket permission to
+    retain every capture. Prefer existing corpus/diagnostic storage. When existing
+    storage would alter a sealed experiment or create duplicate IQ, keep a small,
+    explicitly inventoried subset in its existing feature directories instead of
+    introducing a parallel storage system. Keep raw IQ outside Git and avoid extra
+    IQ copies; NX/P201 copies remain transient unless separately justified.
+11. For each retained diagnostic package, record its purpose and why the files are
+    necessary, exact paths, source/capture/request/session and relevant model or
+    profile identity, file sizes and total bytes, SHA-256 hashes, and the exact
+    manual deletion method in the validation record or an indexed evidence
+    manifest. Distinguish retained evidence from incomplete cleanup. Never label
+    an existing retained path as deleted or report full cleanup without this
+    exception. Remove build outputs, test files, caches, staging files and redundant
+    copies when the unit finishes. Do not delete user-owned corpus/application
+    results as development cleanup; rule 7 still applies.
 
 Nested `AGENTS.md` files may add subsystem-specific instructions. The nearest
 file to the changed code takes precedence when instructions differ.
