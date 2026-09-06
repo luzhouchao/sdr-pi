@@ -1,0 +1,3766 @@
+{
+  "schema_version": 1,
+  "unit": "S4b",
+  "acceptance_status": "pass_with_user_gpu_temperature_exception",
+  "raw_run_status": "failed",
+  "user_exception": {
+    "allow_missing_gpu_temperature": true,
+    "instruction": "没有就不管了，gpu温度",
+    "scope": "GPU temperature remains unmeasured; all other gates unchanged"
+  },
+  "failure": "AssertionError: missing temperature coverage",
+  "base_commit": "9c6efc450978e95ea740ec0bc38a6bc1b388f871",
+  "plan_sha256": "19dd5b27c345f7c28c5d23ea9facd271885430d23b0bdd7edb9d9526c2e8a972",
+  "controller_sha256": "d1929e04c858a321090d3a1009ea4354983c52d6041d2b8b8d607c73f9475c3f",
+  "model_bytes_sha256": "937c7c9497ca9f7990ee4256c617d5c57739e66da3da7498de1ab9d1618d2db2",
+  "synthetic_input": true,
+  "rx_bytes": 0,
+  "locked_test_read": false,
+  "recognizer_available": false,
+  "duration_seconds": 1200.1267600380233,
+  "sample_count": 240,
+  "gpu_temperature_missing_samples": 240,
+  "max_sample_interval_seconds": 5.003271225024946,
+  "latency": {
+    "mamba_seconds": {
+      "all": {
+        "min": 0.19875899801263586,
+        "median": 0.36182054548407905,
+        "p95": 0.3979056380339898,
+        "max": 0.40840583498356864
+      },
+      "history_bytes": {
+        "0": {
+          "min": 0.2076237490400672,
+          "median": 0.36058520097867586,
+          "p95": 0.398546501994133,
+          "max": 0.40191493899328634,
+          "late_early_p50_ratio": 0.9249620898789801
+        },
+        "2048": {
+          "min": 0.2008512340253219,
+          "median": 0.3645446245209314,
+          "p95": 0.3793256870121695,
+          "max": 0.39231176098110154,
+          "late_early_p50_ratio": 0.990733953186893
+        },
+        "8192": {
+          "min": 0.22991080803330988,
+          "median": 0.3634862119797617,
+          "p95": 0.4012538919923827,
+          "max": 0.40840583498356864,
+          "late_early_p50_ratio": 0.9128173371173949
+        },
+        "16384": {
+          "min": 0.19875899801263586,
+          "median": 0.3574401840160135,
+          "p95": 0.377819070010446,
+          "max": 0.386579037993215,
+          "late_early_p50_ratio": 1.5744873972533078
+        }
+      },
+      "p95_limit_seconds": 5
+    },
+    "planner_seconds": {
+      "all": {
+        "min": 1.9988978179753758,
+        "median": 2.7864816465007607,
+        "p95": 4.032810119038913,
+        "max": 4.04402901197318
+      },
+      "history_bytes": {
+        "0": {
+          "min": 1.9988978179753758,
+          "median": 2.0897937460104004,
+          "p95": 2.1534262049826793,
+          "max": 2.1635038750246167,
+          "late_early_p50_ratio": 0.9945979019772002
+        },
+        "2048": {
+          "min": 2.355922750022728,
+          "median": 2.4189248769835103,
+          "p95": 2.4714060490368865,
+          "max": 2.47907016397221,
+          "late_early_p50_ratio": 1.0037798482088642
+        },
+        "8192": {
+          "min": 3.0938931290293112,
+          "median": 3.1419649774907157,
+          "p95": 3.1740242659579962,
+          "max": 3.185799364000559,
+          "late_early_p50_ratio": 0.9982398719253246
+        },
+        "16384": {
+          "min": 3.9458223519613966,
+          "median": 4.005860711011337,
+          "p95": 4.036446865007747,
+          "max": 4.04402901197318,
+          "late_early_p50_ratio": 0.9963837008748329
+        }
+      },
+      "p95_limit_seconds": 60
+    }
+  },
+  "windows": {
+    "first_5_minutes": {
+      "count": 60,
+      "max_temp_c": {
+        "min": 48.843,
+        "median": 49.437,
+        "p95": 50.125,
+        "max": 50.593
+      },
+      "pss_kib": {
+        "min": 2084014,
+        "median": 2141749.0,
+        "p95": 2198724,
+        "max": 2199352
+      },
+      "nvmap_kib": {
+        "min": 10701656,
+        "median": 10701656.0,
+        "p95": 10701656,
+        "max": 10701656
+      },
+      "available_kib": {
+        "min": 31599700,
+        "median": 31697438.0,
+        "p95": 31737948,
+        "max": 31765496
+      }
+    },
+    "penultimate_5_minutes": {
+      "count": 60,
+      "max_temp_c": {
+        "min": 49.156,
+        "median": 49.609,
+        "p95": 50.0,
+        "max": 50.125
+      },
+      "pss_kib": {
+        "min": 2090934,
+        "median": 2146370.0,
+        "p95": 2201766,
+        "max": 2201816
+      },
+      "nvmap_kib": {
+        "min": 10701656,
+        "median": 10701656.0,
+        "p95": 10701656,
+        "max": 10701656
+      },
+      "available_kib": {
+        "min": 31586720,
+        "median": 31670786.0,
+        "p95": 31722396,
+        "max": 31767200
+      }
+    },
+    "last_5_minutes": {
+      "count": 60,
+      "max_temp_c": {
+        "min": 49.25,
+        "median": 49.687,
+        "p95": 50.125,
+        "max": 50.343
+      },
+      "pss_kib": {
+        "min": 2091160,
+        "median": 2146584.0,
+        "p95": 2201952,
+        "max": 2201974
+      },
+      "nvmap_kib": {
+        "min": 10701656,
+        "median": 10701656.0,
+        "p95": 10701656,
+        "max": 10701656
+      },
+      "available_kib": {
+        "min": 31602568,
+        "median": 31683432.0,
+        "p95": 31743408,
+        "max": 31751308
+      }
+    }
+  },
+  "resources": {
+    "max_temp_c": {
+      "min": 48.843,
+      "p50": 49.593,
+      "p95": 50.125,
+      "max": 50.593
+    },
+    "pss_kib": {
+      "min": 2084014,
+      "p50": 2146097.0,
+      "p95": 2201884,
+      "max": 2201974
+    },
+    "nvmap_kib": {
+      "min": 10701656,
+      "p50": 10701656.0,
+      "p95": 10701656,
+      "max": 10701656
+    },
+    "available_kib": {
+      "min": 31586720,
+      "p50": 31683202.0,
+      "p95": 31741780,
+      "max": 31771492
+    },
+    "swap_used_kib": {
+      "min": 1824768,
+      "p50": 1824768.0,
+      "p95": 1824768,
+      "max": 1824768
+    }
+  },
+  "gates": {
+    "complete_96_rounds": true,
+    "at_least_1200_seconds": true,
+    "telemetry_cadence_95_percent": true,
+    "gpu_temperature_complete": false,
+    "memory_ceiling": true,
+    "memory_growth": true,
+    "available_memory": true,
+    "reported_temperature_below_80C": true,
+    "reported_temperature_plateau": true,
+    "latency": true,
+    "lease_serialization": true
+  },
+  "first_health": {
+    "mamba": {
+      "schema_version": 1,
+      "operation": "health",
+      "instance_id": "54f429865c05c2f31f10bd4e08b059611dd8132b1be518bf8c931308a1ac5663",
+      "worker_instance_id": "3d06dc0e054a712731470bb70a6831f7b529652851772fb185f1b2c8f0a44d6d",
+      "ready": true,
+      "recognizer_available": false,
+      "minimum_generation": 1,
+      "active": null,
+      "queue_depth": 0,
+      "queue_capacity": 1,
+      "worker_pid": 358389,
+      "fault": null,
+      "metrics": {
+        "submitted": 0,
+        "completed": 0,
+        "busy": 0,
+        "cancelled": 0,
+        "expired": 0,
+        "failed": 0,
+        "crashes": 0,
+        "restarts": 0,
+        "removed": 0,
+        "queue_wait_us": 0,
+        "total_us": 0,
+        "connection_drops": 0,
+        "lock_wait_us": 12,
+        "gpu_acquired": 1,
+        "gpu_released": 1,
+        "gpu_wait_us": 6949914,
+        "gpu_held_us": 13322844,
+        "gpu_cancelled": 0,
+        "gpu_expired": 0,
+        "gpu_held": 0
+      }
+    },
+    "spark": {
+      "schema_version": 1,
+      "instance_id": "e9b94ddf492c598cb0dff341aa2a4e2fbfa7d47859416b94fb1a7f5f0cfc030c",
+      "worker_instance_id": "34700536c98facb57d6d28d5cc3e7f8d7beb644c30d4d85bd0a134548f3aef16",
+      "worker_pid": 358354,
+      "ready": true,
+      "fault": null,
+      "recognizer_available": false,
+      "active": false,
+      "metrics": {
+        "submitted": 0,
+        "completed": 0,
+        "cancelled": 0,
+        "failed": 0,
+        "busy": 0,
+        "restarts": 1
+      },
+      "gpu_held": false,
+      "gpu_metrics": {
+        "acquired": 1,
+        "released": 1,
+        "wait_us": 30,
+        "held_us": 6956883,
+        "cancelled": 0,
+        "expired": 0
+      }
+    }
+  },
+  "last_health": {
+    "mamba_health": {
+      "schema_version": 1,
+      "operation": "health",
+      "instance_id": "54f429865c05c2f31f10bd4e08b059611dd8132b1be518bf8c931308a1ac5663",
+      "worker_instance_id": "3d06dc0e054a712731470bb70a6831f7b529652851772fb185f1b2c8f0a44d6d",
+      "ready": true,
+      "recognizer_available": false,
+      "minimum_generation": 1,
+      "active": null,
+      "queue_depth": 0,
+      "queue_capacity": 1,
+      "worker_pid": 358389,
+      "fault": null,
+      "metrics": {
+        "submitted": 100,
+        "completed": 100,
+        "busy": 0,
+        "cancelled": 0,
+        "expired": 0,
+        "failed": 0,
+        "crashes": 0,
+        "restarts": 0,
+        "removed": 100,
+        "queue_wait_us": 400737,
+        "total_us": 28982352,
+        "connection_drops": 0,
+        "lock_wait_us": 12,
+        "gpu_acquired": 101,
+        "gpu_released": 101,
+        "gpu_wait_us": 6955324,
+        "gpu_held_us": 41883260,
+        "gpu_cancelled": 0,
+        "gpu_expired": 0,
+        "gpu_held": 0
+      }
+    },
+    "spark_health": {
+      "schema_version": 1,
+      "instance_id": "e9b94ddf492c598cb0dff341aa2a4e2fbfa7d47859416b94fb1a7f5f0cfc030c",
+      "worker_instance_id": "34700536c98facb57d6d28d5cc3e7f8d7beb644c30d4d85bd0a134548f3aef16",
+      "worker_pid": 358354,
+      "ready": true,
+      "fault": null,
+      "recognizer_available": false,
+      "active": false,
+      "metrics": {
+        "submitted": 100,
+        "completed": 100,
+        "cancelled": 0,
+        "failed": 0,
+        "busy": 0,
+        "restarts": 1
+      },
+      "gpu_held": false,
+      "gpu_metrics": {
+        "acquired": 101,
+        "released": 101,
+        "wait_us": 11757,
+        "held_us": 213524718,
+        "cancelled": 0,
+        "expired": 0
+      }
+    }
+  },
+  "rounds": [
+    {
+      "index": 4,
+      "history_bytes": 0,
+      "mamba_seconds": 0.2076237490400672,
+      "planner_seconds": 1.9988978179753758,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 159729,
+        "worker_total_us": 163286
+      }
+    },
+    {
+      "index": 5,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.37061910197371617,
+      "planner_seconds": 2.355922750022728,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 322557,
+        "worker_total_us": 326643
+      }
+    },
+    {
+      "index": 6,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.37658343999646604,
+      "planner_seconds": 3.1425035530119203,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 325864,
+        "worker_total_us": 329908
+      }
+    },
+    {
+      "index": 7,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.36861471901647747,
+      "planner_seconds": 3.9936579299974255,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 318692,
+        "worker_total_us": 323013
+      }
+    },
+    {
+      "index": 8,
+      "history_bytes": 0,
+      "mamba_seconds": 0.3979056380339898,
+      "planner_seconds": 2.098128461977467,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 345387,
+        "worker_total_us": 350153
+      }
+    },
+    {
+      "index": 9,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.365008820022922,
+      "planner_seconds": 2.4714060490368865,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 315482,
+        "worker_total_us": 319447
+      }
+    },
+    {
+      "index": 10,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.3793933080160059,
+      "planner_seconds": 3.167114468989894,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 325698,
+        "worker_total_us": 330246
+      }
+    },
+    {
+      "index": 11,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.21881841000868008,
+      "planner_seconds": 3.9968295079888776,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 169925,
+        "worker_total_us": 174129
+      }
+    },
+    {
+      "index": 12,
+      "history_bytes": 0,
+      "mamba_seconds": 0.3921818550443277,
+      "planner_seconds": 2.1061410210095346,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 340809,
+        "worker_total_us": 345307
+      }
+    },
+    {
+      "index": 13,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.3726226940052584,
+      "planner_seconds": 2.439422140014358,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 321073,
+        "worker_total_us": 325316
+      }
+    },
+    {
+      "index": 14,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.3955230340361595,
+      "planner_seconds": 3.168247130990494,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 344637,
+        "worker_total_us": 349204
+      }
+    },
+    {
+      "index": 15,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.3668463369831443,
+      "planner_seconds": 4.04402901197318,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 315583,
+        "worker_total_us": 319972
+      }
+    },
+    {
+      "index": 16,
+      "history_bytes": 0,
+      "mamba_seconds": 0.40191493899328634,
+      "planner_seconds": 2.102356420014985,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 353596,
+        "worker_total_us": 358076
+      }
+    },
+    {
+      "index": 17,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.3785228049964644,
+      "planner_seconds": 2.4281534450128675,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 325312,
+        "worker_total_us": 329791
+      }
+    },
+    {
+      "index": 18,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.4012538919923827,
+      "planner_seconds": 3.143424304027576,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 349803,
+        "worker_total_us": 354222
+      }
+    },
+    {
+      "index": 19,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.3769142880337313,
+      "planner_seconds": 4.008292746962979,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 325284,
+        "worker_total_us": 329683
+      }
+    },
+    {
+      "index": 20,
+      "history_bytes": 0,
+      "mamba_seconds": 0.398546501994133,
+      "planner_seconds": 2.1534262049826793,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 348327,
+        "worker_total_us": 352311
+      }
+    },
+    {
+      "index": 21,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.3676196789601818,
+      "planner_seconds": 2.365005249972455,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 317323,
+        "worker_total_us": 321293
+      }
+    },
+    {
+      "index": 22,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.40840583498356864,
+      "planner_seconds": 3.14524139103014,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 348952,
+        "worker_total_us": 353227
+      }
+    },
+    {
+      "index": 23,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.20662207202985883,
+      "planner_seconds": 4.022841118043289,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 159949,
+        "worker_total_us": 163730
+      }
+    },
+    {
+      "index": 24,
+      "history_bytes": 0,
+      "mamba_seconds": 0.376835401984863,
+      "planner_seconds": 2.1046136490185745,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 327680,
+        "worker_total_us": 331984
+      }
+    },
+    {
+      "index": 25,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.2296388079994358,
+      "planner_seconds": 2.3969171429635026,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 180509,
+        "worker_total_us": 184412
+      }
+    },
+    {
+      "index": 26,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.3779881810187362,
+      "planner_seconds": 3.1575831299996935,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 327603,
+        "worker_total_us": 331812
+      }
+    },
+    {
+      "index": 27,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.3756008460186422,
+      "planner_seconds": 4.02561087498907,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 323807,
+        "worker_total_us": 328061
+      }
+    },
+    {
+      "index": 28,
+      "history_bytes": 0,
+      "mamba_seconds": 0.38244473497616127,
+      "planner_seconds": 2.085053719987627,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 330442,
+        "worker_total_us": 334994
+      }
+    },
+    {
+      "index": 29,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.39231176098110154,
+      "planner_seconds": 2.4081623170059174,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 342517,
+        "worker_total_us": 346732
+      }
+    },
+    {
+      "index": 30,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.3904649309697561,
+      "planner_seconds": 3.1465575880138204,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 338852,
+        "worker_total_us": 343142
+      }
+    },
+    {
+      "index": 31,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.359543233003933,
+      "planner_seconds": 4.034147911996115,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 311269,
+        "worker_total_us": 315465
+      }
+    },
+    {
+      "index": 32,
+      "history_bytes": 0,
+      "mamba_seconds": 0.373362724960316,
+      "planner_seconds": 2.078838140005246,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 325445,
+        "worker_total_us": 329388
+      }
+    },
+    {
+      "index": 33,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.22830733499722555,
+      "planner_seconds": 2.409899136982858,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 171267,
+        "worker_total_us": 175781
+      }
+    },
+    {
+      "index": 34,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.37662445299793035,
+      "planner_seconds": 3.1245727660134435,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 320762,
+        "worker_total_us": 324623
+      }
+    },
+    {
+      "index": 35,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.2322264540125616,
+      "planner_seconds": 4.0352804910507984,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 183693,
+        "worker_total_us": 187775
+      }
+    },
+    {
+      "index": 36,
+      "history_bytes": 0,
+      "mamba_seconds": 0.3769694800139405,
+      "planner_seconds": 2.049452278006356,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 326530,
+        "worker_total_us": 330387
+      }
+    },
+    {
+      "index": 37,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.22437979199457914,
+      "planner_seconds": 2.416430657962337,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 174377,
+        "worker_total_us": 178339
+      }
+    },
+    {
+      "index": 38,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.3915905010071583,
+      "planner_seconds": 3.12196442700224,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 338944,
+        "worker_total_us": 343343
+      }
+    },
+    {
+      "index": 39,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.23159682797268033,
+      "planner_seconds": 4.0067261140211485,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 180215,
+        "worker_total_us": 184447
+      }
+    },
+    {
+      "index": 40,
+      "history_bytes": 0,
+      "mamba_seconds": 0.3614485369762406,
+      "planner_seconds": 2.091714432986919,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 313757,
+        "worker_total_us": 317683
+      }
+    },
+    {
+      "index": 41,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.369040485995356,
+      "planner_seconds": 2.394838995009195,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 319773,
+        "worker_total_us": 324092
+      }
+    },
+    {
+      "index": 42,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.365763190027792,
+      "planner_seconds": 3.1104501399677247,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 315234,
+        "worker_total_us": 319292
+      }
+    },
+    {
+      "index": 43,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.2201052270247601,
+      "planner_seconds": 4.019473468011711,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 173381,
+        "worker_total_us": 177542
+      }
+    },
+    {
+      "index": 44,
+      "history_bytes": 0,
+      "mamba_seconds": 0.3651407840079628,
+      "planner_seconds": 2.1635038750246167,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 314842,
+        "worker_total_us": 318957
+      }
+    },
+    {
+      "index": 45,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.2244308750377968,
+      "planner_seconds": 2.427168537979014,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 174476,
+        "worker_total_us": 178392
+      }
+    },
+    {
+      "index": 46,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.3614319229964167,
+      "planner_seconds": 3.158323297975585,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 312338,
+        "worker_total_us": 316395
+      }
+    },
+    {
+      "index": 47,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.22478284599492326,
+      "planner_seconds": 3.996151375991758,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 175471,
+        "worker_total_us": 179286
+      }
+    },
+    {
+      "index": 48,
+      "history_bytes": 0,
+      "mamba_seconds": 0.3533804939943366,
+      "planner_seconds": 2.087873059033882,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 305202,
+        "worker_total_us": 309075
+      }
+    },
+    {
+      "index": 49,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.22164478001650423,
+      "planner_seconds": 2.432388857996557,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 174296,
+        "worker_total_us": 178153
+      }
+    },
+    {
+      "index": 50,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.22991080803330988,
+      "planner_seconds": 3.1125849139643833,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 182566,
+        "worker_total_us": 186749
+      }
+    },
+    {
+      "index": 51,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.19875899801263586,
+      "planner_seconds": 4.003277637006249,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 152608,
+        "worker_total_us": 156309
+      }
+    },
+    {
+      "index": 52,
+      "history_bytes": 0,
+      "mamba_seconds": 0.37036106997402385,
+      "planner_seconds": 2.1144366079824977,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 318139,
+        "worker_total_us": 322499
+      }
+    },
+    {
+      "index": 53,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.2206226679845713,
+      "planner_seconds": 2.449270263023209,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 171415,
+        "worker_total_us": 175608
+      }
+    },
+    {
+      "index": 54,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.36188159097218886,
+      "planner_seconds": 3.1112250509904698,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 312413,
+        "worker_total_us": 316543
+      }
+    },
+    {
+      "index": 55,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.2277179160155356,
+      "planner_seconds": 4.032810119038913,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 177276,
+        "worker_total_us": 181387
+      }
+    },
+    {
+      "index": 56,
+      "history_bytes": 0,
+      "mamba_seconds": 0.35708187497220933,
+      "planner_seconds": 2.085071083973162,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 309171,
+        "worker_total_us": 312993
+      }
+    },
+    {
+      "index": 57,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.2008512340253219,
+      "planner_seconds": 2.47907016397221,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 152683,
+        "worker_total_us": 156489
+      }
+    },
+    {
+      "index": 58,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.3451997569645755,
+      "planner_seconds": 3.1371353269787505,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 296690,
+        "worker_total_us": 300532
+      }
+    },
+    {
+      "index": 59,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.23257707699667662,
+      "planner_seconds": 4.002666093001608,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 185799,
+        "worker_total_us": 189738
+      }
+    },
+    {
+      "index": 60,
+      "history_bytes": 0,
+      "mamba_seconds": 0.35922812100034207,
+      "planner_seconds": 2.0038690009969287,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 310340,
+        "worker_total_us": 314492
+      }
+    },
+    {
+      "index": 61,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.3640804290189408,
+      "planner_seconds": 2.4292873609811068,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 313121,
+        "worker_total_us": 317292
+      }
+    },
+    {
+      "index": 62,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.3607860569609329,
+      "planner_seconds": 3.156468226981815,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 311398,
+        "worker_total_us": 315375
+      }
+    },
+    {
+      "index": 63,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.26170888100750744,
+      "planner_seconds": 4.013181545014959,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 216146,
+        "worker_total_us": 220078
+      }
+    },
+    {
+      "index": 64,
+      "history_bytes": 0,
+      "mamba_seconds": 0.349768991000019,
+      "planner_seconds": 2.0444479630095884,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 302192,
+        "worker_total_us": 306397
+      }
+    },
+    {
+      "index": 65,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.357952102960553,
+      "planner_seconds": 2.3928327549947426,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 308733,
+        "worker_total_us": 313047
+      }
+    },
+    {
+      "index": 66,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.2309755640453659,
+      "planner_seconds": 3.140461511036847,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 174231,
+        "worker_total_us": 178261
+      }
+    },
+    {
+      "index": 67,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.37394472904270515,
+      "planner_seconds": 4.036446865007747,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 323600,
+        "worker_total_us": 327653
+      }
+    },
+    {
+      "index": 68,
+      "history_bytes": 0,
+      "mamba_seconds": 0.34747194801457226,
+      "planner_seconds": 2.069616077991668,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 299542,
+        "worker_total_us": 303264
+      }
+    },
+    {
+      "index": 69,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.3793256870121695,
+      "planner_seconds": 2.4357104140217416,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 329661,
+        "worker_total_us": 334584
+      }
+    },
+    {
+      "index": 70,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.3572816500090994,
+      "planner_seconds": 3.1486636689514853,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 307065,
+        "worker_total_us": 311015
+      }
+    },
+    {
+      "index": 71,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.386579037993215,
+      "planner_seconds": 3.9940418530022725,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 333256,
+        "worker_total_us": 338019
+      }
+    },
+    {
+      "index": 72,
+      "history_bytes": 0,
+      "mamba_seconds": 0.3631099979975261,
+      "planner_seconds": 2.0745991389849223,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 313670,
+        "worker_total_us": 317565
+      }
+    },
+    {
+      "index": 73,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.3607560030068271,
+      "planner_seconds": 2.42649938800605,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 311187,
+        "worker_total_us": 315208
+      }
+    },
+    {
+      "index": 74,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.34615119703812525,
+      "planner_seconds": 3.1203219430171885,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 297389,
+        "worker_total_us": 301102
+      }
+    },
+    {
+      "index": 75,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.37262663699220866,
+      "planner_seconds": 3.969917228037957,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 322747,
+        "worker_total_us": 327205
+      }
+    },
+    {
+      "index": 76,
+      "history_bytes": 0,
+      "mamba_seconds": 0.23460961802629754,
+      "planner_seconds": 2.1147700030123815,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 186528,
+        "worker_total_us": 190531
+      }
+    },
+    {
+      "index": 77,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.36175949999596924,
+      "planner_seconds": 2.4000775850145146,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 310503,
+        "worker_total_us": 314779
+      }
+    },
+    {
+      "index": 78,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.23079912998946384,
+      "planner_seconds": 3.185799364000559,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 183311,
+        "worker_total_us": 187338
+      }
+    },
+    {
+      "index": 79,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.377819070010446,
+      "planner_seconds": 3.991024450981058,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 324972,
+        "worker_total_us": 329780
+      }
+    },
+    {
+      "index": 80,
+      "history_bytes": 0,
+      "mamba_seconds": 0.22891802300000563,
+      "planner_seconds": 2.1237381389946677,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 180579,
+        "worker_total_us": 184646
+      }
+    },
+    {
+      "index": 81,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.3681126569863409,
+      "planner_seconds": 2.412052023981232,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 316878,
+        "worker_total_us": 321010
+      }
+    },
+    {
+      "index": 82,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.3650908329873346,
+      "planner_seconds": 3.135694742028136,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 314746,
+        "worker_total_us": 318969
+      }
+    },
+    {
+      "index": 83,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.35533713502809405,
+      "planner_seconds": 4.011964606994297,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 305976,
+        "worker_total_us": 309950
+      }
+    },
+    {
+      "index": 84,
+      "history_bytes": 0,
+      "mamba_seconds": 0.35972186498111114,
+      "planner_seconds": 2.082137868972495,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 310159,
+        "worker_total_us": 314205
+      }
+    },
+    {
+      "index": 85,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.3708874639705755,
+      "planner_seconds": 2.4214190960046835,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 320418,
+        "worker_total_us": 324657
+      }
+    },
+    {
+      "index": 86,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.2503667190321721,
+      "planner_seconds": 3.1740242659579962,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 158296,
+        "worker_total_us": 162103
+      }
+    },
+    {
+      "index": 87,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.36440961802145466,
+      "planner_seconds": 3.9458223519613966,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 313702,
+        "worker_total_us": 317623
+      }
+    },
+    {
+      "index": 88,
+      "history_bytes": 0,
+      "mamba_seconds": 0.2498155980138108,
+      "planner_seconds": 2.119916772993747,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 181186,
+        "worker_total_us": 185281
+      }
+    },
+    {
+      "index": 89,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.3596800650120713,
+      "planner_seconds": 2.4010870350175537,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 311632,
+        "worker_total_us": 315680
+      }
+    },
+    {
+      "index": 90,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.3684790120460093,
+      "planner_seconds": 3.141426401969511,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 319854,
+        "worker_total_us": 323881
+      }
+    },
+    {
+      "index": 91,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.3663924440043047,
+      "planner_seconds": 3.991972560994327,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 317677,
+        "worker_total_us": 321615
+      }
+    },
+    {
+      "index": 92,
+      "history_bytes": 0,
+      "mamba_seconds": 0.25784019799903035,
+      "planner_seconds": 2.1124920119764283,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 170173,
+        "worker_total_us": 174325
+      }
+    },
+    {
+      "index": 93,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.37355649599339813,
+      "planner_seconds": 2.4025420299731195,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 322767,
+        "worker_total_us": 327015
+      }
+    },
+    {
+      "index": 94,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.2505032630288042,
+      "planner_seconds": 3.130178784020245,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 157704,
+        "worker_total_us": 161755
+      }
+    },
+    {
+      "index": 95,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.3658742940169759,
+      "planner_seconds": 4.004995308001526,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 317937,
+        "worker_total_us": 321920
+      }
+    },
+    {
+      "index": 96,
+      "history_bytes": 0,
+      "mamba_seconds": 0.26485910697374493,
+      "planner_seconds": 2.0791227600420825,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 0,
+        "recognizer_available": false,
+        "usage": {
+          "input": 522,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 601,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 179230,
+        "worker_total_us": 183234
+      }
+    },
+    {
+      "index": 97,
+      "history_bytes": 2048,
+      "mamba_seconds": 0.3754861159832217,
+      "planner_seconds": 2.4231534929713234,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 2048,
+        "recognizer_available": false,
+        "usage": {
+          "input": 850,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 929,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 321817,
+        "worker_total_us": 326582
+      }
+    },
+    {
+      "index": 98,
+      "history_bytes": 8192,
+      "mamba_seconds": 0.26827738201245666,
+      "planner_seconds": 3.0938931290293112,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 8192,
+        "recognizer_available": false,
+        "usage": {
+          "input": 1834,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 1913,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 164482,
+        "worker_total_us": 168461
+      }
+    },
+    {
+      "index": 99,
+      "history_bytes": 16384,
+      "mamba_seconds": 0.34652638400439173,
+      "planner_seconds": 3.9960693180328235,
+      "planner": {
+        "status": "pass",
+        "action": "hold",
+        "history_bytes": 16384,
+        "recognizer_available": false,
+        "usage": {
+          "input": 3142,
+          "output": 7,
+          "cacheRead": 72,
+          "cacheWrite": 0,
+          "totalTokens": 3221,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0
+          }
+        }
+      },
+      "timing": {
+        "capture_us": 500,
+        "inference_us": 298014,
+        "worker_total_us": 302262
+      }
+    }
+  ],
+  "lease_intervals": 202,
+  "worker_pids": [
+    358354,
+    358389
+  ],
+  "runtime_cleanup": {
+    "workers_dead": true,
+    "exit_codes": [
+      0,
+      0
+    ],
+    "spools_empty": true,
+    "sockets_absent": true
+  },
+  "attempts": [
+    {
+      "directory": "attempt-default-cache",
+      "status": "failed",
+      "failure": "CancelledError: ",
+      "rounds": 23,
+      "samples": 57,
+      "worker_pids": [
+        357460,
+        357494
+      ],
+      "cleanup": {
+        "workers_dead": true,
+        "exit_codes": [
+          0,
+          0
+        ],
+        "spools_empty": true,
+        "sockets_absent": true
+      },
+      "summary_sha256": "beb8062c7e816afcd753098df2c29bd0a18023f97e9256f0b04c49c786ef80f8",
+      "resources": {
+        "max_temp_c": {
+          "min": 48.25,
+          "p50": 49.0,
+          "p95": 49.718,
+          "max": 50.062
+        },
+        "pss_kib": {
+          "min": 2326206,
+          "p50": 3220570,
+          "p95": 3920348,
+          "max": 4116344
+        },
+        "nvmap_kib": {
+          "min": 10701656,
+          "p50": 10701656,
+          "p95": 10701656,
+          "max": 10701656
+        },
+        "available_kib": {
+          "min": 30154164,
+          "p50": 30482756,
+          "p95": 30683940,
+          "max": 30712020
+        },
+        "swap_used_kib": {
+          "min": 1824768,
+          "p50": 1824768,
+          "p95": 1824768,
+          "max": 1824768
+        }
+      }
+    },
+    {
+      "directory": "attempt-direct-sensors",
+      "status": "failed",
+      "failure": "AssertionError: cat: /sys/class/thermal/thermal_zone1/temp: Resource temporarily unavailable\n",
+      "rounds": 1,
+      "samples": 1,
+      "worker_pids": [
+        356926,
+        356949
+      ],
+      "cleanup": {
+        "workers_dead": true,
+        "exit_codes": [
+          0,
+          0
+        ],
+        "spools_empty": true,
+        "sockets_absent": true
+      },
+      "summary_sha256": "53b85c2eb78113b07d99153fec9e51f72b01dc7a63efc48535fa83cd5fbadc37",
+      "resources": {
+        "max_temp_c": {
+          "min": 50.0,
+          "p50": 50.0,
+          "p95": 50.0,
+          "max": 50.0
+        },
+        "pss_kib": {
+          "min": 2328638,
+          "p50": 2328638,
+          "p95": 2328638,
+          "max": 2328638
+        },
+        "nvmap_kib": {
+          "min": 10701656,
+          "p50": 10701656,
+          "p95": 10701656,
+          "max": 10701656
+        },
+        "available_kib": {
+          "min": 30891564,
+          "p50": 30891564,
+          "p95": 30891564,
+          "max": 30891564
+        },
+        "swap_used_kib": {
+          "min": 1824768,
+          "p50": 1824768,
+          "p95": 1824768,
+          "max": 1824768
+        }
+      }
+    },
+    {
+      "directory": "attempt-tegrastats",
+      "status": "failed",
+      "failure": "AssertionError: missing temperatures",
+      "rounds": 1,
+      "samples": 0,
+      "worker_pids": [
+        357215,
+        357238
+      ],
+      "cleanup": {
+        "workers_dead": true,
+        "exit_codes": [
+          0,
+          0
+        ],
+        "spools_empty": true,
+        "sockets_absent": true
+      },
+      "summary_sha256": "3b3fbccdc40a2e827874cc8049db9a89fb75b5a2dec39a4a8939ba1afc28200f"
+    },
+    {
+      "directory": "attempt-thermal",
+      "status": "failed",
+      "failure": "TypeError: can't concat NoneType to bytes",
+      "rounds": 1,
+      "samples": 0,
+      "worker_pids": [
+        356141,
+        356167
+      ],
+      "cleanup": {
+        "workers_dead": true,
+        "exit_codes": [
+          0,
+          0
+        ],
+        "spools_empty": true,
+        "sockets_absent": true
+      },
+      "summary_sha256": "37b85bf5dc3ccc42ef0741edf87ef64060b5749776f9976cd90b5459efba76c2"
+    }
+  ],
+  "host_probe": {
+    "power_mode": "NV Power Mode: MODE_50W\n3\n",
+    "installed_spark": "MainPID=1150\nActiveState=active\nActiveEnterTimestamp=Wed 2026-09-02 16:35:11 CST\n",
+    "thermal_header_sha256": "109b17a7364606437f347c180e67c639fa3aa7568f541a70b60f1b317a6248b8",
+    "thermal_header": "/*\n * This header provides constants for binding nvidia,tegra234-bpmp-thermal.\n */\n\n#ifndef _DT_BINDINGS_THERMAL_TEGRA234_BPMP_THERMAL_H\n#define _DT_BINDINGS_THERMAL_TEGRA234_BPMP_THERMAL_H\n\n#define TEGRA234_THERMAL_ZONE_CPU\t0\n#define TEGRA234_THERMAL_ZONE_GPU\t1\n#define TEGRA234_THERMAL_ZONE_CV0\t2\n#define TEGRA234_THERMAL_ZONE_CV1\t3\n#define TEGRA234_THERMAL_ZONE_CV2\t4\n#define TEGRA234_THERMAL_ZONE_SOC0\t5\n#define TEGRA234_THERMAL_ZONE_SOC1\t6\n#define TEGRA234_THERMAL_ZONE_SOC2\t7\n#define TEGRA234_THERMAL_ZONE_TJ_MAX\t8\n#define TEGRA234_THERMAL_ZONE_COUNT\t9\n\n#endif\n",
+    "gpu_mode": "enabled",
+    "gpu_policy": "step_wise",
+    "thermal_dt": {
+      "gpu-thermal": "000001ec00000001",
+      "tj-thermal": "000001ec00000008",
+      "cpu-thermal": "000001ec00000000"
+    },
+    "clock_ticks_per_second": 100,
+    "resident_gpu_direct": {
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "cat: /sys/class/thermal/thermal_zone1/temp: Resource temporarily unavailable\n"
+    }
+  },
+  "candidate_options": {
+    "358354": {
+      "executable": "/home/jetson/Spark/runtime/llama.cpp/build/bin/llama-server",
+      "options": {
+        "--cache-ram": "256",
+        "--ctx-size": "32768",
+        "--parallel": "1",
+        "--cache-type-k": "f16",
+        "--cache-type-v": "f16",
+        "--gpu-layers": "all",
+        "--model": "/home/jetson/Spark/models/Spark-X2.5-4B.gguf"
+      }
+    },
+    "358389": {
+      "executable": "/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python",
+      "options": {
+        "--rf-v1-profile": "/home/jetson/sdrharness/jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json"
+      }
+    }
+  },
+  "artifact_hashes": {
+    "tegrastats-probe.log": {
+      "bytes": 71,
+      "sha256": "03b782c6ef360fe07d384f9152655158ccd66261b75c567347f8fb547e7a0916"
+    },
+    "build.log": {
+      "bytes": 1601,
+      "sha256": "c55024930b560c9b879f433a59ffd79b7475a9389f8edd2ce535b5e4bf9114f4"
+    },
+    "host-probe.json": {
+      "bytes": 1265,
+      "sha256": "b5ebf9fc8285ba3933a4f44c44a91c4d1eaaf8ec7df4aedbe34fa83a02f687bb"
+    },
+    "mamba.log": {
+      "bytes": 33721,
+      "sha256": "84ba0e16c983d16ae1820af5703f0524b3ff3cef86848ab6ff52b616be64f172"
+    },
+    "live-summary.json": {
+      "bytes": 256066,
+      "sha256": "c6343ea4b5a16e6936fcb6aa5566753f9f27a6124c8775904480772e955a67e7"
+    },
+    "live.log": {
+      "bytes": 13076,
+      "sha256": "ef86d93875ad0c6f0c6c7d8e9e3971087d489b16617316f19f490cdf66c53459"
+    },
+    "tests.log": {
+      "bytes": 104,
+      "sha256": "ba7ccc824660f99f10c5378a4598ede6de9cccb44d4230bf847998033f779998"
+    },
+    "spark.log": {
+      "bytes": 33313,
+      "sha256": "4795431d7c4cc69d57fb049ed2f1c6fc9cdcabfbf0c31f0fb073e5934a6adc63"
+    },
+    "telemetry.jsonl": {
+      "bytes": 164811,
+      "sha256": "962a187c099884e24c1dd005e1acd6c32002b7c14ab99c328db2a689216bd319"
+    },
+    "gate-tests.log": {
+      "bytes": 16551,
+      "sha256": "9c84938656a5283c61b35b9e3b3a36908eb1d0500ff00feb907d0c41b0f9f865"
+    },
+    "tegrastats.log": {
+      "bytes": 398027,
+      "sha256": "1b380226d83948cb764842da7fdf9c99ada5f4124975bf4733b2e6e99e913214"
+    },
+    "binary-build.log": {
+      "bytes": 173,
+      "sha256": "251e401703452e2dc7b8ca4b67c129b6c8822f0bee798edfe88e363dab3bba21"
+    },
+    "attempt-tegrastats/mamba.log": {
+      "bytes": 1993,
+      "sha256": "d61273f0cd60e059e55c43cdedc60c4b0e0ac660d7c6bb580d47d4a6971ad81c"
+    },
+    "attempt-tegrastats/live-summary.json": {
+      "bytes": 5206,
+      "sha256": "3b3fbccdc40a2e827874cc8049db9a89fb75b5a2dec39a4a8939ba1afc28200f"
+    },
+    "attempt-tegrastats/live.log": {
+      "bytes": 1585,
+      "sha256": "2f5a07430ec03c1454fa505feb984ebbb6f58c263c9895222b1de919dccd549e"
+    },
+    "attempt-tegrastats/spark.log": {
+      "bytes": 1968,
+      "sha256": "a7ba2471d867fdf0ff9e83dab60262067b29f1137f686f382607369dc860ee82"
+    },
+    "attempt-tegrastats/tegrastats.log": {
+      "bytes": 14880,
+      "sha256": "6b702f47bad19ed9d679891cd2a5a78b0489a2d579ddab22e695526d48136efc"
+    },
+    "attempt-default-cache/mamba.log": {
+      "bytes": 9335,
+      "sha256": "09284cba1bc081f40c2bfe4dbfc0d97316ad41d424b9710577af32653f608e76"
+    },
+    "attempt-default-cache/live-summary.json": {
+      "bytes": 63653,
+      "sha256": "beb8062c7e816afcd753098df2c29bd0a18023f97e9256f0b04c49c786ef80f8"
+    },
+    "attempt-default-cache/live.log": {
+      "bytes": 3979,
+      "sha256": "88ee609f8965611a6dff3557680b209f20ab18fb3502c50c73bd7e2869ce8696"
+    },
+    "attempt-default-cache/spark.log": {
+      "bytes": 9218,
+      "sha256": "d4ee6dbcd337269082a642877ecacf22e2a698b3b19262735ade9f892b0a11cc"
+    },
+    "attempt-default-cache/telemetry.jsonl": {
+      "bytes": 39186,
+      "sha256": "ecfd4f4b8b964ecc633df39edc1a4ade2d9f19c44b704474b255d9e7a49c2e90"
+    },
+    "attempt-default-cache/tegrastats.log": {
+      "bytes": 102477,
+      "sha256": "d9a658d804803261b0aef93b41a19780380ea385f24535a44facdb397dc834a3"
+    },
+    "attempt-direct-sensors/mamba.log": {
+      "bytes": 1993,
+      "sha256": "6a2b736a3c18de746b218f455310baf1a71d9e665c83fa5bea73ece1758b93d5"
+    },
+    "attempt-direct-sensors/live-summary.json": {
+      "bytes": 5824,
+      "sha256": "53b85c2eb78113b07d99153fec9e51f72b01dc7a63efc48535fa83cd5fbadc37"
+    },
+    "attempt-direct-sensors/live.log": {
+      "bytes": 1791,
+      "sha256": "04802adf40b66ff8640b445be7c8e2039f396cdf551f64bb0f819f477c008fc2"
+    },
+    "attempt-direct-sensors/spark.log": {
+      "bytes": 1968,
+      "sha256": "a7f2e6c33d52cd2ba37a1afeef381586bf85c24236a9f83e84d7c10844ae5193"
+    },
+    "attempt-direct-sensors/telemetry.jsonl": {
+      "bytes": 663,
+      "sha256": "45894ae2b8d52072615602cbb13a02e61294d02eaffc50fc76a6e7cdd460617d"
+    },
+    "attempt-thermal/mamba.log": {
+      "bytes": 1993,
+      "sha256": "792aa1dba0a9d509111dfd9eb84f03ff77d447be2f53bd7753e23a6519cdc6c2"
+    },
+    "attempt-thermal/live-summary.json": {
+      "bytes": 5182,
+      "sha256": "37b85bf5dc3ccc42ef0741edf87ef64060b5749776f9976cd90b5459efba76c2"
+    },
+    "attempt-thermal/live.log": {
+      "bytes": 1749,
+      "sha256": "7c7b278249a0f4d8297ecd5c820392cb43f6a76dc4ec9f73e3eed67d98fa8c2d"
+    },
+    "attempt-thermal/spark.log": {
+      "bytes": 1968,
+      "sha256": "aa6a8b28bc6c40c3ff8ae7931695b84eacd71dc6888c30c76babd99eb8d3c788"
+    }
+  },
+  "source_sha256": {
+    "jetson-agx/sdrharness/scripts/spark-gpu-gateway.py": "88a3fad6f7571a45919782e11db12951b5296d43e3c3cb051edd952662578ce1",
+    "jetson-agx/sdrharness/scripts/validate-gpu-resources.py": "1ebf7818069587762fd7ca59c5140cbb69d07798f6721ab68235391b3f1ec55d",
+    "jetson-agx/sdrharness/scripts/test-gpu-resources.py": "f77269a268cedf565eeea1a91a31f496cf4a1cc3b334c8001e129fa7a30a6b05",
+    "raspberry-pi/sdr-agent/planner-worker/scripts/validate-resource-planner.mjs": "03be8b53731f665bb6443e0d6055ae9296cc82703b1ab6be9b5c976637cc94e2",
+    "docs/GPU_RESOURCE_S4B_PLAN_2026-09-06.md": "755d2b777441320e000bd054cfdbf515e790e61c3a799499b786551fb254c7f2"
+  },
+  "feature_cleanup": {
+    "verified": true,
+    "removed_directory": "/var/tmp/sdrharness-dev/s4b-906a",
+    "directory_absent": true,
+    "user_results_deleted": false,
+    "installed_services_changed": false
+  },
+  "final_plan_sha256": "755d2b777441320e000bd054cfdbf515e790e61c3a799499b786551fb254c7f2",
+  "acceptance_reducer_latency": {
+    "mamba_seconds": {
+      "0": {
+        "min": 0.2076237490400672,
+        "p50": 0.36058520097867586,
+        "p95": 0.398546501994133,
+        "max": 0.40191493899328634,
+        "late_early_p50_ratio": 0.9249620898789801
+      },
+      "2048": {
+        "min": 0.2008512340253219,
+        "p50": 0.3645446245209314,
+        "p95": 0.3793256870121695,
+        "max": 0.39231176098110154,
+        "late_early_p50_ratio": 0.990733953186893
+      },
+      "8192": {
+        "min": 0.22991080803330988,
+        "p50": 0.3634862119797617,
+        "p95": 0.4012538919923827,
+        "max": 0.40840583498356864,
+        "late_early_p50_ratio": 0.9128173371173949
+      },
+      "16384": {
+        "min": 0.19875899801263586,
+        "p50": 0.3574401840160135,
+        "p95": 0.377819070010446,
+        "max": 0.386579037993215,
+        "late_early_p50_ratio": 1.5744873972533078
+      }
+    },
+    "planner_seconds": {
+      "0": {
+        "min": 1.9988978179753758,
+        "p50": 2.0897937460104004,
+        "p95": 2.1534262049826793,
+        "max": 2.1635038750246167,
+        "late_early_p50_ratio": 0.9945979019772002
+      },
+      "2048": {
+        "min": 2.355922750022728,
+        "p50": 2.4189248769835103,
+        "p95": 2.4714060490368865,
+        "max": 2.47907016397221,
+        "late_early_p50_ratio": 1.0037798482088642
+      },
+      "8192": {
+        "min": 3.0938931290293112,
+        "p50": 3.1419649774907157,
+        "p95": 3.1740242659579962,
+        "max": 3.185799364000559,
+        "late_early_p50_ratio": 0.9982398719253246
+      },
+      "16384": {
+        "min": 3.9458223519613966,
+        "p50": 4.005860711011337,
+        "p95": 4.036446865007747,
+        "max": 4.04402901197318,
+        "late_early_p50_ratio": 0.9963837008748329
+      }
+    }
+  },
+  "final_host_check": {
+    "gpu_temp_read_after_exit": {
+      "exit_code": 0,
+      "stdout": "44031\n",
+      "stderr": ""
+    },
+    "installed_spark": "MainPID=1150\nActiveState=active\nActiveEnterTimestamp=Wed 2026-09-02 16:35:11 CST\n",
+    "processes_absent": true,
+    "sockets_absent": true
+  },
+  "nvidia_reference": {
+    "url": "https://docs.nvidia.com/jetson/archives/r36.4.4/DeveloperGuide/SD/PlatformPowerAndPerformance/JetsonOrinNanoSeriesJetsonOrinNxSeriesAndJetsonAgxOrinSeries.html#sensors-and-sensor-groups",
+    "retrieved_document_sha256": "4fa10939a93f55bb57b981d1b13af4c9d958e049b43efc1991d647892d4f1cd3",
+    "finding": "GPU/CV power-gated thermal reads return EAGAIN; unavailable is not a temperature value."
+  },
+  "reducer_note": "Collector ran with the original strict GPU rule. After the explicit user exception, the tested pure reducer was rerun on the same full telemetry with allow_missing_gpu_temperature=True; acquisition, workload and gateway settings were unchanged."
+}

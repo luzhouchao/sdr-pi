@@ -17,7 +17,7 @@ this file retains the detailed delivery and evidence ledger.
 以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
 编号表示范围，不表示施工先后；实际顺序见
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
-S1/S2/V1a/S3/S4a/S6a/S5/S6b 源码、适用隔离实机验收及清理完成，生产服务未替换。
+S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b 源码、适用隔离实机验收及清理完成，生产服务未替换。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
 - [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
 - [x] AGX 扫频/精查、结果存储和 RX 语料基础、split 隔离完成（第1/4/5章）。
@@ -26,9 +26,9 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b 源码、适用隔离实机验收及清理完成，�
 - [x] S1：准入/health/人工批准源码、测试及隔离真实 Worker 验证完成；生产服务未替换。
 - [x] S2：统一完整结果与 Planner 紧凑 observation、四状态/校准身份、RF-v1 batch 严格转换和真实报告 replay 完成；生产阈值未冻结，能力仍为 false。
 - [x] S3：Worker 单等待位、整批 deadline、取消确认、强杀/重启清理和指标完成源码及有限真实候选验证；未部署，能力仍为 false。
-- [ ] S4：共享 GPU 调度与持续资源验收。
+- [x] S4：共享 GPU 调度与持续资源源码/隔离验收；GPU 温度缺失按用户明确豁免保持未测，生产部署另属 A1。
   - [x] S4a：共享推理租约、串行执行、取消/故障释放和隔离实机正确性完成；未部署，不代表 S4b 完成。
-  - [ ] S4b：最终代表性负载下的显存/RSS/队列/热稳定性证据。
+  - [x] S4b：96 轮/1200 秒串行候选负载下的 nvmap/PSS/队列/时延与 CPU/SoC/Tj 稳定性验证，256 MiB CPU prompt-cache 上限及精确清理完成。GPU 温度 240/240 缺失依用户明确决定不阻塞；不宣称独立 GPU 温度已验证。见 [S4b 验证](GPU_RESOURCE_S4B_VALIDATION_2026-09-06.md)。
 - [x] S5：Runner 工程识别执行、人工批准、预算/audit、联合 stop、自动 Spark 回灌及固定回归完成源码与有限实机验证；精确清理完成，生产能力仍为 false。见 [S5 验证](RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md)。
 - [x] S6：用户识别结果源码及隔离验收交付（S6a/S6b）；生产部署另属 A1。
   - [x] S6a：完整结果保存/恢复/查看/删除完成源码及隔离 replay/演示验证；复用应用 SQLite，不额外保留 IQ，未部署。
@@ -821,9 +821,11 @@ Evidence:
         cleanup and bounded metrics. Rust replay/health/cancel and negative
         tests passed; feature processes and temporary data were removed. See
         [`WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md`](WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md).
-  - [ ] S4b/A1: sustained representative resources/thermal evidence and admitted
-        production lifecycle deployment; finite candidate tests do not complete
-        those conditions.
+  - [x] S4b: 20-minute representative serialized replay/Planner resource evidence
+        and exact cleanup passed with the explicit user exception for unavailable
+        GPU temperature; CPU/SoC/Tj, memory, queue and latency gates passed. See
+        [S4b validation](GPU_RESOURCE_S4B_VALIDATION_2026-09-06.md).
+  - [ ] A1: admitted production lifecycle deployment remains open.
 - [ ] Define and live-validate the shared AGX CUDA admission policy for the
       resident Spark-X2.5-4B Planner and Mamba Worker. For production v1,
       serialize active inference, bound queue/deadline/memory/thermal use, and
@@ -836,9 +838,11 @@ Evidence:
         both supervisor SIGKILL/recovery passed; temporary data and processes
         were removed. See
         [`GPU_LEASE_S4A_VALIDATION_2026-09-06.md`](GPU_LEASE_S4A_VALIDATION_2026-09-06.md).
-  - [ ] S4b/A1: representative memory/thermal/latency acceptance and coordinated
-        admitted deployment routing all production GPU callers through the
-        same gate. Existing installed endpoints remain outside the candidate.
+  - [x] S4b: bounded candidate CPU prompt cache and representative memory/queue/
+        latency/CPU-SoC-Tj thermal acceptance; GPU temperature is explicitly
+        waived as unavailable, not validated.
+  - [ ] A1: coordinated admitted deployment routing all production GPU callers
+        through the same gate; installed endpoints remain outside the candidate.
 - [x] Generate offline confusion matrices, total accuracy, macro-F1, per-class
       precision/recall/F1 and per-SNR accuracy for both complete test splits.
 - [ ] Consume the Chapter 5 frozen numeric-ID/name table, then validate the RF
@@ -945,11 +949,12 @@ Evidence:
 
 ## Current next milestone
 
-S1/S2/V1a/S3/S4a/S6a/S5/S6b source and isolated acceptance are complete.
+S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b source and isolated acceptance are complete.
+S4b retains the explicit user exception for unavailable GPU temperature.
 Installed services remain unchanged and the actual recognizer stays unavailable.
-The next default independent unit is S4b sustained resource acceptance; O1a follows separately.
-Sustained resources, actual independent labels, calibration and production
-admission remain open.
+The next default independent unit is O1a fault/fuzz and operations preparation.
+GPU temperature remains unmeasured; actual independent labels, calibration,
+production deployment/admission and the 24-hour full-loop soak remain open.
 
 Execution order, prerequisites and permitted scheduling changes are maintained
 only in

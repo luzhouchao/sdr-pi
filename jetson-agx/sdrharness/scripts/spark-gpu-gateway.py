@@ -130,7 +130,8 @@ class Gateway:
                    [str(self.binary), '--model', str(self.model), '--alias', 'spark-x2.5-4b',
                     '--host', '127.0.0.1', '--port', str(self.backend_port), '--ctx-size', '32768',
                     '--parallel', '1', '--threads', '12', '--gpu-layers', 'all', '--flash-attn', 'on',
-                    '--cache-type-k', 'f16', '--cache-type-v', 'f16', '--jinja', '--reasoning', 'auto',
+                    '--cache-type-k', 'f16', '--cache-type-v', 'f16', '--cache-ram', '256',
+                    '--jinja', '--reasoning', 'auto',
                     '--reasoning-format', 'deepseek', '--api-key-file', str(self.backend_key_file), '--no-webui'])
         spawning = asyncio.create_task(asyncio.create_subprocess_exec(
             *command, stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,

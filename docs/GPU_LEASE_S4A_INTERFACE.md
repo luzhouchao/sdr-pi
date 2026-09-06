@@ -137,3 +137,13 @@ python3 jetson-agx/sdrharness/scripts/amc-worker-supervisor.py \
 
 The retained S3 candidate systemd template has no shared gate configured; it
 remains a standalone lifecycle example and is not an S4a deployment recipe.
+
+## S4b candidate CPU prompt-cache bound
+
+The owned candidate Spark command now explicitly sets `--cache-ram 256` (MiB).
+The installed llama binary otherwise defaults to an 8-GiB host prompt cache,
+which grew as S4b alternated short and long histories. This bound covers the
+host prompt cache; it does not shrink the existing 32,768 context GPU KV buffer
+or change BF16 weights/f16 KV types. Installed Spark services remain unchanged.
+The resource plan and completion boundary are tracked in
+[the S4b plan](GPU_RESOURCE_S4B_PLAN_2026-09-06.md) and the authoritative checklist.
