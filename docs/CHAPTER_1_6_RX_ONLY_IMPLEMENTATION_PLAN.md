@@ -62,15 +62,17 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 
 - [ ] 在实际接收闭环的终端和 Web 展示 classified/rejected/unavailable/error、
       数字标签、名称可信状态、拒识原因、模型/profile、质量、来源和时延；不暴露
-      IQ 路径或张量。S5 原生 Runner 回灌已完成；S6b 浏览器实际闭环验收尚未完成。
+      IQ 路径或张量。S5/S6b 原生及浏览器隔离闭环已完成，生产部署仍属 A1。
+  - [x] S6b 真实 unavailable/error、合成 classified/rejected 展示、精确归档关联、
+        重启隔离、删除和 Spark hold 通过；见 [S6b 验证](WEB_RECOGNITION_S6B_VALIDATION_2026-09-06.md)。
   - [x] S2 有状态 observation 合同已完成；S6a 已在归档 Web/终端验证全部展示字段，
         实验回放与合成演示明确分开，未将演示算作生产准入。
 - [x] S6a 将完整识别记录写入既有应用 SQLite，提供可见单条人工删除、分页和
       重启恢复；只返回有界摘要，不把完整 logits/IQ 送入 Planner。源码及隔离
       Web/CLI/浏览器验收完成，临时数据已清理，未部署。见
       [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md)。
-- [ ] 用真实识别结果验证 Spark 能解释当前接收结论并显示下一步理由，而不是把
-      模型 top-1 直接写成已确认事实。
+- [x] S6b 用真实 unavailable/error 验证 Spark 解释当前失败关闭状态并返回 hold，
+      未将实验 top-1 写成已确认事实；已准入分类结论仍待 A1。
 
 ## 第2章：接收 Planner、Rust 策略与闭环
 
@@ -312,7 +314,7 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 - [`sdr-agent.rs`](../raspberry-pi/sdr-agent/controller/src/bin/sdr-agent.rs) 的交互/
   巡航路径已接 S5 工程执行器、批准/预算和联合 stop；
   [`app.js`](../raspberry-pi/sdr-agent/web-console/public/app.js) 已有 S6a 归档结果
-  渲染和删除，S5 已完成原生自动回灌，实际浏览器闭环仍待 S6b。
+  渲染和删除，S5/S6b 已完成原生自动回灌和实际浏览器隔离闭环；未部署。
 - [`sdrd_iio.c`](../sdr-system/sdrd/src/sdrd_iio.c) 固定启用
   `voltage0,1` scan pair，并只读验证 `voltage0` 的 `rf_port_select=A_BALANCED`；
   [`sdr.rs`](../raspberry-pi/sdr-agent/controller/src/sdr.rs) 对完整 RX1 身份失败关闭。

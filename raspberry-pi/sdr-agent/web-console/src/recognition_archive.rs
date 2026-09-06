@@ -184,6 +184,25 @@ pub fn ingest(path: &Path, bytes: &[u8]) -> ApiResult<Detail> {
     transaction.commit().map_err(internal_error)?;
     Ok(detail(id, created, input))
 }
+/// Correlate the current S5 observation with its exact immutable archive row.
+pub fn find_matching(path: &Path, observation: &RecognitionObservation) -> ApiResult<Option<i64>> {
+    let row: Option<(i64, String)> = open_result_database(path)?.query_row(
+        "SELECT id,payload_json FROM recognition_results WHERE session_id=?1 AND generation=?2 AND request_id=?3 AND candidate_id=?4",
+        params![format!("runner-{}", observation.session_generation), observation.session_generation.to_string(),
+                observation.request_id.to_string(), observation.candidate_id],
+        |r| Ok((r.get(0)?,r.get(1)?)),
+    ).optional().map_err(internal_error)?;
+    match row {
+        Some((id, payload)) => {
+            let stored = parse_stored(&payload)?;
+            Ok((stored.origin == Origin::EngineeringRx
+                && stored.result.observation == *observation)
+                .then_some(id))
+        }
+        None => Ok(None),
+    }
+}
+
 pub fn list(path: &Path, before: i64) -> ApiResult<Vec<Detail>> {
     if before <= 0 {
         return Err(bad("分页游标无效"));
@@ -390,6 +409,28 @@ mod tests {
         assert_eq!(list(&path, i64::MAX).unwrap().len(), 4);
         std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
     }
+    #[test]
+    fn current_result_link_requires_exact_origin_identity_and_timestamp() {
+        let path = database("current-link");
+        let mut input = replay();
+        input.origin = Origin::EngineeringRx;
+        input.session_id = format!("runner-{}", input.result.observation.session_generation);
+        let record = ingest(&path, &serde_json::to_vec(&input).unwrap()).unwrap();
+        assert_eq!(
+            find_matching(&path, &record.observation).unwrap(),
+            Some(record.id)
+        );
+        let mut other = record.observation.clone();
+        other.observed_at_unix_ms += 1;
+        assert_eq!(find_matching(&path, &other).unwrap(), None);
+        other = record.observation.clone();
+        other.session_generation += 1;
+        assert_eq!(find_matching(&path, &other).unwrap(), None);
+        delete(&path, record.id).unwrap();
+        assert_eq!(find_matching(&path, &record.observation).unwrap(), None);
+        std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
+
     #[test]
     fn engineering_rx_origin_is_preserved_and_never_enables_production() {
         let path = database("engineering-rx");

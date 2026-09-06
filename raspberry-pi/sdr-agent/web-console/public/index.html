@@ -38,6 +38,10 @@
         </aside>
         <section class="console-panel">
           <div class="console-header"><div><span id="active-title">未选择对话</span><small id="active-meta">启动一个对话以连接 sdr-agent</small></div><button id="scroll-bottom" class="ghost-button" type="button">回到底部</button></div>
+          <section id="current-recognition" class="authorization-rail" aria-label="当前对话识别结果" hidden>
+            <div class="rail-copy"><small>当前对话 · 最近一次识别</small><strong id="current-recognition-status"></strong><p id="current-recognition-meaning"></p><small id="current-recognition-time"></small></div>
+            <button id="current-recognition-open" class="ghost-button" type="button">查看这次识别记录</button>
+          </section>
           <section class="authorization-rail" aria-labelledby="authorization-title">
             <div class="rail-copy"><small>RUN AUTHORIZATION</small><strong id="authorization-title">选择谁决定下一步</strong><p>两种模式都经过 Rust 安全校验；不会放宽频段、时长、字节或独占限制。</p></div>
             <button type="button" data-command="/mode manual" class="mode-card manual-mode"><span>逐步批准</span><small>每个可执行动作都停在人工批准门前</small></button>

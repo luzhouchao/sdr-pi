@@ -399,3 +399,11 @@ textarea:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(81,213,23
 .archive-tabs { display: flex; gap: .6rem; margin: 1rem 0; }
 .archive-tabs [aria-pressed="true"] { border-color: var(--cyan); color: var(--cyan); }
 .recognition-evidence summary { cursor: pointer; padding: .8rem 0; }
+
+/* Keep the result's provenance visible on mobile as well as desktop. */
+#current-recognition { grid-template-columns: minmax(0, 1fr) auto; }
+#current-recognition .rail-copy { min-width: 0; overflow-wrap: anywhere; grid-column: auto; }
+#current-recognition .rail-copy p { display: block; font-size: 11px; }
+@media (max-width: 700px) {
+  #current-recognition { grid-template-columns: minmax(0, 1fr); }
+}

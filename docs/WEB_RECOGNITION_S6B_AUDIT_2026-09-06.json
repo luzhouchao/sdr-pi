@@ -1,0 +1,830 @@
+{
+  "schema_version": 1,
+  "unit": "S6b",
+  "base_commit": "1448b04a675f056fd672a24e8518b597e00fe993",
+  "live": {
+    "schema_version": 1,
+    "status": "pass",
+    "generation": 1788676095387,
+    "maximum_rx_bytes": 81920,
+    "initial_inspection_samples": 4096,
+    "max_recognition_executions": 2,
+    "maximum_model_spool_bytes": 32768,
+    "free_bytes_before": 808056946688,
+    "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "sdrd_pid": "17136",
+    "recognizer_available": false,
+    "locked_test_read": false,
+    "training": false,
+    "transmission": false,
+    "feature_directory": "/var/tmp/sdrharness-dev/s6b-906a",
+    "seed_report": {
+      "sweep_id": "s6b-seed-1788676095387",
+      "session_generation": 1788676095387,
+      "backend": "agx_iq_software_aggregate",
+      "backend_version": 1,
+      "estimated_duration_ms": 1100,
+      "elapsed_ms": 3529,
+      "noise_floor_dbfs": -54.72386,
+      "points": [
+        {
+          "point_index": 0,
+          "request_id": 5,
+          "session_generation": 1788676095387,
+          "requested_center_hz": 433920000,
+          "actual_center_hz": 433920000,
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "sequence": 237,
+          "dropped_samples": 0,
+          "overflow": false,
+          "captured_samples": 4096,
+          "band_power_dbfs": -54.72386,
+          "spectral": {
+            "schema_version": 1,
+            "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+            "fft_size": 4096,
+            "segment_count": 1,
+            "bin_width_hz": 512.6953125,
+            "peak_frequency_hz": 433330913,
+            "peak_power_dbfs": -61.00972,
+            "noise_floor_dbfs": -91.94867,
+            "measured_snr_db": 30.93895,
+            "estimated_center_hz": 433328093,
+            "occupied_start_hz": 433324761,
+            "occupied_stop_hz": 433331426,
+            "occupied_bandwidth_hz": 7178
+          },
+          "clipped_samples": 0,
+          "status_flags": 0,
+          "elapsed_us": 3738,
+          "timeout": {
+            "limit_ms": 1000,
+            "elapsed_us": 3738,
+            "timed_out": false
+          },
+          "health": {
+            "healthy": true,
+            "flags": 0,
+            "source": "iio_adapter"
+          },
+          "rx_input": {
+            "identity_version": 1,
+            "verified": true,
+            "front_panel_port": "RX1",
+            "logical_channel": "RX0",
+            "phy_channel": "voltage0",
+            "scan_i_channel": "voltage0",
+            "scan_q_channel": "voltage1",
+            "rf_port_select": "A_BALANCED",
+            "source": "iio_channel_attr"
+          }
+        }
+      ],
+      "candidates": [],
+      "dataset": null
+    },
+    "application_session_id": "session-1788676121759",
+    "feedback_outcomes": [
+      {
+        "status": "unavailable",
+        "model_input": {
+          "instruction": "请依据最新紧凑识别摘要给出一个受限 RX 下一步。当前状态若为 unavailable 或 error，只返回 hold 并解释原因；未标注实验预测不能称为已确认分类。",
+          "limits": {
+            "auto_approve_iq_bytes": 32768,
+            "max_bandwidth_hz": 2100000,
+            "max_dwell_ms": 1000,
+            "max_freq_hz": 6000000000,
+            "max_iq_bytes": 32768,
+            "max_iq_samples": 4096,
+            "max_observation_age_ms": 60000,
+            "max_span_hz": 5930000000,
+            "min_freq_hz": 70000000
+          },
+          "observation": {
+            "age_ms": 0,
+            "candidates": [
+              {
+                "age_ms": 0,
+                "bandwidth_hz": 9742,
+                "center_hz": 433327067,
+                "id": "s6b-live-candidate",
+                "peak_dbfs": -60.502296,
+                "snr_db": 31.456451
+              }
+            ],
+            "health": {
+              "can_capture_iq": true,
+              "can_retune": true,
+              "dropped_observations": 0,
+              "recognizer_available": false,
+              "sdr_online": true
+            },
+            "recognition": {
+              "calibrated_confidence": null,
+              "calibration_status": "uncalibrated",
+              "candidate_id": "s6b-live-candidate",
+              "class": null,
+              "decision_references": null,
+              "identity": {
+                "aggregation": "float64_arithmetic_mean_logits_then_softmax",
+                "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+                "compute": "cuda_fp16_autocast",
+                "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+                "preprocess_id": "rf_preprocess_v1",
+                "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+                "profile_id": "rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1",
+                "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab"
+              },
+              "observed_at_unix_ms": 1788676129559,
+              "quality": {
+                "clipped_samples": 0,
+                "dropped_samples": 0,
+                "healthy": true,
+                "overflow": false,
+                "window_agreement": 0.5,
+                "window_count": 4
+              },
+              "reason": "production_admission_missing",
+              "request_id": 1,
+              "schema_version": 1,
+              "session_generation": 1788676121761,
+              "source": {
+                "capture_request_id": 5,
+                "capture_sequence": 239,
+                "request_id": 5,
+                "sequence": 238,
+                "session_generation": 1788676121761,
+                "sweep_id": "recognition-inspect-1"
+              },
+              "status": "unavailable",
+              "timing": {
+                "capture_us": 3734,
+                "inference_us": 198912,
+                "worker_total_us": 204370
+              }
+            }
+          },
+          "protocol_version": 1,
+          "request_id": 2,
+          "session_generation": 1788676121761,
+          "state": "idle"
+        },
+        "events": [
+          {
+            "id": 17,
+            "timestamp_ms": 1788676134180,
+            "kind": "plan",
+            "text": "已验证计划：保持当前状态：当前识别状态为 unavailable，且未提供已确认分类，因此不能执行 RX 下一步。"
+          },
+          {
+            "id": 19,
+            "timestamp_ms": 1788676134192,
+            "kind": "qwen",
+            "text": "Agent> 当前识别状态为 unavailable，且未提供已确认分类，因此不能执行 RX 下一步。"
+          }
+        ]
+      },
+      {
+        "status": "error",
+        "model_input": {
+          "instruction": "请依据最新紧凑识别摘要给出一个受限 RX 下一步。当前状态若为 unavailable 或 error，只返回 hold 并解释原因；未标注实验预测不能称为已确认分类。",
+          "limits": {
+            "auto_approve_iq_bytes": 32768,
+            "max_bandwidth_hz": 2100000,
+            "max_dwell_ms": 1000,
+            "max_freq_hz": 6000000000,
+            "max_iq_bytes": 32768,
+            "max_iq_samples": 4096,
+            "max_observation_age_ms": 60000,
+            "max_span_hz": 5930000000,
+            "min_freq_hz": 70000000
+          },
+          "observation": {
+            "age_ms": 0,
+            "candidates": [
+              {
+                "age_ms": 0,
+                "bandwidth_hz": 8716,
+                "center_hz": 433329117,
+                "id": "s6b-live-candidate",
+                "peak_dbfs": -61.22769,
+                "snr_db": 30.793343
+              }
+            ],
+            "health": {
+              "can_capture_iq": true,
+              "can_retune": true,
+              "dropped_observations": 0,
+              "recognizer_available": false,
+              "sdr_online": true
+            },
+            "recognition": {
+              "calibrated_confidence": null,
+              "calibration_status": "unavailable",
+              "candidate_id": "s6b-live-candidate",
+              "class": null,
+              "decision_references": null,
+              "identity": null,
+              "observed_at_unix_ms": 1788676143170,
+              "quality": null,
+              "reason": "supervisor_batch_failed",
+              "request_id": 3,
+              "schema_version": 1,
+              "session_generation": 1788676121761,
+              "source": null,
+              "status": "error",
+              "timing": null
+            }
+          },
+          "protocol_version": 1,
+          "request_id": 4,
+          "session_generation": 1788676121761,
+          "state": "idle"
+        },
+        "events": [
+          {
+            "id": 35,
+            "timestamp_ms": 1788676174094,
+            "kind": "plan",
+            "text": "已验证计划：保持当前状态：当前识别状态为 error（supervisor_batch_failed），未产生已确认分类，因此不能执行 RX 下一步。"
+          },
+          {
+            "id": 37,
+            "timestamp_ms": 1788676174106,
+            "kind": "qwen",
+            "text": "Agent> 当前识别状态为 error（supervisor_batch_failed），未产生已确认分类，因此不能执行 RX 下一步。"
+          }
+        ]
+      }
+    ],
+    "real_feedback": {
+      "instruction": "请依据最新紧凑识别摘要给出一个受限 RX 下一步。当前状态若为 unavailable 或 error，只返回 hold 并解释原因；未标注实验预测不能称为已确认分类。",
+      "limits": {
+        "auto_approve_iq_bytes": 32768,
+        "max_bandwidth_hz": 2100000,
+        "max_dwell_ms": 1000,
+        "max_freq_hz": 6000000000,
+        "max_iq_bytes": 32768,
+        "max_iq_samples": 4096,
+        "max_observation_age_ms": 60000,
+        "max_span_hz": 5930000000,
+        "min_freq_hz": 70000000
+      },
+      "observation": {
+        "age_ms": 0,
+        "candidates": [
+          {
+            "age_ms": 0,
+            "bandwidth_hz": 9742,
+            "center_hz": 433327067,
+            "id": "s6b-live-candidate",
+            "peak_dbfs": -60.502296,
+            "snr_db": 31.456451
+          }
+        ],
+        "health": {
+          "can_capture_iq": true,
+          "can_retune": true,
+          "dropped_observations": 0,
+          "recognizer_available": false,
+          "sdr_online": true
+        },
+        "recognition": {
+          "calibrated_confidence": null,
+          "calibration_status": "uncalibrated",
+          "candidate_id": "s6b-live-candidate",
+          "class": null,
+          "decision_references": null,
+          "identity": {
+            "aggregation": "float64_arithmetic_mean_logits_then_softmax",
+            "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+            "compute": "cuda_fp16_autocast",
+            "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+            "preprocess_id": "rf_preprocess_v1",
+            "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+            "profile_id": "rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1",
+            "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab"
+          },
+          "observed_at_unix_ms": 1788676129559,
+          "quality": {
+            "clipped_samples": 0,
+            "dropped_samples": 0,
+            "healthy": true,
+            "overflow": false,
+            "window_agreement": 0.5,
+            "window_count": 4
+          },
+          "reason": "production_admission_missing",
+          "request_id": 1,
+          "schema_version": 1,
+          "session_generation": 1788676121761,
+          "source": {
+            "capture_request_id": 5,
+            "capture_sequence": 239,
+            "request_id": 5,
+            "sequence": 238,
+            "session_generation": 1788676121761,
+            "sweep_id": "recognition-inspect-1"
+          },
+          "status": "unavailable",
+          "timing": {
+            "capture_us": 3734,
+            "inference_us": 198912,
+            "worker_total_us": 204370
+          }
+        }
+      },
+      "protocol_version": 1,
+      "request_id": 2,
+      "session_generation": 1788676121761,
+      "state": "idle"
+    },
+    "real_error": {
+      "id": 2,
+      "created_at_ms": 1788676143178,
+      "session_id": "runner-1788676121761",
+      "origin": "engineering_rx",
+      "production_result": false,
+      "iq_retained": false,
+      "observation": {
+        "schema_version": 1,
+        "candidate_id": "s6b-live-candidate",
+        "request_id": 3,
+        "session_generation": 1788676121761,
+        "observed_at_unix_ms": 1788676143170,
+        "status": "error",
+        "reason": "supervisor_batch_failed",
+        "class": null,
+        "calibrated_confidence": null,
+        "calibration_status": "unavailable",
+        "decision_references": null,
+        "identity": null,
+        "source": null,
+        "quality": null,
+        "timing": null
+      },
+      "experimental_prediction": null,
+      "uncalibrated_probability": null
+    },
+    "resumed_request": {
+      "instruction": "前序压缩摘要：…,\"observed_at_unix_ms\":1788676143170,\"status\":\"error\",\"reason\":\"supervisor_batch_failed\",\"class\":null,\"calibrated_confidence\":null,\"calibration_status\":\"unavailable\",\"decision_references\":null,\"identity\":null,\"source\":null,\"quality\":null,\"timing\":null} [system] 识别工程结果：生产状态 Error，归档 Some(2)，归档错误 None；实验 top-1 不作为独立标签。 [plan] 已验证计划：保持当前状态：当前识别状态为 error（supervisor_batch_failed），未产生已确认分类，因此不能执行 RX 下一步。 [decision] 决策依据> request=4、generation=1788676121761 与当前上下文一致；状态=Idle；保持不触发硬件，原因文本已通过长度和可打印字符校验 [qwen] Agent> 当前识别状态为 error（supervisor_batch_failed），未产生已确认分类，因此不能执行 RX 下一步。 [system] ��计划当前没有生产执行器，仅记录建议，不会操作硬件。；当前指令：只返回 hold，不进行采集。",
+      "limits": {
+        "auto_approve_iq_bytes": 32768,
+        "max_bandwidth_hz": 2100000,
+        "max_dwell_ms": 1000,
+        "max_freq_hz": 6000000000,
+        "max_iq_bytes": 32768,
+        "max_iq_samples": 4096,
+        "max_observation_age_ms": 60000,
+        "max_span_hz": 5930000000,
+        "min_freq_hz": 70000000
+      },
+      "observation": {
+        "age_ms": 0,
+        "candidates": [
+          {
+            "age_ms": 0,
+            "bandwidth_hz": 8716,
+            "center_hz": 433329117,
+            "id": "s6b-live-candidate",
+            "peak_dbfs": -61.22769,
+            "snr_db": 30.793343
+          }
+        ],
+        "health": {
+          "can_capture_iq": true,
+          "can_retune": true,
+          "dropped_observations": 0,
+          "recognizer_available": false,
+          "sdr_online": true
+        }
+      },
+      "protocol_version": 1,
+      "request_id": 1,
+      "session_generation": 1788676175539,
+      "state": "idle"
+    },
+    "archive_before_delete": [
+      {
+        "id": 4,
+        "created_at_ms": 1788676174809,
+        "session_id": "s6a-replay",
+        "origin": "synthetic_fixture",
+        "production_result": false,
+        "iq_retained": false,
+        "observation": {
+          "schema_version": 1,
+          "candidate_id": "synthetic-Rejected",
+          "request_id": 50001,
+          "session_generation": 202609051511,
+          "observed_at_unix_ms": 1000,
+          "status": "rejected",
+          "reason": "synthetic_low_confidence",
+          "class": null,
+          "calibrated_confidence": null,
+          "calibration_status": "frozen",
+          "decision_references": {
+            "calibration": {
+              "id": "synthetic-only",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "rejection": {
+              "id": "synthetic-only",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "admission": {
+              "id": "synthetic-only",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          },
+          "identity": {
+            "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+            "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+            "profile_id": "rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1",
+            "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+            "preprocess_id": "rf_preprocess_v1",
+            "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+            "compute": "cuda_fp16_autocast",
+            "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+          },
+          "source": {
+            "sweep_id": "synthetic-sweep",
+            "request_id": 5,
+            "session_generation": 202609051510,
+            "sequence": 148,
+            "capture_request_id": 5,
+            "capture_sequence": 149
+          },
+          "quality": {
+            "window_count": 4,
+            "window_agreement": 1.0,
+            "clipped_samples": 0,
+            "dropped_samples": 0,
+            "overflow": false,
+            "healthy": true
+          },
+          "timing": {
+            "capture_us": 3895,
+            "worker_total_us": 313555,
+            "inference_us": 308931
+          }
+        },
+        "experimental_prediction": null,
+        "uncalibrated_probability": null
+      },
+      {
+        "id": 3,
+        "created_at_ms": 1788676174780,
+        "session_id": "s6a-replay",
+        "origin": "synthetic_fixture",
+        "production_result": false,
+        "iq_retained": false,
+        "observation": {
+          "schema_version": 1,
+          "candidate_id": "synthetic-Classified",
+          "request_id": 50001,
+          "session_generation": 202609051511,
+          "observed_at_unix_ms": 1000,
+          "status": "classified",
+          "reason": null,
+          "class": {
+            "numeric_id": 1,
+            "name": null,
+            "name_status": "provisional",
+            "name_evidence": null
+          },
+          "calibrated_confidence": 0.75,
+          "calibration_status": "frozen",
+          "decision_references": {
+            "calibration": {
+              "id": "synthetic-only",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "rejection": {
+              "id": "synthetic-only",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "admission": {
+              "id": "synthetic-only",
+              "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+            }
+          },
+          "identity": {
+            "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+            "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+            "profile_id": "rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1",
+            "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+            "preprocess_id": "rf_preprocess_v1",
+            "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+            "compute": "cuda_fp16_autocast",
+            "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+          },
+          "source": {
+            "sweep_id": "synthetic-sweep",
+            "request_id": 5,
+            "session_generation": 202609051510,
+            "sequence": 148,
+            "capture_request_id": 5,
+            "capture_sequence": 149
+          },
+          "quality": {
+            "window_count": 4,
+            "window_agreement": 1.0,
+            "clipped_samples": 0,
+            "dropped_samples": 0,
+            "overflow": false,
+            "healthy": true
+          },
+          "timing": {
+            "capture_us": 3895,
+            "worker_total_us": 313555,
+            "inference_us": 308931
+          }
+        },
+        "experimental_prediction": null,
+        "uncalibrated_probability": null
+      },
+      {
+        "id": 2,
+        "created_at_ms": 1788676143178,
+        "session_id": "runner-1788676121761",
+        "origin": "engineering_rx",
+        "production_result": false,
+        "iq_retained": false,
+        "observation": {
+          "schema_version": 1,
+          "candidate_id": "s6b-live-candidate",
+          "request_id": 3,
+          "session_generation": 1788676121761,
+          "observed_at_unix_ms": 1788676143170,
+          "status": "error",
+          "reason": "supervisor_batch_failed",
+          "class": null,
+          "calibrated_confidence": null,
+          "calibration_status": "unavailable",
+          "decision_references": null,
+          "identity": null,
+          "source": null,
+          "quality": null,
+          "timing": null
+        },
+        "experimental_prediction": null,
+        "uncalibrated_probability": null
+      },
+      {
+        "id": 1,
+        "created_at_ms": 1788676129603,
+        "session_id": "runner-1788676121761",
+        "origin": "engineering_rx",
+        "production_result": false,
+        "iq_retained": false,
+        "observation": {
+          "schema_version": 1,
+          "candidate_id": "s6b-live-candidate",
+          "request_id": 1,
+          "session_generation": 1788676121761,
+          "observed_at_unix_ms": 1788676129559,
+          "status": "unavailable",
+          "reason": "production_admission_missing",
+          "class": null,
+          "calibrated_confidence": null,
+          "calibration_status": "uncalibrated",
+          "decision_references": null,
+          "identity": {
+            "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+            "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+            "profile_id": "rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1",
+            "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+            "preprocess_id": "rf_preprocess_v1",
+            "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+            "compute": "cuda_fp16_autocast",
+            "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+          },
+          "source": {
+            "sweep_id": "recognition-inspect-1",
+            "request_id": 5,
+            "session_generation": 1788676121761,
+            "sequence": 238,
+            "capture_request_id": 5,
+            "capture_sequence": 239
+          },
+          "quality": {
+            "window_count": 4,
+            "window_agreement": 0.5,
+            "clipped_samples": 0,
+            "dropped_samples": 0,
+            "overflow": false,
+            "healthy": true
+          },
+          "timing": {
+            "capture_us": 3734,
+            "worker_total_us": 204370,
+            "inference_us": 198912
+          }
+        },
+        "experimental_prediction": {
+          "numeric_id": 22,
+          "name": null,
+          "name_status": "provisional",
+          "name_evidence": null
+        },
+        "uncalibrated_probability": 0.8144363141132092
+      }
+    ],
+    "cases": [
+      "browser_approval_actual_rx_archive_and_automatic_feedback",
+      "actual_worker_failure_error_display",
+      "four_states_with_explicit_synthetic_positive_decisions",
+      "restart_preserves_exact_records_without_replaying_context",
+      "browser_manual_delete_dismiss_confirm",
+      "deleted_rows_absent_after_second_restart",
+      "no_browser_errors"
+    ],
+    "worker_pids": [
+      352277,
+      352297,
+      352448
+    ],
+    "p201_directories": [
+      "/tmp/sdr-agent-dev/agx-model-batch-1788676121761-1",
+      "/tmp/sdr-agent-dev/agx-model-batch-1788676121761-3",
+      "/tmp/sdr-agent-dev/agx-sweep-1788676095387-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788676121761-0"
+    ],
+    "radio_final": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "cleanup": {
+      "process_exit_codes": [
+        0,
+        0,
+        -15,
+        0,
+        0,
+        0,
+        0
+      ],
+      "errors": [],
+      "control_sockets_absent": true
+    }
+  },
+  "attempts": [
+    {
+      "path": "attempt-detail-wait/live-summary.json",
+      "sha256": "d7accae39b89499f47390437081d8e381cbb28559d4f277d36e8797c2a81ee4a",
+      "status": "failed",
+      "failure": "AssertionError: ",
+      "cleanup": {
+        "process_exit_codes": [
+          0,
+          0,
+          -15,
+          0,
+          0
+        ],
+        "errors": [],
+        "control_sockets_absent": true
+      }
+    },
+    {
+      "path": "attempt-first/live-summary.json",
+      "sha256": "b56c9e4021d99dceca9b4305de921156c03986691373dc95e77c919f546e837f",
+      "status": "failed",
+      "failure": "TimeoutError: Page.wait_for_function: Timeout 65000ms exceeded.",
+      "cleanup": {
+        "process_exit_codes": [
+          0,
+          0,
+          -15,
+          0,
+          0
+        ],
+        "errors": [],
+        "control_sockets_absent": true
+      }
+    },
+    {
+      "path": "live-summary.json",
+      "sha256": "fcbccbfdf7d944ae3e08d361c98f8626ba452fadb920a25acf6b5313274c135b",
+      "status": "pass",
+      "failure": null,
+      "cleanup": {
+        "process_exit_codes": [
+          0,
+          0,
+          -15,
+          0,
+          0,
+          0,
+          0
+        ],
+        "errors": [],
+        "control_sockets_absent": true
+      }
+    },
+    {
+      "path": "passed-before-history-filter/live-summary.json",
+      "sha256": "d05754502e1f967d66a1fb7c2fb89a05f11cd34849cc224caf83cdeb05cec554",
+      "status": "pass",
+      "failure": null,
+      "cleanup": {
+        "process_exit_codes": [
+          0,
+          0,
+          -15,
+          0,
+          0,
+          0,
+          0
+        ],
+        "errors": [],
+        "control_sockets_absent": true
+      }
+    }
+  ],
+  "artifact_hashes": {
+    "live.log": {
+      "bytes": 1100,
+      "sha256": "903eeef1280b380ad306db3097b9942a06660d555305c3bc09ad94559786ab5d"
+    },
+    "web-tests.log": {
+      "bytes": 3828,
+      "sha256": "95a34e2fb9b24fc7491ef75170add5daf3e04b138ad5bff28eb4a1d0847bd37a"
+    },
+    "clippy.log": {
+      "bytes": 175,
+      "sha256": "6d5bd1d28db2dc32afe75caaed71a1dc1f4de203a5dd8a3fbc12efae78fe9cf5"
+    },
+    "fixtures.log": {
+      "bytes": 381,
+      "sha256": "47c0ec962965bdf380611581f4b82c9eb445a600da2d80993b8014e33c72462e"
+    },
+    "recognition-audit.jsonl": {
+      "bytes": 4073,
+      "sha256": "dcb3c4c571d24882e6ef9a47216e828fdf311c1edf478b7b9f02a7df6ae22be5"
+    },
+    "real-unavailable.png": {
+      "bytes": 285157,
+      "sha256": "3b4fa59bf73a90779e811b8a66044cc4ae44ad37a22addd50b57abc79ac44a4a"
+    },
+    "real-error.png": {
+      "bytes": 266403,
+      "sha256": "bf412c8381e0127c3fe010d353886ecc2e38fb8f722167c20575fdc62748a267"
+    },
+    "four-states-mobile.png": {
+      "bytes": 206360,
+      "sha256": "63ba619dc13c773e5c10d8c36d8d3587203ec4c5b4208d6c41fd4bbd5504e81a"
+    },
+    "target/debug/sdr-agent": {
+      "bytes": 25107016,
+      "sha256": "d6f091a3a1cf01c34599bb345c51c4e27038a808bdff6969626d9c51c1a107e8"
+    },
+    "target/debug/sdr-agent-controller": {
+      "bytes": 25228368,
+      "sha256": "d1929e04c858a321090d3a1009ea4354983c52d6041d2b8b8d607c73f9475c3f"
+    },
+    "target/debug/sdr-agent-web-console": {
+      "bytes": 66988456,
+      "sha256": "0508572d606e79557ff2cb524c7a24136c608bac656f3defbfd8319f77e8f36e"
+    }
+  },
+  "source_sha256": {
+    "jetson-agx/sdrharness/scripts/validate-closed-loop-results.py": "2cce50e020917416112c70bedd361c8b337f3626a9346a21e27293b9bdfa4c5e",
+    "raspberry-pi/sdr-agent/web-console/src/main.rs": "287a7af5055609c7a74352d0267baba20c18d946bd123cbeef948d1aaa43bd92",
+    "raspberry-pi/sdr-agent/web-console/src/corpus.rs": "014587cec4f27fbc9285775b1dc49b7e452cd92d12dd58e8fda80f7b845a2c35",
+    "raspberry-pi/sdr-agent/web-console/src/recognition_archive.rs": "fd5f81e77ae4854a928c38d08994cd427e6ae37552ad2e26393be0aa580f107f",
+    "raspberry-pi/sdr-agent/web-console/public/app.js": "418fb9a85b94f3ba65ec1094daf4dd649471bd6f3a07e0b540eade63fd939019",
+    "raspberry-pi/sdr-agent/web-console/public/styles.css": "8a414596692c8b84e16046a66ebb6e7202e57511089d67305759a399015af20c",
+    "raspberry-pi/sdr-agent/web-console/public/index.html": "ae4b731cd3d4d1e9f4ac20a81feb881d1c02852c059c72777ee389bd59ce0efd"
+  },
+  "final_precleanup": {
+    "radio_state_matches": true,
+    "sdrd_sha256": "77d98a005305a4b7531fc3f133e9b4af521e60b065b29fcc304b4c7db80c45ae",
+    "p201_paths_absent": [
+      "/tmp/sdr-agent-dev/agx-model-batch-1788674686768-1",
+      "/tmp/sdr-agent-dev/agx-model-batch-1788674686768-3",
+      "/tmp/sdr-agent-dev/agx-model-batch-1788675140402-1",
+      "/tmp/sdr-agent-dev/agx-model-batch-1788675538336-1",
+      "/tmp/sdr-agent-dev/agx-model-batch-1788675538336-3",
+      "/tmp/sdr-agent-dev/agx-model-batch-1788676121761-1",
+      "/tmp/sdr-agent-dev/agx-model-batch-1788676121761-3",
+      "/tmp/sdr-agent-dev/agx-sweep-1788674686767-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788674686768-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788675140401-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788675140402-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788675512648-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788675538336-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788676095387-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788676121761-0"
+    ],
+    "worker_processes_absent": true,
+    "control_sockets_absent": true,
+    "private_archive_rows": 0
+  },
+  "cleanup": {
+    "verified": true,
+    "removed_directory": "/var/tmp/sdrharness-dev/s6b-906a",
+    "directory_absent": true,
+    "user_results_deleted": false,
+    "installed_services_changed": false
+  }
+}

@@ -108,5 +108,6 @@ JSON import file. `delete ID` is an explicit operator action. There is no silent
 automatic retention cleanup of user records.
 
 S5 now supplies interactive Controller/Runner live engineering persistence and
-joined stop. Actual closed-loop Web acceptance remains S6b. The
+joined stop. S6b has completed isolated actual closed-loop Web acceptance; see
+[Web interface](WEB_RECOGNITION_S6B_INTERFACE.md). The
 installed Web binary/provider settings are unchanged by this source delivery.

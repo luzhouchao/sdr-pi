@@ -76,6 +76,28 @@ struct Config {
     result_db_path: PathBuf,
     capture_root: PathBuf,
     corpus_root: PathBuf,
+    engineering_recognition: Option<EngineeringWebConfig>,
+}
+
+#[derive(Clone)]
+struct EngineeringWebConfig {
+    root: PathBuf,
+    audit: PathBuf,
+    archive: SocketAddr,
+}
+
+fn engineering_web_config(
+    root: Option<PathBuf>,
+    audit: Option<PathBuf>,
+    listen: SocketAddr,
+) -> Result<Option<EngineeringWebConfig>, String> {
+    match (root, audit) {
+        (None, None) => Ok(None),
+        (Some(root), Some(audit)) if root.is_absolute() && audit.is_absolute()
+            && listen.ip().is_loopback() && listen.port() != 0 =>
+            Ok(Some(EngineeringWebConfig { root, audit, archive: listen })),
+        _ => Err("engineering recognition requires absolute root/audit paths and a loopback Web listener".into()),
+    }
 }
 
 #[derive(Clone)]
@@ -95,6 +117,8 @@ struct Inner {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 struct PersistedState {
+    #[serde(default)]
+    controller_generation: u64,
     active_session_id: Option<String>,
     sessions: Vec<Session>,
 }
@@ -118,6 +142,8 @@ struct Session {
     initial_survey_status: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     observation: Option<ObservationSummary>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    recognition_archive_id: Option<i64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     sweep_plot: Option<SweepPlot>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -416,9 +442,10 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     .with_graceful_shutdown(shutdown_signal(state.clone()))
     .await?;
     begin_runtime_shutdown(&state).await;
-    // The process actor bounds child shutdown at four seconds. Keep the Rust
-    // supervisor alive long enough for that cleanup after HTTP has drained.
-    tokio::time::sleep(Duration::from_secs(5)).await;
+    // Keep the actor alive through S5's joined stop instead of dropping and
+    // killing its Controller after the old four-second receive-only timeout.
+    let _finished =
+        tokio::time::timeout(Duration::from_secs(42), state.process_gate.lock()).await?;
     Ok(())
 }
 
@@ -426,8 +453,16 @@ impl Config {
     fn from_env() -> Result<Self, Box<dyn std::error::Error>> {
         let host = env::var("SDR_WEB_LISTEN_HOST").unwrap_or_else(|_| "100.102.130.52".into());
         let port = env::var("SDR_WEB_LISTEN_PORT").unwrap_or_else(|_| "8787".into());
+        let listen: SocketAddr = format!("{host}:{port}").parse()?;
+        let engineering_recognition = engineering_web_config(
+            env::var_os("SDR_WEB_ENGINEERING_RECOGNITION_ROOT").map(PathBuf::from),
+            env::var_os("SDR_WEB_RECOGNITION_AUDIT").map(PathBuf::from),
+            listen,
+        )
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidInput, e))?;
         Ok(Self {
-            listen: format!("{host}:{port}").parse()?,
+            listen,
+            engineering_recognition,
             state_path: env_path(
                 "SDR_WEB_STATE_PATH",
                 "/var/lib/sdr-agent/web-console/state.json",
@@ -612,6 +647,18 @@ async fn delete_recognition_result(
     Path(id): Path<i64>,
 ) -> ApiResult<Json<serde_json::Value>> {
     recognition_archive::delete(&state.config.result_db_path, id)?;
+    let mut inner = state.inner.lock().await;
+    for session in &mut inner.persisted.sessions {
+        if session.recognition_archive_id == Some(id) {
+            session.recognition_archive_id = None;
+            if let Some(observation) = &mut session.observation {
+                observation.recognition = None;
+            }
+        }
+    }
+    persist_locked(&state.config, &inner.persisted)?;
+    drop(inner);
+    publish_state(&state);
     Ok(Json(serde_json::json!({"deleted":id,"files_deleted":0})))
 }
 
@@ -1181,6 +1228,7 @@ async fn create_session(
         initial_survey: Some(initial_survey),
         initial_survey_status: initial_survey_status.into(),
         observation: None,
+        recognition_archive_id: None,
         sweep_plot: None,
         model_input: None,
         thinking: None,
@@ -1314,10 +1362,31 @@ fn single_line(value: &str) -> String {
         .to_owned()
 }
 
+fn planner_safe_history_line(text: &str) -> bool {
+    ![
+        "validated_batch_spool",
+        "validated_s5_rx_plan=",
+        "s5_recognition_source=",
+        "/var/tmp/sdrharness-dev/",
+        ".sigmf-data",
+        "\"experimental_batch\"",
+        "\"logits\"",
+        "\"iq_path\"",
+    ]
+    .iter()
+    .any(|marker| text.contains(marker))
+}
+
 fn carry_forward_instruction(summary: &str, command: &str) -> String {
     const PREFIX: &str = "前序压缩摘要：";
     const CURRENT: &str = "；当前指令：";
-    let summary = single_line(summary);
+    let summary = single_line(
+        &summary
+            .lines()
+            .filter(|line| planner_safe_history_line(line))
+            .collect::<Vec<_>>()
+            .join("\n"),
+    );
     let command = single_line(command);
     let fixed_bytes = PREFIX.len() + CURRENT.len() + command.len();
     if summary.is_empty() || fixed_bytes >= MAX_COMMAND_BYTES {
@@ -1389,7 +1458,7 @@ async fn process_actor(
     // Holding this gate for the complete child lifetime makes a replacement
     // wait until the previous terminal has stopped and released session.sock.
     let _process_guard = state.process_gate.lock().await;
-    let (survey_gain_db, persisted_observation, save_iq) = {
+    let (survey_gain_db, persisted_observation, save_iq, generation_floor) = {
         let inner = state.inner.lock().await;
         let session = inner
             .persisted
@@ -1402,6 +1471,7 @@ async fn process_actor(
                 .map_or(DEFAULT_SURVEY_GAIN_DB, |survey| survey.gain_db),
             session.and_then(|session| session.observation.clone()),
             session.is_some_and(|session| session.save_iq),
+            inner.persisted.controller_generation,
         )
     };
     let initial_survey = claim_initial_survey(&state, &session_id).await;
@@ -1426,20 +1496,39 @@ async fn process_actor(
         .await;
         return;
     }
-    let (request_path, temporary_request) =
-        match prepare_runtime_request(&state.config, persisted_observation.as_ref()) {
-            Ok(result) => result,
-            Err(error) => {
-                record_process_output(
-                    &state,
-                    &session_id,
-                    "system",
-                    format!("无法恢复结构化 SDR 观测：{}", error.1),
-                )
-                .await;
-                return;
-            }
-        };
+    let (request_path, temporary_request, generation) = match prepare_runtime_request(
+        &state.config,
+        persisted_observation.as_ref(),
+        generation_floor,
+    ) {
+        Ok(result) => result,
+        Err(error) => {
+            record_process_output(
+                &state,
+                &session_id,
+                "system",
+                format!("无法恢复结构化 SDR 观测：{}", error.1),
+            )
+            .await;
+            return;
+        }
+    };
+    {
+        let mut inner = state.inner.lock().await;
+        inner.persisted.controller_generation = generation;
+        if let Err(error) = persist_locked(&state.config, &inner.persisted) {
+            drop(inner);
+            cleanup_runtime_request(temporary_request.as_deref());
+            record_process_output(
+                &state,
+                &session_id,
+                "error",
+                format!("无法保存新会话代次：{}", error.1),
+            )
+            .await;
+            return;
+        }
+    }
     let mut command = Command::new(&state.config.agent_binary);
     command
         .arg("--socket")
@@ -1452,6 +1541,15 @@ async fn process_actor(
         .arg(&state.config.sdrd_address)
         .arg("--survey-gain-db")
         .arg(survey_gain_db.to_string());
+    if let Some(engineering) = &state.config.engineering_recognition {
+        command
+            .arg("--engineering-recognition-root")
+            .arg(&engineering.root)
+            .arg("--recognition-archive")
+            .arg(engineering.archive.to_string())
+            .arg("--recognition-audit")
+            .arg(&engineering.audit);
+    }
     if save_iq {
         if !valid_session_id(&session_id) {
             cleanup_runtime_request(temporary_request.as_deref());
@@ -1539,9 +1637,14 @@ async fn process_actor(
                     }
                 }
                 Some(ProcessCommand::Shutdown) | None => {
-                    let _ = stdin.write_all(b"/stop\n/quit\n").await;
+                    let _ = stdin.write_all(b"/stop\n").await;
                     let _ = stdin.flush().await;
-                    if tokio::time::timeout(Duration::from_secs(4), child.wait()).await.is_err() {
+                    // EOF exits the terminal after its priority stop and joined
+                    // recognition cleanup. A queued /quit is deliberately dropped
+                    // by the terminal while stop is pending.
+                    drop(stdin);
+                    let stop_budget = if state.config.engineering_recognition.is_some() { 40 } else { 4 };
+                    if tokio::time::timeout(Duration::from_secs(stop_budget), child.wait()).await.is_err() {
                         let _ = child.kill().await;
                     }
                     break;
@@ -1555,10 +1658,8 @@ async fn process_actor(
 fn prepare_runtime_request(
     config: &Config,
     observation: Option<&ObservationSummary>,
-) -> ApiResult<(PathBuf, Option<PathBuf>)> {
-    let Some(observation) = observation else {
-        return Ok((config.request_path.clone(), None));
-    };
+    generation_floor: u64,
+) -> ApiResult<(PathBuf, Option<PathBuf>, u64)> {
     let base = fs::read(&config.request_path).map_err(internal_error)?;
     if base.len() > MAX_FRAME_BYTES {
         return Err(ApiError(
@@ -1566,7 +1667,10 @@ fn prepare_runtime_request(
             "基础 PlanningContext 超过 32 KiB".into(),
         ));
     }
-    let bytes = runtime_request_bytes(&base, observation)?;
+    let bytes = runtime_request_bytes(&base, observation, generation_floor)?;
+    let generation = serde_json::from_slice::<PlanRequest>(&bytes)
+        .map_err(internal_error)?
+        .session_generation;
     let parent = config
         .state_path
         .parent()
@@ -1585,13 +1689,35 @@ fn prepare_runtime_request(
     drop(file);
     fs::rename(&temporary, &path).map_err(internal_error)?;
     fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).map_err(internal_error)?;
-    Ok((path.clone(), Some(path)))
+    Ok((path.clone(), Some(path), generation))
 }
 
-fn runtime_request_bytes(base: &[u8], observation: &ObservationSummary) -> ApiResult<Vec<u8>> {
-    validate_persisted_observation(observation)?;
+fn runtime_request_bytes(
+    base: &[u8],
+    observation: Option<&ObservationSummary>,
+    generation_floor: u64,
+) -> ApiResult<Vec<u8>> {
     let mut request: PlanRequest = serde_json::from_slice(base).map_err(internal_error)?;
-    request.observation = observation.clone();
+    if let Some(observation) = observation {
+        validate_persisted_observation(observation)?;
+        request.observation = observation.clone();
+    }
+    let previous = generation_floor.max(request.session_generation).max(
+        request
+            .observation
+            .recognition
+            .as_ref()
+            .map_or(0, |o| o.session_generation),
+    );
+    request.session_generation = now_ms().max(
+        previous
+            .checked_add(1)
+            .ok_or_else(|| internal_error("Controller generation exhausted"))?,
+    );
+    // Persisted recognition is history, not a fresh observation for a resumed
+    // generation. Keep the archive unchanged and require a new execution.
+    request.observation.recognition = None;
+    request.observation.health.recognizer_available = false;
     ControllerPolicy
         .validate_request(&request)
         .map_err(internal_error)?;
@@ -1762,8 +1888,15 @@ async fn record_process_output(state: &AppState, session_id: &str, kind: &str, t
             }
         }
         if let Some(payload) = text.strip_prefix("模型输入> ") {
+            let mut observed_generation = 0;
             match serde_json::from_str::<serde_json::Value>(payload) {
-                Ok(value) if value.is_object() => session.model_input = Some(value),
+                Ok(value) if value.is_object() => {
+                    observed_generation = value
+                        .get("session_generation")
+                        .and_then(|g| g.as_u64())
+                        .unwrap_or(0);
+                    session.model_input = Some(value);
+                }
                 _ => {
                     if let Some(event) =
                         push_event(session, "error", "拒绝无效的模型输入记录".into())
@@ -1776,6 +1909,10 @@ async fn record_process_output(state: &AppState, session_id: &str, kind: &str, t
                     }
                 }
             }
+            inner.persisted.controller_generation = inner
+                .persisted
+                .controller_generation
+                .max(observed_generation);
             let _ = persist_locked(&state.config, &inner.persisted);
             drop(inner);
             publish_state(state);
@@ -1846,7 +1983,15 @@ async fn record_process_output(state: &AppState, session_id: &str, kind: &str, t
                     validate_persisted_observation(&observation)?;
                     Ok(observation)
                 }) {
-                Ok(observation) => session.observation = Some(observation),
+                Ok(observation) => {
+                    session.recognition_archive_id =
+                        observation.recognition.as_ref().and_then(|o| {
+                            recognition_archive::find_matching(&state.config.result_db_path, o)
+                                .ok()
+                                .flatten()
+                        });
+                    session.observation = Some(observation);
+                }
                 Err(error) => {
                     if let Some(event) = push_event(
                         session,
@@ -1862,6 +2007,8 @@ async fn record_process_output(state: &AppState, session_id: &str, kind: &str, t
                 }
             }
             let _ = persist_locked(&state.config, &inner.persisted);
+            drop(inner);
+            publish_state(state);
             return;
         }
         if is_current_runtime {
@@ -1994,9 +2141,19 @@ fn compact_session(session: &mut Session, automatic: bool) {
     }
     let mut parts = Vec::new();
     if !session.compacted_summary.is_empty() {
-        parts.push(session.compacted_summary.clone());
+        parts.extend(
+            session
+                .compacted_summary
+                .lines()
+                .filter(|line| planner_safe_history_line(line))
+                .map(str::to_owned),
+        );
     }
-    for event in session.events.iter().filter(|event| event.kind != "prompt") {
+    for event in session
+        .events
+        .iter()
+        .filter(|event| event.kind != "prompt" && planner_safe_history_line(&event.text))
+    {
         parts.push(format!(
             "[{}] {}",
             event.kind,
@@ -2632,6 +2789,33 @@ async fn begin_runtime_shutdown(state: &AppState) {
 #[cfg(test)]
 mod tests {
     #[test]
+    fn engineering_web_is_host_selected_and_loopback_only() {
+        let address = "127.0.0.1:8787".parse().unwrap();
+        assert!(engineering_web_config(None, None, address)
+            .unwrap()
+            .is_none());
+        assert!(engineering_web_config(
+            Some("/private/worker".into()),
+            Some("/private/audit.jsonl".into()),
+            address
+        )
+        .is_ok());
+        assert!(engineering_web_config(
+            Some("relative".into()),
+            Some("/private/audit".into()),
+            address
+        )
+        .is_err());
+        assert!(engineering_web_config(Some("/private/worker".into()), None, address).is_err());
+        assert!(engineering_web_config(
+            Some("/private/worker".into()),
+            Some("/private/audit".into()),
+            "0.0.0.0:8787".parse().unwrap()
+        )
+        .is_err());
+    }
+
+    #[test]
     fn persisted_recognition_uses_s2_contract_without_promoting_history() {
         let mut observation: super::ObservationSummary = serde_json::from_value(serde_json::json!({
             "age_ms": 0,
@@ -2700,6 +2884,7 @@ mod tests {
             initial_survey: None,
             initial_survey_status: "skipped".into(),
             observation: None,
+            recognition_archive_id: None,
             sweep_plot: None,
             model_input: None,
             thinking: None,
@@ -2734,6 +2919,7 @@ mod tests {
     #[test]
     fn evicts_oldest_inactive_session() {
         let state = PersistedState {
+            controller_generation: 0,
             active_session_id: Some("active".into()),
             sessions: vec![session("active", 1), session("old", 2)],
         };
@@ -2765,6 +2951,29 @@ mod tests {
         compact_session(&mut item, false);
         assert_eq!(item.generation, 2);
         assert_eq!(item.compaction_count, 0);
+    }
+
+    #[test]
+    fn restored_planner_history_excludes_internal_iq_diagnostics() {
+        let mut item = session("one", 1);
+        push_event(
+            &mut item,
+            "error",
+            "validated_batch_spool path=/var/tmp/sdrharness-dev/owned/input.iq".into(),
+        );
+        push_event(&mut item, "error", "{\"logits\":[1,2]}".into());
+        push_event(&mut item, "qwen", "识别未准入，保持等待".into());
+        compact_session(&mut item, false);
+        assert!(!item.compacted_summary.contains("/var/tmp/"));
+        assert!(!item.compacted_summary.contains("logits"));
+        assert!(item.compacted_summary.contains("保持等待"));
+        let legacy = "[error] /var/tmp/sdrharness-dev/old.iq\n[qwen] 历史 unavailable";
+        let prompt = carry_forward_instruction(legacy, "只返回 hold");
+        assert!(!prompt.contains("/var/tmp/"));
+        assert!(prompt.contains("历史 unavailable"));
+        assert!(planner_safe_history_line(
+            "float64_arithmetic_mean_logits_then_softmax"
+        ));
     }
 
     #[test]
@@ -2911,9 +3120,29 @@ mod tests {
             }
         }))
         .unwrap();
-        let restored = runtime_request_bytes(&base, &observation()).unwrap();
+        let restored = runtime_request_bytes(&base, Some(&observation()), 0).unwrap();
         let request: PlanRequest = serde_json::from_slice(&restored).unwrap();
         assert_eq!(request.observation.candidates[0].id, "initial-1-7");
+        let mut history = observation();
+        history.health.recognizer_available = true;
+        history.recognition = Some(serde_json::from_value(serde_json::json!({
+            "schema_version":1,"candidate_id":"initial-1-7","request_id":99,"session_generation":999,
+            "observed_at_unix_ms":1,"status":"unavailable","reason":"production_admission_missing",
+            "calibration_status":"uncalibrated"
+        })).unwrap());
+        let restored: PlanRequest =
+            serde_json::from_slice(&runtime_request_bytes(&base, Some(&history), 0).unwrap())
+                .unwrap();
+        assert!(restored.observation.recognition.is_none());
+        assert!(!restored.observation.health.recognizer_available);
+        assert!(restored.session_generation > 999);
+        let next: PlanRequest = serde_json::from_slice(
+            &runtime_request_bytes(&base, None, restored.session_generation).unwrap(),
+        )
+        .unwrap();
+        assert!(next.session_generation > restored.session_generation);
+        assert!(runtime_request_bytes(&base, None, u64::MAX).is_err());
+        assert_eq!(history.recognition.unwrap().observed_at_unix_ms, 1);
     }
 
     #[test]

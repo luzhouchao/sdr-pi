@@ -45,6 +45,7 @@ function render() {
   renderTerminal();
   renderOverview();
   renderModelTrace();
+  renderCurrentRecognition();
   const enabled = Boolean(view.active);
   document.querySelectorAll('[data-command], #command-input, #command-form button, #auto-form input, #auto-form button').forEach((element) => { element.disabled = !enabled; });
 }
@@ -946,6 +947,7 @@ async function selectRecognition(id) {
   const record = await api(`/api/recognition-results/${id}`);
   if (view.selectedRecognitionId !== id) return;
   const o = record.observation;
+  document.querySelector('#recognition-content').dataset.recordId = String(id);
   document.querySelector('#recognition-empty').hidden = true;
   document.querySelector('#recognition-content').hidden = false;
   setText('#recognition-origin', recognitionOrigins[record.origin]);
@@ -964,7 +966,7 @@ async function selectRecognition(id) {
     const description = document.createElement('dd'); description.textContent = value ?? '—';
     target.append(term, description);
   };
-  add('应用会话', record.session_id);
+  add('归档分组', record.session_id);
   add('请求 / 会话代次', `${o.request_id} / ${o.session_generation}`);
   add('结果时间', formatDate(o.observed_at_unix_ms));
   add('原因', o.reason);
@@ -993,6 +995,7 @@ document.querySelector('#recognition-delete').addEventListener('click', async ()
     await api(`/api/recognition-results/${id}`, { method: 'DELETE' });
     if (view.selectedRecognitionId === id) view.selectedRecognitionId = null;
     await loadRecognitions();
+    await loadState();
     toast('识别记录已删除');
   } catch (error) { toast(error.message); }
 });
@@ -1004,3 +1007,28 @@ for (const kind of ['sweeps', 'recognitions']) {
     for (const item of ['sweeps', 'recognitions']) document.querySelector(`#archive-${item}`).setAttribute('aria-pressed', String(item === kind));
   });
 }
+
+
+function renderCurrentRecognition() {
+  const observation = view.active?.observation?.recognition;
+  document.querySelector('#current-recognition').hidden = !observation;
+  if (!observation) return;
+  setText('#current-recognition-status', `${recognitionStatuses[observation.status] || observation.status} · ${observation.candidate_id}`);
+  setText('#current-recognition-meaning', '未准入的实收实验；预测不是独立标签或已确认分类。恢复对话不会重新执行这条结果。');
+  setText('#current-recognition-time', `${formatDate(observation.observed_at_unix_ms)} · 请求 ${observation.request_id} / 代次 ${observation.session_generation}`);
+  const button = document.querySelector('#current-recognition-open');
+  button.disabled = !view.active.recognition_archive_id;
+  button.textContent = view.active.recognition_archive_id ? '查看这次识别记录' : '未找到匹配的已保存记录';
+}
+
+document.querySelector('#current-recognition-open').addEventListener('click', async () => {
+  const session = view.active?.id;
+  const id = view.active?.recognition_archive_id;
+  if (!id) return;
+  try {
+    await showResults();
+    if (view.active?.id !== session) return;
+    document.querySelector('#archive-recognitions').click();
+    await selectRecognition(id);
+  } catch (error) { toast(error.message); }
+});

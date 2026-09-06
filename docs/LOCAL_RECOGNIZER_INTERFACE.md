@@ -286,8 +286,9 @@ conflict/idempotence, manual deletion and actual browser validation passed,
 without IQ retention or Planner context injection. See
 [`RECOGNITION_ARCHIVE_S6A_INTERFACE.md`](RECOGNITION_ARCHIVE_S6A_INTERFACE.md) and
 [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md).
-S5 now provides live engineering Runner persistence. Browser closed-loop acceptance
-remains S6b.
+S5 now provides live engineering Runner persistence. S6b also completes isolated
+actual browser closed-loop acceptance; see
+[Web interface](WEB_RECOGNITION_S6B_INTERFACE.md). Installed services remain unchanged.
 
 ## Remaining delivery work
 
