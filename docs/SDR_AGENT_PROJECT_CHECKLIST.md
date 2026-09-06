@@ -511,6 +511,18 @@ aggregation, result persistence and model-facing summaries.
       [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md).
       Retain this only as historical RX1 port/link evidence; it is not a
       dependency, runtime component or future acceptance path for Chapters 1–6.
+- [ ] User-authorized independent NX/B210 RML2018A playback at 2.440 GHz to P201 RX1;
+      waveform-specific over-air reception remains unconfirmed. This 2026-09-06
+      external signal-source exception does not add TX to Controller/Planner or
+      change production admission, V1b labels, RF-v1 or NX inference scope.
+  - [x] Finite train-only playback tools and stop/receive controls verified:
+        three one-second sample streams, eight bounded RX captures with correct
+        identity and restoration, exact FIFO tests and feature cleanup complete.
+        Negative waveform correlation and UHD terminal S markers are preserved;
+        no end-to-end reception or classification success is claimed. See
+        [`NX_B210_RML_2440_VALIDATION_2026-09-06.md`](NX_B210_RML_2440_VALIDATION_2026-09-06.md).
+  - [ ] Confirm the current antenna ports and diagnose the missing waveform
+        correlation before accepting this RF link or creating any RF labels.
 - [x] Feed only a selected, bounded 1,024-sample IQ window into experimental
       local recognition, with P201 inline transport, AGX-only preprocessing,
       private 8,192-byte spool, correlated CUDA/Mamba response, automatic IQ
