@@ -1,0 +1,1700 @@
+{
+  "schema_id": "b210_rx_fidelity_audit_v1",
+  "baseline_commit": "cf03ed696c5f53eab025af353ba973019f830c7e",
+  "maximum_rx_bytes": 1572840,
+  "actual_rx_bytes": 1572840,
+  "maximum_tx_nominal_seconds": 20,
+  "recognizer_available": false,
+  "independent_labels": 0,
+  "production_services_changed": false,
+  "links": {
+    "tone": {
+      "status": "transport_completed_pending_signal_analysis",
+      "generation": 1788691496918,
+      "feature_directory": "/var/tmp/sdrharness-dev/b210-fidelity-tone-906e",
+      "mode": "tone",
+      "max_rx_bytes": 786420,
+      "max_tx_samples": 25000000,
+      "tx_nominal_seconds": 10,
+      "center_hz": 2440000000,
+      "rate_sps": 2500000,
+      "bandwidth_hz": 1000000,
+      "tx_gain_db": 70,
+      "rx_gain_db": 40,
+      "rx_input": "RX1/RX0/A_BALANCED",
+      "antenna_connection": true,
+      "recognizer_available": false,
+      "locked_test_read": false,
+      "controller_sha256": "b4db3a34b4a58171eace00c89924d8d79fc4e419ab12652cfa9141525338f9af",
+      "free_bytes": 809491013632,
+      "sdrd_pid": "17136",
+      "plans": [
+        {
+          "sweep_id": "b210-baseline-1788691496918",
+          "session_generation": 1788691496918,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2500000,
+          "rf_bandwidth_hz": 1000000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "b210-during-tx-1788691496919",
+          "session_generation": 1788691496919,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2500000,
+          "rf_bandwidth_hz": 1000000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "b210-after-tx-1788691496920",
+          "session_generation": 1788691496920,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2500000,
+          "rf_bandwidth_hz": 1000000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        }
+      ],
+      "baseline": {
+        "sweep_id": "b210-baseline-1788691496918",
+        "session_generation": 1788691496918,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 3608,
+        "noise_floor_dbfs": -56.660133,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788691496918,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2500000,
+            "rf_bandwidth_hz": 1000000,
+            "sequence": 253,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -56.660133,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 610.3515625,
+              "peak_frequency_hz": 2440003052,
+              "peak_power_dbfs": -77.688194,
+              "noise_floor_dbfs": -92.629715,
+              "measured_snr_db": 14.941521,
+              "estimated_center_hz": 2440001526,
+              "occupied_start_hz": 2439998169,
+              "occupied_stop_hz": 2440004883,
+              "occupied_bandwidth_hz": 7325
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 28047,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 28047,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-fidelity-tone-906e/baseline/b210-baseline-1788691496918-1788691496918-1788691497419951932.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-fidelity-tone-906e/baseline/b210-baseline-1788691496918-1788691496918-1788691497419951932.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_command": "timeout --signal=INT --kill-after=2s 35s /usr/lib/uhd/examples/tx_waveforms --args type=b200,serial=2508504 --channels 0 --ant TX/RX --freq 2440000000 --rate 2500000 --bw 500000 --gain 70 --wave-type SINE --wave-freq 100000 --ampl 0.2 --nsamps 25000000",
+      "tx_remote_owner_pid": 19316,
+      "tx_remote_child_pid": 19317,
+      "tone_ready_agx_ns": 1788691504663545558,
+      "during_tx": {
+        "sweep_id": "b210-during-tx-1788691496919",
+        "session_generation": 1788691496919,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 3624,
+        "noise_floor_dbfs": -33.579666,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788691496919,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2500000,
+            "rf_bandwidth_hz": 1000000,
+            "sequence": 254,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -33.579666,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 610.3515625,
+              "peak_frequency_hz": 2440103149,
+              "peak_power_dbfs": -36.963707,
+              "noise_floor_dbfs": -77.069534,
+              "measured_snr_db": 40.105827,
+              "estimated_center_hz": 2440111084,
+              "occupied_start_hz": 2440093384,
+              "occupied_stop_hz": 2440128784,
+              "occupied_bandwidth_hz": 36011
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 27999,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 27999,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-fidelity-tone-906e/during-tx/b210-during-tx-1788691496919-1788691496919-1788691504673217958.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-fidelity-tone-906e/during-tx/b210-during-tx-1788691496919-1788691496919-1788691504673217958.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_exit_code": 0,
+      "after_tx": {
+        "sweep_id": "b210-after-tx-1788691496920",
+        "session_generation": 1788691496920,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 3596,
+        "noise_floor_dbfs": -41.98264,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788691496920,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2500000,
+            "rf_bandwidth_hz": 1000000,
+            "sequence": 255,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -41.98264,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 610.3515625,
+              "peak_frequency_hz": 2439569092,
+              "peak_power_dbfs": -69.76815,
+              "noise_floor_dbfs": -83.50151,
+              "measured_snr_db": 13.73336,
+              "estimated_center_hz": 2439570007,
+              "occupied_start_hz": 2439562378,
+              "occupied_stop_hz": 2439577637,
+              "occupied_bandwidth_hz": 15870
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 27981,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 27981,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-fidelity-tone-906e/after-tx/b210-after-tx-1788691496920-1788691496920-1788691514586568345.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-fidelity-tone-906e/after-tx/b210-after-tx-1788691496920-1788691496920-1788691514586568345.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "remote_tx_stopped": true,
+      "restoration_errors": [],
+      "local_process_exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "radio_before_sha256": "d1a18ef0da25d582b9223b2900a2a9db22475c7245737cd9f1ed7d4954c668c6",
+      "radio_after_sha256": "d1a18ef0da25d582b9223b2900a2a9db22475c7245737cd9f1ed7d4954c668c6"
+    },
+    "rml": {
+      "status": "transport_completed_pending_signal_analysis",
+      "generation": 1788691620539,
+      "feature_directory": "/var/tmp/sdrharness-dev/b210-fidelity-906e",
+      "mode": "rml",
+      "max_rx_bytes": 786420,
+      "max_tx_samples": 21000000,
+      "tx_nominal_seconds": 10,
+      "center_hz": 2440000000,
+      "rate_sps": 2100000,
+      "bandwidth_hz": 1500000,
+      "tx_gain_db": 70,
+      "rx_gain_db": 40,
+      "rx_input": "RX1/RX0/A_BALANCED",
+      "antenna_connection": true,
+      "recognizer_available": false,
+      "locked_test_read": false,
+      "controller_sha256": "b4db3a34b4a58171eace00c89924d8d79fc4e419ab12652cfa9141525338f9af",
+      "free_bytes": 809459519488,
+      "sdrd_pid": "17136",
+      "plans": [
+        {
+          "sweep_id": "b210-baseline-1788691620539",
+          "session_generation": 1788691620539,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "b210-during-tx-1788691620540",
+          "session_generation": 1788691620540,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "b210-after-tx-1788691620541",
+          "session_generation": 1788691620541,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        }
+      ],
+      "baseline": {
+        "sweep_id": "b210-baseline-1788691620539",
+        "session_generation": 1788691620539,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 4107,
+        "noise_floor_dbfs": -46.09117,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788691620539,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "sequence": 256,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -46.09117,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 512.6953125,
+              "peak_frequency_hz": 2439705200,
+              "peak_power_dbfs": -72.54537,
+              "noise_floor_dbfs": -83.06266,
+              "measured_snr_db": 10.517288,
+              "estimated_center_hz": 2439705713,
+              "occupied_start_hz": 2439703662,
+              "occupied_stop_hz": 2439707764,
+              "occupied_bandwidth_hz": 4615
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 33010,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 33010,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-fidelity-906e/baseline/b210-baseline-1788691620539-1788691620539-1788691621056930578.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-fidelity-906e/baseline/b210-baseline-1788691620539-1788691620539-1788691621056930578.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_ready": {
+        "event": "ready",
+        "pid": 19434,
+        "child_pid": 19435
+      },
+      "go_unix_ns": 1788691631902703004,
+      "tx_start_ack_agx_ns": 1788691631929634811,
+      "rx_active_observed_agx_ns": 1788691632433070141,
+      "during_tx": {
+        "sweep_id": "b210-during-tx-1788691620540",
+        "session_generation": 1788691620540,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 4101,
+        "noise_floor_dbfs": -35.949184,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788691620540,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "sequence": 257,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -35.949184,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 512.6953125,
+              "peak_frequency_hz": 2440003076,
+              "peak_power_dbfs": -39.453876,
+              "noise_floor_dbfs": -80.85444,
+              "measured_snr_db": 41.400562,
+              "estimated_center_hz": 2439995642,
+              "occupied_start_hz": 2439884131,
+              "occupied_stop_hz": 2440107153,
+              "occupied_bandwidth_hz": 223536
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 34418,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 34418,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-fidelity-906e/during-tx/b210-during-tx-1788691620540-1788691620540-1788691628672732782.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-fidelity-906e/during-tx/b210-during-tx-1788691620540-1788691620540-1788691628672732782.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "tx_result": {
+        "status": "sent",
+        "payload_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+        "bytes_written": 168000000,
+        "max_samples": 21000000,
+        "rate_sps": 2100000,
+        "nominal_seconds": 10,
+        "child_pid": 19435,
+        "go_unix_ns": 1788691631980854038,
+        "feed_seconds": 9.965718851002748,
+        "uhd_log_sha256": "36f91539c931c169c1b6798c6109b2c35b33d26924cb197e0d90f0205ab7629a",
+        "uhd_async_markers": [
+          "S"
+        ]
+      },
+      "after_tx": {
+        "sweep_id": "b210-after-tx-1788691620541",
+        "session_generation": 1788691620541,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 4080,
+        "noise_floor_dbfs": -46.88814,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788691620541,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "sequence": 258,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -46.88814,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 512.6953125,
+              "peak_frequency_hz": 2440740845,
+              "peak_power_dbfs": -72.78422,
+              "noise_floor_dbfs": -82.30896,
+              "measured_snr_db": 9.524742,
+              "estimated_center_hz": 2440744433,
+              "occupied_start_hz": 2440737256,
+              "occupied_stop_hz": 2440751611,
+              "occupied_bandwidth_hz": 14869
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 32978,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 32978,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-fidelity-906e/after-tx/b210-after-tx-1788691620541-1788691620541-1788691642061667702.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-fidelity-906e/after-tx/b210-after-tx-1788691620541-1788691620541-1788691642061667702.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "remote_tx_stopped": true,
+      "restoration_errors": [],
+      "local_process_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "radio_before_sha256": "d1a18ef0da25d582b9223b2900a2a9db22475c7245737cd9f1ed7d4954c668c6",
+      "radio_after_sha256": "d1a18ef0da25d582b9223b2900a2a9db22475c7245737cd9f1ed7d4954c668c6"
+    }
+  },
+  "source_analysis": {
+    "schema_version": 1,
+    "tone": {
+      "cases": {
+        "baseline": {
+          "iq_sha256": "c1da2626487a0b5a99d079fb63c398906bbdbbb5e1544a8edfcaaf5490dfe5a5",
+          "peak_offset_hz": 100328.06897077899,
+          "target_region_peak_dbfs": -120.31147444011575,
+          "spectral_median_dbfs": -132.07269251106763,
+          "same_observed_bin_dbfs": -146.59585742115905
+        },
+        "during-tx": {
+          "iq_sha256": "c6e92ca76d4a521a07f882e5cef11c17ca51a543d510d6f36d6021c66c41a34d",
+          "peak_offset_hz": 103418.02090486002,
+          "target_region_peak_dbfs": -60.41441755310153,
+          "spectral_median_dbfs": -111.62931274173097,
+          "same_observed_bin_dbfs": -60.41441755310153
+        },
+        "after-tx": {
+          "iq_sha256": "205bd0530de34ed526b8f8165a8fd3a8ef0242031d8225c8c27f847948374ddf",
+          "peak_offset_hz": 99832.15075913636,
+          "target_region_peak_dbfs": -108.73431381299585,
+          "spectral_median_dbfs": -120.38596816886763,
+          "same_observed_bin_dbfs": -113.48455543172085
+        }
+      },
+      "frequency_difference_hz": 3418.0209048600227
+    },
+    "source_99_percent_half_width_hz": 125000,
+    "alignment_method": "median best lag in first seven during-TX windows; apply unchanged to last eight and both TX-off controls",
+    "interpretation": "exploratory source-specific RF link evidence, not model accuracy or independent RF admission",
+    "raw_broadband_test_replaced": false,
+    "recognizer_preprocess_modified": false,
+    "cases": {
+      "baseline": {
+        "iq_sha256": "758132135f0f4338bdfd27dda9ace83a6c7d35e84df71c1cdc0444d83f7a3a98",
+        "fixed_lag": 2749,
+        "later_eight_fixed_lag_correlations": [
+          -0.018043077107342487,
+          -0.005216442543512715,
+          0.01632819956678185,
+          0.10498722696232685,
+          0.023132483624066696,
+          0.05166402857522539,
+          -0.019203793532423845,
+          -0.03817283359125867
+        ],
+        "later_eight_fixed_lag_median": 0.0055558785116345665,
+        "all_window_best_lag_median": 0.13606325073470585,
+        "all_window_best_lags": [
+          1584,
+          2169,
+          2121,
+          4079,
+          2761,
+          258,
+          127,
+          2734,
+          3045,
+          506,
+          3126,
+          3904,
+          3156,
+          2376,
+          61
+        ]
+      },
+      "during-tx": {
+        "iq_sha256": "6500382349da0888fd71e8e92219c48cbfde954530432ab2c82ed6aad43226c7",
+        "fixed_lag": 2749,
+        "later_eight_fixed_lag_correlations": [
+          0.8733815832548575,
+          0.44870590289593765,
+          0.4888486895581802,
+          0.918038703253541,
+          0.8349202236531558,
+          0.910541471202552,
+          0.9186078894724169,
+          0.5636100485729314
+        ],
+        "later_eight_fixed_lag_median": 0.8541509034540067,
+        "all_window_best_lag_median": 0.918038703253541,
+        "all_window_best_lags": [
+          2749,
+          2749,
+          2749,
+          2749,
+          2749,
+          2749,
+          2749,
+          2749,
+          2749,
+          2749,
+          2749,
+          2749,
+          2749,
+          2749,
+          2749
+        ]
+      },
+      "after-tx": {
+        "iq_sha256": "af3b53027554e981522f9391b1e0bc40ff7c94584348b1b20f0a0268f6aff7ca",
+        "fixed_lag": 2749,
+        "later_eight_fixed_lag_correlations": [
+          -0.02692787805544981,
+          0.03264238607801333,
+          -0.001678430793982746,
+          0.02727760858534172,
+          -0.009717417374799473,
+          -0.04798050663444122,
+          -0.00792288462776339,
+          -0.1010343422487055
+        ],
+        "later_eight_fixed_lag_median": -0.008820151001281432,
+        "all_window_best_lag_median": 0.12410387709572904,
+        "all_window_best_lags": [
+          3217,
+          3784,
+          2122,
+          188,
+          2740,
+          803,
+          4011,
+          3251,
+          2422,
+          4083,
+          2054,
+          3498,
+          3565,
+          1700,
+          3233
+        ]
+      }
+    },
+    "engineering_controls": {
+      "schema_id": "b210_rx40_engineering_controls_v1",
+      "limits": {
+        "tone_control_margin_db": 20.0,
+        "tone_spectral_margin_db": 20.0,
+        "during_correlation_minimum": 0.5,
+        "off_correlation_absolute_maximum": 0.2,
+        "source_control_margin_minimum": 0.3
+      },
+      "tone": {
+        "passed": true,
+        "control_margins_db": [
+          86.18143986805752,
+          53.07013787861932
+        ],
+        "spectral_margin_db": 51.21489518862944
+      },
+      "source_passed": true,
+      "passed": true,
+      "during_correlation": 0.8541509034540067,
+      "maximum_off_absolute_correlation": 0.008820151001281432,
+      "source_control_margin": 0.8453307524527253,
+      "independent_labels": 0,
+      "recognizer_available": false,
+      "rf_v1_50db_acceptance": false
+    }
+  },
+  "preparation": {
+    "schema_id": "b210_rx_fidelity_preparation_v1",
+    "source_receipt": {
+      "source_tile_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+      "parent_iq_sha256": "6500382349da0888fd71e8e92219c48cbfde954530432ab2c82ed6aad43226c7",
+      "received_slice_sha256": "4f3bc46b7daf7f1aeee3ea2b404e1766a9cd5e666ecae5148a134f377bff19dd",
+      "source_rows": [
+        102400,
+        102401,
+        102403,
+        102404
+      ],
+      "source_nominal_class_id": 0,
+      "dataset_nominal_snr_db": 30,
+      "selected_complex_offset": 28672,
+      "source_circular_lag": 2749,
+      "alignment_chosen_before_model": true,
+      "selected_source_diagnostic_correlation": 0.8733815832548575,
+      "control_assessment": {
+        "schema_id": "b210_rx40_engineering_controls_v1",
+        "limits": {
+          "tone_control_margin_db": 20.0,
+          "tone_spectral_margin_db": 20.0,
+          "during_correlation_minimum": 0.5,
+          "off_correlation_absolute_maximum": 0.2,
+          "source_control_margin_minimum": 0.3
+        },
+        "tone": {
+          "passed": true,
+          "control_margins_db": [
+            86.18143986805752,
+            53.07013787861932
+          ],
+          "spectral_margin_db": 51.21489518862944
+        },
+        "source_passed": true,
+        "passed": true,
+        "during_correlation": 0.8541509034540067,
+        "maximum_off_absolute_correlation": 0.008820151001281432,
+        "source_control_margin": 0.8453307524527253,
+        "independent_labels": 0,
+        "recognizer_available": false,
+        "rf_v1_50db_acceptance": false
+      },
+      "receiver": {
+        "gain_db": 40,
+        "center_hz": 2440000000,
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "parent_native_point": {
+          "point_index": 0,
+          "request_id": 5,
+          "session_generation": 1788691620540,
+          "requested_center_hz": 2440000000,
+          "actual_center_hz": 2440000000,
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "sequence": 257,
+          "dropped_samples": 0,
+          "overflow": false,
+          "captured_samples": 65535,
+          "band_power_dbfs": -35.949184,
+          "spectral": {
+            "schema_version": 1,
+            "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+            "fft_size": 4096,
+            "segment_count": 15,
+            "bin_width_hz": 512.6953125,
+            "peak_frequency_hz": 2440003076,
+            "peak_power_dbfs": -39.453876,
+            "noise_floor_dbfs": -80.85444,
+            "measured_snr_db": 41.400562,
+            "estimated_center_hz": 2439995642,
+            "occupied_start_hz": 2439884131,
+            "occupied_stop_hz": 2440107153,
+            "occupied_bandwidth_hz": 223536
+          },
+          "clipped_samples": 0,
+          "status_flags": 0,
+          "elapsed_us": 34418,
+          "timeout": {
+            "limit_ms": 1000,
+            "elapsed_us": 34418,
+            "timed_out": false
+          },
+          "health": {
+            "healthy": true,
+            "flags": 0,
+            "source": "iio_adapter"
+          },
+          "rx_input": {
+            "identity_version": 1,
+            "verified": true,
+            "front_panel_port": "RX1",
+            "logical_channel": "RX0",
+            "phy_channel": "voltage0",
+            "scan_i_channel": "voltage0",
+            "scan_q_channel": "voltage1",
+            "rf_port_select": "A_BALANCED",
+            "source": "iio_channel_attr"
+          }
+        }
+      },
+      "spectral_snr_scope": "parent 65535 samples; not AWGN SNR or exact selected-window SNR"
+    },
+    "source_analysis_sha256": "468409e71f1b087f3deb9935e4ea36e8e0441d396fb499286725421959f87c68",
+    "cfo_hz": 3418.0209048600227,
+    "half_width_hz": 125000,
+    "source_lag": 2749,
+    "model_complex_offset": 28672,
+    "raw_baseline_bytes_preserved": true,
+    "method": "tone CFO; source 99% band; first-seven-window scalar fit; fixed eighth-window inference",
+    "residual_interpretation": "noise plus interference plus model mismatch; not calibrated SNR",
+    "phase_fit_threshold": 0.2,
+    "phase_variant_enabled": false,
+    "estimated_phase_rad": null,
+    "phase_rotation_applied_rad": null,
+    "fits": {
+      "received_raw": {
+        "direct": {
+          "gain_real": 0.2366270437861352,
+          "gain_imag": -0.7130871695381572,
+          "train_coherence": 0.00286315146458562,
+          "fit_samples": 28672,
+          "heldout_windows": [
+            {
+              "complex_offset": 28672,
+              "coherence": 0.022001295848437366,
+              "normalized_residual_power": 143165.3212197871
+            },
+            {
+              "complex_offset": 32768,
+              "coherence": 0.009681185768026897,
+              "normalized_residual_power": 703547.257201078
+            },
+            {
+              "complex_offset": 36864,
+              "coherence": 0.022806674123475573,
+              "normalized_residual_power": 487367.0528693892
+            },
+            {
+              "complex_offset": 40960,
+              "coherence": 0.023868797015910062,
+              "normalized_residual_power": 119265.08450470105
+            },
+            {
+              "complex_offset": 45056,
+              "coherence": 0.014529690624054183,
+              "normalized_residual_power": 156852.4620349035
+            },
+            {
+              "complex_offset": 49152,
+              "coherence": 0.03077397644320874,
+              "normalized_residual_power": 125304.87920255506
+            },
+            {
+              "complex_offset": 53248,
+              "coherence": 0.028039071087984865,
+              "normalized_residual_power": 120538.94991717175
+            },
+            {
+              "complex_offset": 57344,
+              "coherence": 0.004515146032089069,
+              "normalized_residual_power": 182128.38606253502
+            }
+          ],
+          "heldout_median_coherence": 0.02240398498595647
+        },
+        "conjugate": {
+          "gain_real": 2.500444005715773,
+          "gain_imag": 0.7269817169523599,
+          "train_coherence": 0.009923293878926967,
+          "fit_samples": 28672,
+          "heldout_windows": [
+            {
+              "complex_offset": 28672,
+              "coherence": 0.08347939829131129,
+              "normalized_residual_power": 11935.66239653135
+            },
+            {
+              "complex_offset": 32768,
+              "coherence": 0.031808946316786935,
+              "normalized_residual_power": 58557.042749136766
+            },
+            {
+              "complex_offset": 36864,
+              "coherence": 0.05036732304722569,
+              "normalized_residual_power": 40590.220052888115
+            },
+            {
+              "complex_offset": 40960,
+              "coherence": 0.08498302332547963,
+              "normalized_residual_power": 9917.917508541326
+            },
+            {
+              "complex_offset": 45056,
+              "coherence": 0.07467834996398025,
+              "normalized_residual_power": 13070.192600794762
+            },
+            {
+              "complex_offset": 49152,
+              "coherence": 0.09778077385451475,
+              "normalized_residual_power": 10420.615373805977
+            },
+            {
+              "complex_offset": 53248,
+              "coherence": 0.09348287939419408,
+              "normalized_residual_power": 10045.631191467666
+            },
+            {
+              "complex_offset": 57344,
+              "coherence": 0.06348592913092926,
+              "normalized_residual_power": 15151.243820921574
+            }
+          ],
+          "heldout_median_coherence": 0.07907887412764578
+        }
+      },
+      "received_cfo": {
+        "direct": {
+          "gain_real": 15.055608978014337,
+          "gain_imag": -19.075264057570195,
+          "train_coherence": 0.0926064938878063,
+          "fit_samples": 28672,
+          "heldout_windows": [
+            {
+              "complex_offset": 28672,
+              "coherence": 0.7521739985066688,
+              "normalized_residual_power": 125.58330991201917
+            },
+            {
+              "complex_offset": 32768,
+              "coherence": 0.34521664905516813,
+              "normalized_residual_power": 675.6683586057421
+            },
+            {
+              "complex_offset": 36864,
+              "coherence": 0.4067185768707671,
+              "normalized_residual_power": 482.26624402898346
+            },
+            {
+              "complex_offset": 40960,
+              "coherence": 0.8217337692602151,
+              "normalized_residual_power": 130.76513795949083
+            },
+            {
+              "complex_offset": 45056,
+              "coherence": 0.7091689842541772,
+              "normalized_residual_power": 153.47631436694613
+            },
+            {
+              "complex_offset": 49152,
+              "coherence": 0.8043055878105603,
+              "normalized_residual_power": 108.01586085884315
+            },
+            {
+              "complex_offset": 53248,
+              "coherence": 0.8207297115803187,
+              "normalized_residual_power": 98.99566323899313
+            },
+            {
+              "complex_offset": 57344,
+              "coherence": 0.6819497128449356,
+              "normalized_residual_power": 168.7724798127508
+            }
+          ],
+          "heldout_median_coherence": 0.730671491380423
+        },
+        "conjugate": {
+          "gain_real": -2.7358053651867547,
+          "gain_imag": 10.335077318580186,
+          "train_coherence": 0.040741596326293865,
+          "fit_samples": 28672,
+          "heldout_windows": [
+            {
+              "complex_offset": 28672,
+              "coherence": 0.33188257477126604,
+              "normalized_residual_power": 696.2116914723086
+            },
+            {
+              "complex_offset": 32768,
+              "coherence": 0.1630785006433366,
+              "normalized_residual_power": 3478.721404562243
+            },
+            {
+              "complex_offset": 36864,
+              "coherence": 0.1874240313923025,
+              "normalized_residual_power": 2424.134353684872
+            },
+            {
+              "complex_offset": 40960,
+              "coherence": 0.35793376176805214,
+              "normalized_residual_power": 605.5242323689511
+            },
+            {
+              "complex_offset": 45056,
+              "coherence": 0.30605095111158453,
+              "normalized_residual_power": 777.1576827699697
+            },
+            {
+              "complex_offset": 49152,
+              "coherence": 0.35290979662393274,
+              "normalized_residual_power": 606.8555290336228
+            },
+            {
+              "complex_offset": 53248,
+              "coherence": 0.3580290158600669,
+              "normalized_residual_power": 579.2767974027744
+            },
+            {
+              "complex_offset": 57344,
+              "coherence": 0.31963229626003303,
+              "normalized_residual_power": 894.7705665735036
+            }
+          ],
+          "heldout_median_coherence": 0.3257574355156495
+        }
+      },
+      "received_band": {
+        "direct": {
+          "gain_real": 0.1997746545253766,
+          "gain_imag": -0.7598414299313625,
+          "train_coherence": 0.0030398038472800445,
+          "fit_samples": 28672,
+          "heldout_windows": [
+            {
+              "complex_offset": 28672,
+              "coherence": 0.025295889420152845,
+              "normalized_residual_power": 110810.28927023108
+            },
+            {
+              "complex_offset": 32768,
+              "coherence": 0.02023863796213626,
+              "normalized_residual_power": 194265.164218005
+            },
+            {
+              "complex_offset": 36864,
+              "coherence": 0.03698103125695724,
+              "normalized_residual_power": 158714.05841110912
+            },
+            {
+              "complex_offset": 40960,
+              "coherence": 0.02490697810385502,
+              "normalized_residual_power": 106500.47993802198
+            },
+            {
+              "complex_offset": 45056,
+              "coherence": 0.017258211775184794,
+              "normalized_residual_power": 110578.81641083767
+            },
+            {
+              "complex_offset": 49152,
+              "coherence": 0.03156295775881203,
+              "normalized_residual_power": 107909.1986125033
+            },
+            {
+              "complex_offset": 53248,
+              "coherence": 0.029244420484551423,
+              "normalized_residual_power": 107547.37369725318
+            },
+            {
+              "complex_offset": 57344,
+              "coherence": 0.00422866585954697,
+              "normalized_residual_power": 141367.0117329968
+            }
+          ],
+          "heldout_median_coherence": 0.02510143376200393
+        },
+        "conjugate": {
+          "gain_real": 2.563246906208669,
+          "gain_imag": 0.7719131502354568,
+          "train_coherence": 0.010357366019935949,
+          "fit_samples": 28672,
+          "heldout_windows": [
+            {
+              "complex_offset": 28672,
+              "coherence": 0.09288252326628528,
+              "normalized_residual_power": 9562.185986945991
+            },
+            {
+              "complex_offset": 32768,
+              "coherence": 0.05638168623538418,
+              "normalized_residual_power": 16721.591410075373
+            },
+            {
+              "complex_offset": 36864,
+              "coherence": 0.08388597424864695,
+              "normalized_residual_power": 13688.282518159345
+            },
+            {
+              "complex_offset": 40960,
+              "coherence": 0.08755966284596195,
+              "normalized_residual_power": 9162.995128391665
+            },
+            {
+              "complex_offset": 45056,
+              "coherence": 0.08692423592410432,
+              "normalized_residual_power": 9537.35681916977
+            },
+            {
+              "complex_offset": 49152,
+              "coherence": 0.10178603625813533,
+              "normalized_residual_power": 9284.307691378275
+            },
+            {
+              "complex_offset": 53248,
+              "coherence": 0.09641329952551082,
+              "normalized_residual_power": 9274.851551533271
+            },
+            {
+              "complex_offset": 57344,
+              "coherence": 0.07010236851613248,
+              "normalized_residual_power": 12166.502399887708
+            }
+          ],
+          "heldout_median_coherence": 0.08724194938503313
+        }
+      },
+      "received_cfo_band": {
+        "direct": {
+          "gain_real": 15.131382328680285,
+          "gain_imag": -19.07806914813339,
+          "train_coherence": 0.0942249212941894,
+          "fit_samples": 28672,
+          "heldout_windows": [
+            {
+              "complex_offset": 28672,
+              "coherence": 0.8201530343582294,
+              "normalized_residual_power": 104.10266734360921
+            },
+            {
+              "complex_offset": 32768,
+              "coherence": 0.6333598056376365,
+              "normalized_residual_power": 203.75063776774905
+            },
+            {
+              "complex_offset": 36864,
+              "coherence": 0.6818872210788895,
+              "normalized_residual_power": 183.8888828341249
+            },
+            {
+              "complex_offset": 40960,
+              "coherence": 0.8342899044840469,
+              "normalized_residual_power": 127.5824496976476
+            },
+            {
+              "complex_offset": 45056,
+              "coherence": 0.8100111543822256,
+              "normalized_residual_power": 118.62783544500071
+            },
+            {
+              "complex_offset": 49152,
+              "coherence": 0.8315617665858487,
+              "normalized_residual_power": 100.49080220896981
+            },
+            {
+              "complex_offset": 53248,
+              "coherence": 0.8333268571185223,
+              "normalized_residual_power": 95.69101717220849
+            },
+            {
+              "complex_offset": 57344,
+              "coherence": 0.7433684069162887,
+              "normalized_residual_power": 141.25753127737175
+            }
+          ],
+          "heldout_median_coherence": 0.8150820943702275
+        },
+        "conjugate": {
+          "gain_real": -2.8149514238736764,
+          "gain_imag": 10.324796004766867,
+          "train_coherence": 0.04141087234173289,
+          "fit_samples": 28672,
+          "heldout_windows": [
+            {
+              "complex_offset": 28672,
+              "coherence": 0.361562156819416,
+              "normalized_residual_power": 586.4483447173881
+            },
+            {
+              "complex_offset": 32768,
+              "coherence": 0.3007250934506944,
+              "normalized_residual_power": 1042.79064475633
+            },
+            {
+              "complex_offset": 36864,
+              "coherence": 0.31214138709806777,
+              "normalized_residual_power": 883.8311996912167
+            },
+            {
+              "complex_offset": 40960,
+              "coherence": 0.36317517562414536,
+              "normalized_residual_power": 590.2244327736613
+            },
+            {
+              "complex_offset": 45056,
+              "coherence": 0.348534050924669,
+              "normalized_residual_power": 598.4698157851828
+            },
+            {
+              "complex_offset": 49152,
+              "coherence": 0.3640851175358754,
+              "normalized_residual_power": 569.3360306723599
+            },
+            {
+              "complex_offset": 53248,
+              "coherence": 0.36294131192933987,
+              "normalized_residual_power": 563.444731375336
+            },
+            {
+              "complex_offset": 57344,
+              "coherence": 0.3475923102183702,
+              "normalized_residual_power": 754.1469028818959
+            }
+          ],
+          "heldout_median_coherence": 0.3550481038720425
+        }
+      }
+    },
+    "power_partitions": {
+      "source": {
+        "inside_fraction": 0.9900215034833612,
+        "outside_fraction": 0.009978496516638846,
+        "total_complex_power": 0.010038800056959632
+      },
+      "rx_raw": {
+        "inside_fraction": 0.6842328846657536,
+        "outside_fraction": 0.3157671153342464,
+        "total_complex_power": 1065.9615320057985
+      },
+      "rx_cfo": {
+        "inside_fraction": 0.6840757618061964,
+        "outside_fraction": 0.31592423819380355,
+        "total_complex_power": 1065.9615320057985
+      }
+    },
+    "model_inputs": {
+      "source_aligned": {
+        "sha256": "6dfb38f62a10bfe916ad407cc2405b44c5a24f867a7d5be4bacabb42293df12a",
+        "bytes": 32768
+      },
+      "source_aligned_band": {
+        "sha256": "4bb18c900a617ab41a7b1fc29e69dc2eedb1f802b079ac09ba41e03c9b79e3ca",
+        "bytes": 32768
+      },
+      "received_raw": {
+        "sha256": "b98ec300531b3c222754b498c844e77eb7e202a37672b16b22cf127c11978fb5",
+        "bytes": 32768
+      },
+      "received_cfo": {
+        "sha256": "56024e6437a25f8c2c45aeabfe292271c162358e3a65c3a8d69973ef73f0103c",
+        "bytes": 32768
+      },
+      "received_band": {
+        "sha256": "65269338e524c4c0209891d001e4c3c115321bf86c6615bf8fb0677652ab394c",
+        "bytes": 32768
+      },
+      "received_cfo_band": {
+        "sha256": "1d088c2a82aba45e1879c143fbbad98577b5b3536b4ed26e41a820dc240c1591",
+        "bytes": 32768
+      }
+    },
+    "recognizer_available": false,
+    "independent_labels": 0,
+    "production_profile_compatible": false,
+    "production_preprocess_changed": false
+  },
+  "inference": {
+    "schema_id": "b210_rx_fidelity_inference_v1",
+    "status": "comparison_completed",
+    "preparation_sha256": "3dec98ff3027dfa399004b5cf278b1c01e320d40540be784cd760acb4311a313",
+    "recognizer_available": false,
+    "independent_labels": 0,
+    "production_profile_compatible": false,
+    "result_semantics": "offline_compensation_diagnostic_not_production_preprocess",
+    "registered_maximum_windows": 28,
+    "actual_experiment_windows": 24,
+    "backend_warmup_windows": 2,
+    "results": {
+      "source_aligned": {
+        "numeric_id": 0,
+        "window_numeric_ids": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "uncalibrated_probability": 0.9999665376663734,
+        "name_status": "provisional",
+        "model_input_sha256": "6dfb38f62a10bfe916ad407cc2405b44c5a24f867a7d5be4bacabb42293df12a",
+        "mean_logits_sha256": "ebbcf0565944e060b03ca04f7871e019fcfdf4eac2f40e048dcae3bf7ae7124a",
+        "inference_us": 142202,
+        "nominal_source_id_agreement": true
+      },
+      "source_aligned_band": {
+        "numeric_id": 0,
+        "window_numeric_ids": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "uncalibrated_probability": 0.999943535424504,
+        "name_status": "provisional",
+        "model_input_sha256": "4bb18c900a617ab41a7b1fc29e69dc2eedb1f802b079ac09ba41e03c9b79e3ca",
+        "mean_logits_sha256": "50baaffdc32109c5f3259ef899e370b4b13bff6662f13267111481a57a8c94fe",
+        "inference_us": 143034,
+        "nominal_source_id_agreement": true
+      },
+      "received_raw": {
+        "numeric_id": 18,
+        "window_numeric_ids": [
+          17,
+          18,
+          18,
+          18
+        ],
+        "uncalibrated_probability": 0.9481792311404336,
+        "name_status": "provisional",
+        "model_input_sha256": "b98ec300531b3c222754b498c844e77eb7e202a37672b16b22cf127c11978fb5",
+        "mean_logits_sha256": "662da869f23af23c78ba163df3f880c522ea9376873f92c1c7026466f567bd4e",
+        "inference_us": 142365,
+        "nominal_source_id_agreement": false
+      },
+      "received_cfo": {
+        "numeric_id": 18,
+        "window_numeric_ids": [
+          17,
+          17,
+          18,
+          18
+        ],
+        "uncalibrated_probability": 0.9599971578512932,
+        "name_status": "provisional",
+        "model_input_sha256": "56024e6437a25f8c2c45aeabfe292271c162358e3a65c3a8d69973ef73f0103c",
+        "mean_logits_sha256": "5b0dece54c2cb334ffeacf2800eda151732509f54cf5cf89422bf9cd2f1f2134",
+        "inference_us": 149480,
+        "nominal_source_id_agreement": false
+      },
+      "received_band": {
+        "numeric_id": 18,
+        "window_numeric_ids": [
+          18,
+          18,
+          18,
+          18
+        ],
+        "uncalibrated_probability": 0.9984846993095461,
+        "name_status": "provisional",
+        "model_input_sha256": "65269338e524c4c0209891d001e4c3c115321bf86c6615bf8fb0677652ab394c",
+        "mean_logits_sha256": "b1f5df8c51548962cfef7b9e7a4d76c2c658aa3cbe321c1dd271efd3ad50f0d7",
+        "inference_us": 156592,
+        "nominal_source_id_agreement": false
+      },
+      "received_cfo_band": {
+        "numeric_id": 18,
+        "window_numeric_ids": [
+          18,
+          18,
+          18,
+          18
+        ],
+        "uncalibrated_probability": 0.9977679685767767,
+        "name_status": "provisional",
+        "model_input_sha256": "1d088c2a82aba45e1879c143fbbad98577b5b3536b4ed26e41a820dc240c1591",
+        "mean_logits_sha256": "b459d9a38ce7cff7179a5fe325124da963a2c0355b091232a2de8f841d7bb055",
+        "inference_us": 143560,
+        "nominal_source_id_agreement": false
+      }
+    },
+    "identity": {
+      "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+      "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+      "compute": "cuda_fp16_autocast",
+      "resident_weight_precision": "fp32",
+      "input_precision": "fp32",
+      "logit_return_precision": "fp32",
+      "sample_rate_hz": 2100000,
+      "window_count": 4,
+      "samples_per_window": 1024,
+      "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+    },
+    "compute": "cuda_fp16_autocast_fp32_weights",
+    "gpu_lease": {
+      "acquired": 1,
+      "released": 1,
+      "wait_us": 40,
+      "held_us": 62068322,
+      "cancelled": 0,
+      "expired": 0
+    }
+  },
+  "posthoc_phase_diagnostic": {
+    "method": "posthoc source-referenced phase rate; first seven windows only",
+    "coefficient_coherence": [
+      0.8308803326426117,
+      0.8339527122831818,
+      0.8308924910278708,
+      0.8311085531904742,
+      0.8310725428997624,
+      0.8319093737813685,
+      0.8239673673644846,
+      0.8201530343582294,
+      0.6333598056376365,
+      0.6818872210788895,
+      0.8342899044840469,
+      0.8100111543822256,
+      0.8315617665858487,
+      0.8333268571185223,
+      0.7433684069162887
+    ],
+    "fit_windows": 7,
+    "heldout_windows": 8,
+    "phase_rate_alias_period_hz": 512.6953125,
+    "applied_to_model_input": false,
+    "identifiable": true,
+    "residual_phase_rate_hz": -82.32054293360383,
+    "window_times_s": [
+      0.0009752380952380952,
+      0.002925714285714286,
+      0.004876190476190476,
+      0.006826666666666667,
+      0.008777142857142857,
+      0.010727619047619048,
+      0.012678095238095238,
+      0.014628571428571428,
+      0.016579047619047618,
+      0.018529523809523808,
+      0.02048,
+      0.02243047619047619,
+      0.02438095238095238,
+      0.02633142857142857,
+      0.02828190476190476
+    ],
+    "unwrapped_phase_rad": [
+      -0.9174736249189482,
+      -1.9331085663650933,
+      -2.905227977380717,
+      -3.9000733427904657,
+      -4.926077028220754,
+      -5.949985387339858,
+      -6.981919327493327,
+      -7.985555156570761,
+      -8.872940647030525,
+      -9.831414948207385,
+      -10.783024082042026,
+      -11.750652364430257,
+      -12.710057356972406,
+      -13.684374085101249,
+      -14.679562214439521
+    ],
+    "predicted_phase_rad": [
+      -0.9039872005892365,
+      -1.91284219346469,
+      -2.9216971863401433,
+      -3.9305521792155966,
+      -4.93940717209105,
+      -5.948262164966504,
+      -6.9571171578419575,
+      -7.965972150717411,
+      -8.974827143592865,
+      -9.983682136468317,
+      -10.992537129343773,
+      -12.001392122219226,
+      -13.01024711509468,
+      -14.019102107970133,
+      -15.027957100845585
+    ],
+    "fit_phase_rmse_rad": 0.019230235403375002,
+    "heldout_phase_rmse_rad": 0.24089715883955048,
+    "preparation_sha256": "3dec98ff3027dfa399004b5cf278b1c01e320d40540be784cd760acb4311a313"
+  },
+  "plot": {
+    "plot_input_hashes_verified": true,
+    "numpy_version": "1.21.5",
+    "matplotlib_version": "3.5.1",
+    "fixed_selected_window_envelope": {
+      "source_aligned": {
+        "p05": 0.020777497680200187,
+        "median": 0.648337205059392,
+        "p95": 1.740674877365859,
+        "dc_fraction": 0.3520837934511179
+      },
+      "received_raw": {
+        "p05": 0.39722751445365706,
+        "median": 0.8777570724487305,
+        "p95": 1.665427001531853,
+        "dc_fraction": 0.07418419705925153
+      },
+      "received_cfo_band": {
+        "p05": 0.5179977194853109,
+        "median": 0.8642864152347765,
+        "p95": 1.5584999297263853,
+        "dc_fraction": 0.7096812095482622
+      }
+    }
+  },
+  "tx_result": {
+    "status": "sent",
+    "payload_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+    "bytes_written": 168000000,
+    "max_samples": 21000000,
+    "rate_sps": 2100000,
+    "nominal_seconds": 10,
+    "child_pid": 19435,
+    "go_unix_ns": 1788691631980854038,
+    "feed_seconds": 9.965718851002748,
+    "uhd_log_sha256": "36f91539c931c169c1b6798c6109b2c35b33d26924cb197e0d90f0205ab7629a",
+    "uhd_async_markers": [
+      "S"
+    ],
+    "child_exit_code": 0,
+    "child_stopped": true
+  },
+  "final_radio_state": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+  "final_sdrd_readback": "17136\n77d98a005305a4b7531fc3f133e9b4af521e60b065b29fcc304b4c7db80c45ae  /sd/sdr-agent/current/sdrd\n",
+  "p201_temporary_paths_verified_absent": [
+    "/tmp/sdr-agent-dev/agx-sweep-1788691496918-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788691496919-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788691496920-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788691620539-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788691620540-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788691620541-0"
+  ],
+  "nx_feature_processes_and_fifo_absent": true,
+  "tests": {
+    "passed": 29,
+    "model_input_hashes_preserved": true,
+    "python_ast_valid": true,
+    "final_preparation_and_all_model_input_hashes_reproduced": true
+  },
+  "evidence_hashes": {
+    "tone": {
+      "after-tx-report.json": "553ff7c3703618edb0d7a4bb527af54f92750ec7dd96cdf15d4bc8cdfa757c6f",
+      "during-tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "baseline-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "after-tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "link-summary.json": "20da6463da7c83b56afa7de4f9fb71e21ff1744f38d4f4d79151965f4cdc9935",
+      "tx-uhd.log": "db28eca2ab1a434462743727d38fb36683e67b1f9b7674cd52a4b696fb73a2a4",
+      "live.log": "11f0499e1d5c8f477d294722bcf42348cc1ab8ebfbecb1e238f6dc2428608a75",
+      "tone-assessment.json": "1748736be8dd6c877cb32fa2fbb39fcf085ab3d27e1dbed76a110e3690d2ba34",
+      "link-started.json": "3eaf1b48846c57c44561488bd1b0e448f9d45a3a1c7b9cb4188966de401b6a57",
+      "baseline-report.json": "cc4b87b1b29611eabd8527af2ac77a50f53f588eaf91fc12a5b5e429465a6737",
+      "during-tx-report.json": "a6b743a5b0711b112aac722820e5104e95efb311adeba0be638b760c2a213d75"
+    },
+    "rml": {
+      "preparation.log": "3dec98ff3027dfa399004b5cf278b1c01e320d40540be784cd760acb4311a313",
+      "after-tx-report.json": "8ad89a13fecd5d2fc51d90e75458c55ef7ad2b854bb10a466e206fd017227a34",
+      "source-matched-analysis.json": "468409e71f1b087f3deb9935e4ea36e8e0441d396fb499286725421959f87c68",
+      "tx-summary.json": "7d84b3412f5a1e0afdbda523d06faab7e5c07e3f3e214642aacccc497cd8a94d",
+      "build.log": "09d0da5a9f8e9e46c5881dbd39473706282d0f60414b9d87d887d073ddc1dc5e",
+      "during-tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "baseline-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source-export.log": "0d9a53b4575efc0b4b94bc65e4ececf13c82a5b1c34d32cd19ae0adbaefb2d22",
+      "fidelity-inference.json": "eb0280b456e761be4831666a0e452c578d78b27c9efc1c1cc45a28dd05968aab",
+      "after-tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tx-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "link-summary.json": "fa556a91861cde2ef0a7ed5e3bf1779fe1639ce019a02acd4ce3bb6f448fa646",
+      "fidelity-prepared.json": "3dec98ff3027dfa399004b5cf278b1c01e320d40540be784cd760acb4311a313",
+      "tests-final.log": "0383f9a80fc575ca0a505f1f64ec2bc9efc1a0dbbd4ef670ba8cd7991b208d7e",
+      "tx-stdout.log": "94ea8e0559ff301d3154cb59e3ec036aec12dcb5bafb488f971ad68e6c741c99",
+      "tx-uhd.log": "36f91539c931c169c1b6798c6109b2c35b33d26924cb197e0d90f0205ab7629a",
+      "plot.log": "5852cbc037dd856eff3d9a3cc50729063f1cbddf68ff5548c3c765c9b992b64a",
+      "fidelity-inference-started.json": "23e6a53208f6afdc5a7ee59158255fcf84cf689fa5cd358a4cfbe63180d9be2e",
+      "source-analysis.log": "468409e71f1b087f3deb9935e4ea36e8e0441d396fb499286725421959f87c68",
+      "live.log": "bb7dc5e8a3addc9ac8c7a57f214b606d77e94aa569bbca2a437862c2832ab43d",
+      "fidelity-phase-supplement.json": "e6b3b320fdb7a953084966a87487efa0a43ecaac1d29c66d14de4280fe35b1c9",
+      "transmission-plan.json": "3ee6f5983b781fbbc352753014782a5a1e5f1810c9eab4c60ec76dfb364c8c1f",
+      "phase-supplement.log": "e6b3b320fdb7a953084966a87487efa0a43ecaac1d29c66d14de4280fe35b1c9",
+      "tests.log": "9b12da33f62e54b3003c5c9b9ee23e57f45058c7868183500a87191515ff120c",
+      "link-started.json": "cb9f2b2a5dffe8fa8f72f703ad38d4b101d783ed74c6419104cafbfafc322835",
+      "baseline-report.json": "a260f0608f29c4476a5632b77c12f4873a7d43f3c58762fc477aa7487ac65753",
+      "inference.log": "fa085fb5b1a39590b7fe823b86823881fedf951afe9aae888efcf0bc8edcb724",
+      "during-tx-report.json": "f5f5343d4ec0c2a40afb7c65091816662b37d9cd6f68d011aa85897c3a88032a"
+    }
+  },
+  "source_code_sha256": "8a81f93406f48e7840a697327024f82102d7e894e20092929eb0014e26bb3164",
+  "figure_sha256": "215c42f3c3f202fbb38b579424ebca2072cc98b458735a31c9de77dc83ba9902",
+  "cleanup": {
+    "verified": true,
+    "agx_and_nx_removed_directories": [
+      "/var/tmp/sdrharness-dev/b210-fidelity-906e",
+      "/var/tmp/sdrharness-dev/b210-fidelity-tone-906e"
+    ],
+    "test_directory_verified_absent": "/var/tmp/sdrharness-dev/b210-control-test-388947",
+    "feature_processes_absent": true,
+    "user_results_deleted": false,
+    "production_services_changed": false
+  },
+  "radio_snapshot_storage": "All four identical raw before/after snapshots are represented by final_radio_state plus their hashes; original link-summary file hashes retained."
+}

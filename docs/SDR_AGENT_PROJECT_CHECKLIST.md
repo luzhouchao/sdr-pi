@@ -569,6 +569,12 @@ aggregation, result persistence and model-facing summaries.
         Preserve this negative result, not an exclusion of actual RF impairments.
         22 tests, bounded AGX inference and exact cleanup completed. See
         [source sensitivity validation](B210_SOURCE_SENSITIVITY_VALIDATION_2026-09-06.md).
+  - [x] New bounded RX40 fidelity/compensation matrix completed: source controls
+        pass; original/CFO/band/CFO+band received cases all remain ID 18 while
+        source controls remain ID 0. Constant-phase case skipped by its gate;
+        raised low-amplitude envelope and posthoc residual phase drift retained
+        as hypotheses, not a fix. 29 tests, 24 model windows and exact cleanup
+        verified. See [RX fidelity validation](B210_RX_FIDELITY_VALIDATION_2026-09-06.md).
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the
