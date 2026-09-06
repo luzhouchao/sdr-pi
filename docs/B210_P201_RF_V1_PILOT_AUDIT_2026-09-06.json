@@ -1,0 +1,996 @@
+{
+  "schema_version": 1,
+  "status": "integration_pass_rf_control_failed",
+  "rf_failure": "AssertionError: controller_error=summary_clipped: SDR summary clipped at the configured fixed gain; lower survey gain and retry\n",
+  "integration_status": "pass",
+  "maximum_rx_bytes": 802804,
+  "maximum_tx_samples": 21000000,
+  "tx_nominal_seconds": 10,
+  "tx_plan": {
+    "schema_version": 1,
+    "split": "train",
+    "train_member_sha256": "0426197a7ba17a4091a37d481bb8cd887a04d06406525978fdc7f669d4d2fa21",
+    "dataset_path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "rows": [
+      102400,
+      102401,
+      102403,
+      102404
+    ],
+    "class_id": 0,
+    "name_status": "provisional",
+    "dataset_nominal_snr_db": 30,
+    "source_iq_sha256": "59c8106dc7bd33978f3010121bc5bfde1d545ff27e556deac7306493fa1631e5",
+    "payload_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+    "payload_bytes": 32768,
+    "amplitude_scale": 0.07039332889300712,
+    "complex_peak": 0.2,
+    "center_hz": 2440000000,
+    "rate_sps": 2100000,
+    "bandwidth_hz": 1500000,
+    "tx_gain_db": 70,
+    "tx_samples": 21000000,
+    "tx_nominal_seconds": 10,
+    "tx_channel": 0,
+    "tx_antenna": "TX/RX",
+    "waveform": "four separate train snippets concatenated and cyclically repeated",
+    "physical_dataset_sample_rate_known": false,
+    "locked_test_read": false,
+    "receiver_label": "unknown until independently correlated and reviewed",
+    "recognizer_available": false
+  },
+  "source_group": "b210-rml-train-c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+  "capture_session_id": "b210-pilot-1788687357694",
+  "receive_domain_only": true,
+  "reviewed_labels": 0,
+  "v1b_complete": false,
+  "recognizer_available": false,
+  "free_bytes": 808034959360,
+  "sdrd_pid": "17136",
+  "cases": {
+    "baseline": {
+      "plan": {
+        "sweep_id": "pilot-baseline-1788687357694",
+        "session_generation": 1788687357694,
+        "frequencies": {
+          "kind": "centers",
+          "centers_hz": [
+            2440000000
+          ]
+        },
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_db": 50,
+        "settle_ms": 500,
+        "frame_samples": 65535,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 1000,
+        "detection_threshold_db": 6.0
+      },
+      "report": {
+        "sweep_id": "pilot-baseline-1788687357694",
+        "session_generation": 1788687357694,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 4054,
+        "noise_floor_dbfs": -29.1438,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788687357694,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "sequence": 242,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -29.1438,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 512.6953125,
+              "peak_frequency_hz": 2439772876,
+              "peak_power_dbfs": -52.081326,
+              "noise_floor_dbfs": -64.96221,
+              "measured_snr_db": 12.880886,
+              "estimated_center_hz": 2439766723,
+              "occupied_start_hz": 2439759033,
+              "occupied_stop_hz": 2439774414,
+              "occupied_bandwidth_hz": 15894
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 33069,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 33069,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-pilot-906a/baseline/pilot-baseline-1788687357694-1788687357694-1788687420156599207.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-pilot-906a/baseline/pilot-baseline-1788687357694-1788687357694-1788687420156599207.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "started_at_unix_ms": 1788687420146,
+      "received_at_unix_ms": 1788687424207,
+      "raw_iq_sha256": "bdd36c3c56147c89678a18004207a2e086bfd26589df5a023f9a96a3fca1e2ee",
+      "native_report_sha256": "a72e3da006fa1e7056c16550083cc0fd3473caace72e982c01bb98e97aa2c50b",
+      "p201_directory": "/tmp/sdr-agent-dev/agx-sweep-1788687357694-0"
+    },
+    "inspection": {
+      "plan": {
+        "sweep_id": "pilot-inspection-1788687357695",
+        "session_generation": 1788687357695,
+        "frequencies": {
+          "kind": "centers",
+          "centers_hz": [
+            2440000000
+          ]
+        },
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_db": 50,
+        "settle_ms": 500,
+        "frame_samples": 65535,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 1000,
+        "detection_threshold_db": 6.0
+      },
+      "report": {
+        "sweep_id": "pilot-inspection-1788687357695",
+        "session_generation": 1788687357695,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1500,
+        "elapsed_ms": 4077,
+        "noise_floor_dbfs": -16.533022,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788687357695,
+            "requested_center_hz": 2440000000,
+            "actual_center_hz": 2440000000,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "sequence": 243,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 65535,
+            "band_power_dbfs": -16.533022,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 15,
+              "bin_width_hz": 512.6953125,
+              "peak_frequency_hz": 2440003076,
+              "peak_power_dbfs": -34.21073,
+              "noise_floor_dbfs": -60.07482,
+              "measured_snr_db": 25.86409,
+              "estimated_center_hz": 2440003332,
+              "occupied_start_hz": 2440002051,
+              "occupied_stop_hz": 2440004614,
+              "occupied_bandwidth_hz": 3077
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 32945,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 32945,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-pilot-906a/inspection/pilot-inspection-1788687357695-1788687357695-1788687427894639437.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-pilot-906a/inspection/pilot-inspection-1788687357695-1788687357695-1788687427894639437.sigmf-meta",
+          "bytes": 262140
+        }
+      },
+      "started_at_unix_ms": 1788687427883,
+      "received_at_unix_ms": 1788687431969,
+      "raw_iq_sha256": "89f071ad994a0eb065005978630487a4e99bc9346270fd7bb6ac12893da14afd",
+      "native_report_sha256": "060cc9e2552645d0ddec9ecadaad1e7993b2b637f807061d8ae254ea0d5481a5",
+      "p201_directory": "/tmp/sdr-agent-dev/agx-sweep-1788687357695-0"
+    },
+    "capture": {
+      "plan": {
+        "sweep_id": "pilot-capture-1788687357696",
+        "session_generation": 1788687357696,
+        "frequencies": {
+          "kind": "centers",
+          "centers_hz": [
+            2440003332
+          ]
+        },
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_db": 50,
+        "settle_ms": 100,
+        "frame_samples": 4096,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 1000,
+        "detection_threshold_db": 6.0
+      },
+      "report": {
+        "sweep_id": "pilot-capture-1788687357696",
+        "session_generation": 1788687357696,
+        "backend": "agx_iq_software_aggregate",
+        "backend_version": 1,
+        "estimated_duration_ms": 1100,
+        "elapsed_ms": 3553,
+        "noise_floor_dbfs": -28.84225,
+        "points": [
+          {
+            "point_index": 0,
+            "request_id": 5,
+            "session_generation": 1788687357696,
+            "requested_center_hz": 2440003332,
+            "actual_center_hz": 2440003332,
+            "sample_rate_hz": 2100000,
+            "rf_bandwidth_hz": 1500000,
+            "sequence": 244,
+            "dropped_samples": 0,
+            "overflow": false,
+            "captured_samples": 4096,
+            "band_power_dbfs": -28.84225,
+            "spectral": {
+              "schema_version": 1,
+              "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+              "fft_size": 4096,
+              "segment_count": 1,
+              "bin_width_hz": 512.6953125,
+              "peak_frequency_hz": 2440002819,
+              "peak_power_dbfs": -37.586254,
+              "noise_floor_dbfs": -80.44437,
+              "measured_snr_db": 42.858112,
+              "estimated_center_hz": 2440003332,
+              "occupied_start_hz": 2439877209,
+              "occupied_stop_hz": 2440129455,
+              "occupied_bandwidth_hz": 252759
+            },
+            "clipped_samples": 0,
+            "status_flags": 0,
+            "elapsed_us": 3731,
+            "timeout": {
+              "limit_ms": 1000,
+              "elapsed_us": 3731,
+              "timed_out": false
+            },
+            "health": {
+              "healthy": true,
+              "flags": 0,
+              "source": "iio_adapter"
+            },
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/tmp/sdrharness-dev/b210-pilot-906a/capture/pilot-capture-1788687357696-1788687357696-1788687432300850900.sigmf-data",
+          "metadata_path": "/var/tmp/sdrharness-dev/b210-pilot-906a/capture/pilot-capture-1788687357696-1788687357696-1788687432300850900.sigmf-meta",
+          "bytes": 16384
+        }
+      },
+      "started_at_unix_ms": 1788687432290,
+      "received_at_unix_ms": 1788687435851,
+      "raw_iq_sha256": "ecd04eaf935610914c48b68f3485612f7e9879bdc11d2d32b7ac74ae7824385c",
+      "native_report_sha256": "a4124231514cfa58d5db1498e29476f0d51f23711e0dc4ede4f4e938b21c9d96",
+      "p201_directory": "/tmp/sdr-agent-dev/agx-sweep-1788687357696-0",
+      "corpus_report_projection_sha256": "c0f27e97c2476afbd15fa73e70dbc3f7c8b706063e3a48ab77ed2a1d86b4ccad"
+    }
+  },
+  "tx_ready": {
+    "event": "ready",
+    "pid": 17468,
+    "child_pid": 17469
+  },
+  "tx_started": {
+    "event": "tx_start",
+    "go_unix_ns": 1788687427881248494
+  },
+  "tx_ack_agx_ms": 1788687427883,
+  "tx_result": {
+    "status": "sent",
+    "payload_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+    "bytes_written": 168000000,
+    "max_samples": 21000000,
+    "rate_sps": 2100000,
+    "nominal_seconds": 10,
+    "child_pid": 17469,
+    "go_unix_ns": 1788687427881248494,
+    "feed_seconds": 9.96523625300324,
+    "uhd_log_sha256": "36f91539c931c169c1b6798c6109b2c35b33d26924cb197e0d90f0205ab7629a",
+    "uhd_async_markers": [
+      "S"
+    ]
+  },
+  "source_diagnostic_before_inference": {
+    "baseline": {
+      "source_half_width_hz": 125000,
+      "windows": [
+        {
+          "best_correlation": 0.13695760336434926,
+          "lag": 1488
+        },
+        {
+          "best_correlation": 0.14233918151552283,
+          "lag": 2186
+        },
+        {
+          "best_correlation": 0.1426120311229551,
+          "lag": 2395
+        },
+        {
+          "best_correlation": 0.12842477780429776,
+          "lag": 499
+        },
+        {
+          "best_correlation": 0.11180822841025091,
+          "lag": 564
+        },
+        {
+          "best_correlation": 0.12240898713467813,
+          "lag": 1758
+        },
+        {
+          "best_correlation": 0.11819712504838137,
+          "lag": 3110
+        },
+        {
+          "best_correlation": 0.13434270205296417,
+          "lag": 289
+        },
+        {
+          "best_correlation": 0.14183733823014547,
+          "lag": 492
+        },
+        {
+          "best_correlation": 0.1364134587200834,
+          "lag": 2303
+        },
+        {
+          "best_correlation": 0.11831993315517879,
+          "lag": 2891
+        },
+        {
+          "best_correlation": 0.14132978254951864,
+          "lag": 3590
+        },
+        {
+          "best_correlation": 0.11190802002323182,
+          "lag": 889
+        },
+        {
+          "best_correlation": 0.11338891460712228,
+          "lag": 3316
+        },
+        {
+          "best_correlation": 0.13802296084854415,
+          "lag": 2480
+        }
+      ],
+      "label": "unknown",
+      "calibration_eligible": false
+    },
+    "inspection": {
+      "source_half_width_hz": 125000,
+      "windows": [
+        {
+          "best_correlation": 0.33162671090260576,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.33568516054648306,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.3348495228380848,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.32596131386244304,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.33301892649303283,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.33385550456256513,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.34121299690122925,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.32076620761536084,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.3345490280844043,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.3280983625922319,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.34434747179907327,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.13040202941719223,
+          "lag": 43
+        },
+        {
+          "best_correlation": 0.324987517484043,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.3276522908229203,
+          "lag": 3127
+        },
+        {
+          "best_correlation": 0.33267663043555035,
+          "lag": 3127
+        }
+      ],
+      "label": "unknown",
+      "calibration_eligible": false
+    },
+    "capture": {
+      "source_half_width_hz": 125000,
+      "windows": [
+        {
+          "best_correlation": 0.2623759508375432,
+          "lag": 238
+        }
+      ],
+      "label": "unknown",
+      "calibration_eligible": false
+    }
+  },
+  "missing_source_controls": [
+    "after"
+  ],
+  "recognition_archive": {
+    "id": 1,
+    "created_at_ms": 1788687522120,
+    "session_id": "b210-pilot-1788687357694",
+    "origin": "experimental_replay",
+    "production_result": false,
+    "iq_retained": false,
+    "observation": {
+      "schema_version": 1,
+      "candidate_id": "b210-pilot-source",
+      "request_id": 10001,
+      "session_generation": 1788687357696,
+      "observed_at_unix_ms": 1788687435851,
+      "status": "unavailable",
+      "reason": "production_admission_missing",
+      "class": null,
+      "calibrated_confidence": null,
+      "calibration_status": "uncalibrated",
+      "decision_references": null,
+      "identity": {
+        "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+        "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+        "profile_id": "rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1",
+        "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+        "preprocess_id": "rf_preprocess_v1",
+        "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+        "compute": "cuda_fp16_autocast",
+        "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+      },
+      "source": {
+        "sweep_id": "pilot-inspection-1788687357695",
+        "request_id": 5,
+        "session_generation": 1788687357695,
+        "sequence": 243,
+        "capture_request_id": 5,
+        "capture_sequence": 244
+      },
+      "quality": {
+        "window_count": 4,
+        "window_agreement": 0.25,
+        "clipped_samples": 0,
+        "dropped_samples": 0,
+        "overflow": false,
+        "healthy": true
+      },
+      "timing": {
+        "capture_us": 3731,
+        "worker_total_us": 185148,
+        "inference_us": 181103
+      }
+    },
+    "experimental_prediction": {
+      "numeric_id": 18,
+      "name": null,
+      "name_status": "provisional",
+      "name_evidence": null
+    },
+    "uncalibrated_probability": 0.8866599352244122
+  },
+  "corpus_shared_iq_inode_verified": true,
+  "coverage": {
+    "coverage": {
+      "receive_domain/unknown/none": {
+        "distinct_days": 1,
+        "distinct_sessions": 1,
+        "records": 1,
+        "unique_iq_captures": 1
+      }
+    },
+    "group_audit": {
+      "all_package_assets_verified": true,
+      "cross_split_group_collision_counts": {
+        "capture_day": 0,
+        "capture_session_id": 0,
+        "source_sample_id": 0
+      },
+      "derived_lineage_inheritance": "verified",
+      "derived_record_count": 1,
+      "evaluation_record_count": 0,
+      "label_provenance_counts": {
+        "unknown": 2
+      },
+      "package_count": 2,
+      "packages": [
+        {
+          "assets_verified": true,
+          "manifest_id": "p201-b210-pilot-1788687357694-244",
+          "manifest_sha256": "e7c2153a86b8db0d6ec47ace67e0ef77052aa71cf97660de6884a95a19772238",
+          "package": "p201-b210-pilot-1788687357694-244",
+          "record_count": 1,
+          "record_index_sha256": "57a9423a63fb3d6b2611b44e776d4bfa51531a5592cac32068b803bb85cca5bd"
+        },
+        {
+          "assets_verified": true,
+          "manifest_id": "p201-b210-pilot-1788687357694-244-rf1",
+          "manifest_sha256": "8905c2c490631ff471a085f422cc0b6a1f4b18fa6ea06ffd3787fcc7ef70fc68",
+          "package": "p201-b210-pilot-1788687357694-244-rf1",
+          "record_count": 1,
+          "record_index_sha256": "d0940a2d1218b89a735e10ea8929bdfca905073ba92cfd439af8ffc0faa38509"
+        }
+      ],
+      "receive_domain_unknown_count": 2,
+      "record_count": 2,
+      "root": "/var/tmp/sdrharness-dev/b210-pilot-906a/app-corpus",
+      "source_counts": {
+        "p201_receive": 2
+      },
+      "split_counts": {
+        "receive_domain": 2
+      },
+      "unknown_p201_evaluation_count": 0
+    },
+    "limitation": "Counts are not effective independent sample sizes or proof of annotation correctness. Human evidence/coverage review is required.",
+    "recognizer_available": false,
+    "schema_id": "rf_v1_evidence_coverage_v1",
+    "schema_version": 1,
+    "v1b_complete": false
+  },
+  "manual_delete_results": [
+    {
+      "deleted": "p201-b210-pilot-1788687357694-244",
+      "files_deleted": 8,
+      "bytes_deleted": 27670
+    },
+    {
+      "deleted": "p201-b210-pilot-1788687357694-244-rf1",
+      "files_deleted": 9,
+      "bytes_deleted": 40996
+    },
+    {
+      "deleted": 1,
+      "files_deleted": 0
+    }
+  ],
+  "baseline_commit": "b99a85f6b83ceb75dffde98112b12bc008200a44",
+  "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+  "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+  "original_rf_cleanup": {
+    "errors": [],
+    "local_process_exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "worker_stopped": true
+  },
+  "offline_replay_cleanup": {
+    "errors": [],
+    "local_process_exit_codes": [
+      0,
+      0
+    ],
+    "worker_stopped": true
+  },
+  "nx_helper_child_fifo_absent": true,
+  "p201_directories": [
+    "/tmp/sdr-agent-dev/agx-sweep-1788687357694-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788687357695-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788687357696-0",
+    "/tmp/sdr-agent-dev/agx-sweep-1788687357697-0"
+  ],
+  "corpus_parent": {
+    "result_id": "p201-b210-pilot-1788687357694-244",
+    "capture_session_id": "b210-pilot-1788687357694",
+    "captured_at_utc": "2026-09-06T09:37:15Z",
+    "capture_day": "2026-09-06",
+    "plan_id": "pilot-capture-1788687357696",
+    "profile_id": "rml2018a-d8-current-integration-v1",
+    "profile_sha256": "7d2347550939be13d3ccde84add514ca5b4e549783fbc8e724124b4f0f4358ba",
+    "preprocess_id": "legacy_adc_unit_rms_v0",
+    "preprocess_sha256": "20f2f21b9d01a5163806a2b1e88c2e1ff0975647eb9da27071ea3f1d61a80303",
+    "center_hz": 2440003332,
+    "sample_rate_hz": 2100000,
+    "rf_bandwidth_hz": 1500000,
+    "gain_mode": "manual",
+    "rx_gain_db": 50.0,
+    "sequence": 244,
+    "samples": 4096,
+    "iq_bytes": 16384,
+    "iq_sha256": "ecd04eaf935610914c48b68f3485612f7e9879bdc11d2d32b7ac74ae7824385c",
+    "raw_rms_dbfs": -28.84225082397461,
+    "measured_snr_db": 42.85811233520508,
+    "clipped_samples": 0,
+    "dropped_samples": 0,
+    "overflow": false,
+    "health_flags": 0,
+    "healthy": true,
+    "label_provenance": "unknown",
+    "label_reason": "no_independent_label",
+    "manual_delete_path": "/api/corpus/p201-b210-pilot-1788687357694-244",
+    "created_at_ms": 1788687522243
+  },
+  "corpus_rf_v1": {
+    "result_id": "p201-b210-pilot-1788687357694-244-rf1",
+    "capture_session_id": "b210-pilot-1788687357694",
+    "captured_at_utc": "2026-09-06T09:37:15Z",
+    "capture_day": "2026-09-06",
+    "plan_id": "pilot-capture-1788687357696",
+    "profile_id": "rml2018a-d8-rf-v1-epoch010-fp16-runtime-v1",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_id": "rf_preprocess_v1",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "center_hz": 2440003332,
+    "sample_rate_hz": 2100000,
+    "rf_bandwidth_hz": 1500000,
+    "gain_mode": "manual",
+    "rx_gain_db": 50.0,
+    "sequence": 244,
+    "samples": 4096,
+    "iq_bytes": 16384,
+    "iq_sha256": "ecd04eaf935610914c48b68f3485612f7e9879bdc11d2d32b7ac74ae7824385c",
+    "raw_rms_dbfs": -28.84225082397461,
+    "measured_snr_db": 42.85811233520508,
+    "clipped_samples": 0,
+    "dropped_samples": 0,
+    "overflow": false,
+    "health_flags": 0,
+    "healthy": true,
+    "label_provenance": "unknown",
+    "label_reason": "no_independent_label",
+    "manual_delete_path": "/api/corpus/p201-b210-pilot-1788687357694-244-rf1",
+    "created_at_ms": 1788687522371
+  },
+  "source_link": {
+    "schema_id": "b210_rf_v1_pilot_link_v1",
+    "source_group": "b210-rml-train-c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+    "source_split": "train",
+    "capture_iq_sha256": "ecd04eaf935610914c48b68f3485612f7e9879bdc11d2d32b7ac74ae7824385c",
+    "diagnostic": {
+      "baseline": {
+        "source_half_width_hz": 125000,
+        "windows": [
+          {
+            "best_correlation": 0.13695760336434926,
+            "lag": 1488
+          },
+          {
+            "best_correlation": 0.14233918151552283,
+            "lag": 2186
+          },
+          {
+            "best_correlation": 0.1426120311229551,
+            "lag": 2395
+          },
+          {
+            "best_correlation": 0.12842477780429776,
+            "lag": 499
+          },
+          {
+            "best_correlation": 0.11180822841025091,
+            "lag": 564
+          },
+          {
+            "best_correlation": 0.12240898713467813,
+            "lag": 1758
+          },
+          {
+            "best_correlation": 0.11819712504838137,
+            "lag": 3110
+          },
+          {
+            "best_correlation": 0.13434270205296417,
+            "lag": 289
+          },
+          {
+            "best_correlation": 0.14183733823014547,
+            "lag": 492
+          },
+          {
+            "best_correlation": 0.1364134587200834,
+            "lag": 2303
+          },
+          {
+            "best_correlation": 0.11831993315517879,
+            "lag": 2891
+          },
+          {
+            "best_correlation": 0.14132978254951864,
+            "lag": 3590
+          },
+          {
+            "best_correlation": 0.11190802002323182,
+            "lag": 889
+          },
+          {
+            "best_correlation": 0.11338891460712228,
+            "lag": 3316
+          },
+          {
+            "best_correlation": 0.13802296084854415,
+            "lag": 2480
+          }
+        ],
+        "label": "unknown",
+        "calibration_eligible": false
+      },
+      "inspection": {
+        "source_half_width_hz": 125000,
+        "windows": [
+          {
+            "best_correlation": 0.33162671090260576,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.33568516054648306,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.3348495228380848,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.32596131386244304,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.33301892649303283,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.33385550456256513,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.34121299690122925,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.32076620761536084,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.3345490280844043,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.3280983625922319,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.34434747179907327,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.13040202941719223,
+            "lag": 43
+          },
+          {
+            "best_correlation": 0.324987517484043,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.3276522908229203,
+            "lag": 3127
+          },
+          {
+            "best_correlation": 0.33267663043555035,
+            "lag": 3127
+          }
+        ],
+        "label": "unknown",
+        "calibration_eligible": false
+      },
+      "capture": {
+        "source_half_width_hz": 125000,
+        "windows": [
+          {
+            "best_correlation": 0.2623759508375432,
+            "lag": 238
+          }
+        ],
+        "label": "unknown",
+        "calibration_eligible": false
+      }
+    },
+    "label": "unknown",
+    "review_pending": true,
+    "evaluation_eligible": false
+  },
+  "tx_final": {
+    "status": "sent",
+    "payload_sha256": "c95ac58c1fd91ef4da992622dbdf70a9bc5884d0941419083451473a052f534e",
+    "bytes_written": 168000000,
+    "max_samples": 21000000,
+    "rate_sps": 2100000,
+    "nominal_seconds": 10,
+    "child_pid": 17469,
+    "go_unix_ns": 1788687427881248494,
+    "feed_seconds": 9.96523625300324,
+    "uhd_log_sha256": "36f91539c931c169c1b6798c6109b2c35b33d26924cb197e0d90f0205ab7629a",
+    "uhd_async_markers": [
+      "S"
+    ],
+    "child_exit_code": 0,
+    "child_stopped": true
+  },
+  "evidence_hashes": {
+    "pilot-summary.json": "d603ab5fb892fa14a6ee85bc61f80b53e95277d36053694f12d4eb3d58f998e6",
+    "replay-summary.json": "eede3cc1f3821e56c9796b8d75940844310c6e8060eb7468e1e1b333dd0076e2",
+    "recognition-full.json": "ae5d49db2abc32fbd85f5c9d29da7b8ff0c0c27ac15e08747d8ebecf9ff785ac",
+    "received-window.json": "c47a017bddc4fb1d2e8781c1efce751f9c9b8434872e3b9222c853863c6ec555",
+    "source-link.json": "f4a8fe528678e16965d0c7273fe002010766d3262f1c795b07d6def9c2ca0166",
+    "tx-summary.json": "2795e5371ed999afe5eebfb5206996ac11349c3ef38de5c45e87acdb9ebfcbcc",
+    "tx-uhd.log": "36f91539c931c169c1b6798c6109b2c35b33d26924cb197e0d90f0205ab7629a",
+    "after-stderr.log": "0aed91676cd551dc3effaf3f2b0d2fc5853a68c6f7d67625bd572a1a80a8c7de"
+  },
+  "binary_hashes": {
+    "sdr-agent-controller": "b4db3a34b4a58171eace00c89924d8d79fc4e419ab12652cfa9141525338f9af",
+    "examples/recognize-received-window": "b715c33a78f6bd9d1766d41e23bc9081b060fae165c4fa9daf80f269cc08f9fa",
+    "sdr-agent-web-console": "d4097d282a896d8f9c1d1a9111d08fa6182aa0d02407be916944b6d5924331bf"
+  },
+  "final_feature_cleanup": {
+    "verified": true,
+    "local_feature_processes_absent": true,
+    "agx_feature_directory_removed": "/var/tmp/sdrharness-dev/b210-pilot-906a",
+    "nx_feature_directory_removed": "/var/tmp/sdrharness-dev/b210-pilot-906a",
+    "p201_feature_paths_absent": [
+      "/tmp/sdr-agent-dev/agx-sweep-1788687357694-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788687357695-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788687357696-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788687357697-0"
+    ],
+    "user_data_deleted": false,
+    "production_services_replaced": false
+  },
+  "experimental_window_predictions": [
+    {
+      "window_index": 0,
+      "label": "provisional:16",
+      "uncalibrated_probability": 0.556725025177002
+    },
+    {
+      "window_index": 1,
+      "label": "provisional:17",
+      "uncalibrated_probability": 0.4810304343700409
+    },
+    {
+      "window_index": 2,
+      "label": "provisional:16",
+      "uncalibrated_probability": 0.9847645163536072
+    },
+    {
+      "window_index": 3,
+      "label": "provisional:18",
+      "uncalibrated_probability": 0.99992835521698
+    }
+  ],
+  "batch_sha256": "9666523dbeaf5bdd4bce983ecf90f6e2939a8552eaff0ca76958ed2c9a893e60",
+  "duplicate_run_guards": [
+    {
+      "mode": "live",
+      "already_recorded_run_rejected_before_radio": true
+    },
+    {
+      "mode": "replay",
+      "already_recorded_run_rejected_before_radio": true
+    }
+  ],
+  "tests": {
+    "controller_passed": 118,
+    "controller_ignored": 1,
+    "final_received_window_test_passed": true,
+    "b210_fake_uhd_source_tests_passed": 8,
+    "clippy_all_targets_deny_warnings": true,
+    "rust_fmt_check": true,
+    "python_ast_check": true,
+    "logs_sha256": {
+      "controller-tests.log": "808fccc37c0f02c2dc7cdf48d2fa12275a1d77729249009291c6fb2f6c1d66e0",
+      "received-tests-final.log": "11b3eac24515f1482fdd54444b239bc396e420a20dd99097b59dc2f0e57eddb9",
+      "b210-tests.log": "32fa077bf9a36ade60e18bd54a2b388b96ff232354fe35bd353cd611e2d23567",
+      "clippy-final.log": "1d0f2d87c8436732e5278ecb236742aba716b52730e648cc7e2d7ff16429d7d5"
+    }
+  }
+}

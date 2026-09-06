@@ -6,6 +6,7 @@ pub mod live_recognition;
 pub mod planner;
 pub mod policy;
 pub mod protocol;
+pub mod received_window;
 pub mod recognition_execution;
 pub mod recognition_input;
 pub mod recognition_result;

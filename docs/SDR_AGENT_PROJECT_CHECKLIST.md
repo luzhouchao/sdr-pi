@@ -550,6 +550,18 @@ aggregation, result persistence and model-facing summaries.
         this is exploratory engineering evidence, not independent RF labels,
         model accuracy or production admission. Eight software tests passed. See
         [`NX_B210_RML_2440_EXTENDED_VALIDATION_2026-09-06.md`](NX_B210_RML_2440_EXTENDED_VALIDATION_2026-09-06.md).
+- [ ] Complete the registered B210/P201 RF-v1 pilot with accepted RF controls
+      and source association as well as received-result integration.
+  - [x] Hash-bound received RF-v1 replay, real frozen Worker, S2/S6a archive,
+        legacy/RF-v1 corpus lineage and existing delete APIs isolated-validated
+        using one authorized 2.440 GHz B210/P201 pilot; tests and exact cleanup
+        complete. No production deployment or independent labels. See
+        [pilot validation](B210_P201_RF_V1_PILOT_VALIDATION_2026-09-06.md).
+  - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
+        failed with `summary_clipped`; successful received-window inference
+        predicted experimental ID 18 versus source nominal ID 0. Preserve the
+        failed control and ambiguous source diagnostic; no additional burst in
+        this unit, and no classification-accuracy or V1b completion claim.
 - [x] Feed only a selected, bounded 1,024-sample IQ window into experimental
       local recognition, with P201 inline transport, AGX-only preprocessing,
       private 8,192-byte spool, correlated CUDA/Mamba response, automatic IQ

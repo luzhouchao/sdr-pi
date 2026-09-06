@@ -165,3 +165,14 @@ rejection, report known accuracy/coverage/rejection, OOD false acceptance and
 ECE/NLL on independent acceptance data. V3 still owns the one-time locked-test
 admission and name-space questions. V1a tools/specification cannot complete any
 of those gates.
+
+## 外部 B210 pilot 的适用边界（2026-09-06 补充）
+
+用户另行授权 NX+B210 在2.4 GHz作为有限外部信号源，由固定 P201 RX1/RX0/
+A_BALANCED 接收、AGX处理。该例外不改变生产 RX-only、RF-v1、独立样本量或
+校准/验收准入条件。[本轮 pilot](B210_P201_RF_V1_PILOT_VALIDATION_2026-09-06.md)
+只验证实收重放接入；停发后削顶对照失败，不宣布 RF 接收来源匹配或分类准确率通过。
+已查看的四段 train 波形、周期重复和本 session/day 均不能计为独立 known-RF 标签。
+外部源 tile hash/group 仅作为排除性审计记录，不由模型预测、置信度或相关值生成
+independent_annotation。后续正式样本必须另有可审核来源、有效停发对照、歧义说明
+及 source/session/day 隔离；工具完成和此 pilot 不改变 V1b 的未完成状态。
