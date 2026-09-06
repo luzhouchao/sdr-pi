@@ -22,18 +22,21 @@ spec.loader.exec_module(rf)
 NX = ['ssh','-F','/home/jetson/.ssh/config','-o','ConnectTimeout=5','nx']
 
 
-async def run(feature, binary):
+async def run(feature, binary, mode="rml"):
     assert feature.resolve() == feature and feature.parent == Path('/var/tmp/sdrharness-dev')
-    assert feature.name == 'b210-p201-2440-20260906'
+    assert feature.name.startswith('b210-') and feature.name.replace('-', '').isalnum()
     audit_path = feature / 'link-summary.json'
     assert not audit_path.exists(), 'refusing to overwrite evidence'
-    tx_plan = json.loads((feature / 'transmission-plan.json').read_text())
-    assert tx_plan['tx_gain_db'] in (0, 40)
+    tx_plan = (dict(tx_gain_db=70) if mode == 'tone' else
+               json.loads((feature / 'transmission-plan.json').read_text()))
+    assert tx_plan['tx_gain_db'] in ((70,) if mode == 'tone' else (0, 40, 70))
+    rate = 2500000 if mode == 'tone' else 2100000
+    rx_bw = 1000000 if mode == 'tone' else 1500000
     generation = int(time.time()*1000)
     processes = []
     audit = dict(status='failed',generation=generation,feature_directory=str(feature),
-                 max_rx_bytes=786420,max_tx_samples=2100000,tx_nominal_seconds=1,
-                 center_hz=2440000000,rate_sps=2100000,bandwidth_hz=1500000,
+                 mode=mode,max_rx_bytes=786420,max_tx_samples=(25000000 if mode == "tone" else tx_plan["tx_samples"]),tx_nominal_seconds=(10 if mode == "tone" else tx_plan["tx_nominal_seconds"]),
+                 center_hz=2440000000,rate_sps=rate,bandwidth_hz=rx_bw,
                  tx_gain_db=tx_plan['tx_gain_db'],rx_gain_db=50,rx_input='RX1/RX0/A_BALANCED',
                  antenna_connection=True,recognizer_available=False,locked_test_read=False,
                  controller_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
@@ -62,7 +65,7 @@ async def run(feature, binary):
     async def capture(tag, gen):
         plan = dict(sweep_id=f'b210-{tag}-{gen}',session_generation=gen,
                     frequencies=dict(kind='centers',centers_hz=[2440000000]),
-                    sample_rate_hz=2100000,rf_bandwidth_hz=1500000,gain_db=50,
+                    sample_rate_hz=rate,rf_bandwidth_hz=rx_bw,gain_db=50,
                     settle_ms=500,frame_samples=65535,aggregate_frames=1,
                     point_timeout_ms=1000,detection_threshold_db=12.)
         audit.setdefault('plans',[]).append(plan)
@@ -85,6 +88,40 @@ async def run(feature, binary):
     tx = None
     try:
         audit['baseline'] = await capture('baseline',generation)
+        if mode == 'tone':
+            # Fixed historical single-tone diagnostic, moved into the authorized
+            # 2.4-GHz band. Sample count is finite even if the SSH link fails.
+            tx_args = ('timeout --signal=INT --kill-after=2s 35s '
+                       '/usr/lib/uhd/examples/tx_waveforms '
+                       '--args type=b200,serial=2508504 --channels 0 --ant TX/RX '
+                       '--freq 2440000000 --rate 2500000 --bw 500000 '
+                       '--gain 70 --wave-type SINE --wave-freq 100000 --ampl 0.2 '
+                       '--nsamps 25000000')
+            audit['tx_command'] = tx_args
+            print(json.dumps(dict(event='finite_tone_plan',command=tx_args,
+                                  max_tx_samples=25000000,nominal_seconds=10)),flush=True)
+            tx = await asyncio.create_subprocess_exec(*NX,tx_args,stdout=asyncio.subprocess.PIPE,
+                                                     stderr=asyncio.subprocess.STDOUT)
+            processes.append(tx)
+            prefix = b''
+            deadline = time.monotonic()+25
+            while b'Press Ctrl' not in prefix:
+                remaining = deadline-time.monotonic()
+                assert remaining > 0, 'tone startup timeout'
+                line = await asyncio.wait_for(tx.stdout.readline(),remaining)
+                assert line, prefix.decode()[-2000:]
+                prefix += line
+                assert len(prefix) <= 16384, 'tone log bound'
+            audit['tone_ready_agx_ns'] = time.time_ns()
+            audit['during_tx'] = await capture('during-tx',generation+1)
+            rest = await asyncio.wait_for(tx.stdout.read(),15)
+            await asyncio.wait_for(tx.wait(),3)
+            (feature/'tx-uhd.log').write_bytes(prefix+rest)
+            assert tx.returncode == 0, (prefix+rest).decode()[-2000:]
+            audit['tx_exit_code'] = tx.returncode
+            audit['after_tx'] = await capture('after-tx',generation+2)
+            audit['status'] = 'transport_completed_pending_signal_analysis'
+            return
         # Remote timeout also bounds the NX process if the SSH transport fails.
         tx = await asyncio.create_subprocess_exec(*NX,
                 f'timeout --signal=TERM --kill-after=3s 65s python3 {feature}/b210-finite-train-tx.py --directory {feature}',
@@ -115,12 +152,12 @@ async def run(feature, binary):
                 # Keep the bounded RX owner alive until restoration completes.
                 await receive
         tx.stdin.close()
-        output,error=await asyncio.wait_for(tx.communicate(),10)
+        output,error=await asyncio.wait_for(tx.communicate(),tx_plan['tx_nominal_seconds']+5)
         (feature/'tx-stdout.log').write_bytes(line+output)
         (feature/'tx-stderr.log').write_bytes(error)
         assert tx.returncode==0,error.decode()
         audit['tx_result']=json.loads(output.decode().strip())
-        assert audit['tx_result']['status']=='sent' and audit['tx_result']['bytes_written']==16800000
+        assert audit['tx_result']['status']=='sent' and audit['tx_result']['bytes_written']==tx_plan['tx_samples']*8
         audit['after_tx']=await capture('after-tx',generation+2)
         audit['status']='transport_completed_pending_signal_analysis'
     finally:
@@ -148,5 +185,6 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--directory',type=Path,required=True)
     p.add_argument('--controller',type=Path,required=True)
+    p.add_argument('--mode',choices=['rml','tone'],default='rml')
     a=p.parse_args()
-    asyncio.run(run(a.directory,a.controller))
+    asyncio.run(run(a.directory,a.controller,a.mode))

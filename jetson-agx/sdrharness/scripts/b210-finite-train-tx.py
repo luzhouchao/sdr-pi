@@ -19,10 +19,12 @@ import time
 def transmit(root):
     plan = json.loads((root / 'transmission-plan.json').read_text())
     for key, value in dict(center_hz=2440000000,rate_sps=2100000,bandwidth_hz=1500000,
-                           tx_samples=2100000,tx_channel=0,tx_antenna='TX/RX',
+                           tx_channel=0,tx_antenna='TX/RX',
                            payload_bytes=32768,split='train',locked_test_read=False).items():
         assert plan[key] == value, key
-    assert plan['tx_gain_db'] in (0, 40), 'unregistered gain'
+    configuration = (plan['tx_samples'], plan['tx_nominal_seconds'], plan['tx_gain_db'], plan['complex_peak'])
+    assert configuration in ((2100000, 1, 0, 0.1), (2100000, 1, 40, 0.1),
+                             (21000000, 10, 70, 0.2)), 'unregistered transmission plan'
     payload = (root / 'train-tile.fc32').read_bytes()
     assert len(payload) == 32768 and hashlib.sha256(payload).hexdigest() == plan['payload_sha256']
     fifo = root / 'tx.fc32.fifo'
@@ -30,7 +32,7 @@ def transmit(root):
     child = None
     fd = None
     audit = dict(status='failed',payload_sha256=plan['payload_sha256'],bytes_written=0,
-                 max_samples=2100000,rate_sps=2100000,nominal_seconds=1)
+                 max_samples=plan['tx_samples'],rate_sps=2100000,nominal_seconds=plan['tx_nominal_seconds'])
     # Signal handlers unwind finally; closing stdin before GO also aborts.
     def abort(signum, frame):
         raise RuntimeError('stop signal ' + str(signum))
@@ -60,10 +62,10 @@ def transmit(root):
         started = time.monotonic()
         audit['go_unix_ns'] = time.time_ns()
         print(json.dumps(dict(event='tx_start',go_unix_ns=audit['go_unix_ns'])),flush=True)
-        total = 2100000 * 8
+        total = plan['tx_samples'] * 8
         sent = 0
         while sent < total:
-            assert time.monotonic() - started < 2, 'finite feed deadline exceeded'
+            assert time.monotonic() - started < plan['tx_nominal_seconds'] + 1, 'finite feed deadline exceeded'
             assert child.poll() is None, 'UHD exited during feed'
             offset = sent % len(payload)
             chunk = payload[offset:offset + min(len(payload)-offset, total-sent)]

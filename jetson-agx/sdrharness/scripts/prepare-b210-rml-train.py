@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[3]
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--directory', type=Path, required=True)
+    parser.add_argument('--extended', action='store_true', help='registered ten-second 70-dB retry, peak 0.2')
     args = parser.parse_args()
     directory = args.directory
     if directory.resolve() != directory or directory.parent != Path('/var/tmp/sdrharness-dev'):
@@ -40,7 +41,8 @@ def main():
     assert iq.shape == (4, 1024, 2) and np.isfinite(iq).all()
     assert (labels.argmax(axis=1) == 0).all() and (snr == 30).all()
     complex_iq = iq[..., 0].astype(np.float64) + 1j * iq[..., 1].astype(np.float64)
-    scale = 0.1 / float(np.abs(complex_iq).max())
+    peak = 0.2 if args.extended else 0.1
+    scale = peak / float(np.abs(complex_iq).max())
     payload = np.asarray(iq.reshape(-1, 2) * scale, dtype='<f4').tobytes()
     assert len(payload) == 32768
     metadata = dict(schema_version=1,split='train',train_member_sha256=digest,
@@ -48,9 +50,9 @@ def main():
                     name_status='provisional',dataset_nominal_snr_db=30,
                     source_iq_sha256=hashlib.sha256(iq.tobytes()).hexdigest(),
                     payload_sha256=hashlib.sha256(payload).hexdigest(),payload_bytes=len(payload),
-                    amplitude_scale=scale,complex_peak=0.1,center_hz=2440000000,
-                    rate_sps=2100000,bandwidth_hz=1500000,tx_gain_db=0,
-                    tx_samples=2100000,tx_nominal_seconds=1,tx_channel=0,tx_antenna='TX/RX',
+                    amplitude_scale=scale,complex_peak=peak,center_hz=2440000000,
+                    rate_sps=2100000,bandwidth_hz=1500000,tx_gain_db=(70 if args.extended else 0),
+                    tx_samples=(21000000 if args.extended else 2100000),tx_nominal_seconds=(10 if args.extended else 1),tx_channel=0,tx_antenna='TX/RX',
                     waveform='four separate train snippets concatenated and cyclically repeated',
                     physical_dataset_sample_rate_known=False,locked_test_read=False,
                     receiver_label='unknown until independently correlated and reviewed',

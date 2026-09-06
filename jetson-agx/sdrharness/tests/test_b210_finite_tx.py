@@ -17,14 +17,18 @@ spec.loader.exec_module(tx)
 
 
 class FiniteTxTests(unittest.TestCase):
-    def run_case(self, go=True, tamper=False):
+    def run_case(self, go=True, tamper=False, extended=False, invalid=False):
         # Caller supplies the feature TMPDIR; no files touch user results.
         root = Path(tempfile.mkdtemp(prefix='fifo-',dir=os.environ['TMPDIR']))
         payload = bytes(range(256))*128
         plan = dict(center_hz=2440000000,rate_sps=2100000,bandwidth_hz=1500000,
-                    tx_gain_db=40,tx_samples=2100000,tx_channel=0,tx_antenna='TX/RX',
+                    tx_gain_db=40,tx_samples=2100000,tx_nominal_seconds=1,complex_peak=0.1,tx_channel=0,tx_antenna='TX/RX',
                     payload_bytes=32768,split='train',locked_test_read=False,
                     payload_sha256=hashlib.sha256(payload).hexdigest())
+        if extended:
+            plan.update(tx_samples=21000000,tx_nominal_seconds=10,tx_gain_db=70,complex_peak=0.2)
+        if invalid:
+            plan['tx_samples'] += 1
         (root/'transmission-plan.json').write_text(json.dumps(plan))
         (root/'train-tile.fc32').write_bytes(payload if not tamper else payload[:-1])
         real_popen = subprocess.Popen
@@ -47,18 +51,20 @@ class FiniteTxTests(unittest.TestCase):
                  patch.object(tx.select,'select',fake_select), \
                  patch.object(tx.os,'read',lambda fd,n: (b'GO\n' if go else b'') if fd==0 else original_read(fd,n)), \
                  patch.object(tx.signal,'signal'):
-                if not go or tamper:
+                if not go or tamper or invalid:
                     with self.assertRaises(AssertionError):tx.transmit(root)
                 else:tx.transmit(root)
             self.assertFalse((root/'tx.fc32.fifo').exists())
             self.assertTrue(all(p.poll() is not None for p in launched))
-            if tamper:
+            if tamper or invalid:
                 self.assertFalse(launched)
             elif go:
                 result=json.loads((root/'tx-uhd.log').read_text())
-                total=2100000*8
-                expected=(payload*(total//len(payload)+1))[:total]
-                self.assertEqual(result,dict(bytes=total,sha256=hashlib.sha256(expected).hexdigest()))
+                total=plan['tx_samples']*8
+                expected=hashlib.sha256()
+                for _ in range(total//len(payload)):expected.update(payload)
+                expected.update(payload[:total%len(payload)])
+                self.assertEqual(result,dict(bytes=total,sha256=expected.hexdigest()))
             else:
                 self.assertEqual(json.loads((root/'tx-summary.json').read_text())['bytes_written'],0)
         finally:
@@ -71,6 +77,9 @@ class FiniteTxTests(unittest.TestCase):
         result=subprocess.run([sys.executable,'-O',str(SCRIPT)],capture_output=True,text=True,timeout=3)
         self.assertNotEqual(result.returncode,0)
         self.assertIn('optimized Python would disable validation',result.stderr)
+
+    def test_extended_plan_exact_ten_second_sample_bound(self):self.run_case(extended=True)
+    def test_unregistered_sample_bound_refuses_before_uhd(self):self.run_case(invalid=True)
 
     def test_exact_payload_and_finite_tail(self):self.run_case()
     def test_eof_before_go_does_not_send(self):self.run_case(go=False)

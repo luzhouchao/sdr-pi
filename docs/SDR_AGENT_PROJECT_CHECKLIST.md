@@ -511,18 +511,24 @@ aggregation, result persistence and model-facing summaries.
       [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md).
       Retain this only as historical RX1 port/link evidence; it is not a
       dependency, runtime component or future acceptance path for Chapters 1–6.
-- [ ] User-authorized independent NX/B210 RML2018A playback at 2.440 GHz to P201 RX1;
-      waveform-specific over-air reception remains unconfirmed. This 2026-09-06
+- [x] User-authorized independent NX/B210 finite RML2018A train playback at
+      2.440 GHz to P201 RX1 demonstrated by source-specific signal matching. This 2026-09-06
       external signal-source exception does not add TX to Controller/Planner or
       change production admission, V1b labels, RF-v1 or NX inference scope.
   - [x] Finite train-only playback tools and stop/receive controls verified:
         three one-second sample streams, eight bounded RX captures with correct
         identity and restoration, exact FIFO tests and feature cleanup complete.
         Negative waveform correlation and UHD terminal S markers are preserved;
-        no end-to-end reception or classification success is claimed. See
+        no reception or classification success was claimed for those initial attempts. See
         [`NX_B210_RML_2440_VALIDATION_2026-09-06.md`](NX_B210_RML_2440_VALIDATION_2026-09-06.md).
-  - [ ] Confirm the current antenna ports and diagnose the missing waveform
-        correlation before accepting this RF link or creating any RF labels.
+  - [x] User confirmed antenna ports; ten-second historical-tone and registered
+        RML retries at 2.440 GHz completed, with six clean bounded RX captures,
+        restoration and exact cleanup. The tone rose 44.799/34.319 dB over the
+        same-bin TX-off controls; source-derived-band, fixed-lag RML correlation
+        was 0.772 versus 0.009/-0.021. Original broadband failure remains recorded;
+        this is exploratory engineering evidence, not independent RF labels,
+        model accuracy or production admission. Eight software tests passed. See
+        [`NX_B210_RML_2440_EXTENDED_VALIDATION_2026-09-06.md`](NX_B210_RML_2440_EXTENDED_VALIDATION_2026-09-06.md).
 - [x] Feed only a selected, bounded 1,024-sample IQ window into experimental
       local recognition, with P201 inline transport, AGX-only preprocessing,
       private 8,192-byte spool, correlated CUDA/Mamba response, automatic IQ
