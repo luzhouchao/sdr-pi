@@ -1,0 +1,1461 @@
+{
+  "schema_id": "b210_centered_synthetic_validation_v1",
+  "source_code_sha256": "811f6905c375cc3b9399dcf42a2a2ef5e7d5fc03d43fb070d1e8877f51a1a030",
+  "positive_cases": 24,
+  "same_spectrum_negative_cases": 24,
+  "accepted_positive_cases": 22,
+  "accepted_negative_cases": 0,
+  "registered_all_positive_condition_met": false,
+  "rf_operations": 0,
+  "model_windows": 0,
+  "dataset_rows_read": 0,
+  "baseline_commit": "80eb31ca2f0bfc3edcaa897357cba8cca0efe9ae",
+  "candidate_ready_for_live_qualification": false,
+  "recognizer_available": false,
+  "independent_labels": 0,
+  "unit_tests_passed": 44,
+  "original_envelope_gate_unchanged": true,
+  "rows": [
+    {
+      "seed": 90700,
+      "lag": 0,
+      "bias": [
+        0.0,
+        0.0
+      ],
+      "residual_hz": -80.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 0,
+          "residual_frequency_hz": -79.98555243396117,
+          "phase_rmse_rad": 0.0004274467622024077,
+          "prefix_minimum_coherence": 0.9451108395779161,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 270.50285326009663,
+        "during_median": 0.9997932414370327,
+        "during_minimum": 0.9997834430165695,
+        "off_maximum": 0.07652389410028429,
+        "surrogate_maximum": 0.1869119324571556
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 1271,
+          "residual_frequency_hz": -80.02247103604196,
+          "phase_rmse_rad": 0.003124197376042953,
+          "prefix_minimum_coherence": 0.17370474020849389,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 270.5028532600967,
+        "during_median": 0.1742379851421516,
+        "during_minimum": 0.1738269602567356,
+        "off_maximum": 0.07907919994483928,
+        "surrogate_maximum": 0.1869119324571556
+      }
+    },
+    {
+      "seed": 90701,
+      "lag": 0,
+      "bias": [
+        0.0,
+        0.0
+      ],
+      "residual_hz": 0.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 0,
+          "residual_frequency_hz": 0.004084842157981132,
+          "phase_rmse_rad": 0.0004811085498116231,
+          "prefix_minimum_coherence": 0.9997703496867233,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 231.61207848077595,
+        "during_median": 0.9997988014975122,
+        "during_minimum": 0.9997849387894848,
+        "off_maximum": 0.10112764409685561,
+        "surrogate_maximum": 0.1999216174380488
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 2623,
+          "residual_frequency_hz": -0.05880319965209843,
+          "phase_rmse_rad": 0.0036589188753734674,
+          "prefix_minimum_coherence": 0.17097920794943702,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 231.61207848077595,
+        "during_median": 0.1715810873310185,
+        "during_minimum": 0.1708692385801379,
+        "off_maximum": 0.05793849243171377,
+        "surrogate_maximum": 0.19992161743804884
+      }
+    },
+    {
+      "seed": 90702,
+      "lag": 0,
+      "bias": [
+        0.0,
+        0.0
+      ],
+      "residual_hz": 65.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 0,
+          "residual_frequency_hz": 64.99504274645233,
+          "phase_rmse_rad": 0.00043024419615235004,
+          "prefix_minimum_coherence": 0.9607591310853262,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 258.97698883207795,
+        "during_median": 0.9997932223182259,
+        "during_minimum": 0.9997856213217581,
+        "off_maximum": 0.0900298603677537,
+        "surrogate_maximum": 0.18221978535010339
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 1583,
+          "residual_frequency_hz": 64.96302722411431,
+          "phase_rmse_rad": 0.0017385553788383835,
+          "prefix_minimum_coherence": 0.16830354827544972,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 258.97698883207795,
+        "during_median": 0.16931528635784093,
+        "during_minimum": 0.16844143353110888,
+        "off_maximum": 0.08234023186222353,
+        "surrogate_maximum": 0.18221978535010339
+      }
+    },
+    {
+      "seed": 90703,
+      "lag": 0,
+      "bias": [
+        0.0,
+        0.0
+      ],
+      "residual_hz": 150.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 0,
+          "residual_frequency_hz": 150.01486462950243,
+          "phase_rmse_rad": 0.0007511129134480153,
+          "prefix_minimum_coherence": 0.7921837747155219,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 225.85507342315503,
+        "during_median": 0.999795003034607,
+        "during_minimum": 0.9997872215368825,
+        "off_maximum": 0.08212972283976863,
+        "surrogate_maximum": 0.1868190664382853
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 3797,
+          "residual_frequency_hz": 150.04569764490464,
+          "phase_rmse_rad": 0.003355741444002196,
+          "prefix_minimum_coherence": 0.1793140694346105,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 225.855073423155,
+        "during_median": 0.17972691911808136,
+        "during_minimum": 0.17922090070062607,
+        "off_maximum": 0.06591235293678385,
+        "surrogate_maximum": 0.1868190664382853
+      }
+    },
+    {
+      "seed": 90704,
+      "lag": 0,
+      "bias": [
+        2.0,
+        1.5
+      ],
+      "residual_hz": -80.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 0,
+          "residual_frequency_hz": -79.99166078723101,
+          "phase_rmse_rad": 0.0004643722325771362,
+          "prefix_minimum_coherence": 0.7764338491124116,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 241.01945597137367,
+        "during_median": 0.9997845675015933,
+        "during_minimum": 0.9997796305563081,
+        "off_maximum": 0.09217279410513098,
+        "surrogate_maximum": 0.18577125104071407
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 3787,
+          "residual_frequency_hz": -80.04993926342854,
+          "phase_rmse_rad": 0.0029275021133840172,
+          "prefix_minimum_coherence": 0.1514137741280881,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 241.01945597137387,
+        "during_median": 0.15185476577159418,
+        "during_minimum": 0.15137630713659816,
+        "off_maximum": 0.07138133433602216,
+        "surrogate_maximum": 0.18577125104071407
+      }
+    },
+    {
+      "seed": 90705,
+      "lag": 0,
+      "bias": [
+        2.0,
+        1.5
+      ],
+      "residual_hz": 0.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 0,
+          "residual_frequency_hz": -0.0013959399460973278,
+          "phase_rmse_rad": 0.0008365884703713779,
+          "prefix_minimum_coherence": 0.9997808902999689,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 262.6757902491051,
+        "during_median": 0.9997959424677293,
+        "during_minimum": 0.9997852420774499,
+        "off_maximum": 0.07419702260646258,
+        "surrogate_maximum": 0.1864140199956774
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 68,
+          "residual_frequency_hz": -0.01781913331603484,
+          "phase_rmse_rad": 0.0037000708243614244,
+          "prefix_minimum_coherence": 0.18539542594804087,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 262.6757902491051,
+        "during_median": 0.18656059093200092,
+        "during_minimum": 0.18565001407024154,
+        "off_maximum": 0.09577012693092289,
+        "surrogate_maximum": 0.1864140199956774
+      }
+    },
+    {
+      "seed": 90706,
+      "lag": 0,
+      "bias": [
+        2.0,
+        1.5
+      ],
+      "residual_hz": 65.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 0,
+          "residual_frequency_hz": 65.02807560707963,
+          "phase_rmse_rad": 0.0004225269358405427,
+          "prefix_minimum_coherence": 0.8254338389423541,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 238.27654781380033,
+        "during_median": 0.9997897246586755,
+        "during_minimum": 0.9997801376551964,
+        "off_maximum": 0.06324423615934913,
+        "surrogate_maximum": 0.19851039582840307
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 335,
+          "residual_frequency_hz": 64.88100314372204,
+          "phase_rmse_rad": 0.002670176683534684,
+          "prefix_minimum_coherence": 0.17469563603201213,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 238.27654781380022,
+        "during_median": 0.17554959702939926,
+        "during_minimum": 0.17475093784783016,
+        "off_maximum": 0.0944203154455656,
+        "surrogate_maximum": 0.19851039582840307
+      }
+    },
+    {
+      "seed": 90707,
+      "lag": 0,
+      "bias": [
+        2.0,
+        1.5
+      ],
+      "residual_hz": 150.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 0,
+          "residual_frequency_hz": 150.02056492346634,
+          "phase_rmse_rad": 0.0005508514933509969,
+          "prefix_minimum_coherence": 0.48988862648960124,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 239.00403670457166,
+        "during_median": 0.9997962565143829,
+        "during_minimum": 0.9997895240210521,
+        "off_maximum": 0.08457783513308938,
+        "surrogate_maximum": 0.1436278581861921
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 257,
+          "residual_frequency_hz": 150.03248188861573,
+          "phase_rmse_rad": 0.0014894097088310938,
+          "prefix_minimum_coherence": 0.12885269962462856,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 239.00403670457158,
+        "during_median": 0.12925178694630574,
+        "during_minimum": 0.12874580400946184,
+        "off_maximum": 0.09769475664478851,
+        "surrogate_maximum": 0.14362785818619206
+      }
+    },
+    {
+      "seed": 90708,
+      "lag": 776,
+      "bias": [
+        0.0,
+        0.0
+      ],
+      "residual_hz": -80.0,
+      "positive": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": false
+        },
+        "fit": {
+          "lag": 776,
+          "residual_frequency_hz": -79.99321960762497,
+          "phase_rmse_rad": 0.0006271216298979681,
+          "prefix_minimum_coherence": 0.9456491513542749,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 246.11261788027937,
+        "during_median": 0.9997963518882922,
+        "during_minimum": 0.9997792906459304,
+        "off_maximum": 0.06627389656535251,
+        "surrogate_maximum": 0.21357526903052818
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": false
+        },
+        "fit": {
+          "lag": 273,
+          "residual_frequency_hz": -79.9141325896949,
+          "phase_rmse_rad": 0.0029746000759026067,
+          "prefix_minimum_coherence": 0.18343599239682493,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 246.11261788027937,
+        "during_median": 0.18425017266032595,
+        "during_minimum": 0.18362287605604494,
+        "off_maximum": 0.06901970455854119,
+        "surrogate_maximum": 0.21357526903052818
+      }
+    },
+    {
+      "seed": 90709,
+      "lag": 776,
+      "bias": [
+        0.0,
+        0.0
+      ],
+      "residual_hz": 0.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 776,
+          "residual_frequency_hz": 0.01860007826174022,
+          "phase_rmse_rad": 0.0003477632452721436,
+          "prefix_minimum_coherence": 0.9997792584758814,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 244.7142439992632,
+        "during_median": 0.9997932587305431,
+        "during_minimum": 0.9997866702322944,
+        "off_maximum": 0.09483629802094552,
+        "surrogate_maximum": 0.18343711679761962
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 545,
+          "residual_frequency_hz": 0.03870544376125624,
+          "phase_rmse_rad": 0.004228478173053163,
+          "prefix_minimum_coherence": 0.15927899405138043,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 244.7142439992633,
+        "during_median": 0.15976478212518502,
+        "during_minimum": 0.15888880022054586,
+        "off_maximum": 0.0755036418003209,
+        "surrogate_maximum": 0.18343711679761965
+      }
+    },
+    {
+      "seed": 90710,
+      "lag": 776,
+      "bias": [
+        0.0,
+        0.0
+      ],
+      "residual_hz": 65.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 776,
+          "residual_frequency_hz": 65.00752626494852,
+          "phase_rmse_rad": 0.0004838222791374363,
+          "prefix_minimum_coherence": 0.9616380187411651,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 240.22156026623594,
+        "during_median": 0.999798966060334,
+        "during_minimum": 0.9997802093790675,
+        "off_maximum": 0.09863749437009083,
+        "surrogate_maximum": 0.18460053653657213
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 2306,
+          "residual_frequency_hz": 64.97197683939731,
+          "phase_rmse_rad": 0.0030406710964606017,
+          "prefix_minimum_coherence": 0.15582367515817808,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 240.221560266236,
+        "during_median": 0.15596709853580043,
+        "during_minimum": 0.15570759211962287,
+        "off_maximum": 0.05274467348958222,
+        "surrogate_maximum": 0.18460053653657216
+      }
+    },
+    {
+      "seed": 90711,
+      "lag": 776,
+      "bias": [
+        0.0,
+        0.0
+      ],
+      "residual_hz": 150.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 776,
+          "residual_frequency_hz": 149.9899993583638,
+          "phase_rmse_rad": 0.0006271504006069324,
+          "prefix_minimum_coherence": 0.7955135554638508,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 221.18322528170862,
+        "during_median": 0.9997916691715443,
+        "during_minimum": 0.999781008227747,
+        "off_maximum": 0.10157411851140348,
+        "surrogate_maximum": 0.19065311947448316
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 888,
+          "residual_frequency_hz": 149.9946179463109,
+          "phase_rmse_rad": 0.005296189507576908,
+          "prefix_minimum_coherence": 0.1585345694402184,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 221.18322528170862,
+        "during_median": 0.15892444300365488,
+        "during_minimum": 0.15840188499040062,
+        "off_maximum": 0.07015935907071737,
+        "surrogate_maximum": 0.19065311947448316
+      }
+    },
+    {
+      "seed": 90712,
+      "lag": 776,
+      "bias": [
+        2.0,
+        1.5
+      ],
+      "residual_hz": -80.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 776,
+          "residual_frequency_hz": -79.98058517095046,
+          "phase_rmse_rad": 0.0006497696558705112,
+          "prefix_minimum_coherence": 0.7549054147128021,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 246.83899082889454,
+        "during_median": 0.9997932146262529,
+        "during_minimum": 0.999779884776257,
+        "off_maximum": 0.10373203656196295,
+        "surrogate_maximum": 0.1532992490508529
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 2194,
+          "residual_frequency_hz": -79.97087807426104,
+          "phase_rmse_rad": 0.004011111229395535,
+          "prefix_minimum_coherence": 0.1331504432787138,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 246.83899082889454,
+        "during_median": 0.13333241463539636,
+        "during_minimum": 0.13214230788373912,
+        "off_maximum": 0.06749744587616191,
+        "surrogate_maximum": 0.15329924905085288
+      }
+    },
+    {
+      "seed": 90713,
+      "lag": 776,
+      "bias": [
+        2.0,
+        1.5
+      ],
+      "residual_hz": 0.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 776,
+          "residual_frequency_hz": 0.005089722179180865,
+          "phase_rmse_rad": 0.0005848904329687508,
+          "prefix_minimum_coherence": 0.9997861175121839,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 256.51406785431374,
+        "during_median": 0.9997993696873309,
+        "during_minimum": 0.999790999982397,
+        "off_maximum": 0.06900641168336277,
+        "surrogate_maximum": 0.18583703924035525
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 3063,
+          "residual_frequency_hz": 0.029857889060804624,
+          "phase_rmse_rad": 0.002200592208033347,
+          "prefix_minimum_coherence": 0.16971422789261773,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 256.51406785431374,
+        "during_median": 0.17107492032505683,
+        "during_minimum": 0.16926578741145862,
+        "off_maximum": 0.07529023792766704,
+        "surrogate_maximum": 0.18583703924035516
+      }
+    },
+    {
+      "seed": 90714,
+      "lag": 776,
+      "bias": [
+        2.0,
+        1.5
+      ],
+      "residual_hz": 65.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 776,
+          "residual_frequency_hz": 64.99968439269074,
+          "phase_rmse_rad": 0.00019583649507118924,
+          "prefix_minimum_coherence": 0.8331768417703228,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 234.09806537912462,
+        "during_median": 0.9997910766969029,
+        "during_minimum": 0.9997856329656685,
+        "off_maximum": 0.07989619588660196,
+        "surrogate_maximum": 0.17691797227174244
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 3817,
+          "residual_frequency_hz": 64.94620053784004,
+          "phase_rmse_rad": 0.0019660566920780996,
+          "prefix_minimum_coherence": 0.15845299162108425,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 234.0980653791245,
+        "during_median": 0.15899616545400086,
+        "during_minimum": 0.15820135164089966,
+        "off_maximum": 0.07248740759071268,
+        "surrogate_maximum": 0.17691797227174239
+      }
+    },
+    {
+      "seed": 90715,
+      "lag": 776,
+      "bias": [
+        2.0,
+        1.5
+      ],
+      "residual_hz": 150.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 776,
+          "residual_frequency_hz": 149.98730745948603,
+          "phase_rmse_rad": 0.00034982462614536596,
+          "prefix_minimum_coherence": 0.510606526328003,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 221.83509060424433,
+        "during_median": 0.9997976842489288,
+        "during_minimum": 0.9997779437268511,
+        "off_maximum": 0.08713831314240891,
+        "surrogate_maximum": 0.13216995214433114
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 3165,
+          "residual_frequency_hz": 150.01443578270482,
+          "phase_rmse_rad": 0.0037150928080389384,
+          "prefix_minimum_coherence": 0.11491330317088788,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 221.83509060424439,
+        "during_median": 0.1153914369160693,
+        "during_minimum": 0.11416362898853649,
+        "off_maximum": 0.06846073091630023,
+        "surrogate_maximum": 0.13216995214433114
+      }
+    },
+    {
+      "seed": 90716,
+      "lag": 4095,
+      "bias": [
+        0.0,
+        0.0
+      ],
+      "residual_hz": -80.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 4095,
+          "residual_frequency_hz": -79.98322036219652,
+          "phase_rmse_rad": 0.0006251350061623195,
+          "prefix_minimum_coherence": 0.9373833754229945,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 248.35465559705437,
+        "during_median": 0.9997936434035511,
+        "during_minimum": 0.9997837124222864,
+        "off_maximum": 0.1060581479448112,
+        "surrogate_maximum": 0.18790575191819858
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 3379,
+          "residual_frequency_hz": -79.90043310646975,
+          "phase_rmse_rad": 0.0024382629366048055,
+          "prefix_minimum_coherence": 0.17809588429466935,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 248.35465559705443,
+        "during_median": 0.17862475443343778,
+        "during_minimum": 0.17786842615707402,
+        "off_maximum": 0.1265803076794838,
+        "surrogate_maximum": 0.18790575191819858
+      }
+    },
+    {
+      "seed": 90717,
+      "lag": 4095,
+      "bias": [
+        0.0,
+        0.0
+      ],
+      "residual_hz": 0.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 4095,
+          "residual_frequency_hz": 0.0018375045101123653,
+          "phase_rmse_rad": 0.0003645147436176331,
+          "prefix_minimum_coherence": 0.9997795101340238,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 256.05664195464396,
+        "during_median": 0.9997921683942731,
+        "during_minimum": 0.9997827739652617,
+        "off_maximum": 0.050471427070011815,
+        "surrogate_maximum": 0.18500414672886237
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 3956,
+          "residual_frequency_hz": 0.08067832546389893,
+          "phase_rmse_rad": 0.0032044396848655778,
+          "prefix_minimum_coherence": 0.17420289713249876,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 256.05664195464396,
+        "during_median": 0.17523460887072234,
+        "during_minimum": 0.17477572445280487,
+        "off_maximum": 0.07206691635349634,
+        "surrogate_maximum": 0.18500414672886237
+      }
+    },
+    {
+      "seed": 90718,
+      "lag": 4095,
+      "bias": [
+        0.0,
+        0.0
+      ],
+      "residual_hz": 65.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 4095,
+          "residual_frequency_hz": 65.00851444458344,
+          "phase_rmse_rad": 0.0007051151237547237,
+          "prefix_minimum_coherence": 0.9598028094903343,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 255.0253756290058,
+        "during_median": 0.9997952008762283,
+        "during_minimum": 0.9997871392825135,
+        "off_maximum": 0.11517389472206561,
+        "surrogate_maximum": 0.19277004226549196
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 2148,
+          "residual_frequency_hz": 64.89241485099778,
+          "phase_rmse_rad": 0.0019139098029131957,
+          "prefix_minimum_coherence": 0.15703437910762233,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 255.0253756290058,
+        "during_median": 0.1575513032644692,
+        "during_minimum": 0.15653076923431072,
+        "off_maximum": 0.08400488429222347,
+        "surrogate_maximum": 0.19277004226549202
+      }
+    },
+    {
+      "seed": 90719,
+      "lag": 4095,
+      "bias": [
+        0.0,
+        0.0
+      ],
+      "residual_hz": 150.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 4095,
+          "residual_frequency_hz": 149.9771243011506,
+          "phase_rmse_rad": 0.0007158709759370315,
+          "prefix_minimum_coherence": 0.8207930201017858,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 228.57960092388984,
+        "during_median": 0.9998039475168887,
+        "during_minimum": 0.9997734995330202,
+        "off_maximum": 0.07382147492660504,
+        "surrogate_maximum": 0.1692200953516131
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 2684,
+          "residual_frequency_hz": 149.98512469419668,
+          "phase_rmse_rad": 0.004876157088452601,
+          "prefix_minimum_coherence": 0.15329037801376444,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 228.57960092388993,
+        "during_median": 0.1537967288175751,
+        "during_minimum": 0.15272295657710686,
+        "off_maximum": 0.07966117423062548,
+        "surrogate_maximum": 0.1692200953516131
+      }
+    },
+    {
+      "seed": 90720,
+      "lag": 4095,
+      "bias": [
+        2.0,
+        1.5
+      ],
+      "residual_hz": -80.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 4095,
+          "residual_frequency_hz": -79.99000583017235,
+          "phase_rmse_rad": 0.0005097042769044164,
+          "prefix_minimum_coherence": 0.7725921459314755,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 240.20773529014272,
+        "during_median": 0.9997948155762959,
+        "during_minimum": 0.9997781261524579,
+        "off_maximum": 0.07383672427634952,
+        "surrogate_maximum": 0.1798663158330451
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 432,
+          "residual_frequency_hz": -80.07190667034534,
+          "phase_rmse_rad": 0.004685925744192404,
+          "prefix_minimum_coherence": 0.14533698589725008,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 240.20773529014272,
+        "during_median": 0.1460835522390338,
+        "during_minimum": 0.14568357535308818,
+        "off_maximum": 0.10900874887709315,
+        "surrogate_maximum": 0.17986631583304508
+      }
+    },
+    {
+      "seed": 90721,
+      "lag": 4095,
+      "bias": [
+        2.0,
+        1.5
+      ],
+      "residual_hz": 0.0,
+      "positive": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": false
+        },
+        "fit": {
+          "lag": 4095,
+          "residual_frequency_hz": -0.009493917486712118,
+          "phase_rmse_rad": 0.00027758317181811565,
+          "prefix_minimum_coherence": 0.9997675006213184,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 223.85702897612043,
+        "during_median": 0.9997986748462113,
+        "during_minimum": 0.9997840289410237,
+        "off_maximum": 0.07296323815163719,
+        "surrogate_maximum": 0.21541631658575267
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": false
+        },
+        "fit": {
+          "lag": 2221,
+          "residual_frequency_hz": 0.06271664248332703,
+          "phase_rmse_rad": 0.0025020731344713126,
+          "prefix_minimum_coherence": 0.19978060231343062,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 223.85702897612043,
+        "during_median": 0.20050792159969846,
+        "during_minimum": 0.19996458709184023,
+        "off_maximum": 0.09449672080888759,
+        "surrogate_maximum": 0.21541631658575267
+      }
+    },
+    {
+      "seed": 90722,
+      "lag": 4095,
+      "bias": [
+        2.0,
+        1.5
+      ],
+      "residual_hz": 65.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 4095,
+          "residual_frequency_hz": 65.03075227594964,
+          "phase_rmse_rad": 0.0007123047689082956,
+          "prefix_minimum_coherence": 0.8222100990267167,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 234.83549147269693,
+        "during_median": 0.9997940482877977,
+        "during_minimum": 0.9997771262360199,
+        "off_maximum": 0.0913191977897427,
+        "surrogate_maximum": 0.16876965789476703
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 3954,
+          "residual_frequency_hz": 64.95239057256822,
+          "phase_rmse_rad": 0.0024767947517308243,
+          "prefix_minimum_coherence": 0.14518973637954324,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 234.83549147269693,
+        "during_median": 0.144824113524967,
+        "during_minimum": 0.14308713317671445,
+        "off_maximum": 0.07917850289255658,
+        "surrogate_maximum": 0.16876965789476706
+      }
+    },
+    {
+      "seed": 90723,
+      "lag": 4095,
+      "bias": [
+        2.0,
+        1.5
+      ],
+      "residual_hz": 150.0,
+      "positive": {
+        "waveform_association_passed": true,
+        "checks": {
+          "prefix_estimate": true,
+          "during_median": true,
+          "during_every_window": true,
+          "stopped_controls": true,
+          "source_off_margin": true,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 4095,
+          "residual_frequency_hz": 149.99674435429787,
+          "phase_rmse_rad": 0.0003735974335838616,
+          "prefix_minimum_coherence": 0.5357706611446614,
+          "passed": true,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 250.67868080162836,
+        "during_median": 0.9997982183392494,
+        "during_minimum": 0.9997874811950067,
+        "off_maximum": 0.07213245264702975,
+        "surrogate_maximum": 0.14892124825394612
+      },
+      "same_spectrum_negative": {
+        "waveform_association_passed": false,
+        "checks": {
+          "prefix_estimate": false,
+          "during_median": false,
+          "during_every_window": false,
+          "stopped_controls": true,
+          "source_off_margin": false,
+          "same_spectrum_wrong_sources": true
+        },
+        "fit": {
+          "lag": 3716,
+          "residual_frequency_hz": 150.07988042085543,
+          "phase_rmse_rad": 0.002271289831387158,
+          "prefix_minimum_coherence": 0.11792295474070962,
+          "passed": false,
+          "fit_complex_samples": 28672,
+          "phase_alias_period_hz": 512.6953125
+        },
+        "source_effective_bins": 250.6786808016283,
+        "during_median": 0.11808429610736386,
+        "during_minimum": 0.11752104093600545,
+        "off_maximum": 0.08839314082788598,
+        "surrogate_maximum": 0.1489212482539461
+      }
+    }
+  ],
+  "tests_initial_failure": "Matrix stopped at positive seed 90708 because a same-spectrum surrogate scored above 0.2. Runner then evaluated all fixed cases and recorded candidate acceptance separately from implementation tests; no gate changed.",
+  "full_matrix_reproduced": true,
+  "evidence_hashes": {
+    "tests-matrix-complete.log": "cdc5fd4066802756abe6d0c068a2dd36496012b58f2a848fac9022d725d811f4",
+    "tests-final.log": "875c48ac4d3a72443d3a69da3905624c1c72d0a2bea25b9604971e93b52fca21",
+    "tests.log": "a4d3d8e9b5c36259fa53ae93cf92b9f7fd75430bc0a208b8be6fd371809d3a3c",
+    "tmp/centered-synthetic-final.json": "efa15a58e39338a2816e9b4bb34c8504e99cee9f671594c8ff1563ead5704a1e",
+    "tmp/centered-synthetic-matrix.json": "efa15a58e39338a2816e9b4bb34c8504e99cee9f671594c8ff1563ead5704a1e"
+  },
+  "plan_sha256": "0affe899c8e8178bee156ded5bdc37f6f975dfd0e4357254d1eb188147bdb58d",
+  "test_source_sha256": "9881b70ef4fc48305ef8ff04c6de67415b968b99c67fbc71fd035e3063bb5813",
+  "cleanup": {
+    "verified": true,
+    "root": "/var/tmp/sdrharness-dev/b210-centered-source-906g",
+    "test_directories_already_absent": [
+      "/var/tmp/sdrharness-dev/b210-control-test-393375"
+    ],
+    "removed_bytes": 497444,
+    "maximum_bytes": 16777216,
+    "processes_absent": true,
+    "all_evidence_hashes_verified_before_removal": true,
+    "user_data_untouched": true
+  },
+  "tested_source_code_sha256": "38937d7a4f563650c9072e4eb092853fca6b2fb688bfdf7601cafbd54126f337",
+  "post_test_edit": "Comment only: numerical candidate; AST identical to tested source. Method acceptance remains failed."
+}

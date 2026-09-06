@@ -97,6 +97,139 @@ def assess_controls(result):
                 recognizer_available=False,rf_v1_50db_acceptance=False)
 
 
+# A separate numerical candidate. Never substitutes for v1 controls.
+CENTERED_LIMITS = dict(prefix_coherence_minimum=.2, phase_rmse_maximum_rad=.2,
+                       residual_frequency_maximum_hz=200., source_effective_bins_minimum=8.,
+                       heldout_median_minimum=.8, heldout_minimum=.6,
+                       off_maximum=.2, source_off_margin_minimum=.6, surrogate_maximum=.2)
+FIT_SAMPLES = 7*PERIOD
+END_SAMPLES = 15*PERIOD
+SURROGATE_SEEDS = (9060701, 9060702, 9060703)
+
+
+def _complex_array(value, size):
+    array = np.asarray(value, dtype=np.complex128)
+    if array.shape != (size,) or not np.isfinite(array).all():
+        raise ValueError('centered association requires exact finite complex arrays')
+    return array
+
+
+def _source_band(source, half_width):
+    bins = abs(np.fft.fftfreq(PERIOD, 1/RATE)) <= half_width
+    return np.fft.ifft(np.fft.fft(source)*bins)
+
+
+def centered_segment(raw, start, end, frequency, half_width):
+    """Slice raw samples before any FFT; keep the original time origin."""
+    segment = raw[start:end]*np.exp(-2j*np.pi*frequency*np.arange(start, end)/RATE)
+    bins = abs(np.fft.fftfreq(len(segment), 1/RATE)) <= half_width
+    return np.fft.ifft(np.fft.fft(segment)*bins).reshape(-1, PERIOD)
+
+
+def _centered_correlations(windows, source, all_lags=False):
+    x = source-source.mean()
+    y = windows-windows.mean(axis=1, keepdims=True)
+    denominator = np.sqrt(np.sum(abs(y)**2, axis=1)*np.sum(abs(x)**2))
+    if not np.isfinite(denominator).all():
+        raise ValueError('nonfinite centered power')
+    if all_lags:
+        products = np.fft.ifft(np.fft.fft(y, axis=1)*np.fft.fft(x).conj(), axis=1)
+        denominator = denominator[:, None]
+    else:
+        products = np.sum(y*x.conj(), axis=1)
+    # Zero-power stopped-TX controls have zero correlation, not NaN.
+    return np.divide(products, denominator, out=np.zeros_like(products), where=denominator>0)
+
+
+def fit_centered_source(raw, source, tone_cfo, half_width):
+    """Only the first seven raw windows may select lag or residual frequency."""
+    prefix = centered_segment(raw, 0, FIT_SAMPLES, tone_cfo, half_width)
+    reference = _source_band(source, half_width)
+    correlations = _centered_correlations(prefix, reference, all_lags=True)
+    lag = int(np.argmax(np.mean(abs(correlations), axis=0)))
+    values = correlations[:, lag]
+    phase = np.unwrap(np.angle(values))
+    times = (np.arange(7)+.5)*PERIOD/RATE
+    design = np.column_stack((times, np.ones(7)))
+    slope, intercept = np.linalg.lstsq(design, phase, rcond=None)[0]
+    rmse = float(np.sqrt(np.mean((phase-design @ [slope, intercept])**2)))
+    residual = float(slope/(2*np.pi))
+    minimum = float(np.min(abs(values)))
+    passed = (minimum >= CENTERED_LIMITS['prefix_coherence_minimum']
+              and rmse <= CENTERED_LIMITS['phase_rmse_maximum_rad']
+              and abs(residual) <= CENTERED_LIMITS['residual_frequency_maximum_hz'])
+    return dict(lag=lag, residual_frequency_hz=residual, phase_rmse_rad=rmse,
+                prefix_minimum_coherence=minimum, passed=bool(passed),
+                fit_complex_samples=FIT_SAMPLES, phase_alias_period_hz=RATE/PERIOD)
+
+
+def _heldout_centered(raw, source, tone_cfo, half_width, fit):
+    # A failed estimate is not an exemption for negative controls. Score them
+    # with the unrefined tone frequency, preserving the prefix-selected lag.
+    frequency = tone_cfo+(fit['residual_frequency_hz'] if fit['passed'] else 0.)
+    windows = centered_segment(raw, FIT_SAMPLES, END_SAMPLES, frequency, half_width)
+    reference = np.roll(_source_band(source, half_width), fit['lag'])
+    return list(map(float, abs(_centered_correlations(windows, reference))))
+
+
+def assess_centered_source(reference, captures, tone_cfo, half_width):
+    """Numerical source association only; no RF qualification or model input changes.
+
+    The caller still owes raw hash/identity, tone, acquisition quality and radio
+    restoration checks. This API cannot promote a live or production capability.
+    """
+    source = _complex_array(reference, PERIOD)
+    if set(captures) != {'baseline', 'during-tx', 'after-tx'}:
+        raise ValueError('both stopped-TX controls and during-TX capture are required')
+    raw = {tag: _complex_array(value, 65535) for tag, value in captures.items()}
+    if (not np.isfinite([tone_cfo, half_width]).all() or abs(tone_cfo)>5000
+            or not 0<half_width<RATE/2):
+        raise ValueError('invalid tone frequency or source bandwidth')
+    band = _source_band(source, half_width)
+    power = abs(np.fft.fft(band-band.mean()))**2
+    # Suppress numerical DC residue in the effective-bin statistic.
+    power[0] = 0
+    total = float(power.sum())
+    if not np.isfinite(total) or total<=0:
+        raise ValueError('source has no finite non-DC power')
+    weights = power/total
+    effective_bins = float(1/np.sum(weights**2))
+    if effective_bins < CENTERED_LIMITS['source_effective_bins_minimum']:
+        raise ValueError('source is too spectrally concentrated for association')
+    fit = fit_centered_source(raw['during-tx'], source, tone_cfo, half_width)
+    cases = {tag: _heldout_centered(value, source, tone_cfo, half_width, fit)
+             for tag, value in raw.items()}
+    surrogate_results = []
+    spectrum = np.fft.fft(source)
+    for seed in SURROGATE_SEEDS:
+        rng = np.random.default_rng(seed)
+        wrong_spectrum = abs(spectrum)*np.exp(1j*rng.uniform(-np.pi, np.pi, PERIOD))
+        wrong_spectrum[0] = spectrum[0]  # Preserve genuine source DC, too.
+        wrong = np.fft.ifft(wrong_spectrum)
+        wrong_fit = fit_centered_source(raw['during-tx'], wrong, tone_cfo, half_width)
+        scores = _heldout_centered(raw['during-tx'], wrong, tone_cfo, half_width, wrong_fit)
+        surrogate_results.append(dict(seed=seed, fit=wrong_fit, heldout_coherences=scores,
+                                      maximum_coherence=max(scores)))
+    during_median = float(np.median(cases['during-tx']))
+    during_minimum = min(cases['during-tx'])
+    off_maximum = max(cases['baseline']+cases['after-tx'])
+    surrogate_maximum = max(row['maximum_coherence'] for row in surrogate_results)
+    checks = dict(prefix_estimate=fit['passed'],
+                  during_median=during_median>=CENTERED_LIMITS['heldout_median_minimum'],
+                  during_every_window=during_minimum>=CENTERED_LIMITS['heldout_minimum'],
+                  stopped_controls=off_maximum<=CENTERED_LIMITS['off_maximum'],
+                  source_off_margin=during_median-off_maximum>=CENTERED_LIMITS['source_off_margin_minimum'],
+                  same_spectrum_wrong_sources=surrogate_maximum<=CENTERED_LIMITS['surrogate_maximum'])
+    return dict(schema_id='b210_centered_source_candidate_v2', limits=CENTERED_LIMITS.copy(),
+                waveform_association_passed=all(checks.values()), checks=checks, fit=fit,
+                source_effective_bins=effective_bins, heldout_coherences=cases,
+                during_median=during_median, during_minimum=during_minimum,
+                off_maximum=off_maximum, surrogate_maximum=surrogate_maximum,
+                surrogates=surrogate_results, live_rf_qualified=False, recognizer_available=False,
+                independent_labels=0, production_preprocess_changed=False,
+                interpretation='candidate numerical association; requires separate live RF controls')
+
+
 def analyze(root,tone_directory):
     tone=tone_metrics(tone_directory)
     raw_tile=(root/'train-tile.fc32').read_bytes()

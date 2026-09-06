@@ -587,6 +587,15 @@ aggregation, result persistence and model-facing summaries.
         source-association gate failed; exploratory improvements cannot replace
         that prerequisite. Register an appropriate independent source-association
         check before a new bounded validation; retain this run's failed gate.
+    - [x] Implement and evaluate a separate centered-complex v2 numerical
+          candidate with raw-prefix/heldout FFT isolation and same-spectrum
+          wrong-source controls. 44 software tests and cleanup verified;
+          candidate acceptance failed: 22/24 synthetic positives accepted,
+          0/24 wrong sources accepted. No RF/model/dataset operations. See
+          [centered-source validation](B210_CENTERED_SOURCE_VALIDATION_2026-09-06.md).
+    - [ ] Resolve the candidate's two synthetic false rejections with a justified
+          search-aware criterion and preregistered independent validation before
+          integrating it into a new live source/bias qualification.
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the
