@@ -107,6 +107,10 @@ END_SAMPLES = 15*PERIOD
 SURROGATE_SEEDS = (9060701, 9060702, 9060703)
 V3_SURROGATE_SEEDS = tuple(range(9060701, 9060732))
 V3_SOURCE_WRONG_MARGIN = .3
+V4_PHASE_NULL_FAMILY_BUDGET = 1e-4
+V4_PHASE_DIRECTIONS = 16
+V4_OFF_WINDOWS = 16
+V4_OFF_THRESHOLD_CEILING = .5
 
 
 def _complex_array(value, size):
@@ -174,12 +178,16 @@ def _heldout_centered(raw, source, tone_cfo, half_width, fit):
     return list(map(float, abs(_centered_correlations(windows, reference))))
 
 
-def _centered_surrogate(source, received, tone_cfo, half_width, seed):
+def _phase_surrogate(source, seed):
     spectrum = np.fft.fft(source)
     rng = np.random.default_rng(seed)
     wrong_spectrum = abs(spectrum)*np.exp(1j*rng.uniform(-np.pi, np.pi, PERIOD))
     wrong_spectrum[0] = spectrum[0]  # Preserve genuine source DC, too.
-    wrong = np.fft.ifft(wrong_spectrum)
+    return np.fft.ifft(wrong_spectrum)
+
+
+def _centered_surrogate(source, received, tone_cfo, half_width, seed):
+    wrong = _phase_surrogate(source, seed)
     wrong_fit = fit_centered_source(received, wrong, tone_cfo, half_width)
     scores = _heldout_centered(received, wrong, tone_cfo, half_width, wrong_fit)
     return dict(seed=seed, fit=wrong_fit, heldout_coherences=scores,
@@ -258,6 +266,98 @@ def assess_centered_source_v3(reference, captures, tone_cfo, half_width):
     result['schema_id'] = 'b210_centered_source_candidate_v3'
     result['surrogate_count'] = len(result['surrogates'])
     result['interpretation'] = 'finite searched spectrum-matched contrast; not a p-value or live RF qualification'
+    return result
+
+
+def v4_heldout_windows(raw, tone_cfo, half_width, fit):
+    """Independent raw-window FFTs, with a fixed capture time origin."""
+    frequency = tone_cfo+(fit['residual_frequency_hz'] if fit['passed'] else 0.)
+    times = np.arange(FIT_SAMPLES, END_SAMPLES).reshape(8, PERIOD)/RATE
+    windows = raw[FIT_SAMPLES:END_SAMPLES].reshape(8, PERIOD)*np.exp(-2j*np.pi*frequency*times)
+    bins = abs(np.fft.fftfreq(PERIOD, 1/RATE))<=half_width
+    return np.fft.ifft(np.fft.fft(windows, axis=1)*bins, axis=1)
+
+
+def phase_null_stopped_control(reference, windows):
+    """Conditional independent-uniform Fourier-phase bound, not RF calibration.
+
+    P(max_j |correlation_j| > threshold_j) <= family_budget only under
+    the stated phase model. A large formal bound fails identifiability.
+    """
+    source = _complex_array(reference, PERIOD)
+    noise = np.asarray(windows, dtype=np.complex128)
+    if noise.shape!=(V4_OFF_WINDOWS, PERIOD) or not np.isfinite(noise).all():
+        raise ValueError('sixteen finite stopped windows required')
+    x_power = abs(np.fft.fft(source-source.mean()))**2
+    y_power = abs(np.fft.fft(noise-noise.mean(axis=1, keepdims=True), axis=1))**2
+    x_power[0] = 0
+    y_power[:, 0] = 0
+    x_total = float(x_power.sum())
+    y_total = y_power.sum(axis=1)
+    if not np.isfinite(x_total) or x_total<=0 or not np.isfinite(y_total).all():
+        raise ValueError('invalid centered spectral power')
+    p = x_power/x_total
+    q = np.divide(y_power, y_total[:, None], out=np.zeros_like(y_power), where=y_total[:, None]>0)
+    overlap = np.sum(p*q, axis=1)
+    coefficient = np.log(V4_PHASE_DIRECTIONS*V4_OFF_WINDOWS/V4_PHASE_NULL_FAMILY_BUDGET)
+    thresholds = np.sqrt(overlap*coefficient)/np.cos(np.pi/V4_PHASE_DIRECTIONS)
+    correlations = abs(_centered_correlations(noise, source))
+    rows = []
+    for index, (score, threshold, variance, power) in enumerate(zip(correlations, thresholds, overlap, y_total)):
+        identifiable = bool(threshold<V4_OFF_THRESHOLD_CEILING)
+        rows.append(dict(case='baseline' if index<8 else 'after-tx',
+                         complex_offset=FIT_SAMPLES+(index%8)*PERIOD,
+                         correlation=float(score), threshold=float(threshold),
+                         spectral_overlap=float(variance),
+                         overlap_effective_dimension=float(1/variance) if variance>0 else None,
+                         zero_centered_power=bool(power==0), identifiable=identifiable,
+                         passed=bool(identifiable and score<=threshold)))
+    return dict(passed=all(row['passed'] for row in rows), windows=rows,
+                conditional_family_budget=V4_PHASE_NULL_FAMILY_BUDGET,
+                directions=V4_PHASE_DIRECTIONS, window_count=V4_OFF_WINDOWS,
+                threshold_strict_ceiling=V4_OFF_THRESHOLD_CEILING,
+                null_assumption='independent uniform non-DC Fourier phases conditional on amplitudes',
+                assumption_verified_for_input=False, production_calibration=False)
+
+
+def assess_centered_source_v4(reference, captures, tone_cfo, half_width):
+    """V4 uses raw-window FFTs and an explicit conditional stopped-noise bound."""
+    result = assess_centered_source_v3(reference, captures, tone_cfo, half_width)
+    result['legacy_v3_passed'] = result['waveform_association_passed']
+    source = _complex_array(reference, PERIOD)
+    raw = {tag: _complex_array(value, 65535) for tag, value in captures.items()}
+    aligned = np.roll(_source_band(source, half_width), result['fit']['lag'])
+    windows = {tag: v4_heldout_windows(value, tone_cfo, half_width, result['fit'])
+               for tag, value in raw.items()}
+    result['heldout_coherences'] = {tag: list(map(float, abs(_centered_correlations(value, aligned))))
+                                   for tag, value in windows.items()}
+    for row in result['surrogates']:
+        wrong = _phase_surrogate(source, row['seed'])
+        wrong_aligned = np.roll(_source_band(wrong, half_width), row['fit']['lag'])
+        wrong_windows = v4_heldout_windows(raw['during-tx'], tone_cfo, half_width, row['fit'])
+        row['heldout_coherences'] = list(map(float, abs(_centered_correlations(wrong_windows, wrong_aligned))))
+        row['maximum_coherence'] = max(row['heldout_coherences'])
+    cases = result['heldout_coherences']
+    result['during_median'] = float(np.median(cases['during-tx']))
+    result['during_minimum'] = min(cases['during-tx'])
+    result['off_maximum'] = max(cases['baseline']+cases['after-tx'])
+    result['surrogate_maximum'] = max(row['maximum_coherence'] for row in result['surrogates'])
+    result['source_wrong_margin'] = result['during_minimum']-result['surrogate_maximum']
+    control = phase_null_stopped_control(aligned, np.concatenate([windows['baseline'], windows['after-tx']]))
+    result['stopped_phase_null'] = control
+    result['checks'].update(
+        during_median=result['during_median']>=CENTERED_LIMITS['heldout_median_minimum'],
+        during_every_window=result['during_minimum']>=CENTERED_LIMITS['heldout_minimum'],
+        stopped_controls=control['passed'],
+        source_off_margin=result['during_median']-result['off_maximum']>=CENTERED_LIMITS['source_off_margin_minimum'],
+        source_wrong_margin=result['source_wrong_margin']>=V3_SOURCE_WRONG_MARGIN)
+    result['limits'].pop('off_maximum')
+    result['limits'].update(off_phase_family_budget=V4_PHASE_NULL_FAMILY_BUDGET,
+                            off_threshold_strict_ceiling=V4_OFF_THRESHOLD_CEILING)
+    result['schema_id'] = 'b210_centered_source_candidate_v4'
+    result['heldout_transform'] = 'independent_raw_4096_window_fft_v1'
+    result['waveform_association_passed'] = all(result['checks'].values())
+    result['interpretation'] = 'conditional phase-null stopped control and finite searched source contrast; not live RF qualification'
     return result
 
 

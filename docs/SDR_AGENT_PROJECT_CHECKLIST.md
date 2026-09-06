@@ -600,9 +600,17 @@ aggregation, result persistence and model-facing summaries.
           fails on two 32-kHz stopped-noise controls. 49 software tests and
           exact cleanup verified; see
           [source v3 validation](B210_SOURCE_V3_VALIDATION_2026-09-06.md).
-    - [ ] Establish a bandwidth-aware stopped-control criterion with a stated
-          basis for correlated samples and multiple windows, then independently
-          validate the complete candidate before new live source/bias qualification.
+    - [x] Implement v4 stopped-control bounds from spectral overlap under an
+          explicit independent Fourier-phase noise assumption, using per-window
+          FFTs and a 16-window union bound. One preregistered independent matrix
+          accepts 72/72 synthetic sources and 0/72 wrong sources; 56 software
+          tests and exact cleanup pass. This qualifies only the numerical
+          candidate, not live RF or production calibration; see
+          [source v4 validation](B210_SOURCE_V4_VALIDATION_2026-09-06.md).
+    - [ ] Integrate the fixed v4 candidate into a newly registered bounded
+          2.440-GHz RX40 source/bias validation with real tone/off controls,
+          raw hash/source/capture/RX identity and restoration evidence; retain
+          historical failed gates and keep production admission closed.
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the
