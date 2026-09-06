@@ -105,6 +105,8 @@ CENTERED_LIMITS = dict(prefix_coherence_minimum=.2, phase_rmse_maximum_rad=.2,
 FIT_SAMPLES = 7*PERIOD
 END_SAMPLES = 15*PERIOD
 SURROGATE_SEEDS = (9060701, 9060702, 9060703)
+V3_SURROGATE_SEEDS = tuple(range(9060701, 9060732))
+V3_SOURCE_WRONG_MARGIN = .3
 
 
 def _complex_array(value, size):
@@ -172,6 +174,18 @@ def _heldout_centered(raw, source, tone_cfo, half_width, fit):
     return list(map(float, abs(_centered_correlations(windows, reference))))
 
 
+def _centered_surrogate(source, received, tone_cfo, half_width, seed):
+    spectrum = np.fft.fft(source)
+    rng = np.random.default_rng(seed)
+    wrong_spectrum = abs(spectrum)*np.exp(1j*rng.uniform(-np.pi, np.pi, PERIOD))
+    wrong_spectrum[0] = spectrum[0]  # Preserve genuine source DC, too.
+    wrong = np.fft.ifft(wrong_spectrum)
+    wrong_fit = fit_centered_source(received, wrong, tone_cfo, half_width)
+    scores = _heldout_centered(received, wrong, tone_cfo, half_width, wrong_fit)
+    return dict(seed=seed, fit=wrong_fit, heldout_coherences=scores,
+                maximum_coherence=max(scores))
+
+
 def assess_centered_source(reference, captures, tone_cfo, half_width):
     """Numerical source association only; no RF qualification or model input changes.
 
@@ -199,17 +213,8 @@ def assess_centered_source(reference, captures, tone_cfo, half_width):
     fit = fit_centered_source(raw['during-tx'], source, tone_cfo, half_width)
     cases = {tag: _heldout_centered(value, source, tone_cfo, half_width, fit)
              for tag, value in raw.items()}
-    surrogate_results = []
-    spectrum = np.fft.fft(source)
-    for seed in SURROGATE_SEEDS:
-        rng = np.random.default_rng(seed)
-        wrong_spectrum = abs(spectrum)*np.exp(1j*rng.uniform(-np.pi, np.pi, PERIOD))
-        wrong_spectrum[0] = spectrum[0]  # Preserve genuine source DC, too.
-        wrong = np.fft.ifft(wrong_spectrum)
-        wrong_fit = fit_centered_source(raw['during-tx'], wrong, tone_cfo, half_width)
-        scores = _heldout_centered(raw['during-tx'], wrong, tone_cfo, half_width, wrong_fit)
-        surrogate_results.append(dict(seed=seed, fit=wrong_fit, heldout_coherences=scores,
-                                      maximum_coherence=max(scores)))
+    surrogate_results = [_centered_surrogate(source, raw['during-tx'], tone_cfo, half_width, seed)
+                         for seed in SURROGATE_SEEDS]
     during_median = float(np.median(cases['during-tx']))
     during_minimum = min(cases['during-tx'])
     off_maximum = max(cases['baseline']+cases['after-tx'])
@@ -228,6 +233,32 @@ def assess_centered_source(reference, captures, tone_cfo, half_width):
                 surrogates=surrogate_results, live_rf_qualified=False, recognizer_available=False,
                 independent_labels=0, production_preprocess_changed=False,
                 interpretation='candidate numerical association; requires separate live RF controls')
+
+
+def assess_centered_source_v3(reference, captures, tone_cfo, half_width):
+    """Compare the weakest source window to 31 spectrum-matched searched nulls.
+
+    This finite diagnostic contrast is not a calibrated hypothesis test. All
+    absolute source, stopped-TX and estimator gates remain mandatory.
+    """
+    result = assess_centered_source(reference, captures, tone_cfo, half_width)
+    result['legacy_v2_three_surrogate_passed'] = result['waveform_association_passed']
+    source = _complex_array(reference, PERIOD)
+    received = _complex_array(captures['during-tx'], 65535)
+    result['surrogates'].extend(
+        _centered_surrogate(source, received, tone_cfo, half_width, seed)
+        for seed in V3_SURROGATE_SEEDS[len(SURROGATE_SEEDS):])
+    result['surrogate_maximum'] = max(row['maximum_coherence'] for row in result['surrogates'])
+    result['source_wrong_margin'] = result['during_minimum']-result['surrogate_maximum']
+    result['limits'].pop('surrogate_maximum')
+    result['limits']['source_wrong_margin_minimum'] = V3_SOURCE_WRONG_MARGIN
+    result['checks'].pop('same_spectrum_wrong_sources')
+    result['checks']['source_wrong_margin'] = result['source_wrong_margin']>=V3_SOURCE_WRONG_MARGIN
+    result['waveform_association_passed'] = all(result['checks'].values())
+    result['schema_id'] = 'b210_centered_source_candidate_v3'
+    result['surrogate_count'] = len(result['surrogates'])
+    result['interpretation'] = 'finite searched spectrum-matched contrast; not a p-value or live RF qualification'
+    return result
 
 
 def analyze(root,tone_directory):

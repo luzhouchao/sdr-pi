@@ -593,9 +593,16 @@ aggregation, result persistence and model-facing summaries.
           candidate acceptance failed: 22/24 synthetic positives accepted,
           0/24 wrong sources accepted. No RF/model/dataset operations. See
           [centered-source validation](B210_CENTERED_SOURCE_VALIDATION_2026-09-06.md).
-    - [ ] Resolve the candidate's two synthetic false rejections with a justified
-          search-aware criterion and preregistered independent validation before
-          integrating it into a new live source/bias qualification.
+    - [x] Implement v3 searched, spectrum-matched source/wrong-source contrast;
+          resolve both old false rejections while preserving v2 failures. Run
+          the preregistered 72-positive/72-negative matrix once: 70 positives
+          accepted, no negatives accepted; full candidate acceptance still
+          fails on two 32-kHz stopped-noise controls. 49 software tests and
+          exact cleanup verified; see
+          [source v3 validation](B210_SOURCE_V3_VALIDATION_2026-09-06.md).
+    - [ ] Establish a bandwidth-aware stopped-control criterion with a stated
+          basis for correlated samples and multiple windows, then independently
+          validate the complete candidate before new live source/bias qualification.
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the

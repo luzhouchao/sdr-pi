@@ -16,10 +16,10 @@ spec.loader.exec_module(match)
 
 
 class CenteredSourceTests(unittest.TestCase):
-    def fixture(self, seed=90607, lag=776, bias=2+1.5j, residual=65.):
+    def fixture(self, seed=90607, lag=776, bias=2+1.5j, residual=65., half_width=125000):
         rng = np.random.default_rng(seed)
         source = rng.normal(size=4096)+1j*rng.normal(size=4096)
-        source = match._source_band(source, 125000)
+        source = match._source_band(source, half_width)
         source /= np.sqrt(np.mean(abs(source)**2))
         source += .7+.2j
         samples = np.tile(np.roll(source, lag), 16)[:65535]
