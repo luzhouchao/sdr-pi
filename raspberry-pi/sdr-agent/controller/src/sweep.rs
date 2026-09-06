@@ -2236,12 +2236,26 @@ mod tests {
 
     #[test]
     fn clipped_fixed_gain_agx_iq_fails_and_restores_session() {
+        inline_failure_restores(false, "summary_clipped");
+    }
+
+    #[test]
+    fn transport_overflow_fails_and_restores_session() {
+        inline_failure_restores(true, "agx_capture_shape");
+    }
+
+    fn inline_failure_restores(overflow: bool, expected_code: &str) {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let address = listener.local_addr().unwrap();
         let server = thread::spawn(move || {
             let mut iq = vec![0_u8; 64 * 4];
-            iq[..2].copy_from_slice(&2047_i16.to_le_bytes());
+            if !overflow {
+                iq[..2].copy_from_slice(&2047_i16.to_le_bytes());
+            }
             let inline = format!("{{\"schema_version\":1,\"request_id\":5,\"status\":\"ok\",\"generation\":9,\"session_generation\":9,\"samples_captured\":64,\"bytes_transferred\":256,\"sequence\":46,\"dropped_samples\":0,\"overflow\":false,\"timeout\":{{\"limit_ms\":500,\"elapsed_us\":500,\"timed_out\":false}},\"health\":{{\"healthy\":true,\"flags\":0,\"source\":\"iio_adapter\"}},\"iq_base64\":\"{}\"}}\n", test_base64(&iq));
+            let mut payload: serde_json::Value = serde_json::from_str(&inline).unwrap();
+            payload["overflow"] = serde_json::json!(overflow);
+            let inline = serde_json::to_string(&payload).unwrap() + "\n";
             let responses = [
                 "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"server\":\"p201-sdrd\",\"protocol\":\"SDRD/1\",\"mode\":\"controlled\",\"mutating_commands\":true}\n",
                 "{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":true,\"raw_iq_capture\":true,\"software_summary\":true,\"max_capture_bytes\":67108864,\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n",
@@ -2280,7 +2294,7 @@ mod tests {
         ))
         .run(&one_point)
         .unwrap_err();
-        assert_eq!(error.code, "summary_clipped");
+        assert_eq!(error.code, expected_code);
         server.join().unwrap();
     }
 

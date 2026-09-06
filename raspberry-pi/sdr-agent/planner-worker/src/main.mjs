@@ -92,6 +92,10 @@ sessionServer.on("listening", () => {
 });
 
 async function handleFrame(frame) {
+  // Read-only liveness; this never invokes a provider or changes a session.
+  if (frame === '{"protocol_version":1,"operation":"health"}') {
+    return { schema_version: 1, service: "planner", ready: true, recognizer_available: false };
+  }
   let request;
   try {
     request = parseRequest(frame);

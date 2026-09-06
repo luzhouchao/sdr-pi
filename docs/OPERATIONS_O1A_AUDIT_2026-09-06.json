@@ -1,0 +1,960 @@
+{
+  "schema_version": 1,
+  "unit": "O1a",
+  "status": "pass",
+  "base_commit": "30448e247d293fd50560b146076cfa1007a25c1c",
+  "plan_sha256": "4597bbd291aa0e26e45bdbbd5e4b1b477e1d5750d6cfac0a34663936cfcf7ead",
+  "full_matrix": {
+    "schema_version": 1,
+    "status": "pass",
+    "rx_bytes": 0,
+    "locked_test_read": false,
+    "recognizer_available": false,
+    "suites": [
+      {
+        "name": "controller-fmt",
+        "argv": [
+          "cargo",
+          "fmt",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/controller/Cargo.toml",
+          "--check"
+        ],
+        "exit_code": 0,
+        "seconds": 0.5096496840124018,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "controller-tests",
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/controller/Cargo.toml",
+          "--all-targets",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "seconds": 0.7490992509992793,
+        "sha256": "da295fdb3af28723f5067cb5192dd00136b661f3b0284e32e92815329f96625c"
+      },
+      {
+        "name": "controller-clippy",
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/controller/Cargo.toml",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit_code": 0,
+        "seconds": 0.20211099198786542,
+        "sha256": "22e0df986057b9ba5be07526ac5fb348862a3dedef42108383cc3e088acbb889"
+      },
+      {
+        "name": "web-fmt",
+        "argv": [
+          "cargo",
+          "fmt",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/web-console/Cargo.toml",
+          "--check"
+        ],
+        "exit_code": 0,
+        "seconds": 0.2341762349824421,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "web-tests",
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/web-console/Cargo.toml",
+          "--all-targets",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "seconds": 4.259399438975379,
+        "sha256": "70267e9680fd4922af2fbc480b6ab742fb81683489c483a7fd29e814c5ab3a4d"
+      },
+      {
+        "name": "web-clippy",
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/web-console/Cargo.toml",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit_code": 0,
+        "seconds": 0.27021203900221735,
+        "sha256": "299f16a2c523be18fef769975d2df00e0505521db047540feea3a74b94666887"
+      },
+      {
+        "name": "node-tests",
+        "argv": [
+          "node",
+          "--test"
+        ],
+        "exit_code": 0,
+        "seconds": 0.9079776679864153,
+        "sha256": "0725f39eda5e1f3e432c0c7d943fed8aae25dac31d760a3ad02a2d9fcf2a0eec"
+      },
+      {
+        "name": "operations-tests",
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "$REPO/jetson-agx/sdrharness/tests",
+          "-p",
+          "test_operations*.py"
+        ],
+        "exit_code": 0,
+        "seconds": 10.91382286202861,
+        "sha256": "c744ad4a816530a13022ce3ce9f5ccff9ba89955d7579bc1c435b4f222791310"
+      },
+      {
+        "name": "gpu-fault-tests",
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "$REPO/jetson-agx/sdrharness/tests",
+          "-p",
+          "test_gpu_lease.py"
+        ],
+        "exit_code": 0,
+        "seconds": 6.08091736305505,
+        "sha256": "0bb17622359810b4bea6bf759daf3d5c58816cfe08f95004ca2f560c9c74ea5b"
+      },
+      {
+        "name": "supervisor-fault-tests",
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "$REPO/jetson-agx/sdrharness/tests",
+          "-p",
+          "test_amc_worker_supervisor.py"
+        ],
+        "exit_code": 0,
+        "seconds": 3.717594469024334,
+        "sha256": "7ecd8bc6ce15d63394f1ce653b22349f34218ffa685e3fd6b511d922688975af"
+      },
+      {
+        "name": "worker-contract-tests",
+        "argv": [
+          "$REPO/local-assets/amc-eval/runtime/venv/bin/python",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "$REPO/jetson-agx/sdrharness/tests",
+          "-p",
+          "test_amc_mamba_worker.py"
+        ],
+        "exit_code": 0,
+        "seconds": 3.3152607239899226,
+        "sha256": "5279d1fc9a1ced44f9c96da1414ef59e4676f963fbad52e7a1a2903538819b0d"
+      },
+      {
+        "name": "c-sanitized-tests",
+        "argv": [
+          "make",
+          "-C",
+          "$REPO/sdr-system/sdrd",
+          "test",
+          "BUILD_DIR=$FEATURE/sdrd-sanitized",
+          "CFLAGS=-std=c11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer",
+          "LDFLAGS=-fsanitize=address,undefined"
+        ],
+        "exit_code": 0,
+        "seconds": 11.003931248968001,
+        "sha256": "828399a4878b0d55ce7fc5cbf30ab1cbac3e0f2234a8e7d34863d04ff3af6749"
+      },
+      {
+        "name": "web-build",
+        "argv": [
+          "cargo",
+          "build",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/web-console/Cargo.toml"
+        ],
+        "exit_code": 0,
+        "seconds": 0.21804188197711483,
+        "sha256": "299f16a2c523be18fef769975d2df00e0505521db047540feea3a74b94666887"
+      }
+    ],
+    "cases": [
+      {
+        "name": "native_readonly_health",
+        "statuses": [
+          {
+            "name": "web",
+            "status": "healthy"
+          },
+          {
+            "name": "planner",
+            "status": "healthy"
+          }
+        ]
+      },
+      {
+        "name": "native_planner_fuzz",
+        "count": 256,
+        "seed": 20260906,
+        "sha256": "37510d63221056aad06377bbb5fa9ee2c953ee29662e3b10ff45ec4ef74c2447"
+      },
+      {
+        "name": "native_web_archive_fuzz",
+        "count": 256,
+        "seed": 20260906,
+        "sha256": "261a9210872a0e4f14cc35c1fcd6bf16e2429aefdab27d0e51446173c395b5d5"
+      },
+      {
+        "name": "native_failure_dedupe_recovery",
+        "initial": {
+          "schema_version": 1,
+          "observed_at_unix_ms": 1788683866252,
+          "recognizer_available": false,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "healthy"
+          },
+          "events": [
+            {
+              "service": "disk",
+              "status": "healthy",
+              "event": "healthy"
+            },
+            {
+              "service": "planner",
+              "status": "healthy",
+              "event": "healthy"
+            },
+            {
+              "service": "web",
+              "status": "healthy",
+              "event": "healthy"
+            }
+          ],
+          "free_bytes": 807211896832
+        },
+        "failed": {
+          "schema_version": 1,
+          "observed_at_unix_ms": 1788683866278,
+          "recognizer_available": false,
+          "statuses": {
+            "web": "unavailable",
+            "planner": "healthy",
+            "disk": "healthy"
+          },
+          "events": [
+            {
+              "service": "web",
+              "status": "unavailable",
+              "event": "alert"
+            }
+          ],
+          "free_bytes": 807211892736
+        },
+        "recovered": {
+          "schema_version": 1,
+          "observed_at_unix_ms": 1788683866359,
+          "recognizer_available": false,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "healthy"
+          },
+          "events": [
+            {
+              "service": "web",
+              "status": "healthy",
+              "event": "recovered"
+            }
+          ],
+          "free_bytes": 807211888640
+        }
+      }
+    ],
+    "cleanup": {
+      "process_exit_codes": [
+        -15,
+        0,
+        0
+      ],
+      "control_sockets_absent": true,
+      "control_sockets": [
+        "/run/user/1000/sdrharness/o1a-906a-planner.sock",
+        "/run/user/1000/sdrharness/o1a-906a-session.sock"
+      ]
+    }
+  },
+  "final_native": {
+    "schema_version": 1,
+    "status": "pass",
+    "rx_bytes": 0,
+    "locked_test_read": false,
+    "recognizer_available": false,
+    "suites": [
+      {
+        "name": "web-build",
+        "argv": [
+          "cargo",
+          "build",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/web-console/Cargo.toml"
+        ],
+        "exit_code": 0,
+        "seconds": 11.091128946980461,
+        "sha256": "4abdd39f7e5fa024609dd010cd387448caccca879681a02e29179422f65f4c97"
+      }
+    ],
+    "cases": [
+      {
+        "name": "native_readonly_health",
+        "statuses": [
+          {
+            "name": "web",
+            "status": "healthy"
+          },
+          {
+            "name": "planner",
+            "status": "healthy"
+          }
+        ]
+      },
+      {
+        "name": "native_planner_fuzz",
+        "count": 256,
+        "seed": 20260906,
+        "sha256": "37510d63221056aad06377bbb5fa9ee2c953ee29662e3b10ff45ec4ef74c2447"
+      },
+      {
+        "name": "native_web_archive_fuzz",
+        "count": 256,
+        "seed": 20260906,
+        "sha256": "261a9210872a0e4f14cc35c1fcd6bf16e2429aefdab27d0e51446173c395b5d5"
+      },
+      {
+        "name": "native_failure_dedupe_recovery",
+        "initial": {
+          "schema_version": 1,
+          "observed_at_unix_ms": 1788684381132,
+          "recognizer_available": false,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "healthy"
+          },
+          "events": [
+            {
+              "service": "disk",
+              "status": "healthy",
+              "event": "healthy"
+            },
+            {
+              "service": "planner",
+              "status": "healthy",
+              "event": "healthy"
+            },
+            {
+              "service": "web",
+              "status": "healthy",
+              "event": "healthy"
+            }
+          ],
+          "free_bytes": 808146018304
+        },
+        "failed": {
+          "schema_version": 1,
+          "observed_at_unix_ms": 1788684381159,
+          "recognizer_available": false,
+          "statuses": {
+            "web": "unavailable",
+            "planner": "healthy",
+            "disk": "healthy"
+          },
+          "events": [
+            {
+              "service": "web",
+              "status": "unavailable",
+              "event": "alert"
+            }
+          ],
+          "free_bytes": 808146014208
+        },
+        "recovered": {
+          "schema_version": 1,
+          "observed_at_unix_ms": 1788684381241,
+          "recognizer_available": false,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "healthy"
+          },
+          "events": [
+            {
+              "service": "web",
+              "status": "healthy",
+              "event": "recovered"
+            }
+          ],
+          "free_bytes": 808146010112
+        }
+      }
+    ],
+    "cleanup": {
+      "process_exit_codes": [
+        -15,
+        0,
+        0
+      ],
+      "control_sockets_absent": true,
+      "control_sockets": [
+        "/run/user/1000/sdrharness/o1a-906a-planner.sock",
+        "/run/user/1000/sdrharness/o1a-906a-session.sock"
+      ]
+    }
+  },
+  "followup_checks": {
+    "controller": "100 library + 16 terminal + 1 integration passed",
+    "web": "35 passed, 2 ignored",
+    "node": "56 passed",
+    "python_operations": "12 passed",
+    "python_gpu_faults": "22 passed",
+    "python_supervisor": "10 passed",
+    "python_worker_contract": "3 passed",
+    "sanitizers": "C ASan + UBSan passed",
+    "systemd_verify": "exit 0; warnings only for unrelated host units"
+  },
+  "seed": 20260906,
+  "mutation_targets": 11,
+  "mutation_cases": 2816,
+  "release_drill": {
+    "receipts": {
+      "previous": {
+        "bytes": 2336008,
+        "installed": false,
+        "manifest_sha256": "1967d393149c2b59ce2a20c3e6483d73edc78594ad9270b62d18f0bd85a59cd1",
+        "recognizer_available": false,
+        "release_id": "previous",
+        "schema_version": 1,
+        "verified_files": 1
+      },
+      "candidate": {
+        "bytes": 67130312,
+        "installed": false,
+        "manifest_sha256": "1520299d63b89490ff71cc0a036b439214a97f3b6753ffaebfdc72a73311c8e5",
+        "recognizer_available": false,
+        "release_id": "candidate",
+        "schema_version": 1,
+        "verified_files": 1
+      }
+    },
+    "corrupt_release_exit_code": 2,
+    "corrupt_release_did_not_switch": true,
+    "candidate_switch_then_previous_rollback": true,
+    "user_database_unchanged": true,
+    "user_database_sha256": "3f3b30f3d6059b3d37dfad55684132147d1733bddd5e7c49862fcad2e0c282e3",
+    "installed_services_changed": false
+  },
+  "deep_json_cli": {
+    "cases": 2,
+    "status": "pass",
+    "health_exit_code": 3,
+    "release_exit_code": 2,
+    "stderr_empty": true
+  },
+  "source_sha256": {
+    "jetson-agx/sdrharness/systemd/sdrharness-web.service": "a51f2cbe4d773ef809c646dd2ee81f6fc8a160944ef10f4e4512a251e501d5ab",
+    "raspberry-pi/sdr-agent/controller/src/lib.rs": "cd23491d1eb8d72f1af39dc0f97624ca724d7afec71865c54e80ea8a052d67fb",
+    "raspberry-pi/sdr-agent/controller/src/runner.rs": "fb8bfd5e2255352e7c844a5321a3b6f54288bf6aafb703719a6a82f84d21b6c6",
+    "raspberry-pi/sdr-agent/controller/src/sweep.rs": "404db31503ae83aa6844b421cba1c7a028056ebe9e739bd8f7a832388e4ea636",
+    "raspberry-pi/sdr-agent/planner-worker/src/main.mjs": "f091d57bef5f993b702e42ef8c2bbb5bf03c5f56b50a727c31c973f89e976471",
+    "raspberry-pi/sdr-agent/planner-worker/src/session-server.mjs": "ec9c9778e8343f3b11b90a6134fec608e19fdca8a7f7070bcdb37be6ce438b28",
+    "raspberry-pi/sdr-agent/web-console/src/main.rs": "7ad443410f03ea8e104ba683ce6a148df29727f68f5a58095d1b04b797bdcd8a",
+    "sdr-system/sdrd/tests/test_sdrd.c": "2b0c16de3a6d5ab8349a1a4c3b138d2464cb35227879228a6ddf438b0fe7835c",
+    "jetson-agx/sdrharness/config/operations/health.json.example": "687499ac31134db01355682c01601c5d535a9403634e222732ccff2706ef249c",
+    "jetson-agx/sdrharness/config/operations/journald-sdrharness.conf.example": "8ba585213ba6dbbb810f5176d1e22294b9e62254de74c0df3f6ee0433cd5875e",
+    "jetson-agx/sdrharness/config/operations/release.json.example": "b953bda4d9fd2fd650e72cb69ac636eb99d3b67bbc25b4939c94449df1828e7a",
+    "jetson-agx/sdrharness/config/operations/sdrharness-health.candidate.service": "29ce0fe628ab05a55bae3db3d930be214831168a6306c296c0892438b1dde8c1",
+    "jetson-agx/sdrharness/config/operations/sdrharness-health.candidate.timer": "9b66f6a1f8568f42fb5c041fdc8748a94a8fdd84be27236ccbce538bde52afc8",
+    "jetson-agx/sdrharness/config/operations/service-logging.conf.example": "0adf2cbe72c4c9f67049288a050cbf9228ad108d7e912c5dfe5feede29420cea",
+    "jetson-agx/sdrharness/scripts/operations-health.py": "ac21d70ba6e5d5b9c1edcce153be6a3f5675cde1d63c47f87a4d19b2afab4c15",
+    "jetson-agx/sdrharness/scripts/validate-operations.py": "2c39f51200722cf72826f99c4291236ba1c1789e4975ee3f850a7ae6a22e4552",
+    "jetson-agx/sdrharness/scripts/verify-release.py": "9e6fdf953acba83eb1227e4701784120d13a08def952654981b94c025ac2beb2",
+    "jetson-agx/sdrharness/tests/test_operations.py": "f7e17ed602e6ec513aaa67fbe2715b8ea19fc6ec7e070b50628f516107e38c4a",
+    "jetson-agx/sdrharness/tests/test_operations_fuzz.py": "eca24f9658971780a487431002c90f628612696ecd6752023fe5ff221baf19c5",
+    "raspberry-pi/sdr-agent/controller/src/bounded_audit.rs": "37b6550284d6c72697247947808b4e47bf074aaf37e378431253ee4cb4564355",
+    "raspberry-pi/sdr-agent/controller/tests/operations_fuzz.rs": "1f33f41528aecc9095eb9d0d495db7aca15f65dc5443e126a300cadc988f615f",
+    "raspberry-pi/sdr-agent/planner-worker/test/operations-fuzz.test.mjs": "78a89b04b1bda0fd691bfc22af7afac16aa76acb3f7135838d563d252fb9dcdd"
+  },
+  "artifact_hashes": {
+    "controller-final-tests.log": {
+      "bytes": 10921,
+      "sha256": "9e6724d24ff5dd599a54c36e1fd6708ce0766b54fe5634129a719c5791d4e875"
+    },
+    "controller-final-clippy.log": {
+      "bytes": 173,
+      "sha256": "00eac03a9c861980669ea23b20644cd2a9f12e0a67670dc8b6f3e995c3f48ac3"
+    },
+    "web-tests.log": {
+      "bytes": 3725,
+      "sha256": "70267e9680fd4922af2fbc480b6ab742fb81683489c483a7fd29e814c5ab3a4d"
+    },
+    "sweep-final-tests.log": {
+      "bytes": 2409,
+      "sha256": "5e259458cf3fa8c323a5d72507a6268431d17334391e368e47d7e98934b54bf2"
+    },
+    "native-web.log": {
+      "bytes": 52,
+      "sha256": "3f3dfa7684f5f00c8390b95aa34aaf5b6c4490a693a366e237efc2fd18869b84"
+    },
+    "node-tests.log": {
+      "bytes": 10490,
+      "sha256": "0725f39eda5e1f3e432c0c7d943fed8aae25dac31d760a3ad02a2d9fcf2a0eec"
+    },
+    "controller-fmt.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "systemd-verify.log": {
+      "bytes": 496,
+      "sha256": "37b67b8be743b90f4ae72b889efccd27569518b85baa45ab368c5c6438eec3ec"
+    },
+    "gpu-fault-tests.log": {
+      "bytes": 16551,
+      "sha256": "0bb17622359810b4bea6bf759daf3d5c58816cfe08f95004ca2f560c9c74ea5b"
+    },
+    "web-build.log": {
+      "bytes": 277,
+      "sha256": "4abdd39f7e5fa024609dd010cd387448caccca879681a02e29179422f65f4c97"
+    },
+    "ops-final-tests.log": {
+      "bytes": 739,
+      "sha256": "a63a2800139351da093011caa8b16c6a69aa383576ceca1ead77fbf7bf6db3e5"
+    },
+    "controller-tests.log": {
+      "bytes": 21110,
+      "sha256": "da295fdb3af28723f5067cb5192dd00136b661f3b0284e32e92815329f96625c"
+    },
+    "overflow-fault-test.log": {
+      "bytes": 985,
+      "sha256": "82a2d93a35e20b901928f7f2bf30fa392da117db2cc88969fef48cdea7276fd8"
+    },
+    "controller-clippy.log": {
+      "bytes": 72,
+      "sha256": "22e0df986057b9ba5be07526ac5fb348862a3dedef42108383cc3e088acbb889"
+    },
+    "release-drill.json": {
+      "bytes": 901,
+      "sha256": "a079006372c6cd9be1bd8b29c5ce1b813a5abac07c802f0db9c1a578bca6ab81"
+    },
+    "operations-final-tests.log": {
+      "bytes": 741,
+      "sha256": "009a0318c28f5a66aaefe6d7fdb4548ca4b0ffe5d91c56872e6122a7e77888c1"
+    },
+    "ops-hardening-tests.log": {
+      "bytes": 107,
+      "sha256": "dcdd05d13e6378566f2ac526808de7a965e40906a53fca56beaa1cc4053ffc0d"
+    },
+    "native-node.log": {
+      "bytes": 208,
+      "sha256": "326e36a2420ad0eb6861305b42b86e92d2ea839706494ef343185ecc406e4aeb"
+    },
+    "web-clippy.log": {
+      "bytes": 72,
+      "sha256": "299f16a2c523be18fef769975d2df00e0505521db047540feea3a74b94666887"
+    },
+    "web-fmt.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "supervisor-fault-tests.log": {
+      "bytes": 109,
+      "sha256": "7ecd8bc6ce15d63394f1ce653b22349f34218ffa685e3fd6b511d922688975af"
+    },
+    "native-web-restarted.log": {
+      "bytes": 52,
+      "sha256": "3f3dfa7684f5f00c8390b95aa34aaf5b6c4490a693a366e237efc2fd18869b84"
+    },
+    "operations-tests.log": {
+      "bytes": 737,
+      "sha256": "c744ad4a816530a13022ce3ce9f5ccff9ba89955d7579bc1c435b4f222791310"
+    },
+    "c-sanitized-tests.log": {
+      "bytes": 565,
+      "sha256": "828399a4878b0d55ce7fc5cbf30ab1cbac3e0f2234a8e7d34863d04ff3af6749"
+    },
+    "operations-summary.json": {
+      "bytes": 3000,
+      "sha256": "1ea7be271f90cccded41f2dc1cecd7b3daaba77921ecb77136eab19d43aa258f"
+    },
+    "audit-final-tests.log": {
+      "bytes": 1400,
+      "sha256": "04e6dd192dc5a924c81b02fe285b5d06234438c0095a5167976224b0c10044d6"
+    },
+    "final-native.log": {
+      "bytes": 306,
+      "sha256": "e98a658b7ce64305808539d671df9f5bb68e5013b44266322cfbab577f42a3a1"
+    },
+    "deep-json-negative.json": {
+      "bytes": 100,
+      "sha256": "72dba3c255567e40910a5ed4f582c512cf01cdffdabb4adf24a20fde7ada714e"
+    },
+    "worker-contract-tests.log": {
+      "bytes": 101,
+      "sha256": "5279d1fc9a1ced44f9c96da1414ef59e4676f963fbad52e7a1a2903538819b0d"
+    },
+    "attempt-system-python/web-tests.log": {
+      "bytes": 3829,
+      "sha256": "400d4639a6295087cfdf845b9dbb0231bf08a5effce3c47e10cb0633a9eed25f"
+    },
+    "attempt-system-python/node-tests.log": {
+      "bytes": 10286,
+      "sha256": "29e21c440f0710199d42040650d9621ccd89b969c83c22b55fc0bfbb0f80c3f5"
+    },
+    "attempt-system-python/controller-fmt.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "attempt-system-python/gpu-fault-tests.log": {
+      "bytes": 16551,
+      "sha256": "4b42738d638c2dbc858f01aad605fe5b7606862eaff07fbab216094a7cbbc376"
+    },
+    "attempt-system-python/node-fuzz-final.log": {
+      "bytes": 1149,
+      "sha256": "fe1e5d0d7da5f8cac3de5f36e1328fffb78fa6d974755e45819aa0de435e281a"
+    },
+    "attempt-system-python/node-fuzz.log": {
+      "bytes": 946,
+      "sha256": "fdbad49ec1383677e4796ccb393db669361781c4efa4eac2a444f1dc6ba6b401"
+    },
+    "attempt-system-python/web-build.log": {
+      "bytes": 2221,
+      "sha256": "dbc5e6fe5f2101379e51c6e55daa93a28e996fadec1775d43be688120f54c3bb"
+    },
+    "attempt-system-python/controller-tests.log": {
+      "bytes": 21211,
+      "sha256": "0d0b72c98dd2309581ec4353fc4029ecc2993e2b3149f0cd042d34585ebd016a"
+    },
+    "attempt-system-python/c-tests.log": {
+      "bytes": 404,
+      "sha256": "ffebcac83bad371a6e7c6a7f3cba52df1ad38f7f1c40ebea734c991329b5af49"
+    },
+    "attempt-system-python/controller-clippy.log": {
+      "bytes": 620,
+      "sha256": "278a7e994c0e0539cc248484da5d9bb57779958c7ba7934e357ef5d3f198feed"
+    },
+    "attempt-system-python/ops-tests.log": {
+      "bytes": 737,
+      "sha256": "c6112e1368ea4e69371fc53a229c643bde0891e63876c08a7b985a56a469beea"
+    },
+    "attempt-system-python/web-clippy.log": {
+      "bytes": 1974,
+      "sha256": "d1219bb7c6836cb48460fd1e3e5eb372971ef213e558af8a8a9440f0200e5b6d"
+    },
+    "attempt-system-python/web-fmt.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "attempt-system-python/supervisor-fault-tests.log": {
+      "bytes": 109,
+      "sha256": "8190ac7d038b366f60be082a4d55993d2648c5c2b3917d00c2f18fd79e190c31"
+    },
+    "attempt-system-python/operations-tests.log": {
+      "bytes": 737,
+      "sha256": "57f4175da4d14ef5e57b6848f8d52fcf579945147888899221045a57205bd90c"
+    },
+    "attempt-system-python/rust-tests.log": {
+      "bytes": 11421,
+      "sha256": "cb2c8b4f2dad5e26d2466e24d5835b5b0613d8c316b9f700eb74261cd1550207"
+    },
+    "attempt-system-python/matrix.log": {
+      "bytes": 3848,
+      "sha256": "1e462cca631f90860be5f761bdedf28ef562b58a62e0756af83118e9b6a906f7"
+    },
+    "attempt-system-python/operations-summary.json": {
+      "bytes": 4484,
+      "sha256": "2ebfec43328943dfc9ffee0c124d166acfe0aee0371114345e6572ecd87eb066"
+    },
+    "attempt-system-python/worker-contract-tests.log": {
+      "bytes": 970,
+      "sha256": "5f18b5ff6b3ed9f44f0c111410f9e9c7bc9738bbb6e51fc70852ccdb82f73f45"
+    },
+    "passed-matrix-before-review/native-web.log": {
+      "bytes": 52,
+      "sha256": "e5fb63e44f38f4a56268b434fda06c1ee05e020c6b6e4e79f8b3ccdfe78f6ee9"
+    },
+    "passed-matrix-before-review/web-build.log": {
+      "bytes": 72,
+      "sha256": "299f16a2c523be18fef769975d2df00e0505521db047540feea3a74b94666887"
+    },
+    "passed-matrix-before-review/native-node.log": {
+      "bytes": 208,
+      "sha256": "326e36a2420ad0eb6861305b42b86e92d2ea839706494ef343185ecc406e4aeb"
+    },
+    "passed-matrix-before-review/native-web-restarted.log": {
+      "bytes": 52,
+      "sha256": "e5fb63e44f38f4a56268b434fda06c1ee05e020c6b6e4e79f8b3ccdfe78f6ee9"
+    },
+    "passed-matrix-before-review/matrix.log": {
+      "bytes": 3769,
+      "sha256": "6ce10d24c84929482e04400f16c9f3b721d2a1a93f3852824ed5870422a56b9e"
+    },
+    "passed-matrix-before-review/operations-summary.json": {
+      "bytes": 7699,
+      "sha256": "0f2dd428edc5f568e2b7496443dd655b9827cfca45f2f845ccffdd2a41f51ef9"
+    }
+  },
+  "binaries": {
+    "web_sha256": "359b5a24b0c80f64794d13361bb349837a0af84fbd9de914dc26d30c7accb1bf",
+    "sdrd_test_sha256": "6ce037418d17590b041c0fbd05d53dfbbc29710976184a19d330a99c06d05906"
+  },
+  "pre_cleanup": {
+    "processes_absent": true,
+    "native_control_sockets_absent": true,
+    "removed_orphan_test_sockets": []
+  },
+  "cleanup": {
+    "verified": true,
+    "removed_directory": "/var/tmp/sdrharness-dev/o1a-906a",
+    "directory_absent": true,
+    "user_results_deleted": false,
+    "installed_services_changed": false
+  },
+  "installed_services_changed": false,
+  "rx_bytes": 0,
+  "locked_test_read": false,
+  "recognizer_available": false,
+  "retained_failed_matrix": {
+    "schema_version": 1,
+    "status": "failed",
+    "rx_bytes": 0,
+    "locked_test_read": false,
+    "recognizer_available": false,
+    "suites": [
+      {
+        "name": "controller-fmt",
+        "argv": [
+          "cargo",
+          "fmt",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/controller/Cargo.toml",
+          "--check"
+        ],
+        "exit_code": 0,
+        "seconds": 0.502664437983185,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "controller-tests",
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/controller/Cargo.toml",
+          "--all-targets",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "seconds": 4.874357524968218,
+        "sha256": "0d0b72c98dd2309581ec4353fc4029ecc2993e2b3149f0cd042d34585ebd016a"
+      },
+      {
+        "name": "controller-clippy",
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/controller/Cargo.toml",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit_code": 0,
+        "seconds": 15.577595528040547,
+        "sha256": "278a7e994c0e0539cc248484da5d9bb57779958c7ba7934e357ef5d3f198feed"
+      },
+      {
+        "name": "web-fmt",
+        "argv": [
+          "cargo",
+          "fmt",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/web-console/Cargo.toml",
+          "--check"
+        ],
+        "exit_code": 0,
+        "seconds": 0.23643771902425215,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "web-tests",
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/web-console/Cargo.toml",
+          "--all-targets",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "seconds": 16.83256909699412,
+        "sha256": "400d4639a6295087cfdf845b9dbb0231bf08a5effce3c47e10cb0633a9eed25f"
+      },
+      {
+        "name": "web-clippy",
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "$REPO/raspberry-pi/sdr-agent/web-console/Cargo.toml",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit_code": 0,
+        "seconds": 18.384886381041724,
+        "sha256": "d1219bb7c6836cb48460fd1e3e5eb372971ef213e558af8a8a9440f0200e5b6d"
+      },
+      {
+        "name": "node-tests",
+        "argv": [
+          "node",
+          "--test"
+        ],
+        "exit_code": 0,
+        "seconds": 0.9105143210035749,
+        "sha256": "29e21c440f0710199d42040650d9621ccd89b969c83c22b55fc0bfbb0f80c3f5"
+      },
+      {
+        "name": "operations-tests",
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "$REPO/jetson-agx/sdrharness/tests",
+          "-p",
+          "test_operations*.py"
+        ],
+        "exit_code": 0,
+        "seconds": 10.913578123028856,
+        "sha256": "57f4175da4d14ef5e57b6848f8d52fcf579945147888899221045a57205bd90c"
+      },
+      {
+        "name": "gpu-fault-tests",
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "$REPO/jetson-agx/sdrharness/tests",
+          "-p",
+          "test_gpu_lease.py"
+        ],
+        "exit_code": 0,
+        "seconds": 6.030033956980333,
+        "sha256": "4b42738d638c2dbc858f01aad605fe5b7606862eaff07fbab216094a7cbbc376"
+      },
+      {
+        "name": "supervisor-fault-tests",
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "$REPO/jetson-agx/sdrharness/tests",
+          "-p",
+          "test_amc_worker_supervisor.py"
+        ],
+        "exit_code": 0,
+        "seconds": 3.7896962439990602,
+        "sha256": "8190ac7d038b366f60be082a4d55993d2648c5c2b3917d00c2f18fd79e190c31"
+      },
+      {
+        "name": "worker-contract-tests",
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "$REPO/jetson-agx/sdrharness/tests",
+          "-p",
+          "test_amc_mamba_worker.py"
+        ],
+        "exit_code": 1,
+        "seconds": 0.37820629501948133,
+        "sha256": "5f18b5ff6b3ed9f44f0c111410f9e9c7bc9738bbb6e51fc70852ccdb82f73f45"
+      }
+    ],
+    "cases": [],
+    "failure": "AssertionError: worker-contract-tests",
+    "cleanup": {
+      "process_exit_codes": [],
+      "control_sockets_absent": true,
+      "control_sockets": []
+    }
+  },
+  "release_manifests": {
+    "previous": {
+      "schema_version": 1,
+      "release_id": "previous",
+      "kind": "rx_only_candidate",
+      "recognizer_available": false,
+      "files": [
+        {
+          "path": "web",
+          "bytes": 2336008,
+          "sha256": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+        }
+      ]
+    },
+    "candidate": {
+      "schema_version": 1,
+      "release_id": "candidate",
+      "kind": "rx_only_candidate",
+      "recognizer_available": false,
+      "files": [
+        {
+          "path": "web",
+          "bytes": 67130312,
+          "sha256": "359b5a24b0c80f64794d13361bb349837a0af84fbd9de914dc26d30c7accb1bf"
+        }
+      ]
+    }
+  },
+  "installed_service_snapshot": "MainPID=204288\nId=sdrharness-web.service\nActiveState=active\nActiveEnterTimestamp=Sat 2026-09-05 02:28:35 CST\n\nMainPID=62839\nId=sdrharness-planner.service\nActiveState=active\nActiveEnterTimestamp=Thu 2026-09-03 13:39:00 CST\n\nMainPID=1150\nId=spark-x25.service\nActiveState=active\nActiveEnterTimestamp=Wed 2026-09-02 16:35:11 CST\n",
+  "failure_notes": [
+    "Initial unified matrix used system Python for the existing worker contract tests; Torch was unavailable. Corrected that suite to the existing frozen venv; no environment/model/dataset installation or evaluation occurred.",
+    "Early framing-test close synchronization, test-only C temporary path buffer sizing, and the new overflow test expected error code were corrected during development; final tests passed."
+  ]
+}

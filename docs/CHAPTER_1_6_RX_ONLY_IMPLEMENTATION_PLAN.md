@@ -323,6 +323,10 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
   `voltage0,1` scan pair，并只读验证 `voltage0` 的 `rf_port_select=A_BALANCED`；
   [`sdr.rs`](../raspberry-pi/sdr-agent/controller/src/sdr.rs) 对完整 RX1 身份失败关闭。
 
+O1a 已完成故障/fuzz、审计轮转、只读健康/本地告警及升级回滚的源码/隔离验证，
+生产配置未安装；见 [O1a 验证](OPERATIONS_O1A_VALIDATION_2026-09-06.md)。
+独立标签、校准/准入、A1 部署及 O1b 24 小时闭环仍按各自条件推进。
+
 ## 推进顺序入口
 
 实际推进顺序仅维护在

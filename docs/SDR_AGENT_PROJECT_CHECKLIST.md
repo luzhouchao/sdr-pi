@@ -17,7 +17,7 @@ this file retains the detailed delivery and evidence ledger.
 以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
 编号表示范围，不表示施工先后；实际顺序见
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
-S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b 源码、适用隔离实机验收及清理完成，生产服务未替换。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
+S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成，生产服务未替换。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
 - [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
 - [x] AGX 扫频/精查、结果存储和 RX 语料基础、split 隔离完成（第1/4/5章）。
@@ -42,7 +42,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b 源码、适用隔离实机验收及清理完成
   - [ ] V3b：规则冻结后执行一次 locked test；不得用 test 反复调参。
 - [ ] A1：production profile、可回滚部署、RX-only 矩阵验收和真实正向 capability。
 - [ ] O1：持续运行和运维。
-  - [ ] O1a：可重复故障/fuzz、日志/健康告警/升级回滚流程。
+  - [x] O1a：固定 seed 的故障/fuzz 矩阵、8 MiB×4 audit 轮转、只读健康/本地去重告警、发布校验与私有升级/回滚演练完成源码、隔离验证及清理。生产配置未安装；见 [O1a 验证](OPERATIONS_O1A_VALIDATION_2026-09-06.md)。
   - [ ] O1b：24 小时完整闭环 soak；不替代人工批准策略或自动触发决策。
 - [ ] 第7章设备/辐射源身份识别：后续独立范围，不计入当前调制识别交付。
 
@@ -938,21 +938,29 @@ Evidence:
       mandatory cleanup before feature completion.
 - [x] Add and validate the project-local `p201-sdr-workflow` skill for bounded
       access, cross-build, deployment, duplicate-instance gating and cleanup.
-- [ ] Add automated protocol fuzzing for malformed, oversized, stale, duplicate,
-      truncated, and reordered frames across all sockets.
-- [ ] Add repeatable fault injection for upstream-model loss, Planner Worker
-      restart, SDRD loss, IIO timeout, transport overflow, and cancellation
-      races.
+- [x] O1a adds deterministic bounded mutation across application-owned protocol
+      boundaries (11 targets × 256 cases), alongside actual socket malformed/
+      oversized/stale/duplicate/truncated/reordered regressions. C ASan/UBSan and
+      isolated native Web/Planner recovery passed; no third-party SSH/IIOD fuzz
+      or exhaustive coverage claim. See [O1a validation](OPERATIONS_O1A_VALIDATION_2026-09-06.md).
+- [x] O1a unifies repeatable upstream/model restart, SDRD disconnect, fake-radio
+      timeout, explicit transport overflow/restore, and cancellation/generation
+      fault checks; these deterministic tests do not replace A1 real RF acceptance.
 - [ ] Run and document a complete 24-hour autonomous-loop soak test.
-- [ ] Define production log rotation, health monitoring, alerting, update, and
-      rollback procedures for Pi and SDR services.
+- [x] O1a defines and isolated-validates current AGX logging, read-only health/
+      local alert transitions, immutable candidate release verification and
+      upgrade/rollback procedures. P201 follows its existing deployment workflow
+      and Pi stays standby; user results are excluded from log/rollback cleanup.
+  - [ ] A1: install/validate production log and monitoring configuration plus
+        admitted coordinated deployment/rollback; O1a did not replace services.
 
 ## Current next milestone
 
-S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b source and isolated acceptance are complete.
+S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a source and isolated acceptance are complete.
 S4b retains the explicit user exception for unavailable GPU temperature.
 Installed services remain unchanged and the actual recognizer stays unavailable.
-The next default independent unit is O1a fault/fuzz and operations preparation.
+Next is V1b/V3a evidence readiness review, then V2 only when its independent
+label/name prerequisites are satisfied; do not infer data coverage from tooling.
 GPU temperature remains unmeasured; actual independent labels, calibration,
 production deployment/admission and the 24-hour full-loop soak remain open.
 

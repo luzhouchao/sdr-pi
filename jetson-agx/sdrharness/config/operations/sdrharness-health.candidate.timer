@@ -1,0 +1,9 @@
+[Unit]
+Description=Candidate bounded health cadence (not installed)
+
+[Timer]
+OnBootSec=30s
+OnUnitInactiveSec=30s
+AccuracySec=2s
+Unit=sdrharness-health.candidate.service
+# No [Install]; only an A1 coordinated deployment may activate the candidate pair.

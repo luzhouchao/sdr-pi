@@ -1,5 +1,6 @@
 pub mod autonomy;
 pub mod batch_recognition;
+mod bounded_audit;
 pub mod execution;
 pub mod live_recognition;
 pub mod planner;

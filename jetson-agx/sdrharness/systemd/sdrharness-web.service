@@ -12,7 +12,7 @@ EnvironmentFile=/etc/sdrharness/runtime.env
 ExecStart=/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console
 Restart=on-failure
 RestartSec=3
-TimeoutStopSec=8
+TimeoutStopSec=50
 StateDirectory=sdrharness/web-console
 StateDirectoryMode=0700
 

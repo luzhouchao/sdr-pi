@@ -396,6 +396,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         .route("/", get(index))
         .route("/app.js", get(app_js))
         .route("/styles.css", get(styles_css))
+        .route("/api/health", get(web_health))
         .route("/api/state", get(get_state))
         .route(
             "/api/provider",
@@ -514,6 +515,16 @@ async fn styles_css() -> impl IntoResponse {
     (
         [(header::CONTENT_TYPE, "text/css; charset=utf-8")],
         include_str!("../public/styles.css"),
+    )
+}
+
+async fn web_health() -> impl IntoResponse {
+    (
+        [(header::CACHE_CONTROL, "no-store")],
+        Json(serde_json::json!({
+            "schema_version": 1, "service": "web", "ready": true,
+            "recognizer_available": false
+        })),
     )
 }
 

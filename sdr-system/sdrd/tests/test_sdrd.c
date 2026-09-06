@@ -628,9 +628,38 @@ static void remove_test_tree(const char *root) {
   assert(rmdir(root) == 0);
 }
 
+static void test_seeded_protocol_mutations(void) {
+  sdrd_config_t config;
+  uint32_t seed = 20260906U;
+  unsigned int n;
+  sdrd_config_defaults(&config);
+  config.mode = SDRD_MODE_SHADOW;
+  for (n = 0; n < 256; ++n) {
+    char input[4096];
+    char response[8192];
+    size_t index;
+    const char *base = "SDRD/1 HELLO 41";
+    strcpy(input, base);
+    seed = seed * 1664525U + 1013904223U;
+    index = seed % strlen(base);
+    if (n % 4 == 0) input[index] = '\0';
+    else if (n % 4 == 1) input[index] = (char)(seed % 128U);
+    else if (n % 4 == 2) strcat(input, " EXTRA");
+    else { memset(input, 'x', sizeof(input) - 1); input[sizeof(input) - 1] = '\0'; }
+    memset(response, 0, sizeof(response));
+    (void)sdrd_format_response(&config, input, response, sizeof(response));
+    assert(memchr(response, '\0', sizeof(response)) != NULL);
+    assert(strlen(response) < sizeof(response));
+  }
+  puts("o1a_fuzz=sdrd seed=20260906 cases=256");
+}
+
 int main(void) {
-  char root[] = "/tmp/sdrd-test-XXXXXX";
+  char root[256];
+  const char *temporary = getenv("TMPDIR");
+  assert(snprintf(root, sizeof(root), "%s/sdrd-test-XXXXXX", temporary != NULL ? temporary : "/tmp") < (int)sizeof(root));
   assert(mkdtemp(root) != NULL);
+  test_seeded_protocol_mutations();
   test_shadow_config_and_protocol(root);
   test_iio_control_limits();
   test_controlled_allowlist_and_restore();

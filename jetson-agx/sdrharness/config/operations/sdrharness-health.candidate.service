@@ -1,0 +1,21 @@
+[Unit]
+Description=Read-only SDR candidate health snapshot (not installed)
+
+[Service]
+Type=oneshot
+User=jetson
+Group=jetson
+ExecStart=/usr/bin/python3 /home/jetson/sdrharness/jetson-agx/sdrharness/scripts/operations-health.py --config /etc/sdrharness/health.json --state /var/lib/sdrharness/health/state.json
+StateDirectory=sdrharness/health
+StateDirectoryMode=0700
+TimeoutStartSec=25
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+MemoryMax=96M
+TasksMax=16
+# Exit 2 means unhealthy; stdout provides a redacted local transition event.
+# No [Install]; no automatic restart, remote alert hook, or capability mutation.

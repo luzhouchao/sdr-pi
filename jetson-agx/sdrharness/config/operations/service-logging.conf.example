@@ -1,0 +1,8 @@
+# Future coordinated AGX service drop-in; review per-service limits at A1.
+[Service]
+LogNamespace=sdrharness
+StandardOutput=journal
+StandardError=journal
+# Covers the candidate Web's <=42-second joined shutdown plus margin.
+TimeoutStopSec=50
+KillMode=control-group

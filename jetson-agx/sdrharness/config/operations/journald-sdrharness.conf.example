@@ -1,0 +1,11 @@
+# Candidate configuration for /etc/systemd/journald@sdrharness.conf.
+# Not installed by O1a. Journal retention never touches application results.
+[Journal]
+Storage=persistent
+SystemMaxUse=128M
+RuntimeMaxUse=32M
+SystemMaxFileSize=8M
+RuntimeMaxFileSize=8M
+MaxRetentionSec=14day
+RateLimitIntervalSec=30s
+RateLimitBurst=1000

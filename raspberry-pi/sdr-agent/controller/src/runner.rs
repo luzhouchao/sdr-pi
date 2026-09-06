@@ -17,11 +17,8 @@ use serde::Serialize;
 use serde_json::{json, Value};
 use std::error::Error;
 use std::fmt;
-use std::fs::{File, OpenOptions};
-use std::io::{self, Write};
+use std::io;
 use std::net::SocketAddr;
-#[cfg(unix)]
-use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -73,17 +70,13 @@ pub trait AuditSink {
 }
 
 pub struct JsonlAuditAdapter {
-    file: File,
+    file: crate::bounded_audit::BoundedAudit,
 }
 
 impl JsonlAuditAdapter {
     pub fn open(path: impl AsRef<Path>) -> io::Result<Self> {
-        let mut options = OpenOptions::new();
-        options.create(true).append(true);
-        #[cfg(unix)]
-        options.mode(0o600);
         Ok(Self {
-            file: options.open(path)?,
+            file: crate::bounded_audit::BoundedAudit::open(path.as_ref())?,
         })
     }
 }
@@ -99,8 +92,7 @@ impl AuditSink for JsonlAuditAdapter {
             ));
         }
         frame.push(b'\n');
-        self.file.write_all(&frame)?;
-        self.file.flush()
+        self.file.append(&frame)
     }
 }
 
