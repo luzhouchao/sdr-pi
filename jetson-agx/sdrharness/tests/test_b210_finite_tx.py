@@ -17,16 +17,20 @@ spec.loader.exec_module(tx)
 
 
 class FiniteTxTests(unittest.TestCase):
-    def run_case(self, go=True, tamper=False, extended=False, invalid=False):
+    def run_case(self, go=True, tamper=False, extended=False, invalid=False, single=False, bad_unit=False):
         # Caller supplies the feature TMPDIR; no files touch user results.
         root = Path(tempfile.mkdtemp(prefix='fifo-',dir=os.environ['TMPDIR']))
-        payload = bytes(range(256))*128
+        payload = bytes(range(256))*(32 if single else 128)
         plan = dict(center_hz=2440000000,rate_sps=2100000,bandwidth_hz=1500000,
                     tx_gain_db=40,tx_samples=2100000,tx_nominal_seconds=1,complex_peak=0.1,tx_channel=0,tx_antenna='TX/RX',
                     payload_bytes=32768,split='train',locked_test_read=False,
                     payload_sha256=hashlib.sha256(payload).hexdigest())
         if extended:
             plan.update(tx_samples=21000000,tx_nominal_seconds=10,tx_gain_db=70,complex_peak=0.2)
+        if single:
+            plan.update(schema_version=2,payload_bytes=8192,source_unit_samples=4096 if bad_unit else 1024,
+                        rows=[102400],tx_unit_count=20480,uhd_spb=1024,
+                        tx_samples=20971520,tx_nominal_seconds=10,tx_gain_db=70,complex_peak=0.2)
         if invalid:
             plan['tx_samples'] += 1
         (root/'transmission-plan.json').write_text(json.dumps(plan))
@@ -37,6 +41,7 @@ class FiniteTxTests(unittest.TestCase):
         launched=[]
         def fake_uhd(args, **kwargs):
             self.assertNotIn('--repeat',args)
+            self.assertEqual(args[args.index('--spb')+1],'1024' if single else '10000')
             fifo=args[args.index('--file')+1]
             child=real_popen([sys.executable,'-c',
                 'import sys,hashlib,json; f=open(sys.argv[1],"rb"); h=hashlib.sha256(); n=0\n'
@@ -51,12 +56,12 @@ class FiniteTxTests(unittest.TestCase):
                  patch.object(tx.select,'select',fake_select), \
                  patch.object(tx.os,'read',lambda fd,n: (b'GO\n' if go else b'') if fd==0 else original_read(fd,n)), \
                  patch.object(tx.signal,'signal'):
-                if not go or tamper or invalid:
+                if not go or tamper or invalid or bad_unit:
                     with self.assertRaises(AssertionError):tx.transmit(root)
                 else:tx.transmit(root)
             self.assertFalse((root/'tx.fc32.fifo').exists())
             self.assertTrue(all(p.poll() is not None for p in launched))
-            if tamper or invalid:
+            if tamper or invalid or bad_unit:
                 self.assertFalse(launched)
             elif go:
                 result=json.loads((root/'tx-uhd.log').read_text())
@@ -84,6 +89,10 @@ class FiniteTxTests(unittest.TestCase):
     def test_exact_payload_and_finite_tail(self):self.run_case()
     def test_eof_before_go_does_not_send(self):self.run_case(go=False)
     def test_tampered_payload_never_starts_uhd(self):self.run_case(tamper=True)
+    def test_single_row_exact_full_1024_units(self):self.run_case(single=True)
+    def test_single_row_wrong_unit_is_rejected_before_uhd(self):self.run_case(single=True,bad_unit=True)
+    def test_single_row_partial_final_unit_is_rejected(self):self.run_case(single=True,invalid=True)
+    def test_single_row_hash_tampering_is_rejected(self):self.run_case(single=True,tamper=True)
 
 
 if __name__=='__main__':unittest.main()

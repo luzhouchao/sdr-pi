@@ -33,15 +33,21 @@ def document(path):
     return json.loads(read(path))
 
 
-def validate_capture_root(root, mode):
+def validate_capture_root(root, mode, *, single_source_sha256=None):
     """Bind native reports, physical identity, raw files and requested SigMF settings."""
     link = document(root/'link-summary.json')
+    tx_samples=21000000
+    payload_hash=affine.paired.SOURCE_HASH
+    if single_source_sha256 is not None:
+        assert mode=='rml' and len(single_source_sha256)==64
+        assert all(char in '0123456789abcdef' for char in single_source_sha256)
+        tx_samples=20971520;payload_hash=single_source_sha256
     rate,width = (2500000,1000000) if mode=='tone' else (2100000,1500000)
     assert link['status']=='transport_completed_pending_signal_analysis'
     for key,value in dict(mode=mode,center_hz=2440000000,rate_sps=rate,bandwidth_hz=width,
                           rx_gain_db=40,tx_gain_db=70,rx_input='RX1/RX0/A_BALANCED',
                           max_rx_bytes=786420,tx_nominal_seconds=10,
-                          max_tx_samples=25000000 if mode=='tone' else 21000000).items():
+                          max_tx_samples=25000000 if mode=='tone' else tx_samples).items():
         assert link[key]==value, key
     assert link['feature_directory']==str(root)
     assert link['remote_tx_stopped'] is True and link['restoration_errors']==[]
@@ -51,11 +57,11 @@ def validate_capture_root(root, mode):
         assert link['tx_exit_code']==0
     else:
         tx = document(root/'tx-summary.json')
-        assert tx['status']=='sent' and tx['bytes_written']==168000000
+        assert tx['status']=='sent' and tx['bytes_written']==tx_samples*8
         assert tx['child_stopped'] is True and tx['child_exit_code']==0
-        assert tx['payload_sha256']==affine.paired.SOURCE_HASH
+        assert tx['payload_sha256']==payload_hash
         assert tx['uhd_log_sha256']==affine.paired.sha(read(root/'tx-uhd.log'))
-        assert (tx['max_samples'],tx['rate_sps'],tx['nominal_seconds'])==(21000000,2100000,10)
+        assert (tx['max_samples'],tx['rate_sps'],tx['nominal_seconds'])==(tx_samples,2100000,10)
         assert all(tx[key]==value for key,value in link['tx_result'].items())
     assert len(link['plans'])==3
     hashes = {'link-summary.json':affine.paired.sha(read(root/'link-summary.json'))}

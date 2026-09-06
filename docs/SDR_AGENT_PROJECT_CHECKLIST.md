@@ -614,10 +614,21 @@ aggregation, result persistence and model-facing summaries.
           raw-power excursions; no model/warmup ran. 64 tests and exact AGX/NX
           cleanup complete; see
           [v4 live validation](B210_V4_LIVE_VALIDATION_2026-09-06.md).
-    - [ ] Characterize the intermittent power excursions with a registered
-          bounded stopped-TX background comparison.
-    - [ ] Qualify fresh source controls before further bidirectional bias/model
-          validation; no retrospective acceptance of the failed v4 capture.
+    - [x] User-requested single-1024-sample source is the new export default;
+          versioned 20,480 complete-unit TX, sealed six-capture input and all
+          65,535 pointwise I/Q/residual rows verified. Preserve all 512 segment
+          summaries, source/carrier/DC separation, fixed-prefix scalar/FIR
+          comparisons and explicitly posthoc fractional-delay diagnostics.
+          76 software tests, real RX restoration and exact cleanup complete; see
+          [1024 pointwise validation](B210_1024_POINTWISE_VALIDATION_2026-09-06.md).
+    - [x] Registered paired stopped-TX captures show short power excursions too:
+          47/17 of 512 segments exceed the same exploratory 14.058-ADC-RMS line.
+          This is two short captures, not background population statistics or
+          evidence identifying a particular radio/interferer; see the pointwise record.
+    - [ ] Isolate the carrier-related component and time-varying phase through
+          controlled single-variable comparisons with the same 1024-sample source.
+    - [ ] Qualify fresh 1024-source controls before further bidirectional
+          bias/classifier validation; no retrospective acceptance of failed captures.
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the

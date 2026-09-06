@@ -20,13 +20,22 @@ def transmit(root):
     plan = json.loads((root / 'transmission-plan.json').read_text())
     for key, value in dict(center_hz=2440000000,rate_sps=2100000,bandwidth_hz=1500000,
                            tx_channel=0,tx_antenna='TX/RX',
-                           payload_bytes=32768,split='train',locked_test_read=False).items():
+                           split='train',locked_test_read=False).items():
         assert plan[key] == value, key
     configuration = (plan['tx_samples'], plan['tx_nominal_seconds'], plan['tx_gain_db'], plan['complex_peak'])
-    assert configuration in ((2100000, 1, 0, 0.1), (2100000, 1, 40, 0.1),
-                             (21000000, 10, 70, 0.2)), 'unregistered transmission plan'
+    version=plan.get('schema_version',1)
+    if version==2:
+        assert plan['source_unit_samples']==1024 and plan['payload_bytes']==8192
+        assert plan['rows']==[102400] and plan['tx_unit_count']==20480 and plan['uhd_spb']==1024
+        assert configuration==(20971520,10,70,0.2), 'unregistered single-row transmission plan'
+        spb=1024
+    else:
+        assert version==1 and plan['payload_bytes']==32768
+        assert configuration in ((2100000, 1, 0, 0.1), (2100000, 1, 40, 0.1),
+                                 (21000000, 10, 70, 0.2)), 'unregistered transmission plan'
+        spb=10000
     payload = (root / 'train-tile.fc32').read_bytes()
-    assert len(payload) == 32768 and hashlib.sha256(payload).hexdigest() == plan['payload_sha256']
+    assert len(payload) == plan['payload_bytes'] and hashlib.sha256(payload).hexdigest() == plan['payload_sha256']
     fifo = root / 'tx.fc32.fifo'
     os.mkfifo(fifo, 0o600)
     child = None
@@ -40,7 +49,7 @@ def transmit(root):
     signal.signal(signal.SIGINT, abort)
     try:
         args = ['/usr/lib/uhd/examples/tx_samples_from_file','--args','type=b200,serial=2508504',
-                '--file',str(fifo),'--type','float','--spb','10000','--rate','2100000',
+                '--file',str(fifo),'--type','float','--spb',str(spb),'--rate','2100000',
                 '--freq','2440000000','--gain',str(plan['tx_gain_db']),'--ant','TX/RX','--bw','1500000',
                 '--channel','0','--subdev','A:A']
         with (root / 'tx-uhd.log').open('x') as log:
