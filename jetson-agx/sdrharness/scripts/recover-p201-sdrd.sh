@@ -5,7 +5,7 @@ readonly p201_host="192.168.1.10"
 readonly p201_password_file="/home/jetson/.config/sdrharness/p201-root.password"
 readonly p201_known_hosts="/home/jetson/.ssh/known_hosts"
 readonly recovery_lock="/run/sdrharness-p201-recovery/recovery.lock"
-readonly controller="/home/jetson/.local/lib/sdrharness/bin/sdr-agent-controller"
+readonly health_probe="/home/jetson/.local/lib/sdrharness/bin/sdr-agent-health"
 
 umask 077
 
@@ -15,8 +15,8 @@ for command_name in flock nc ssh sshpass stat timeout; do
     exit 2
   }
 done
-[[ -x "${controller}" ]] || {
-  echo "p201_recovery_error=missing_controller" >&2
+[[ -x "${health_probe}" ]] || {
+  echo "p201_recovery_error=missing_health_probe" >&2
   exit 2
 }
 [[ -f "${p201_password_file}" && ! -L "${p201_password_file}" ]] || {
@@ -97,9 +97,7 @@ nc -z -w 3 "${p201_host}" 43110 || {
   echo "p201_recovery_error=sdrd_unreachable" >&2
   exit 1
 }
-"${controller}" \
-  --mode observe \
+timeout 6 "${health_probe}" \
   --sdrd "${p201_host}:43110" \
-  --sdrd-timeout-ms 5000 \
-  --request /dev/null >/dev/null
+  --timeout-ms 1000
 echo "p201_recovery_result=healthy"

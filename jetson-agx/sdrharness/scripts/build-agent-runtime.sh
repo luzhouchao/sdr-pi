@@ -29,6 +29,7 @@ controller="${repo_root}/raspberry-pi/sdr-agent/controller"
 )
 install -m 0755 "${controller}/target/release/sdr-agent-controller" "${artifact_root}/bin/"
 install -m 0755 "${controller}/target/release/sdr-agent" "${artifact_root}/bin/"
+install -m 0755 "${controller}/target/release/sdr-agent-health" "${artifact_root}/bin/"
 
 web_console="${repo_root}/raspberry-pi/sdr-agent/web-console"
 (

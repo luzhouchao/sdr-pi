@@ -138,13 +138,20 @@ runtime flock, accepts only one expected daemon/listener or a fully stopped
 zero/zero state, and uses the retained `/sd/sdr-agent/current/S60sdrd` entry.
 The Web unit wants this oneshot so an AGX/Web restart performs the same check.
 
-P201 currently regenerates its Dropbear key when its RAM root reboots. The
-recovery service intentionally fails closed on that change; verify the direct
-link and P201/release identity before repinning. Do not disable host-key checks.
-Unattended cross-P201-reboot recovery remains blocked until the operator
-explicitly chooses whether to initialize the vendor's blank persistent-key NVM
-filesystem. See
-[`../../docs/SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md`](../../docs/SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md).
+Install `bin/sdr-agent-health` from the native build alongside the recovery
+script. This small read-only entry reuses the Controller's strict SDRD Adapter
+and sends only HELLO/CAPABILITIES/HEALTH/QUIT. It requires a verified RX1 identity,
+healthy flags and receive capabilities; a parsed unhealthy response exits
+nonzero. The recovery script gives it a six-second outer deadline and the unit
+has a 45-second startup budget. It does not depend on upgrading the installed
+general Controller or enabling recognition. See
+[`../../docs/P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md`](../../docs/P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md).
+
+The explicitly authorized persistent-host-key setup and real reboot validation
+were completed on 2026-09-03. Strict host-key checking remains required; a future
+unexpected change must fail closed pending identity verification. Do not repeat
+the NVM initialization or disable checking. See
+[`../../docs/SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](../../docs/SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md).
 
 ## Local Spark Planner
 

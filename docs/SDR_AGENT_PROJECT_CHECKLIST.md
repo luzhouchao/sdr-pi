@@ -441,20 +441,23 @@ Evidence:
 - [x] Deploy controlled `sdrd` with a private-link listener, retained `/sd`
       release, tested stop path,
       bounded live capture and verified state restoration.
-- [ ] Maintain safe persistent `sdrd` startup after reboot and successful recovery
+- [x] Maintain safe persistent `sdrd` startup after reboot and successful recovery
       health checks without modifying the boot image. Historical startup and
-      host-key validations below remain valid, but the installed recovery CLI
-      currently rejects `rx_input` on both old and new daemons (2026-09-07):
+      host-key validations below remain valid; the 2026-09-07 recovery CLI
+      incompatibility is resolved for the deployed recovery service:
   - [x] Deploy and live-validate the AGX recovery oneshot/timer, strict
         duplicate-instance gates, normal start, idle abnormal-exit recovery,
         concurrent-start rejection, current-boot persistence and rollback;
         see
         [`SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md).
-  - [ ] Repair the installed recovery Controller's outdated response contract
-        and live-verify the oneshot/timer health result. The preexisting failure
-        was reproduced before and after RX-port deployment with identical
-        default wire responses; see
-        [port selection validation](P201_RX_PORT_SELECTION_VALIDATION_2026-09-07.md).
+  - [x] Replace recovery's outdated general CLI dependency with the deployed
+        read-only `sdr-agent-health`, reusing strict Controller Adapter parsing
+        and requiring healthy verified RX1/capabilities for success. 11 test
+        functions, already-running/timer-start/flock rejection, state restoration
+        and exact cleanup pass. Preserve the original early-journal assertion
+        and the same-recovery confirmation. General Controller/Planner/Web/model
+        deployment is unchanged. See
+        [recovery health validation](P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md).
   - [x] Remove the manual host-key repin after a P201 reboot by explicitly
         authorized initialization of only the 917,504-byte vendor QSPI `mtd2`
         JFFS2 partition, persisting only the verified ECDSA key plus its minimal

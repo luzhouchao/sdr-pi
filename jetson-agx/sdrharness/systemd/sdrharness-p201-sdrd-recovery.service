@@ -12,7 +12,7 @@ RuntimeDirectory=sdrharness-p201-recovery
 RuntimeDirectoryMode=0700
 RuntimeDirectoryPreserve=yes
 ExecStart=/home/jetson/.local/lib/sdrharness/scripts/recover-p201-sdrd.sh
-TimeoutStartSec=35
+TimeoutStartSec=45
 
 UMask=0077
 NoNewPrivileges=true

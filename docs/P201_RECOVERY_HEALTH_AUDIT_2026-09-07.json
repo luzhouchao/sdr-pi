@@ -1,0 +1,238 @@
+{
+  "schema_id": "p201_recovery_health_validation_v1",
+  "source_base_commit": "4dc452e",
+  "deployment": {
+    "max_capture_bytes": 0,
+    "model_windows": 0,
+    "tx_operations": 0,
+    "initial_sdrd_pid": "11547",
+    "idle": {
+      "schema_version": 1,
+      "request_id": 1,
+      "status": "ok",
+      "generation": 0,
+      "session_generation": 0,
+      "active": false,
+      "profile_applied": false,
+      "restore_armed": false,
+      "faulted": false
+    },
+    "release": "/home/jetson/.local/lib/sdrharness/releases/20260907-recovery-health-v1",
+    "rollback": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-recovery-health-v1",
+    "legacy_controller_sha256": "3cbad970165b9b86d8bc6441e74ddf0d8bf9740c15e54cfcd94e8786269d16c6",
+    "started_ns": 1788776676806006615,
+    "status": "installed_running_path_verified",
+    "running_service": "Result=success\nExecMainStatus=0\n",
+    "already_running_kept_same_pid": true,
+    "running_journal": "Sep 07 18:24:05 ubuntu systemd[1]: Starting Recover the receive-only P201 sdrd from its persistent release...\nSep 07 18:24:05 ubuntu recover-p201-sdrd.sh[468378]: p201_recovery_action=already_running pid_count=1 listener_count=1 daemon_sha256=83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f\nSep 07 18:24:05 ubuntu recover-p201-sdrd.sh[468380]: controller_error=response_shape: unknown field `rx_input`, expected one of `schema_version`, `request_id`, `status`, `mode`, `iio_visible`, `radio_control`, `raw_iq_capture`, `software_summary`, `max_capture_bytes`, `fpga_backend`, `fpga_identity_valid`, `fpga_summary_version`, `fpga_abi_version`, `fpga_capability`, `fpga_aggregate`\nSep 07 18:24:05 ubuntu systemd[1]: sdrharness-p201-sdrd-recovery.service: Main process exited, code=exited, status=1/FAILURE\nSep 07 18:24:05 ubuntu systemd[1]: sdrharness-p201-sdrd-recovery.service: Failed with result 'exit-code'.\nSep 07 18:24:05 ubuntu systemd[1]: Failed to start Recover the receive-only P201 sdrd from its persistent release.\nSep 07 18:24:36 ubuntu systemd[1]: Starting Recover the receive-only P201 sdrd from its persistent release...\nSep 07 18:24:36 ubuntu systemd[1]: sdrharness-p201-sdrd-recovery.service: Main process exited, code=killed, status=15/TERM\nSep 07 18:24:36 ubuntu systemd[1]: sdrharness-p201-sdrd-recovery.service: Failed with result 'signal'.\nSep 07 18:24:36 ubuntu systemd[1]: Stopped Recover the receive-only P201 sdrd from its persistent release.\nSep 07 18:24:37 ubuntu systemd[1]: Starting Recover the receive-only P201 sdrd from its persistent release...\nSep 07 18:24:38 ubuntu recover-p201-sdrd.sh[468573]: p201_recovery_action=already_running pid_count=1 listener_count=1 daemon_sha256=83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f\nSep 07 18:24:38 ubuntu recover-p201-sdrd.sh[468576]: {\"online\":true,\"healthy\":true,\"health_flags\":0,\"iio_visible\":true,\"can_retune\":true,\"can_capture_iq\":true,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}}\nSep 07 18:24:38 ubuntu recover-p201-sdrd.sh[468567]: p201_recovery_result=healthy\nSep 07 18:24:38 ubuntu systemd[1]: sdrharness-p201-sdrd-recovery.service: Deactivated successfully.\nSep 07 18:24:38 ubuntu systemd[1]: Finished Recover the receive-only P201 sdrd from its persistent release.\n",
+    "probe_snapshot": {
+      "online": true,
+      "healthy": true,
+      "health_flags": 0,
+      "iio_visible": true,
+      "can_retune": true,
+      "can_capture_iq": true,
+      "rx_input": {
+        "identity_version": 1,
+        "verified": true,
+        "front_panel_port": "RX1",
+        "logical_channel": "RX0",
+        "phy_channel": "voltage0",
+        "scan_i_channel": "voltage0",
+        "scan_q_channel": "voltage1",
+        "rf_port_select": "A_BALANCED",
+        "source": "iio_channel_attr"
+      }
+    },
+    "timer_active": true,
+    "legacy_controller_unchanged": true
+  },
+  "initial_timer_validation": {
+    "max_capture_bytes": 0,
+    "model_windows": 0,
+    "tx_operations": 0,
+    "idle": {
+      "schema_version": 1,
+      "request_id": 1,
+      "status": "ok",
+      "generation": 0,
+      "session_generation": 0,
+      "active": false,
+      "profile_applied": false,
+      "restore_armed": false,
+      "faulted": false
+    },
+    "initial_pid": "11547",
+    "status": "failed",
+    "stop_output": "Stopping receive-only sdrd: OK\n",
+    "zero_pid_zero_listener": true,
+    "recovered_pid": "5909",
+    "elapsed_seconds": 16.148615760030225,
+    "service": "Result=success\nExecMainStatus=0\nActiveState=inactive\n",
+    "snapshot": {
+      "online": true,
+      "healthy": true,
+      "health_flags": 0,
+      "iio_visible": true,
+      "can_retune": true,
+      "can_capture_iq": true,
+      "rx_input": {
+        "identity_version": 1,
+        "verified": true,
+        "front_panel_port": "RX1",
+        "logical_channel": "RX0",
+        "phy_channel": "voltage0",
+        "scan_i_channel": "voltage0",
+        "scan_q_channel": "voltage1",
+        "rf_port_select": "A_BALANCED",
+        "source": "iio_channel_attr"
+      }
+    },
+    "radio_restored": true,
+    "sdrd_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+    "journal": "Sep 07 18:25:09 ubuntu systemd[1]: Starting Recover the receive-only P201 sdrd from its persistent release...\nSep 07 18:25:09 ubuntu recover-p201-sdrd.sh[468640]: p201_recovery_action=already_running pid_count=1 listener_count=1 daemon_sha256=83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f\nSep 07 18:25:09 ubuntu recover-p201-sdrd.sh[468643]: {\"online\":true,\"healthy\":true,\"health_flags\":0,\"iio_visible\":true,\"can_retune\":true,\"can_capture_iq\":true,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}}\nSep 07 18:25:09 ubuntu recover-p201-sdrd.sh[468634]: p201_recovery_result=healthy\nSep 07 18:25:09 ubuntu systemd[1]: sdrharness-p201-sdrd-recovery.service: Deactivated successfully.\nSep 07 18:25:09 ubuntu systemd[1]: Finished Recover the receive-only P201 sdrd from its persistent release.\nSep 07 18:25:40 ubuntu systemd[1]: Starting Recover the receive-only P201 sdrd from its persistent release...\nSep 07 18:25:40 ubuntu recover-p201-sdrd.sh[468664]: p201_recovery_action=already_running pid_count=1 listener_count=1 daemon_sha256=83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f\nSep 07 18:25:40 ubuntu recover-p201-sdrd.sh[468667]: {\"online\":true,\"healthy\":true,\"health_flags\":0,\"iio_visible\":true,\"can_retune\":true,\"can_capture_iq\":true,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}}\nSep 07 18:25:40 ubuntu recover-p201-sdrd.sh[468658]: p201_recovery_result=healthy\nSep 07 18:25:40 ubuntu systemd[1]: sdrharness-p201-sdrd-recovery.service: Deactivated successfully.\nSep 07 18:25:40 ubuntu systemd[1]: Finished Recover the receive-only P201 sdrd from its persistent release.\nSep 07 18:26:14 ubuntu systemd[1]: Starting Recover the receive-only P201 sdrd from its persistent release...\nSep 07 18:26:14 ubuntu recover-p201-sdrd.sh[468683]: p201_recovery_action=already_running pid_count=1 listener_count=1 daemon_sha256=83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f\nSep 07 18:26:14 ubuntu recover-p201-sdrd.sh[468686]: {\"online\":true,\"healthy\":true,\"health_flags\":0,\"iio_visible\":true,\"can_retune\":true,\"can_capture_iq\":true,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}}\nSep 07 18:26:14 ubuntu recover-p201-sdrd.sh[468677]: p201_recovery_result=healthy\nSep 07 18:26:14 ubuntu systemd[1]: sdrharness-p201-sdrd-recovery.service: Deactivated successfully.\nSep 07 18:26:14 ubuntu systemd[1]: Finished Recover the receive-only P201 sdrd from its persistent release.\n"
+  },
+  "timer_confirmation": {
+    "status": "passed",
+    "same_recovery_attempt": true,
+    "no_additional_stop": true,
+    "sdrd_pid": "5909",
+    "radio_unchanged": true,
+    "service": "Result=success\nExecMainStatus=0\n",
+    "journal": "Sep 07 18:26:44 ubuntu systemd[1]: Starting Recover the receive-only P201 sdrd from its persistent release...\nSep 07 18:26:46 ubuntu recover-p201-sdrd.sh[468793]: Starting receive-only sdrd: OK\nSep 07 18:26:46 ubuntu recover-p201-sdrd.sh[468793]: p201_recovery_action=started pid_count=1 listener_count=1 daemon_sha256=83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f\nSep 07 18:26:46 ubuntu recover-p201-sdrd.sh[468799]: {\"online\":true,\"healthy\":true,\"health_flags\":0,\"iio_visible\":true,\"can_retune\":true,\"can_capture_iq\":true,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}}\nSep 07 18:26:46 ubuntu recover-p201-sdrd.sh[468786]: p201_recovery_result=healthy\nSep 07 18:26:46 ubuntu systemd[1]: sdrharness-p201-sdrd-recovery.service: Deactivated successfully.\nSep 07 18:26:46 ubuntu systemd[1]: Finished Recover the receive-only P201 sdrd from its persistent release.\n",
+    "initial_validator_limitation": "journal read before completed invocation flushed; original failed assertion retained"
+  },
+  "lock_validation": {
+    "lock_rejected": true,
+    "rejection_state": "Result=exit-code\nExecMainStatus=75\n",
+    "pid_unchanged": "5909",
+    "final_state": "Result=success\nExecMainStatus=0\n",
+    "restored": true
+  },
+  "releases": [
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-recovery-health-v1/recover-p201-sdrd.sh",
+      "bytes": 3303,
+      "sha256": "5bc1c32d515fd53ce9f90a58d4eb749e68252c222b65be93a71047e422a873d5"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-recovery-health-v1/sdr-agent-health",
+      "bytes": 529096,
+      "sha256": "13102e3016cc2a8244cbceb99ae54dca7a26f2f025445e50e938e45e0f17138b"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-recovery-health-v1/sdrharness-p201-sdrd-recovery.service",
+      "bytes": 708,
+      "sha256": "a2419bbeb42b9a886bef9d7022f92e148bebcc845650eeb11468485518daece3"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-recovery-health-v1/recover-p201-sdrd.sh",
+      "bytes": 3348,
+      "sha256": "91a2b31e04339fdcd9b15a7475d70b4277a2c75d7f6c24487052988573d8641d"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-recovery-health-v1/sdrharness-p201-sdrd-recovery.service",
+      "bytes": 708,
+      "sha256": "0f515f6ed146b64465edb656e7f231c47afaccf59acd9ec0845cc67c816fe7a4"
+    }
+  ],
+  "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+  "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+  "final_sdrd_pid": "5909",
+  "final_service": "Result=success\nExecMainStatus=0\n",
+  "final_timer_active": true,
+  "old_generic_controller_unchanged": true,
+  "max_capture_bytes": 0,
+  "model_windows": 0,
+  "recognizer_available": false,
+  "checks": {
+    "tests.log": {
+      "sha256": "e8a68eb8416a0377928b7e0a750217078459aa22215bf88ae79e3eef80d354e8",
+      "tail": [
+        "     Running tests/recovery_health.rs (/var/tmp/sdrharness-dev/p201-recovery-health-907w/target/debug/deps/recovery_health-5ce65783054ab123)",
+        "",
+        "running 6 tests",
+        "test command_surface_and_timeout_are_bounded ... ok",
+        "test accepts_strict_healthy_rx1_without_mutation ... ok",
+        "test stalled_endpoint_times_out_without_mutation ... ok",
+        "test protocol_identity_unknown_fields_and_wrong_types_stay_strict ... ok",
+        "test missing_unverified_or_mismatched_input_fails_closed ... ok",
+        "test unhealthy_or_missing_receive_capability_fails_process_status ... ok",
+        "",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.65s",
+        ""
+      ]
+    },
+    "adapter-tests.log": {
+      "sha256": "f069d2848f20d53468b1dbf0db57433a1a70fbcda8bbae89008c211e5c41384c",
+      "tail": [
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 18.84s",
+        "     Running unittests src/lib.rs (/var/tmp/sdrharness-dev/p201-recovery-health-907w/target/debug/deps/sdr_agent_controller-1bf824e9463a8f6b)",
+        "",
+        "running 5 tests",
+        "test sdr::tests::planner_health_never_upgrades_unhealthy_capabilities ... ok",
+        "test sdr::tests::replay_adapter_is_a_second_real_adapter ... ok",
+        "test sdr::tests::rejects_mismatched_response_id ... ok",
+        "test sdr::tests::preserves_remote_execution_metadata_on_failure ... ok",
+        "test sdr::tests::reads_and_reduces_shadow_sdrd_snapshot ... ok",
+        "",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 97 filtered out; finished in 0.00s",
+        ""
+      ]
+    },
+    "clippy.log": {
+      "sha256": "eba4b66c8d1fe5fbfaa1a8b3f174191d9ce9b124ba4f79b0ecaf0c68fcff2ea7",
+      "tail": [
+        "    Checking serde_core v1.0.229",
+        "    Checking zmij v1.0.23",
+        "    Checking generic-array v0.14.7",
+        "    Checking cpufeatures v0.2.17",
+        "    Checking block-buffer v0.10.4",
+        "    Checking crypto-common v0.1.7",
+        "    Checking digest v0.10.7",
+        "    Checking sha2 v0.10.9",
+        "    Checking serde_json v1.0.151",
+        "    Checking serde v1.0.229",
+        "    Checking sdr-agent-controller v0.1.0 (/home/jetson/sdrharness/raspberry-pi/sdr-agent/controller)",
+        "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 14.04s"
+      ]
+    },
+    "build.log": {
+      "sha256": "311d46bf7560ad222c9bed9dd2522f23c83211f2914a5b01fc04e08c7146b3c1",
+      "tail": [
+        "   Compiling cfg-if v1.0.4",
+        "   Compiling memchr v2.8.3",
+        "   Compiling generic-array v0.14.7",
+        "   Compiling syn v3.0.4",
+        "   Compiling cpufeatures v0.2.17",
+        "   Compiling crypto-common v0.1.7",
+        "   Compiling block-buffer v0.10.4",
+        "   Compiling digest v0.10.7",
+        "   Compiling sha2 v0.10.9",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling sdr-agent-controller v0.1.0 (/home/jetson/sdrharness/raspberry-pi/sdr-agent/controller)",
+        "    Finished `release` profile [optimized] target(s) in 1m 04s"
+      ]
+    }
+  },
+  "test_functions_passed": 11,
+  "cli_scenarios": 24,
+  "static_checks": [
+    "cargo fmt --check",
+    "clippy --bin sdr-agent-health --test recovery_health -D warnings",
+    "bash -n",
+    "systemd-analyze verify (only unrelated host-unit warnings)",
+    "git diff --check"
+  ],
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/p201-recovery-health-907w",
+    "removed_files": 1632,
+    "removed_logical_bytes": 765733911,
+    "file_list_sha256": "59184b688cc959a705baeb632e827ae217b80ed94f4de998fa6030d205ce78b9",
+    "new_iq_retained_bytes": 0,
+    "user_results_deleted": false,
+    "old_rf_evidence_deleted": false,
+    "p201_transient_files_created": 0,
+    "verified": true
+  }
+}
