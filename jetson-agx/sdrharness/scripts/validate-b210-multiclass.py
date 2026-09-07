@@ -356,8 +356,10 @@ def prepare():
 
 
 @contextmanager
-def idle_spark_pause():
+def idle_spark_pause(*, evidence_root=ROOT):
     """Installed Spark predates the shared gate; pause only an idle, identified PID."""
+    assert evidence_root.resolve() == evidence_root and evidence_root.parent == Path('/var/tmp/sdrharness-dev')
+    assert evidence_root.is_dir()
     import urllib.request
     pid = int(checked_command(['systemctl', 'show', 'spark-x25.service', '-p', 'MainPID', '--value']).strip())
     proc = Path('/proc') / str(pid)
@@ -396,7 +398,7 @@ def idle_spark_pause():
         watchdog.terminate()
         watchdog.wait(timeout=3)
         audit['restore_watchdog_stopped'] = watchdog.returncode is not None
-        save(ROOT / 'gpu-isolation.json', audit)
+        save(evidence_root / 'gpu-isolation.json', audit)
 
 
 async def infer():

@@ -732,6 +732,18 @@ aggregation, result persistence and model-facing summaries.
             unique-inode bytes). No independent RF accuracy, universal FIR fix,
             V1b completion or production admission claim. See
             [24-class validation](B210_MULTICLASS_VALIDATION_2026-09-07.md).
+      - [x] Diagnose the four qualified multiclass RX errors with all eight
+            same-class successful controls, prefix-only source/channel
+            counterfactuals and full fixed-block pointwise I/Q plots. 432 windows
+            plus 2 warmups complete; 24 baseline logits reproduce exactly.
+            Constant timing/phase/CFO/affine offsets do not recover the four
+            errors; all successful controls remain successful. Check six strong
+            DC sources without revising original gates, and inspect the 4090
+            pre-RF D8 validation confusion matrix and operator-provided name
+            reference. 17 tests, retained replay, Spark restoration and complete
+            feature-root cleanup pass; no new RF, dataset reads or retained IQ.
+            Hardware cause, production name mapping and general repair remain
+            unresolved. See [residual validation](B210_RESIDUAL_VALIDATION_2026-09-07.md).
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the
