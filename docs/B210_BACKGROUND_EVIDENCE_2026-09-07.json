@@ -1,0 +1,243 @@
+{
+  "schema_id": "sdrharness_retained_diagnostic_evidence_v1",
+  "date": "2026-09-07",
+  "root": "/var/tmp/sdrharness-dev/b210-background-907n",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-24/background-1788743330601-1788743330601-1788743443064750040.sigmf-data",
+      "bytes": 262140,
+      "sha256": "6c629159580d2fc3bbb28a620acf35d901c9698334f635f1cfd11043a740a0ce"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-24/background-1788743330601-1788743330601-1788743443064750040.sigmf-meta",
+      "bytes": 487,
+      "sha256": "0b92584a2db0ed0f7bed9ebbc1a60745291cd5dfcde95e2b2323e2414830de1d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-24/plan.json",
+      "bytes": 383,
+      "sha256": "ad500fc775404e12afc23ab98aa7a61726f5dfdf660215a1e17336e1188e1b4a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-24/report.json",
+      "bytes": 2223,
+      "sha256": "19e8b5f0e1043d7853db57592ea5cbd08e2cc8aec1c2ed2919d2cacb68f1a309"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-25/background-1788743330602-1788743330602-1788743447909177481.sigmf-data",
+      "bytes": 262140,
+      "sha256": "fd90c4b74929864b45a04d7d5aa04c38fe8246b71b4a0c25827bb7027c07889c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-25/background-1788743330602-1788743330602-1788743447909177481.sigmf-meta",
+      "bytes": 487,
+      "sha256": "740e6142825bdd1054fbf45abce31196e84d7ec74d6c291ec2633414de45e13d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-25/plan.json",
+      "bytes": 383,
+      "sha256": "f8aabbe273b9d5735873483fbf8191ce2494de4123c0b0a0e37fd10773b376ae"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-25/report.json",
+      "bytes": 2222,
+      "sha256": "09fb23458d1934d6c493e833167b62ed23de21bfb8eea20e63b53bcb76693dc6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-26/background-1788743330603-1788743330603-1788743452733176004.sigmf-data",
+      "bytes": 262140,
+      "sha256": "8ae260da2c394da1379d143c6fb476be43db9447258e29391cfb72d0876b8adb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-26/background-1788743330603-1788743330603-1788743452733176004.sigmf-meta",
+      "bytes": 487,
+      "sha256": "d09dd71b9440a3cc1eb3aca2ea26e9a18e6cc02eb49d1e4206abb63130a944bc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-26/plan.json",
+      "bytes": 383,
+      "sha256": "ce5b50915f1b70e4b7947cf0334e4970270c0243528f1e9b10ae3011008e6dfd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-26/report.json",
+      "bytes": 2222,
+      "sha256": "eb9afa61ff38e75597cc5feb25cb4f29e5305936403fb217c4ddfbe8804d0d08"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-27/background-1788743330604-1788743330604-1788743457599919725.sigmf-data",
+      "bytes": 262140,
+      "sha256": "4340517757accbcf6a922735f3965b87c1f3b091ee53b6133e76f73d63a9f7c6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-27/background-1788743330604-1788743330604-1788743457599919725.sigmf-meta",
+      "bytes": 487,
+      "sha256": "ac80c00514328f782f19eda4c6fcc72dcd82558401beb6084d99139ee898da72"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-27/plan.json",
+      "bytes": 383,
+      "sha256": "ceb90e02100f936839972c91f0228f4b1359ea65294969935a3f2f2c1cf287c6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-27/report.json",
+      "bytes": 2222,
+      "sha256": "facbede7b5c13014036ed4e44d4a4e0081e69ae0a622e4e4c0154c20b1da4978"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-28/background-1788743330605-1788743330605-1788743462432842866.sigmf-data",
+      "bytes": 262140,
+      "sha256": "237157848e4f2b373b1252b59d78fa4048cfd328e6ea1c09fd72cab7fbff0241"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-28/background-1788743330605-1788743330605-1788743462432842866.sigmf-meta",
+      "bytes": 487,
+      "sha256": "22c26fa1bab628050b2ec1977cc6030fbcee81b63d4e4b4baa4788f13c10dca4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-28/plan.json",
+      "bytes": 383,
+      "sha256": "be3cf73f130d8fa53859e3455c626d18a13c9ab94f164e4e1ccdef5dd68481f9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-28/report.json",
+      "bytes": 2222,
+      "sha256": "88beb56205160bc83daad0539598052b17227a8f126f78c7731245e09bf4d910"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-29/background-1788743330606-1788743330606-1788743467288186556.sigmf-data",
+      "bytes": 262140,
+      "sha256": "e280b91bf2dd20c20c771f23c606495fe25e6701f36828fb3286a929c37ba623"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-29/background-1788743330606-1788743330606-1788743467288186556.sigmf-meta",
+      "bytes": 487,
+      "sha256": "375309c2713f8e16ac2cf69e79d270fb66374cbcd39707cba81551d762e55beb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-29/plan.json",
+      "bytes": 383,
+      "sha256": "b36149adccb9bba0f8567c3caf1e7ccff84e367ba75d774d819d0d7f70033941"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-background-907n/capture-29/report.json",
+      "bytes": 2220,
+      "sha256": "d08b41b36330848f03612e4e40ded3775cf97828e7ec5299683aec4ec3a65775"
+    }
+  ],
+  "logical_bytes": 1591391,
+  "raw_rx_iq_bytes": 1572840,
+  "purpose": "Reproduce all six independent 2440/2455 MHz confirmations, including failed background gates; retain no discovery IQ.",
+  "identity": {
+    "rx_input": {
+      "identity_version": 1,
+      "verified": true,
+      "front_panel_port": "RX1",
+      "logical_channel": "RX0",
+      "phy_channel": "voltage0",
+      "scan_i_channel": "voltage0",
+      "scan_q_channel": "voltage1",
+      "rf_port_select": "A_BALANCED",
+      "source": "iio_channel_attr"
+    },
+    "profile": "RX40_2.1MSps_1.5MHz_175kHz_fixed_FIR_background_only",
+    "confirmations": [
+      {
+        "index": 24,
+        "center_hz": 2440000000,
+        "seal": {
+          "hashes": {
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-24/background-1788743330601-1788743330601-1788743443064750040.sigmf-data": "6c629159580d2fc3bbb28a620acf35d901c9698334f635f1cfd11043a740a0ce",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-24/background-1788743330601-1788743330601-1788743443064750040.sigmf-meta": "0b92584a2db0ed0f7bed9ebbc1a60745291cd5dfcde95e2b2323e2414830de1d",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-24/report.json": "19e8b5f0e1043d7853db57592ea5cbd08e2cc8aec1c2ed2919d2cacb68f1a309",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-24/plan.json": "ad500fc775404e12afc23ab98aa7a61726f5dfdf660215a1e17336e1188e1b4a"
+          },
+          "request_id": 5,
+          "sequence": 331,
+          "session_generation": 1788743330601
+        }
+      },
+      {
+        "index": 25,
+        "center_hz": 2455000000,
+        "seal": {
+          "hashes": {
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-25/background-1788743330602-1788743330602-1788743447909177481.sigmf-data": "fd90c4b74929864b45a04d7d5aa04c38fe8246b71b4a0c25827bb7027c07889c",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-25/background-1788743330602-1788743330602-1788743447909177481.sigmf-meta": "740e6142825bdd1054fbf45abce31196e84d7ec74d6c291ec2633414de45e13d",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-25/report.json": "09fb23458d1934d6c493e833167b62ed23de21bfb8eea20e63b53bcb76693dc6",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-25/plan.json": "f8aabbe273b9d5735873483fbf8191ce2494de4123c0b0a0e37fd10773b376ae"
+          },
+          "request_id": 5,
+          "sequence": 332,
+          "session_generation": 1788743330602
+        }
+      },
+      {
+        "index": 26,
+        "center_hz": 2455000000,
+        "seal": {
+          "hashes": {
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-26/background-1788743330603-1788743330603-1788743452733176004.sigmf-data": "8ae260da2c394da1379d143c6fb476be43db9447258e29391cfb72d0876b8adb",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-26/background-1788743330603-1788743330603-1788743452733176004.sigmf-meta": "d09dd71b9440a3cc1eb3aca2ea26e9a18e6cc02eb49d1e4206abb63130a944bc",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-26/report.json": "eb9afa61ff38e75597cc5feb25cb4f29e5305936403fb217c4ddfbe8804d0d08",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-26/plan.json": "ce5b50915f1b70e4b7947cf0334e4970270c0243528f1e9b10ae3011008e6dfd"
+          },
+          "request_id": 5,
+          "sequence": 333,
+          "session_generation": 1788743330603
+        }
+      },
+      {
+        "index": 27,
+        "center_hz": 2440000000,
+        "seal": {
+          "hashes": {
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-27/background-1788743330604-1788743330604-1788743457599919725.sigmf-data": "4340517757accbcf6a922735f3965b87c1f3b091ee53b6133e76f73d63a9f7c6",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-27/background-1788743330604-1788743330604-1788743457599919725.sigmf-meta": "ac80c00514328f782f19eda4c6fcc72dcd82558401beb6084d99139ee898da72",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-27/report.json": "facbede7b5c13014036ed4e44d4a4e0081e69ae0a622e4e4c0154c20b1da4978",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-27/plan.json": "ceb90e02100f936839972c91f0228f4b1359ea65294969935a3f2f2c1cf287c6"
+          },
+          "request_id": 5,
+          "sequence": 334,
+          "session_generation": 1788743330604
+        }
+      },
+      {
+        "index": 28,
+        "center_hz": 2440000000,
+        "seal": {
+          "hashes": {
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-28/background-1788743330605-1788743330605-1788743462432842866.sigmf-data": "237157848e4f2b373b1252b59d78fa4048cfd328e6ea1c09fd72cab7fbff0241",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-28/background-1788743330605-1788743330605-1788743462432842866.sigmf-meta": "22c26fa1bab628050b2ec1977cc6030fbcee81b63d4e4b4baa4788f13c10dca4",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-28/report.json": "88beb56205160bc83daad0539598052b17227a8f126f78c7731245e09bf4d910",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-28/plan.json": "be3cf73f130d8fa53859e3455c626d18a13c9ab94f164e4e1ccdef5dd68481f9"
+          },
+          "request_id": 5,
+          "sequence": 335,
+          "session_generation": 1788743330605
+        }
+      },
+      {
+        "index": 29,
+        "center_hz": 2455000000,
+        "seal": {
+          "hashes": {
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-29/background-1788743330606-1788743330606-1788743467288186556.sigmf-data": "e280b91bf2dd20c20c771f23c606495fe25e6701f36828fb3286a929c37ba623",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-29/background-1788743330606-1788743330606-1788743467288186556.sigmf-meta": "375309c2713f8e16ac2cf69e79d270fb66374cbcd39707cba81551d762e55beb",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-29/report.json": "d08b41b36330848f03612e4e40ded3775cf97828e7ec5299683aec4ec3a65775",
+            "/var/tmp/sdrharness-dev/b210-background-907n/capture-29/plan.json": "b36149adccb9bba0f8567c3caf1e7ccff84e367ba75d774d819d0d7f70033941"
+          },
+          "request_id": 5,
+          "sequence": 336,
+          "session_generation": 1788743330606
+        }
+      }
+    ],
+    "label_source": "unknown",
+    "independent_labels": 0,
+    "model_windows": 0,
+    "recognizer_available": false
+  },
+  "verification_command": "PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 python3 jetson-agx/sdrharness/scripts/diagnose-b210-background.py --verify-retained",
+  "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/b210-background-907n",
+  "deletion_note": "Only after deciding this confirmation evidence is no longer needed; update inventory/checklist to mark raw replay unavailable. Do not remove the older LO rejection package or application results."
+}

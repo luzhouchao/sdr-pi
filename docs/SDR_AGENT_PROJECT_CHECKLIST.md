@@ -634,6 +634,14 @@ aggregation, result persistence and model-facing summaries.
           [LO-offset validation](B210_LO_OFFSET_VALIDATION_2026-09-06.md).
     - [ ] Identify remaining time-varying phase and stopped/background excursions;
           LO separation does not remove these effects or establish their origin.
+      - [x] Characterize retained bursts and execute a registered 30-point RX-only
+            frequency comparison: discovery selects 2455 MHz once; independent
+            confirmation reduces peak background versus 2440 MHz but fails all
+            three absolute quiet-background checks. Preserve the failure and all
+            statistics, with no protocol/hardware-cause or classification claim.
+            96 tests, real restoration, precise cleanup and six inventoried
+            confirmation captures (~1.6 MB) verified; see
+            [background validation](B210_BACKGROUND_VALIDATION_2026-09-07.md).
     - [x] Implement and live-validate an engineering +250-kHz LO / fixed 257-tap
           FIR rejection path: two captures suppress the LO band by 94.63/94.75 dB,
           preserve 99.9066% source power and show fixed-window source coherence
