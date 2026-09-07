@@ -681,9 +681,18 @@ aggregation, result persistence and model-facing summaries.
             numerical replay and exact cleanup verified. This does not prove
             ADC/DMA continuity or a physical cause; see
             [RX byte audit](B210_RX_BYTE_AUDIT_VALIDATION_2026-09-07.md).
-      - [ ] Validate positive IIO refill length versus buffer span semantics and
-            inject short/mismatched refill failures; the byte audit identified
-            an untested contract, not an observed cause of the RF failures.
+      - [x] Validate IIO positive refill/span semantics against v0.21 source and
+            the actual mapped target library's disassembly. Harden raw and
+            compatibility power loops to reject malformed/short refills before
+            consumption and clean failed output. Old-code negative reproduced;
+            34 cases on both paths, existing protocol tests, ASan/UBSan, ARMv7
+            ABI build and exact cleanup pass. Source delivery only; no observed
+            historical RF cause or deployment claim. See
+            [refill contract validation](IIO_REFILL_CONTRACT_VALIDATION_2026-09-07.md).
+      - [ ] Live-validate the refill candidate with a finite RX/restore/failure
+            plan and perform a verified rollback-capable replacement. The
+            installed daemon remains the prior release; build success alone
+            does not establish target acquisition or RF-failure repair.
       - [ ] Execute antenna/50-ohm termination/antenna input isolation with actual
             connection evidence. Operator confirmed no termination is available;
             open-circuit RX is not a substitute and no physical comparison ran.

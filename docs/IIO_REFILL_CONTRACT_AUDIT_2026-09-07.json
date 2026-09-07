@@ -1,0 +1,211 @@
+{
+  "schema_id": "sdrharness_iio_refill_contract_v1",
+  "baseline_commit": "bb8b51282fe895329b84339ddd99c816a09861e5",
+  "timestamp_utc": "2026-09-07T04:43:04.625237+00:00",
+  "upstream": [
+    {
+      "url": "https://raw.githubusercontent.com/analogdevicesinc/libiio/v0.21/buffer.c",
+      "bytes": 8255,
+      "sha256": "acdaba81d0e0eb76a6493cd30c10488aa971877d4333cf516846f06e61a83063"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/analogdevicesinc/libiio/v0.21/local.c",
+      "bytes": 48743,
+      "sha256": "5ec802b1b2d8b4b70862b801d6bdba884e58459ddbfb62a57427e1500785b661"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/analogdevicesinc/libiio/v0.21/iio.h",
+      "bytes": 76320,
+      "sha256": "77c9f596286c3eae729125035c4b1a2bc5a1754d10cabb5970efc90f685e0cac"
+    }
+  ],
+  "target_library": {
+    "path": "/usr/lib/libiio.so.0.21",
+    "bytes": 88136,
+    "sha256": "96bb209b35aa22a4e48365084d92f9794adffbff9e3b643cb1f4323e761077ba",
+    "read_only_probe": "96bb209b35aa22a4e48365084d92f9794adffbff9e3b643cb1f4323e761077ba  /usr/lib/libiio.so.0.21\n17136\nb6d94000-b6da9000 r-xp 00000000 00:02 533        /usr/lib/libiio.so.0.21\nb6da9000-b6db8000 ---p 00015000 00:02 533        /usr/lib/libiio.so.0.21\nb6db8000-b6db9000 r--p 00014000 00:02 533        /usr/lib/libiio.so.0.21\nb6db9000-b6dba000 rw-p 00015000 00:02 533        /usr/lib/libiio.so.0.21\n"
+  },
+  "disassembly": {
+    "refill-disassembly.txt": "\n/var/tmp/sdrharness-dev/iio-refill-907r/libiio.so.0.21:     file format elf32-littlearm\n\n\nDisassembly of section .init:\n\nDisassembly of section .plt:\n\nDisassembly of section .text:\n\n00008250 <iio_buffer_refill@@Base>:\n    8250:\te92d4073 \tpush\t{r0, r1, r4, r5, r6, lr}\n    8254:\te1a04000 \tmov\tr4, r0\n    8258:\te5905000 \tldr\tr5, [r0]\n    825c:\te590200c \tldr\tr2, [r0, #12]\n    8260:\te5903014 \tldr\tr3, [r0, #20]\n    8264:\te5d00021 \tldrb\tr0, [r0, #33]\t; 0x21\n    8268:\te5951038 \tldr\tr1, [r5, #56]\t; 0x38\n    826c:\te3500000 \tcmp\tr0, #0\n    8270:\t0a000014 \tbeq\t82c8 <iio_buffer_refill@@Base+0x78>\n    8274:\te5950000 \tldr\tr0, [r5]\n    8278:\te5900004 \tldr\tr0, [r0, #4]\n    827c:\te58d1000 \tstr\tr1, [sp]\n    8280:\te2841004 \tadd\tr1, r4, #4\n    8284:\te5906024 \tldr\tr6, [r0, #36]\t; 0x24\n    8288:\te1a00005 \tmov\tr0, r5\n    828c:\te12fff36 \tblx\tr6\n    8290:\te3500000 \tcmp\tr0, #0\n    8294:\te1a06000 \tmov\tr6, r0\n    8298:\tba000007 \tblt\t82bc <iio_buffer_refill@@Base+0x6c>\n    829c:\te5840010 \tstr\tr0, [r4, #16]\n    82a0:\te1a00005 \tmov\tr0, r5\n    82a4:\te5952038 \tldr\tr2, [r5, #56]\t; 0x38\n    82a8:\te5941014 \tldr\tr1, [r4, #20]\n    82ac:\tebfff06a \tbl\t445c <iio_device_get_sample_size_mask@plt>\n    82b0:\te3500000 \tcmp\tr0, #0\n    82b4:\tb1a06000 \tmovlt\tr6, r0\n    82b8:\ta584001c \tstrge\tr0, [r4, #28]\n    82bc:\te1a00006 \tmov\tr0, r6\n    82c0:\te28dd008 \tadd\tsp, sp, #8\n    82c4:\te8bd8070 \tpop\t{r4, r5, r6, pc}\n    82c8:\te58d1000 \tstr\tr1, [sp]\n    82cc:\te1a00005 \tmov\tr0, r5\n    82d0:\te5941004 \tldr\tr1, [r4, #4]\n    82d4:\tebfff8c3 \tbl\t65e8 <iio_device_find_debug_attr@@Base+0x164>\n    82d8:\teaffffec \tb\t8290 <iio_buffer_refill@@Base+0x40>\n\nDisassembly of section .fini:\n",
+    "end-disassembly.txt": "\n/var/tmp/sdrharness-dev/iio-refill-907r/libiio.so.0.21:     file format elf32-littlearm\n\n\nDisassembly of section .init:\n\nDisassembly of section .plt:\n\nDisassembly of section .text:\n\n00008520 <iio_buffer_end@@Base>:\n    8520:\te5902004 \tldr\tr2, [r0, #4]\n    8524:\te5900010 \tldr\tr0, [r0, #16]\n    8528:\te0820000 \tadd\tr0, r2, r0\n    852c:\te12fff1e \tbx\tlr\n\nDisassembly of section .fini:\n"
+  },
+  "baseline_failure": {
+    "expected": true,
+    "log": "make: Entering directory '/home/jetson/sdrharness/sdr-system/sdrd'\nmkdir -p /var/tmp/sdrharness-dev/iio-refill-907r/before\ncc -Iinclude -std=c11 -O2 -Wall -Wextra -Wpedantic -Werror -o /var/tmp/sdrharness-dev/iio-refill-907r/before/test_sdrd tests/test_sdrd.c src/sdrd.c src/sdrd_iio.c  -ldl -pthread\ncc -Iinclude -std=c11 -O2 -Wall -Wextra -Wpedantic -Werror -o /var/tmp/sdrharness-dev/iio-refill-907r/before/test_iio_refill tests/test_iio_refill.c src/sdrd.c  -ldl -pthread\n/var/tmp/sdrharness-dev/iio-refill-907r/before/test_sdrd\no1a_fuzz=sdrd seed=20260906 cases=256\nsdrd_tests=pass\n/var/tmp/sdrharness-dev/iio-refill-907r/before/test_iio_refill\ntest_iio_refill: tests/test_iio_refill.c:84: exercise: Assertion `rc == expected_rc' failed.\nmake: *** [Makefile:40: test] Aborted (core dumped)\nmake: Leaving directory '/home/jetson/sdrharness/sdr-system/sdrd'\n",
+    "synthetic_file": [
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/iio-refill-test-v2oGQQ/capture/capture-1-1.ci16",
+        "bytes": 1200,
+        "sha256": "8f23264d0566a0bdd835ccec6bfe9d131497f6fb24d68eb1358a9a9f298da64e",
+        "first_1024_unique_bytes": [
+          1
+        ],
+        "tail_176_unique_bytes": [
+          2
+        ]
+      }
+    ]
+  },
+  "validation": {
+    "cases_per_path": 34,
+    "paths": [
+      "raw_iq",
+      "compatibility_power"
+    ],
+    "after_log": "make: Entering directory '/home/jetson/sdrharness/sdr-system/sdrd'\nmkdir -p /var/tmp/sdrharness-dev/iio-refill-907r/after\ncc -Iinclude -std=c11 -O2 -Wall -Wextra -Wpedantic -Werror -o /var/tmp/sdrharness-dev/iio-refill-907r/after/sdrd src/main.c src/sdrd.c src/sdrd_iio.c  -ldl -pthread\ncc -Iinclude -std=c11 -O2 -Wall -Wextra -Wpedantic -Werror -o /var/tmp/sdrharness-dev/iio-refill-907r/after/test_sdrd tests/test_sdrd.c src/sdrd.c src/sdrd_iio.c  -ldl -pthread\ncc -Iinclude -std=c11 -O2 -Wall -Wextra -Wpedantic -Werror -o /var/tmp/sdrharness-dev/iio-refill-907r/after/test_iio_refill tests/test_iio_refill.c src/sdrd.c  -ldl -pthread\n/var/tmp/sdrharness-dev/iio-refill-907r/after/test_sdrd\no1a_fuzz=sdrd seed=20260906 cases=256\nsdrd_tests=pass\n/var/tmp/sdrharness-dev/iio-refill-907r/after/test_iio_refill\niio_refill_cases=34 raw_and_power=pass cleanup=pass\nmake: Leaving directory '/home/jetson/sdrharness/sdr-system/sdrd'\n",
+    "sanitizer_log": "make: Entering directory '/home/jetson/sdrharness/sdr-system/sdrd'\nmkdir -p /var/tmp/sdrharness-dev/iio-refill-907r/sanitized\ncc -Iinclude -std=c11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -o /var/tmp/sdrharness-dev/iio-refill-907r/sanitized/test_sdrd tests/test_sdrd.c src/sdrd.c src/sdrd_iio.c  -ldl -pthread\ncc -Iinclude -std=c11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -o /var/tmp/sdrharness-dev/iio-refill-907r/sanitized/test_iio_refill tests/test_iio_refill.c src/sdrd.c  -ldl -pthread\n/var/tmp/sdrharness-dev/iio-refill-907r/sanitized/test_sdrd\no1a_fuzz=sdrd seed=20260906 cases=256\nsdrd_tests=pass\n/var/tmp/sdrharness-dev/iio-refill-907r/sanitized/test_iio_refill\niio_refill_cases=34 raw_and_power=pass cleanup=pass\nmake: Leaving directory '/home/jetson/sdrharness/sdr-system/sdrd'\n",
+    "arm_build_log": "/var/tmp/sdrharness-dev/iio-refill-907r/armv7/sdrd: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-armhf.so.3, for GNU/Linux 3.2.0, stripped\n\nVersion symbols section '.gnu.version' contains 72 entries:\n Addr: 0000000000010d80  Offset: 0x000d80  Link: 5 (.dynsym)\n  000:   0 (*local*)       0 (*local*)       0 (*local*)       0 (*local*)    \n  004:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  008:   5 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  00c:   2 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  010:   2 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  014:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     4 (GLIBC_2.17)    3 (GLIBC_2.4)  \n  018:   3 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  01c:   2 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  020:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     5 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  024:   3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  028:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)  \n  02c:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  030:   3 (GLIBC_2.4)     5 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  034:   3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)  \n  038:   2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)     5 (GLIBC_2.4)  \n  03c:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)     6 (GLIBC_2.7)  \n  040:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  044:   3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n\nVersion needs section '.gnu.version_r' contains 3 entries:\n Addr: 0x0000000000010e10  Offset: 0x000e10  Link: 6 (.dynstr)\n  000000: Version: 1  File: libdl.so.2  Cnt: 1\n  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 5\n  0x0020: Version: 1  File: libc.so.6  Cnt: 3\n  0x0030:   Name: GLIBC_2.7  Flags: none  Version: 6\n  0x0040:   Name: GLIBC_2.17  Flags: none  Version: 4\n  0x0050:   Name: GLIBC_2.4  Flags: none  Version: 3\n  0x0060: Version: 1  File: libpthread.so.0  Cnt: 1\n  0x0070:   Name: GLIBC_2.4  Flags: none  Version: 2\n0c7d7aa9a0f47ac75d2316a38a6116979df3368181af19f3b513ed0e9547897c  /var/tmp/sdrharness-dev/iio-refill-907r/armv7/sdrd\ntoolchain_root=/home/jetson/.local/lib/sdrharness/toolchains/gcc-arm-8.2-2018.08-x86_64-arm-linux-gnueabihf\nbuilder_image_id=sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98\nglibc_requirements=GLIBC_2.4,GLIBC_2.7,GLIBC_2.17\n",
+    "arm_artifact_sha256": "0c7d7aa9a0f47ac75d2316a38a6116979df3368181af19f3b513ed0e9547897c",
+    "final_review_sanitizer_log": "make: Entering directory '/home/jetson/sdrharness/sdr-system/sdrd'\nmkdir -p /var/tmp/sdrharness-dev/iio-refill-review-907r/sanitized\ncc -Iinclude -std=c11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -o /var/tmp/sdrharness-dev/iio-refill-review-907r/sanitized/test_sdrd tests/test_sdrd.c src/sdrd.c src/sdrd_iio.c  -ldl -pthread\ncc -Iinclude -std=c11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -o /var/tmp/sdrharness-dev/iio-refill-review-907r/sanitized/test_iio_refill tests/test_iio_refill.c src/sdrd.c  -ldl -pthread\n/var/tmp/sdrharness-dev/iio-refill-review-907r/sanitized/test_sdrd\no1a_fuzz=sdrd seed=20260906 cases=256\nsdrd_tests=pass\n/var/tmp/sdrharness-dev/iio-refill-review-907r/sanitized/test_iio_refill\niio_refill_cases=34 raw_and_power=pass cleanup=pass\nmake: Leaving directory '/home/jetson/sdrharness/sdr-system/sdrd'\n"
+  },
+  "source_hashes": {
+    "sdr-system/sdrd/src/sdrd_iio.c": "6d8fdf3c79b1f480888fb7f9f818c3387480993a158c1c5d768832558a3b7f54",
+    "sdr-system/sdrd/tests/test_iio_refill.c": "1050398796b42752e859999732638a3446ec5dd5646a61ba5b374f768c8fcf97",
+    "sdr-system/sdrd/Makefile": "82fff7f278880b418b345c1fc99b5f6de6b2ec725efe166aa0507f3049e71ab8"
+  },
+  "deployed": false,
+  "live_capture_validated": false,
+  "rf_operations": 0,
+  "model_windows": 0,
+  "recognizer_available": false,
+  "independent_labels": 0,
+  "historical_rf_cause_proven": false,
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/iio-refill-907r",
+    "removed_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/after/sdrd",
+        "bytes": 63496,
+        "sha256": "d64c1fe354b9a9c16432f7a36e98a271698c63f00b2fec6c30c29c6439137715"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/after/test_iio_refill",
+        "bytes": 63112,
+        "sha256": "f4cec341b93de1d50e8432887b6be27b98217f1c304d3365afb84917c457399a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/after/test_sdrd",
+        "bytes": 88808,
+        "sha256": "6188a2fbb4eea5902d37b8391e53818da5455bea980aa9a767a010395f6c05b8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/after.log",
+        "bytes": 928,
+        "sha256": "9e7853f9f1a37d05fb8a89ca80f9ce10216b8207517026140af4aa13938bc3f5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/armv7/sdrd",
+        "bytes": 46804,
+        "sha256": "0c7d7aa9a0f47ac75d2316a38a6116979df3368181af19f3b513ed0e9547897c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/armv7.log",
+        "bytes": 2638,
+        "sha256": "9c206283ea7ed12fe5fa14622b8c896a086f318351e3f45fefc8ea9522fe2f27"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/before/test_iio_refill",
+        "bytes": 63072,
+        "sha256": "a24583a74271c6ebc1bfdc198e62c03f7b00471f4a5a2e99c12511554cbb2328"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/before/test_sdrd",
+        "bytes": 84648,
+        "sha256": "4abdb656b5e647ee175d32b9787efc5b39c06467db45e28e7e9d08cc376b1f19"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/before.log",
+        "bytes": 861,
+        "sha256": "b454556ffcd9a23cdb7b5856fd475a7d36bdfa56052c3304207f77440f43bdf7"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/buffer.c",
+        "bytes": 8255,
+        "sha256": "acdaba81d0e0eb76a6493cd30c10488aa971877d4333cf516846f06e61a83063"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/end-disassembly.txt",
+        "bytes": 383,
+        "sha256": "b36890871d1419ce19f61708b74e9b2b2d56b06b9b521d4624083d628d4dd2eb"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/iio-refill-test-v2oGQQ/capture/capture-1-1.ci16",
+        "bytes": 1200,
+        "sha256": "8f23264d0566a0bdd835ccec6bfe9d131497f6fb24d68eb1358a9a9f298da64e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/iio.h",
+        "bytes": 76320,
+        "sha256": "77c9f596286c3eae729125035c4b1a2bc5a1754d10cabb5970efc90f685e0cac"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/libiio.so.0.21",
+        "bytes": 88136,
+        "sha256": "96bb209b35aa22a4e48365084d92f9794adffbff9e3b643cb1f4323e761077ba"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/local.c",
+        "bytes": 48743,
+        "sha256": "5ec802b1b2d8b4b70862b801d6bdba884e58459ddbfb62a57427e1500785b661"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/refill-disassembly.txt",
+        "bytes": 1642,
+        "sha256": "5abc091c3c8f07fc82a8719ad8729afa644428de561d6cdec04a8aba8064b27f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/sanitized/test_iio_refill",
+        "bytes": 695440,
+        "sha256": "5b6fc63977d4cb9a155381b5660692cb98cf7685d677740cded69abb59e2ebb1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/sanitized/test_sdrd",
+        "bytes": 802920,
+        "sha256": "ccf09b86d13c9e909b8319fa7a0a0949190015f730e09f2f17227b904132599e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/sanitized.log",
+        "bytes": 895,
+        "sha256": "dc6cb98f8a9eb89e3b0705cce709bd0d104f1ceadb348142f0626a7baeaa9c06"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/target-library.json",
+        "bytes": 557,
+        "sha256": "4ee6411ea0ba0b04ce789d5beb92c867ca02f4d74cfb0eade1efbf38d2339350"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/iio-refill-907r/upstream.json",
+        "bytes": 589,
+        "sha256": "502818f52b83f30987fdc98d936c3eb50a09c65524a5abf5a491de8c2e8efb16"
+      }
+    ],
+    "removed_bytes": 2139447,
+    "absence_verified": true,
+    "new_iq_retained": 0,
+    "remote_directories_created": 0,
+    "existing_user_results_and_evidence_untouched": true,
+    "review_followup": {
+      "root": "/var/tmp/sdrharness-dev/iio-refill-review-907r",
+      "removed_files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/iio-refill-review-907r/review.log",
+          "bytes": 930,
+          "sha256": "131ce69b8b97b88b3f22ef1f12b19e48781218ec471ff7d550325e9377f215ec"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/iio-refill-review-907r/sanitized/test_iio_refill",
+          "bytes": 695312,
+          "sha256": "95c19016794128cc74603b282b75edbdf366713d97e564ca1bd279458d06d6b6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/iio-refill-review-907r/sanitized/test_sdrd",
+          "bytes": 802920,
+          "sha256": "ccf09b86d13c9e909b8319fa7a0a0949190015f730e09f2f17227b904132599e"
+        }
+      ],
+      "removed_bytes": 1499162,
+      "absence_verified": true,
+      "reason": "Review preserves existing make test behavior when TMPDIR is unset; rerun final test source under sanitizers."
+    }
+  }
+}

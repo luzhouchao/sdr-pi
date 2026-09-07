@@ -573,6 +573,45 @@ static int ensure_directory(const char *path) {
   return 0;
 }
 
+/* libiio 0.21 buffer_end reflects data_length, not allocation capacity. Check
+ * both views before consuming data, and reject short refills rather than
+ * joining discontinuous fragments. The final request tail is handled later. */
+static int checked_refill(
+    sdrd_iio_adapter_t *adapter,
+    const unsigned char **start,
+    size_t *available,
+    uint64_t *dropped_samples,
+    uint32_t *health_flags) {
+  const ssize_t refill = adapter->api.buffer_refill(adapter->buffer);
+  const uint64_t expected = (uint64_t)adapter->buffer_samples * 4u;
+  const unsigned char *end;
+  uintptr_t span;
+  *start = NULL;
+  *available = 0u;
+  if (refill < 0) {
+    return (int)refill;
+  }
+  *start = adapter->api.buffer_start(adapter->buffer);
+  end = adapter->api.buffer_end(adapter->buffer);
+  if (*start == NULL || end == NULL || (uintptr_t)end <= (uintptr_t)*start) {
+    return -EPROTO;
+  }
+  span = (uintptr_t)end - (uintptr_t)*start;
+  if (refill == 0 || (uint64_t)refill != (uint64_t)span ||
+      (span % 4u) != 0u || (uint64_t)span > expected) {
+    return -EPROTO;
+  }
+  if ((uint64_t)span < expected) {
+    /* This counts missing bytes in a reported short refill, not independently
+     * measured ADC sample loss. Do not count contradictory length reports. */
+    *dropped_samples += (expected - (uint64_t)span) / 4u;
+    *health_flags |= SDRD_EXEC_HEALTH_SHORT_REFILL;
+    return -EPROTO;
+  }
+  *available = (size_t)span;
+  return 0;
+}
+
 static int adapter_capture_iq(
     void *context,
     const sdrd_capture_request_t *request,
@@ -582,7 +621,6 @@ static int adapter_capture_iq(
   char feature_path[SDRD_MAX_PATH * 2u];
   char full_path[SDRD_MAX_PATH * 2u];
   uint64_t remaining;
-  uint64_t expected_refill_bytes;
   struct timespec started;
   struct timespec finished;
   int fd = -1;
@@ -595,7 +633,6 @@ static int adapter_capture_iq(
   memset(result, 0, sizeof(*result));
   memset(&identity, 0, sizeof(identity));
   result->timeout_ms = request->timeout_ms != 0u ? request->timeout_ms : adapter->iio_timeout_ms;
-  expected_refill_bytes = (uint64_t)adapter->buffer_samples * 4u;
   (void)clock_gettime(CLOCK_MONOTONIC, &started);
   rc = adapter_probe_rx_input(adapter, &identity);
   if (rc != 0) {
@@ -665,29 +702,13 @@ static int adapter_capture_iq(
   adapter->capture_active = 1;
   (void)pthread_mutex_unlock(&adapter->cancel_mutex);
   while (remaining > 0u) {
-    const ssize_t refill = adapter->api.buffer_refill(adapter->buffer);
-    unsigned char *start;
-    unsigned char *end;
+    const unsigned char *start;
     size_t available;
     size_t to_write;
-    if (refill < 0) {
-      rc = (int)refill;
+    rc = checked_refill(adapter, &start, &available,
+                        &result->dropped_samples, &result->health_flags);
+    if (rc != 0) {
       goto failed;
-    }
-    start = adapter->api.buffer_start(adapter->buffer);
-    end = adapter->api.buffer_end(adapter->buffer);
-    if (start == NULL || end == NULL || end <= start) {
-      rc = -EIO;
-      goto failed;
-    }
-    available = (size_t)(end - start);
-    if ((available % 4u) != 0u) {
-      rc = -EPROTO;
-      goto failed;
-    }
-    if ((uint64_t)available < expected_refill_bytes) {
-      result->dropped_samples += (expected_refill_bytes - (uint64_t)available) / 4u;
-      result->health_flags |= SDRD_EXEC_HEALTH_SHORT_REFILL;
     }
     to_write = available;
     if ((uint64_t)to_write > remaining) {
@@ -810,27 +831,17 @@ static int adapter_capture_power(
   adapter->capture_active = 1;
   (void)pthread_mutex_unlock(&adapter->cancel_mutex);
   while (remaining > 0u) {
-    const ssize_t refill = adapter->api.buffer_refill(adapter->buffer);
     const unsigned char *cursor;
-    const unsigned char *end;
+    size_t available;
     uint64_t available_samples;
     uint64_t take;
     uint64_t index;
-    if (refill < 0) {
-      rc = (int)refill;
+    rc = checked_refill(adapter, &cursor, &available,
+                        &result->dropped_samples, &result->health_flags);
+    if (rc != 0) {
       break;
     }
-    cursor = adapter->api.buffer_start(adapter->buffer);
-    end = adapter->api.buffer_end(adapter->buffer);
-    if (cursor == NULL || end == NULL || end <= cursor || ((size_t)(end - cursor) % 4u) != 0u) {
-      rc = -EIO;
-      break;
-    }
-    available_samples = (uint64_t)(end - cursor) / 4u;
-    if (available_samples < adapter->buffer_samples) {
-      result->dropped_samples += (uint64_t)adapter->buffer_samples - available_samples;
-      result->health_flags |= SDRD_EXEC_HEALTH_SHORT_REFILL;
-    }
+    available_samples = (uint64_t)available / 4u;
     take = available_samples < remaining ? available_samples : remaining;
     for (index = 0u; index < take; ++index) {
       int16_t i_sample;
@@ -867,6 +878,8 @@ static int adapter_capture_power(
       result->health_flags |= SDRD_EXEC_HEALTH_OVERFLOW;
     } else if (rc == -ECANCELED) {
       result->health_flags |= SDRD_EXEC_HEALTH_CANCELLED;
+    } else if (rc == -EPROTO) {
+      result->health_flags |= SDRD_EXEC_HEALTH_SHAPE_ERROR;
     } else {
       result->health_flags |= SDRD_EXEC_HEALTH_IO_ERROR;
     }
