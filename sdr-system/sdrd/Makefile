@@ -17,6 +17,7 @@ LDLIBS += -ldl -pthread
 DAEMON := $(BUILD_DIR)/sdrd
 TEST := $(BUILD_DIR)/test_sdrd
 IIO_REFILL_TEST := $(BUILD_DIR)/test_iio_refill
+IIO_PORT_TEST := $(BUILD_DIR)/test_iio_ports
 LIVE_TIMEOUT_TEST := $(BUILD_DIR)/live_timeout_restore
 
 .PHONY: all test live-timeout-test clean
@@ -35,9 +36,13 @@ $(TEST): tests/test_sdrd.c $(TEST_SOURCES) include/sdrd.h include/sdrd_iio.h | $
 $(IIO_REFILL_TEST): tests/test_iio_refill.c $(TEST_SOURCES) include/sdrd.h include/sdrd_iio.h | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ tests/test_iio_refill.c src/sdrd.c $(LDFLAGS) $(LDLIBS)
 
-test: $(TEST) $(IIO_REFILL_TEST)
+$(IIO_PORT_TEST): tests/test_iio_ports.c $(TEST_SOURCES) include/sdrd.h include/sdrd_iio.h | $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ tests/test_iio_ports.c src/sdrd.c $(LDFLAGS) $(LDLIBS)
+
+test: $(TEST) $(IIO_REFILL_TEST) $(IIO_PORT_TEST)
 	$(TEST)
 	$(IIO_REFILL_TEST)
+	$(IIO_PORT_TEST)
 
 $(LIVE_TIMEOUT_TEST): tests/live_timeout_restore.c $(TEST_SOURCES) include/sdrd.h include/sdrd_iio.h | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ tests/live_timeout_restore.c $(TEST_SOURCES) $(LDFLAGS) $(LDLIBS)

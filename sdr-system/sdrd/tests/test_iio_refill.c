@@ -4,6 +4,7 @@
 #include <assert.h>
 
 struct iio_channel { int enabled; };
+static unsigned int selected_channel;
 struct iio_buffer {
   unsigned char data[2048];
   ssize_t returned;
@@ -52,10 +53,12 @@ static void initialize(sdrd_iio_adapter_t *adapter, struct iio_buffer *buffer,
   memset(adapter, 0, sizeof(*adapter));
   adapter->buffer = buffer;
   adapter->buffer_samples = 256;
+  assert(sdrd_rx_input_for_port(selected_channel ? "RX2" : "RX1", 0, &adapter->selected_input) == 0);
+  adapter->selected_scan_mask = selected_channel ? 12u : 3u;
   adapter->iio_timeout_ms = 1000;
-  adapter->phy_rx0 = &channels[0];
+  adapter->selected_phy_rx = &channels[selected_channel];
   for (unsigned int i = 0; i < 4; ++i) {
-    channels[i].enabled = i < 2;
+    channels[i].enabled = (adapter->selected_scan_mask & (1u << i)) != 0;
     adapter->scan[i] = &channels[i];
   }
   assert(copy_text(adapter->data_root, sizeof(adapter->data_root), root) == 0);
@@ -168,6 +171,10 @@ int main(void) {
       ++cases;
     }
   }
+  selected_channel = 1;
+  exercise(root, 1024, 1024, 0, 0, 0, 0, 0);
+  exercise(root, 512, 1024, 0, 2, -EPROTO, SDRD_EXEC_HEALTH_SHAPE_ERROR, 0);
+  cases += 2;
   assert(rmdir(root) == 0);
   printf("iio_refill_cases=%u raw_and_power=pass cleanup=pass\n", cases);
   return 0;

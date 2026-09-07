@@ -206,6 +206,16 @@
       "removed_bytes": 1499162,
       "absence_verified": true,
       "reason": "Review preserves existing make test behavior when TMPDIR is unset; rerun final test source under sanitizers."
+    },
+    "later_apport_cleanup": {
+      "discovered_in": "RX port selection unit on 2026-09-07",
+      "file": {
+        "path": "/var/crash/_var_tmp_sdrharness-dev_iio-refill-907r_before_test_iio_refill.1000.crash",
+        "bytes": 25253,
+        "sha256": "7816f5c97cf8e38751c16b954d6580c94900b91689f17a88663ac1c1342b341d"
+      },
+      "absence_verified": true,
+      "explanation": "Apport wrote a separate report despite ulimit -c 0; no core file had appeared inside the original feature directories."
     }
   }
 }

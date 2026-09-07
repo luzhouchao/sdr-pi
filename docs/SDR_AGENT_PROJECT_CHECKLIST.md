@@ -441,13 +441,20 @@ Evidence:
 - [x] Deploy controlled `sdrd` with a private-link listener, retained `/sd`
       release, tested stop path,
       bounded live capture and verified state restoration.
-- [x] Design and validate safe persistent `sdrd` startup after reboot without
-      modifying the boot image:
+- [ ] Maintain safe persistent `sdrd` startup after reboot and successful recovery
+      health checks without modifying the boot image. Historical startup and
+      host-key validations below remain valid, but the installed recovery CLI
+      currently rejects `rx_input` on both old and new daemons (2026-09-07):
   - [x] Deploy and live-validate the AGX recovery oneshot/timer, strict
         duplicate-instance gates, normal start, idle abnormal-exit recovery,
         concurrent-start rejection, current-boot persistence and rollback;
         see
         [`SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md).
+  - [ ] Repair the installed recovery Controller's outdated response contract
+        and live-verify the oneshot/timer health result. The preexisting failure
+        was reproduced before and after RX-port deployment with identical
+        default wire responses; see
+        [port selection validation](P201_RX_PORT_SELECTION_VALIDATION_2026-09-07.md).
   - [x] Remove the manual host-key repin after a P201 reboot by explicitly
         authorized initialization of only the 917,504-byte vendor QSPI `mtd2`
         JFFS2 partition, persisting only the verified ECDSA key plus its minimal
@@ -689,10 +696,19 @@ aggregation, result persistence and model-facing summaries.
             ABI build and exact cleanup pass. Source delivery only; no observed
             historical RF cause or deployment claim. See
             [refill contract validation](IIO_REFILL_CONTRACT_VALIDATION_2026-09-07.md).
-      - [ ] Live-validate the refill candidate with a finite RX/restore/failure
-            plan and perform a verified rollback-capable replacement. The
-            installed daemon remains the prior release; build success alone
-            does not establish target acquisition or RF-failure repair.
+      - [x] Live-validate the refill changes within the RX-port candidate on both
+            channels: finite successful IQ, forced timeout, recovery and disconnect
+            restoration pass, with a verified rollback and installed replacement.
+            This does not establish historical RF-failure repair; see
+            [port selection validation](P201_RX_PORT_SELECTION_VALIDATION_2026-09-07.md).
+      - [x] Make sdrd RX1/RX2 selectable by startup config with corresponding PHY,
+            scan pair, gain snapshot/restore and truthful IQ identity. Native,
+            sanitizer and bounded two-channel live tests pass; release
+            `20260907-rx-port-selection-v1` is installed with default RX1 and
+            retained rollback. Exact cleanup verified. Operator narrowed scope
+            to these two ports after vendor source proved fixed TRX switch
+            controls; no FPGA/BOOT change. Frozen Controller/profile still
+            requires RX1; RX2 is an explicit diagnostic path. See the same record.
       - [ ] Execute antenna/50-ohm termination/antenna input isolation with actual
             connection evidence. Operator confirmed no termination is available;
             open-circuit RX is not a substitute and no physical comparison ran.

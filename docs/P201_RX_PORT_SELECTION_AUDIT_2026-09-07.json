@@ -1,0 +1,1368 @@
+{
+  "schema_id": "p201_rx_port_selection_v1",
+  "timestamp_utc": "2026-09-07T05:50:43.404081+00:00",
+  "baseline": "5a79664ef047f08fccc448acfea6e73cf728535a",
+  "scope": "RX1/RX2 only, explicitly narrowed by operator after vendor routing inspection",
+  "antenna": {
+    "operator_report": "new 2.4GHz/5GHz dual-band antenna on RX2",
+    "comparison_with_previous_antenna": false
+  },
+  "vendor_sources": [
+    {
+      "path": "/media/jetson/陆周超的移动硬盘/SDR P201P/璞致PZSDR系列板卡之P201Pro P203Pro 硬件说明.pdf",
+      "bytes": 1138690,
+      "sha256": "d70de515affbb2007d847b841ee48d8a17918ffb0bbf8c777f1da32c468c9250"
+    },
+    {
+      "path": "/media/jetson/陆周超的移动硬盘/SDR P201P/04.硬件相关--Hardware/01.原理图--Schematic/PZSDR P201Pro P203Pro schematic.pdf",
+      "bytes": 750146,
+      "sha256": "339911d4eb8669ff70a9f9fb35f12390cd6cba21500d4684f1ef762450bfae78"
+    },
+    {
+      "archive": "/media/jetson/陆周超的移动硬盘/SDR P201P/05.教程和源码--Course_Demos/1_ADI_Pluto/2_Pluto源码及移植说明--Pluto source code and porting instructions/2_Pluto_code/pzsdr-fw.7z",
+      "archive_bytes": 5148431997,
+      "archive_sha256_computed": false,
+      "member": "pzsdr-fw/hdl/projects/pzp201pro/system_top.v",
+      "bytes": 5662,
+      "sha256": "dd509270bce7288484a3afc0d54657a58162260a6b46dbf320439391874b8f1a"
+    },
+    {
+      "archive": "/media/jetson/陆周超的移动硬盘/SDR P201P/05.教程和源码--Course_Demos/1_ADI_Pluto/2_Pluto源码及移植说明--Pluto source code and porting instructions/2_Pluto_code/pzsdr-fw.7z",
+      "archive_bytes": 5148431997,
+      "archive_sha256_computed": false,
+      "member": "pzsdr-fw/hdl/projects/pzp201pro/system_constr.xdc",
+      "bytes": 7591,
+      "sha256": "7a598f60192e18e82ba8a35ec38cffcef49ca23e3ed76c8a79724e3d6a80062b"
+    }
+  ],
+  "vendor_switch_constants": {
+    "TRX1_nTX_RX": 0,
+    "RX1_TRX_nRX": 0,
+    "RX2_nTRX_RX": 1,
+    "TRX2_TX_nRX": 1
+  },
+  "vendor_interpretation": "Each dedicated RX jack connects to its corresponding AD9361 A input; TRX controls are constants in supplied source. No new bitstream or boot-chain comparison/modification performed.",
+  "gpio_read_only": "gpiochip0: GPIOs 906-1023, parent: platform/e000a000.gpio, zynq_gpio:\n gpio-954 (                    |ulpi resetb         ) out hi \n gpio-973 (                    |reset               ) out hi \n gpio-977 (                    |led0:blue           ) out lo \n gpio-978 (                    |led1:blue           ) out lo \n/sys/class/gpio/gpiochip906\nzynq_gpio\n906\n118\nexport\ngpiochip906\nunexport\n",
+  "tests": {
+    "refill_scenarios": 36,
+    "paths_per_scenario": 2,
+    "ports_apply_restore_test": true,
+    "protocol_config_identity_test": true,
+    "protocol_mutations": 256,
+    "asan_ubsan": true
+  },
+  "logs": {
+    "build.log": "make: Entering directory '/home/jetson/sdrharness/sdr-system/sdrd'\nmake: Nothing to be done for 'all'.\ncc -Iinclude -std=c11 -O2 -Wall -Wextra -Wpedantic -Werror -o /var/tmp/sdrharness-dev/rx-port-select-907s/build/test_iio_refill tests/test_iio_refill.c src/sdrd.c  -ldl -pthread\n/var/tmp/sdrharness-dev/rx-port-select-907s/build/test_sdrd\no1a_fuzz=sdrd seed=20260906 cases=256\nsdrd_tests=pass\n/var/tmp/sdrharness-dev/rx-port-select-907s/build/test_iio_refill\niio_refill_cases=36 raw_and_power=pass cleanup=pass\n/var/tmp/sdrharness-dev/rx-port-select-907s/build/test_iio_ports\niio_operation=apply stage=hardwaregain rc=-5\niio_operation=apply stage=hardwaregain rc=-5\niio_ports=RX1,RX2 apply_snapshot_restore_failure_identity=pass\nmake: Leaving directory '/home/jetson/sdrharness/sdr-system/sdrd'\n",
+    "sanitized.log": "make: Entering directory '/home/jetson/sdrharness/sdr-system/sdrd'\nmkdir -p /var/tmp/sdrharness-dev/rx-port-select-907s/sanitized\ncc -Iinclude -std=c11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -o /var/tmp/sdrharness-dev/rx-port-select-907s/sanitized/test_sdrd tests/test_sdrd.c src/sdrd.c src/sdrd_iio.c  -ldl -pthread\ncc -Iinclude -std=c11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -o /var/tmp/sdrharness-dev/rx-port-select-907s/sanitized/test_iio_refill tests/test_iio_refill.c src/sdrd.c  -ldl -pthread\ncc -Iinclude -std=c11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -o /var/tmp/sdrharness-dev/rx-port-select-907s/sanitized/test_iio_ports tests/test_iio_ports.c src/sdrd.c  -ldl -pthread\n/var/tmp/sdrharness-dev/rx-port-select-907s/sanitized/test_sdrd\no1a_fuzz=sdrd seed=20260906 cases=256\nsdrd_tests=pass\n/var/tmp/sdrharness-dev/rx-port-select-907s/sanitized/test_iio_refill\niio_refill_cases=36 raw_and_power=pass cleanup=pass\n/var/tmp/sdrharness-dev/rx-port-select-907s/sanitized/test_iio_ports\niio_operation=apply stage=hardwaregain rc=-5\niio_operation=apply stage=hardwaregain rc=-5\niio_ports=RX1,RX2 apply_snapshot_restore_failure_identity=pass\nmake: Leaving directory '/home/jetson/sdrharness/sdr-system/sdrd'\n",
+    "armv7.log": "/var/tmp/sdrharness-dev/rx-port-select-907s/armv7/sdrd: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-armhf.so.3, for GNU/Linux 3.2.0, stripped\n\nVersion symbols section '.gnu.version' contains 73 entries:\n Addr: 0000000000010d9e  Offset: 0x000d9e  Link: 5 (.dynsym)\n  000:   0 (*local*)       0 (*local*)       0 (*local*)       0 (*local*)    \n  004:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  008:   5 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  00c:   2 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  010:   2 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  014:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     4 (GLIBC_2.17)    3 (GLIBC_2.4)  \n  018:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)  \n  01c:   3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  020:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     5 (GLIBC_2.4)  \n  024:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  028:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  02c:   2 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  030:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     5 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  034:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  038:   2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)  \n  03c:   5 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)  \n  040:   6 (GLIBC_2.7)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  044:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)  \n  048:   3 (GLIBC_2.4)  \n\nVersion needs section '.gnu.version_r' contains 3 entries:\n Addr: 0x0000000000010e30  Offset: 0x000e30  Link: 6 (.dynstr)\n  000000: Version: 1  File: libdl.so.2  Cnt: 1\n  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 5\n  0x0020: Version: 1  File: libc.so.6  Cnt: 3\n  0x0030:   Name: GLIBC_2.7  Flags: none  Version: 6\n  0x0040:   Name: GLIBC_2.17  Flags: none  Version: 4\n  0x0050:   Name: GLIBC_2.4  Flags: none  Version: 3\n  0x0060: Version: 1  File: libpthread.so.0  Cnt: 1\n  0x0070:   Name: GLIBC_2.4  Flags: none  Version: 2\n83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f  /var/tmp/sdrharness-dev/rx-port-select-907s/armv7/sdrd\ntoolchain_root=/home/jetson/.local/lib/sdrharness/toolchains/gcc-arm-8.2-2018.08-x86_64-arm-linux-gnueabihf\nbuilder_image_id=sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98\nglibc_requirements=GLIBC_2.4,GLIBC_2.7,GLIBC_2.17\n",
+    "port-live-attempt1.log": "{\"ports\": [\"RX1\", \"RX2\"], \"center_hz\": 2455000000, \"rate_sps\": 2100000, \"bandwidth_hz\": 1500000, \"gain_db\": 40, \"settle_ms\": 500, \"cases_per_port\": [\"65535 success\", \"65535 forced 1ms timeout\", \"4096 recovery\", \"disconnect restoration\"], \"maximum_rx_bytes\": 1081328, \"maximum_capture_calls\": 6, \"estimated_seconds\": 60, \"agx_directory\": \"/var/tmp/sdrharness-dev/rx-port-select-907s\", \"p201_directory\": \"/tmp/sdr-agent-dev/rx-port-select-907s\", \"free_bytes\": 808623738880, \"stop\": \"SIGINT/SIGTERM to this script; active session STOP_SESSION and candidate shutdown; installed daemon restored\", \"tx_operations\": 0, \"model_windows\": 0, \"antenna\": \"operator reports new 2.4/5GHz antenna on RX2\"}\nTraceback (most recent call last):\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-sdrd-rx-ports.py\", line 248, in <module>\n    execute(args.binary, args.feature_directory)\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-sdrd-rx-ports.py\", line 152, in execute\n    assert active[f'/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage{i}_en'] == str(int(i // 2 == int(port == 'RX2')))\nAssertionError\n",
+    "port-live.log": "{\"ports\": [\"RX1\", \"RX2\"], \"center_hz\": 2455000000, \"rate_sps\": 2100000, \"bandwidth_hz\": 1500000, \"gain_db\": 40, \"settle_ms\": 500, \"cases_per_port\": [\"65535 success\", \"65535 forced 1ms timeout\", \"4096 recovery\", \"disconnect restoration\"], \"maximum_rx_bytes\": 1081328, \"maximum_capture_calls\": 6, \"estimated_seconds\": 60, \"agx_directory\": \"/var/tmp/sdrharness-dev/rx-port-select-907s\", \"p201_directory\": \"/tmp/sdr-agent-dev/rx-port-select-907s\", \"free_bytes\": 808603537408, \"stop\": \"SIGINT/SIGTERM to this script; active session STOP_SESSION and candidate shutdown; installed daemon restored\", \"tx_operations\": 0, \"model_windows\": 0, \"antenna\": \"operator reports new 2.4/5GHz antenna on RX2\"}\nRX1/RX2 candidate validation passed; installed daemon and both RX states restored.\n",
+    "deploy-attempt1.log": "Traceback (most recent call last):\n  File \"/var/tmp/sdrharness-dev/rx-port-select-907s/deploy.py\", line 59, in <module>\n    observe=v.command(['/home/jetson/.local/lib/sdrharness/bin/sdr-agent-controller','--mode','observe','--sdrd','192.168.1.10:43110','--sdrd-timeout-ms','5000','--request','/dev/null'])\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-sdrd-rx-ports.py\", line 29, in command\n    raise RuntimeError(r.stderr.decode(errors='replace')[-1500:])\nRuntimeError: controller_error=response_shape: unknown field `rx_input`, expected one of `schema_version`, `request_id`, `status`, `mode`, `iio_visible`, `radio_control`, `raw_iq_capture`, `software_summary`, `max_capture_bytes`, `fpga_backend`, `fpga_identity_valid`, `fpga_summary_version`, `fpga_abi_version`, `fpga_capability`, `fpga_aggregate`\n\n",
+    "deploy.log": "{\"status\": \"passed\", \"candidate_sha256\": \"83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f\", \"pid\": \"11547\", \"release\": \"/sd/sdr-agent/releases/20260907-rx-port-selection-v1\", \"rollback_release\": \"/sd/sdr-agent/releases/20260907-before-rx-port-selection-v1\", \"default_rx_input\": \"RX1\"}\n"
+  },
+  "first_live_attempt": {
+    "record": {
+      "budget": {
+        "ports": [
+          "RX1",
+          "RX2"
+        ],
+        "center_hz": 2455000000,
+        "rate_sps": 2100000,
+        "bandwidth_hz": 1500000,
+        "gain_db": 40,
+        "settle_ms": 500,
+        "cases_per_port": [
+          "65535 success",
+          "65535 forced 1ms timeout",
+          "4096 recovery",
+          "disconnect restoration"
+        ],
+        "maximum_rx_bytes": 1081328,
+        "maximum_capture_calls": 6,
+        "estimated_seconds": 60,
+        "agx_directory": "/var/tmp/sdrharness-dev/rx-port-select-907s",
+        "p201_directory": "/tmp/sdr-agent-dev/rx-port-select-907s",
+        "free_bytes": 808623738880,
+        "stop": "SIGINT/SIGTERM to this script; active session STOP_SESSION and candidate shutdown; installed daemon restored",
+        "tx_operations": 0,
+        "model_windows": 0,
+        "antenna": "operator reports new 2.4/5GHz antenna on RX2"
+      },
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "original_pid": [
+        "17136"
+      ],
+      "installed_sha256": "77d98a005305a4b7531fc3f133e9b4af521e60b065b29fcc304b4c7db80c45ae",
+      "candidate_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+      "cases": [],
+      "status": "running",
+      "recognizer_available": false,
+      "deployed": false,
+      "probes": [
+        {
+          "port": "RX1",
+          "mode": "--check-config",
+          "output": "config_result=ok listen=192.168.1.10:43110 mode=controlled\n"
+        },
+        {
+          "port": "RX1",
+          "mode": "--probe",
+          "output": "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":false,\"raw_iq_capture\":false,\"software_summary\":false,\"max_capture_bytes\":67108864,\"rx_input\":{\"identity_version\":1,\"verified\":false,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"},\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"healthy\":false,\"health_flags\":4,\"iio_phy_visible\":true,\"iio_rx_visible\":true,\"rx_input\":{\"identity_version\":1,\"verified\":false,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"},\"fpga_configured\":false,\"fpga_mapped\":false,\"fpga_identity_valid\":false,\"session_faulted\":false}\n"
+        },
+        {
+          "port": "RX1",
+          "mode": "--probe-radio",
+          "output": "{\"radio_probe\":\"ok\",\"center_hz\":5985999996,\"sample_rate_hz\":30720000,\"rf_bandwidth_hz\":30000000,\"gain_mode\":\"manual\",\"scan_channel_mask\":0,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}}\n"
+        }
+      ],
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "restored": true,
+      "remote_staging_removed": true
+    },
+    "capture_calls": 0,
+    "reason": "Validator checked sysfs before libiio buffer creation; corrected inspection timing, no RF parameter change"
+  },
+  "live": {
+    "budget": {
+      "ports": [
+        "RX1",
+        "RX2"
+      ],
+      "center_hz": 2455000000,
+      "rate_sps": 2100000,
+      "bandwidth_hz": 1500000,
+      "gain_db": 40,
+      "settle_ms": 500,
+      "cases_per_port": [
+        "65535 success",
+        "65535 forced 1ms timeout",
+        "4096 recovery",
+        "disconnect restoration"
+      ],
+      "maximum_rx_bytes": 1081328,
+      "maximum_capture_calls": 6,
+      "estimated_seconds": 60,
+      "agx_directory": "/var/tmp/sdrharness-dev/rx-port-select-907s",
+      "p201_directory": "/tmp/sdr-agent-dev/rx-port-select-907s",
+      "free_bytes": 808603537408,
+      "stop": "SIGINT/SIGTERM to this script; active session STOP_SESSION and candidate shutdown; installed daemon restored",
+      "tx_operations": 0,
+      "model_windows": 0,
+      "antenna": "operator reports new 2.4/5GHz antenna on RX2"
+    },
+    "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "original_pid": [
+      "9242"
+    ],
+    "installed_sha256": "77d98a005305a4b7531fc3f133e9b4af521e60b065b29fcc304b4c7db80c45ae",
+    "candidate_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+    "cases": [
+      {
+        "port": "RX1",
+        "kind": "success",
+        "response": {
+          "schema_version": 1,
+          "request_id": 5,
+          "status": "ok",
+          "generation": 1788759481493,
+          "session_generation": 1788759481493,
+          "samples_captured": 65535,
+          "bytes_transferred": 262140,
+          "sequence": 1,
+          "dropped_samples": 0,
+          "overflow": false,
+          "timeout": {
+            "limit_ms": 1000,
+            "elapsed_us": 33616,
+            "timed_out": false
+          },
+          "health": {
+            "healthy": true,
+            "flags": 0,
+            "source": "iio_adapter"
+          },
+          "rx_input": {
+            "identity_version": 1,
+            "verified": true,
+            "front_panel_port": "RX1",
+            "logical_channel": "RX0",
+            "phy_channel": "voltage0",
+            "scan_i_channel": "voltage0",
+            "scan_q_channel": "voltage1",
+            "rf_port_select": "A_BALANCED",
+            "source": "iio_channel_attr"
+          },
+          "iq_sha256": "337847a9ea32e7fb08b5f31477c0646b63049a167a2aeb498a7e0b49a3905e0c",
+          "component_range": [
+            -7,
+            7
+          ],
+          "rms_adc": 1.5615497033901222,
+          "active_radio_state": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n2455000000\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n2100000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n1500000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n40.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n1\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n1\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n1\n"
+        },
+        "restored": true
+      },
+      {
+        "port": "RX1",
+        "kind": "timeout",
+        "response": {
+          "schema_version": 1,
+          "request_id": 9,
+          "status": "error",
+          "error": "capture_failed_restored",
+          "generation": 1788759486093,
+          "session_generation": 1788759486093,
+          "sequence": 2,
+          "dropped_samples": 0,
+          "overflow": false,
+          "timeout": {
+            "limit_ms": 1,
+            "elapsed_us": 3798,
+            "timed_out": true
+          },
+          "health": {
+            "healthy": false,
+            "flags": 4,
+            "source": "iio_adapter"
+          }
+        },
+        "restored": true
+      },
+      {
+        "port": "RX1",
+        "kind": "success",
+        "response": {
+          "schema_version": 1,
+          "request_id": 12,
+          "status": "ok",
+          "generation": 1788759490329,
+          "session_generation": 1788759490329,
+          "samples_captured": 4096,
+          "bytes_transferred": 16384,
+          "sequence": 3,
+          "dropped_samples": 0,
+          "overflow": false,
+          "timeout": {
+            "limit_ms": 1000,
+            "elapsed_us": 3739,
+            "timed_out": false
+          },
+          "health": {
+            "healthy": true,
+            "flags": 0,
+            "source": "iio_adapter"
+          },
+          "rx_input": {
+            "identity_version": 1,
+            "verified": true,
+            "front_panel_port": "RX1",
+            "logical_channel": "RX0",
+            "phy_channel": "voltage0",
+            "scan_i_channel": "voltage0",
+            "scan_q_channel": "voltage1",
+            "rf_port_select": "A_BALANCED",
+            "source": "iio_channel_attr"
+          },
+          "iq_sha256": "d5593d2e7e0bedcc2b8cc071c0a1169421113c9ec12eb0cf65a29c0c1919e067",
+          "component_range": [
+            -7,
+            6
+          ],
+          "rms_adc": 2.579545063451112,
+          "active_radio_state": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n2455000000\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n2100000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n1500000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n40.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n1\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n1\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n1\n"
+        },
+        "restored": true
+      },
+      {
+        "port": "RX1",
+        "kind": "disconnect",
+        "restored": true
+      },
+      {
+        "port": "RX2",
+        "kind": "success",
+        "response": {
+          "schema_version": 1,
+          "request_id": 5,
+          "status": "ok",
+          "generation": 1788759500338,
+          "session_generation": 1788759500338,
+          "samples_captured": 65535,
+          "bytes_transferred": 262140,
+          "sequence": 1,
+          "dropped_samples": 0,
+          "overflow": false,
+          "timeout": {
+            "limit_ms": 1000,
+            "elapsed_us": 33591,
+            "timed_out": false
+          },
+          "health": {
+            "healthy": true,
+            "flags": 0,
+            "source": "iio_adapter"
+          },
+          "rx_input": {
+            "identity_version": 1,
+            "verified": true,
+            "front_panel_port": "RX2",
+            "logical_channel": "RX1",
+            "phy_channel": "voltage1",
+            "scan_i_channel": "voltage2",
+            "scan_q_channel": "voltage3",
+            "rf_port_select": "A_BALANCED",
+            "source": "iio_channel_attr"
+          },
+          "iq_sha256": "9a377d6c3cfb02e51b22213724cb2898b0ec3d101af9608b6550612a32fae5ef",
+          "component_range": [
+            -26,
+            27
+          ],
+          "rms_adc": 8.91692882920876,
+          "active_radio_state": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n2455000000\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n2100000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n1500000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n40.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n1\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n1\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n1\n"
+        },
+        "restored": true
+      },
+      {
+        "port": "RX2",
+        "kind": "timeout",
+        "response": {
+          "schema_version": 1,
+          "request_id": 9,
+          "status": "error",
+          "error": "capture_failed_restored",
+          "generation": 1788759504901,
+          "session_generation": 1788759504901,
+          "sequence": 2,
+          "dropped_samples": 0,
+          "overflow": false,
+          "timeout": {
+            "limit_ms": 1,
+            "elapsed_us": 3826,
+            "timed_out": true
+          },
+          "health": {
+            "healthy": false,
+            "flags": 4,
+            "source": "iio_adapter"
+          }
+        },
+        "restored": true
+      },
+      {
+        "port": "RX2",
+        "kind": "success",
+        "response": {
+          "schema_version": 1,
+          "request_id": 12,
+          "status": "ok",
+          "generation": 1788759509128,
+          "session_generation": 1788759509128,
+          "samples_captured": 4096,
+          "bytes_transferred": 16384,
+          "sequence": 3,
+          "dropped_samples": 0,
+          "overflow": false,
+          "timeout": {
+            "limit_ms": 1000,
+            "elapsed_us": 3767,
+            "timed_out": false
+          },
+          "health": {
+            "healthy": true,
+            "flags": 0,
+            "source": "iio_adapter"
+          },
+          "rx_input": {
+            "identity_version": 1,
+            "verified": true,
+            "front_panel_port": "RX2",
+            "logical_channel": "RX1",
+            "phy_channel": "voltage1",
+            "scan_i_channel": "voltage2",
+            "scan_q_channel": "voltage3",
+            "rf_port_select": "A_BALANCED",
+            "source": "iio_channel_attr"
+          },
+          "iq_sha256": "5216683f5b794f1fa63be50871452cc8af4db26886975c07a640ea3dc2a39a7b",
+          "component_range": [
+            -10,
+            9
+          ],
+          "rms_adc": 3.6609211614018675,
+          "active_radio_state": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n2455000000\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n2100000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n1500000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n40.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n1\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n1\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n1\n"
+        },
+        "restored": true
+      },
+      {
+        "port": "RX2",
+        "kind": "disconnect",
+        "restored": true
+      }
+    ],
+    "status": "passed",
+    "recognizer_available": false,
+    "deployed": false,
+    "probes": [
+      {
+        "port": "RX1",
+        "mode": "--check-config",
+        "output": "config_result=ok listen=192.168.1.10:43110 mode=controlled\n"
+      },
+      {
+        "port": "RX1",
+        "mode": "--probe",
+        "output": "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":false,\"raw_iq_capture\":false,\"software_summary\":false,\"max_capture_bytes\":67108864,\"rx_input\":{\"identity_version\":1,\"verified\":false,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"},\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"healthy\":false,\"health_flags\":4,\"iio_phy_visible\":true,\"iio_rx_visible\":true,\"rx_input\":{\"identity_version\":1,\"verified\":false,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"},\"fpga_configured\":false,\"fpga_mapped\":false,\"fpga_identity_valid\":false,\"session_faulted\":false}\n"
+      },
+      {
+        "port": "RX1",
+        "mode": "--probe-radio",
+        "output": "{\"radio_probe\":\"ok\",\"center_hz\":5985999996,\"sample_rate_hz\":30720000,\"rf_bandwidth_hz\":30000000,\"gain_mode\":\"manual\",\"scan_channel_mask\":0,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}}\n"
+      },
+      {
+        "port": "RX2",
+        "mode": "--check-config",
+        "output": "config_result=ok listen=192.168.1.10:43110 mode=controlled\n"
+      },
+      {
+        "port": "RX2",
+        "mode": "--probe",
+        "output": "{\"schema_version\":1,\"request_id\":1,\"status\":\"ok\",\"mode\":\"controlled\",\"iio_visible\":true,\"radio_control\":false,\"raw_iq_capture\":false,\"software_summary\":false,\"max_capture_bytes\":67108864,\"rx_input\":{\"identity_version\":1,\"verified\":false,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"},\"fpga_backend\":\"disabled\",\"fpga_identity_valid\":false,\"fpga_summary_version\":0,\"fpga_abi_version\":0,\"fpga_capability\":0,\"fpga_aggregate\":false}\n{\"schema_version\":1,\"request_id\":2,\"status\":\"ok\",\"healthy\":false,\"health_flags\":4,\"iio_phy_visible\":true,\"iio_rx_visible\":true,\"rx_input\":{\"identity_version\":1,\"verified\":false,\"front_panel_port\":\"RX1\",\"logical_channel\":\"RX0\",\"phy_channel\":\"voltage0\",\"scan_i_channel\":\"voltage0\",\"scan_q_channel\":\"voltage1\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"},\"fpga_configured\":false,\"fpga_mapped\":false,\"fpga_identity_valid\":false,\"session_faulted\":false}\n"
+      },
+      {
+        "port": "RX2",
+        "mode": "--probe-radio",
+        "output": "{\"radio_probe\":\"ok\",\"center_hz\":5985999996,\"sample_rate_hz\":30720000,\"rf_bandwidth_hz\":30000000,\"gain_mode\":\"manual\",\"scan_channel_mask\":0,\"rx_input\":{\"identity_version\":1,\"verified\":true,\"front_panel_port\":\"RX2\",\"logical_channel\":\"RX1\",\"phy_channel\":\"voltage1\",\"scan_i_channel\":\"voltage2\",\"scan_q_channel\":\"voltage3\",\"rf_port_select\":\"A_BALANCED\",\"source\":\"iio_channel_attr\"}}\n"
+      }
+    ],
+    "daemon_logs": {
+      "RX1": "sdrd_listening=192.168.1.10:43110 mode=controlled\nERROR: Error during buffer disable: Success (0)\nERROR: Error during buffer disable: File exists (17)\nERROR: Error during buffer disable: Success (0)\n",
+      "RX2": "sdrd_listening=192.168.1.10:43110 mode=controlled\nERROR: Error during buffer disable: Success (0)\nERROR: Error during buffer disable: File exists (17)\nERROR: Error during buffer disable: Success (0)\n"
+    },
+    "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "restored": true,
+    "remote_staging_removed": true
+  },
+  "deployment": {
+    "candidate_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+    "previous_sha256": "77d98a005305a4b7531fc3f133e9b4af521e60b065b29fcc304b4c7db80c45ae",
+    "release": "/sd/sdr-agent/releases/20260907-rx-port-selection-v1",
+    "rollback_release": "/sd/sdr-agent/releases/20260907-before-rx-port-selection-v1",
+    "default_rx_input": "RX1",
+    "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "install_log": "config_result=ok listen=192.168.1.10:43110 mode=controlled\nStopping receive-only sdrd: OK\nStarting receive-only sdrd: OK\n83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f  /sd/sdr-agent/current/sdrd\n",
+    "hello": {
+      "schema_version": 1,
+      "request_id": 1,
+      "status": "ok",
+      "server": "p201-sdrd",
+      "protocol": "SDRD/1",
+      "mode": "controlled",
+      "mutating_commands": true
+    },
+    "capabilities": {
+      "schema_version": 1,
+      "request_id": 2,
+      "status": "ok",
+      "mode": "controlled",
+      "iio_visible": true,
+      "radio_control": true,
+      "raw_iq_capture": true,
+      "software_summary": true,
+      "max_capture_bytes": 67108864,
+      "rx_input": {
+        "identity_version": 1,
+        "verified": true,
+        "front_panel_port": "RX1",
+        "logical_channel": "RX0",
+        "phy_channel": "voltage0",
+        "scan_i_channel": "voltage0",
+        "scan_q_channel": "voltage1",
+        "rf_port_select": "A_BALANCED",
+        "source": "iio_channel_attr"
+      },
+      "fpga_backend": "disabled",
+      "fpga_identity_valid": false,
+      "fpga_summary_version": 0,
+      "fpga_abi_version": 0,
+      "fpga_capability": 0,
+      "fpga_aggregate": false
+    },
+    "health": {
+      "schema_version": 1,
+      "request_id": 3,
+      "status": "ok",
+      "healthy": true,
+      "health_flags": 0,
+      "iio_phy_visible": true,
+      "iio_rx_visible": true,
+      "rx_input": {
+        "identity_version": 1,
+        "verified": true,
+        "front_panel_port": "RX1",
+        "logical_channel": "RX0",
+        "phy_channel": "voltage0",
+        "scan_i_channel": "voltage0",
+        "scan_q_channel": "voltage1",
+        "rf_port_select": "A_BALANCED",
+        "source": "iio_channel_attr"
+      },
+      "fpga_configured": false,
+      "fpga_mapped": false,
+      "fpga_identity_valid": false,
+      "session_faulted": false
+    },
+    "installed_controller_observe": {
+      "exit_code": 1,
+      "stderr": "controller_error=response_shape: unknown field `rx_input`, expected one of `schema_version`, `request_id`, `status`, `mode`, `iio_visible`, `radio_control`, `raw_iq_capture`, `software_summary`, `max_capture_bytes`, `fpga_backend`, `fpga_identity_valid`, `fpga_summary_version`, `fpga_abi_version`, `fpga_capability`, `fpga_aggregate`\n",
+      "preexisting_on_old_daemon": true
+    },
+    "default_wire_equal_to_old_daemon": true,
+    "status": "passed",
+    "pid": "11547",
+    "retained_release_files": "/sd/sdr-agent/releases/20260907-rx-port-selection-v1/S60sdrd\n2638\ne3c10951d8a8b1bffae9433ec68f3c74f0a4074f842f4b94db07ec25b62ee32d  /sd/sdr-agent/releases/20260907-rx-port-selection-v1/S60sdrd\n/sd/sdr-agent/releases/20260907-rx-port-selection-v1/sdrd\n46808\n83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f  /sd/sdr-agent/releases/20260907-rx-port-selection-v1/sdrd\n/sd/sdr-agent/releases/20260907-rx-port-selection-v1/sdrd.conf\n607\nac96a9e01173e63b48acfb8dd6834125b3397a0e2823da380a855df6b894893c  /sd/sdr-agent/releases/20260907-rx-port-selection-v1/sdrd.conf\n/sd/sdr-agent/releases/20260907-before-rx-port-selection-v1/S60sdrd\n2638\ne3c10951d8a8b1bffae9433ec68f3c74f0a4074f842f4b94db07ec25b62ee32d  /sd/sdr-agent/releases/20260907-before-rx-port-selection-v1/S60sdrd\n/sd/sdr-agent/releases/20260907-before-rx-port-selection-v1/sdrd\n46804\n77d98a005305a4b7531fc3f133e9b4af521e60b065b29fcc304b4c7db80c45ae  /sd/sdr-agent/releases/20260907-before-rx-port-selection-v1/sdrd\n/sd/sdr-agent/releases/20260907-before-rx-port-selection-v1/sdrd.conf\n607\nac96a9e01173e63b48acfb8dd6834125b3397a0e2823da380a855df6b894893c  /sd/sdr-agent/releases/20260907-before-rx-port-selection-v1/sdrd.conf\n",
+    "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "final_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+    "release_inventory": {
+      "files": [
+        {
+          "path": "/sd/sdr-agent/releases/20260907-rx-port-selection-v1/S60sdrd",
+          "bytes": 2638,
+          "sha256": "e3c10951d8a8b1bffae9433ec68f3c74f0a4074f842f4b94db07ec25b62ee32d"
+        },
+        {
+          "path": "/sd/sdr-agent/releases/20260907-rx-port-selection-v1/sdrd",
+          "bytes": 46808,
+          "sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f"
+        },
+        {
+          "path": "/sd/sdr-agent/releases/20260907-rx-port-selection-v1/sdrd.conf",
+          "bytes": 607,
+          "sha256": "ac96a9e01173e63b48acfb8dd6834125b3397a0e2823da380a855df6b894893c"
+        },
+        {
+          "path": "/sd/sdr-agent/releases/20260907-before-rx-port-selection-v1/S60sdrd",
+          "bytes": 2638,
+          "sha256": "e3c10951d8a8b1bffae9433ec68f3c74f0a4074f842f4b94db07ec25b62ee32d"
+        },
+        {
+          "path": "/sd/sdr-agent/releases/20260907-before-rx-port-selection-v1/sdrd",
+          "bytes": 46804,
+          "sha256": "77d98a005305a4b7531fc3f133e9b4af521e60b065b29fcc304b4c7db80c45ae"
+        },
+        {
+          "path": "/sd/sdr-agent/releases/20260907-before-rx-port-selection-v1/sdrd.conf",
+          "bytes": 607,
+          "sha256": "ac96a9e01173e63b48acfb8dd6834125b3397a0e2823da380a855df6b894893c"
+        }
+      ],
+      "total_bytes": 100102,
+      "purpose": "Installed version and tested rollback; not temporary data",
+      "delete_method": "Only after selecting another verified release, remove exactly the listed three files in the retired release directory and rmdir that directory; never remove current while serving."
+    }
+  },
+  "first_deployment_attempt": {
+    "candidate_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+    "previous_sha256": "77d98a005305a4b7531fc3f133e9b4af521e60b065b29fcc304b4c7db80c45ae",
+    "release": "/sd/sdr-agent/releases/20260907-rx-port-selection-v1",
+    "rollback_release": "/sd/sdr-agent/releases/20260907-before-rx-port-selection-v1",
+    "default_rx_input": "RX1",
+    "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "install_log": "config_result=ok listen=192.168.1.10:43110 mode=controlled\nStopping receive-only sdrd: OK\nStarting receive-only sdrd: OK\n83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f  /sd/sdr-agent/current/sdrd\n",
+    "hello": {
+      "schema_version": 1,
+      "request_id": 1,
+      "status": "ok",
+      "server": "p201-sdrd",
+      "protocol": "SDRD/1",
+      "mode": "controlled",
+      "mutating_commands": true
+    },
+    "capabilities": {
+      "schema_version": 1,
+      "request_id": 2,
+      "status": "ok",
+      "mode": "controlled",
+      "iio_visible": true,
+      "radio_control": true,
+      "raw_iq_capture": true,
+      "software_summary": true,
+      "max_capture_bytes": 67108864,
+      "rx_input": {
+        "identity_version": 1,
+        "verified": true,
+        "front_panel_port": "RX1",
+        "logical_channel": "RX0",
+        "phy_channel": "voltage0",
+        "scan_i_channel": "voltage0",
+        "scan_q_channel": "voltage1",
+        "rf_port_select": "A_BALANCED",
+        "source": "iio_channel_attr"
+      },
+      "fpga_backend": "disabled",
+      "fpga_identity_valid": false,
+      "fpga_summary_version": 0,
+      "fpga_abi_version": 0,
+      "fpga_capability": 0,
+      "fpga_aggregate": false
+    },
+    "health": {
+      "schema_version": 1,
+      "request_id": 3,
+      "status": "ok",
+      "healthy": true,
+      "health_flags": 0,
+      "iio_phy_visible": true,
+      "iio_rx_visible": true,
+      "rx_input": {
+        "identity_version": 1,
+        "verified": true,
+        "front_panel_port": "RX1",
+        "logical_channel": "RX0",
+        "phy_channel": "voltage0",
+        "scan_i_channel": "voltage0",
+        "scan_q_channel": "voltage1",
+        "rf_port_select": "A_BALANCED",
+        "source": "iio_channel_attr"
+      },
+      "fpga_configured": false,
+      "fpga_mapped": false,
+      "fpga_identity_valid": false,
+      "session_faulted": false
+    },
+    "rollback_log": "Stopping receive-only sdrd: OK\nStarting receive-only sdrd: OK\n",
+    "status": "failed",
+    "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "final_sha256": "77d98a005305a4b7531fc3f133e9b4af521e60b065b29fcc304b4c7db80c45ae"
+  },
+  "baseline_compatibility": {
+    "old_daemon_responses": {
+      "hello": {
+        "schema_version": 1,
+        "request_id": 1,
+        "status": "ok",
+        "server": "p201-sdrd",
+        "protocol": "SDRD/1",
+        "mode": "controlled",
+        "mutating_commands": true
+      },
+      "capabilities": {
+        "schema_version": 1,
+        "request_id": 2,
+        "status": "ok",
+        "mode": "controlled",
+        "iio_visible": true,
+        "radio_control": true,
+        "raw_iq_capture": true,
+        "software_summary": true,
+        "max_capture_bytes": 67108864,
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        },
+        "fpga_backend": "disabled",
+        "fpga_identity_valid": false,
+        "fpga_summary_version": 0,
+        "fpga_abi_version": 0,
+        "fpga_capability": 0,
+        "fpga_aggregate": false
+      },
+      "health": {
+        "schema_version": 1,
+        "request_id": 3,
+        "status": "ok",
+        "healthy": true,
+        "health_flags": 0,
+        "iio_phy_visible": true,
+        "iio_rx_visible": true,
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        },
+        "fpga_configured": false,
+        "fpga_mapped": false,
+        "fpga_identity_valid": false,
+        "session_faulted": false
+      }
+    },
+    "default_wire_equal_to_candidate": true,
+    "installed_cli_exit": 1,
+    "installed_cli_stderr": "controller_error=response_shape: unknown field `rx_input`, expected one of `schema_version`, `request_id`, `status`, `mode`, `iio_visible`, `radio_control`, `raw_iq_capture`, `software_summary`, `max_capture_bytes`, `fpga_backend`, `fpga_identity_valid`, `fpga_summary_version`, `fpga_abi_version`, `fpga_capability`, `fpga_aggregate`\n",
+    "preexisting": true
+  },
+  "new_iq_retained": 0,
+  "model_windows": 0,
+  "warmups": 0,
+  "independent_labels": 0,
+  "recognizer_available": false,
+  "fpga_changes": false,
+  "source_sha256": {
+    "sdr-system/sdrd/src/sdrd.c": "d570fdeb85d97c8658bf89577263985adbfc9bb637212d72bfdccdef0271d68c",
+    "sdr-system/sdrd/src/sdrd_iio.c": "ffc6f70e4309cd842579662bfd087452a4f970f90a43aa9ad5b2c1f265f16a12",
+    "sdr-system/sdrd/include/sdrd.h": "880ead8e78bfc6fabcc64648d79619fc8175922f950bc474a50525035155fd68",
+    "sdr-system/sdrd/tests/test_sdrd.c": "b1f47d620e7e7d761c991a373f86392c9c0b20591eff6fe17c8a66866dfe2372",
+    "sdr-system/sdrd/tests/test_iio_refill.c": "f14c69b5f0c1aa96d5c529b8704d8ad45d9e35797594a1c06bfc98fdb3304a7c",
+    "sdr-system/sdrd/tests/test_iio_ports.c": "43501042415c2b7c26e59622176aa4fccac2eec5e3d1cbc7e9259141bfb186c3",
+    "jetson-agx/sdrharness/scripts/validate-sdrd-rx-ports.py": "b644706574f0c469f58a712469a0ee2a110ac4150eadece3f027216adfce11d3"
+  },
+  "apport_cleanup": {
+    "files": [
+      {
+        "path": "/var/crash/_var_tmp_sdrharness-dev_rx-port-select-907s_build_test_iio_ports.1000.crash",
+        "bytes": 24226,
+        "sha256": "f21c1ae61a346ef90d88ef938f8875a562c07926de2438acc7824daaedad8ee6"
+      },
+      {
+        "path": "/var/crash/_var_tmp_sdrharness-dev_iio-refill-907r_before_test_iio_refill.1000.crash",
+        "bytes": 25253,
+        "sha256": "7816f5c97cf8e38751c16b954d6580c94900b91689f17a88663ac1c1342b341d"
+      }
+    ],
+    "absence_verified": true,
+    "unrelated_reports_untouched": true
+  },
+  "final_read_only_verification": {
+    "health": {
+      "schema_version": 1,
+      "request_id": 1,
+      "status": "ok",
+      "healthy": true,
+      "health_flags": 0,
+      "iio_phy_visible": true,
+      "iio_rx_visible": true,
+      "rx_input": {
+        "identity_version": 1,
+        "verified": true,
+        "front_panel_port": "RX1",
+        "logical_channel": "RX0",
+        "phy_channel": "voltage0",
+        "scan_i_channel": "voltage0",
+        "scan_q_channel": "voltage1",
+        "rf_port_select": "A_BALANCED",
+        "source": "iio_channel_attr"
+      },
+      "fpga_configured": false,
+      "fpga_mapped": false,
+      "fpga_identity_valid": false,
+      "session_faulted": false
+    },
+    "pid": "11547",
+    "sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+    "radio_unchanged": true,
+    "remote_feature_paths_absent": true,
+    "recovery_timer": "active",
+    "recovery_service_healthy": false
+  },
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/rx-port-select-907s",
+    "files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/archive-list.txt",
+        "bytes": 23842722,
+        "sha256": "f3a3aa987899cbb81dc9a36c21f8ae6501b9feea39eefe2d49d43256f7d1a3fb"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/archive-read.py",
+        "bytes": 1651,
+        "sha256": "d03b2b3369b46c35e8c11aeb78d360d1110ed905c1db6f55fd952fd9ea5bf76a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/armv7/sdrd",
+        "bytes": 46808,
+        "sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/armv7.log",
+        "bytes": 2671,
+        "sha256": "15f02e65bd83ae426eab23eae83b403753bf4fd9d91d2f22fbc421f131245099"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/baseline-compatibility.json",
+        "bytes": 2196,
+        "sha256": "7c6e9654ed79fe8fdc5525307e266d1d5bc68e8fd09a6df7a92a120b423b89e5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/build/sdrd",
+        "bytes": 63672,
+        "sha256": "c6586d0accf68ee1625d114757ec4ee3822317e16699c164c35fcf472e8692cd"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/build/test_iio_ports",
+        "bytes": 62952,
+        "sha256": "a50d3cc18504f107a50aa70901879f784b07108c33d3b8612a348fac275c0159"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/build/test_iio_refill",
+        "bytes": 63352,
+        "sha256": "cd05d3f74e8b132f327f4e203f0746603d5c4e9d7061bc2d2fbeca670299abb1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/build/test_sdrd",
+        "bytes": 89080,
+        "sha256": "deff6eaa4df8490d012cb54b5d3f12988c0be2251debcb1edfc19bf5286f9a41"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/build.log",
+        "bytes": 797,
+        "sha256": "f03da2bd4bd8d163e51042dcd28881b5a67619c4434ae3cb73bed2eddbfa4664"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/deploy-attempt1.log",
+        "bytes": 833,
+        "sha256": "a15ecfd70c3bc315b2d5fb9205a510f52d71f8702ab5589f56b82cf23f8b819c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/deploy.log",
+        "bytes": 302,
+        "sha256": "cb556e9ea49bcd4717fb9386bd353b92a4bf36e7475fa2df3284fbc536838402"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/deploy.py",
+        "bytes": 5181,
+        "sha256": "fe29f639e5caee8f304f3f04187fcea506e1fcdee8c95efb2efd4274131d905f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/deployment-attempt1.json",
+        "bytes": 5001,
+        "sha256": "f231592db933853f5b4cb2230256dd8ae099d5f227d9fc9db982c14621c86366"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/deployment.json",
+        "bytes": 6676,
+        "sha256": "cdb932697ee8540b146d9e6f8b8a73777e5f7c73ea42b31b1b5558782ab4d921"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/extract-routing.log",
+        "bytes": 823,
+        "sha256": "aaa08a38951248ccf826c016c566cc1fa4ab80a9475791ca24b7d7dca90a20f5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/gpio-readonly.txt",
+        "bytes": 392,
+        "sha256": "77e25b34e7561f14c457c5734ea596a18d55e7e54bb85dfc9f66b17ff3a2f43d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/hardware.txt",
+        "bytes": 22442,
+        "sha256": "faae142e5bd6501dd485b2ee27c68f7f452f6905d02094244d671ee0b3dadc7c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/label.png",
+        "bytes": 573476,
+        "sha256": "b8cb3778d699ae0f980334506e9e7097a5e38012b188bf1dd55d331d0315a55e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/bin/7z",
+        "bytes": 39,
+        "sha256": "f78e435b5865d8ac7f38fd5e5a90b9ec64f43c6655a6042cc36db060db1d5aaa"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/bin/7za",
+        "bytes": 40,
+        "sha256": "14a67146b43b84e628a834016ae55604a73d359ac0778bb779518b368391c1f6"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/lib/p7zip/7z",
+        "bytes": 556648,
+        "sha256": "1a48db7f9d26e10fcc2afd8a063863b4dd71c5df61ac87bbbead0bce09b57a09"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/lib/p7zip/7z.so",
+        "bytes": 1908176,
+        "sha256": "47a4f66565d270b32c37b2475bff620e457f499f2b9a824204a573368504c3ce"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/lib/p7zip/7zCon.sfx",
+        "bytes": 453024,
+        "sha256": "16a2d7578b65def1e3cd8b90f3e85f65812f775ab9a6e3185f703d6d19b1e429"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/lib/p7zip/7za",
+        "bytes": 1396408,
+        "sha256": "69f2fb8702722dd51647669b105948f74681dd0f2a8bad79d1cd9e7a642e106c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/7zC.txt.gz",
+        "bytes": 2100,
+        "sha256": "575dd6d18e2298bb795a2614118c0b41efd52282358bebc93fecc93ae54eaf97"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/7zFormat.txt.gz",
+        "bytes": 2088,
+        "sha256": "d79bf65c22484dcdac566c1b3806a20b5ef22f5865b0aeb75e93ee6c5931daad"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/commands/add.htm",
+        "bytes": 3217,
+        "sha256": "ce3509df691063f943072578b41f4688323d6351b84d273dad1c8c580e32a7f6"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/commands/bench.htm",
+        "bytes": 3132,
+        "sha256": "085f60023574608c937918b5ca76b7e5c1ea093fd9551464ff80d94f66b6ab47"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/commands/delete.htm",
+        "bytes": 1785,
+        "sha256": "f964a693709d3e8a71cafeda412e33cad05a3f38757fce265491f1d931bad45a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/commands/extract.htm",
+        "bytes": 3677,
+        "sha256": "c5e61ff38bb3c077d9d4932a4248912be5088da79c5d823894284a4eb9b52f38"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/commands/extract_full.htm",
+        "bytes": 2595,
+        "sha256": "45923cb601aff8cabc01e8c0edd6653cf60726e89d1dbdefa2f258b44563596b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/commands/hash.htm",
+        "bytes": 1837,
+        "sha256": "e992b1c85ddaa74322674207d515f4e332b2c2e5a37665ef4ab7ecd1f13aa8e7"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/commands/index.htm",
+        "bytes": 1670,
+        "sha256": "e12aafac94e6e755708f66cbbd4b00e2d6911c3fcca5d8865a5747593b7c1cb4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/commands/list.htm",
+        "bytes": 2175,
+        "sha256": "d072e0235793e36dc9204689f22eeacfdb0df86f7559a6dd7b0913b2343d4228"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/commands/rename.htm",
+        "bytes": 1421,
+        "sha256": "72e5c63bfd1c23dbb89ab2845c7b4fdce8e3723c58b856ce5c3a6af437dda454"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/commands/style.css",
+        "bytes": 15,
+        "symlink_target": "../../style.css"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/commands/test.htm",
+        "bytes": 1458,
+        "sha256": "0acfcfd2c1c01564289383114f5c223c14a0099b5b70883c20b723a7ae3280c9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/commands/update.htm",
+        "bytes": 2338,
+        "sha256": "6b01ff8488b2f81c0dacb32fdc9a369d10cffa50f4861c91bed8549c4f5c618a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/exit_codes.htm",
+        "bytes": 854,
+        "sha256": "7338c97de2ff2b6d227db20b177cfc86d657a11630e501b4175419d3ab2bc601"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/index.htm",
+        "bytes": 838,
+        "sha256": "e21dbd750cd9d301db43ff22f006c40e177e4450790e51c133bfee78048e4705"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/style.css",
+        "bytes": 12,
+        "symlink_target": "../style.css"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/ar_exclude.htm",
+        "bytes": 1449,
+        "sha256": "3ebb6f8cb69e9fde117912afcb4fe0818a2f229b92a86c01865afe2e4821438a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/ar_include.htm",
+        "bytes": 2453,
+        "sha256": "57e6d4071ba0153c2ef95f7344cc176712fccfea63b50b315553fc543a8ce16c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/ar_no.htm",
+        "bytes": 1398,
+        "sha256": "6890e6f070ea46c5fe74b0b2e10497e923d79158fd6126ca7bb33bb7d73b52f4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/bb.htm",
+        "bytes": 1937,
+        "sha256": "59b834c976ffa20099c0dd62986e8a039eaee0393bd7f2015c0780d25b16d811"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/bs.htm",
+        "bytes": 1997,
+        "sha256": "9cac39fd3fffc59b239dc37cbaab837a0804331841e6992877d69ea9d3e32aa0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/charset.htm",
+        "bytes": 1997,
+        "sha256": "830d7f4c8b074f4cbda6c6931e5a8b608bf1903a05b217c134133394861cac00"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/exclude.htm",
+        "bytes": 1975,
+        "sha256": "bbf60b394e8b6bcff5ee38743b551116d09992076e557d825b61638be6f3bfba"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/include.htm",
+        "bytes": 2911,
+        "sha256": "01101ed4fe553237a5e4552cde7aca9ebd110edb9bb8a4294de380426d9ee3ca"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/index.htm",
+        "bytes": 5844,
+        "sha256": "30819d08ae58ae6688aa020e32239a1eded8227913a96dd92adee789c9369f4c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/large_pages.htm",
+        "bytes": 2188,
+        "sha256": "309c8ae0568e622beda8b7d709370912218f85cd6dd08b078add721eff1c1cf1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/list_tech.htm",
+        "bytes": 802,
+        "sha256": "9703866886afcee4c234ef499881b92b7e3167dfd9f7defe72f58f23ddf95808"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/method.htm",
+        "bytes": 36211,
+        "sha256": "3b58de2b4922a9cedc508ae82d1d60b489a09303cf30ab38053a3946f3880e7c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/output_dir.htm",
+        "bytes": 1362,
+        "sha256": "fa8ea512e9c4bb0bb103be1c59c1d1f1d1183d5e8f1073282b15a3bd78b4d17a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/overwrite.htm",
+        "bytes": 1516,
+        "sha256": "94ff24d47a2a8fdbea2b16a7c0084c948be810958a154344cba978f50cb37f1a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/password.htm",
+        "bytes": 1380,
+        "sha256": "e3994ad7530d3499f3de726ed93b5ed95dcda77b576c901e0aeb62153e70e61b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/recurse.htm",
+        "bytes": 2586,
+        "sha256": "1021bac1dff70adeaffd21a2a18c936579b007fa1e3cbd18ae8b4275957d1dde"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/sa.htm",
+        "bytes": 1436,
+        "sha256": "6ecbb883b5b8c1ca3cf22fef33619b2db7a7ee1ddc56a3578fa5cdb24c0c3e8c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/scc.htm",
+        "bytes": 914,
+        "sha256": "2d734ff240553bfca74c96bb508fe0d9327b0d7ddac30e399a97ab2ab43256bc"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/scrc.htm",
+        "bytes": 1280,
+        "sha256": "b4629a2c6904023c329bcb1360b32935025fb4ba457e2d771609d9ed0e4b23e8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/sdel.htm",
+        "bytes": 954,
+        "sha256": "7897256ddd225f565fe453fb9d468da42d1f1545f40ac778475c43b45e328853"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/sfx.htm",
+        "bytes": 5567,
+        "sha256": "9f185a7ed2c9fa7a975fe1ddd0cc5b43ea545947d154cbb89f3891c98f237de8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/shared.htm",
+        "bytes": 1011,
+        "sha256": "127f3e0563b569fa70f554e176f9f312477d0a69442dd6c8800c9e50c1fb825f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/sni.htm",
+        "bytes": 1385,
+        "sha256": "099bf04ad9e08b2c2b2ca1af66561d160824b79731d46030382a4de50b81423f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/sns.htm",
+        "bytes": 2249,
+        "sha256": "c7f813ea49255687f36678b9458a8382eabc77b1b7cf4c25f7a3bce7dcb9c363"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/spf.htm",
+        "bytes": 2425,
+        "sha256": "5312383578c8948565ae999580825294c3fbda0394ec8d0ac71fd607ceeb6014"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/ssc.htm",
+        "bytes": 1466,
+        "sha256": "7b21f5254921da71fb5d8c5c2f2dc915c70a80ea3dfe820734998a2cc0cd4bef"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/stdin.htm",
+        "bytes": 1587,
+        "sha256": "da0091d1a30c865d29a14bb74482b4091247d27d9476a7521ed2b9da8cb2ce37"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/stdout.htm",
+        "bytes": 1438,
+        "sha256": "08fb73cac6617a4509fde9dd1b44173f10d183a79a46001e87d5aac2e4b02739"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/stl.htm",
+        "bytes": 978,
+        "sha256": "b5a5ede866dd5e5940b67d9d6c386c2630eb9432a24f0a0397ac3767a1382a00"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/stop_switch.htm",
+        "bytes": 678,
+        "sha256": "d90b914ffe64eb57cc8528211d53dd96938e5bef1b6d45682c31326c9f7530ac"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/stx.htm",
+        "bytes": 1388,
+        "sha256": "79b59fed96a6f4fb32483d8222a9cb9b23ea54b9cf4fec7dbe5ed38619755e0b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/style.css",
+        "bytes": 15,
+        "symlink_target": "../../style.css"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/type.htm",
+        "bytes": 3761,
+        "sha256": "7bbd15efb467a9fffd968be21ae75786967fdea12076d5736c27efbdf44ec4c1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/update.htm",
+        "bytes": 8164,
+        "sha256": "75f3a7cafb51b54cd13eb616fb2106470f47cf0285d2bc7efba3d225e4d2be00"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/volume.htm",
+        "bytes": 1325,
+        "sha256": "454d7eec5e4c150a45f29858274722256b6dbc9aecf518299b255466713b5987"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/working_dir.htm",
+        "bytes": 1722,
+        "sha256": "9f6c69c5a997c534a66aac6eee6dc6e3cebdc758641a027f4db22c0d429141e9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/switches/yes.htm",
+        "bytes": 1255,
+        "sha256": "f6ee55e979f5622c9a4020611d2dc489b74d9b8ea03799f05e974974a61a16af"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/cmdline/syntax.htm",
+        "bytes": 4068,
+        "sha256": "1e58d8a02869fa1830906e7ef5ac4ec724ac20e9f366d871ebb632a2118c96a4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/general/7z.htm",
+        "bytes": 5808,
+        "sha256": "f7aa1e14318d856f7d7469a033232fffd1647fb111a046110d31ae1436bea2bc"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/general/faq.htm",
+        "bytes": 6016,
+        "sha256": "0cd775d2577f9474eb05958bc18609055b372fb8fa70c02431fa8b30193880e2"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/general/formats.htm",
+        "bytes": 4776,
+        "sha256": "3157925aa4a3ab2ffa8f95a9f6b50f4306c8e44c54dfeb60cca1ba3ec0d51c85"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/general/index.htm",
+        "bytes": 731,
+        "sha256": "104202f5af1f38765ed0f78f8c715f6ecb9f76bdcf954cd45523e5af919e6f38"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/general/performance.htm",
+        "bytes": 2191,
+        "sha256": "09ff72e5bc30793e6b1b8592767d23196b28cb4cd6c415ac0271390d90a02e23"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/general/style.css",
+        "bytes": 12,
+        "symlink_target": "../style.css"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/general/thanks.htm",
+        "bytes": 1607,
+        "sha256": "7775ddb1cffa3e3f44c5ae6dc570d450470dc5628da950d00477f8cc4d51e13d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/start.htm",
+        "bytes": 1093,
+        "sha256": "ccfdee87ae08fbb0762a4aac0e439a382738ac452cb1c80741cfcc0979c7c3d7"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/MANUAL/style.css",
+        "bytes": 2850,
+        "sha256": "9090681aff934b85ee02a32bb18254b5233ccfddf9d8d970d634b32c6103811d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/Methods.txt",
+        "bytes": 2834,
+        "sha256": "3ea46cf6f45d546b96bed8929e3d99e907cb6e13753fd91cfc23a9d2275580b0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/lzma.txt.gz",
+        "bytes": 3741,
+        "sha256": "eab545734c708c2108143ab5e7adf7359998f91e0145eeec1673c7acb3348d7e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/readme.txt.gz",
+        "bytes": 2050,
+        "sha256": "e752d16a4cd5057e1d286722528f048e2ad4b1ea6370b64b986652d64be0f58d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/DOC/src-history.txt.gz",
+        "bytes": 5657,
+        "sha256": "3db1274bd624d63365595c63ee8c671141360b9e2e52aba6b6c7ce394acde090"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/README.gz",
+        "bytes": 2891,
+        "sha256": "63b0e9603bac7866d1e2cf04e382a8445e6c31c6365022bbc627513eb1bda0ce"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip/TODO",
+        "bytes": 704,
+        "sha256": "529c49a992230f1134756890a134e71a6ec695dacce710de0b204fe6ef92f731"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc/p7zip-full",
+        "bytes": 5,
+        "symlink_target": "p7zip"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/doc-base/p7zip-full",
+        "bytes": 589,
+        "sha256": "08f5cad2ad1ae6643b2504848544cf3e695da13c5970d19c35bec0f8de953eba"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/man/man1/7z.1.gz",
+        "bytes": 2583,
+        "sha256": "f60cdded9131478e17de1b65d4c0e745ec9dae5483b60cb8415a28a2c0b59a94"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip/usr/share/man/man1/7za.1.gz",
+        "bytes": 2566,
+        "sha256": "ecf1b9ac45aadb3d20ddedbadb5209383a3bd790858f92b71ea5a2bff7e20c84"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip-download.log",
+        "bytes": 738,
+        "sha256": "c5c5e4dfec765d8276d1b85c12212b248760d2f0751342fbb6b8d76554ede662"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/p7zip-full.deb",
+        "bytes": 1064576,
+        "sha256": "e55edcc4b1818343f25efc4654de2742ec8413676866b4da5347ec3219d84c93"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/port-live-attempt1.json",
+        "bytes": 5730,
+        "sha256": "af161bfb023c2ecb085c197bae2e4b92dba856d3a4b012737b180be6e53e7e83"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/port-live-attempt1.log",
+        "bytes": 1141,
+        "sha256": "f3e1a7fc3887d6ceb0989ad7aa9f608f4790ddcc44f8fddc445bf578938e716e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/port-live.json",
+        "bytes": 19656,
+        "sha256": "b7152a0fde3d291c06ad18aa6fd4d0152020b5fec070f227ba0d122d7487cf77"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/port-live.log",
+        "bytes": 774,
+        "sha256": "7f3370674d0e93d352f486aa82096b5441b736b55617ed4a108b9b72d65c0ff0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/rf-page14.png",
+        "bytes": 378348,
+        "sha256": "2942d6704fd57145da93abce9667bedb328ed31c2448bd7c975fcc5e57250db3"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/rf-schematic.png",
+        "bytes": 187264,
+        "sha256": "34af08178b7b14dba291ccddbe864b84a3abd5868da2e721af39201363e55fc1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/sanitized/test_iio_ports",
+        "bytes": 696136,
+        "sha256": "070c71c0d0b0225b3e90c4ce58bcafa76af9b5bbd38a3da075410c0ea815cabe"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/sanitized/test_iio_refill",
+        "bytes": 719936,
+        "sha256": "11da65023bbe3ea1053b6d0e16f6be6ab7e99991672e2bec8b87bcc9b953b291"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/sanitized/test_sdrd",
+        "bytes": 842768,
+        "sha256": "37a4c97ff3f8bdbea0baf1279e8e716d337c062a82b43f2d4d601989b4b54fc4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/sanitized.log",
+        "bytes": 1373,
+        "sha256": "c988808fde9016f2a1fcc05c791340ec0cf5c61fbb99257fa8cdb0a308eb1b37"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/schematic.txt",
+        "bytes": 331662,
+        "sha256": "6f30db8b752c12479492b2892e6fe6eedb9e24c1fc700fe0cb4bd9adae6e3f33"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/vendor-downloads.html",
+        "bytes": 104035,
+        "sha256": "0683f53041b3a2a771d626b431caeed0b8fba2634a0c3fff1332966d569abce1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/vendor-list.html",
+        "bytes": 118925,
+        "sha256": "badb5825a05ad43b6331cd7511216d3218057c246026b0d1870f60185dbe842f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/vendor-product.html",
+        "bytes": 116828,
+        "sha256": "339f965bf908d935f20b10339221446c7b159b363a8855bc617de61ddc733678"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/vendor-routing/system_constr.xdc",
+        "bytes": 7591,
+        "sha256": "7a598f60192e18e82ba8a35ec38cffcef49ca23e3ed76c8a79724e3d6a80062b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-port-select-907s/vendor-routing/system_top.v",
+        "bytes": 5662,
+        "sha256": "dd509270bce7288484a3afc0d54657a58162260a6b46dbf320439391874b8f1a"
+      }
+    ],
+    "removed_bytes": 33901493,
+    "absence_verified": true,
+    "new_iq_retained": 0,
+    "original_media_and_attachments_untouched": true,
+    "previous_diagnostic_packages_untouched": true,
+    "retained_deployment_inventory": "deployment.release_inventory",
+    "removed_apport_bytes": 49479
+  }
+}

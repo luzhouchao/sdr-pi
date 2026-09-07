@@ -57,6 +57,7 @@ typedef struct sdrd_config {
   uint32_t iio_timeout_ms;
   uint32_t iio_buffer_samples;
   uint32_t retune_settle_ms;
+  char rx_input[16]; /* Startup selection; one complex RX channel per session. */
   uint64_t min_center_hz;
   uint64_t max_center_hz;
   uint32_t min_sample_rate_hz;
@@ -76,6 +77,8 @@ typedef struct sdrd_rx_input_identity {
   char scan_q_channel[16];
   char rf_port_select[32];
 } sdrd_rx_input_identity_t;
+
+int sdrd_rx_input_for_port(const char *port, int verified, sdrd_rx_input_identity_t *identity);
 
 typedef struct sdrd_radio_state {
   uint64_t center_hz;

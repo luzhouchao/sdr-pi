@@ -1,18 +1,17 @@
 # `sdrd` control plane
 
 `sdrd` is the C control-plane process intended to run on the P201 Pro's ARMv7
-Buildroot Linux. The deployed configuration remains deliberately read-only:
+Buildroot Linux. It supports shadow observation and controlled receive-only acquisition:
 
 - it reports `ad9361-phy` and `cf-ad9361-lpc` visibility;
-- controlled mode admits capture only when the read-only AD9361
-  `voltage0/rf_port_select` probe proves the fixed physical path
-  `RX1 / RX0 / A_BALANCED` and the `voltage0,1` I/Q scan pair;
+- controlled mode admits one selected RX1 or RX2 path, with the corresponding
+  AD9361 PHY channel, I/Q scan pair and `A_BALANCED` readback;
 - it retains constant false/zero FPGA response fields only for SDRD/1 client
   compatibility; no FPGA configuration or implementation remains;
 - it serves a small versioned protocol over a persistent TCP connection;
 - it rejects profile, session, and IQ-capture commands in `mode=shadow`;
 - shadow mode never writes IIO attributes;
-- it is not installed as a startup service by this repository.
+- the personal installed service and release state are recorded in the project checklist.
 
 The library now also contains the controlled-mode command parser, ownership
 state machine, bounded-capture contract, and a local libiio 0.21 Adapter. The
@@ -25,6 +24,31 @@ and [`deploy/S60sdrd`](deploy/S60sdrd). The live deployment is retained on
 see the deployment evidence before changing the boot chain.
 [`config/sdrd-controlled-interface.conf`](config/sdrd-controlled-interface.conf)
 documents the accepted limits but is explicitly not a deployment configuration.
+
+## Receive-port selection
+
+Set `rx_input=RX1` (default) or `rx_input=RX2` in the daemon configuration before
+starting it. Selection is fixed for that daemon instance; finish its session and
+stop it before restarting with another configuration. Editing a config file does
+not switch an active capture. Do not start a second daemon/collector to change ports.
+
+| Config / panel port | Logical RX | PHY | Scan I / Q | RF input |
+| --- | --- | --- | --- | --- |
+| RX1 | RX0 | voltage0 | voltage0 / voltage1 | A_BALANCED |
+| RX2 | RX1 | voltage1 | voltage2 / voltage3 | A_BALANCED |
+
+Both cases transport one interleaved `ci16_le` stream (4 bytes/complex sample).
+Profile writes and gain snapshot/restoration use the selected PHY; the other
+channel's gain is untouched, and the original scan mask is restored. RF-port
+attributes are read, not written. TRX1/TRX2 are rejected: the supplied vendor
+firmware fixes their external switch controls rather than exposing a selector.
+This service neither changes that firmware nor transmits.
+
+The frozen production RF-v1 and existing AGX Controller admit only RX1. RX2
+requires a diagnostic client that validates its actual identity; it must not be
+relabeled as RX1 or passed through the old profile. `CAPTURE_POWER` and its
+`software_summary` capability are unavailable for RX2 because those legacy
+fields explicitly represent RX0. AGX raw-IQ processing remains the primary path.
 
 ## Protocol v1
 
@@ -55,7 +79,7 @@ request ID. Generations reject stale session actions. `RETUNE` is deliberately
 not allowlisted; `APPLY_PROFILE` is the atomic tuning operation.
 
 Every successful capture/summary result carries the correlated `request_id`
-and `session_generation`, the Adapter capture `sequence`, measured
+and `session_generation`, the Adapter capture `sequence`, reported
 `dropped_samples`/`overflow`, and two nested metadata objects:
 
 ```json
@@ -72,8 +96,7 @@ metadata together with the restoration-specific error code, and the Rust
 client preserves that object in its error/audit path.
 
 `CAPABILITIES`, `HEALTH`, session start, profile, capture/summary, and stop
-responses carry a versioned `rx_input` object. Its only admitted controlled-mode
-identity is:
+responses carry a versioned `rx_input` object. The default RX1 identity is:
 
 ```json
 {"identity_version":1,"verified":true,"front_panel_port":"RX1","logical_channel":"RX0","phy_channel":"voltage0","scan_i_channel":"voltage0","scan_q_channel":"voltage1","rf_port_select":"A_BALANCED","source":"iio_channel_attr"}
@@ -109,7 +132,7 @@ implementation or configuration path.
 `APPLY_PROFILE` accepts only the configured subset of the verified project
 limits: 70 MHz..6 GHz center frequency, 2.083333..30.72 MS/s sample rate,
 0.2..56 MHz RF bandwidth, RF bandwidth no greater than sample rate, allowlisted
-gain modes, and the fixed software RX0 / physical RX1 input only in this slice.
+gain modes, and one configured RX1 or RX2 input.
 `CAPTURE_IQ` requires a safe feature ID,
 uses four bytes per complex int16 sample, and cannot exceed the configured hard
 cap (64 MiB by default). Adapter results use paths relative to

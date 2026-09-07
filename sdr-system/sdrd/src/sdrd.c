@@ -84,6 +84,7 @@ void sdrd_config_defaults(sdrd_config_t *config) {
   config->iio_timeout_ms = 2000u;
   config->iio_buffer_samples = 4096u;
   config->retune_settle_ms = 5u;
+  (void)copy_text(config->rx_input, sizeof(config->rx_input), "RX1");
   config->min_center_hz = 70000000u;
   config->max_center_hz = 6000000000u;
   config->min_sample_rate_hz = 2083333u;
@@ -104,15 +105,33 @@ const char *sdrd_mode_name(sdrd_mode_t mode) {
   }
 }
 
+int sdrd_rx_input_for_port(const char *port, int verified, sdrd_rx_input_identity_t *identity) {
+  if (port == NULL || identity == NULL) return -EINVAL;
+  const int second = strcmp(port, "RX2") == 0;
+  if (!second && strcmp(port, "RX1") != 0) return -ENOTSUP;
+  memset(identity, 0, sizeof(*identity));
+  identity->identity_version = SDRD_RX_INPUT_IDENTITY_VERSION;
+  identity->verified = verified != 0;
+  (void)copy_text(identity->front_panel_port, sizeof(identity->front_panel_port), second ? "RX2" : "RX1");
+  (void)copy_text(identity->logical_channel, sizeof(identity->logical_channel), second ? "RX1" : "RX0");
+  (void)copy_text(identity->phy_channel, sizeof(identity->phy_channel), second ? "voltage1" : "voltage0");
+  (void)copy_text(identity->scan_i_channel, sizeof(identity->scan_i_channel), second ? "voltage2" : "voltage0");
+  (void)copy_text(identity->scan_q_channel, sizeof(identity->scan_q_channel), second ? "voltage3" : "voltage1");
+  (void)copy_text(identity->rf_port_select, sizeof(identity->rf_port_select), "A_BALANCED");
+  return 0;
+}
+
 int sdrd_rx_input_identity_valid(const sdrd_rx_input_identity_t *identity) {
-  return identity != NULL && identity->identity_version == SDRD_RX_INPUT_IDENTITY_VERSION &&
-         identity->verified != 0 &&
-         strcmp(identity->front_panel_port, SDRD_RX_FRONT_PANEL_PORT) == 0 &&
-         strcmp(identity->logical_channel, SDRD_RX_LOGICAL_CHANNEL) == 0 &&
-         strcmp(identity->phy_channel, SDRD_RX_PHY_CHANNEL) == 0 &&
-         strcmp(identity->scan_i_channel, SDRD_RX_SCAN_I_CHANNEL) == 0 &&
-         strcmp(identity->scan_q_channel, SDRD_RX_SCAN_Q_CHANNEL) == 0 &&
-         strcmp(identity->rf_port_select, SDRD_RX_RF_PORT_SELECT) == 0;
+  sdrd_rx_input_identity_t expected;
+  if (identity == NULL || identity->verified != 1 ||
+      memchr(identity->front_panel_port, '\0', sizeof(identity->front_panel_port)) == NULL ||
+      sdrd_rx_input_for_port(identity->front_panel_port, 1, &expected) != 0) return 0;
+  return identity->identity_version == expected.identity_version &&
+         memcmp(identity->logical_channel, expected.logical_channel, sizeof(identity->logical_channel)) == 0 &&
+         memcmp(identity->phy_channel, expected.phy_channel, sizeof(identity->phy_channel)) == 0 &&
+         memcmp(identity->scan_i_channel, expected.scan_i_channel, sizeof(identity->scan_i_channel)) == 0 &&
+         memcmp(identity->scan_q_channel, expected.scan_q_channel, sizeof(identity->scan_q_channel)) == 0 &&
+         memcmp(identity->rf_port_select, expected.rf_port_select, sizeof(identity->rf_port_select)) == 0;
 }
 
 static int set_config_value(
@@ -166,6 +185,9 @@ static int set_config_value(
       return -EINVAL;
     }
     return 0;
+  }
+  if (strcmp(key, "rx_input") == 0) {
+    return copy_text(config->rx_input, sizeof(config->rx_input), value);
   }
   if (strcmp(key, "iio_buffer_samples") == 0) {
     if (parse_u32(value, &config->iio_buffer_samples) != 0) {
@@ -309,6 +331,13 @@ int sdrd_config_validate(
   if (config->retune_settle_ms > 1000u) {
     set_error(error, error_size, "retune_settle_ms must not exceed 1000");
     return -ERANGE;
+  }
+  {
+    sdrd_rx_input_identity_t selected;
+    if (sdrd_rx_input_for_port(config->rx_input, 0, &selected) != 0) {
+      set_error(error, error_size, "rx_input must be RX1 or RX2; TRX1/TRX2 receive routing is not verified");
+      return -ENOTSUP;
+    }
   }
   if (config->min_center_hz < 70000000u || config->max_center_hz > 6000000000u ||
       config->min_center_hz > config->max_center_hz) {
@@ -460,7 +489,7 @@ static void expected_rx_input(
       identity->rf_port_select, sizeof(identity->rf_port_select), SDRD_RX_RF_PORT_SELECT);
 }
 
-static int probe_fixed_rx_input(
+static int probe_selected_rx_input(
     const sdrd_radio_ops_t *radio,
     sdrd_rx_input_identity_t *identity) {
   sdrd_rx_input_identity_t observed;
@@ -483,6 +512,9 @@ static int format_rx_input_json(
     char *output,
     size_t output_size) {
   const int verified = sdrd_rx_input_identity_valid(identity);
+  sdrd_rx_input_identity_t selected;
+  expected_rx_input(&selected, 0);
+  if (verified) selected = *identity;
   const int written = snprintf(
       output,
       output_size,
@@ -493,12 +525,12 @@ static int format_rx_input_json(
       "\"source\":\"iio_channel_attr\"}",
       SDRD_RX_INPUT_IDENTITY_VERSION,
       verified != 0 ? "true" : "false",
-      SDRD_RX_FRONT_PANEL_PORT,
-      SDRD_RX_LOGICAL_CHANNEL,
-      SDRD_RX_PHY_CHANNEL,
-      SDRD_RX_SCAN_I_CHANNEL,
-      SDRD_RX_SCAN_Q_CHANNEL,
-      SDRD_RX_RF_PORT_SELECT);
+      selected.front_panel_port,
+      selected.logical_channel,
+      selected.phy_channel,
+      selected.scan_i_channel,
+      selected.scan_q_channel,
+      selected.rf_port_select);
   return written < 0 || (size_t)written >= output_size ? -ENOSPC : 0;
 }
 
@@ -681,7 +713,7 @@ int sdrd_session_close(sdrd_session_t *session, const sdrd_radio_ops_t *radio) {
     restore_rc = radio->restore(radio->context, &session->saved_state);
   }
   memset(&identity, 0, sizeof(identity));
-  identity_rc = probe_fixed_rx_input(radio, &identity);
+  identity_rc = probe_selected_rx_input(radio, &identity);
   if (identity_rc == 0 &&
       sdrd_rx_input_identity_valid(&session->saved_state.rx_input) != 0 &&
       memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
@@ -705,6 +737,7 @@ int sdrd_session_close(sdrd_session_t *session, const sdrd_radio_ops_t *radio) {
 }
 
 static int handle_start_session(
+    const sdrd_config_t *config,
     const parsed_request_t *request,
     sdrd_session_t *session,
     const sdrd_radio_ops_t *radio,
@@ -726,8 +759,8 @@ static int handle_start_session(
     return format_error(request->request_id, "session_busy", response, response_size);
   }
   memset(&identity, 0, sizeof(identity));
-  rc = probe_fixed_rx_input(radio, &identity);
-  if (rc != 0) {
+  rc = probe_selected_rx_input(radio, &identity);
+  if (rc != 0 || strcmp(identity.front_panel_port, config->rx_input) != 0) {
     return format_error(request->request_id, "rx_input_unavailable", response, response_size);
   }
   rc = radio->snapshot(radio->context, &session->saved_state);
@@ -808,14 +841,14 @@ static int handle_apply_profile(
   state.enabled_channels = enabled_channels;
   state.rx_input = session->saved_state.rx_input;
   memset(&identity, 0, sizeof(identity));
-  rc = probe_fixed_rx_input(radio, &identity);
+  rc = probe_selected_rx_input(radio, &identity);
   if (rc != 0 || memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
     (void)sdrd_session_close(session, radio);
     return format_error(request->request_id, "rx_input_changed", response, response_size);
   }
   rc = radio->apply_profile(radio->context, &state);
   if (rc == 0) {
-    rc = probe_fixed_rx_input(radio, &identity);
+    rc = probe_selected_rx_input(radio, &identity);
     if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
       rc = -EPROTO;
     }
@@ -912,7 +945,7 @@ static int handle_capture_iq(
     return format_error(request->request_id, "capture_out_of_bounds", response, response_size);
   }
   (void)copy_text(capture.feature_id, sizeof(capture.feature_id), request->fields[6]);
-  rc = probe_fixed_rx_input(radio, &identity);
+  rc = probe_selected_rx_input(radio, &identity);
   if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
     rc = -EPROTO;
   }
@@ -920,7 +953,7 @@ static int handle_capture_iq(
     rc = radio->capture_iq(radio->context, &capture, &result);
   }
   if (rc == 0) {
-    rc = probe_fixed_rx_input(radio, &identity);
+    rc = probe_selected_rx_input(radio, &identity);
     if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
       rc = -EPROTO;
     }
@@ -1090,7 +1123,7 @@ static int handle_capture_iq_inline(
     return format_error(request->request_id, "inline_capture_out_of_bounds", response, response_size);
   }
   (void)copy_text(capture.feature_id, sizeof(capture.feature_id), request->fields[6]);
-  rc = probe_fixed_rx_input(radio, &identity);
+  rc = probe_selected_rx_input(radio, &identity);
   if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
     rc = -EPROTO;
   }
@@ -1098,7 +1131,7 @@ static int handle_capture_iq_inline(
     rc = radio->capture_iq(radio->context, &capture, &result);
   }
   if (rc == 0) {
-    rc = probe_fixed_rx_input(radio, &identity);
+    rc = probe_selected_rx_input(radio, &identity);
     if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
       rc = -EPROTO;
     }
@@ -1234,7 +1267,7 @@ static int handle_capture_power(
   if (power_ops_available(radio) == 0) {
     return format_error(request->request_id, "software_summary_unavailable", response, response_size);
   }
-  rc = probe_fixed_rx_input(radio, &identity);
+  rc = probe_selected_rx_input(radio, &identity);
   if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
     rc = -EPROTO;
   }
@@ -1242,7 +1275,7 @@ static int handle_capture_power(
     rc = radio->capture_power(radio->context, &summary, &result);
   }
   if (rc == 0) {
-    rc = probe_fixed_rx_input(radio, &identity);
+    rc = probe_selected_rx_input(radio, &identity);
     if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) {
       rc = -EPROTO;
     }
@@ -1418,7 +1451,11 @@ int sdrd_handle_request(
       return format_error(request.request_id, "probe_failed", response, response_size);
     }
     memset(&rx_input, 0, sizeof(rx_input));
-    rc = probe_fixed_rx_input(radio, &rx_input);
+    rc = probe_selected_rx_input(radio, &rx_input);
+    if (rc == 0 && strcmp(rx_input.front_panel_port, config->rx_input) != 0) {
+      rc = -EPROTO;
+      rx_input.verified = 0;
+    }
     if (config->mode == SDRD_MODE_CONTROLLED && rc != 0) {
       status.health_flags |= SDRD_HEALTH_RX_INPUT_IDENTITY_INVALID;
     }
@@ -1484,7 +1521,7 @@ int sdrd_handle_request(
       return format_error(request.request_id, "radio_backend_unavailable", response, response_size);
     }
     if (strcmp(request.command, "START_SESSION") == 0) {
-      return handle_start_session(&request, session, radio, response, response_size);
+      return handle_start_session(config, &request, session, radio, response, response_size);
     }
     if (strcmp(request.command, "APPLY_PROFILE") == 0) {
       return handle_apply_profile(config, &request, session, radio, response, response_size);

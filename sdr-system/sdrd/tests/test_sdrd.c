@@ -472,6 +472,56 @@ static void test_rx_input_identity_fails_closed(void) {
   assert(session.faulted != 0);
 }
 
+static void test_rx2_selection_and_config(const char *root) {
+  sdrd_config_t config;
+  sdrd_session_t session;
+  fake_radio_t fake = {0};
+  char response[SDRD_MAX_RESPONSE], error[256], path[1024];
+  sdrd_config_defaults(&config);
+  assert(strcmp(config.rx_input, "RX1") == 0);
+  assert(snprintf(path, sizeof(path), "%s/rx-port.conf", root) > 0);
+  write_text(path, "rx_input=RX2\n");
+  assert(sdrd_config_load(path, &config, error, sizeof(error)) == 0);
+  assert(strcmp(config.rx_input, "RX2") == 0);
+  assert(sdrd_rx_input_for_port("RX2", 1, &fake.state.rx_input) == 0);
+  assert(sdrd_rx_input_identity_valid(&fake.state.rx_input));
+  sdrd_rx_input_identity_t wrong = fake.state.rx_input;
+  strcpy(wrong.scan_i_channel, "voltage0");
+  assert(!sdrd_rx_input_identity_valid(&wrong));
+  wrong = fake.state.rx_input;
+  memset(wrong.front_panel_port, 'x', sizeof(wrong.front_panel_port));
+  assert(!sdrd_rx_input_identity_valid(&wrong));
+  const char *invalid[] = {"TRX1", "TRX2", "RX0", "rx2", "RX2 extra"};
+  for (size_t i = 0; i < sizeof(invalid)/sizeof(invalid[0]); ++i) {
+    char text[128];
+    assert(snprintf(text, sizeof(text), "rx_input=%s\n", invalid[i]) > 0);
+    write_text(path, text);
+    assert(sdrd_config_load(path, &config, error, sizeof(error)) != 0);
+  }
+  assert(unlink(path) == 0);
+  sdrd_config_defaults(&config);
+  config.mode = SDRD_MODE_CONTROLLED;
+  strcpy(config.rx_input, "RX2");
+  sdrd_radio_ops_t ops = fake_ops(&fake);
+  sdrd_session_init(&session);
+  assert(sdrd_handle_request(&config, &session, &ops, "SDRD/1 START_SESSION 1 9010", response, sizeof(response)) == 0);
+  assert(strstr(response, "\"front_panel_port\":\"RX2\"") != NULL);
+  assert(strstr(response, "\"scan_i_channel\":\"voltage2\"") != NULL);
+  assert(sdrd_handle_request(&config, &session, &ops,
+         "SDRD/1 APPLY_PROFILE 2 9010 2455000000 2100000 1500000 manual 40 1", response, sizeof(response)) == 0);
+  assert(strstr(response, "\"front_panel_port\":\"RX2\"") != NULL);
+  assert(sdrd_handle_request(&config, &session, &ops,
+         "SDRD/1 CAPTURE_IQ 3 9010 1024 4096 rx2-test", response, sizeof(response)) == 0);
+  assert(strstr(response, "\"scan_q_channel\":\"voltage3\"") != NULL);
+  assert(sdrd_handle_request(&config, &session, &ops, "SDRD/1 STOP_SESSION 4 9010", response, sizeof(response)) == 0);
+  assert(strstr(response, "\"restored\":true") != NULL);
+  assert(sdrd_rx_input_for_port("RX1", 1, &fake.state.rx_input) == 0);
+  sdrd_session_init(&session);
+  assert(sdrd_handle_request(&config, &session, &ops, "SDRD/1 START_SESSION 1 9011", response, sizeof(response)) == 0);
+  assert(strstr(response, "rx_input_unavailable") != NULL);
+  assert(session.active == 0);
+}
+
 static void test_disconnect_and_failure_restore(void) {
   sdrd_config_t config;
   sdrd_session_t session;
@@ -664,6 +714,7 @@ int main(void) {
   test_iio_control_limits();
   test_controlled_allowlist_and_restore();
   test_rx_input_identity_fails_closed();
+  test_rx2_selection_and_config(root);
   test_disconnect_and_failure_restore();
   test_inline_iq_transport_and_cleanup(root);
   remove_test_tree(root);
