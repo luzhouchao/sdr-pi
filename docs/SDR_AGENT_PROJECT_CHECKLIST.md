@@ -666,6 +666,14 @@ aggregation, result persistence and model-facing summaries.
           full-matrix reliability nor a benefit from increasing amplitude is
           established. Preserve failures; no retrospective gate or window changes,
           production admission, or qualified bidirectional-bias claim.
+      - [x] Complete offline posthoc phase/gain/CFO/delay decomposition of all
+            744 source/stopped blocks in the retained ABBA package. Broad local
+            searches still leave ~95% unexplained centered energy in high2's fixed
+            block and 54–64% in low2; simultaneous guard-band activity supports
+            prioritizing input contamination over simple alignment corrections.
+            Six synthetic tests, exact replay and temporary cleanup verified;
+            no new RF/model/IQ copies and no physical-cause or repair claim. See
+            [failure decomposition](B210_FAILURE_DECOMPOSITION_VALIDATION_2026-09-07.md).
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the
