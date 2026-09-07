@@ -19,15 +19,18 @@ import time
 def transmit(root):
     plan = json.loads((root / 'transmission-plan.json').read_text())
     version=plan.get('schema_version',1)
-    center=2455000000 if version==4 else 2440000000
+    if version == 5:
+        from b210_multiclass_contract import validate
+        assert validate(root) == plan
+    center=2455000000 if version in (4,5) else 2440000000
     for key, value in dict(center_hz=center,rate_sps=2100000,bandwidth_hz=1500000,
                            tx_channel=0,tx_antenna='TX/RX',
                            split='train',locked_test_read=False).items():
         assert plan[key] == value, key
     configuration = (plan['tx_samples'], plan['tx_nominal_seconds'], plan['tx_gain_db'], plan['complex_peak'])
-    if version in (2,3,4):
+    if version in (2,3,4,5):
         assert plan['source_unit_samples']==1024 and plan['payload_bytes']==8192
-        assert plan['rows']==[102400] and plan['tx_unit_count']==20480 and plan['uhd_spb']==1024
+        assert (version==5 or plan['rows']==[102400]) and plan['tx_unit_count']==20480 and plan['uhd_spb']==1024
         allowed=((20971520,10,70,0.2),(20971520,10,70,0.3)) if version==4 else ((20971520,10,70,0.2),)
         assert configuration in allowed, 'unregistered single-row transmission plan'
         spb=1024
@@ -37,7 +40,9 @@ def transmit(root):
                                  (21000000, 10, 70, 0.2)), 'unregistered transmission plan'
         spb=10000
     offset=plan.get('tx_lo_offset_hz',0)
-    if version==4:
+    if version==5:
+        assert offset==250000 and plan['tx_requested_lo_hz']==2455250000
+    elif version==4:
         assert type(offset) is int and offset==250000
         assert plan['tx_requested_lo_hz']==2455250000 and plan['diagnostic_contract']=='b210_2455_margin_v1'
         assert plan['parent_payload_sha256']=='c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9'
@@ -56,8 +61,9 @@ def transmit(root):
     fd = None
     audit = dict(status='failed',payload_sha256=plan['payload_sha256'],bytes_written=0,
                  max_samples=plan['tx_samples'],rate_sps=2100000,nominal_seconds=plan['tx_nominal_seconds'])
-    if version in (3,4):audit.update(tx_lo_offset_hz=offset,tx_requested_lo_hz=center+offset)
-    if version==4:audit.update(center_hz=center,complex_peak=plan['complex_peak'])
+    if version in (3,4,5):audit.update(tx_lo_offset_hz=offset,tx_requested_lo_hz=center+offset)
+    if version in (4,5):audit.update(center_hz=center,complex_peak=plan['complex_peak'])
+    if version==5:audit.update(case_id=plan['case_id'],class_id=plan['class_id'],rows=plan['rows'],source_iq_sha256=plan['source_iq_sha256'])
     # Signal handlers unwind finally; closing stdin before GO also aborts.
     def abort(signum, frame):
         raise RuntimeError('stop signal ' + str(signum))
@@ -68,7 +74,7 @@ def transmit(root):
                 '--file',str(fifo),'--type','float','--spb',str(spb),'--rate','2100000',
                 '--freq',str(center),'--gain',str(plan['tx_gain_db']),'--ant','TX/RX','--bw','1500000',
                 '--channel','0','--subdev','A:A']
-        if version in (3,4):args.extend(['--lo-offset',str(offset)])
+        if version in (3,4,5):args.extend(['--lo-offset',str(offset)])
         with (root / 'tx-uhd.log').open('x') as log:
             child = subprocess.Popen(args,stdout=log,stderr=subprocess.STDOUT)
         audit['child_pid'] = child.pid

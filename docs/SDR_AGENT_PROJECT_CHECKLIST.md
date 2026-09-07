@@ -720,6 +720,18 @@ aggregation, result persistence and model-facing summaries.
             pass; retain 55 inventoried files (~3.26 MB unique). This is not an
             antenna causal-effect or recognition-accuracy claim; see
             [new antenna validation](B210_RX1_NEW_ANTENNA_VALIDATION_2026-09-07.md).
+      - [x] Cover all 24 numeric classes with three preselected +30 dB train
+            rows each, one 1024-sample TX unit per case, interleaved across three
+            rounds. All 75 tone/RML groups and 225 captures restore successfully;
+            1152 diagnostic windows plus 2 warmups complete. Source/raw RX/FIR RX
+            nominal agreement is 69/72, 30/72, 56/72; retain all failed gates and
+            five FIR regressions. Original full diagnostic gate passes 51/72;
+            five carrier-dominated sources expose the existing zero-bandwidth
+            association limitation. 29 tests, retained replay, exact cleanup and
+            Spark restoration pass; retain 1268 inventoried files (62,465,220
+            unique-inode bytes). No independent RF accuracy, universal FIR fix,
+            V1b completion or production admission claim. See
+            [24-class validation](B210_MULTICLASS_VALIDATION_2026-09-07.md).
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the

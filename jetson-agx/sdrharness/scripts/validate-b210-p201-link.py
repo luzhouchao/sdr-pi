@@ -58,7 +58,11 @@ async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000):
                json.loads((feature / 'transmission-plan.json').read_text()))
     if mode=='rml':
         assert tx_plan['center_hz']==center_hz
-        if center_hz==2455000000:assert tx_plan['schema_version']==4
+        if center_hz==2455000000:
+            assert tx_plan['schema_version'] in (4,5)
+            if tx_plan['schema_version']==5:
+                from b210_multiclass_contract import validate
+                assert validate(feature)==tx_plan
     assert tx_plan['tx_gain_db'] in ((70,) if mode == 'tone' else (0, 40, 70))
     rate = 2500000 if mode == 'tone' else 2100000
     rx_bw = 1000000 if mode == 'tone' else 1500000
@@ -180,7 +184,7 @@ async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000):
             return
         # Remote timeout also bounds the NX process if the SSH transport fails.
         tx = await asyncio.create_subprocess_exec(*NX,
-                f'timeout --signal=TERM --kill-after=3s 65s python3 {feature}/b210-finite-train-tx.py --directory {feature}',
+                f'PYTHONDONTWRITEBYTECODE=1 timeout --signal=TERM --kill-after=3s 65s python3 {feature}/b210-finite-train-tx.py --directory {feature}',
                 stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE)
         processes.append(tx)
         line = await asyncio.wait_for(tx.stdout.readline(),45)

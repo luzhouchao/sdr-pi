@@ -17,7 +17,7 @@ spec.loader.exec_module(tx)
 
 
 class FiniteTxTests(unittest.TestCase):
-    def run_case(self, go=True, tamper=False, extended=False, invalid=False, single=False, bad_unit=False, lo_offset=None, bad_version=False, margin_peak=None, bad_margin=False):
+    def run_case(self, go=True, tamper=False, extended=False, invalid=False, single=False, bad_unit=False, lo_offset=None, bad_version=False, margin_peak=None, bad_margin=False, multiclass=False):
         # Caller supplies the feature TMPDIR; no files touch user results.
         root = Path(tempfile.mkdtemp(prefix='fifo-',dir=os.environ['TMPDIR']))
         payload = bytes(range(256))*(32 if single else 128)
@@ -45,6 +45,14 @@ class FiniteTxTests(unittest.TestCase):
         bad_margin=bad_margin or (margin_peak is not None and margin_peak not in (.2,.3))
         if invalid:
             plan['tx_samples'] += 1
+        if multiclass:
+            sys.path.insert(0, str(SCRIPT.parent))
+            registered = json.loads((SCRIPT.parent.parent/'config/amc/b210-multiclass-907u.json').read_text())
+            plan = registered['cases'][0]
+            source = Path('/var/tmp/sdrharness-dev') / ('b210-multi-'+plan['case_id']+'-907u')
+            payload = (source/'train-tile.fc32').read_bytes()
+            (root/'multiclass-manifest.json').write_bytes((source/'multiclass-manifest.json').read_bytes())
+            lo_offset=250000
         (root/'transmission-plan.json').write_text(json.dumps(plan))
         (root/'train-tile.fc32').write_bytes(payload if not tamper else payload[:-1])
         real_popen = subprocess.Popen
@@ -55,7 +63,7 @@ class FiniteTxTests(unittest.TestCase):
             self.assertNotIn('--repeat',args)
             self.assertEqual(args[args.index('--spb')+1],'1024' if single else '10000')
             if lo_offset is not None:self.assertEqual(args[args.index('--lo-offset')+1],str(lo_offset))
-            self.assertEqual(args[args.index('--freq')+1],str(2455000000 if margin_peak is not None else 2440000000))
+            self.assertEqual(args[args.index('--freq')+1],str(2455000000 if margin_peak is not None or multiclass else 2440000000))
             fifo=args[args.index('--file')+1]
             child=real_popen([sys.executable,'-c',
                 'import sys,hashlib,json; f=open(sys.argv[1],"rb"); h=hashlib.sha256(); n=0\n'
@@ -94,6 +102,10 @@ class FiniteTxTests(unittest.TestCase):
 
     def test_margin_amplitudes_keep_finite_1024_stream(self):
         for peak in (.2,.3):self.run_case(single=True,margin_peak=peak)
+
+    def test_multiclass_pinned_source_exact_finite_stream_and_eof(self):
+        self.run_case(single=True,multiclass=True)
+        self.run_case(single=True,multiclass=True,go=False)
 
     def test_margin_unregistered_peak_parent_and_tamper_rejected(self):
         self.run_case(single=True,margin_peak=.4)
