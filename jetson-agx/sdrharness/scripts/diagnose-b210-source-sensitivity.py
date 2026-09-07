@@ -15,7 +15,7 @@ if not __debug__:
     raise RuntimeError('validation requires assertions')
 SCRIPTS = Path(__file__).parent
 ROOT = SCRIPTS.resolve().parents[2]
-AUDIT_PATH = ROOT/'docs/B210_P201_RX40_PAIRED_AUDIT_2026-09-06.json'
+AUDIT_PATH = ROOT/'docs/evidence/B210_P201_RX40_PAIRED_AUDIT_2026-09-06.json'
 AUDIT_HASH = '1d3c01a3f26e3661295b2a72facd87d3d72d1510bb279e1afd3344fbbc84b432'
 FEATURE = Path('/var/tmp/sdrharness-dev/b210-source-sensitivity-906d')
 RATE = 2100000

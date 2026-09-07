@@ -27,7 +27,7 @@ class MarginTests(unittest.TestCase):
 class CenterBindingTests(unittest.TestCase):
     def setUp(self):
         temp=tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']);self.addCleanup(temp.cleanup);self.root=Path(temp.name)
-        history=json.loads((m.live.affine.ROOT/'docs/B210_RX_AFFINE_AUDIT_2026-09-06.json').read_text())
+        history=json.loads((m.live.affine.ROOT/'docs/evidence/B210_RX_AFFINE_AUDIT_2026-09-06.json').read_text())
         self.link=copy.deepcopy(history['links']['tone']);self.link['feature_directory']=str(self.root);self.link['center_hz']=2455000000
         self.link['radio_before']=self.link['radio_after']=history['final_radio_state']
         for i,(tag,field) in enumerate((('baseline','baseline'),('during-tx','during_tx'),('after-tx','after_tx'))):

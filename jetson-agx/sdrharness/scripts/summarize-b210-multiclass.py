@@ -9,8 +9,8 @@ from pathlib import Path
 SCRIPTS = Path(__file__).resolve().parent
 REPO = SCRIPTS.parents[2]
 ROOT = Path('/var/tmp/sdrharness-dev/b210-multiclass-907u')
-AUDIT = REPO / 'docs/B210_MULTICLASS_AUDIT_2026-09-07.json'
-INVENTORY = REPO / 'docs/B210_MULTICLASS_EVIDENCE_2026-09-07.json'
+AUDIT = REPO / 'docs/evidence/B210_MULTICLASS_AUDIT_2026-09-07.json'
+INVENTORY = REPO / 'docs/evidence/B210_MULTICLASS_EVIDENCE_2026-09-07.json'
 KINDS = ('source_original', 'source_filtered', 'received_raw', 'received_filtered')
 
 

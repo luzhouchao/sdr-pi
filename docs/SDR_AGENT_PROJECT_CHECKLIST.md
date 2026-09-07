@@ -28,11 +28,11 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
 - [x] S3：Worker 单等待位、整批 deadline、取消确认、强杀/重启清理和指标完成源码及有限真实候选验证；未部署，能力仍为 false。
 - [x] S4：共享 GPU 调度与持续资源源码/隔离验收；GPU 温度缺失按用户明确豁免保持未测，生产部署另属 A1。
   - [x] S4a：共享推理租约、串行执行、取消/故障释放和隔离实机正确性完成；未部署，不代表 S4b 完成。
-  - [x] S4b：96 轮/1200 秒串行候选负载下的 nvmap/PSS/队列/时延与 CPU/SoC/Tj 稳定性验证，256 MiB CPU prompt-cache 上限及精确清理完成。GPU 温度 240/240 缺失依用户明确决定不阻塞；不宣称独立 GPU 温度已验证。见 [S4b 验证](GPU_RESOURCE_S4B_VALIDATION_2026-09-06.md)。
-- [x] S5：Runner 工程识别执行、人工批准、预算/audit、联合 stop、自动 Spark 回灌及固定回归完成源码与有限实机验证；精确清理完成，生产能力仍为 false。见 [S5 验证](RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md)。
+  - [x] S4b：96 轮/1200 秒串行候选负载下的 nvmap/PSS/队列/时延与 CPU/SoC/Tj 稳定性验证，256 MiB CPU prompt-cache 上限及精确清理完成。GPU 温度 240/240 缺失依用户明确决定不阻塞；不宣称独立 GPU 温度已验证。见 [S4b 验证](validation/GPU_RESOURCE_S4B_VALIDATION_2026-09-06.md)。
+- [x] S5：Runner 工程识别执行、人工批准、预算/audit、联合 stop、自动 Spark 回灌及固定回归完成源码与有限实机验证；精确清理完成，生产能力仍为 false。见 [S5 验证](validation/RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md)。
 - [x] S6：用户识别结果源码及隔离验收交付（S6a/S6b）；生产部署另属 A1。
   - [x] S6a：完整结果保存/恢复/查看/删除完成源码及隔离 replay/演示验证；复用应用 SQLite，不额外保留 IQ，未部署。
-  - [x] S6b：S5 后真实闭环、浏览器结果和 Spark 紧凑摘要验收及精确清理完成，未部署。见 [S6b 验证](WEB_RECOGNITION_S6B_VALIDATION_2026-09-06.md)。
+  - [x] S6b：S5 后真实闭环、浏览器结果和 Spark 紧凑摘要验收及精确清理完成，未部署。见 [S6b 验证](validation/WEB_RECOGNITION_S6B_VALIDATION_2026-09-06.md)。
 - [ ] V1：RF-v1 独立数据证据准备。
   - [x] V1a：版本化派生、独立证据接入、采样/覆盖/校准与验收分组规范完成；隔离 HTTP/浏览器/删除及失败清理验证通过，未部署。
   - [ ] V1b：获得并审核足够的独立 known-RF/OOD 标签；实际覆盖达到预注册条件。
@@ -42,7 +42,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
   - [ ] V3b：规则冻结后执行一次 locked test；不得用 test 反复调参。
 - [ ] A1：production profile、可回滚部署、RX-only 矩阵验收和真实正向 capability。
 - [ ] O1：持续运行和运维。
-  - [x] O1a：固定 seed 的故障/fuzz 矩阵、8 MiB×4 audit 轮转、只读健康/本地去重告警、发布校验与私有升级/回滚演练完成源码、隔离验证及清理。生产配置未安装；见 [O1a 验证](OPERATIONS_O1A_VALIDATION_2026-09-06.md)。
+  - [x] O1a：固定 seed 的故障/fuzz 矩阵、8 MiB×4 audit 轮转、只读健康/本地去重告警、发布校验与私有升级/回滚演练完成源码、隔离验证及清理。生产配置未安装；见 [O1a 验证](validation/OPERATIONS_O1A_VALIDATION_2026-09-06.md)。
   - [ ] O1b：24 小时完整闭环 soak；不替代人工批准策略或自动触发决策。
 - [ ] 第7章设备/辐射源身份识别：后续独立范围，不计入当前调制识别交付。
 
@@ -70,7 +70,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
       reboot-resume user units, recovering exactly one retained receive-only
       `sdrd`, and verifying the deployed AGX Harness is the only enabled RX
       control path; see
-      [`SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md`](SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md).
+      [`SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md).
 
 - [x] Keep Qwen inference, tokenization, and KV cache on the 4090 llama.cpp
       module for the original Pi deployment baseline; it was later stopped when
@@ -89,13 +89,13 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
       the Web-selected `spark-local` Planner, adapt its constrained JSON Schema
       response into the sole `submit_plan` tool event, and live-validate a
       greeting plus a Rust-approved real-P201 sweep with radio restoration; see
-      [`SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md`](SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md).
+      [`SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md`](validation/SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md).
 - [x] Reuse the existing AGX loopback SearXNG service as a Spark-only bounded
       host search adapter with at most two searches, eight sources, a 15-second
       timeout, a 512 KiB response limit, no redirects or arbitrary result fetch,
       untrusted-evidence prompting, Web-visible source events and unchanged
       Rust/SDR authority; live model and browser validation is recorded in
-      [`SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md`](SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md).
+      [`SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md`](validation/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md).
 - [x] Run the Planner Worker as an enabled systemd module with memory, CPU, task,
       filesystem, privilege, and address-family restrictions.
 - [x] Preserve the stateless one-shot `planner.sock` interface as a fail-closed
@@ -161,7 +161,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
       and never expose the fixed system prompt.
 - [x] Deploy and live-validate the AGX result database, aggregate-results page,
       optional SigMF storage and manual deletion with a real P201 scan; see
-      [`SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md`](SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md).
+      [`SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md`](validation/SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md).
 - [x] Track automatic compaction separately from session-generation changes and
       persist one-shot initial-survey state so switching or restarting a
       completed conversation neither increments `compaction_count` nor repeats
@@ -179,12 +179,12 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
       model is streaming, with a four-line terminal queue, Pi-style steer and
       follow-up, priority `/stop`, asynchronous acknowledgement correlation,
       and fail-closed stale-generation handling; see
-      [`SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md).
+      [`SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md).
 - [x] Persist and resume bounded interactive terminal history after normal or
       unexpected exit and Planner restart, using atomic owner-only state,
       hard file/message/context/age limits, and conversation-only restoration
       that excludes approvals, plans, actions, queues and old generations; see
-      [`SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md).
+      [`SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md).
 - [x] Enforce the explicitly selected single-trusted-operator model: retain at
       most two bounded Web conversation histories for that same operator, run
       only one active interactive Controller, reject a second `session.sock`
@@ -192,7 +192,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
       the existing global inference and SDR ownership gates. Multi-user
       identity, authorization and concurrent-control isolation are not project
       requirements; see
-      [`SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md`](SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md).
+      [`SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md).
 - [x] Live-test OpenCode Go `deepseek-v4-flash` through the deployed Web,
       unchanged Controller interface and real `0600` subscription credential:
       a new conversation produced a Rust-validated health-only `hold` from the
@@ -205,7 +205,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
       automatic cloud failover; the provider-independent Rust policy and RX-only
       authority remain unchanged. The mode-`0600` selection, loopback endpoint
       and active/enabled service were reverified on 2026-09-04; see
-      [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
+      [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](validation/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
 - [ ] Extend the Web and terminal receive-only observation views to render
       classified/rejected/unavailable/error, numeric label identity, trusted or
       provisional name, calibrated confidence/rejection reason, source,
@@ -215,14 +215,14 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
         show provenance, four inert demo states, candidate replay/unavailable,
         numeric/name trust, confidence calibration, source/model identity,
         quality/timing and manual deletion. Native browser/CLI and cleanup passed;
-        see [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md).
+        see [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](validation/RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md).
   - [x] S5: native live receive-loop terminal observation, joined execution,
         engineering archive and automatic compact Spark feedback passed finite
         real validation and cleanup; installed services remain unchanged.
   - [x] S6b: actual browser approval/RX/Worker/Spark loop, exact result links,
         recovery without replay and manual delete passed; real unavailable/error
         and explicitly synthetic classified/rejected remain distinguished. See
-        [S6b validation](WEB_RECOGNITION_S6B_VALIDATION_2026-09-06.md).
+        [S6b validation](validation/WEB_RECOGNITION_S6B_VALIDATION_2026-09-06.md).
   - [ ] A1: deploy and validate the admitted production result views.
 - [x] Persist full bounded recognition records in the application result store
       and add a visible per-record manual-delete path without retaining IQ by
@@ -230,28 +230,28 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
       bounds pagination, rejects conflicting/forged imports, and verifies restart
       restoration and per-record deletion without touching capture/corpus/IQ.
       Source and isolated native acceptance only; installed services unchanged.
-      See [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md).
+      See [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](validation/RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md).
 - [x] S5 isolated live Spark validation: only the compact real unavailable
       observation enters one automatic feedback turn, explaining missing admission
       and producing a Rust-validated hold without claiming an unlabeled class.
       Explicit synthetic error/classified/rejected regression remains nonproduction.
-      See [S5 validation](RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md).
+      See [S5 validation](validation/RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md).
 
 Evidence:
 
-- [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md)
-- [`AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](AGX_FRAMEWORK_VALIDATION_2026-09-01.md)
-- [`SDR_AGENT_RUNTIME_DESIGN.md`](SDR_AGENT_RUNTIME_DESIGN.md)
-- [`SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md)
-- [`SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md`](SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md)
-- [`SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md)
-- [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
-- [`SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md)
-- [`SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md`](SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md)
-- [`SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md`](SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md)
-- [`SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md)
-- [`SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md`](SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md)
-- [`SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md`](SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md)
+- [`AGX_SDRHARNESS_MIGRATION.md`](../jetson-agx/sdrharness/README.md)
+- [`AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](validation/AGX_FRAMEWORK_VALIDATION_2026-09-01.md)
+- [`SDR_AGENT_RUNTIME_DESIGN.md`](reference/SDR_AGENT_RUNTIME_DESIGN.md)
+- [`SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](validation/PI_BASELINE_HISTORY.md#pi-3)
+- [`SDR_AGENT_EXECUTOR_DEPLOYMENT_2026-08-31.md`](validation/PI_BASELINE_HISTORY.md#pi-5)
+- [`SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md`](validation/PI_BASELINE_HISTORY.md#pi-7)
+- [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](validation/SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
+- [`SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](validation/SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md)
+- [`SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md`](validation/SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md)
+- [`SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_AGX_RX_OWNERSHIP_CUTOVER_VALIDATION_2026-09-03.md)
+- [`SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_TERMINAL_STREAMING_INPUT_VALIDATION_2026-09-03.md)
+- [`SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_TERMINAL_SESSION_RESUME_VALIDATION_2026-09-03.md)
+- [`SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_SINGLE_OPERATOR_SESSION_VALIDATION_2026-09-03.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 2. Receive-only planning policy and autonomous loop
@@ -297,25 +297,25 @@ Evidence:
       P201/AGX fixed profile and limitations in the system prompt, and requires
       model-selected survey/inspection sample rate and RF bandwidth before Rust
       validation and SDRD execution; see
-      [`P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md`](P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md).
+      [`P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md`](validation/P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md).
 - [x] Complete automatic `survey_band` execution and feed its compact CPU sweep
       observation into the next Planner turn. The bounded AGX CPU path was
       live-validated receive-only with the real P201 SDR and OpenCode Go model,
       including fixed gain, byte/step accounting, candidate feedback, zero
       clipping and verified radio restoration; see
-      [`SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md).
+      [`SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](validation/SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md).
 - [x] Execute a current `inspect_candidate` proposal through the fixed-gain,
       no-file software power-summary path in both step-approval and automatic
       dispatch modes. The real SDR/OpenCode Go manual-approval path was
       live-validated with candidate feedback, zero clipping and restoration;
       see
-      [`SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md`](SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md).
+      [`SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md`](validation/SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md).
 - [x] Render every Rust-validated proposal as a visible Agent reply, use
       language-matched `hold.reason` replies for non-hardware conversation,
       expose the manual approval gate for single surveys, and accept the
       declared SDRD `software_summary` capability in bounded-IQ execution. The
       real Web/OpenCode Go/P201 paths and exact delivery cleanup passed; see
-      [`SDR_AGENT_REPLY_AND_CAPTURE_COMPAT_VALIDATION_2026-09-01.md`](SDR_AGENT_REPLY_AND_CAPTURE_COMPAT_VALIDATION_2026-09-01.md).
+      [`SDR_AGENT_REPLY_AND_CAPTURE_COMPAT_VALIDATION_2026-09-01.md`](validation/SDR_AGENT_REPLY_AND_CAPTURE_COMPAT_VALIDATION_2026-09-01.md).
 - [x] Persist typed candidate observations independently of terminal history,
       restore them through a validated mode-`0600` runtime PlanningContext after
       Web restart, and bound textual carry-forward to one 1,024-byte terminal
@@ -325,7 +325,7 @@ Evidence:
       software `SweepEngine`, return the aggregate plus a fresh Planner
       observation, re-observe restored SDR health, and append the correlated
       proposal/validation/authorization/result JSONL audit chain; see
-      [`SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md`](SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md).
+      [`SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md).
 - [x] Persist a root-only JSONL audit record joining operator input,
       model/provider, raw proposal, Rust validation, approval, execution and the
       resulting observation, including fail-closed planning attempts.
@@ -334,7 +334,7 @@ Evidence:
       timeouts, direct cancellation after a partial sweep, SDRD loss/recovery,
       model abort/generation invalidation, stale-result tests and daemon survival
       after a client transport timeout; see
-      [`SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
+      [`SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
 - [x] Implement S1 capability sourcing in plain Controller, one-shot Runner,
       raw execute and terminal prompt/queue/proposal/feedback/approval paths:
       replace request/template self-assertion with a bounded current Worker and
@@ -343,7 +343,7 @@ Evidence:
       Source tests and isolated real epoch-10 Worker health validation passed;
       the candidate stayed unavailable and all feature processes/data/builds
       were cleaned. See
-      [`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md).
+      [`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](validation/RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md).
 - [x] Require operator approval for `RunLocalRecognition`; verify that step
       mode holds the plan, automatic cruise stops at the approval gate,
       one-shot automatic authorization fails before unsupported dispatch, and
@@ -384,12 +384,12 @@ Evidence:
       proposal passing Rust policy. Recognition unavailable correctly yields hold;
       classified/rejected inputs are explicitly synthetic. This replaces the old
       4/5 smoke as current bounded regression evidence, not as production admission.
-      See [S5 validation](RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md).
+      See [S5 validation](validation/RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md).
 
 Evidence:
 
-- [`SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md`](SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md)
-- [`SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md)
+- [`SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_ONESHOT_SWEEP_INSPECTION_VALIDATION_2026-09-03.md)
+- [`SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_COMPLETE_LOOP_FAULT_RECOVERY_VALIDATION_2026-09-03.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 3. P201 Linux/IIO bounded RX control plane (`sdrd`)
@@ -413,7 +413,7 @@ Evidence:
 - [x] Live-validate the same state restoration path after an IIO timeout,
       including exact manual-gain recovery with the production IIO Adapter;
       see
-      [`SDR_AGENT_EXECUTION_METADATA_TIMEOUT_VALIDATION_2026-09-03.md`](SDR_AGENT_EXECUTION_METADATA_TIMEOUT_VALIDATION_2026-09-03.md).
+      [`SDR_AGENT_EXECUTION_METADATA_TIMEOUT_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_EXECUTION_METADATA_TIMEOUT_VALIDATION_2026-09-03.md).
 - [x] Live-validate restoration of LO, sample rate, RF bandwidth, gain mode, and
       scan-channel mask after success and an apply/readback error.
 - [x] Implement and live-validate bounded retune, explicit settle delay, and
@@ -427,7 +427,7 @@ Evidence:
       compatibility and return `retired_command` for `CAPTURE_SUMMARY`.
 - [x] Deploy and live-validate the inline IQ transport on P201 without changing
       persistent radio state; see
-      [`SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md`](SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md).
+      [`SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md`](validation/SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md).
 - [x] Implement and live-validate bounded no-file `CAPTURE_POWER` summaries and
       fixed manual-gain profiles with per-point numeric gain readback, clipping
       metadata, cancellation, and saved AGC/gain restoration.
@@ -437,7 +437,7 @@ Evidence:
 - [x] Add Adapter-produced sequence, overflow, dropped-sample, timeout, health,
       request and session-generation metadata to all execution results and
       preserve failure metadata through AGX errors/audit; see
-      [`SDR_AGENT_EXECUTION_METADATA_TIMEOUT_VALIDATION_2026-09-03.md`](SDR_AGENT_EXECUTION_METADATA_TIMEOUT_VALIDATION_2026-09-03.md).
+      [`SDR_AGENT_EXECUTION_METADATA_TIMEOUT_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_EXECUTION_METADATA_TIMEOUT_VALIDATION_2026-09-03.md).
 - [x] Deploy controlled `sdrd` with a private-link listener, retained `/sd`
       release, tested stop path,
       bounded live capture and verified state restoration.
@@ -449,7 +449,7 @@ Evidence:
         duplicate-instance gates, normal start, idle abnormal-exit recovery,
         concurrent-start rejection, current-boot persistence and rollback;
         see
-        [`SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md).
+        [`SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md).
   - [x] Replace recovery's outdated general CLI dependency with the deployed
         read-only `sdr-agent-health` (subsequently consolidated unchanged into
         `sdr-agent --mode health`; see unified CLI validation below), reusing strict Controller Adapter parsing
@@ -458,14 +458,14 @@ Evidence:
         and exact cleanup pass. Preserve the original early-journal assertion
         and the same-recovery confirmation. General Controller/Planner/Web/model
         deployment is unchanged. See
-        [recovery health validation](P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md).
+        [recovery health validation](validation/P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md).
   - [x] Remove the manual host-key repin after a P201 reboot by explicitly
         authorized initialization of only the 917,504-byte vendor QSPI `mtd2`
         JFFS2 partition, persisting only the verified ECDSA key plus its minimal
         manifest, retaining a byte-exact root-only rollback image, and proving
         an unchanged global pin across a real reboot plus subsequent idle-daemon
         recovery; see
-        [`SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md).
+        [`SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md).
 - [x] Consolidate interactive Agent, scripted Controller and read-only recovery
       into the single installed `sdr-agent` CLI, preserving protocol/policy and
       admission gates. The old generic installed CLI failed `rx_input` parsing;
@@ -476,14 +476,14 @@ Evidence:
       compaction still applies). Seven exact temporary roots / 816,198,886 logical
       bytes cleaned; only inventoried release/rollback artifacts retained, no new
       IQ. Production recognition remains unavailable and A1 incomplete. See
-      [unified CLI validation](UNIFIED_CLI_VALIDATION_2026-09-07.md).
+      [unified CLI validation](validation/UNIFIED_CLI_VALIDATION_2026-09-07.md).
 - [x] Complete a full 1,800-second long-duration reconnect and fault-recovery
       test on the real SDR, covering 100 bounded acquisitions, three
       profile-applied client disconnects, two idle-daemon timer recoveries,
       transport and IIO timeouts, direct partial-action cancellation,
       duplicate-start rejection, sequence/metadata/resource/thermal accounting
       and verified final restoration; see
-      [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
+      [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
 - [x] Make the fixed production physical input `RX1 / A_BALANCED` a probed,
       audited and fail-closed SDRD/1 identity, return it with profile/capture or
       health metadata, and verify that it is unchanged on every exit path
@@ -493,7 +493,7 @@ Evidence:
       writes the selector. It was deployed and live-validated with exact identity
       propagation, fail-closed mismatch tests, bounded RX, disconnect
       restoration and transient cleanup; see
-      [`P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md`](P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md).
+      [`P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md`](validation/P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md).
 
 Evidence:
 
@@ -502,14 +502,14 @@ Evidence:
 - [`../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md)
 - [`../sdr-system/docs/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md)
 - [`../sdr-system/docs/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md`](../sdr-system/docs/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md)
-- [`SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md)
-- [`SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md`](SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md)
-- [`SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md`](SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md)
-- [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
-- [`SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md`](SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md)
-- [`SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md)
-- [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md)
-- [`P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md`](P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md)
+- [`SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](validation/PI_BASELINE_HISTORY.md#pi-4)
+- [`SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md`](validation/PI_BASELINE_HISTORY.md#pi-6)
+- [`SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md`](validation/PI_BASELINE_HISTORY.md#pi-8)
+- [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](validation/SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
+- [`SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md`](validation/SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md#historical-investigation)
+- [`SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md)
+- [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md)
+- [`P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md`](validation/P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 4. AGX acquisition, candidate refinement, and model input
@@ -534,13 +534,13 @@ aggregation, result persistence and model-facing summaries.
       flow with both raw-IQ storage disabled and enabled, including exact byte
       accounting, AGX free-space evidence, SVG result readback, manual deletion,
       cancellation and verified radio-state restoration; see
-      [`SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md`](SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md).
+      [`SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md`](validation/SDR_AGENT_AGX_INLINE_RESULTS_VALIDATION_2026-09-01.md).
 - [x] Characterize the current P201/AGX bounded receive profile without raw-IQ
       retention: 2.1–30.72 MS/s profiles applied and restored, but legacy power
       processing reached only about 7 MS/s and base64 inline transport only
       about 1.87 Mb/s. Keep sustained-operation claims limited to this measured
       baseline; see
-      [`P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md`](P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md).
+      [`P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md`](validation/P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md).
 - [x] Run a configurable one-shot receive-only initial survey for each new Web
       conversation, defaulting to a 743-point 70 MHz–6 GHz plan at fixed 20 dB;
       fail on clipping or gain-readback mismatch, restore radio state, persist
@@ -551,7 +551,7 @@ aggregation, result persistence and model-facing summaries.
       comparison: the target bin rose 52.875 dB over the stopped-TX control,
       all captures had zero drops/overflow/clipping, both radios were restored,
       and transient data was removed; see
-      [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md).
+      [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](validation/NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md).
       Retain this only as historical RX1 port/link evidence; it is not a
       dependency, runtime component or future acceptance path for Chapters 1–6.
 - [x] User-authorized independent NX/B210 finite RML2018A train playback at
@@ -563,7 +563,7 @@ aggregation, result persistence and model-facing summaries.
         identity and restoration, exact FIFO tests and feature cleanup complete.
         Negative waveform correlation and UHD terminal S markers are preserved;
         no reception or classification success was claimed for those initial attempts. See
-        [`NX_B210_RML_2440_VALIDATION_2026-09-06.md`](NX_B210_RML_2440_VALIDATION_2026-09-06.md).
+        [`NX_B210_RML_2440_VALIDATION_2026-09-06.md`](validation/NX_B210_RML_2440_VALIDATION_2026-09-06.md).
   - [x] User confirmed antenna ports; ten-second historical-tone and registered
         RML retries at 2.440 GHz completed, with six clean bounded RX captures,
         restoration and exact cleanup. The tone rose 44.799/34.319 dB over the
@@ -571,32 +571,32 @@ aggregation, result persistence and model-facing summaries.
         was 0.772 versus 0.009/-0.021. Original broadband failure remains recorded;
         this is exploratory engineering evidence, not independent RF labels,
         model accuracy or production admission. Eight software tests passed. See
-        [`NX_B210_RML_2440_EXTENDED_VALIDATION_2026-09-06.md`](NX_B210_RML_2440_EXTENDED_VALIDATION_2026-09-06.md).
+        [`NX_B210_RML_2440_EXTENDED_VALIDATION_2026-09-06.md`](validation/NX_B210_RML_2440_EXTENDED_VALIDATION_2026-09-06.md).
 - [ ] Complete the registered B210/P201 RF-v1 pilot with accepted RF controls
       and source association as well as received-result integration.
   - [x] Hash-bound received RF-v1 replay, real frozen Worker, S2/S6a archive,
         legacy/RF-v1 corpus lineage and existing delete APIs isolated-validated
         using one authorized 2.440 GHz B210/P201 pilot; tests and exact cleanup
         complete. No production deployment or independent labels. See
-        [pilot validation](B210_P201_RF_V1_PILOT_VALIDATION_2026-09-06.md).
+        [pilot validation](validation/B210_P201_RF_V1_PILOT_VALIDATION_2026-09-06.md).
   - [x] Separate RX40 engineering controls and user-requested paired source/RX
         model diagnostic completed: tone/RML TX-off checks pass fixed gates;
         original and aligned source predict ID 0, unmodified received IQ ID 18.
         NX child-query compatibility, finite stop/cleanup, 17 tests and exact
         feature cleanup verified. This is not RF-v1 50 dB acceptance or V1b.
-        See [RX40 paired validation](B210_P201_RX40_PAIRED_VALIDATION_2026-09-06.md).
+        See [RX40 paired validation](validation/B210_P201_RX40_PAIRED_VALIDATION_2026-09-06.md).
   - [x] Offline single-source sensitivity to historical ±3.53 kHz CFO, +90°
         phase and fixed-realization added AWGN ratios 20/10 dB tested: all seven
         cases remain ID 0; both source baseline mean-logit hashes reproduce.
         Preserve this negative result, not an exclusion of actual RF impairments.
         22 tests, bounded AGX inference and exact cleanup completed. See
-        [source sensitivity validation](B210_SOURCE_SENSITIVITY_VALIDATION_2026-09-06.md).
+        [source sensitivity validation](validation/B210_SOURCE_SENSITIVITY_VALIDATION_2026-09-06.md).
   - [x] New bounded RX40 fidelity/compensation matrix completed: source controls
         pass; original/CFO/band/CFO+band received cases all remain ID 18 while
         source controls remain ID 0. Constant-phase case skipped by its gate;
         raised low-amplitude envelope and posthoc residual phase drift retained
         as hypotheses, not a fix. 29 tests, 24 model windows and exact cleanup
-        verified. See [RX fidelity validation](B210_RX_FIDELITY_VALIDATION_2026-09-06.md).
+        verified. See [RX fidelity validation](validation/B210_RX_FIDELITY_VALIDATION_2026-09-06.md).
   - [x] Prefix-only complex gain/bias diagnostic tools and bounded RX40 posthoc
         exploration completed. Original source-envelope gate failed (0.340 < 0.5)
         and remains failed; explicit exploration produced source+b ID 0→18 and
@@ -604,7 +604,7 @@ aggregation, result persistence and model-facing summaries.
         35 tests, 28 experimental model windows, radio restoration and exact
         AGX/NX feature cleanup verified. This is known-source exploration, not
         blind compensation, hardware root-cause attribution or production repair.
-        See [affine exploration validation](B210_RX_AFFINE_VALIDATION_2026-09-06.md).
+        See [affine exploration validation](validation/B210_RX_AFFINE_VALIDATION_2026-09-06.md).
   - [ ] Qualify the source-reference bidirectional bias validation: the original
         source-association gate failed; exploratory improvements cannot replace
         that prerequisite. Register an appropriate independent source-association
@@ -614,35 +614,35 @@ aggregation, result persistence and model-facing summaries.
           wrong-source controls. 44 software tests and cleanup verified;
           candidate acceptance failed: 22/24 synthetic positives accepted,
           0/24 wrong sources accepted. No RF/model/dataset operations. See
-          [centered-source validation](B210_CENTERED_SOURCE_VALIDATION_2026-09-06.md).
+          [centered-source validation](validation/B210_CENTERED_SOURCE_VALIDATION_2026-09-06.md).
     - [x] Implement v3 searched, spectrum-matched source/wrong-source contrast;
           resolve both old false rejections while preserving v2 failures. Run
           the preregistered 72-positive/72-negative matrix once: 70 positives
           accepted, no negatives accepted; full candidate acceptance still
           fails on two 32-kHz stopped-noise controls. 49 software tests and
           exact cleanup verified; see
-          [source v3 validation](B210_SOURCE_V3_VALIDATION_2026-09-06.md).
+          [source v3 validation](validation/B210_SOURCE_V3_VALIDATION_2026-09-06.md).
     - [x] Implement v4 stopped-control bounds from spectral overlap under an
           explicit independent Fourier-phase noise assumption, using per-window
           FFTs and a 16-window union bound. One preregistered independent matrix
           accepts 72/72 synthetic sources and 0/72 wrong sources; 56 software
           tests and exact cleanup pass. This qualifies only the numerical
           candidate, not live RF or production calibration; see
-          [source v4 validation](B210_SOURCE_V4_VALIDATION_2026-09-06.md).
+          [source v4 validation](validation/B210_SOURCE_V4_VALIDATION_2026-09-06.md).
     - [x] Integrate fixed v4 with sealed raw/report/SigMF/source identity and
           model preflight; execute the registered 2.440-GHz RX40 tone/RML pair.
           Six bounded captures pass native quality/identity and restoration checks, but source
           qualification fails on window 15 (coherence 0.413 < 0.6) amid short
           raw-power excursions; no model/warmup ran. 64 tests and exact AGX/NX
           cleanup complete; see
-          [v4 live validation](B210_V4_LIVE_VALIDATION_2026-09-06.md).
+          [v4 live validation](validation/B210_V4_LIVE_VALIDATION_2026-09-06.md).
     - [x] User-requested single-1024-sample source is the new export default;
           versioned 20,480 complete-unit TX, sealed six-capture input and all
           65,535 pointwise I/Q/residual rows verified. Preserve all 512 segment
           summaries, source/carrier/DC separation, fixed-prefix scalar/FIR
           comparisons and explicitly posthoc fractional-delay diagnostics.
           76 software tests, real RX restoration and exact cleanup complete; see
-          [1024 pointwise validation](B210_1024_POINTWISE_VALIDATION_2026-09-06.md).
+          [1024 pointwise validation](validation/B210_1024_POINTWISE_VALIDATION_2026-09-06.md).
     - [x] Registered paired stopped-TX captures show short power excursions too:
           47/17 of 512 segments exceed the same exploratory 14.058-ADC-RMS line.
           This is two short captures, not background population statistics or
@@ -653,7 +653,7 @@ aggregation, result persistence and model-facing summaries.
           center bias drops about 43 dB. This supports TX LO leakage/feedthrough,
           not a damaged-component diagnosis or classifier repair. 82 tests,
           18 real captures, radio restoration and exact cleanup verified; see
-          [LO-offset validation](B210_LO_OFFSET_VALIDATION_2026-09-06.md).
+          [LO-offset validation](validation/B210_LO_OFFSET_VALIDATION_2026-09-06.md).
     - [ ] Identify remaining time-varying phase and stopped/background excursions;
           LO separation does not remove these effects or establish their origin.
       - [x] Characterize retained bursts and execute a registered 30-point RX-only
@@ -663,7 +663,7 @@ aggregation, result persistence and model-facing summaries.
             statistics, with no protocol/hardware-cause or classification claim.
             96 tests, real restoration, precise cleanup and six inventoried
             confirmation captures (~1.6 MB) verified; see
-            [background validation](B210_BACKGROUND_VALIDATION_2026-09-07.md).
+            [background validation](validation/B210_BACKGROUND_VALIDATION_2026-09-07.md).
     - [x] Implement and live-validate an engineering +250-kHz LO / fixed 257-tap
           FIR rejection path: two captures suppress the LO band by 94.63/94.75 dB,
           preserve 99.9066% source power and show fixed-window source coherence
@@ -673,8 +673,8 @@ aggregation, result persistence and model-facing summaries.
           89 tests and independent verification of 587,511 filtered samples pass.
           Non-evidence data and NX/P201 copies cleaned; per the new operator
           retention rule, 53 inventoried files (~3.3 MB) remain for sealed replay.
-          See [LO rejection validation](B210_LO_REJECTION_VALIDATION_2026-09-07.md)
-          and [retained evidence](B210_LO_REJECTION_EVIDENCE_2026-09-07.json).
+          See [LO rejection validation](validation/B210_LO_REJECTION_VALIDATION_2026-09-07.md)
+          and [retained evidence](evidence/B210_LO_REJECTION_EVIDENCE_2026-09-07.json).
     - [x] Complete the registered 2455-MHz 1024-source amplitude ABBA comparison
           (.2/.3/.3/.2), with explicit version-4 source lineage and strict center
           binding. One fixed low1 block passes source/background controls; source,
@@ -682,7 +682,7 @@ aggregation, result persistence and model-facing summaries.
           16 experimental model windows + 2 warmups, 101 software tests, 15 real
           captures/restorations and precise cleanup verified; 67 inventoried files
           (~4.1 MB) retain the complete success/failure matrix. See
-          [2455 margin validation](B210_2455_MARGIN_VALIDATION_2026-09-07.md).
+          [2455 margin validation](validation/B210_2455_MARGIN_VALIDATION_2026-09-07.md).
     - [ ] Establish repeatable source/background qualification across a fixed
           matrix: the 2455-MHz ABBA trial admits only one of four cases, so neither
           full-matrix reliability nor a benefit from increasing amplitude is
@@ -695,14 +695,14 @@ aggregation, result persistence and model-facing summaries.
             prioritizing input contamination over simple alignment corrections.
             Six synthetic tests, exact replay and temporary cleanup verified;
             no new RF/model/IQ copies and no physical-cause or repair claim. See
-            [failure decomposition](B210_FAILURE_DECOMPOSITION_VALIDATION_2026-09-07.md).
+            [failure decomposition](validation/B210_FAILURE_DECOMPOSITION_VALIDATION_2026-09-07.md).
       - [x] Audit all 15 retained captures (983,025 samples) for byte layout,
             aligned repeats, zero fills and 4096-sample boundary artifacts:
             no full-block repeats or long constant spans found; live read-only
             IIO layout agrees with ci16_le. Six synthetic tests, 67-file seals,
             numerical replay and exact cleanup verified. This does not prove
             ADC/DMA continuity or a physical cause; see
-            [RX byte audit](B210_RX_BYTE_AUDIT_VALIDATION_2026-09-07.md).
+            [RX byte audit](validation/B210_RX_BYTE_AUDIT_VALIDATION_2026-09-07.md).
       - [x] Validate IIO positive refill/span semantics against v0.21 source and
             the actual mapped target library's disassembly. Harden raw and
             compatibility power loops to reject malformed/short refills before
@@ -710,12 +710,12 @@ aggregation, result persistence and model-facing summaries.
             34 cases on both paths, existing protocol tests, ASan/UBSan, ARMv7
             ABI build and exact cleanup pass. Source delivery only; no observed
             historical RF cause or deployment claim. See
-            [refill contract validation](IIO_REFILL_CONTRACT_VALIDATION_2026-09-07.md).
+            [refill contract validation](validation/IIO_REFILL_CONTRACT_VALIDATION_2026-09-07.md).
       - [x] Live-validate the refill changes within the RX-port candidate on both
             channels: finite successful IQ, forced timeout, recovery and disconnect
             restoration pass, with a verified rollback and installed replacement.
             This does not establish historical RF-failure repair; see
-            [port selection validation](P201_RX_PORT_SELECTION_VALIDATION_2026-09-07.md).
+            [port selection validation](validation/P201_RX_PORT_SELECTION_VALIDATION_2026-09-07.md).
       - [x] Make sdrd RX1/RX2 selectable by startup config with corresponding PHY,
             scan pair, gain snapshot/restore and truthful IQ identity. Native,
             sanitizer and bounded two-channel live tests pass; release
@@ -734,7 +734,7 @@ aggregation, result persistence and model-facing summaries.
             31 tests, 12 live capture/restoration checks, exact replay and cleanup
             pass; retain 55 inventoried files (~3.26 MB unique). This is not an
             antenna causal-effect or recognition-accuracy claim; see
-            [new antenna validation](B210_RX1_NEW_ANTENNA_VALIDATION_2026-09-07.md).
+            [new antenna validation](validation/B210_RX1_NEW_ANTENNA_VALIDATION_2026-09-07.md).
       - [x] Cover all 24 numeric classes with three preselected +30 dB train
             rows each, one 1024-sample TX unit per case, interleaved across three
             rounds. All 75 tone/RML groups and 225 captures restore successfully;
@@ -746,7 +746,7 @@ aggregation, result persistence and model-facing summaries.
             Spark restoration pass; retain 1268 inventoried files (62,465,220
             unique-inode bytes). No independent RF accuracy, universal FIR fix,
             V1b completion or production admission claim. See
-            [24-class validation](B210_MULTICLASS_VALIDATION_2026-09-07.md).
+            [24-class validation](validation/B210_MULTICLASS_VALIDATION_2026-09-07.md).
       - [x] Diagnose the four qualified multiclass RX errors with all eight
             same-class successful controls, prefix-only source/channel
             counterfactuals and full fixed-block pointwise I/Q plots. 432 windows
@@ -758,7 +758,7 @@ aggregation, result persistence and model-facing summaries.
             reference. 17 tests, retained replay, Spark restoration and complete
             feature-root cleanup pass; no new RF, dataset reads or retained IQ.
             Hardware cause, production name mapping and general repair remain
-            unresolved. See [residual validation](B210_RESIDUAL_VALIDATION_2026-09-07.md).
+            unresolved. See [residual validation](validation/B210_RESIDUAL_VALIDATION_2026-09-07.md).
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the
@@ -769,7 +769,7 @@ aggregation, result persistence and model-facing summaries.
       private 8,192-byte spool, correlated CUDA/Mamba response, automatic IQ
       deletion and verified radio restoration. Keep production capability off
       because labels, RF preprocessing and rejection remain unresolved; see
-      [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md).
+      [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](validation/P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md).
 - [x] Define and hash-pin the integration-only
       `rml2018a-d8-current-integration-v1` input profile and
       `legacy_adc_unit_rms_v0` preprocessing specification: fixed verified
@@ -783,7 +783,7 @@ aggregation, result persistence and model-facing summaries.
       The 433.92-MHz live validation rejected the pre-fix over-wide target,
       then admitted the corrected bounded target without reusing a differently
       gained sweep noise estimate; see
-      [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md).
+      [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](validation/P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md).
 - [x] Implement one continuous bounded 4,096-sample capture, AGX-only split into
       four exact model-ready windows, byte-reproducible golden fixtures, strict
       per-window quality/offset metadata and private spool cleanup. A real P201
@@ -804,12 +804,12 @@ aggregation, result persistence and model-facing summaries.
       removed; an independent generation-bound cancel produced
       `capture_failed_restored`. Both paths restored verified RX1 state and left
       no transient data; see
-      [`P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md`](P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md).
+      [`P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md`](validation/P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md).
 - [x] Freeze `rf_preprocess_v1` using train/validation and versioned unknown
       P201 evidence: hardware retune, no digital shift/filter/resampling, DC
       retained, shared 4,096-sample complex RMS, four contiguous 1,024-sample
       windows and mean logits. Selection did not open test; see
-      [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md).
+      [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](validation/RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md).
 - [x] Implement the independently hash-pinned integration-only RF-v1 runtime
       profile with shared-capture RMS and ordered float32 windows, reproduce the
       frozen offline golden bytes exactly, and live-validate the epoch-10 FP16
@@ -817,7 +817,7 @@ aggregation, result persistence and model-facing summaries.
       capture cancel restore P201 RX1 and remove spool; all feature processes,
       ten P201 transient directories, three AGX feature roots and build staging
       were cleaned and verified. See
-      [`RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md`](RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md).
+      [`RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md`](validation/RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md).
 - [ ] Freeze independently labeled known-RF/OOD calibration and production
       acceptance thresholds before promoting the runtime profile; numerical
       RMS guards and development target gates are not calibrated acceptance.
@@ -828,26 +828,26 @@ aggregation, result persistence and model-facing summaries.
       baseline.
 - [x] Complete the long-duration reconnect, cancellation and fault-recovery
       portion with the chapter 3 bounded 1,800-second real-SDR run; see
-      [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
+      [`SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md`](validation/SDR_AGENT_SDRD_LONG_RECONNECT_FAULT_RECOVERY_VALIDATION_2026-09-03.md).
 - [x] Complete bounded AGX software-acquisition overload testing: reject a
       278,528-byte point before backend/radio work, process 128 consecutive
       262,144-byte windows (32 MiB total) with continuous sequences and zero
       drop/overflow/clipping/timeout/health failures, bound AGX/P201 resources,
       and prove both IIO-deadline and client-disconnect restoration followed by
       a fresh successful generation; see
-      [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md).
+      [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](validation/P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md).
 
 Evidence:
 
-- [`SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md`](SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md)
+- [`SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md`](reference/SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md)
 - [`../raspberry-pi/p201pro-rust/TEST_RESULTS.md`](../raspberry-pi/p201pro-rust/TEST_RESULTS.md)
-- [`PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md`](PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md)
-- [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
-- [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md)
-- [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
-- [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)
-- [`P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md`](P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md)
-- [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md)
+- [`PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md`](validation/PI_BASELINE_HISTORY.md#pi-9)
+- [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](validation/SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
+- [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](validation/NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md)
+- [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](validation/P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
+- [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](validation/P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)
+- [`P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md`](validation/P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md)
+- [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](validation/P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 5. Input standardization, receive-domain alignment, and evaluation governance
@@ -880,8 +880,8 @@ recognition; it does not own hardware control or another runtime backend.
       rejects source/label misuse, provisional-name escalation, path/hash
       tampering and train/test lineage collisions; and validates the existing
       four-window golden fixture without assigning it a false class. See
-      [`AMC_CORPUS_MANIFEST_V1.md`](AMC_CORPUS_MANIFEST_V1.md) and
-      [`AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md`](AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md).
+      [`AMC_CORPUS_MANIFEST_V1.md`](reference/AMC_CORPUS_MANIFEST_V1.md) and
+      [`AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md`](validation/AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md).
 - [x] Build a bounded, versioned P201 receive-only corpus with session/date,
       center, rate, bandwidth, fixed RF input, gain, samples/bytes, quality and
       cleanup metadata; provide a visible manual-delete path and keep bulk IQ
@@ -889,14 +889,14 @@ recognition; it does not own hardware control or another runtime backend.
       writes, metadata/IQ mismatches and incomplete cleanup; a 4,096-sample
       RX1 row was live-captured, reference-validated, visibly deleted and then
       restored as an `unknown` application result; see
-      [`P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md`](P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md).
+      [`P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md`](validation/P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md).
 - [x] Prove train/validation/test isolation by source sample, capture session
       and UTC day so crops, augmentation or repeated receptions of one source
       do not cross splits. Both complete retained split files have unique,
       in-range, fully covering global-row assignments with zero pairwise
       intersections; the cross-package P201 audit enforces parent inheritance,
       all three group keys and `receive_domain` for unknown receptions. See
-      [`AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md`](AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md).
+      [`AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md`](validation/AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md).
 - [x] Pre-register and use only train statistics, complete validation groups and
       versioned `receive_domain/unknown` evidence to freeze the
       `rf_preprocess_v1` retraining contract: 2.1 MS/s without software
@@ -904,13 +904,13 @@ recognition; it does not own hardware control or another runtime backend.
       contiguous 1,024-sample windows, and mean-logit aggregation. The selection
       code never loaded the test member/result; labeled validation accuracy and
       unlabeled P201 quality/confidence remained separate. See
-      [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md).
+      [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](validation/RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md).
 - [x] Receive the user-trained epoch-10 RF-aligned checkpoint, retain its full
       147-entry provenance map in an isolated ignored AGX asset directory, and
       strictly evaluate all 95,607 grouped validation examples in FP32:
       aggregate accuracy matched the 4090 exactly at `0.6705575952` and NLL
       differed by only `6.8e-8`; test remained unopened and capability false. See
-      [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md).
+      [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](validation/RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md).
 - [x] Add versioned RF-v1 corpus derivation/import and independently annotated
       evidence ingestion by reusing the existing corpus contract/store. The
       deployed intake still pins the legacy profile and writes only `unknown`;
@@ -921,12 +921,12 @@ recognition; it does not own hardware control or another runtime backend.
       validation passed; new roots preserve original request reports and older
       seven-file roots remain unknown-only. Parent hashes and shared IQ survive
       independent deletion, group constraints persist, and all feature data was
-      cleaned. See [`RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md`](RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md).
+      cleaned. See [`RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md`](validation/RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md).
 - [x] Pre-register the known-RF/OOD coverage and sampling rationale plus separate
       calibration and acceptance groups before fitting thresholds; track label
       evidence, ambiguous cases and class/name mapping without opening the
       locked test. The specification is
-      [`RF_V1_KNOWN_RF_OOD_SAMPLING_V1.md`](RF_V1_KNOWN_RF_OOD_SAMPLING_V1.md),
+      [`RF_V1_KNOWN_RF_OOD_SAMPLING_V1.md`](reference/RF_V1_KNOWN_RF_OOD_SAMPLING_V1.md),
       with clustered/effective sample-size rationale and explicit coverage gaps.
       This completes the tools/specification gate only; actual independently
       reviewed coverage remains V1b, not supplied by unknown receptions.
@@ -939,16 +939,16 @@ recognition; it does not own hardware control or another runtime backend.
 
 Evidence:
 
-- [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md)
-- [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
-- [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
-- [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
-- [`AMC_CORPUS_MANIFEST_V1.md`](AMC_CORPUS_MANIFEST_V1.md)
-- [`AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md`](AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md)
-- [`P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md`](P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md)
-- [`AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md`](AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md)
-- [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md)
-- [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md)
+- [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](reference/FPGA_RETIREMENT_DECISION_2026-09-02.md)
+- [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](validation/NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
+- [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](validation/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
+- [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](validation/P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
+- [`AMC_CORPUS_MANIFEST_V1.md`](reference/AMC_CORPUS_MANIFEST_V1.md)
+- [`AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md`](validation/AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md)
+- [`P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md`](validation/P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md)
+- [`AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md`](validation/AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md)
+- [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](validation/RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md)
+- [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](validation/RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 6. Local Mamba modulation recognition
@@ -971,12 +971,12 @@ Evidence:
       SHA-256 parity; after selecting seed44, remove the redundant AGX candidate
       copies while retaining the audit table and verified 4090 recovery paths.
       This does not enable recognition. See
-      [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md).
+      [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](validation/NX_B210_MAMBA_D8_ASSET_HANDOFF.md).
 - [x] Stage RML2018A seed44 and HisarMod2019 seed43 with their exact clean D8
       inference source, fixed splits and datasets under the ignored AGX-local
       asset root; strictly load both checkpoints and reproduce both complete
       FP32 test sets. Evidence:
-      [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md).
+      [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](validation/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md).
 - [x] Retain seed44 as an experimental baseline and receive the user's
       validation-selected RF-aligned epoch-10 fine-tuned checkpoint using the
       exact frozen Chapter 4 `rf_preprocess_v1`. Its source, split, preprocessing,
@@ -985,7 +985,7 @@ Evidence:
 - [x] Select and hash-pin FP16 autocast for the epoch-10 validation candidate
       after complete FP32/FP16/BF16 comparison on AGX. This precision selection
       does not promote the checkpoint or enable runtime capability; see
-      [`RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md`](RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md).
+      [`RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md`](validation/RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md).
 - [ ] Freeze calibration and acceptance thresholds before promoting epoch 10
       from a validation-only candidate to an admitted production checkpoint or
       viewing its frozen test result.
@@ -999,7 +999,7 @@ Evidence:
       provisional window outputs plus an explicitly uncalibrated majority-vote
       summary, and delete the batch on success or error. The real RX1 validation
       kept `production_recognizer_available=false`; see
-      [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md).
+      [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](validation/P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md).
 - [x] Run the RF-aligned epoch-10 Worker with FP32 resident weights and the
       frozen FP16 autocast, return all 24 FP32 logits per ordered window, and
       aggregate them using float64 arithmetic mean followed by softmax on AGX.
@@ -1008,7 +1008,7 @@ Evidence:
       cancellation cleanup passed unit and live RX-only validation. Keep all
       probabilities uncalibrated, numeric IDs authoritative, names provisional
       and capability false; see
-      [`RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md`](RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md).
+      [`RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md`](validation/RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md).
 - [x] Numerically compare AGX FP32 with the 4090 training environment on the
       same 16 IQ rows per dataset: both argmax sets agree 16/16 and maximum
       absolute logits differences are `2.93e-5` (RML) and `1.18e-4` (Hisar).
@@ -1025,7 +1025,7 @@ Evidence:
       five-case Planner smoke (BF16 4/5, Q8 3/5), unavailable MTP tensors and
       unstable/no-median-gain n-gram speculation; retain BF16 as production
       default and do not count this as sustained Worker validation. See
-      [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
+      [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](validation/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
 - [ ] Measure production Worker queue drops, cancellation, concurrency and
       sustained thermal behavior.
   - [x] S3 lifecycle implementation and finite actual RF-v1 Worker validation:
@@ -1034,11 +1034,11 @@ Evidence:
         cancellation, child/supervisor kill and restart fencing, exact orphan
         cleanup and bounded metrics. Rust replay/health/cancel and negative
         tests passed; feature processes and temporary data were removed. See
-        [`WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md`](WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md).
+        [`WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md`](validation/WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md).
   - [x] S4b: 20-minute representative serialized replay/Planner resource evidence
         and exact cleanup passed with the explicit user exception for unavailable
         GPU temperature; CPU/SoC/Tj, memory, queue and latency gates passed. See
-        [S4b validation](GPU_RESOURCE_S4B_VALIDATION_2026-09-06.md).
+        [S4b validation](validation/GPU_RESOURCE_S4B_VALIDATION_2026-09-06.md).
   - [ ] A1: admitted production lifecycle deployment remains open.
 - [ ] Define and live-validate the shared AGX CUDA admission policy for the
       resident Spark-X2.5-4B Planner and Mamba Worker. For production v1,
@@ -1051,7 +1051,7 @@ Evidence:
         native RF-v1 Mamba → Planner, concurrent waiting, both cancellations and
         both supervisor SIGKILL/recovery passed; temporary data and processes
         were removed. See
-        [`GPU_LEASE_S4A_VALIDATION_2026-09-06.md`](GPU_LEASE_S4A_VALIDATION_2026-09-06.md).
+        [`GPU_LEASE_S4A_VALIDATION_2026-09-06.md`](validation/GPU_LEASE_S4A_VALIDATION_2026-09-06.md).
   - [x] S4b: bounded candidate CPU prompt cache and representative memory/queue/
         latency/CPU-SoC-Tj thermal acceptance; GPU temperature is explicitly
         waived as unavailable, not validated.
@@ -1070,17 +1070,17 @@ Evidence:
       batch/logits/quality/timing and rejects production decisions under the
       candidate profile. Rust/Node tests and retained live-report replay passed;
       temporary test/build data was removed. See
-      [`RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md`](RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md).
+      [`RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md`](validation/RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md).
       The dependent Web build omission was corrected separately after V1a audit
       exposed it; 20 isolated Web tests and Clippy pass. See
-      [`RECOGNITION_RESULT_S2_WEB_CORRECTION_2026-09-06.md`](RECOGNITION_RESULT_S2_WEB_CORRECTION_2026-09-06.md).
+      [`RECOGNITION_RESULT_S2_WEB_CORRECTION_2026-09-06.md`](validation/RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md#web-build-correction).
 - [x] Define and validate `recognizer_admission_v1`, bounded six-gate evidence
       receipts and challenge-correlated `recognizer_health_v1`, including full
       model/profile/preprocess/precision identity, Worker instance and time,
       receipt hashes, 250-ms socket deadlines and no stale-success fallback.
       The real candidate reports `production_enabled=false`; two actual Worker
       instances, status-only forgery and malformed enable requests were tested.
-      See [`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md).
+      See [`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](validation/RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md).
 - [ ] Live-validate positive production capability from an actually admitted
       Worker and complete model/calibration/acceptance/runtime/deployment
       receipts at A1. S1 integrity checks and synthetic passing receipts do not
@@ -1102,15 +1102,15 @@ Evidence:
 
 Evidence:
 
-- [`LOCAL_RECOGNIZER_INTERFACE.md`](LOCAL_RECOGNIZER_INTERFACE.md)
-- [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md)
-- [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
-- [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
-- [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md)
-- [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)
-- [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
-- [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md)
-- [`RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md`](RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md)
+- [`LOCAL_RECOGNIZER_INTERFACE.md`](reference/LOCAL_RECOGNIZER_INTERFACE.md)
+- [`AGX_SDRHARNESS_MIGRATION.md`](../jetson-agx/sdrharness/README.md)
+- [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](validation/NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
+- [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](validation/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
+- [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](validation/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md)
+- [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](validation/P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)
+- [`P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](validation/P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md)
+- [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](validation/RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md)
+- [`RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md`](validation/RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md)
 - [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)
 
 ## 7. Emitter/radiation-source identification
@@ -1131,6 +1131,14 @@ Evidence:
 
 ## 8. Verification, deployment, and operations
 
+- [x] Consolidate documentation into four current reading entries plus reference,
+      validation and evidence directories. Delete four superseded guides, merge
+      eleven dispersed records into three reports, preserve all 86 original
+      audit/plan/figure hashes and 81 validation/handoff bodies, retain three
+      frozen configuration audit paths, and update path-only consumers. Local
+      links, 136 Rust and 37 Python tests, checkout and exact temporary cleanup
+      pass. No runtime deployment or admission change; see
+      [documentation consolidation](validation/DOCS_CONSOLIDATION_2026-09-07.md).
 - [x] Pass the current Rust Controller and Recognizer interface test suite.
 - [x] Pass Rust formatting and Clippy with warnings denied.
 - [x] Pass the current Planner/session Node test suite.
@@ -1156,7 +1164,7 @@ Evidence:
       boundaries (11 targets × 256 cases), alongside actual socket malformed/
       oversized/stale/duplicate/truncated/reordered regressions. C ASan/UBSan and
       isolated native Web/Planner recovery passed; no third-party SSH/IIOD fuzz
-      or exhaustive coverage claim. See [O1a validation](OPERATIONS_O1A_VALIDATION_2026-09-06.md).
+      or exhaustive coverage claim. See [O1a validation](validation/OPERATIONS_O1A_VALIDATION_2026-09-06.md).
 - [x] O1a unifies repeatable upstream/model restart, SDRD disconnect, fake-radio
       timeout, explicit transport overflow/restore, and cancellation/generation
       fault checks; these deterministic tests do not replace A1 real RF acceptance.
@@ -1170,16 +1178,8 @@ Evidence:
 
 ## Current next milestone
 
-S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a source and isolated acceptance are complete.
-S4b retains the explicit user exception for unavailable GPU temperature.
-Installed services remain unchanged and the actual recognizer stays unavailable.
-Next is V1b/V3a evidence readiness review, then V2 only when its independent
-label/name prerequisites are satisfied; do not infer data coverage from tooling.
-GPU temperature remains unmeasured; actual independent labels, calibration,
-production deployment/admission and the 24-hour full-loop soak remain open.
-
-Execution order, prerequisites and permitted scheduling changes are maintained
-only in
-[`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md).
-Chapter numbering here is a status ledger, not an instruction to implement in
-that order. Each delivery has its own verification and exact cleanup record.
+The current deployment summary is at the top of this checklist. Execution order
+is maintained only in [ACTUAL_DELIVERY_ORDER](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md).
+The unified CLI is installed; full production recognition remains unavailable.
+Do not interpret dated evidence statements about unchanged services as current
+status or restart completed S/V work.

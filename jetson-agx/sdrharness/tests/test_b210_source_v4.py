@@ -63,7 +63,7 @@ class SourceV4Tests(unittest.TestCase):
             match.phase_null_stopped_control(np.zeros(4096),noise)
 
     def test_old_narrowband_failures_are_preserved_and_v4_resolves_them(self):
-        evidence = json.loads((prior.base.SCRIPT.parents[3]/'docs/B210_SOURCE_V3_AUDIT_2026-09-06.json').read_text())
+        evidence = json.loads((prior.base.SCRIPT.parents[3]/'docs/evidence/B210_SOURCE_V3_AUDIT_2026-09-06.json').read_text())
         for seed,bias,residual in ((91827,0j,0),(91842,2+1.5j,65)):
             source,captures = prior.fixture(seed=seed,lag=776,bias=bias,residual=residual,half_width=32000)
             old = match.assess_centered_source_v3(source,captures,3450,32000)

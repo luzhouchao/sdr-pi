@@ -774,7 +774,7 @@ pub(crate) mod tests {
         )
         .unwrap();
         let audit: serde_json::Value = serde_json::from_str(include_str!(
-            "../../../../docs/RF_V1_RUNTIME_PARITY_AUDIT_2026-09-05.json"
+            "../../../../docs/evidence/RF_V1_RUNTIME_PARITY_AUDIT_2026-09-05.json"
         ))
         .unwrap();
         let report: IntegrationBatchRecognitionReport =

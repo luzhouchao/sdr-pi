@@ -162,7 +162,7 @@ async def infer(*, root=None, prepare_function=None, max_inputs=12):
         receipt['gpu_lease']=lease.metrics.copy();lease.close();lo.save(feature/'inference.json',receipt)
 
 def verify_retained():
-    record=live.affine.ROOT/'docs/B210_LO_REJECTION_EVIDENCE_2026-09-07.json'
+    record=live.affine.ROOT/'docs/evidence/B210_LO_REJECTION_EVIDENCE_2026-09-07.json'
     inventory=live.document(record)
     expected={row['path'] for row in inventory['files']}
     actual={str(path) for name in inventory['roots'] for path in Path(name).rglob('*') if path.is_file()}
@@ -171,7 +171,7 @@ def verify_retained():
         data=live.read(Path(row['path']))
         assert len(data)==row['bytes'] and lo.hashlib.sha256(data).hexdigest()==row['sha256']
     current,_=prepare()
-    audit=live.document(live.affine.ROOT/'docs/B210_LO_REJECTION_AUDIT_2026-09-07.json')
+    audit=live.document(live.affine.ROOT/'docs/evidence/B210_LO_REJECTION_AUDIT_2026-09-07.json')
     assert all(audit[key]==value for key,value in current.items()), 'retained analysis changed'
     print(json.dumps(dict(retained_files=len(expected),logical_bytes=sum(row['bytes'] for row in inventory['files']),
                           sealed_analysis_reproduced=True,model_windows=0,rf_operations=0)))

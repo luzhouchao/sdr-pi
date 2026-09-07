@@ -386,7 +386,7 @@ sdr-agent \
 ```
 
 The recognition interface and its fixed IQ contract are documented in
-[`../../docs/LOCAL_RECOGNIZER_INTERFACE.md`](../../docs/LOCAL_RECOGNIZER_INTERFACE.md).
+[`../../docs/LOCAL_RECOGNIZER_INTERFACE.md`](../../docs/reference/LOCAL_RECOGNIZER_INTERFACE.md).
 
 For a development smoke test, a natural-language instruction can replace the
 instruction in a bounded context file without changing its health or limits:
@@ -421,23 +421,23 @@ in [`../../jetson-agx/sdrharness/README.md`](../../jetson-agx/sdrharness/README.
 
 The repository does not install services automatically. The plan-only release
 was manually deployed and enabled on the project Pi on 2026-08-31; see
-[`../../docs/SDR_AGENT_PI_DEPLOYMENT_2026-08-31.md`](../../docs/SDR_AGENT_PI_DEPLOYMENT_2026-08-31.md).
+[`../../docs/SDR_AGENT_PI_DEPLOYMENT_2026-08-31.md`](../../docs/validation/PI_BASELINE_HISTORY.md#pi-2).
 The read-only SDRD observation slice was subsequently deployed and validated;
 see
-[`../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md).
+[`../../docs/SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](../../docs/validation/PI_BASELINE_HISTORY.md#pi-4).
 The interactive `sdr-agent` terminal was then deployed and validated; see
-[`../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md).
+[`../../docs/SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](../../docs/validation/PI_BASELINE_HISTORY.md#pi-3).
 The original Tailnet Rust web console was deployed and live-validated on
 2026-09-01; see
-[`../../docs/SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md`](../../docs/SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md).
+[`../../docs/SDR_AGENT_WEB_CONSOLE_DEPLOYMENT_2026-09-01.md`](../../docs/validation/PI_BASELINE_HISTORY.md#pi-7).
 The AGX Controller now has live-validated bounded-IQ execution, in-flight
 `/stop` cancellation, fixed-gain software surveys, step-approved candidate
 inspection and a bounded automatic cruise that feeds real measurements into
 the next OpenCode Go turn; see
-[`../../docs/SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](../../docs/SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md).
+[`../../docs/SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md`](../../docs/validation/SDR_AGENT_AUTOMATIC_SURVEY_VALIDATION_2026-09-01.md).
 Candidate state now survives Web restart independently of compacted terminal
 text; see
-[`../../docs/SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md`](../../docs/SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md).
+[`../../docs/SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md`](../../docs/validation/SDR_AGENT_CANDIDATE_INSPECTION_VALIDATION_2026-09-01.md).
 Recognition remains plan-only. The
 persistent P201 `sdrd` endpoint was recovered and the bounded receive-only
 survey path was live-validated from AGX; a broader acquisition-ownership

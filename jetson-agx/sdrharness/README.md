@@ -127,7 +127,7 @@ The 2026-09-01 AGX loopback validation passed. The persistent receive-only
 that neither the process nor TCP port 43110 was already active; the AGX
 read-only Controller observation then passed. This does not authorize starting
 a collector or changing radio state. Evidence is in
-[`../../docs/AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](../../docs/AGX_FRAMEWORK_VALIDATION_2026-09-01.md).
+[`../../docs/AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](../../docs/validation/AGX_FRAMEWORK_VALIDATION_2026-09-01.md).
 
 ## P201 SDRD recovery
 
@@ -148,13 +148,13 @@ enables recognition. The former `sdr-agent-controller` and `sdr-agent-health`
 executables are merged into this entry; keep old artifacts only in the named
 rollback release. Web still has its HTTP server, which launches this same
 `sdr-agent` in interactive mode. See
-[`../../docs/P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md`](../../docs/P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md).
+[`../../docs/P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md`](../../docs/validation/P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md).
 
 The explicitly authorized persistent-host-key setup and real reboot validation
 were completed on 2026-09-03. Strict host-key checking remains required; a future
 unexpected change must fail closed pending identity verification. Do not repeat
 the NVM initialization or disable checking. See
-[`../../docs/SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](../../docs/SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md).
+[`../../docs/SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](../../docs/validation/SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md).
 
 ## Local Spark Planner
 
@@ -172,7 +172,7 @@ throughputs by approximately half, so the production data dependency remains
 stay resident. Community Q8 improved token generation but failed more of the
 small Planner smoke set; MTP was unavailable in both GGUFs and n-gram
 speculation had no stable median gain. BF16 therefore remains the default. See
-[`../../docs/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](../../docs/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
+[`../../docs/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](../../docs/validation/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
 
 Spark's llama.cpp chat template can emit unbounded assistant prose before a
 required native tool call. The Planner therefore asks this provider for one
@@ -195,10 +195,10 @@ do not receive this Spark-specific host adapter.
 The 2026-09-02 live test covered Web configuration, a normal greeting, model
 selection of all sweep parameters, Rust validation, manual approval, real P201
 execution, AGX aggregation, zero clipping and verified radio restoration. See
-[`../../docs/SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md`](../../docs/SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md).
+[`../../docs/SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md`](../../docs/validation/SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md).
 The bounded local web-search deployment and real browser/model validation are
 recorded in
-[`../../docs/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md`](../../docs/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md).
+[`../../docs/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md`](../../docs/validation/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md).
 
 ## Experimental CUDA/Mamba validation and deferred production recognizer
 
@@ -220,10 +220,10 @@ local-assets/amc-eval/runtime/venv/bin/python \
 
 This tool reads only the pinned offline corpus and does not contact an SDR.
 Complete accuracy, logits parity, latency, memory and thermal evidence is in
-[`../../docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](../../docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md).
+[`../../docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](../../docs/validation/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md).
 
 Chapter 5 corpus metadata now uses the strict
-[`amc_corpus_manifest_v1`](../../docs/AMC_CORPUS_MANIFEST_V1.md) contract. It
+[`amc_corpus_manifest_v1`](../../docs/reference/AMC_CORPUS_MANIFEST_V1.md) contract. It
 keeps the compact manifest separate from a content-hashed streaming JSONL
 window index and permits only dataset ground truth, independently evidenced
 annotations or explicit unknown labels. Validate a package without loading the
@@ -251,7 +251,7 @@ recognize-live` path using
 `raspberry-pi/sdr-agent/controller/config/live-recognition.experimental.example.json`.
 Its one real P201 RX1 capture, preprocessing limitation, result, radio
 restoration and cleanup are recorded in
-[`../../docs/P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](../../docs/P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md).
+[`../../docs/P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](../../docs/validation/P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md).
 
 The systemd template
 `systemd/sdrharness-amc-mamba-experimental.service` has no `[Install]` section

@@ -264,7 +264,7 @@ mod tests {
     };
     fn replay() -> Import {
         let audit: serde_json::Value = serde_json::from_str(include_str!(
-            "../../../../docs/RF_V1_RUNTIME_PARITY_AUDIT_2026-09-05.json"
+            "../../../../docs/evidence/RF_V1_RUNTIME_PARITY_AUDIT_2026-09-05.json"
         ))
         .unwrap();
         let report = serde_json::from_value(audit["cases"][0]["report"].clone()).unwrap();

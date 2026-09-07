@@ -1,56 +1,32 @@
-# Documentation index
+# 项目文档入口
 
-## Current sources of truth
+日常继续开发只需要先读根目录的四份文件：
 
-- [`SDR_AGENT_PROJECT_CHECKLIST.md`](SDR_AGENT_PROJECT_CHECKLIST.md): exact
-  implementation and validation status.
-- [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md):
-  current checkbox-based Chapter 1–6 receive-only implementation plan and the
-  concise audit of what remains in Chapters 1–3.
-- [`ROADMAP.md`](ROADMAP.md): ordered future work.
-- [`SDR_AGENT_RUNTIME_DESIGN.md`](SDR_AGENT_RUNTIME_DESIGN.md): Agent,
-  Controller and Planner boundaries.
-- [`SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md`](SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md):
-  current P201-to-AGX sweep and result path.
-- [`LOCAL_RECOGNIZER_INTERFACE.md`](LOCAL_RECOGNIZER_INTERFACE.md): stable
-  recognition interface and production-disabled experimental CUDA/Mamba
-  Worker.
-- [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md):
-  complete RML2018A/HisarMod2019 FP32 accuracy, 4090 logits parity and AGX
-  latency/resource evidence; this does not enable the production Recognizer.
-- [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md):
-  local BF16/Q8 Planner timing and smoke results, Mamba contention evidence,
-  MTP/n-gram findings and the local-first/provider-interface decision.
-- [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md):
-  Chapter 4 maximum-window load, pre-hardware overload rejection, bounded
-  resources, timeout/disconnect restoration and exact cleanup evidence.
-- [`AMC_CORPUS_MANIFEST_V1.md`](AMC_CORPUS_MANIFEST_V1.md): the normative
-  Chapter 5 manifest/JSONL window contract for offline, P201 RX-only and golden
-  data with explicit label provenance and split lineage.
-- [`AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md`](AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md):
-  strict-validator, negative-matrix and existing golden-fixture evidence.
-- [`AGX_SDRHARNESS_MIGRATION.md`](AGX_SDRHARNESS_MIGRATION.md): AGX deployment
-  layout and completed receive-ownership migration boundary.
-- [`FPGA_RETIREMENT_DECISION_2026-09-02.md`](FPGA_RETIREMENT_DECISION_2026-09-02.md):
-  permanent retired-scope boundary.
+1. [AGENTS.md](../AGENTS.md)：工作规则、硬件边界、证据保留与清理。
+2. [权威 checklist](SDR_AGENT_PROJECT_CHECKLIST.md)：哪些已完成、哪些仍未完成。
+3. [实际推进顺序](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)：下一独立单元及其依赖。
+4. [第1—6章范围](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)：各章完整交付边界。
 
-## Validation records
+然后按当前任务选择下面的目录，不必逐份重读历史实验。
 
-Files with dated `VALIDATION`, `DEPLOYMENT`, `RESULTS` or `BASELINE` names are
-immutable evidence of what was actually tested. They may describe an older
-release, but they are not current instructions. Follow the checklist and the
-current design documents above when they differ.
+| 目录 | 用途 |
+| --- | --- |
+| [reference/](reference/README.md) | 当前架构、接口合同、采样规范、运维流程与决策 |
+| [validation/](validation/README.md) | 按主题索引的已执行验证、部署和回滚记录 |
+| [evidence/](evidence/README.md) | 原始审计 JSON、保留证据清单、预登记计划和图表 |
 
-The former
-[`CHAPTER_4_6_INTEGRATION_PLAN.md`](CHAPTER_4_6_INTEGRATION_PLAN.md) is retained
-only as superseded design rationale. It is no longer a current plan or status
-source.
+最近实际安装的是[统一 CLI](validation/UNIFIED_CLI_VALIDATION_2026-09-07.md)：
+Web/终端/脚本/恢复共用 `sdr-agent`。识别系统尚未整体生产准入；源码完成、隔离
+验证通过、实际安装和生产能力开放须分别核对。状态只在 checklist 维护，顺序
+只在推进文档维护。
 
-[`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](NX_B210_MAMBA_D8_ASSET_HANDOFF.md) is a
-historical hardware/model handoff. Its B210 details remain useful port evidence,
-but B210/USRP transmission is not part of the current Chapter 1–6 plan.
+历史文档中的“下一步”“未完成”和旧命令只描述当时状态，不是新任务指令。
+早期 Pi 验证已合入[历史合订记录](validation/PI_BASELINE_HISTORY.md)。旧 ROADMAP、
+第4—6章独立排期、迁移待办与重复工作流已移除；原因及替代位置见
+[整理记录](validation/DOCS_CONSOLIDATION_2026-09-07.md)。原文件可从 `7115b50` 的
+Git 树取回，不需要恢复到当前工作目录。
 
-The large retired FPGA/Vivado tree, FPGA-only reports, Pi VkFFT experiment and
-superseded research notes were removed from the working tree on 2026-09-02.
-They remain available in Git history before the cleanup change if an audit ever
-requires them.
+审计/预登记/图表保留原始字节；其内部记录的旧 `docs/<文件>` 路径不改写，
+通常位于 `docs/evidence/<同名文件>`。其中三份被冻结配置直接引用的审计 JSON
+保留在原根目录，避免改变 profile/选择计划的路径合同；不额外复制。历史源码哈希仍对应当时提交。不要为
+使旧记录看起来“最新”而修改失败结果、哈希、准入状态或原始 IQ 清单。

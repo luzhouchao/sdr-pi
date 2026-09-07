@@ -186,7 +186,7 @@ The production build contains only the Linux/IIO capture path. The retired
 FPGA/MMIO source and compatibility stub were removed; the Makefile and
 cross-build script still reject the old `ENABLE_FPGA=1` request explicitly.
 See
-[`../../docs/FPGA_RETIREMENT_DECISION_2026-09-02.md`](../../docs/FPGA_RETIREMENT_DECISION_2026-09-02.md).
+[`../../docs/FPGA_RETIREMENT_DECISION_2026-09-02.md`](../../docs/reference/FPGA_RETIREMENT_DECISION_2026-09-02.md).
 
 The static Docker build remains valid for shadow-only probes. Do not use that
 artifact for controlled mode: a static glibc 2.36 executable cannot safely

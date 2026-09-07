@@ -19,7 +19,7 @@ class V4LiveTests(unittest.TestCase):
         self.temporary=tempfile.TemporaryDirectory(dir=os.environ['TMPDIR'])
         self.addCleanup(self.temporary.cleanup)
         self.root=Path(self.temporary.name)
-        history=json.loads((live.SCRIPTS.resolve().parents[2]/'docs/B210_RX_AFFINE_AUDIT_2026-09-06.json').read_text())
+        history=json.loads((live.SCRIPTS.resolve().parents[2]/'docs/evidence/B210_RX_AFFINE_AUDIT_2026-09-06.json').read_text())
         self.link=copy.deepcopy(history['links']['tone'])
         self.link['feature_directory']=str(self.root)
         self.link['radio_before']=self.link['radio_after']=history['final_radio_state']

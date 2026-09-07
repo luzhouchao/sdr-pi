@@ -164,8 +164,8 @@ async def run(binary):
         assert audit['restored']
 
 def verify_retained():
-    inventory=live.document(live.affine.ROOT/'docs/B210_BACKGROUND_EVIDENCE_2026-09-07.json')
-    audit=live.document(live.affine.ROOT/'docs/B210_BACKGROUND_AUDIT_2026-09-07.json')
+    inventory=live.document(live.affine.ROOT/'docs/evidence/B210_BACKGROUND_EVIDENCE_2026-09-07.json')
+    audit=live.document(live.affine.ROOT/'docs/evidence/B210_BACKGROUND_AUDIT_2026-09-07.json')
     expected={row['path'] for row in inventory['files']}
     assert {str(p) for p in ROOT.rglob('*') if p.is_file()}==expected
     for row in inventory['files']:

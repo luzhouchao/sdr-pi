@@ -22,8 +22,8 @@ background = live.affine.module('antenna_background', 'diagnose-b210-background.
 ROOT = Path('/var/tmp/sdrharness-dev/b210-antenna-907t')
 CASES = (('r1', .2), ('r2', .2), ('r3', .2))
 REPO = live.affine.ROOT
-AUDIT = REPO / 'docs/B210_RX1_NEW_ANTENNA_AUDIT_2026-09-07.json'
-INVENTORY = REPO / 'docs/B210_RX1_NEW_ANTENNA_EVIDENCE_2026-09-07.json'
+AUDIT = REPO / 'docs/evidence/B210_RX1_NEW_ANTENNA_AUDIT_2026-09-07.json'
+INVENTORY = REPO / 'docs/evidence/B210_RX1_NEW_ANTENNA_EVIDENCE_2026-09-07.json'
 
 
 def feature(tag):
@@ -88,7 +88,7 @@ def acquire(binary):
 
 def historical_comparison():
     """Same amplitude/settings, different antenna/time/daemon; no causal estimate."""
-    original = live.document(REPO / 'docs/B210_2455_MARGIN_AUDIT_2026-09-07.json')
+    original = live.document(REPO / 'docs/evidence/B210_2455_MARGIN_AUDIT_2026-09-07.json')
     result = {}
     for tag in ('low1', 'low2'):
         assert margin.seal_case(margin.feature(tag), .2) == original['seal']['cases'][tag]
@@ -101,7 +101,7 @@ def historical_comparison():
                           model_control_passed=original['cases'][tag]['model_control_passed'],
                           statistics=phases)
     return dict(causal_antenna_effect_established=False, differences=['antenna', 'session/time', 'sdrd version'],
-                original_audit_sha256=hashlib.sha256(live.read(REPO / 'docs/B210_2455_MARGIN_AUDIT_2026-09-07.json')).hexdigest(),
+                original_audit_sha256=hashlib.sha256(live.read(REPO / 'docs/evidence/B210_2455_MARGIN_AUDIT_2026-09-07.json')).hexdigest(),
                 old_same_amplitude_cases=result)
 
 

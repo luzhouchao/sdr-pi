@@ -54,7 +54,7 @@ class BackgroundTests(unittest.TestCase):
 class NativeBackgroundTests(unittest.TestCase):
     def setUp(self):
         tmp=tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']);self.addCleanup(tmp.cleanup);self.root=Path(tmp.name)
-        historical=json.loads((bg.live.affine.ROOT/'docs/B210_LO_REJECTION_AUDIT_2026-09-07.json').read_text())['cases']['fix1']['link_evidence']
+        historical=json.loads((bg.live.affine.ROOT/'docs/evidence/B210_LO_REJECTION_AUDIT_2026-09-07.json').read_text())['cases']['fix1']['link_evidence']
         self.report=copy.deepcopy(historical['baseline']);self.plan=copy.deepcopy(historical['plans'][0])
         self.data=self.root/'iq.sigmf-data';self.meta=self.root/'iq.sigmf-meta';self.data.write_bytes(bytes(262140))
         self.report['dataset'].update(data_path=str(self.data),metadata_path=str(self.meta))

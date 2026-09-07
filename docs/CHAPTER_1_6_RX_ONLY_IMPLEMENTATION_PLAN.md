@@ -39,7 +39,7 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 `recognizer_available=false` 继续成立。高 softmax、四窗一致和有限实收成功都不
 能替代独立标注准确率、OOD false acceptance 或生产 Worker 验收。
 
-2026-09-07 运行入口更新：[统一 CLI](UNIFIED_CLI_VALIDATION_2026-09-07.md) 已将
+2026-09-07 运行入口更新：[统一 CLI](validation/UNIFIED_CLI_VALIDATION_2026-09-07.md) 已将
 当前 Controller/交互代码装入单个 `sdr-agent`，并供 Web 与恢复服务调用。
 这是 RX 控制入口交付；下文各识别单元的“未部署”仍指生产识别系统未整体上线，
 Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部署，A1 保持未完成。
@@ -69,13 +69,13 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
       数字标签、名称可信状态、拒识原因、模型/profile、质量、来源和时延；不暴露
       IQ 路径或张量。S5/S6b 原生及浏览器隔离闭环已完成，生产部署仍属 A1。
   - [x] S6b 真实 unavailable/error、合成 classified/rejected 展示、精确归档关联、
-        重启隔离、删除和 Spark hold 通过；见 [S6b 验证](WEB_RECOGNITION_S6B_VALIDATION_2026-09-06.md)。
+        重启隔离、删除和 Spark hold 通过；见 [S6b 验证](validation/WEB_RECOGNITION_S6B_VALIDATION_2026-09-06.md)。
   - [x] S2 有状态 observation 合同已完成；S6a 已在归档 Web/终端验证全部展示字段，
         实验回放与合成演示明确分开，未将演示算作生产准入。
 - [x] S6a 将完整识别记录写入既有应用 SQLite，提供可见单条人工删除、分页和
       重启恢复；只返回有界摘要，不把完整 logits/IQ 送入 Planner。源码及隔离
       Web/CLI/浏览器验收完成，临时数据已清理，未部署。见
-      [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md)。
+      [`RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md`](validation/RECOGNITION_ARCHIVE_S6A_VALIDATION_2026-09-06.md)。
 - [x] S6b 用真实 unavailable/error 验证 Spark 解释当前失败关闭状态并返回 hold，
       未将实验 top-1 写成已确认事实；已准入分类结论仍待 A1。
 
@@ -103,7 +103,7 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
       terminal 不再继承 request/template 的可用布尔值；缺失、过期、哈希/精度
       不符及同 generation 的 Worker/准入记录更换均失败关闭。真实候选 health
       验证和完整临时数据清理已完成，能力仍为 false。见
-      [`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md)。
+      [`RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md`](validation/RECOGNIZER_ADMISSION_S1_VALIDATION_2026-09-06.md)。
 - [x] `RunLocalRecognition` 已要求人工批准；step 待批准、cruise 停在批准门、
       one-shot automatic 拒绝和批准时重新检查均通过测试。
 - [ ] 在 A1 部署已准入版本并实机验收生产能力与批准执行链；S1 只完成源码和
@@ -113,7 +113,7 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
         精查、RF-v1 四窗、S3/S4a 与 S6a 归档，预算/audit/恢复和精确清理已验证。
 - [x] S5 将紧凑 observation 写回 PlanningContext，并自动启动一次 Spark 规划轮；
       真实 unavailable 及明确合成的其余状态回归通过，后续仍须正常批准；不宣称
-      生产 classified/rejected 已实收准入。见 [S5 验证](RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md)。
+      生产 classified/rejected 已实收准入。见 [S5 验证](validation/RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md)。
 - [x] S5 联合 `/stop`、generation-bound RX cancel、Worker 回收/共享租约释放和
       迟到结果隔离已完成源码及有限实机验证；生产服务未替换。
 - [x] 六动作/边界/状态/故障测试与八项真实 Spark 固定回归通过；每个接受提案
@@ -137,7 +137,7 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
       SDRD/1 可审计且失败关闭的版本化身份；capability、health、profile、capture
       与 stop 均返回该身份，所有 session 退出路径验证不变，Rust 客户端严格
       关联，且已完成 ARMv7 部署、有限实收和恢复/清理验证；见
-      [`P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md`](P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md)。
+      [`P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md`](validation/P201_RX1_INPUT_IDENTITY_VALIDATION_2026-09-04.md)。
 
 ### 还未完成
 
@@ -165,17 +165,17 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
       4,096 点 RX1 采集被切成 4 × 1,024 的逐字节可复现输入，并以四个精确
       offset 顺序调用 Worker。真实实收完成 3/4 provisional 多数票、射频恢复与
       spool/Worker/P201 临时数据清理；生产 capability 仍为 false。见
-      [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)。
+      [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](validation/P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md)。
 - [x] 四窗口故障路径已实收：Worker 在窗口 0 后退出会让窗口 1 显式失败并删除
       32-KiB spool；独立 generation-bound cancel 会产生
       `capture_failed_restored`。两条路径均恢复 P201、删除 AGX/P201 临时数据且
       保持 capability false；见
-      [`P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md`](P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md)。
+      [`P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md`](validation/P201_MAMBA_BATCH_FAILURE_CANCEL_VALIDATION_2026-09-05.md)。
 - [x] AGX 软件 acquisition overload 已完成：超 256-KiB 单点计划在接触 backend/
       射频前拒绝；128 个最大合法窗口共 32 MiB 实收，sequence 连续且 dropped、
       overflow、clipping、timeout、health/身份错误均为 0；IIO deadline 和 AGX
       连接中断均恢复，后续 generation 成功，资源有界且无 IQ 残留。见
-      [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md)。
+      [`P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md`](validation/P201_AGX_SOFTWARE_ACQUISITION_OVERLOAD_VALIDATION_2026-09-05.md)。
 - [x] FPGA 聚合、MMIO、UIO、Vivado 和 `BOOT.bin` 已从当前路线退役。
 
 ### 还未完成
@@ -187,7 +187,7 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
       `receive_domain/unknown` 证据冻结 `rf_preprocess_v1` 重训合同：硬件重调谐、
       不做数字频移/额外滤波/重采样、保留 DC、四窗共享 RMS、4 × 1,024 连续窗和
       mean-logit；选择代码未加载 test，见
-      [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md)。
+      [`RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md`](validation/RF_PREPROCESS_V1_SELECTION_VALIDATION_2026-09-05.md)。
 - [x] 用户训练的 RF-aligned epoch-10 checkpoint 已独立下载、逐文件核验并在 AGX
       严格加载；完整 95,607 个 validation 四窗组 accuracy 与 4090 完全一致，NLL
       差 `6.8e-8`，test 未打开且 capability 保持 false。
@@ -195,7 +195,7 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
       点共享 RMS、保留 DC、四窗顺序、FP16 autocast/FP32 常驻权重、每窗完整
       logits 和 AGX float64 mean-logit 后 softmax；冻结 golden hash 一致，来源/
       请求/session/哈希严格关联，成功、Worker 退出和取消均恢复并清理。见
-      [`RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md`](RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md)。
+      [`RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md`](validation/RF_V1_RUNTIME_PARITY_VALIDATION_2026-09-05.md)。
 - [ ] 仅用 validation 与独立标注 known-RF/OOD 证据冻结温度、置信度、agreement、
       SNR、带宽和质量阈值；最后才能做一次 locked test 准入。
 
@@ -216,13 +216,13 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
       `dataset_ground_truth`、`independent_annotation` 或 `unknown`，同时固定内容、
       profile、预处理、标签、split 和证据哈希。严格校验器已覆盖来源/标签误用、
       临时名称升级、路径/哈希篡改、错误 RX 口、未清理冻结记录和 train/test
-      lineage 泄漏；见 [`AMC_CORPUS_MANIFEST_V1.md`](AMC_CORPUS_MANIFEST_V1.md)。
+      lineage 泄漏；见 [`AMC_CORPUS_MANIFEST_V1.md`](reference/AMC_CORPUS_MANIFEST_V1.md)。
 - [x] 已部署 AGX 应用自有的 P201 corpus SQLite/七文件包存储和 `接收语料` 页面；
       loopback-only 入口只接受当前 2.1 MS/s、1.5 MHz、50 dB、4,096-sample RX1
       profile，重新计算 IQ 功率/频谱/削顶并要求恢复与临时清理。一次 433.920 MHz
       实收以 `unknown` 入库，通过完整资产哈希校验和真实页面删除后又按同一内容
       恢复保留；见
-      [`P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md`](P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md)。
+      [`P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md`](validation/P201_RX_CORPUS_STORE_VALIDATION_2026-09-05.md)。
 
 ### 还未完成
 
@@ -230,7 +230,7 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
       train/validation/test 隔离：两套完整 split 均全覆盖、内部无重复且两两交集为
       0；跨 P201 包审计会拒绝父级血缘改变和三类 group 泄漏，当前唯一
       `receive_domain/unknown` 行不进入准确率。见
-      [`AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md`](AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md)。
+      [`AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md`](validation/AMC_SPLIT_ISOLATION_VALIDATION_2026-09-05.md)。
 - [x] 已只用 train/validation 完成五种预处理与 1/2/4 窗、三种聚合消融，冻结
       四窗共享复数 RMS、保留 DC、4 × 1,024 和 mean-logit 作为重训合同；历史
       test 虽已存在，但本次工具拒绝加载 test 成员/结果。P201 `unknown` 的质量和
@@ -243,7 +243,7 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
       支持人工删除，不把模型 top-1 或 `unknown` 理由转成独立标签。V1a 源码、
       采样规范和隔离 Web/HTTP/浏览器/删除验证完成；完整临时数据已清理，未部署。
       旧包缺失原始 request 报告时只能 unknown 派生，实际标签/覆盖仍属于 V1b。见
-      [`RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md`](RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md)。
+      [`RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md`](validation/RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md)。
 - [ ] 补充独立标注 known-RF/OOD 数据，冻结 calibration 与 acceptance threshold，
       再查看该 checkpoint 的 locked test。
 - [ ] 解决 RML2018A 数字 ID 到名称顺序争议；解决前数字 ID 是唯一可信类别身份，
@@ -273,11 +273,11 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
 - [x] 用户已使用冻结的 `rf_preprocess_v1` 在 4090 微调并按 validation 选择 D8
       epoch 10；AGX 已锁定并验证源码、split、profile、数字标签、训练配置和权重，
       test 保持锁定。见
-      [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md)。
+      [`RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md`](validation/RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_2026-09-05.md)。
 - [x] 已在最终 checkpoint 上按预注册门限比较 FP16/BF16/FP32 的完整 validation
       准确率、argmax/logits/probability 偏差、吞吐和显存；FP16 全部门限通过，
       固定为候选推理精度，BF16 因数值偏差淘汰，test 与生产能力仍保持关闭。见
-      [`RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md`](RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md)。
+      [`RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md`](validation/RF_V1_PRECISION_SELECTION_VALIDATION_2026-09-05.md)。
 - [x] 已实现 epoch-10 FP16 四窗完整 logits、严格合同关联及 AGX mean-logit 聚合，
       完成 golden、故障/取消测试和 RX1 实收与清理；仍为 integration_only。
 - [ ] 实现置信度校准与 noise/unknown/低质量/低置信度拒识，报告 rejection rate、
@@ -287,7 +287,7 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
       拒识原因和校准状态；只把有界摘要传给 Planner，完整记录保留在 AGX。
       S2 已通过 Rust/Node 合同测试和保留实收报告 replay，并清理临时数据；尚未
       部署；结果存储/归档 UI 已由 S6a 补上，工程 Runner 已由 S5 接入。见
-      [`RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md`](RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md)。
+      [`RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md`](validation/RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md)。
 - [x] S1 health/profile/receipt 探测接口和候选失败关闭验证已完成；生产正向
       capability 仍须完整准入和 A1 部署证据。
 - [ ] 实现 production Worker queue=1、整批 deadline、cancel/drop 指标、
@@ -295,16 +295,16 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
   - [x] S3 生命周期源码及有限真实 epoch-10 Worker 验证完成：单活动批次/单等待位、
         整批与独立队列 deadline、取消确认、实例/generation 隔离、进程强杀/重启
         清理和指标；临时数据已清理。见
-        [`WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md`](WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md)。
+        [`WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md`](validation/WORKER_SUPERVISOR_S3_VALIDATION_2026-09-06.md)。
   - [x] S4b：20 分钟代表性候选串行资源/时延/队列和 CPU/SoC/Tj 验收，
         GPU 温度缺失按用户明确豁免保持未测；缓存上限/清理完成。见
-        [S4b 验证](GPU_RESOURCE_S4B_VALIDATION_2026-09-06.md)。
+        [S4b 验证](validation/GPU_RESOURCE_S4B_VALIDATION_2026-09-06.md)。
   - [ ] A1：已准入生产部署；S3/S4b 未替换服务。
 - [x] S4a：Spark 与 Mamba 同时常驻但活跃推理按 `Spark -> Mamba -> Spark`
       串行的源码及隔离实机验证完成；取消先回收实际子进程再释放共享租约，实例/
       generation 和连接隔离阻止迟到结果回流。共享启动/整批锁、双方强杀恢复、
       实际 Node Planner 和原生 Mamba replay 通过，临时数据已清理。见
-      [`GPU_LEASE_S4A_VALIDATION_2026-09-06.md`](GPU_LEASE_S4A_VALIDATION_2026-09-06.md)。
+      [`GPU_LEASE_S4A_VALIDATION_2026-09-06.md`](validation/GPU_LEASE_S4A_VALIDATION_2026-09-06.md)。
       生产服务未替换；S4b 资源验收已按用户 GPU 温度豁免完成，所有生产调用
       统一入 gate 仍属 A1。
 - [ ] 部署可回滚的生产 Worker，并在冻结的频率/增益/session 矩阵上完成 RX-only
@@ -320,7 +320,7 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
   未准入而拒绝，未配置工程执行器时不伪装执行成功。
 - [`policy.rs`](../raspberry-pi/sdr-agent/controller/src/policy.rs) 已对
   `RunLocalRecognition` 要求人工批准，覆盖 step/automatic 两种模式。
-- [`sdr-agent.rs`](../raspberry-pi/sdr-agent/controller/src/bin/sdr-agent.rs) 的交互/
+- [`sdr-agent.rs`](../raspberry-pi/sdr-agent/controller/src/cli/console.rs) 的交互/
   巡航路径已接 S5 工程执行器、批准/预算和联合 stop；
   [`app.js`](../raspberry-pi/sdr-agent/web-console/public/app.js) 已有 S6a 归档结果
   渲染和删除，S5/S6b 已完成原生自动回灌和实际浏览器隔离闭环；未部署。
@@ -329,7 +329,7 @@ Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部�
   [`sdr.rs`](../raspberry-pi/sdr-agent/controller/src/sdr.rs) 对完整 RX1 身份失败关闭。
 
 O1a 已完成故障/fuzz、审计轮转、只读健康/本地告警及升级回滚的源码/隔离验证，
-生产配置未安装；见 [O1a 验证](OPERATIONS_O1A_VALIDATION_2026-09-06.md)。
+生产配置未安装；见 [O1a 验证](validation/OPERATIONS_O1A_VALIDATION_2026-09-06.md)。
 独立标签、校准/准入、A1 部署及 O1b 24 小时闭环仍按各自条件推进。
 
 ## 推进顺序入口

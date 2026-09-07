@@ -13,7 +13,7 @@ if not __debug__:
     raise RuntimeError('validation assertions required')
 SCRIPTS = Path(__file__).resolve().parent
 REPO = SCRIPTS.parents[2]
-AUDIT = REPO / 'docs/B210_RX_BYTE_AUDIT_2026-09-07.json'
+AUDIT = REPO / 'docs/evidence/B210_RX_BYTE_AUDIT_2026-09-07.json'
 spec = importlib.util.spec_from_file_location('byte_margin', SCRIPTS / 'validate-b210-2455-margin.py')
 margin = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(margin)
@@ -97,7 +97,7 @@ def characterize(raw):
 
 def analyze():
     live = margin.live
-    inventory_path = REPO / 'docs/B210_2455_MARGIN_EVIDENCE_2026-09-07.json'
+    inventory_path = REPO / 'docs/evidence/B210_2455_MARGIN_EVIDENCE_2026-09-07.json'
     inventory = live.document(inventory_path)
     expected = {row['path'] for row in inventory['files']}
     assert len(expected) == len(inventory['files']) == 67

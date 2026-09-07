@@ -9,7 +9,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 ROOT = Path('/var/tmp/sdrharness-dev/b210-residual-907v')
-DOCS = Path(__file__).resolve().parents[3]/'docs'
+DOCS = Path(__file__).resolve().parents[3]/'docs/evidence'
 PAIRS = [('r0c05', 'r1c05', '8PSK'), ('r0c11', 'r1c11', '128APSK'),
          ('r1c13', 'r0c13', '32QAM'), ('r2c19', 'r1c19', 'AM-DSB-WC')]
 with np.load(ROOT/'pointwise-display.npz', allow_pickle=False) as archive:

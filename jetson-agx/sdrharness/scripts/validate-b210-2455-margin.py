@@ -115,8 +115,8 @@ def unaligned_statistics(report):
 
 
 def verify_retained():
-    manifest=live.document(live.affine.ROOT/'docs/B210_2455_MARGIN_EVIDENCE_2026-09-07.json')
-    audit=live.document(live.affine.ROOT/'docs/B210_2455_MARGIN_AUDIT_2026-09-07.json')
+    manifest=live.document(live.affine.ROOT/'docs/evidence/B210_2455_MARGIN_EVIDENCE_2026-09-07.json')
+    audit=live.document(live.affine.ROOT/'docs/evidence/B210_2455_MARGIN_AUDIT_2026-09-07.json')
     expected={r['path'] for r in manifest['files']}
     assert {str(p) for name in manifest['roots'] for p in Path(name).rglob('*') if p.is_file()}==expected
     for row in manifest['files']:

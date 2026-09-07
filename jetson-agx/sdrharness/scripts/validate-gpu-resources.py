@@ -94,7 +94,7 @@ async def validate(root, *, allow_missing_gpu_temperature=False):
     report = dict(schema_version=1, status='failed', rx_bytes=0, synthetic_input=True,
                   locked_test_read=False, recognizer_available=False, feature_directory=str(root),
                   allow_missing_gpu_temperature=allow_missing_gpu_temperature,
-                  plan_sha256=sha(ROOT/'docs/GPU_RESOURCE_S4B_PLAN_2026-09-06.md'),
+                  plan_sha256=sha(ROOT/'docs/evidence/GPU_RESOURCE_S4B_PLAN_2026-09-06.md'),
                   controller_sha256=sha(controller), model_bytes_sha256=sha(root/'model.f32'))
     measurement_start = None
     monitor_task = None

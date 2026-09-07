@@ -34,7 +34,7 @@ def compact(result):
 
 class SourceV3Tests(unittest.TestCase):
     def test_old_false_rejections_remain_failed_in_v2_and_are_resolved_in_v3(self):
-        evidence = json.loads((base.SCRIPT.parents[3]/'docs/B210_CENTERED_SOURCE_AUDIT_2026-09-06.json').read_text())
+        evidence = json.loads((base.SCRIPT.parents[3]/'docs/evidence/B210_CENTERED_SOURCE_AUDIT_2026-09-06.json').read_text())
         for seed, lag, bias, residual in ((90708, 776, 0j, -80), (90721, 4095, 2+1.5j, 0)):
             source, captures = fixture(seed=seed, lag=lag, bias=bias, residual=residual)
             old = match.assess_centered_source(source, captures, 3450, 125000)

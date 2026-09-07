@@ -21,8 +21,8 @@ spec.loader.exec_module(multi)
 point, repair = multi.repair.lo.point, multi.repair
 ROOT = Path('/var/tmp/sdrharness-dev/b210-residual-907v')
 REPO = multi.REPO
-OLD_AUDIT = REPO/'docs/B210_MULTICLASS_AUDIT_2026-09-07.json'
-AUDIT = REPO/'docs/B210_RESIDUAL_AUDIT_2026-09-07.json'
+OLD_AUDIT = REPO/'docs/evidence/B210_MULTICLASS_AUDIT_2026-09-07.json'
+AUDIT = REPO/'docs/evidence/B210_RESIDUAL_AUDIT_2026-09-07.json'
 CLASSES = (5, 11, 13, 19)
 BAD = ('r0c05', 'r0c11', 'r1c13', 'r2c19')
 START, COUNT, FIT, RATE = 32768, 65535, 16384, 2100000
@@ -33,13 +33,13 @@ save = multi.save
 
 
 def verify_parent():
-    inventory = multi.live.document(REPO/'docs/B210_MULTICLASS_EVIDENCE_2026-09-07.json')
+    inventory = multi.live.document(REPO/'docs/evidence/B210_MULTICLASS_EVIDENCE_2026-09-07.json')
     expected = {p['path'] for p in inventory['files']}
     assert {str(p) for r in inventory['roots'] for p in Path(r).rglob('*') if p.is_file()} == expected
     for row in inventory['files']:
         raw = multi.live.read(Path(row['path']))
         assert len(raw) == row['bytes'] and sha(raw) == row['sha256']
-    return dict(inventory_sha256=sha((REPO/'docs/B210_MULTICLASS_EVIDENCE_2026-09-07.json').read_bytes()),
+    return dict(inventory_sha256=sha((REPO/'docs/evidence/B210_MULTICLASS_EVIDENCE_2026-09-07.json').read_bytes()),
                 audit_sha256=sha(OLD_AUDIT.read_bytes()), files=len(expected))
 
 

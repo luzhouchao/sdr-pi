@@ -105,11 +105,11 @@ def characterize(source,raw,center,fit=None,h=None):
 
 def analyze():
     margin.verify_retained()
-    original=live.document(live.affine.ROOT/'docs/B210_2455_MARGIN_AUDIT_2026-09-07.json')
+    original=live.document(live.affine.ROOT/'docs/evidence/B210_2455_MARGIN_AUDIT_2026-09-07.json')
     report=dict(schema_id='b210_posthoc_failure_decomposition_v1',analysis_numpy=np.__version__,posthoc=True,
                 original_gate_changes=False,model_windows=0,rf_operations=0,independent_labels=0,recognizer_available=False,
                 block_starts=STARTS.tolist(),block_samples=1024,cfo_deltas_hz=DELTAS.tolist(),fractional_step_samples=.125,
-                parent_audit_sha256=margin.lo.hashlib.sha256(live.read(live.affine.ROOT/'docs/B210_2455_MARGIN_AUDIT_2026-09-07.json')).hexdigest(),cases={})
+                parent_audit_sha256=margin.lo.hashlib.sha256(live.read(live.affine.ROOT/'docs/evidence/B210_2455_MARGIN_AUDIT_2026-09-07.json')).hexdigest(),cases={})
     for tag,_ in margin.CASES:
         v=np.frombuffer(live.read(margin.feature(tag)/'train-tile.fc32'),dtype='<f4').reshape(PERIOD,2);source=v[:,0].astype(float)+1j*v[:,1].astype(float)
         case=original['cases'][tag];fit=case['pointwise']['alignment'];usable=fit['usable']
@@ -146,5 +146,5 @@ if __name__=='__main__':
     if a.analyze:margin.lo.save(ROOT/'analysis.json',analyze())
     elif a.plot:plot(live.document(ROOT/'analysis.json'),a.plot)
     else:
-        current=analyze();saved=live.document(live.affine.ROOT/'docs/B210_FAILURE_DECOMPOSITION_AUDIT_2026-09-07.json')
+        current=analyze();saved=live.document(live.affine.ROOT/'docs/evidence/B210_FAILURE_DECOMPOSITION_AUDIT_2026-09-07.json')
         assert all(saved[k]==v for k,v in current.items());print('Posthoc diagnostic reproduced; original gates/IQ/model outputs unchanged.')

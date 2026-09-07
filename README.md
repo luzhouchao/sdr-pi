@@ -33,39 +33,23 @@ Completions/Responses 接口继续保留为人工选择的 provider，不做自�
 
 ## 当前状态
 
-- Pi 侧 Rust Controller、Planner Worker、终端和 Web Console 已实机验证，作为可回滚基线。
-- SDR 侧受控 `sdrd` 已验证只接收扫频、限幅 IQ、取消和状态恢复。
-- AGX 迁移目录、配置、systemd 模板和本机构建入口已纳入 Git。
-- AGX 已在 `/home/jetson/sdrharness` 完成 aarch64 原生构建、测试和
-  loopback 运行验证；P201 的持久 `sdrd` 经重复实例门禁后恢复，AGX
-  对 `192.168.1.10:43110` 的只读 SDRD 观察已通过。
-- AGX Web 可将 OpenAI-compatible Completions/Responses 上游写入
-  不被 Git 跟踪的 `0600` 私密配置；按用户要求监听所有 IPv4
-  接口，不得做公网端口映射。
-- 本机 Spark-X2.5-4B BF16 Planner 与受限 Web Search 已接入并实机验证；旧
-  Qwen 进程已停止并禁用。
-- Spark BF16 与 Mamba 的短时共存/故意重叠测试证明内存足够，但并行活跃推理
-  会使双方吞吐近似减半；生产闭环保持模型常驻、推理串行。社区 Q8、MTP 和
-  n-gram 结果见
-  [`docs/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](docs/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md)。
-- 扫频聚合结果可在 Web 独立页面查看和手动删除；原始 IQ 仅在显式开启时按
-  每次扫描保存为 SigMF。
-- D8/Shared-Bi RML2018A seeds 42--46 候选已完成盘点；RML seed44 与 Hisar
-  seed43、两套数据集、固定 split、最小推理源码和 AGX `venv` 已整理到 Git
-  忽略的 `local-assets/amc-eval/`。两套完整 FP32 test split 与 4090 logits
-  对照通过，但 RF 预处理合同、可信 RML 类名、低精度策略和生产 Worker
-  仍未完成，见
-  [`docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)。
+当前状态以[权威 checklist](docs/SDR_AGENT_PROJECT_CHECKLIST.md)为准，
+下一独立交付以[实际推进顺序](docs/SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)为准。
+
+AGX 已接管 P201 接收和软件处理；网页、交互终端、脚本及恢复共用已安装的
+`sdr-agent`。RF-v1、epoch-10 FP16 和识别工程闭环已有隔离验证，完整生产识别
+尚未准入，`recognizer_available=false`。目前按用户选择先推进 Web 与运维部署，
+暂停训练、微调及进一步模型诊断。树莓派保留为历史/回滚基线。
 
 ## 目录
 
 | 目录 | 内容 |
 | --- | --- |
-| [`jetson-agx/sdrharness/`](jetson-agx/sdrharness/) | AGX clone 后的构建、配置和 systemd 入口 |
-| [`raspberry-pi/sdr-agent/`](raspberry-pi/sdr-agent/) | 已验证的 Controller、Planner、终端、Web 与历史识别 seam |
-| [`raspberry-pi/p201pro-rust/`](raspberry-pi/p201pro-rust/) | Rust/libiio 采集和软件扫频参考实现 |
-| [`sdr-system/`](sdr-system/) | P201 Pro 内嵌系统与 `sdrd` |
-| [`docs/`](docs/) | 当前设计、迁移记录、检查清单和验证证据索引 |
+| [`jetson-agx/sdrharness/`](jetson-agx/sdrharness) | AGX clone 后的构建、配置和 systemd 入口 |
+| [`raspberry-pi/sdr-agent/`](raspberry-pi/sdr-agent) | 已验证的 Controller、Planner、终端、Web 与历史识别 seam |
+| [`raspberry-pi/p201pro-rust/`](raspberry-pi/p201pro-rust) | Rust/libiio 采集和软件扫频参考实现 |
+| [`sdr-system/`](sdr-system) | P201 Pro 内嵌系统与 `sdrd` |
+| [`docs/`](docs) | 当前设计、迁移记录、检查清单和验证证据索引 |
 
 ## AGX 快速开始
 
@@ -80,8 +64,7 @@ bash jetson-agx/sdrharness/scripts/build-agent-runtime.sh
 ```
 
 上述命令只验证和构建，不安装 systemd、不启动第二套采集，也不修改 SDR。部署步骤见
-[`jetson-agx/sdrharness/README.md`](jetson-agx/sdrharness/README.md) 和
-[`docs/AGX_SDRHARNESS_MIGRATION.md`](docs/AGX_SDRHARNESS_MIGRATION.md)。
+[`jetson-agx/sdrharness/README.md`](jetson-agx/sdrharness/README.md)。
 
 ## 安全边界
 
