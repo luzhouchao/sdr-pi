@@ -674,6 +674,19 @@ aggregation, result persistence and model-facing summaries.
             Six synthetic tests, exact replay and temporary cleanup verified;
             no new RF/model/IQ copies and no physical-cause or repair claim. See
             [failure decomposition](B210_FAILURE_DECOMPOSITION_VALIDATION_2026-09-07.md).
+      - [x] Audit all 15 retained captures (983,025 samples) for byte layout,
+            aligned repeats, zero fills and 4096-sample boundary artifacts:
+            no full-block repeats or long constant spans found; live read-only
+            IIO layout agrees with ci16_le. Six synthetic tests, 67-file seals,
+            numerical replay and exact cleanup verified. This does not prove
+            ADC/DMA continuity or a physical cause; see
+            [RX byte audit](B210_RX_BYTE_AUDIT_VALIDATION_2026-09-07.md).
+      - [ ] Validate positive IIO refill length versus buffer span semantics and
+            inject short/mismatched refill failures; the byte audit identified
+            an untested contract, not an observed cause of the RF failures.
+      - [ ] Execute antenna/50-ohm termination/antenna input isolation with actual
+            connection evidence. Operator confirmed no termination is available;
+            open-circuit RX is not a substitute and no physical comparison ran.
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the
