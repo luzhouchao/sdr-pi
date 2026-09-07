@@ -1,119 +1,154 @@
-# Project agent instructions
+# SDR Harness 项目协作规则
 
-## Living project checklist
+本文件是 `/home/jetson/sdrharness` 的项目工作规则，不是进度副本。
+用户在当前任务中的明确指令优先；子目录 `AGENTS.md` 对其范围补充约束，
+目录规则冲突时以修改处最近的一份为准，但不能推翻用户的明确决定。
+已有授权按原范围持续有效，不因换对话重复索取；不能把历史授权扩大到其他操作。
 
-The authoritative implementation-status checklist is
-[`docs/SDR_AGENT_PROJECT_CHECKLIST.md`](docs/SDR_AGENT_PROJECT_CHECKLIST.md).
+## 1. 开始任务：先确认事实和范围
 
-All agents working in this repository must follow these rules:
+1. 核对工作目录、分支、HEAD、上游和工作区改动；不假定交接中的提交仍是最新。
+   保留用户已有改动，不自行 reset、清理或切换分支。新分支使用 `codex/` 前缀。
+2. 阅读[文档入口](docs/README.md)，再按下表确认状态、顺序和范围；修改子系统前
+   读对应 checklist 条目、接口及最近适用的验证记录，不必重读全部历史实验。
+3. 选择一个独立交付，写清完成条件及需要的测试/实机验证。用户的“继续”沿用当前
+   目标和约束，不重做已经完成的单元，不机械按章节或 S/V 编号施工。
+4. 涉及安装状态时核对实际二进制、配置、进程和接口；源码存在、源码测试通过、
+   隔离验收、实际部署、生产准入是不同事实。
 
-1. Read the relevant checklist section before planning or changing a subsystem.
-2. Update the checklist in the same change whenever a listed item is completed,
-   invalidated, split into smaller work, or given a materially different scope.
-3. Mark an item `- [x]` only after its stated completion condition has been
-   implemented and verified. Code, design, mocks, or tests alone do not prove a
-   live/deployed item unless the checklist wording explicitly says they do.
-4. Keep an item `- [ ]` while any part of its wording remains incomplete. Split
-   partially completed work into precise completed and incomplete child items
-   instead of using an ambiguous partial-status symbol.
-5. For hardware and deployment work, require live target validation before
-   checking the item. Record the validation document, artifact hash, release,
-   or test evidence when practical.
-6. Do not mark future capability true in configuration merely to satisfy a
-   checklist item. Runtime capability must come from the responsible Adapter or
-   hardware probe and fail closed when unavailable.
-7. Preserve completed historical items unless evidence shows a regression. If a
-   regression occurs, uncheck the item and add a short note pointing to the
-   failure evidence or follow-up task.
-8. Before finishing a project change, review `git diff` and confirm the
-   checklist accurately describes the resulting repository and deployed state.
+| 要确认的内容 | 唯一维护位置 |
+| --- | --- |
+| 完成状态和证据 | [权威 checklist](docs/SDR_AGENT_PROJECT_CHECKLIST.md) |
+| 当前下一单元和依赖顺序 | [ACTUAL_DELIVERY_ORDER](docs/SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md) |
+| 第1—6章完整交付范围 | [章节规划](docs/CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md) |
+| 架构、接口、采样规范、运维流程 | [reference](docs/reference/README.md) |
+| 当时的验证、部署、失败和回滚事实 | [validation](docs/validation/README.md) |
+| 原始审计、预登记、图表、保留数据清单 | [evidence](docs/evidence/README.md) |
 
-## Retired FPGA scope
+历史记录中的“下一步”、旧命令和待批准操作只描述当时状态，不构成当前施工指令。
+不要另建 ROADMAP、重复下一步清单或第二份 `agent.md`。
 
-The user retired the FPGA acceleration route on 2026-09-02. This decision
-overrides older FPGA plans, checklists, experiments, and standing approvals:
+## 2. 架构与代码入口
 
-1. The production architecture is P201 Linux/IIO bounded RX acquisition and
-   transport followed by AGX software aggregation, storage, and inference.
-2. Do not build, enable, deploy, stage, or advertise an FPGA aggregation
-   backend. Do not use `ENABLE_FPGA=1`, write FPGA registers, generate or copy a
-   `BOOT.bin`, modify the boot chain, or resume FPGA/NX offload work.
-3. Protocol-v1 FPGA fields may remain only as constant false/zero wire-compatibility
-   fields for already deployed clients. They must not reach the Planner as a
-   selectable capability.
-4. The retired FPGA source tree, MMIO Adapter, Pi VkFFT experiment and obsolete
-   research documents were removed from the working tree at the user's request
-   on 2026-09-02. Git history before that cleanup is the audit archive; do not
-   restore those files into current source merely for historical reference.
-5. Reopening FPGA work requires a new explicit user decision that reverses this
-   retirement; ordinary performance work or hardware access authorization is
-   not sufficient.
+生产数据路径固定为 **P201 Linux/IIO 有界 RX 与传输 → AGX 软件处理**。
+AGX 负责 Agent、控制、原始 IQ 存储、聚合、功率/噪声估计、候选合并、预处理和
+模型推理；不得仅为减少传输而把聚合搬回 P201。树莓派只保留历史/回滚基线。
 
-## Development sweep authorization and data hygiene
+| 代码位置 | 职责 |
+| --- | --- |
+| `raspberry-pi/sdr-agent/controller/` | AGX 复用的 Rust Controller；唯一硬件执行、策略、能力、预算和批准权威 |
+| `raspberry-pi/sdr-agent/planner-worker/` | Pi Agent 框架的 Planner；只提出结构化计划，没有 shell/SSH/文件/IIO 权限 |
+| `raspberry-pi/sdr-agent/web-console/` | Web、会话和应用结果管理，复用 Controller |
+| `jetson-agx/sdrharness/` | AGX 配置、部署入口、工具、Worker 与验证脚本 |
+| `sdr-system/sdrd/` | P201 的接收、传输、取消及射频状态恢复 |
 
-The user authorizes the agent to approve receive-only, bounded sweep operations
-during development without asking again, subject to all of these constraints:
+只有一个 Controller CLI：`sdr-agent`。默认进入交互入口，脚本使用显式 `--mode`，
+恢复使用严格只读的 `--mode health`。Web HTTP 服务 `sdr-agent-web-console` 调用
+同一 CLI；不恢复旧 `sdr-agent-controller` / `sdr-agent-health` 可执行入口。
+Cargo 包/库名 `sdr-agent-controller` 无需改名；不要另建重复实现或存储系统。
 
-1. The sweep must stay inside repository safety limits, use one RX path by
-   default, have explicit frequency/sample-rate/bandwidth/dwell/point limits,
-   and include a direct stop plus verified radio-state restoration.
-2. This authorization does not cover transmission, arbitrary IIO writes,
-   capture without a plan-derived finite byte count, persistent radio changes,
-   FPGA/`BOOT.bin` work, or disabling a safety check. FPGA/`BOOT.bin` work is
-   retired from project scope; the other actions require separate explicit
-   authority.
-3. Before a live sweep, print or record the validated plan, estimated duration,
-   maximum bytes, free-space check, and the exact temporary data directory.
-4. In the software path, the SDR is responsible only for bounded RX acquisition
-   and transport. AGX owns raw-IQ storage, software aggregation, power/noise
-   estimation, candidate merging, and model-facing summaries. Do not move
-   software aggregation back onto the SDR merely to reduce transport unless the
-   user explicitly changes this architecture. There is no active FPGA summary
-   backend.
-5. Put AGX development data only under
-   `/var/tmp/sdrharness-dev/<feature-id>/`, legacy Pi development data only under
-   `/var/tmp/sdr-agent-dev/<feature-id>/`, and SDR-local transient data only
-   under `/tmp/sdr-agent-dev/<feature-id>/`. Use a unique feature ID. There is no
-   project-wide fixed 64 MiB ceiling: derive and record a finite maximum byte
-   count from the validated frequency/point/sample plan, verify AGX free space
-   before capture, and fail closed if the exact bound or space check is absent.
-   SDR-local data must be transient and removed after confirmed AGX receipt.
-6. Keep raw IQ and intermediate sweep outputs out of Git. Retain the feature's
-   source code, public and internal interfaces, tests, configuration examples,
-   design documents, bounded summaries, hashes, metrics, and validation
-   documentation.
-7. User-visible acquisition results are not development temporary data. The AGX
-   may persist processed sweep points, candidates, recognition output, or
-   explicitly selected IQ in an application-owned result store outside Git.
-   Such results must have a visible manual-delete path and must not be removed
-   by development cleanup unless the user selected them for deletion.
-8. At the end of each feature, stop all feature processes, verify the exact
-   resolved feature-directory paths, and delete all temporary data and workstation
-   staging artifacts except the minimum diagnostic evidence explicitly inventoried
-   under rule 10. Report what was removed and what was retained. A feature is not
-   complete and its checklist item must not be checked until cleanup and the
-   retained-evidence inventory are verified.
-9. Treat each completed feature as its own delivery unit: after tests pass,
-   temporary data cleanup is verified, and the checklist is updated, create a
-   focused commit and push it to the configured Git remote promptly. Do not
-   defer several completed features into one unrelated batch.
-10. Necessary evidence for diagnosing a concrete problem may be retained after
-    delivery (operator instruction, 2026-09-07). Keep only the minimum evidence
-    needed to reproduce or review the finding; this is not blanket permission to
-    retain every capture. Prefer existing corpus/diagnostic storage. When existing
-    storage would alter a sealed experiment or create duplicate IQ, keep a small,
-    explicitly inventoried subset in its existing feature directories instead of
-    introducing a parallel storage system. Keep raw IQ outside Git and avoid extra
-    IQ copies; NX/P201 copies remain transient unless separately justified.
-11. For each retained diagnostic package, record its purpose and why the files are
-    necessary, exact paths, source/capture/request/session and relevant model or
-    profile identity, file sizes and total bytes, SHA-256 hashes, and the exact
-    manual deletion method in the validation record or an indexed evidence
-    manifest. Distinguish retained evidence from incomplete cleanup. Never label
-    an existing retained path as deleted or report full cleanup without this
-    exception. Remove build outputs, test files, caches, staging files and redundant
-    copies when the unit finishes. Do not delete user-owned corpus/application
-    results as development cleanup; rule 7 still applies.
+理解或定位代码时，若根目录已有 `.codegraph/`，先用 `codegraph_explore` 或
+`codegraph explore`；不存在则直接用 `rg` / `rg --files`，不自行建立索引。
 
-Nested `AGENTS.md` files may add subsystem-specific instructions. The nearest
-file to the changed code takes precedence when instructions differ.
+## 3. 模型与证据边界
+
+用户当前选择先推进非模型工作，暂停训练、微调和进一步模型诊断；改变这一选择
+须有新的明确指令，不能把普通“继续”或软件部署理解为恢复模型实验。
+
+- 沿用冻结 epoch-10、FP16 autocast + FP32 权重和 RF-v1；不自行训练、不重跑
+  完整精度实验、不读取 locked test。
+- 保持 `recognizer_available=false`。未来能力必须来自负责的 Adapter/Worker
+  实测健康与已准入制品，不能由配置、测试替身或接口存在推定为 true。
+- 独立 known-RF/OOD 证据不足时，不冻结生产温度或拒识阈值。数字 ID 可信，
+  文本名称仍 provisional；用户提供的诊断名称表不自动成为正式映射证据。
+- 未标注实收只证明链路/质量。模型 top-1、置信度、unknown 理由或已用于诊断的
+  train 波形不能充当独立标签；保持 source/session/day 与派生血缘的集合隔离。
+- Planner 只接收有界摘要；IQ 路径、张量、完整 logits 和内部完整记录不进入 Planner。
+- GPU 温度缺失按用户明确豁免保持“未测”，不重复用它阻塞已通过的资源单元，
+  也不宣称温度已验证。其余资源门与最终生产准入条件仍有效。
+
+## 4. 硬件访问与有界接收
+
+P201 操作使用 [p201-sdr-workflow](.codex/skills/p201-sdr-workflow/SKILL.md)，遵守
+其访问、凭证、单实例、ARMv7 ABI、部署、回滚和恢复流程。密码/密钥不得打印、
+复制进日志或 Git；使用既有受保护凭证和严格主机密钥校验，不输出完整秘密配置。
+
+用户已授权开发中的 **receive-only 有界 sweep**，满足以下条件无需再次询问：
+
+1. 在仓库安全限制内，默认只用一路 RX；执行前记录已验证的频率/频点数、采样率、
+   带宽、增益、dwell/settle、每点样本、deadline、预计时长、精确最大字节数、
+   AGX 可用空间及本单元 AGX/P201 临时路径。缺少有限计划或空间检查必须拒绝。
+   没有项目统一的 64 MiB 总量上限，具体边界由计划和接口限制共同确定。
+2. 确认只有一个接收所有者和一个预期 sdrd，不启动第二个 collector。P201 是
+   唯一生产受控 SDR；NX+B210 只可在既有明确授权和登记计划范围内作 2.4 GHz
+   有限外部信号源，不因此给生产 Agent/P201 增加 TX 能力。
+3. 最近确认的天线口为 RX1；实操前核对连接与身份。冻结合同要求
+   RX1/RX0/A_BALANCED。sdrd 启动配置支持 RX1/RX2，不代表当前 Controller/profile
+   接纳 RX2，不能把端口诊断冒充冻结 RF-v1 验收。
+4. 提供直接停止路径；成功、错误、超时、取消和断连都需核对 LO、采样率、带宽、
+   两路 RX 增益模式/增益/端口及全部 scan mask/buffer 恢复。轮询确认恢复完成，
+   不用过早快照判定失败。接收忙时不能另开普通状态连接，使用专用取消路径。
+5. 这份 RX 授权不覆盖任意 IIO 写、无有限预算采集、持久射频修改、关闭安全检查
+   或一般发射。其他操作只能在已有对应明确授权范围内执行；没有授权时再澄清。
+   不无衰减同轴直连 TX/RX。
+
+FPGA 路线自 2026-09-02 退役：不得构建、启用、部署或暂存 FPGA 聚合，不用
+`ENABLE_FPGA=1`，不写 FPGA 寄存器，不生成/复制 `BOOT.bin` 或改启动链，不恢复
+MMIO/UIO、Pi VkFFT、FPGA/NX offload。协议遗留 FPGA 字段只能为 false/zero，
+不能进入 Planner 作为能力。已删除的旧树留在 Git 历史，不因历史引用恢复源码。
+重新开启此路线必须有用户明确推翻退役决定的指令，普通硬件授权不够。
+
+## 5. 临时数据、应用结果与保留证据
+
+| 类型 | 位置和处理 |
+| --- | --- |
+| AGX 开发数据、构建、缓存、测试和暂存 | `/var/tmp/sdrharness-dev/<唯一 feature-id>/` |
+| 仅适用于授权的历史 Pi 验证 | `/var/tmp/sdr-agent-dev/<唯一 feature-id>/` |
+| P201 瞬时数据 | `/tmp/sdr-agent-dev/<feature-id>/`；确认 AGX 收到后移除 |
+| 必须放在 allowlist 中的运行 socket | 按接口选允许路径，以 feature-id 隔离，记录并逐个清理 |
+| 用户可见的结果/语料 | Git 外的应用自有存储；保留可见人工删除入口，不参与开发清理 |
+
+构建和测试显式设置适用的 `CARGO_TARGET_DIR`、`TMPDIR`、缓存目录等，避免在仓库
+或其他固定目录遗留产物。纯文档修改无需创建采集目录或执行射频/模型验证。
+原始 IQ、中间输出、权重和构建制品不入 Git；默认不增加 IQ 副本。
+
+必要诊断证据可保留，但只保留复核具体问题所需的最小集合。优先复用现有语料/
+诊断存储；若搬移会改变封存实验或产生副本，可保留在原 feature 目录并明确登记。
+NX/P201 副本默认仍为瞬时数据，额外保留必须有单独依据。
+
+每个保留包须记录：用途及必要性、精确路径、source/capture/request/session、
+适用的 model/profile/preprocess 身份、文件大小/总字节、SHA-256、精确人工删除
+方法。发布/回滚制品也须有版本和哈希。不要把保留证据说成“已全部清理”。
+
+交付前停止本单元进程，核对真实解析后的精确路径，删除所有非保留临时文件、
+构建、缓存和工作站暂存，验证目录/socket 不存在，并报告删除与保留的数量/字节。
+只清理本单元，不清空公共临时根，不删除用户结果或以前登记的 RF 证据。
+
+## 6. 文档与 checklist 维护
+
+- 本文件只维护工作规则。状态更新到 checklist，顺序更新到 DELIVERY_ORDER，
+  接口写入 reference，单元验证写入 validation，原始附件写入 evidence。
+  优先更新/合并已有同主题记录，避免再次堆积重复规划和同一事项的“下一步”。
+- 修改条目完成条件、拆分范围、完成或发现退化时，在同一提交更新 checklist。
+  只有全部条件已实现、已验证且清理完成才能勾选；部分完成拆成明确子项。
+  硬件/部署条目必须有实际目标验证，不能用源码、mock 或测试替代上线事实。
+- 保留已完成历史。确有退化时取消相应勾选并链接失败依据，不掩盖失败或重写旧
+  实验为通过。工具完成不等于独立数据齐备，也不等于父级准入完成。
+- 封存审计、预登记和图表不追溯改写原字节/哈希；旧路径按 evidence 索引定位。
+  三份被配置冻结引用的审计 JSON 保留原 docs 根路径。新派生记录须版本化并
+  记录父级血缘，不为整理目录修改冻结配置。删并文档时修复引用和读取者。
+
+## 7. 独立单元交付顺序
+
+1. 审计现状并明确单元边界；在已有实现上修改。
+2. 运行与改动相称的检查。Rust 改动做格式/测试/Clippy，接口变化覆盖相关消费者；
+   前端行为改动做实际浏览器检查，硬件/部署做适用实机与回滚验证。纯文档改动
+   检查事实、链接、规则一致性和 diff，不重跑模型/射频实验。
+3. 记录实际执行、失败、修正、未测项和部署边界；新路径不符、依赖缺失或校验失败
+   时按原门拒绝，不通过放宽解析/预算/准入来获得“成功”。
+4. 核验清理和保留清单，更新权威 checklist 与适用验证记录。
+5. Review `git diff`（含暂存改动），确认范围聚焦、无秘密/原始 IQ/构建产物、
+   清单符合仓库与实际部署状态；创建一个聚焦 commit 并立即 push 到配置的上游。
+   不积攒多个已完成单元合成一批，不将后续多个交付混入本次提交。
+6. 最终报告完成内容、验证、实际部署/未完成边界、清理/保留、提交和推送状态；
+   新对话交接引用文档入口与当前 Git 状态，不再粘贴另一份永久进度表。

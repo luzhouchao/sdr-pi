@@ -1131,6 +1131,13 @@ Evidence:
 
 ## 8. Verification, deployment, and operations
 
+- [x] Reorganize root `AGENTS.md` around task entry, authoritative document roles,
+      shared code/CLI ownership, model and hardware boundaries, temporary versus
+      retained/user data, and independent delivery. Preserve prior RX/FPGA/data
+      rules and existing authorization scope; add current documentation layout,
+      frozen-path handling and conditional CodeGraph use without duplicating the
+      progress queue. Eight links, rule consistency and diff review verified;
+      documentation-only change, no runtime activity or temporary data created.
 - [x] Consolidate documentation into four current reading entries plus reference,
       validation and evidence directories. Delete four superseded guides, merge
       eleven dispersed records into three reports, preserve all 86 original
