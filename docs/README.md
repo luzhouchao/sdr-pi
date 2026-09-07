@@ -15,7 +15,9 @@
 | [validation/](validation/README.md) | 按主题索引的已执行验证、部署和回滚记录 |
 | [evidence/](evidence/README.md) | 原始审计 JSON、保留证据清单、预登记计划和图表 |
 
-最近实际安装的是[统一 CLI](validation/UNIFIED_CLI_VALIDATION_2026-09-07.md)：
+最近完成[Web 后台升级与会话恢复验收](validation/WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)，
+Web 制品和退出预算已更新，原会话/结果保留并已实际回滚验证；识别仍关闭。
+此前已安装[统一 CLI](validation/UNIFIED_CLI_VALIDATION_2026-09-07.md)：
 Web/终端/脚本/恢复共用 `sdr-agent`。识别系统尚未整体生产准入；源码完成、隔离
 验证通过、实际安装和生产能力开放须分别核对。状态只在 checklist 维护，顺序
 只在推进文档维护。

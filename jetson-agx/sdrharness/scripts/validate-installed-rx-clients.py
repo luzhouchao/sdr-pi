@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded RX compatibility audit of supplied native CLI or installed Web artifacts.
+"""Bounded RX compatibility audit of supplied native CLI or supplied Web artifacts.
 
 No deployment, model requests, production session writes, or retained IQ. Run one
 phase in a fresh direct child of /var/tmp/sdrharness-dev; preserve audit.json in
@@ -65,7 +65,7 @@ def validate(args):
     root.mkdir(mode=0o700)  # Fresh directory only; never reuse failed evidence.
     (root / 'tmp').mkdir(mode=0o700)
     env = {k: v for k, v in os.environ.items() if not k.startswith(('SDR_', 'SDRHARNESS_'))}
-    env.update(TMPDIR=str(root / 'tmp'), PYTHONDONTWRITEBYTECODE='1')
+    env.update(TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache'), PYTHONDONTWRITEBYTECODE='1')
     before = rf.ssh(rf.STATE)
     values = dict(zip(before.splitlines()[::2], before.splitlines()[1::2]))
     assert all(v == '0' for p, v in values.items() if p.endswith('_en') or p.endswith('/enable'))
@@ -79,8 +79,8 @@ def validate(args):
     audit = dict(schema_version=1, phase=args.phase, status='failed', feature_directory=str(root),
                  radio_before=before, sdrd_pid=daemon, cases=[], recognizer_available=False,
                  tx_operations=0, model_http_requests=0, generations=[])
-    audit['artifacts'] = {str(p): digest(p) for p in (args.controller, BIN / 'sdr-agent', BIN / 'sdr-agent-web-console')}
-    points = 19 if args.phase == 'cli' else 18
+    audit['artifacts'] = {str(p): digest(p) for p in (args.controller, args.web, BIN / 'sdr-agent', BIN / 'sdr-agent-web-console')}
+    points = 19 if args.phase == 'cli' else (50 if args.recovery else 18)
     audit['budget'] = dict(maximum_points=points, maximum_rx_bytes=points * 4096 * 4,
         centers_hz=[2455000000, 2470000000], sample_rate_hz=10000000,
         rf_bandwidth_hz=10000000, frame_samples=4096, aggregate_frames=1, gain_db=20,
@@ -188,7 +188,7 @@ def validate(args):
             provider_path = root / 'provider.json'
             provider_path.write_text(json.dumps(provider)); provider_path.chmod(0o600)
             request_template = json.loads((REPO / 'jetson-agx/sdrharness/config/request.json').read_text())
-            first_generation = int(time.time() * 1000)
+            first_generation = int(time.time() * 1000) + (86400000 if args.recovery else 0)
             request_template['session_generation'] = first_generation
             (root / 'request.json').write_text(json.dumps(request_template))
             nodeenv = dict(env, SDR_PLANNER_BASE_URL=provider['base_url'], SDR_PLANNER_API_KEY=provider['api_key'],
@@ -203,7 +203,7 @@ def validate(args):
                 SDR_WEB_SDRD_ADDRESS='192.168.1.10:43110', SDR_WEB_PROVIDER_CONFIG_PATH=str(provider_path),
                 SDR_WEB_RESULT_DB_PATH=str(root / 'results.sqlite3'), SDR_WEB_CAPTURE_ROOT=str(root / 'captures'),
                 SDR_WEB_CORPUS_ROOT=str(root / 'corpus'))
-            web = launch('web', [BIN / 'sdr-agent-web-console'], webenv)
+            web = launch('web', [args.web], webenv)
             def ready():
                 assert web.poll() is None, (root / 'web.log').read_text()
                 try:
@@ -228,6 +228,8 @@ def validate(args):
                     audit['browser_readiness'] = 'state HTTP 200 + rendered controls; SSE keeps network busy'
                 page.locator('#new-session').wait_for(state='visible')
                 audit['buttons'] = page.locator('button').evaluate_all('(nodes) => nodes.map(n => ({id:n.id,text:n.textContent.trim()}))')
+                if args.recovery:
+                    first_generation += 1  # New Web allocates above the template.
                 remember(first_generation)
                 print(json.dumps(dict(web_generation=first_generation, p201_point_paths=[f'/tmp/sdr-agent-dev/agx-sweep-{first_generation}-{i}' for i in range(2)])), flush=True)
                 page.locator('#new-session').click()
@@ -245,6 +247,34 @@ def validate(args):
                 page.locator('#sweep-results-entry').click()
                 page.locator('#delete-result').wait_for(state='visible')
                 page.screenshot(path=str(root / 'results.png'), full_page=True)
+                if args.recovery:
+                    old_generation = json.loads((root / 'runtime-request.json').read_text())['session_generation']
+                    assert old_generation == first_generation
+                    # Closing an SSE browser is a viewer disconnect, not an RX command.
+                    page.close()
+                    web.terminate(); assert web.wait(timeout=10) == 0
+                    restore()
+                    assert not (root / 'runtime-request.json').exists()
+                    web = launch('web-resumed', [args.web], webenv)
+                    wait_for(ready)
+                    wait_for(lambda: (root / 'runtime-request.json').exists())
+                    resumed = json.loads((root / 'runtime-request.json').read_text())
+                    assert resumed['session_generation'] > old_generation
+                    assert resumed['observation'].get('recognition') is None
+                    assert resumed['observation']['health']['recognizer_available'] is False
+                    assert session()['id'] == first['id'] and session()['initial_survey_status'] == 'complete'
+                    assert http(base, '/api/results') == results
+                    assert http(base, f"/api/results/{results[0]['id']}") == detail
+                    page = browser.new_page()
+                    page.on('pageerror', lambda error: errors.append(str(error)))
+                    with page.expect_response(lambda response: response.url == base + '/api/state' and response.ok):
+                        page.goto(base)
+                    page.locator('#sweep-results-entry').click()
+                    page.locator('#delete-result').wait_for(state='visible')
+                    page.on('dialog', lambda dialog: dialog.accept())
+                    check_case('restart preserves completed session and result without RX replay', dict(
+                        session_id=first['id'], before_generation=old_generation,
+                        after_generation=resumed['session_generation'], result_count=len(results)))
                 page.locator('#delete-result').click()
                 wait_for(lambda: http(base, '/api/results') == [])
                 check_case('browser manual result deletion', {'remaining': 0})
@@ -252,7 +282,9 @@ def validate(args):
                 provider['initial_survey'].update(stop_hz=2470000000, dwell_ms=1000)
                 provider_path.write_text(json.dumps(provider))
                 second_generation = first_generation + 1
-                request_template['session_generation'] = second_generation
+                if args.recovery:
+                    second_generation = json.loads((root / 'state.json').read_text())['controller_generation'] + 1
+                request_template['session_generation'] = second_generation - (1 if args.recovery else 0)
                 (root / 'request.json').write_text(json.dumps(request_template))
                 remember(second_generation)
                 print(json.dumps(dict(web_generation=second_generation, p201_point_paths=[f'/tmp/sdr-agent-dev/agx-sweep-{second_generation}-{i}' for i in range(16)])), flush=True)
@@ -265,6 +297,53 @@ def validate(args):
                 assert http(base, '/api/results') == []
                 check_case('browser active stop', session())
                 pending.clear()
+                if args.recovery:
+                    stopped = session()
+                    # Commands to the inactive prior session must fail before reaching CLI.
+                    import urllib.error
+                    try:
+                        http(base, f"/api/sessions/{first['id']}/command", 'POST', {'command': '/status'})
+                        raise AssertionError('inactive command accepted')
+                    except urllib.error.HTTPError as error:
+                        assert error.code == 409
+                    http(base, f"/api/sessions/{first['id']}/activate", 'POST', {})
+                    wait_for(lambda: session()['id'] == first['id'] and session()['status'] == 'connected')
+                    assert session()['initial_survey_status'] == 'complete'
+                    assert http(base, '/api/results') == []
+                    assert next(s for s in http(base, '/api/state')['sessions'] if s['id'] == stopped['id']).get('observation') == stopped.get('observation')
+                    check_case('session switch rejects inactive commands and keeps results deleted', {'http_status': 409})
+                    for fault in ('controller-disconnect', 'web-shutdown'):
+                        generation = json.loads((root / 'state.json').read_text())['controller_generation'] + 1
+                        remember(generation)
+                        print(json.dumps(dict(case=fault, generation=generation, p201_point_paths=[
+                            f'/tmp/sdr-agent-dev/agx-sweep-{generation}-{i}' for i in range(16)])), flush=True)
+                        # Template stays below persisted floor; the new actor must use that floor.
+                        page.locator('#new-session').click()
+                        wait_for(lambda: rf.ssh('cat /sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency').strip() == '2455000000')
+                        assert json.loads((root / 'runtime-request.json').read_text())['session_generation'] == generation
+                        if fault == 'controller-disconnect':
+                            child_ids = subprocess.check_output(['ps', '-o', 'pid=', '--ppid', str(web.pid)], text=True).split()
+                            assert len(child_ids) == 1
+                            os.kill(int(child_ids[0]), signal.SIGKILL)
+                            wait_for(lambda: session()['status'] == 'exited')
+                        else:
+                            web.terminate(); assert web.wait(timeout=10) == 0
+                        restore()
+                        if fault == 'controller-disconnect':
+                            web.terminate(); assert web.wait(timeout=10) == 0
+                        assert not (root / 'runtime-request.json').exists()
+                        web = launch(f'web-after-{fault}', [args.web], webenv)
+                        wait_for(ready)
+                        wait_for(lambda: session()['status'] == 'connected')
+                        assert session()['initial_survey_status'] == 'failed'
+                        assert http(base, '/api/results') == []
+                        check_case(f'{fault} restores RF; restart does not repeat interrupted sweep', {
+                            'session_id': session()['id'], 'status': session()['initial_survey_status'],
+                            'generation': generation, 'restored_generation': json.loads((root / 'runtime-request.json').read_text())['session_generation']})
+                        pending.clear()
+                        with page.expect_response(lambda response: response.url == base + '/api/state' and response.ok):
+                            page.reload()
+                        page.locator('#new-session').wait_for(state='visible')
                 assert errors == [], errors
                 audit['browser_errors'] = errors
                 browser.close()
@@ -311,6 +390,8 @@ if __name__ == '__main__':
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--phase', choices=['cli', 'web'], required=True)
     parser.add_argument('--controller', type=Path, required=True)
+    parser.add_argument('--web', type=Path, default=BIN / 'sdr-agent-web-console')
+    parser.add_argument('--recovery', action='store_true', help='Validate current Web restart, isolation and disconnect paths')
     args = parser.parse_args()
     for sig in (signal.SIGINT, signal.SIGTERM):
         signal.signal(sig, lambda signum, _frame: (_ for _ in ()).throw(InterruptedError(f'signal {signum}')))

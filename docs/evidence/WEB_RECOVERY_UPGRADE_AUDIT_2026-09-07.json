@@ -1,0 +1,1486 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "c3a4411a1b2d84efcb3c7e82d0e2b9cf6f59b18a",
+  "branch": "codex/recognizer-amc-offline-validation",
+  "scope": "Web RX-only upgrade and session recovery; not A1",
+  "recognizer_available": false,
+  "model_experiments": 0,
+  "tx_operations": 0,
+  "new_iq_retained_bytes": 0,
+  "source_files": [
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/web-console/src/main.rs",
+      "bytes": 121203,
+      "sha256": "43fa157eb8d820e2ed8ad8ed1c3e81d13373c9d625b36ee3ba55cc897d71df3e"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/web-console/Cargo.lock",
+      "bytes": 19300,
+      "sha256": "3e8fe11008885c5f2dc823d89a3ae69b927151436aca0fec4a9ff0217b720be7"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/web-console/public/app.js",
+      "bytes": 48940,
+      "sha256": "418fb9a85b94f3ba65ec1094daf4dd649471bd6f3a07e0b540eade63fd939019"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/web-console/public/index.html",
+      "bytes": 21505,
+      "sha256": "ae4b731cd3d4d1e9f4ac20a81feb881d1c02852c059c72777ee389bd59ce0efd"
+    },
+    {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py",
+      "bytes": 25344,
+      "sha256": "03ffb236de62dcd2bb16292984d9bd319b0e802e4950523e959105afbc7e3162"
+    },
+    {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/systemd/sdrharness-web.service",
+      "bytes": 873,
+      "sha256": "a51f2cbe4d773ef809c646dd2ee81f6fc8a160944ef10f4e4512a251e501d5ab"
+    }
+  ],
+  "installed_baseline": {
+    "web_release": "20260905-p201-corpus-store-v1",
+    "web_sha256": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834",
+    "web_assets_match_commit": "df7f8c3",
+    "app_js_sha256": "125f1572e061ec6492b05081762ca8964ad411eccfb36901b38bc4161b2431f6",
+    "index_html_sha256": "da49fb2db5bda17abe3de483609679f880fb9c78c2bd60a7a66b71f7ba633820",
+    "web_pid": 475400,
+    "cli_sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+    "sdrd_pid": 5909,
+    "sdrd_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+    "request_differing_top_fields_vs_repository": [
+      "observation"
+    ],
+    "service_difference": "TimeoutStopSec 8 -> 50; no logging/monitoring configuration"
+  },
+  "tests": {
+    "web": {
+      "passed": 36,
+      "ignored": 2
+    },
+    "controller": {
+      "passed": 125,
+      "ignored": 1
+    },
+    "node": {
+      "passed": 56
+    },
+    "web_clippy": "passed -D warnings",
+    "web_format": "passed",
+    "native_release": "AArch64 stripped; all dynamic libraries resolved",
+    "systemd_verify": "exit 0; three pre-existing unrelated unit warnings",
+    "python_ast": "passed"
+  },
+  "failures": [
+    {
+      "attempt": "initial-compile",
+      "reason": "extra token argument in initial edit; fixed before successful tests/release"
+    },
+    {
+      "attempt": "controller-tests",
+      "reason": "one Unix socket test exceeded SUN_LEN under long feature TMPDIR; 100 passed, 1 failed, 1 ignored; reran all targets in /var/tmp/sdrharness-dev/w907t and passed"
+    },
+    {
+      "attempt": "live1",
+      "reason": "harness indexed optional observation absent after early stop; use optional lookup; RF restored and all private processes stopped"
+    },
+    {
+      "attempt": "live2",
+      "reason": "Jetson kernel lacks /proc/PID/task/PID/children; use ps --ppid for controlled child PID; RF restored and all private processes stopped"
+    }
+  ],
+  "live_attempts": [
+    {
+      "schema_version": 1,
+      "phase": "web",
+      "status": "failed",
+      "feature_directory": "/var/tmp/sdrharness-dev/web-recovery-907a-live1",
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "5909",
+      "cases": [
+        {
+          "name": "native observe",
+          "restored": true,
+          "result": {
+            "online": true,
+            "healthy": true,
+            "health_flags": 0,
+            "iio_visible": true,
+            "can_retune": true,
+            "can_capture_iq": true,
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        },
+        {
+          "name": "installed Web initial RX and archive",
+          "restored": true,
+          "result": {
+            "summary": {
+              "id": 1,
+              "session_id": "session-1788783943945",
+              "sweep_id": "initial-1788870338174",
+              "kind": "initial",
+              "created_at_ms": 1788783945041,
+              "point_count": 2,
+              "candidate_count": 0,
+              "elapsed_ms": 1016,
+              "gain_db": 20,
+              "noise_floor_dbfs": -53.59866,
+              "iq_bytes": 0
+            },
+            "sweep_plot": {
+              "schema_version": 1,
+              "sweep_id": "initial-1788870338174",
+              "kind": "initial",
+              "elapsed_ms": 1016,
+              "gain_db": 20,
+              "noise_floor_dbfs": -53.59866,
+              "points": [
+                [
+                  2455000000,
+                  -53.71174
+                ],
+                [
+                  2456000000,
+                  -53.59866
+                ]
+              ],
+              "candidates": []
+            }
+          }
+        },
+        {
+          "name": "restart preserves completed session and result without RX replay",
+          "restored": true,
+          "result": {
+            "session_id": "session-1788783943945",
+            "before_generation": 1788870338174,
+            "after_generation": 1788870338175,
+            "result_count": 1
+          }
+        },
+        {
+          "name": "browser manual result deletion",
+          "restored": true,
+          "result": {
+            "remaining": 0
+          }
+        },
+        {
+          "name": "browser active stop",
+          "restored": true,
+          "result": {
+            "id": "session-1788783947435",
+            "generation": 1,
+            "status": "connected",
+            "initial_survey_status": "failed",
+            "events": [
+              {
+                "id": 1,
+                "timestamp_ms": 1788783947447,
+                "kind": "system",
+                "text": "终端进程已启动，等待控制器提示。"
+              },
+              {
+                "id": 2,
+                "timestamp_ms": 1788783947454,
+                "kind": "system",
+                "text": "SDR Agent 已连接。输入 /help 查看命令。硬件执行=已启用。"
+              },
+              {
+                "id": 3,
+                "timestamp_ms": 1788783947460,
+                "kind": "sweep",
+                "text": "首次扫频已开始：2455000000–2470000000 Hz，16 个点，步进 1000000 Hz，每点停留 1000 ms，固定接收增益 20 dB；最多处理 262144 字节接收样本，可随时输入 /stop。"
+              },
+              {
+                "id": 4,
+                "timestamp_ms": 1788783947461,
+                "kind": "prompt",
+                "text": "SDR Agent> "
+              },
+              {
+                "id": 5,
+                "timestamp_ms": 1788783948468,
+                "kind": "operator",
+                "text": "Operator> /stop"
+              },
+              {
+                "id": 6,
+                "timestamp_ms": 1788783949422,
+                "kind": "sweep",
+                "text": "首次扫频已取消并完成恢复：remote_error: capture_failed_restored metadata={\"dropped_samples\":0,\"error\":\"capture_failed_restored\",\"generation\":1788870338176,\"health\":{\"flags\":8,\"healthy\":false,\"source\":\"iio_adapter\"},\"overflow\":false,\"request_id\":5,\"schema_version\":1,\"sequence\":15,\"session_generation\":1788870338176,\"status\":\"error\",\"timeout\":{\"elapsed_us\":3079,\"limit_ms\":250,\"timed_out\":false}}"
+              },
+              {
+                "id": 7,
+                "timestamp_ms": 1788783949429,
+                "kind": "system",
+                "text": "会话已停止；旧计划已失效。"
+              },
+              {
+                "id": 8,
+                "timestamp_ms": 1788783949431,
+                "kind": "prompt",
+                "text": "SDR Agent> "
+              }
+            ]
+          }
+        }
+      ],
+      "recognizer_available": false,
+      "tx_operations": 0,
+      "model_http_requests": 0,
+      "generations": [
+        1788870338174,
+        1788870338176
+      ],
+      "artifacts": {
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+        "/var/tmp/sdrharness-dev/web-recovery-907a/target/release/sdr-agent-web-console": "c2e19b171e30475a06e38a074ec55282bf55f0f3ffe5de6cf1a8a730b957a0fe",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+      },
+      "budget": {
+        "maximum_points": 50,
+        "maximum_rx_bytes": 819200,
+        "centers_hz": [
+          2455000000,
+          2470000000
+        ],
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "frame_samples": 4096,
+        "aggregate_frames": 1,
+        "gain_db": 20,
+        "success_points": 2,
+        "cancel_maximum_points": 16,
+        "maximum_dwell_ms": 1000,
+        "maximum_point_timeout_ms": 250,
+        "conservative_rx_duration_ms": 62550,
+        "free_bytes": 807795748864,
+        "save_iq": false,
+        "p201_paths": "/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>",
+        "stop": "Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup"
+      },
+      "browser_readiness": "state HTTP 200 + rendered controls; SSE keeps network busy",
+      "processes_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid_after": "5909",
+      "p201_paths_verified_absent": [
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338174-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870338176-15"
+      ],
+      "p201_cleanup_verified": true,
+      "protected_results_unchanged": true,
+      "protected_sessions_unchanged": true,
+      "restored": true,
+      "full_temporary_audit_receipt": {
+        "path": "/var/tmp/sdrharness-dev/web-recovery-907a-live1/audit.json",
+        "bytes": 13030,
+        "sha256": "fa5a4b129b06a44562e51c5fa353e46493be603b563654ac8565983f95c5dbfe"
+      }
+    },
+    {
+      "schema_version": 1,
+      "phase": "web",
+      "status": "failed",
+      "feature_directory": "/var/tmp/sdrharness-dev/web-recovery-907a-live2",
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "5909",
+      "cases": [
+        {
+          "name": "native observe",
+          "restored": true,
+          "result": {
+            "online": true,
+            "healthy": true,
+            "health_flags": 0,
+            "iio_visible": true,
+            "can_retune": true,
+            "can_capture_iq": true,
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        },
+        {
+          "name": "installed Web initial RX and archive",
+          "restored": true,
+          "result": {
+            "summary": {
+              "id": 1,
+              "session_id": "session-1788783988824",
+              "sweep_id": "initial-1788870383674",
+              "kind": "initial",
+              "created_at_ms": 1788783989924,
+              "point_count": 2,
+              "candidate_count": 0,
+              "elapsed_ms": 1012,
+              "gain_db": 20,
+              "noise_floor_dbfs": -54.219063,
+              "iq_bytes": 0
+            },
+            "sweep_plot": {
+              "schema_version": 1,
+              "sweep_id": "initial-1788870383674",
+              "kind": "initial",
+              "elapsed_ms": 1012,
+              "gain_db": 20,
+              "noise_floor_dbfs": -54.219063,
+              "points": [
+                [
+                  2455000000,
+                  -54.219063
+                ],
+                [
+                  2456000000,
+                  -54.266808
+                ]
+              ],
+              "candidates": []
+            }
+          }
+        },
+        {
+          "name": "restart preserves completed session and result without RX replay",
+          "restored": true,
+          "result": {
+            "session_id": "session-1788783988824",
+            "before_generation": 1788870383674,
+            "after_generation": 1788870383675,
+            "result_count": 1
+          }
+        },
+        {
+          "name": "browser manual result deletion",
+          "restored": true,
+          "result": {
+            "remaining": 0
+          }
+        },
+        {
+          "name": "browser active stop",
+          "restored": true,
+          "result": {
+            "id": "session-1788783992315",
+            "generation": 1,
+            "status": "connected",
+            "initial_survey_status": "failed",
+            "events": [
+              {
+                "id": 1,
+                "timestamp_ms": 1788783992333,
+                "kind": "system",
+                "text": "终端进程已启动，等待控制器提示。"
+              },
+              {
+                "id": 2,
+                "timestamp_ms": 1788783992339,
+                "kind": "system",
+                "text": "SDR Agent 已连接。输入 /help 查看命令。硬件执行=已启用。"
+              },
+              {
+                "id": 3,
+                "timestamp_ms": 1788783992345,
+                "kind": "sweep",
+                "text": "首次扫频已开始：2455000000–2470000000 Hz，16 个点，步进 1000000 Hz，每点停留 1000 ms，固定接收增益 20 dB；最多处理 262144 字节接收样本，可随时输入 /stop。"
+              },
+              {
+                "id": 4,
+                "timestamp_ms": 1788783992346,
+                "kind": "prompt",
+                "text": "SDR Agent> "
+              },
+              {
+                "id": 5,
+                "timestamp_ms": 1788783993350,
+                "kind": "operator",
+                "text": "Operator> /stop"
+              },
+              {
+                "id": 6,
+                "timestamp_ms": 1788783994260,
+                "kind": "sweep",
+                "text": "首次扫频已取消并完成恢复：remote_error: capture_failed_restored metadata={\"dropped_samples\":0,\"error\":\"capture_failed_restored\",\"generation\":1788870383676,\"health\":{\"flags\":8,\"healthy\":false,\"source\":\"iio_adapter\"},\"overflow\":false,\"request_id\":5,\"schema_version\":1,\"sequence\":18,\"session_generation\":1788870383676,\"status\":\"error\",\"timeout\":{\"elapsed_us\":3318,\"limit_ms\":250,\"timed_out\":false}}"
+              },
+              {
+                "id": 7,
+                "timestamp_ms": 1788783994268,
+                "kind": "system",
+                "text": "会话已停止；旧计划已失效。"
+              },
+              {
+                "id": 8,
+                "timestamp_ms": 1788783994269,
+                "kind": "prompt",
+                "text": "SDR Agent> "
+              }
+            ]
+          }
+        },
+        {
+          "name": "session switch rejects inactive commands and keeps results deleted",
+          "restored": true,
+          "result": {
+            "http_status": 409
+          }
+        }
+      ],
+      "recognizer_available": false,
+      "tx_operations": 0,
+      "model_http_requests": 0,
+      "generations": [
+        1788870383674,
+        1788870383676,
+        1788870383678
+      ],
+      "artifacts": {
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+        "/var/tmp/sdrharness-dev/web-recovery-907a/target/release/sdr-agent-web-console": "c2e19b171e30475a06e38a074ec55282bf55f0f3ffe5de6cf1a8a730b957a0fe",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+      },
+      "budget": {
+        "maximum_points": 50,
+        "maximum_rx_bytes": 819200,
+        "centers_hz": [
+          2455000000,
+          2470000000
+        ],
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "frame_samples": 4096,
+        "aggregate_frames": 1,
+        "gain_db": 20,
+        "success_points": 2,
+        "cancel_maximum_points": 16,
+        "maximum_dwell_ms": 1000,
+        "maximum_point_timeout_ms": 250,
+        "conservative_rx_duration_ms": 62550,
+        "free_bytes": 807782961152,
+        "save_iq": false,
+        "p201_paths": "/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>",
+        "stop": "Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup"
+      },
+      "browser_readiness": "state HTTP 200 + rendered controls; SSE keeps network busy",
+      "processes_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid_after": "5909",
+      "p201_paths_verified_absent": [
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383674-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383676-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870383678-15"
+      ],
+      "p201_cleanup_verified": true,
+      "protected_results_unchanged": true,
+      "protected_sessions_unchanged": true,
+      "restored": true,
+      "full_temporary_audit_receipt": {
+        "path": "/var/tmp/sdrharness-dev/web-recovery-907a-live2/audit.json",
+        "bytes": 14065,
+        "sha256": "7b1e99c702756d1a0c9174d1ee2351cc49fc169341f11e0940f833b9dc783b02"
+      }
+    },
+    {
+      "schema_version": 1,
+      "phase": "web",
+      "status": "passed",
+      "feature_directory": "/var/tmp/sdrharness-dev/web-recovery-907a-live3",
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "5909",
+      "cases": [
+        {
+          "name": "native observe",
+          "restored": true,
+          "result": {
+            "online": true,
+            "healthy": true,
+            "health_flags": 0,
+            "iio_visible": true,
+            "can_retune": true,
+            "can_capture_iq": true,
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        },
+        {
+          "name": "installed Web initial RX and archive",
+          "restored": true,
+          "result": {
+            "summary": {
+              "id": 1,
+              "session_id": "session-1788784058190",
+              "sweep_id": "initial-1788870453122",
+              "kind": "initial",
+              "created_at_ms": 1788784059287,
+              "point_count": 2,
+              "candidate_count": 0,
+              "elapsed_ms": 1032,
+              "gain_db": 20,
+              "noise_floor_dbfs": -37.823772,
+              "iq_bytes": 0
+            },
+            "sweep_plot": {
+              "schema_version": 1,
+              "sweep_id": "initial-1788870453122",
+              "kind": "initial",
+              "elapsed_ms": 1032,
+              "gain_db": 20,
+              "noise_floor_dbfs": -37.823772,
+              "points": [
+                [
+                  2455000000,
+                  -53.626595
+                ],
+                [
+                  2456000000,
+                  -37.823772
+                ]
+              ],
+              "candidates": []
+            }
+          }
+        },
+        {
+          "name": "restart preserves completed session and result without RX replay",
+          "restored": true,
+          "result": {
+            "session_id": "session-1788784058190",
+            "before_generation": 1788870453122,
+            "after_generation": 1788870453123,
+            "result_count": 1
+          }
+        },
+        {
+          "name": "browser manual result deletion",
+          "restored": true,
+          "result": {
+            "remaining": 0
+          }
+        },
+        {
+          "name": "browser active stop",
+          "restored": true,
+          "result": {
+            "id": "session-1788784061647",
+            "generation": 1,
+            "status": "connected",
+            "initial_survey_status": "failed",
+            "events": [
+              {
+                "id": 1,
+                "timestamp_ms": 1788784061659,
+                "kind": "system",
+                "text": "终端进程已启动，等待控制器提示。"
+              },
+              {
+                "id": 2,
+                "timestamp_ms": 1788784061665,
+                "kind": "system",
+                "text": "SDR Agent 已连接。输入 /help 查看命令。硬件执行=已启用。"
+              },
+              {
+                "id": 3,
+                "timestamp_ms": 1788784061671,
+                "kind": "sweep",
+                "text": "首次扫频已开始：2455000000–2470000000 Hz，16 个点，步进 1000000 Hz，每点停留 1000 ms，固定接收增益 20 dB；最多处理 262144 字节接收样本，可随时输入 /stop。"
+              },
+              {
+                "id": 4,
+                "timestamp_ms": 1788784061671,
+                "kind": "prompt",
+                "text": "SDR Agent> "
+              },
+              {
+                "id": 5,
+                "timestamp_ms": 1788784062663,
+                "kind": "operator",
+                "text": "Operator> /stop"
+              },
+              {
+                "id": 6,
+                "timestamp_ms": 1788784063602,
+                "kind": "sweep",
+                "text": "首次扫频已取消并完成恢复：remote_error: capture_failed_restored metadata={\"dropped_samples\":0,\"error\":\"capture_failed_restored\",\"generation\":1788870453124,\"health\":{\"flags\":8,\"healthy\":false,\"source\":\"iio_adapter\"},\"overflow\":false,\"request_id\":5,\"schema_version\":1,\"sequence\":21,\"session_generation\":1788870453124,\"status\":\"error\",\"timeout\":{\"elapsed_us\":2860,\"limit_ms\":250,\"timed_out\":false}}"
+              },
+              {
+                "id": 7,
+                "timestamp_ms": 1788784063608,
+                "kind": "system",
+                "text": "会话已停止；旧计划已失效。"
+              },
+              {
+                "id": 8,
+                "timestamp_ms": 1788784063610,
+                "kind": "prompt",
+                "text": "SDR Agent> "
+              }
+            ]
+          }
+        },
+        {
+          "name": "session switch rejects inactive commands and keeps results deleted",
+          "restored": true,
+          "result": {
+            "http_status": 409
+          }
+        },
+        {
+          "name": "controller-disconnect restores RF; restart does not repeat interrupted sweep",
+          "restored": true,
+          "result": {
+            "session_id": "session-1788784064595",
+            "status": "failed",
+            "generation": 1788870453126,
+            "restored_generation": 1788870453127
+          }
+        },
+        {
+          "name": "web-shutdown restores RF; restart does not repeat interrupted sweep",
+          "restored": true,
+          "result": {
+            "session_id": "session-1788784066480",
+            "status": "failed",
+            "generation": 1788870453128,
+            "restored_generation": 1788870453129
+          }
+        }
+      ],
+      "recognizer_available": false,
+      "tx_operations": 0,
+      "model_http_requests": 0,
+      "generations": [
+        1788870453122,
+        1788870453124,
+        1788870453126,
+        1788870453128
+      ],
+      "artifacts": {
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+        "/var/tmp/sdrharness-dev/web-recovery-907a/target/release/sdr-agent-web-console": "c2e19b171e30475a06e38a074ec55282bf55f0f3ffe5de6cf1a8a730b957a0fe",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+      },
+      "budget": {
+        "maximum_points": 50,
+        "maximum_rx_bytes": 819200,
+        "centers_hz": [
+          2455000000,
+          2470000000
+        ],
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "frame_samples": 4096,
+        "aggregate_frames": 1,
+        "gain_db": 20,
+        "success_points": 2,
+        "cancel_maximum_points": 16,
+        "maximum_dwell_ms": 1000,
+        "maximum_point_timeout_ms": 250,
+        "conservative_rx_duration_ms": 62550,
+        "free_bytes": 807758483456,
+        "save_iq": false,
+        "p201_paths": "/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>",
+        "stop": "Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup"
+      },
+      "browser_readiness": "state HTTP 200 + rendered controls; SSE keeps network busy",
+      "browser_errors": [],
+      "processes_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid_after": "5909",
+      "p201_paths_verified_absent": [
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453122-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453124-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453126-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870453128-15"
+      ],
+      "p201_cleanup_verified": true,
+      "protected_results_unchanged": true,
+      "protected_sessions_unchanged": true,
+      "restored": true,
+      "full_temporary_audit_receipt": {
+        "path": "/var/tmp/sdrharness-dev/web-recovery-907a-live3/audit.json",
+        "bytes": 15565,
+        "sha256": "5692b65060a0014e5ec54b132d510f91309bb7d555f4241d53c3a0c422212cfe"
+      }
+    },
+    {
+      "schema_version": 1,
+      "phase": "web",
+      "status": "passed",
+      "feature_directory": "/var/tmp/sdrharness-dev/web-recovery-907a-installed",
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "5909",
+      "cases": [
+        {
+          "name": "native observe",
+          "restored": true,
+          "result": {
+            "online": true,
+            "healthy": true,
+            "health_flags": 0,
+            "iio_visible": true,
+            "can_retune": true,
+            "can_capture_iq": true,
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        },
+        {
+          "name": "installed Web initial RX and archive",
+          "restored": true,
+          "result": {
+            "summary": {
+              "id": 1,
+              "session_id": "session-1788784179934",
+              "sweep_id": "initial-1788870574948",
+              "kind": "initial",
+              "created_at_ms": 1788784181034,
+              "point_count": 2,
+              "candidate_count": 0,
+              "elapsed_ms": 1020,
+              "gain_db": 20,
+              "noise_floor_dbfs": -39.643204,
+              "iq_bytes": 0
+            },
+            "sweep_plot": {
+              "schema_version": 1,
+              "sweep_id": "initial-1788870574948",
+              "kind": "initial",
+              "elapsed_ms": 1020,
+              "gain_db": 20,
+              "noise_floor_dbfs": -39.643204,
+              "points": [
+                [
+                  2455000000,
+                  -53.9099
+                ],
+                [
+                  2456000000,
+                  -39.643204
+                ]
+              ],
+              "candidates": []
+            }
+          }
+        },
+        {
+          "name": "restart preserves completed session and result without RX replay",
+          "restored": true,
+          "result": {
+            "session_id": "session-1788784179934",
+            "before_generation": 1788870574948,
+            "after_generation": 1788870574949,
+            "result_count": 1
+          }
+        },
+        {
+          "name": "browser manual result deletion",
+          "restored": true,
+          "result": {
+            "remaining": 0
+          }
+        },
+        {
+          "name": "browser active stop",
+          "restored": true,
+          "result": {
+            "id": "session-1788784183508",
+            "generation": 1,
+            "status": "connected",
+            "initial_survey_status": "failed",
+            "events": [
+              {
+                "id": 1,
+                "timestamp_ms": 1788784183521,
+                "kind": "system",
+                "text": "终端进程已启动，等待控制器提示。"
+              },
+              {
+                "id": 2,
+                "timestamp_ms": 1788784183527,
+                "kind": "system",
+                "text": "SDR Agent 已连接。输入 /help 查看命令。硬件执行=已启用。"
+              },
+              {
+                "id": 3,
+                "timestamp_ms": 1788784183533,
+                "kind": "sweep",
+                "text": "首次扫频已开始：2455000000–2470000000 Hz，16 个点，步进 1000000 Hz，每点停留 1000 ms，固定接收增益 20 dB；最多处理 262144 字节接收样本，可随时输入 /stop。"
+              },
+              {
+                "id": 4,
+                "timestamp_ms": 1788784183534,
+                "kind": "prompt",
+                "text": "SDR Agent> "
+              },
+              {
+                "id": 5,
+                "timestamp_ms": 1788784184524,
+                "kind": "operator",
+                "text": "Operator> /stop"
+              },
+              {
+                "id": 6,
+                "timestamp_ms": 1788784185463,
+                "kind": "sweep",
+                "text": "首次扫频已取消并完成恢复：remote_error: capture_failed_restored metadata={\"dropped_samples\":0,\"error\":\"capture_failed_restored\",\"generation\":1788870574950,\"health\":{\"flags\":8,\"healthy\":false,\"source\":\"iio_adapter\"},\"overflow\":false,\"request_id\":5,\"schema_version\":1,\"sequence\":25,\"session_generation\":1788870574950,\"status\":\"error\",\"timeout\":{\"elapsed_us\":2424,\"limit_ms\":250,\"timed_out\":false}}"
+              },
+              {
+                "id": 7,
+                "timestamp_ms": 1788784185469,
+                "kind": "system",
+                "text": "会话已停止；旧计划已失效。"
+              },
+              {
+                "id": 8,
+                "timestamp_ms": 1788784185472,
+                "kind": "prompt",
+                "text": "SDR Agent> "
+              }
+            ]
+          }
+        },
+        {
+          "name": "session switch rejects inactive commands and keeps results deleted",
+          "restored": true,
+          "result": {
+            "http_status": 409
+          }
+        },
+        {
+          "name": "controller-disconnect restores RF; restart does not repeat interrupted sweep",
+          "restored": true,
+          "result": {
+            "session_id": "session-1788784186456",
+            "status": "failed",
+            "generation": 1788870574952,
+            "restored_generation": 1788870574953
+          }
+        },
+        {
+          "name": "web-shutdown restores RF; restart does not repeat interrupted sweep",
+          "restored": true,
+          "result": {
+            "session_id": "session-1788784188291",
+            "status": "failed",
+            "generation": 1788870574954,
+            "restored_generation": 1788870574955
+          }
+        }
+      ],
+      "recognizer_available": false,
+      "tx_operations": 0,
+      "model_http_requests": 0,
+      "generations": [
+        1788870574948,
+        1788870574950,
+        1788870574952,
+        1788870574954
+      ],
+      "artifacts": {
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "c2e19b171e30475a06e38a074ec55282bf55f0f3ffe5de6cf1a8a730b957a0fe"
+      },
+      "budget": {
+        "maximum_points": 50,
+        "maximum_rx_bytes": 819200,
+        "centers_hz": [
+          2455000000,
+          2470000000
+        ],
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "frame_samples": 4096,
+        "aggregate_frames": 1,
+        "gain_db": 20,
+        "success_points": 2,
+        "cancel_maximum_points": 16,
+        "maximum_dwell_ms": 1000,
+        "maximum_point_timeout_ms": 250,
+        "conservative_rx_duration_ms": 62550,
+        "free_bytes": 807727378432,
+        "save_iq": false,
+        "p201_paths": "/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>",
+        "stop": "Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup"
+      },
+      "browser_readiness": "state HTTP 200 + rendered controls; SSE keeps network busy",
+      "browser_errors": [],
+      "processes_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid_after": "5909",
+      "p201_paths_verified_absent": [
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574948-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574950-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574952-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788870574954-15"
+      ],
+      "p201_cleanup_verified": true,
+      "protected_results_unchanged": true,
+      "protected_sessions_unchanged": true,
+      "restored": true,
+      "full_temporary_audit_receipt": {
+        "path": "/var/tmp/sdrharness-dev/web-recovery-907a-installed/audit.json",
+        "bytes": 15413,
+        "sha256": "8b13b08e05a073a720de3da6c59a51b5b8dd36fcb86aa0e675db3196d6470330"
+      }
+    }
+  ],
+  "deployment": {
+    "schema_version": 1,
+    "baseline": {
+      "active_session_id": "session-1788261263788",
+      "session_ids": [
+        "session-1788261263788",
+        "session-1788263597140"
+      ],
+      "initial_surveys": {
+        "session-1788263597140": "complete",
+        "session-1788261263788": "complete"
+      },
+      "results": {
+        "count": 2,
+        "canonical_json_sha256": "e4fb2ffb75eb4b113c878ad5e3a61d5f046697e5c78b8bee9c81000c373402c5"
+      },
+      "corpus": {
+        "count": 1,
+        "canonical_json_sha256": "556aab46922f65fb174305485acf5dffc290bc0aa1c62edb959fd19d61a66245"
+      }
+    },
+    "cli": {
+      "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent",
+      "bytes": 2544408,
+      "sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f"
+    },
+    "previous_web": {
+      "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console",
+      "bytes": 2336008,
+      "sha256": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+    },
+    "config_hashes": {
+      "/etc/sdrharness/runtime.env": "8de3b79d181e5fbbbf408eba6ab71e2b35cff67954d222a632396bd8f63afc6d",
+      "/etc/sdrharness/request.json": "75eb9e268066cd1b5cacc54ecf0c2a86debe235413766b450c7611d670967a15",
+      "/var/lib/sdrharness/web-console/provider.json": "eeb926f47dcaf4ca6a41b1b894f8cc0e6de5254e10598455016f5e3d49a0313d"
+    },
+    "stages": [
+      {
+        "stage": "install",
+        "release": {
+          "schema_version": 1,
+          "release_id": "20260907-web-recovery-v1",
+          "verified_files": 2,
+          "bytes": 3278985,
+          "recognizer_available": false,
+          "installed": false,
+          "manifest_sha256": "64cb272d7f3a4fc0c267d159de6132d538b328dd973c093be371dfee9167afa7"
+        },
+        "web_pid": 487691,
+        "cli_pid": 487695,
+        "web_sha256": "c2e19b171e30475a06e38a074ec55282bf55f0f3ffe5de6cf1a8a730b957a0fe",
+        "timeout_stop": "50s",
+        "preserved": true,
+        "health": {
+          "ready": true,
+          "recognizer_available": false,
+          "schema_version": 1,
+          "service": "web"
+        },
+        "controller_generation": 1788784108244,
+        "config_hashes_unchanged": true,
+        "radio_restored": true,
+        "sdrd_pid": "5909"
+      },
+      {
+        "stage": "rollback",
+        "release": {
+          "schema_version": 1,
+          "release_id": "20260907-before-web-recovery-v1",
+          "verified_files": 2,
+          "bytes": 2336880,
+          "recognizer_available": false,
+          "installed": false,
+          "manifest_sha256": "e89b6cc7fd42278b120abe2b878d71f20af0dbc015ba8cca5925206f63658a66"
+        },
+        "web_pid": 487785,
+        "cli_pid": 487788,
+        "web_sha256": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834",
+        "timeout_stop": "8s",
+        "preserved": true,
+        "config_hashes_unchanged": true,
+        "radio_restored": true,
+        "sdrd_pid": "5909"
+      },
+      {
+        "stage": "final-install",
+        "release": {
+          "schema_version": 1,
+          "release_id": "20260907-web-recovery-v1",
+          "verified_files": 2,
+          "bytes": 3278985,
+          "recognizer_available": false,
+          "installed": false,
+          "manifest_sha256": "64cb272d7f3a4fc0c267d159de6132d538b328dd973c093be371dfee9167afa7"
+        },
+        "web_pid": 487881,
+        "cli_pid": 487885,
+        "web_sha256": "c2e19b171e30475a06e38a074ec55282bf55f0f3ffe5de6cf1a8a730b957a0fe",
+        "timeout_stop": "50s",
+        "preserved": true,
+        "health": {
+          "ready": true,
+          "recognizer_available": false,
+          "schema_version": 1,
+          "service": "web"
+        },
+        "controller_generation": 1788784154440,
+        "config_hashes_unchanged": true,
+        "radio_restored": true,
+        "sdrd_pid": "5909"
+      }
+    ],
+    "packages": [
+      {
+        "schema_version": 1,
+        "release_id": "20260907-before-web-recovery-v1",
+        "verified_files": 2,
+        "bytes": 2336880,
+        "recognizer_available": false,
+        "installed": false,
+        "manifest_sha256": "e89b6cc7fd42278b120abe2b878d71f20af0dbc015ba8cca5925206f63658a66"
+      },
+      {
+        "schema_version": 1,
+        "release_id": "20260907-web-recovery-v1",
+        "verified_files": 2,
+        "bytes": 3278985,
+        "recognizer_available": false,
+        "installed": false,
+        "manifest_sha256": "64cb272d7f3a4fc0c267d159de6132d538b328dd973c093be371dfee9167afa7"
+      }
+    ],
+    "retained_files": [
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-web-recovery-v1/release.json",
+        "bytes": 473,
+        "sha256": "e89b6cc7fd42278b120abe2b878d71f20af0dbc015ba8cca5925206f63658a66"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-web-recovery-v1/sdr-agent-web-console",
+        "bytes": 2336008,
+        "sha256": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-web-recovery-v1/sdrharness-web.service",
+        "bytes": 872,
+        "sha256": "d25e8805c5580e9edbc63f907b42109cbc3fae0a775a005d48311eb8891d00a9"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-recovery-v1/release.json",
+        "bytes": 466,
+        "sha256": "64cb272d7f3a4fc0c267d159de6132d538b328dd973c093be371dfee9167afa7"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-recovery-v1/sdr-agent-web-console",
+        "bytes": 3278112,
+        "sha256": "c2e19b171e30475a06e38a074ec55282bf55f0f3ffe5de6cf1a8a730b957a0fe"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-recovery-v1/sdrharness-web.service",
+        "bytes": 873,
+        "sha256": "a51f2cbe4d773ef809c646dd2ee81f6fc8a160944ef10f4e4512a251e501d5ab"
+      }
+    ]
+  },
+  "production_browser": {
+    "ready": "state HTTP 200 + rendered controls",
+    "url": "http://127.0.0.1:8787/",
+    "view_result": true,
+    "delete_control_visible": true,
+    "deleted_user_results": false,
+    "js_errors": [],
+    "health": {
+      "ready": true,
+      "recognizer_available": false,
+      "schema_version": 1,
+      "service": "web"
+    },
+    "session_ids": [
+      "session-1788263597140",
+      "session-1788261263788"
+    ],
+    "result_count": 2,
+    "corpus_count": 1,
+    "all_state_and_results_unchanged": true
+  },
+  "validation_receipts": [
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/tests.log",
+      "bytes": 3384,
+      "sha256": "59f5452146555021e186c31442252be1e609dbb0a23798ef68141cefb23e0d4d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/tests-final.log",
+      "bytes": 3918,
+      "sha256": "f1244700a5402e3904d80037f66ce7c7937158f56e29547d4ca47ed29058e122"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/clippy.log",
+      "bytes": 2299,
+      "sha256": "3179a389b9d0001316a9e724eccb3f1160cbcd75cb011cc34f9364af241b0100"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/controller-tests.log",
+      "bytes": 10329,
+      "sha256": "a3070ad5dce9cf6953e14d78455422993b8034aae562632cca63de1bda52280b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/controller-tests-final.log",
+      "bytes": 11975,
+      "sha256": "e5a9a8ca48ad48fa75b382c4f70b5b24b88af8abb725a24cd2abf59d3fde4b16"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/node-tests.log",
+      "bytes": 10505,
+      "sha256": "88959853432ab4c4da172566fa9425b3ae29915a1244d78ceacd9af4165ad0e0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/build.log",
+      "bytes": 2605,
+      "sha256": "1214348cdc82077ca383b18e6c7df25df8b9cc784b25cb8066ae2f24f91e97a2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/unit-verify.log",
+      "bytes": 496,
+      "sha256": "37b67b8be743b90f4ae72b889efccd27569518b85baa45ab368c5c6438eec3ec"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/live1.log",
+      "bytes": 2579,
+      "sha256": "ad4668f289e406a5b77440a4e9baafd8ce252d274d296fef6507afb6c7a755db"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/live2.log",
+      "bytes": 3798,
+      "sha256": "77f96aaeb5c1547d83b699e1627940fac286339fafa6c65d58b1b6fce8548ed0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/live3.log",
+      "bytes": 3710,
+      "sha256": "fa2f24bca90d16821b44ac8b69db8aab3034ba588f0e4f3af571feb582ef6882"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/installed-live.log",
+      "bytes": 3710,
+      "sha256": "d799d2a364b4bcc61f97cb789760466a8709f38a57b8d825165bdedd536b44c0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/deploy.py",
+      "bytes": 6166,
+      "sha256": "ae156587fb59b412a1374d70dd2baab64fbe522ab33f7b2fa526044922c09569"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/production-browser.py",
+      "bytes": 1531,
+      "sha256": "568e354fbd6a76a666f41920cf3121d81f0c6f894e4119954d9ee69cd7c45166"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-recovery-907a/production-results.png",
+      "bytes": 311443,
+      "sha256": "0573383de662b4c5d6e5f508d96f698262017532020bdfbe3f9bdd307a5cbb58"
+    }
+  ],
+  "recovery": {
+    "timer": "active",
+    "oneshot_result": "success",
+    "oneshot_exit": 0,
+    "health": "healthy RX1/RX0/A_BALANCED"
+  },
+  "cleanup": {
+    "status": "complete",
+    "roots": [
+      {
+        "path": "/var/tmp/sdrharness-dev/web-recovery-907a",
+        "regular_files": 3776,
+        "logical_bytes": 1641587691,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/web-recovery-907a-live1",
+        "regular_files": 84,
+        "logical_bytes": 1239343,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/web-recovery-907a-live2",
+        "regular_files": 84,
+        "logical_bytes": 1239129,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/web-recovery-907a-live3",
+        "regular_files": 86,
+        "logical_bytes": 1239999,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/web-recovery-907a-installed",
+        "regular_files": 86,
+        "logical_bytes": 1238442,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/w907t",
+        "regular_files": 0,
+        "logical_bytes": 0,
+        "verified_absent": true
+      }
+    ],
+    "deleted_regular_files": 4116,
+    "deleted_logical_bytes": 1646544604,
+    "feature_processes_remaining": [],
+    "sockets_verified_absent": [
+      "/run/user/1000/sdrharness/web-recovery-907a-live1-planner.sock",
+      "/run/user/1000/sdrharness/web-recovery-907a-live1-session.sock",
+      "/run/user/1000/sdrharness/web-recovery-907a-live2-planner.sock",
+      "/run/user/1000/sdrharness/web-recovery-907a-live2-session.sock",
+      "/run/user/1000/sdrharness/web-recovery-907a-live3-planner.sock",
+      "/run/user/1000/sdrharness/web-recovery-907a-live3-session.sock",
+      "/run/user/1000/sdrharness/web-recovery-907a-installed-planner.sock",
+      "/run/user/1000/sdrharness/web-recovery-907a-installed-session.sock"
+    ],
+    "p201_paths_verified_absent": 208,
+    "retained_release_files": 6,
+    "retained_release_bytes": 5616804,
+    "new_iq_retained_bytes": 0,
+    "existing_user_results_and_registered_rf_evidence_deleted": false
+  }
+}

@@ -17,8 +17,9 @@ this file retains the detailed delivery and evidence ledger.
 以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
 编号表示范围，不表示施工先后；实际顺序见
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
-S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；Worker、识别 Web、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
+S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
+- [x] Web 后台升级：已核对旧制品与源码差异，补齐旧进程输出隔离，验收重启不重扫、request/session/generation 隔离、停止/断连完整恢复、浏览器结果查看/删除、原用户结果保留及实际升级/回滚；精确清理完成。见 [Web 验收](validation/WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)。不开放识别，不部署日志/监控配置。
 - [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
 - [x] AGX 扫频/精查、结果存储和 RX 语料基础、split 隔离完成（第1/4/5章）。
 - [x] RF-v1 预处理、用户训练 epoch-10 checkpoint 的 validation 和 FP16 选择完成。
@@ -30,11 +31,11 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
   - [x] S4a：共享推理租约、串行执行、取消/故障释放和隔离实机正确性完成；未部署，不代表 S4b 完成。
   - [x] S4b：96 轮/1200 秒串行候选负载下的 nvmap/PSS/队列/时延与 CPU/SoC/Tj 稳定性验证，256 MiB CPU prompt-cache 上限及精确清理完成。GPU 温度 240/240 缺失依用户明确决定不阻塞；不宣称独立 GPU 温度已验证。见 [S4b 验证](validation/GPU_RESOURCE_S4B_VALIDATION_2026-09-06.md)。
 - [x] S5：Runner 工程识别执行、人工批准、预算/audit、联合 stop、自动 Spark 回灌及固定回归完成源码与有限实机验证；精确清理完成，生产能力仍为 false。见 [S5 验证](validation/RUNNER_RECOGNITION_S5_VALIDATION_2026-09-06.md)。
-- [x] S6：用户识别结果源码及隔离验收交付（S6a/S6b）；生产部署另属 A1。
-  - [x] S6a：完整结果保存/恢复/查看/删除完成源码及隔离 replay/演示验证；复用应用 SQLite，不额外保留 IQ，未部署。
-  - [x] S6b：S5 后真实闭环、浏览器结果和 Spark 紧凑摘要验收及精确清理完成，未部署。见 [S6b 验证](validation/WEB_RECOGNITION_S6B_VALIDATION_2026-09-06.md)。
+- [x] S6：用户识别结果源码及隔离验收交付（S6a/S6b）；Web/归档界面已随非模型单元安装，生产识别准入另属 A1。
+  - [x] S6a：完整结果保存/恢复/查看/删除完成源码及隔离 replay/演示验证；复用应用 SQLite，不额外保留 IQ，归档接口已随 Web 安装。
+  - [x] S6b：S5 后真实闭环、浏览器结果和 Spark 紧凑摘要验收及精确清理完成，Web 已安装但工程识别未配置。见 [S6b 验证](validation/WEB_RECOGNITION_S6B_VALIDATION_2026-09-06.md)。
 - [ ] V1：RF-v1 独立数据证据准备。
-  - [x] V1a：版本化派生、独立证据接入、采样/覆盖/校准与验收分组规范完成；隔离 HTTP/浏览器/删除及失败清理验证通过，未部署。
+  - [x] V1a：版本化派生、独立证据接入、采样/覆盖/校准与验收分组规范完成；隔离 HTTP/浏览器/删除及失败清理验证通过，Web 接口已安装，独立证据仍须 V1b。
   - [ ] V1b：获得并审核足够的独立 known-RF/OOD 标签；实际覆盖达到预注册条件。
 - [ ] V2：根据 validation 和独立证据冻结校准/拒识，并完成独立验收。
 - [ ] V3：标签空间与模型准入。
@@ -50,6 +51,10 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
 科学准入分别记账；小项完成不能使仍缺其余条件的父项被勾选。
 
 ## 1. Agent/Harness and operator interface
+
+2026-09-07 [Web 升级](validation/WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)已安装当前 Web
+源码及实例隔离修正。下列 S6/V1a 原验证中的“未部署”保留历史时点；现有归档/
+语料接口随 Web 制品安装，生产识别能力和已准入结果验收仍未完成。
 
 - [x] Select Jetson AGX Orin as the primary Agent, acquisition,
       aggregation and CUDA-inference host, with clone root fixed at
@@ -1187,6 +1192,7 @@ Evidence:
 
 The current deployment summary is at the top of this checklist. Execution order
 is maintained only in [ACTUAL_DELIVERY_ORDER](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md).
-The unified CLI is installed; full production recognition remains unavailable.
+The unified CLI and the Web recovery upgrade are installed; full production
+recognition remains unavailable.
 Do not interpret dated evidence statements about unchanged services as current
 status or restart completed S/V work.

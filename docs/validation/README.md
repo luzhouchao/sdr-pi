@@ -4,12 +4,15 @@
 当前状态见[权威清单](../SDR_AGENT_PROJECT_CHECKLIST.md)，下一步见[推进顺序](../SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 旧命令、旧地址、当时的“未部署/下一步”仅描述原验证时点；不能直接照历史记录重跑 RF、训练或格式化操作。
 
-近期入口：[统一 CLI 部署](UNIFIED_CLI_VALIDATION_2026-09-07.md)、
+近期入口：[Web 升级与会话恢复](WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)、
+[统一 CLI 部署](UNIFIED_CLI_VALIDATION_2026-09-07.md)、
 [P201 RX1/RX2](P201_RX_PORT_SELECTION_VALIDATION_2026-09-07.md)、
 [O1a](OPERATIONS_O1A_VALIDATION_2026-09-06.md)、
 [文档整理](DOCS_CONSOLIDATION_2026-09-07.md)。
 
 ## Agent、控制与部署
+
+- [Web 后台升级与会话恢复验收](WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)
 
 - [AGX Agent framework validation - 2026-09-01](AGX_FRAMEWORK_VALIDATION_2026-09-01.md)
 - [IIO refill 合同修复：异常长度失败关闭，尚无历史RF根因结论](IIO_REFILL_CONTRACT_VALIDATION_2026-09-07.md)

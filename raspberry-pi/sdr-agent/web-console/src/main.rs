@@ -240,6 +240,7 @@ struct UiUpdate {
 
 #[derive(Clone)]
 struct RuntimeHandle {
+    token: Arc<()>,
     session_id: String,
     tx: mpsc::Sender<ProcessCommand>,
 }
@@ -1420,6 +1421,9 @@ fn deactivate_current(inner: &mut Inner) {
         if let Some(session) = find_session_mut(&mut inner.persisted, &active_id) {
             compact_session(session, false);
             session.status = "stored".into();
+            if session.initial_survey_status == "running" {
+                session.initial_survey_status = "failed".into();
+            }
         }
     }
     if let Some(runtime) = inner.runtime.take() {
@@ -1427,17 +1431,36 @@ fn deactivate_current(inner: &mut Inner) {
     }
 }
 
-fn spawn_agent_process(state: AppState, session_id: String) -> RuntimeHandle {
-    let (tx, rx) = mpsc::channel(16);
-    let actor_session_id = session_id.clone();
-    tokio::spawn(async move {
-        process_actor(state, actor_session_id, rx).await;
-    });
-    RuntimeHandle { session_id, tx }
+fn current_runtime(inner: &Inner, session_id: &str, token: &Arc<()>) -> bool {
+    inner.runtime.as_ref().is_some_and(|runtime| {
+        runtime.session_id == session_id && Arc::ptr_eq(&runtime.token, token)
+    })
 }
 
-async fn claim_initial_survey(state: &AppState, session_id: &str) -> Option<InitialSurveyConfig> {
+fn spawn_agent_process(state: AppState, session_id: String) -> RuntimeHandle {
+    let (tx, rx) = mpsc::channel(16);
+    let token = Arc::new(());
+    let actor_token = token.clone();
+    let actor_session_id = session_id.clone();
+    tokio::spawn(async move {
+        process_actor(state, actor_session_id, actor_token, rx).await;
+    });
+    RuntimeHandle {
+        session_id,
+        token,
+        tx,
+    }
+}
+
+async fn claim_initial_survey(
+    state: &AppState,
+    session_id: &str,
+    token: &Arc<()>,
+) -> Option<InitialSurveyConfig> {
     let mut inner = state.inner.lock().await;
+    if !current_runtime(&inner, session_id, token) {
+        return None;
+    }
     let survey = find_session_mut(&mut inner.persisted, session_id).and_then(|session| {
         if session.initial_survey_status != "pending" {
             return None;
@@ -1450,8 +1473,8 @@ async fn claim_initial_survey(state: &AppState, session_id: &str) -> Option<Init
         session.initial_survey_status = "running".into();
         Some(survey)
     });
-    if survey.is_some() {
-        let _ = persist_locked(&state.config, &inner.persisted);
+    if survey.is_some() && persist_locked(&state.config, &inner.persisted).is_err() {
+        return None;
     }
     drop(inner);
     if survey.is_some() {
@@ -1463,6 +1486,7 @@ async fn claim_initial_survey(state: &AppState, session_id: &str) -> Option<Init
 async fn process_actor(
     state: AppState,
     session_id: String,
+    token: Arc<()>,
     mut rx: mpsc::Receiver<ProcessCommand>,
 ) {
     // The Planner Worker deliberately permits one interactive socket owner.
@@ -1471,6 +1495,9 @@ async fn process_actor(
     let _process_guard = state.process_gate.lock().await;
     let (survey_gain_db, persisted_observation, save_iq, generation_floor) = {
         let inner = state.inner.lock().await;
+        if !current_runtime(&inner, &session_id, &token) {
+            return;
+        }
         let session = inner
             .persisted
             .sessions
@@ -1485,7 +1512,7 @@ async fn process_actor(
             inner.persisted.controller_generation,
         )
     };
-    let initial_survey = claim_initial_survey(&state, &session_id).await;
+    let initial_survey = claim_initial_survey(&state, &session_id, &token).await;
     let mut planner_socket_ready = false;
     for _ in 0..50 {
         if tokio::fs::metadata(&state.config.session_socket)
@@ -1501,6 +1528,7 @@ async fn process_actor(
         record_process_output(
             &state,
             &session_id,
+            &token,
             "system",
             "Planner 会话 socket 在 5 秒内未就绪，终端没有启动。".into(),
         )
@@ -1517,6 +1545,7 @@ async fn process_actor(
             record_process_output(
                 &state,
                 &session_id,
+                &token,
                 "system",
                 format!("无法恢复结构化 SDR 观测：{}", error.1),
             )
@@ -1526,6 +1555,10 @@ async fn process_actor(
     };
     {
         let mut inner = state.inner.lock().await;
+        if !current_runtime(&inner, &session_id, &token) {
+            cleanup_runtime_request(temporary_request.as_deref());
+            return;
+        }
         inner.persisted.controller_generation = generation;
         if let Err(error) = persist_locked(&state.config, &inner.persisted) {
             drop(inner);
@@ -1533,6 +1566,7 @@ async fn process_actor(
             record_process_output(
                 &state,
                 &session_id,
+                &token,
                 "error",
                 format!("无法保存新会话代次：{}", error.1),
             )
@@ -1567,6 +1601,7 @@ async fn process_actor(
             record_process_output(
                 &state,
                 &session_id,
+                &token,
                 "system",
                 "对话 ID 无法安全映射到采集目录，终端没有启动。".into(),
             )
@@ -1603,6 +1638,7 @@ async fn process_actor(
             record_process_output(
                 &state,
                 &session_id,
+                &token,
                 "system",
                 format!("无法启动 sdr-agent：{error}"),
             )
@@ -1613,38 +1649,40 @@ async fn process_actor(
     let stdout = child.stdout.take().expect("stdout piped");
     let stderr = child.stderr.take().expect("stderr piped");
     let mut stdin = child.stdin.take().expect("stdin piped");
-    tokio::spawn(read_process_stream(
+    let stdout_task = tokio::spawn(read_process_stream(
         state.clone(),
         session_id.clone(),
+        token.clone(),
         stdout,
         false,
     ));
-    tokio::spawn(read_process_stream(
+    let stderr_task = tokio::spawn(read_process_stream(
         state.clone(),
         session_id.clone(),
+        token.clone(),
         stderr,
         true,
     ));
     record_process_output(
         &state,
         &session_id,
+        &token,
         "system",
         "终端进程已启动，等待控制器提示。".into(),
     )
     .await;
 
-    loop {
+    let exit_text = loop {
         tokio::select! {
             status = child.wait() => {
-                record_runtime_exit(&state, &session_id, format!("终端进程已退出：{status:?}")).await;
-                break;
+                break format!("终端进程已退出：{status:?}");
             }
             command = rx.recv() => match command {
                 Some(ProcessCommand::Input(input)) => {
                     if let Err(error) = stdin.write_all(format!("{input}\n").as_bytes()).await {
-                        record_process_output(&state, &session_id, "system", format!("写入终端失败：{error}")).await;
+                        record_process_output(&state, &session_id, &token, "system", format!("写入终端失败：{error}")).await;
                     } else if let Err(error) = stdin.flush().await {
-                        record_process_output(&state, &session_id, "system", format!("刷新终端输入失败：{error}")).await;
+                        record_process_output(&state, &session_id, &token, "system", format!("刷新终端输入失败：{error}")).await;
                     }
                 }
                 Some(ProcessCommand::Shutdown) | None => {
@@ -1658,11 +1696,14 @@ async fn process_actor(
                     if tokio::time::timeout(Duration::from_secs(stop_budget), child.wait()).await.is_err() {
                         let _ = child.kill().await;
                     }
-                    break;
+                    break "终端进程已停止。".into();
                 }
             }
         }
-    }
+    };
+    // Drain both pipes before releasing ownership or allowing a replacement.
+    let _ = tokio::join!(stdout_task, stderr_task);
+    record_runtime_exit(&state, &session_id, &token, exit_text).await;
     cleanup_runtime_request(temporary_request.as_deref());
 }
 
@@ -1751,17 +1792,13 @@ fn cleanup_runtime_request(path: Option<&FsPath>) {
     }
 }
 
-async fn record_runtime_exit(state: &AppState, session_id: &str, text: String) {
+async fn record_runtime_exit(state: &AppState, session_id: &str, token: &Arc<()>, text: String) {
     let mut inner = state.inner.lock().await;
-    let is_current = inner
-        .runtime
-        .as_ref()
-        .map(|runtime| runtime.session_id.as_str())
-        == Some(session_id);
+    if !current_runtime(&inner, session_id, token) {
+        return;
+    }
     if let Some(session) = find_session_mut(&mut inner.persisted, session_id) {
-        if is_current {
-            session.status = "exited".into();
-        }
+        session.status = "exited".into();
         if session.initial_survey_status == "running" {
             session.initial_survey_status = "failed".into();
         }
@@ -1773,15 +1810,14 @@ async fn record_runtime_exit(state: &AppState, session_id: &str, text: String) {
             });
         }
     }
-    if is_current {
-        inner.runtime = None;
-    }
+    inner.runtime = None;
     let _ = persist_locked(&state.config, &inner.persisted);
 }
 
 async fn read_process_stream<R: AsyncRead + Unpin>(
     state: AppState,
     session_id: String,
+    token: Arc<()>,
     mut reader: R,
     stderr: bool,
 ) {
@@ -1797,18 +1833,19 @@ async fn read_process_stream<R: AsyncRead + Unpin>(
                     pending.drain(..=index);
                     if !line.is_empty() && !is_empty_agent_line(&line) {
                         let kind = classify_output(&line, stderr);
-                        record_process_output(&state, &session_id, kind, line).await;
+                        record_process_output(&state, &session_id, &token, kind, line).await;
                     }
                 }
                 if pending.ends_with("SDR Agent> ") {
                     let prompt = std::mem::take(&mut pending);
-                    record_process_output(&state, &session_id, "prompt", prompt).await;
+                    record_process_output(&state, &session_id, &token, "prompt", prompt).await;
                 }
             }
             Err(error) => {
                 record_process_output(
                     &state,
                     &session_id,
+                    &token,
                     "system",
                     format!("读取终端输出失败：{error}"),
                 )
@@ -1819,7 +1856,7 @@ async fn read_process_stream<R: AsyncRead + Unpin>(
     }
     if !pending.trim().is_empty() && !is_empty_agent_line(&pending) {
         let kind = classify_output(&pending, stderr);
-        record_process_output(&state, &session_id, kind, pending).await;
+        record_process_output(&state, &session_id, &token, kind, pending).await;
     }
 }
 
@@ -1858,13 +1895,17 @@ fn classify_output(line: &str, stderr: bool) -> &'static str {
     }
 }
 
-async fn record_process_output(state: &AppState, session_id: &str, kind: &str, text: String) {
+async fn record_process_output(
+    state: &AppState,
+    session_id: &str,
+    token: &Arc<()>,
+    kind: &str,
+    text: String,
+) {
     let mut inner = state.inner.lock().await;
-    let is_current_runtime = inner
-        .runtime
-        .as_ref()
-        .map(|runtime| runtime.session_id.as_str())
-        == Some(session_id);
+    if !current_runtime(&inner, session_id, token) {
+        return;
+    }
     if let Some(session) = find_session_mut(&mut inner.persisted, session_id) {
         if let Some(payload) = text.strip_prefix("SweepPlot> ") {
             match serde_json::from_str::<SweepPlot>(payload)
@@ -2022,13 +2063,11 @@ async fn record_process_output(state: &AppState, session_id: &str, kind: &str, t
             publish_state(state);
             return;
         }
-        if is_current_runtime {
-            session.status = if kind == "error" {
-                "error".into()
-            } else {
-                "connected".into()
-            };
-        }
+        session.status = if kind == "error" {
+            "error".into()
+        } else {
+            "connected".into()
+        };
         if let Some(basis) = text.strip_prefix("决策依据> ") {
             session.decision_basis = Some(basis.to_owned());
         }
@@ -2799,6 +2838,106 @@ async fn begin_runtime_shutdown(state: &AppState) {
 
 #[cfg(test)]
 mod tests {
+    #[tokio::test]
+    async fn retired_runtime_cannot_mutate_reactivated_session_or_archive() {
+        let root = env::temp_dir().join(format!(
+            "web-runtime-fence-{}-{}",
+            std::process::id(),
+            now_ms()
+        ));
+        fs::create_dir(&root).unwrap();
+        let mut config = Config::from_env().unwrap();
+        config.state_path = root.join("state.json");
+        config.result_db_path = root.join("results.sqlite3");
+        config.capture_root = root.join("captures");
+        let token = Arc::new(());
+        let retired = Arc::new(());
+        let (tx, _rx) = mpsc::channel(16);
+        let (updates, _) = broadcast::channel(16);
+        let (shutdown, _) = broadcast::channel(4);
+        let mut item = session("session-1", 1);
+        item.initial_survey_status = "pending".into();
+        item.initial_survey = Some(default_initial_survey());
+        let state = AppState {
+            config,
+            inner: Arc::new(Mutex::new(Inner {
+                persisted: PersistedState {
+                    controller_generation: 7,
+                    active_session_id: Some(item.id.clone()),
+                    sessions: vec![item],
+                },
+                runtime: Some(RuntimeHandle {
+                    session_id: "session-1".into(),
+                    token: token.clone(),
+                    tx,
+                }),
+            })),
+            process_gate: Arc::new(Mutex::new(())),
+            model_query_gate: Arc::new(Mutex::new(())),
+            shutdown,
+            updates,
+        };
+        let before = serde_json::to_value(&state.inner.lock().await.persisted).unwrap();
+        for line in [
+            "SweepPlot> {}".to_owned(),
+            format!(
+                "Observation> {}",
+                serde_json::to_string(&observation()).unwrap()
+            ),
+            "模型输入> {\"session_generation\":999}".into(),
+            "ThinkingStart> {\"request_id\":42}".into(),
+            "初始扫频完成：late".into(),
+        ] {
+            record_process_output(&state, "session-1", &retired, "system", line).await;
+        }
+        record_process_output(
+            &state,
+            "session-other",
+            &token,
+            "system",
+            "wrong session".into(),
+        )
+        .await;
+        record_runtime_exit(&state, "session-1", &retired, "old exit".into()).await;
+        assert!(claim_initial_survey(&state, "session-1", &retired)
+            .await
+            .is_none());
+        assert_eq!(
+            serde_json::to_value(&state.inner.lock().await.persisted).unwrap(),
+            before
+        );
+        assert!(!state.config.result_db_path.exists());
+        assert!(!state.config.state_path.exists());
+        // A retired actor queued behind the owner cannot spawn or claim RX.
+        let (_tx, rx) = mpsc::channel(1);
+        process_actor(state.clone(), "session-1".into(), retired, rx).await;
+        assert_eq!(
+            serde_json::to_value(&state.inner.lock().await.persisted).unwrap(),
+            before
+        );
+        record_process_output(
+            &state,
+            "session-1",
+            &token,
+            "system",
+            "current output".into(),
+        )
+        .await;
+        assert_eq!(
+            state.inner.lock().await.persisted.sessions[0].events.len(),
+            1
+        );
+        assert!(claim_initial_survey(&state, "session-1", &token)
+            .await
+            .is_some());
+        {
+            let mut inner = state.inner.lock().await;
+            deactivate_current(&mut inner);
+            assert_eq!(inner.persisted.sessions[0].initial_survey_status, "failed");
+        }
+        fs::remove_dir_all(root).unwrap();
+    }
+
     #[test]
     fn engineering_web_is_host_selected_and_loopback_only() {
         let address = "127.0.0.1:8787".parse().unwrap();
