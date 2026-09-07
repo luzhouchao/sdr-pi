@@ -1,0 +1,529 @@
+{
+  "schema_id": "sdrharness_retained_diagnostic_evidence_v1",
+  "date": "2026-09-07",
+  "roots": [
+    "/var/tmp/sdrharness-dev/b210-antenna-907t",
+    "/var/tmp/sdrharness-dev/b210-antenna-tone-907t",
+    "/var/tmp/sdrharness-dev/b210-antenna-r1-907t",
+    "/var/tmp/sdrharness-dev/b210-antenna-r2-907t",
+    "/var/tmp/sdrharness-dev/b210-antenna-r3-907t"
+  ],
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-907t/antenna-context.json",
+      "bytes": 583,
+      "sha256": "bd76931a084ccb7804c2794707b105276cb323c013354ca50882d5b38d25d0fc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-907t/seal.json",
+      "bytes": 10568,
+      "sha256": "c6e378038e3b884f11d1718d8c831a5ea90b3d6b3d10b98a318db1ae794a6ec0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/after-tx/b210-after-tx-1788761786636-1788761786636-1788761808055541104.sigmf-data",
+      "bytes": 262140,
+      "sha256": "649d2cb643138c696b12f09d04486acbbb1b7c82df3d17183298f8fa56ce8f5e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/after-tx/b210-after-tx-1788761786636-1788761786636-1788761808055541104.sigmf-meta",
+      "bytes": 487,
+      "sha256": "5be9394503f232d19ac04e25cab607bf4f58af46a1c3374cac36dda011f54058"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/after-tx-report.json",
+      "bytes": 2224,
+      "sha256": "a4c085a7becb4f6202b1329e7e05cc6f63e1ac9e91eccc1d1322c6a27bceca37"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/baseline/b210-baseline-1788761786634-1788761786634-1788761787142959163.sigmf-data",
+      "bytes": 262140,
+      "sha256": "0eb90acf4930b65646f25b57f4015e495bc3330eaa597438bdb878e56a0225d2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/baseline/b210-baseline-1788761786634-1788761786634-1788761787142959163.sigmf-meta",
+      "bytes": 487,
+      "sha256": "c8984556c65e9f644b0da690001de8b0715db0b50cd52fc8c13f1035ba36e016"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/baseline-report.json",
+      "bytes": 2225,
+      "sha256": "56067b947c641bc1bcdfff289c63722d8683fa681459d129dba856b912e4965d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/during-tx/b210-during-tx-1788761786635-1788761786635-1788761794751349772.sigmf-data",
+      "bytes": 262140,
+      "sha256": "f671a40d518fe5e15b29d0978e9e48a82b12663715aa8fbe03616e000dbaca0b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/during-tx/b210-during-tx-1788761786635-1788761786635-1788761794751349772.sigmf-meta",
+      "bytes": 487,
+      "sha256": "d6283186da8841abd133c237628fe6e786626e91213be2637b610480116e4392"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/during-tx-report.json",
+      "bytes": 2231,
+      "sha256": "3fd3501dc03be1c505ceba857e17cb16ef5e658a0e5261230e7418fc4c2cd815"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/link-summary.json",
+      "bytes": 12342,
+      "sha256": "3e84314ec294a2c0a1caf7016a4c4e40a7d87882b8a17f00c09b485289e5cb24"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/train-tile.fc32",
+      "bytes": 8192,
+      "sha256": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/transmission-plan.json",
+      "bytes": 1543,
+      "sha256": "af28e05ae9938d9769b4d837a939db5e75cb3d6d5fb05bd9632a4ddddd96595a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/tx-summary.json",
+      "bytes": 604,
+      "sha256": "9c94817ed45caa6ead715222843058e2ed2a2dfd83130c81b88dbbf026167961"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r1-907t/tx-uhd.log",
+      "bytes": 1539,
+      "sha256": "b6f0cfd5139af5ec69d137c480609fd5810a08b5239a8e762ff3dbb46521b657"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/after-tx/b210-after-tx-1788761814151-1788761814151-1788761835421733739.sigmf-data",
+      "bytes": 262140,
+      "sha256": "e76eb76b78f8bf90f51092213181196a6bb48ba43e544ff498b7bce6277e2e30"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/after-tx/b210-after-tx-1788761814151-1788761814151-1788761835421733739.sigmf-meta",
+      "bytes": 487,
+      "sha256": "22f84cfd335793f9ecd9cefdfd83d6b8e5f3942d9ec4f719e6d0dd6006db272e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/after-tx-report.json",
+      "bytes": 2225,
+      "sha256": "f5f65cada718e880e8bb109f1e8a9689f35f07b0a74f63b632d07c2aa0be99ac"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/baseline/b210-baseline-1788761814149-1788761814149-1788761814657086300.sigmf-data",
+      "bytes": 262140,
+      "sha256": "200868331f616a462027d29d928de968dbbe5956c5a74976fbe32860d7491275"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/baseline/b210-baseline-1788761814149-1788761814149-1788761814657086300.sigmf-meta",
+      "bytes": 487,
+      "sha256": "aa139a838db34351f4842a0ab24c205b34b520d44843dc29db51f13fe63d3990"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/baseline-report.json",
+      "bytes": 2225,
+      "sha256": "c81ef02c1ecafe61e3cbf7945eeb22f44abc83a4090e611408a8b60dc2a071f6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/during-tx/b210-during-tx-1788761814150-1788761814150-1788761822129219250.sigmf-data",
+      "bytes": 262140,
+      "sha256": "d749c172f49fb863d2d4a3db5b79b1e28fc4e9b28e45e54dfab96cc32c7cf25a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/during-tx/b210-during-tx-1788761814150-1788761814150-1788761822129219250.sigmf-meta",
+      "bytes": 487,
+      "sha256": "26c4ea5c68976dad5efd53dfd38326a2abfd1c525633021c9fac6026a48905fd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/during-tx-report.json",
+      "bytes": 2230,
+      "sha256": "ec0fdcbb5f8a5fc407a76115fcec1f5e66469a58b8f874f1a9eb4218dc65b635"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/link-summary.json",
+      "bytes": 12342,
+      "sha256": "b092c56c0f602042d62fe516c133b8a0d6d7ec9ac35224de6d1bf734faeafb16"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/train-tile.fc32",
+      "bytes": 8192,
+      "sha256": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/transmission-plan.json",
+      "bytes": 1543,
+      "sha256": "af28e05ae9938d9769b4d837a939db5e75cb3d6d5fb05bd9632a4ddddd96595a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/tx-summary.json",
+      "bytes": 604,
+      "sha256": "9f81fffb9ae9a5564df2c19b2a056e1efd242355b48bb201462dd5f0e2d0e0c0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r2-907t/tx-uhd.log",
+      "bytes": 1539,
+      "sha256": "b6f0cfd5139af5ec69d137c480609fd5810a08b5239a8e762ff3dbb46521b657"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/after-tx/b210-after-tx-1788761841554-1788761841554-1788761862837468251.sigmf-data",
+      "bytes": 262140,
+      "sha256": "62e2d0c9f0385d9e3bc71be4bbc121dceb6dde015aa65a6680a02e3fa3465138"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/after-tx/b210-after-tx-1788761841554-1788761841554-1788761862837468251.sigmf-meta",
+      "bytes": 487,
+      "sha256": "7106c154a0479211f2487149dbaaf9695ad2d1158806f8a612f4a1938734dd95"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/after-tx-report.json",
+      "bytes": 2223,
+      "sha256": "3f5ad2ee2d1a5e51b5ef86bb2f585f8dfdad01d048cf9255463a50dfc7960d98"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/baseline/b210-baseline-1788761841552-1788761841552-1788761842060970111.sigmf-data",
+      "bytes": 262140,
+      "sha256": "93a1819b2abf195f989f9b98d088035c9d0e9230312b966f09b7faf78619c300"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/baseline/b210-baseline-1788761841552-1788761841552-1788761842060970111.sigmf-meta",
+      "bytes": 487,
+      "sha256": "5d8a7ab9f942bb46ef66aececb04e9f0488da96f31a881a36a21c0f0bad2a870"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/baseline-report.json",
+      "bytes": 2226,
+      "sha256": "fe845b280b8d866b9896e288966abe0895da6a60504ecf8a160ebd9d414e1ed0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/during-tx/b210-during-tx-1788761841553-1788761841553-1788761849532123978.sigmf-data",
+      "bytes": 262140,
+      "sha256": "54dd2fdb9b432563d31e10d4dfdae6664dfde472fdb6483b2721d232db2dfb70"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/during-tx/b210-during-tx-1788761841553-1788761841553-1788761849532123978.sigmf-meta",
+      "bytes": 487,
+      "sha256": "9a420994d3ce123e15e3e01ba282d2287b01ab4492c0f7eb6de0bf005fdd0e1c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/during-tx-report.json",
+      "bytes": 2233,
+      "sha256": "518deb07ae9e8768eb141f52e97d9b7cb950978aa4f22192c041cce0f7f85b95"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/link-summary.json",
+      "bytes": 12344,
+      "sha256": "a43b9852b67bfdf09f73a48fdd9067258aecce35c68f7cdcf1e4f02e60d92060"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/train-tile.fc32",
+      "bytes": 8192,
+      "sha256": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/transmission-plan.json",
+      "bytes": 1543,
+      "sha256": "af28e05ae9938d9769b4d837a939db5e75cb3d6d5fb05bd9632a4ddddd96595a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/tx-summary.json",
+      "bytes": 604,
+      "sha256": "7ed9e2db87f597fb4a18b6ac76129aa4c2eea5381eaf4e236e3a55dfdb3674d9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-r3-907t/tx-uhd.log",
+      "bytes": 1539,
+      "sha256": "e027a9288d7d40617702a5d79088ec7d1de285c80e143644350d127f64b3a5a4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-tone-907t/after-tx/b210-after-tx-1788761763998-1788761763998-1788761781330197235.sigmf-data",
+      "bytes": 262140,
+      "sha256": "018ed6feeb08b5360b504c2ed8137032f17395e0304c323e48191e333d6ebbd2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-tone-907t/after-tx/b210-after-tx-1788761763998-1788761763998-1788761781330197235.sigmf-meta",
+      "bytes": 487,
+      "sha256": "dd0fbe4f16f983632ec6773086e32751c46408d18a4d8221d16cea1436a2bebb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-tone-907t/after-tx-report.json",
+      "bytes": 2233,
+      "sha256": "73c0a20ccfb34223f3dac2e43209ff739ca7b124755ec393b51553c6b3447036"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-tone-907t/baseline/b210-baseline-1788761763996-1788761763996-1788761764501683568.sigmf-data",
+      "bytes": 262140,
+      "sha256": "7ca1e410356559dff9e88ff4064285674a3bc4d76759c61f669774cf87e80d0d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-tone-907t/baseline/b210-baseline-1788761763996-1788761763996-1788761764501683568.sigmf-meta",
+      "bytes": 487,
+      "sha256": "c9fb0733ce8710045374c032a2e7ee97a8e3b998cbfa61a1eed6836859583e5b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-tone-907t/baseline-report.json",
+      "bytes": 2228,
+      "sha256": "f79e7e51fd2dd2ed37612b50818339c43baced7a65d50a25d54150af8bf9b95c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-tone-907t/during-tx/b210-during-tx-1788761763997-1788761763997-1788761771517178766.sigmf-data",
+      "bytes": 262140,
+      "sha256": "292e92e3a03b5d68de7bf1345840a5c537f1051ebce08ddd6c23e17c073d4c0f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-tone-907t/during-tx/b210-during-tx-1788761763997-1788761763997-1788761771517178766.sigmf-meta",
+      "bytes": 487,
+      "sha256": "71fff90b0b39546f0ebac8aa6b114715a4a65463132ec06ca5cee9a5b464c47b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-tone-907t/during-tx-report.json",
+      "bytes": 2238,
+      "sha256": "e16ce07ddd11f6a80c4fe30976590754b4f42271dd4be001f022cf21b8762f3f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-tone-907t/link-summary.json",
+      "bytes": 11932,
+      "sha256": "6314a032b32b9989eaa024c59e7d6c5a5d2982af0ebdec491de08212a8aeea71"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-antenna-tone-907t/tx-uhd.log",
+      "bytes": 1544,
+      "sha256": "72d8da5a8ef356b84e19961d0902713a1e6a4180d7bee31f7f276db95b4d9c0b"
+    }
+  ],
+  "logical_bytes": 3275554,
+  "unique_file_bytes": 3259170,
+  "raw_rx_iq_bytes": 3145680,
+  "purpose": "Reproduce all three new-antenna source-match passes and background-control failures, including the fresh tone and untimed UHD U marker. No classifier tensors, build artifacts or remote IQ copies retained.",
+  "identity": {
+    "antenna": {
+      "schema_id": "b210_rx1_new_antenna_v1",
+      "operator_report": "new 2.4/5GHz antenna moved from RX2 to RX1",
+      "physical_input": "RX1/RX0/A_BALANCED",
+      "source_parent": "/var/tmp/sdrharness-dev/b210-margin-low1-907o",
+      "parent_payload_sha256": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9",
+      "cases": [
+        [
+          "r1",
+          0.2
+        ],
+        [
+          "r2",
+          0.2
+        ],
+        [
+          "r3",
+          0.2
+        ]
+      ],
+      "historical_comparison_only": true,
+      "antenna_causal_effect_established": false,
+      "recognizer_available": false,
+      "independent_labels": 0
+    },
+    "source_rows": [
+      102400
+    ],
+    "source_payload_sha256": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9",
+    "physical_rx": {
+      "identity_version": 1,
+      "verified": true,
+      "front_panel_port": "RX1",
+      "logical_channel": "RX0",
+      "phy_channel": "voltage0",
+      "scan_i_channel": "voltage0",
+      "scan_q_channel": "voltage1",
+      "rf_port_select": "A_BALANCED",
+      "source": "iio_channel_attr"
+    },
+    "center_hz": 2455000000,
+    "tx_lo_offset_hz": 250000,
+    "rx_gain_db": 40,
+    "sdrd_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+    "captures": {
+      "tone": {
+        "hashes": {
+          "link-summary.json": "6314a032b32b9989eaa024c59e7d6c5a5d2982af0ebdec491de08212a8aeea71",
+          "baseline/b210-baseline-1788761763996-1788761763996-1788761764501683568.sigmf-data": "7ca1e410356559dff9e88ff4064285674a3bc4d76759c61f669774cf87e80d0d",
+          "baseline/b210-baseline-1788761763996-1788761763996-1788761764501683568.sigmf-meta": "c9fb0733ce8710045374c032a2e7ee97a8e3b998cbfa61a1eed6836859583e5b",
+          "baseline-report.json": "f79e7e51fd2dd2ed37612b50818339c43baced7a65d50a25d54150af8bf9b95c",
+          "during-tx/b210-during-tx-1788761763997-1788761763997-1788761771517178766.sigmf-data": "292e92e3a03b5d68de7bf1345840a5c537f1051ebce08ddd6c23e17c073d4c0f",
+          "during-tx/b210-during-tx-1788761763997-1788761763997-1788761771517178766.sigmf-meta": "71fff90b0b39546f0ebac8aa6b114715a4a65463132ec06ca5cee9a5b464c47b",
+          "during-tx-report.json": "e16ce07ddd11f6a80c4fe30976590754b4f42271dd4be001f022cf21b8762f3f",
+          "after-tx/b210-after-tx-1788761763998-1788761763998-1788761781330197235.sigmf-data": "018ed6feeb08b5360b504c2ed8137032f17395e0304c323e48191e333d6ebbd2",
+          "after-tx/b210-after-tx-1788761763998-1788761763998-1788761781330197235.sigmf-meta": "dd0fbe4f16f983632ec6773086e32751c46408d18a4d8221d16cea1436a2bebb",
+          "after-tx-report.json": "73c0a20ccfb34223f3dac2e43209ff739ca7b124755ec393b51553c6b3447036"
+        },
+        "captures": [
+          {
+            "tag": "baseline",
+            "sweep_id": "b210-baseline-1788761763996",
+            "session_generation": 1788761763996,
+            "request_id": 5,
+            "sequence": 1,
+            "iq_sha256": "7ca1e410356559dff9e88ff4064285674a3bc4d76759c61f669774cf87e80d0d"
+          },
+          {
+            "tag": "during-tx",
+            "sweep_id": "b210-during-tx-1788761763997",
+            "session_generation": 1788761763997,
+            "request_id": 5,
+            "sequence": 2,
+            "iq_sha256": "292e92e3a03b5d68de7bf1345840a5c537f1051ebce08ddd6c23e17c073d4c0f"
+          },
+          {
+            "tag": "after-tx",
+            "sweep_id": "b210-after-tx-1788761763998",
+            "session_generation": 1788761763998,
+            "request_id": 5,
+            "sequence": 3,
+            "iq_sha256": "018ed6feeb08b5360b504c2ed8137032f17395e0304c323e48191e333d6ebbd2"
+          }
+        ],
+        "sdrd_pid": "11547"
+      },
+      "cases": {
+        "r1": {
+          "hashes": {
+            "link-summary.json": "3e84314ec294a2c0a1caf7016a4c4e40a7d87882b8a17f00c09b485289e5cb24",
+            "baseline/b210-baseline-1788761786634-1788761786634-1788761787142959163.sigmf-data": "0eb90acf4930b65646f25b57f4015e495bc3330eaa597438bdb878e56a0225d2",
+            "baseline/b210-baseline-1788761786634-1788761786634-1788761787142959163.sigmf-meta": "c8984556c65e9f644b0da690001de8b0715db0b50cd52fc8c13f1035ba36e016",
+            "baseline-report.json": "56067b947c641bc1bcdfff289c63722d8683fa681459d129dba856b912e4965d",
+            "during-tx/b210-during-tx-1788761786635-1788761786635-1788761794751349772.sigmf-data": "f671a40d518fe5e15b29d0978e9e48a82b12663715aa8fbe03616e000dbaca0b",
+            "during-tx/b210-during-tx-1788761786635-1788761786635-1788761794751349772.sigmf-meta": "d6283186da8841abd133c237628fe6e786626e91213be2637b610480116e4392",
+            "during-tx-report.json": "3fd3501dc03be1c505ceba857e17cb16ef5e658a0e5261230e7418fc4c2cd815",
+            "after-tx/b210-after-tx-1788761786636-1788761786636-1788761808055541104.sigmf-data": "649d2cb643138c696b12f09d04486acbbb1b7c82df3d17183298f8fa56ce8f5e",
+            "after-tx/b210-after-tx-1788761786636-1788761786636-1788761808055541104.sigmf-meta": "5be9394503f232d19ac04e25cab607bf4f58af46a1c3374cac36dda011f54058",
+            "after-tx-report.json": "a4c085a7becb4f6202b1329e7e05cc6f63e1ac9e91eccc1d1322c6a27bceca37"
+          },
+          "captures": [
+            {
+              "tag": "baseline",
+              "sweep_id": "b210-baseline-1788761786634",
+              "session_generation": 1788761786634,
+              "request_id": 5,
+              "sequence": 4,
+              "iq_sha256": "0eb90acf4930b65646f25b57f4015e495bc3330eaa597438bdb878e56a0225d2"
+            },
+            {
+              "tag": "during-tx",
+              "sweep_id": "b210-during-tx-1788761786635",
+              "session_generation": 1788761786635,
+              "request_id": 5,
+              "sequence": 5,
+              "iq_sha256": "f671a40d518fe5e15b29d0978e9e48a82b12663715aa8fbe03616e000dbaca0b"
+            },
+            {
+              "tag": "after-tx",
+              "sweep_id": "b210-after-tx-1788761786636",
+              "session_generation": 1788761786636,
+              "request_id": 5,
+              "sequence": 6,
+              "iq_sha256": "649d2cb643138c696b12f09d04486acbbb1b7c82df3d17183298f8fa56ce8f5e"
+            }
+          ],
+          "sdrd_pid": "11547",
+          "source_hashes": {
+            "transmission-plan.json": "af28e05ae9938d9769b4d837a939db5e75cb3d6d5fb05bd9632a4ddddd96595a",
+            "train-tile.fc32": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9",
+            "tx-summary.json": "9c94817ed45caa6ead715222843058e2ed2a2dfd83130c81b88dbbf026167961",
+            "tx-uhd.log": "b6f0cfd5139af5ec69d137c480609fd5810a08b5239a8e762ff3dbb46521b657"
+          }
+        },
+        "r2": {
+          "hashes": {
+            "link-summary.json": "b092c56c0f602042d62fe516c133b8a0d6d7ec9ac35224de6d1bf734faeafb16",
+            "baseline/b210-baseline-1788761814149-1788761814149-1788761814657086300.sigmf-data": "200868331f616a462027d29d928de968dbbe5956c5a74976fbe32860d7491275",
+            "baseline/b210-baseline-1788761814149-1788761814149-1788761814657086300.sigmf-meta": "aa139a838db34351f4842a0ab24c205b34b520d44843dc29db51f13fe63d3990",
+            "baseline-report.json": "c81ef02c1ecafe61e3cbf7945eeb22f44abc83a4090e611408a8b60dc2a071f6",
+            "during-tx/b210-during-tx-1788761814150-1788761814150-1788761822129219250.sigmf-data": "d749c172f49fb863d2d4a3db5b79b1e28fc4e9b28e45e54dfab96cc32c7cf25a",
+            "during-tx/b210-during-tx-1788761814150-1788761814150-1788761822129219250.sigmf-meta": "26c4ea5c68976dad5efd53dfd38326a2abfd1c525633021c9fac6026a48905fd",
+            "during-tx-report.json": "ec0fdcbb5f8a5fc407a76115fcec1f5e66469a58b8f874f1a9eb4218dc65b635",
+            "after-tx/b210-after-tx-1788761814151-1788761814151-1788761835421733739.sigmf-data": "e76eb76b78f8bf90f51092213181196a6bb48ba43e544ff498b7bce6277e2e30",
+            "after-tx/b210-after-tx-1788761814151-1788761814151-1788761835421733739.sigmf-meta": "22f84cfd335793f9ecd9cefdfd83d6b8e5f3942d9ec4f719e6d0dd6006db272e",
+            "after-tx-report.json": "f5f65cada718e880e8bb109f1e8a9689f35f07b0a74f63b632d07c2aa0be99ac"
+          },
+          "captures": [
+            {
+              "tag": "baseline",
+              "sweep_id": "b210-baseline-1788761814149",
+              "session_generation": 1788761814149,
+              "request_id": 5,
+              "sequence": 7,
+              "iq_sha256": "200868331f616a462027d29d928de968dbbe5956c5a74976fbe32860d7491275"
+            },
+            {
+              "tag": "during-tx",
+              "sweep_id": "b210-during-tx-1788761814150",
+              "session_generation": 1788761814150,
+              "request_id": 5,
+              "sequence": 8,
+              "iq_sha256": "d749c172f49fb863d2d4a3db5b79b1e28fc4e9b28e45e54dfab96cc32c7cf25a"
+            },
+            {
+              "tag": "after-tx",
+              "sweep_id": "b210-after-tx-1788761814151",
+              "session_generation": 1788761814151,
+              "request_id": 5,
+              "sequence": 9,
+              "iq_sha256": "e76eb76b78f8bf90f51092213181196a6bb48ba43e544ff498b7bce6277e2e30"
+            }
+          ],
+          "sdrd_pid": "11547",
+          "source_hashes": {
+            "transmission-plan.json": "af28e05ae9938d9769b4d837a939db5e75cb3d6d5fb05bd9632a4ddddd96595a",
+            "train-tile.fc32": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9",
+            "tx-summary.json": "9f81fffb9ae9a5564df2c19b2a056e1efd242355b48bb201462dd5f0e2d0e0c0",
+            "tx-uhd.log": "b6f0cfd5139af5ec69d137c480609fd5810a08b5239a8e762ff3dbb46521b657"
+          }
+        },
+        "r3": {
+          "hashes": {
+            "link-summary.json": "a43b9852b67bfdf09f73a48fdd9067258aecce35c68f7cdcf1e4f02e60d92060",
+            "baseline/b210-baseline-1788761841552-1788761841552-1788761842060970111.sigmf-data": "93a1819b2abf195f989f9b98d088035c9d0e9230312b966f09b7faf78619c300",
+            "baseline/b210-baseline-1788761841552-1788761841552-1788761842060970111.sigmf-meta": "5d8a7ab9f942bb46ef66aececb04e9f0488da96f31a881a36a21c0f0bad2a870",
+            "baseline-report.json": "fe845b280b8d866b9896e288966abe0895da6a60504ecf8a160ebd9d414e1ed0",
+            "during-tx/b210-during-tx-1788761841553-1788761841553-1788761849532123978.sigmf-data": "54dd2fdb9b432563d31e10d4dfdae6664dfde472fdb6483b2721d232db2dfb70",
+            "during-tx/b210-during-tx-1788761841553-1788761841553-1788761849532123978.sigmf-meta": "9a420994d3ce123e15e3e01ba282d2287b01ab4492c0f7eb6de0bf005fdd0e1c",
+            "during-tx-report.json": "518deb07ae9e8768eb141f52e97d9b7cb950978aa4f22192c041cce0f7f85b95",
+            "after-tx/b210-after-tx-1788761841554-1788761841554-1788761862837468251.sigmf-data": "62e2d0c9f0385d9e3bc71be4bbc121dceb6dde015aa65a6680a02e3fa3465138",
+            "after-tx/b210-after-tx-1788761841554-1788761841554-1788761862837468251.sigmf-meta": "7106c154a0479211f2487149dbaaf9695ad2d1158806f8a612f4a1938734dd95",
+            "after-tx-report.json": "3f5ad2ee2d1a5e51b5ef86bb2f585f8dfdad01d048cf9255463a50dfc7960d98"
+          },
+          "captures": [
+            {
+              "tag": "baseline",
+              "sweep_id": "b210-baseline-1788761841552",
+              "session_generation": 1788761841552,
+              "request_id": 5,
+              "sequence": 10,
+              "iq_sha256": "93a1819b2abf195f989f9b98d088035c9d0e9230312b966f09b7faf78619c300"
+            },
+            {
+              "tag": "during-tx",
+              "sweep_id": "b210-during-tx-1788761841553",
+              "session_generation": 1788761841553,
+              "request_id": 5,
+              "sequence": 11,
+              "iq_sha256": "54dd2fdb9b432563d31e10d4dfdae6664dfde472fdb6483b2721d232db2dfb70"
+            },
+            {
+              "tag": "after-tx",
+              "sweep_id": "b210-after-tx-1788761841554",
+              "session_generation": 1788761841554,
+              "request_id": 5,
+              "sequence": 12,
+              "iq_sha256": "62e2d0c9f0385d9e3bc71be4bbc121dceb6dde015aa65a6680a02e3fa3465138"
+            }
+          ],
+          "sdrd_pid": "11547",
+          "source_hashes": {
+            "transmission-plan.json": "af28e05ae9938d9769b4d837a939db5e75cb3d6d5fb05bd9632a4ddddd96595a",
+            "train-tile.fc32": "c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9",
+            "tx-summary.json": "7ed9e2db87f597fb4a18b6ac76129aa4c2eea5381eaf4e236e3a55dfdb3674d9",
+            "tx-uhd.log": "e027a9288d7d40617702a5d79088ec7d1de285c80e143644350d127f64b3a5a4"
+          }
+        }
+      }
+    }
+  },
+  "analysis_numpy": "1.26.4",
+  "source_payloads_share_original_inode": true,
+  "verification_command": "PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 /home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python /home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-b210-new-antenna.py --verify-retained",
+  "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/b210-antenna-907t /var/tmp/sdrharness-dev/b210-antenna-tone-907t /var/tmp/sdrharness-dev/b210-antenna-r1-907t /var/tmp/sdrharness-dev/b210-antenna-r2-907t /var/tmp/sdrharness-dev/b210-antenna-r3-907t",
+  "deletion_note": "Only these five inventoried diagnostic roots after explicit manual selection; update inventory/checklist. Old IQ packages, source-parent hardlinks outside these roots, USB media and application results are excluded."
+}

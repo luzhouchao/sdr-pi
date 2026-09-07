@@ -712,6 +712,14 @@ aggregation, result persistence and model-facing summaries.
       - [ ] Execute antenna/50-ohm termination/antenna input isolation with actual
             connection evidence. Operator confirmed no termination is available;
             open-circuit RX is not a substitute and no physical comparison ran.
+      - [x] Retry RX1 with the operator's new dual-band antenna using one tone
+            and three unchanged .2-amplitude 1024-source repetitions. All three
+            fixed source/residual checks pass; each fails at least one original
+            stopped-background margin, so classification remains unmeasured.
+            31 tests, 12 live capture/restoration checks, exact replay and cleanup
+            pass; retain 55 inventoried files (~3.26 MB unique). This is not an
+            antenna causal-effect or recognition-accuracy claim; see
+            [new antenna validation](B210_RX1_NEW_ANTENNA_VALIDATION_2026-09-07.md).
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the
