@@ -1,0 +1,1342 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "feature": "unified-cli-907x",
+  "baseline_head": "6ed1fa16a56b7cf4ead9f2af62853be694330fce",
+  "recognizer_available": false,
+  "model_calls": 0,
+  "tx_operations": 0,
+  "preinstalled_failure": {
+    "command": [
+      "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-controller",
+      "--mode",
+      "observe",
+      "--sdrd",
+      "192.168.1.10:43110",
+      "--sdrd-timeout-ms",
+      "1000"
+    ],
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "controller_error=response_shape: unknown field `rx_input`, expected one of `schema_version`, `request_id`, `status`, `mode`, `iio_visible`, `radio_control`, `raw_iq_capture`, `software_summary`, `max_capture_bytes`, `fpga_backend`, `fpga_identity_valid`, `fpga_summary_version`, `fpga_abi_version`, `fpga_capability`, `fpga_aggregate`\n"
+  },
+  "runs": [
+    {
+      "schema_version": 1,
+      "phase": "cli",
+      "status": "failed",
+      "feature_directory": "/var/tmp/sdrharness-dev/unified-cli-907x-cli",
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "5909",
+      "cases": [
+        {
+          "name": "native observe",
+          "restored": true,
+          "result": {
+            "online": true,
+            "healthy": true,
+            "health_flags": 0,
+            "iio_visible": true,
+            "can_retune": true,
+            "can_capture_iq": true,
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        },
+        {
+          "name": "CLI two-point sweep",
+          "restored": true,
+          "result": {
+            "sweep_id": "unified-cli-907x-cli",
+            "session_generation": 1788780008579,
+            "backend": "agx_iq_software_aggregate",
+            "backend_version": 1,
+            "estimated_duration_ms": 540,
+            "elapsed_ms": 1038,
+            "noise_floor_dbfs": -52.969807,
+            "points": [
+              {
+                "point_index": 0,
+                "request_id": 5,
+                "session_generation": 1788780008579,
+                "requested_center_hz": 2455000000,
+                "actual_center_hz": 2455000000,
+                "sample_rate_hz": 10000000,
+                "rf_bandwidth_hz": 10000000,
+                "sequence": 1,
+                "dropped_samples": 0,
+                "overflow": false,
+                "captured_samples": 4096,
+                "band_power_dbfs": -52.969807,
+                "spectral": {
+                  "schema_version": 1,
+                  "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+                  "fft_size": 4096,
+                  "segment_count": 1,
+                  "bin_width_hz": 2441.40625,
+                  "peak_frequency_hz": 2451022949,
+                  "peak_power_dbfs": -71.34668,
+                  "noise_floor_dbfs": -93.4765,
+                  "measured_snr_db": 22.129822,
+                  "estimated_center_hz": 2451024170,
+                  "occupied_start_hz": 2450842285,
+                  "occupied_stop_hz": 2451206055,
+                  "occupied_bandwidth_hz": 366211
+                },
+                "clipped_samples": 0,
+                "status_flags": 0,
+                "elapsed_us": 2256,
+                "timeout": {
+                  "limit_ms": 250,
+                  "elapsed_us": 2256,
+                  "timed_out": false
+                },
+                "health": {
+                  "healthy": true,
+                  "flags": 0,
+                  "source": "iio_adapter"
+                },
+                "rx_input": {
+                  "identity_version": 1,
+                  "verified": true,
+                  "front_panel_port": "RX1",
+                  "logical_channel": "RX0",
+                  "phy_channel": "voltage0",
+                  "scan_i_channel": "voltage0",
+                  "scan_q_channel": "voltage1",
+                  "rf_port_select": "A_BALANCED",
+                  "source": "iio_channel_attr"
+                }
+              },
+              {
+                "point_index": 1,
+                "request_id": 7,
+                "session_generation": 1788780008579,
+                "requested_center_hz": 2456000000,
+                "actual_center_hz": 2456000000,
+                "sample_rate_hz": 10000000,
+                "rf_bandwidth_hz": 10000000,
+                "sequence": 2,
+                "dropped_samples": 0,
+                "overflow": false,
+                "captured_samples": 4096,
+                "band_power_dbfs": -53.003044,
+                "spectral": {
+                  "schema_version": 1,
+                  "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+                  "fft_size": 4096,
+                  "segment_count": 1,
+                  "bin_width_hz": 2441.40625,
+                  "peak_frequency_hz": 2459957520,
+                  "peak_power_dbfs": -73.18685,
+                  "noise_floor_dbfs": -92.917656,
+                  "measured_snr_db": 19.730804,
+                  "estimated_center_hz": 2460307861,
+                  "occupied_start_hz": 2459706055,
+                  "occupied_stop_hz": 2460909668,
+                  "occupied_bandwidth_hz": 1206055
+                },
+                "clipped_samples": 0,
+                "status_flags": 0,
+                "elapsed_us": 2136,
+                "timeout": {
+                  "limit_ms": 250,
+                  "elapsed_us": 2136,
+                  "timed_out": false
+                },
+                "health": {
+                  "healthy": true,
+                  "flags": 0,
+                  "source": "iio_adapter"
+                },
+                "rx_input": {
+                  "identity_version": 1,
+                  "verified": true,
+                  "front_panel_port": "RX1",
+                  "logical_channel": "RX0",
+                  "phy_channel": "voltage0",
+                  "scan_i_channel": "voltage0",
+                  "scan_q_channel": "voltage1",
+                  "rf_port_select": "A_BALANCED",
+                  "source": "iio_channel_attr"
+                }
+              }
+            ],
+            "candidates": [],
+            "dataset": null
+          }
+        },
+        {
+          "name": "CLI invalid frequency rejected",
+          "restored": true,
+          "result": "sdr_agent_error=frequencies: sweep centers must be unique, ascending, and between 70 MHz and 6 GHz"
+        },
+        {
+          "name": "CLI forced timeout",
+          "restored": true,
+          "result": "sdr_agent_error=remote_error: capture_failed_restored metadata={\"dropped_samples\":0,\"error\":\"capture_failed_restored\",\"generation\":1788780008580,\"health\":{\"flags\":4,\"healthy\":false,\"source\":\"iio_adapter\"},\"overflow\":false,\"request_id\":5,\"schema_version\":1,\"sequence\":3,\"session_generation\":1788780008580,\"status\":\"error\",\"timeout\":{\"elapsed_us\":2329,\"limit_ms\":1,\"timed_out\":true}}"
+        }
+      ],
+      "recognizer_available": false,
+      "tx_operations": 0,
+      "model_http_requests": 0,
+      "generations": [
+        1788780008579,
+        1788780008580,
+        1788780008581
+      ],
+      "artifacts": {
+        "/var/tmp/sdrharness-dev/unified-cli-907x/target/release/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "d722990c69ebdedfa4dec957f5c7c0ade9989524dfb3f00727c34ccb81f2f702",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+      },
+      "budget": {
+        "maximum_points": 19,
+        "maximum_rx_bytes": 311296,
+        "centers_hz": [
+          2455000000,
+          2470000000
+        ],
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "frame_samples": 4096,
+        "aggregate_frames": 1,
+        "gain_db": 20,
+        "success_points": 2,
+        "cancel_maximum_points": 16,
+        "maximum_dwell_ms": 1000,
+        "maximum_point_timeout_ms": 250,
+        "conservative_rx_duration_ms": 23769,
+        "free_bytes": 808908271616,
+        "save_iq": false,
+        "p201_paths": "/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>",
+        "stop": "Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup"
+      },
+      "processes_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n10000000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n10000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n20.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid_after": "5909",
+      "p201_paths_verified_absent": [
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008579-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008580-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780008581-15"
+      ],
+      "p201_cleanup_verified": true,
+      "protected_results_unchanged": true,
+      "protected_sessions_unchanged": true,
+      "restored": false
+    },
+    {
+      "schema_version": 1,
+      "phase": "cli",
+      "status": "passed",
+      "feature_directory": "/var/tmp/sdrharness-dev/unified-cli-907x-cli2",
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "5909",
+      "cases": [
+        {
+          "name": "native observe",
+          "restored": true,
+          "result": {
+            "online": true,
+            "healthy": true,
+            "health_flags": 0,
+            "iio_visible": true,
+            "can_retune": true,
+            "can_capture_iq": true,
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        },
+        {
+          "name": "CLI two-point sweep",
+          "restored": true,
+          "result": {
+            "sweep_id": "unified-cli-907x-cli2",
+            "session_generation": 1788780087318,
+            "backend": "agx_iq_software_aggregate",
+            "backend_version": 1,
+            "estimated_duration_ms": 540,
+            "elapsed_ms": 1016,
+            "noise_floor_dbfs": -50.999157,
+            "points": [
+              {
+                "point_index": 0,
+                "request_id": 5,
+                "session_generation": 1788780087318,
+                "requested_center_hz": 2455000000,
+                "actual_center_hz": 2455000000,
+                "sample_rate_hz": 10000000,
+                "rf_bandwidth_hz": 10000000,
+                "sequence": 4,
+                "dropped_samples": 0,
+                "overflow": false,
+                "captured_samples": 4096,
+                "band_power_dbfs": -52.01721,
+                "spectral": {
+                  "schema_version": 1,
+                  "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+                  "fft_size": 4096,
+                  "segment_count": 1,
+                  "bin_width_hz": 2441.40625,
+                  "peak_frequency_hz": 2459755859,
+                  "peak_power_dbfs": -73.47968,
+                  "noise_floor_dbfs": -91.54499,
+                  "measured_snr_db": 18.065308,
+                  "estimated_center_hz": 2459783935,
+                  "occupied_start_hz": 2459572754,
+                  "occupied_stop_hz": 2459995117,
+                  "occupied_bandwidth_hz": 424805
+                },
+                "clipped_samples": 0,
+                "status_flags": 0,
+                "elapsed_us": 2203,
+                "timeout": {
+                  "limit_ms": 250,
+                  "elapsed_us": 2203,
+                  "timed_out": false
+                },
+                "health": {
+                  "healthy": true,
+                  "flags": 0,
+                  "source": "iio_adapter"
+                },
+                "rx_input": {
+                  "identity_version": 1,
+                  "verified": true,
+                  "front_panel_port": "RX1",
+                  "logical_channel": "RX0",
+                  "phy_channel": "voltage0",
+                  "scan_i_channel": "voltage0",
+                  "scan_q_channel": "voltage1",
+                  "rf_port_select": "A_BALANCED",
+                  "source": "iio_channel_attr"
+                }
+              },
+              {
+                "point_index": 1,
+                "request_id": 7,
+                "session_generation": 1788780087318,
+                "requested_center_hz": 2456000000,
+                "actual_center_hz": 2456000000,
+                "sample_rate_hz": 10000000,
+                "rf_bandwidth_hz": 10000000,
+                "sequence": 5,
+                "dropped_samples": 0,
+                "overflow": false,
+                "captured_samples": 4096,
+                "band_power_dbfs": -50.999157,
+                "spectral": {
+                  "schema_version": 1,
+                  "algorithm_id": "agx_welch_hann_dc_reject_obw99_v1",
+                  "fft_size": 4096,
+                  "segment_count": 1,
+                  "bin_width_hz": 2441.40625,
+                  "peak_frequency_hz": 2459637695,
+                  "peak_power_dbfs": -73.14097,
+                  "noise_floor_dbfs": -89.57501,
+                  "measured_snr_db": 16.434044,
+                  "estimated_center_hz": 2459754882,
+                  "occupied_start_hz": 2459596191,
+                  "occupied_stop_hz": 2459913574,
+                  "occupied_bandwidth_hz": 319825
+                },
+                "clipped_samples": 0,
+                "status_flags": 0,
+                "elapsed_us": 2139,
+                "timeout": {
+                  "limit_ms": 250,
+                  "elapsed_us": 2139,
+                  "timed_out": false
+                },
+                "health": {
+                  "healthy": true,
+                  "flags": 0,
+                  "source": "iio_adapter"
+                },
+                "rx_input": {
+                  "identity_version": 1,
+                  "verified": true,
+                  "front_panel_port": "RX1",
+                  "logical_channel": "RX0",
+                  "phy_channel": "voltage0",
+                  "scan_i_channel": "voltage0",
+                  "scan_q_channel": "voltage1",
+                  "rf_port_select": "A_BALANCED",
+                  "source": "iio_channel_attr"
+                }
+              }
+            ],
+            "candidates": [],
+            "dataset": null
+          }
+        },
+        {
+          "name": "CLI invalid frequency rejected",
+          "restored": true,
+          "result": "sdr_agent_error=frequencies: sweep centers must be unique, ascending, and between 70 MHz and 6 GHz"
+        },
+        {
+          "name": "CLI forced timeout",
+          "restored": true,
+          "result": "sdr_agent_error=remote_error: capture_failed_restored metadata={\"dropped_samples\":0,\"error\":\"capture_failed_restored\",\"generation\":1788780087319,\"health\":{\"flags\":4,\"healthy\":false,\"source\":\"iio_adapter\"},\"overflow\":false,\"request_id\":5,\"schema_version\":1,\"sequence\":6,\"session_generation\":1788780087319,\"status\":\"error\",\"timeout\":{\"elapsed_us\":2284,\"limit_ms\":1,\"timed_out\":true}}"
+        },
+        {
+          "name": "CLI active cancellation",
+          "restored": true,
+          "result": "sdr_agent_error=remote_error: capture_failed_restored metadata={\"dropped_samples\":0,\"error\":\"capture_failed_restored\",\"generation\":1788780087320,\"health\":{\"flags\":8,\"healthy\":false,\"source\":\"iio_adapter\"},\"overflow\":false,\"request_id\":5,\"schema_version\":1,\"sequence\":7,\"session_generation\":1788780087320,\"status\":\"error\",\"timeout\":{\"elapsed_us\":1701,\"limit_ms\":250,\"timed_out\":false}}\n"
+        }
+      ],
+      "recognizer_available": false,
+      "tx_operations": 0,
+      "model_http_requests": 0,
+      "generations": [
+        1788780087318,
+        1788780087319,
+        1788780087320
+      ],
+      "artifacts": {
+        "/var/tmp/sdrharness-dev/unified-cli-907x/target/release/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "d722990c69ebdedfa4dec957f5c7c0ade9989524dfb3f00727c34ccb81f2f702",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+      },
+      "budget": {
+        "maximum_points": 19,
+        "maximum_rx_bytes": 311296,
+        "centers_hz": [
+          2455000000,
+          2470000000
+        ],
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "frame_samples": 4096,
+        "aggregate_frames": 1,
+        "gain_db": 20,
+        "success_points": 2,
+        "cancel_maximum_points": 16,
+        "maximum_dwell_ms": 1000,
+        "maximum_point_timeout_ms": 250,
+        "conservative_rx_duration_ms": 23769,
+        "free_bytes": 808889159680,
+        "save_iq": false,
+        "p201_paths": "/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>",
+        "stop": "Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup"
+      },
+      "processes_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid_after": "5909",
+      "p201_paths_verified_absent": [
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087318-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087319-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780087320-15"
+      ],
+      "p201_cleanup_verified": true,
+      "protected_results_unchanged": true,
+      "protected_sessions_unchanged": true,
+      "restored": true
+    },
+    {
+      "schema_version": 1,
+      "phase": "web",
+      "status": "failed",
+      "feature_directory": "/var/tmp/sdrharness-dev/unified-cli-907x-web",
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "5909",
+      "cases": [
+        {
+          "name": "native observe",
+          "restored": true,
+          "result": {
+            "online": true,
+            "healthy": true,
+            "health_flags": 0,
+            "iio_visible": true,
+            "can_retune": true,
+            "can_capture_iq": true,
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        }
+      ],
+      "recognizer_available": false,
+      "tx_operations": 0,
+      "model_http_requests": 0,
+      "generations": [],
+      "artifacts": {
+        "/var/tmp/sdrharness-dev/unified-cli-907x/target/release/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "d722990c69ebdedfa4dec957f5c7c0ade9989524dfb3f00727c34ccb81f2f702",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+      },
+      "budget": {
+        "maximum_points": 18,
+        "maximum_rx_bytes": 294912,
+        "centers_hz": [
+          2455000000,
+          2470000000
+        ],
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "frame_samples": 4096,
+        "aggregate_frames": 1,
+        "gain_db": 20,
+        "success_points": 2,
+        "cancel_maximum_points": 16,
+        "maximum_dwell_ms": 1000,
+        "maximum_point_timeout_ms": 250,
+        "conservative_rx_duration_ms": 22518,
+        "free_bytes": 808883048448,
+        "save_iq": false,
+        "p201_paths": "/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>",
+        "stop": "Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup"
+      },
+      "processes_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid_after": "5909",
+      "p201_paths_verified_absent": [],
+      "p201_cleanup_verified": true,
+      "protected_results_unchanged": true,
+      "protected_sessions_unchanged": true,
+      "restored": true
+    },
+    {
+      "schema_version": 1,
+      "phase": "web",
+      "status": "failed",
+      "feature_directory": "/var/tmp/sdrharness-dev/unified-cli-907x-web2",
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "5909",
+      "cases": [
+        {
+          "name": "native observe",
+          "restored": true,
+          "result": {
+            "online": true,
+            "healthy": true,
+            "health_flags": 0,
+            "iio_visible": true,
+            "can_retune": true,
+            "can_capture_iq": true,
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        }
+      ],
+      "recognizer_available": false,
+      "tx_operations": 0,
+      "model_http_requests": 0,
+      "generations": [],
+      "artifacts": {
+        "/var/tmp/sdrharness-dev/unified-cli-907x/target/release/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "d722990c69ebdedfa4dec957f5c7c0ade9989524dfb3f00727c34ccb81f2f702",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+      },
+      "budget": {
+        "maximum_points": 18,
+        "maximum_rx_bytes": 294912,
+        "centers_hz": [
+          2455000000,
+          2470000000
+        ],
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "frame_samples": 4096,
+        "aggregate_frames": 1,
+        "gain_db": 20,
+        "success_points": 2,
+        "cancel_maximum_points": 16,
+        "maximum_dwell_ms": 1000,
+        "maximum_point_timeout_ms": 250,
+        "conservative_rx_duration_ms": 22518,
+        "free_bytes": 808876085248,
+        "save_iq": false,
+        "p201_paths": "/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>",
+        "stop": "Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup"
+      },
+      "processes_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid_after": "5909",
+      "p201_paths_verified_absent": [],
+      "p201_cleanup_verified": true,
+      "protected_results_unchanged": true,
+      "protected_sessions_unchanged": true,
+      "restored": true
+    },
+    {
+      "schema_version": 1,
+      "phase": "web",
+      "status": "failed",
+      "feature_directory": "/var/tmp/sdrharness-dev/unified-cli-907x-web3",
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "5909",
+      "cases": [
+        {
+          "name": "native observe",
+          "restored": true,
+          "result": {
+            "online": true,
+            "healthy": true,
+            "health_flags": 0,
+            "iio_visible": true,
+            "can_retune": true,
+            "can_capture_iq": true,
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        }
+      ],
+      "recognizer_available": false,
+      "tx_operations": 0,
+      "model_http_requests": 0,
+      "generations": [],
+      "artifacts": {
+        "/var/tmp/sdrharness-dev/unified-cli-907x/target/release/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "d722990c69ebdedfa4dec957f5c7c0ade9989524dfb3f00727c34ccb81f2f702",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+      },
+      "budget": {
+        "maximum_points": 18,
+        "maximum_rx_bytes": 294912,
+        "centers_hz": [
+          2455000000,
+          2470000000
+        ],
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "frame_samples": 4096,
+        "aggregate_frames": 1,
+        "gain_db": 20,
+        "success_points": 2,
+        "cancel_maximum_points": 16,
+        "maximum_dwell_ms": 1000,
+        "maximum_point_timeout_ms": 250,
+        "conservative_rx_duration_ms": 22518,
+        "free_bytes": 808858660864,
+        "save_iq": false,
+        "p201_paths": "/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>",
+        "stop": "Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup"
+      },
+      "browser_readiness": "state HTTP 200 + rendered controls; SSE keeps network busy",
+      "processes_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid_after": "5909",
+      "p201_paths_verified_absent": [],
+      "p201_cleanup_verified": true,
+      "protected_results_unchanged": true,
+      "protected_sessions_unchanged": true,
+      "restored": true
+    },
+    {
+      "schema_version": 1,
+      "phase": "web",
+      "status": "passed",
+      "feature_directory": "/var/tmp/sdrharness-dev/unified-cli-907x-web4",
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid": "5909",
+      "cases": [
+        {
+          "name": "native observe",
+          "restored": true,
+          "result": {
+            "online": true,
+            "healthy": true,
+            "health_flags": 0,
+            "iio_visible": true,
+            "can_retune": true,
+            "can_capture_iq": true,
+            "rx_input": {
+              "identity_version": 1,
+              "verified": true,
+              "front_panel_port": "RX1",
+              "logical_channel": "RX0",
+              "phy_channel": "voltage0",
+              "scan_i_channel": "voltage0",
+              "scan_q_channel": "voltage1",
+              "rf_port_select": "A_BALANCED",
+              "source": "iio_channel_attr"
+            }
+          }
+        },
+        {
+          "name": "installed Web initial RX and archive",
+          "restored": true,
+          "result": {
+            "summary": {
+              "id": 1,
+              "session_id": "session-1788780317790",
+              "sweep_id": "initial-1788780313075",
+              "kind": "initial",
+              "created_at_ms": 1788780318875,
+              "point_count": 2,
+              "candidate_count": 0,
+              "elapsed_ms": 1014,
+              "gain_db": 20,
+              "noise_floor_dbfs": -52.78328,
+              "iq_bytes": 0
+            },
+            "sweep_plot": {
+              "schema_version": 1,
+              "sweep_id": "initial-1788780313075",
+              "kind": "initial",
+              "elapsed_ms": 1014,
+              "gain_db": 20,
+              "noise_floor_dbfs": -52.78328,
+              "points": [
+                [
+                  2455000000,
+                  -52.78328
+                ],
+                [
+                  2456000000,
+                  -53.50967
+                ]
+              ],
+              "candidates": []
+            }
+          }
+        },
+        {
+          "name": "browser manual result deletion",
+          "restored": true,
+          "result": {
+            "remaining": 0
+          }
+        },
+        {
+          "name": "browser active stop",
+          "restored": true,
+          "result": {
+            "id": "session-1788780320277",
+            "title": "对话 20277",
+            "created_at_ms": 1788780320277,
+            "last_used_at_ms": 1788780325278,
+            "generation": 1,
+            "compaction_count": 0,
+            "status": "connected",
+            "compacted_summary": "",
+            "summary_pending": false,
+            "events_since_compaction": 8,
+            "initial_survey": {
+              "mode": "custom_band",
+              "start_hz": 2455000000,
+              "stop_hz": 2470000000,
+              "step_hz": 1000000,
+              "dwell_ms": 1000,
+              "gain_db": 20
+            },
+            "initial_survey_status": "failed",
+            "save_iq": false,
+            "events": [
+              {
+                "id": 1,
+                "timestamp_ms": 1788780324282,
+                "kind": "system",
+                "text": "终端进程已启动，等待控制器提示。"
+              },
+              {
+                "id": 2,
+                "timestamp_ms": 1788780324289,
+                "kind": "system",
+                "text": "SDR Agent 已连接。输入 /help 查看命令。硬件执行=已启用。"
+              },
+              {
+                "id": 3,
+                "timestamp_ms": 1788780324295,
+                "kind": "sweep",
+                "text": "首次扫频已开始：2455000000–2470000000 Hz，16 个点，步进 1000000 Hz，每点停留 1000 ms，固定接收增益 20 dB；最多处理 262144 字节接收样本，可随时输入 /stop。"
+              },
+              {
+                "id": 4,
+                "timestamp_ms": 1788780324295,
+                "kind": "prompt",
+                "text": "SDR Agent> "
+              },
+              {
+                "id": 5,
+                "timestamp_ms": 1788780325278,
+                "kind": "operator",
+                "text": "Operator> /stop"
+              },
+              {
+                "id": 6,
+                "timestamp_ms": 1788780326225,
+                "kind": "sweep",
+                "text": "首次扫频已取消并完成恢复：remote_error: capture_failed_restored metadata={\"dropped_samples\":0,\"error\":\"capture_failed_restored\",\"generation\":1788780313076,\"health\":{\"flags\":8,\"healthy\":false,\"source\":\"iio_adapter\"},\"overflow\":false,\"request_id\":5,\"schema_version\":1,\"sequence\":12,\"session_generation\":1788780313076,\"status\":\"error\",\"timeout\":{\"elapsed_us\":2313,\"limit_ms\":250,\"timed_out\":false}}"
+              },
+              {
+                "id": 7,
+                "timestamp_ms": 1788780326231,
+                "kind": "system",
+                "text": "会话已停止；旧计划已失效。"
+              },
+              {
+                "id": 8,
+                "timestamp_ms": 1788780326231,
+                "kind": "prompt",
+                "text": "SDR Agent> "
+              }
+            ]
+          }
+        }
+      ],
+      "recognizer_available": false,
+      "tx_operations": 0,
+      "model_http_requests": 0,
+      "generations": [
+        1788780313075,
+        1788780313076
+      ],
+      "artifacts": {
+        "/var/tmp/sdrharness-dev/unified-cli-907x/target/release/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "d722990c69ebdedfa4dec957f5c7c0ade9989524dfb3f00727c34ccb81f2f702",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+      },
+      "budget": {
+        "maximum_points": 18,
+        "maximum_rx_bytes": 294912,
+        "centers_hz": [
+          2455000000,
+          2470000000
+        ],
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "frame_samples": 4096,
+        "aggregate_frames": 1,
+        "gain_db": 20,
+        "success_points": 2,
+        "cancel_maximum_points": 16,
+        "maximum_dwell_ms": 1000,
+        "maximum_point_timeout_ms": 250,
+        "conservative_rx_duration_ms": 22518,
+        "free_bytes": 808834023424,
+        "save_iq": false,
+        "p201_paths": "/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>",
+        "stop": "Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup"
+      },
+      "browser_readiness": "state HTTP 200 + rendered controls; SSE keeps network busy",
+      "browser_errors": [],
+      "processes_stopped": true,
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid_after": "5909",
+      "p201_paths_verified_absent": [
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313075-15",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-1",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-2",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-3",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-4",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-5",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-6",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-7",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-8",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-9",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-10",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-11",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-12",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-13",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-14",
+        "/tmp/sdr-agent-dev/agx-sweep-1788780313076-15"
+      ],
+      "p201_cleanup_verified": true,
+      "protected_results_unchanged": true,
+      "protected_sessions_unchanged": true,
+      "restored": true
+    }
+  ],
+  "followups": [
+    {
+      "restored_now": true,
+      "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n"
+    },
+    {
+      "attempt": "web3",
+      "captured_points": 2,
+      "generation": 1,
+      "radio_restored": true,
+      "p201_paths_verified_absent": [
+        "/tmp/sdr-agent-dev/agx-sweep-1-0",
+        "/tmp/sdr-agent-dev/agx-sweep-1-1"
+      ],
+      "reason": "installed Web uses base request generation and complete status; no generated request for a fresh session"
+    }
+  ],
+  "attempt_errors": {
+    "cli-run.log": "{\"maximum_points\": 19, \"maximum_rx_bytes\": 311296, \"centers_hz\": [2455000000, 2470000000], \"sample_rate_hz\": 10000000, \"rf_bandwidth_hz\": 10000000, \"frame_samples\": 4096, \"aggregate_frames\": 1, \"gain_db\": 20, \"success_points\": 2, \"cancel_maximum_points\": 16, \"maximum_dwell_ms\": 1000, \"maximum_point_timeout_ms\": 250, \"conservative_rx_duration_ms\": 23769, \"free_bytes\": 808908271616, \"save_iq\": false, \"p201_paths\": \"/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>\", \"stop\": \"Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup\"}\nnative observe: passed\nCLI two-point sweep: passed\nCLI invalid frequency rejected: passed\nCLI forced timeout: passed\nTraceback (most recent call last):\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 165, in validate\n    wait_for(lambda: status().get('session_generation') == generation)\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 49, in wait_for\n    result = check()\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 165, in <lambda>\n    wait_for(lambda: status().get('session_generation') == generation)\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 111, in status\n    return wire.send('EXECUTION_STATUS 0')\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-sdrd-rx-ports.py\", line 52, in send\n    assert row['status'] == status, row\nAssertionError: {'schema_version': 1, 'request_id': 1, 'status': 'error', 'error': 'server_busy'}\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 305, in <module>\n    validate(args)\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 294, in validate\n    assert audit['status'] == 'passed', str(root / 'audit.json')\nAssertionError: /var/tmp/sdrharness-dev/unified-cli-907x-cli/audit.json\n",
+    "web-run.log": "{\"maximum_points\": 18, \"maximum_rx_bytes\": 294912, \"centers_hz\": [2455000000, 2470000000], \"sample_rate_hz\": 10000000, \"rf_bandwidth_hz\": 10000000, \"frame_samples\": 4096, \"aggregate_frames\": 1, \"gain_db\": 20, \"success_points\": 2, \"cancel_maximum_points\": 16, \"maximum_dwell_ms\": 1000, \"maximum_point_timeout_ms\": 250, \"conservative_rx_duration_ms\": 22518, \"free_bytes\": 808883048448, \"save_iq\": false, \"p201_paths\": \"/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>\", \"stop\": \"Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup\"}\nnative observe: passed\nTraceback (most recent call last):\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 167, in validate\n    class Sink(http.server.BaseHTTPRequestHandler):\nAttributeError: 'function' object has no attribute 'server'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 304, in <module>\n    validate(args)\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 293, in validate\n    assert audit['status'] == 'passed', str(root / 'audit.json')\nAssertionError: /var/tmp/sdrharness-dev/unified-cli-907x-web/audit.json\n",
+    "web2-run.log": "{\"maximum_points\": 18, \"maximum_rx_bytes\": 294912, \"centers_hz\": [2455000000, 2470000000], \"sample_rate_hz\": 10000000, \"rf_bandwidth_hz\": 10000000, \"frame_samples\": 4096, \"aggregate_frames\": 1, \"gain_db\": 20, \"success_points\": 2, \"cancel_maximum_points\": 16, \"maximum_dwell_ms\": 1000, \"maximum_point_timeout_ms\": 250, \"conservative_rx_duration_ms\": 22518, \"free_bytes\": 808876085248, \"save_iq\": false, \"p201_paths\": \"/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>\", \"stop\": \"Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup\"}\nnative observe: passed\nTraceback (most recent call last):\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 218, in validate\n    page.goto(base); page.wait_for_load_state('networkidle')\n  File \"/home/jetson/.local/lib/python3.10/site-packages/playwright/sync_api/_generated.py\", line 9117, in wait_for_load_state\n    self._sync(self._impl_obj.wait_for_load_state(state=state, timeout=timeout))\n  File \"/home/jetson/.local/lib/python3.10/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n  File \"/home/jetson/.local/lib/python3.10/site-packages/playwright/_impl/_page.py\", line 576, in wait_for_load_state\n    return await self._main_frame.wait_for_load_state(**locals_to_params(locals()))\n  File \"/home/jetson/.local/lib/python3.10/site-packages/playwright/_impl/_frame.py\", line 273, in wait_for_load_state\n    return await self._wait_for_load_state_impl(state, timeout)\n  File \"/home/jetson/.local/lib/python3.10/site-packages/playwright/_impl/_frame.py\", line 301, in _wait_for_load_state_impl\n    await waiter.result()\nplaywright._impl._errors.TimeoutError: Timeout 30000ms exceeded.\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 304, in <module>\n    validate(args)\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 293, in validate\n    assert audit['status'] == 'passed', str(root / 'audit.json')\nAssertionError: /var/tmp/sdrharness-dev/unified-cli-907x-web2/audit.json\n",
+    "web3-run.log": "{\"maximum_points\": 18, \"maximum_rx_bytes\": 294912, \"centers_hz\": [2455000000, 2470000000], \"sample_rate_hz\": 10000000, \"rf_bandwidth_hz\": 10000000, \"frame_samples\": 4096, \"aggregate_frames\": 1, \"gain_db\": 20, \"success_points\": 2, \"cancel_maximum_points\": 16, \"maximum_dwell_ms\": 1000, \"maximum_point_timeout_ms\": 250, \"conservative_rx_duration_ms\": 22518, \"free_bytes\": 808858660864, \"save_iq\": false, \"p201_paths\": \"/tmp/sdr-agent-dev/agx-sweep-<recorded-generation>-<0..15>\", \"stop\": \"Web /stop or CLI --mode cancel --session-generation N; SIGINT/SIGTERM invokes cleanup\"}\nnative observe: passed\nTraceback (most recent call last):\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 233, in validate\n    wait_for(lambda: (root / 'runtime-request.json').exists())\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 53, in wait_for\n    raise TimeoutError('bounded condition did not complete')\nTimeoutError: bounded condition did not complete\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 312, in <module>\n    validate(args)\n  File \"/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-installed-rx-clients.py\", line 301, in validate\n    assert audit['status'] == 'passed', str(root / 'audit.json')\nAssertionError: /var/tmp/sdrharness-dev/unified-cli-907x-web3/audit.json\n",
+    "deploy-run.log.attempt1": "Traceback (most recent call last):\n  File \"/var/tmp/sdrharness-dev/unified-cli-907x/deploy.py\", line 59, in <module>\n    assert all(event in current['events'] for event in original['events'])\nAssertionError\n",
+    "deploy-run.log.preflight-retry": "Traceback (most recent call last):\n  File \"/var/tmp/sdrharness-dev/unified-cli-907x/deploy.py\", line 24, in <module>\n    release.mkdir(mode=0o700);rollback.mkdir(mode=0o700)\n  File \"/usr/lib/python3.10/pathlib.py\", line 1175, in mkdir\n    self._accessor.mkdir(self, mode)\nFileExistsError: [Errno 17] File exists: '/home/jetson/.local/lib/sdrharness/releases/20260907-unified-cli-v1'\n"
+  },
+  "deployment_first_attempt": {
+    "status": "failed",
+    "rollback": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-unified-cli-v1",
+    "release": "/home/jetson/.local/lib/sdrharness/releases/20260907-unified-cli-v1",
+    "old_files": {
+      "bin/sdr-agent": {
+        "sha256": "d722990c69ebdedfa4dec957f5c7c0ade9989524dfb3f00727c34ccb81f2f702",
+        "bytes": 1127192
+      },
+      "bin/sdr-agent-controller": {
+        "sha256": "3cbad970165b9b86d8bc6441e74ddf0d8bf9740c15e54cfcd94e8786269d16c6",
+        "bytes": 1110800
+      },
+      "bin/sdr-agent-health": {
+        "sha256": "13102e3016cc2a8244cbceb99ae54dca7a26f2f025445e50e938e45e0f17138b",
+        "bytes": 529096
+      },
+      "scripts/recover-p201-sdrd.sh": {
+        "sha256": "5bc1c32d515fd53ce9f90a58d4eb749e68252c222b65be93a71047e422a873d5",
+        "bytes": 3303
+      }
+    },
+    "source_head": "6ed1fa16a56b7cf4ead9f2af62853be694330fce",
+    "recognizer_available": false,
+    "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "sdrd_pid": "5909",
+    "protected_before": {
+      "/api/results": "e4fb2ffb75eb4b113c878ad5e3a61d5f046697e5c78b8bee9c81000c373402c5",
+      "/api/corpus": "556aab46922f65fb174305485acf5dffc290bc0aa1c62edb959fd19d61a66245"
+    },
+    "health": {
+      "online": true,
+      "healthy": true,
+      "health_flags": 0,
+      "iio_visible": true,
+      "can_retune": true,
+      "can_capture_iq": true,
+      "rx_input": {
+        "identity_version": 1,
+        "verified": true,
+        "front_panel_port": "RX1",
+        "logical_channel": "RX0",
+        "phy_channel": "voltage0",
+        "scan_i_channel": "voltage0",
+        "scan_q_channel": "voltage1",
+        "rf_port_select": "A_BALANCED",
+        "source": "iio_channel_attr"
+      }
+    },
+    "recovery": "Result=success\nExecMainStatus=0",
+    "rolled_back": true
+  },
+  "deployment": {
+    "status": "passed",
+    "rollback": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-unified-cli-v1",
+    "release": "/home/jetson/.local/lib/sdrharness/releases/20260907-unified-cli-v1",
+    "old_files": {
+      "bin/sdr-agent": {
+        "sha256": "d722990c69ebdedfa4dec957f5c7c0ade9989524dfb3f00727c34ccb81f2f702",
+        "bytes": 1127192
+      },
+      "bin/sdr-agent-controller": {
+        "sha256": "3cbad970165b9b86d8bc6441e74ddf0d8bf9740c15e54cfcd94e8786269d16c6",
+        "bytes": 1110800
+      },
+      "bin/sdr-agent-health": {
+        "sha256": "13102e3016cc2a8244cbceb99ae54dca7a26f2f025445e50e938e45e0f17138b",
+        "bytes": 529096
+      },
+      "scripts/recover-p201-sdrd.sh": {
+        "sha256": "5bc1c32d515fd53ce9f90a58d4eb749e68252c222b65be93a71047e422a873d5",
+        "bytes": 3303
+      }
+    },
+    "source_head": "6ed1fa16a56b7cf4ead9f2af62853be694330fce",
+    "recognizer_available": false,
+    "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "sdrd_pid": "5909",
+    "protected_before": {
+      "/api/results": "e4fb2ffb75eb4b113c878ad5e3a61d5f046697e5c78b8bee9c81000c373402c5",
+      "/api/corpus": "556aab46922f65fb174305485acf5dffc290bc0aa1c62edb959fd19d61a66245"
+    },
+    "health": {
+      "online": true,
+      "healthy": true,
+      "health_flags": 0,
+      "iio_visible": true,
+      "can_retune": true,
+      "can_capture_iq": true,
+      "rx_input": {
+        "identity_version": 1,
+        "verified": true,
+        "front_panel_port": "RX1",
+        "logical_channel": "RX0",
+        "phy_channel": "voltage0",
+        "scan_i_channel": "voltage0",
+        "scan_q_channel": "voltage1",
+        "rf_port_select": "A_BALANCED",
+        "source": "iio_channel_attr"
+      }
+    },
+    "recovery": "Result=success\nExecMainStatus=0",
+    "post_status_events": [
+      {
+        "id": 174,
+        "timestamp_ms": 1788780610066,
+        "kind": "system",
+        "text": "终端进程已启动，等待控制器提示。"
+      },
+      {
+        "id": 175,
+        "timestamp_ms": 1788780610070,
+        "kind": "system",
+        "text": "SDR Agent 已连接。输入 /help 查看命令。硬件执行=已启用。"
+      },
+      {
+        "id": 176,
+        "timestamp_ms": 1788780610071,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 177,
+        "timestamp_ms": 1788780610092,
+        "kind": "operator",
+        "text": "Operator> /status"
+      },
+      {
+        "id": 178,
+        "timestamp_ms": 1788780610097,
+        "kind": "system",
+        "text": "控制器状态：空闲，可以接收新任务；运行模式：逐步人工批准。"
+      },
+      {
+        "id": 179,
+        "timestamp_ms": 1788780610097,
+        "kind": "system",
+        "text": "Agent 会话：已打开；上游模型：空闲；等待处理的消息：0 条。"
+      },
+      {
+        "id": 180,
+        "timestamp_ms": 1788780610098,
+        "kind": "system",
+        "text": "人工批准：没有待处理计划；下一请求编号：1；安全代次：1。"
+      },
+      {
+        "id": 181,
+        "timestamp_ms": 1788780610099,
+        "kind": "cruise",
+        "text": "巡航状态：未启用；当前每个可执行动作都需要人工批准。"
+      },
+      {
+        "id": 182,
+        "timestamp_ms": 1788780610099,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      }
+    ],
+    "installed_agent_pid": "475403",
+    "installed_sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+    "results_unchanged": true,
+    "sessions_preserved_with_existing_48_event_restart_compaction": true,
+    "radio_restored": true,
+    "obsolete_active_entries_removed": true
+  },
+  "tests": {
+    "cargo_test_passed": 125,
+    "cargo_test_ignored": 1,
+    "ignored_reason": "explicit bounded synthetic replay export",
+    "fmt": true,
+    "clippy": true,
+    "build": true,
+    "python_syntax_scripts": 5,
+    "bash_syntax_scripts": 2,
+    "cargo_binary_targets": [
+      "sdr-agent"
+    ],
+    "logs": {
+      "tests.log": {
+        "sha256": "9b9eb18d6d48606e7bb1933f17617a4b98d7fd9d2a4582f5aeaffe72c95793ae",
+        "bytes": 12652,
+        "results": [
+          "test result: ok. 101 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.45s",
+          "test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+          "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.65s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+        ]
+      },
+      "clippy.log": {
+        "sha256": "c8e2d9a82ecec4f0d98ec4832aeb62462b0d6117add45dc237cad00e9f054dbe",
+        "bytes": 620,
+        "results": []
+      },
+      "build.log": {
+        "sha256": "e82c58b331ab1b0b574d72167c7270b7d3ce14a82ffe6b9981339332407fba2f",
+        "bytes": 799,
+        "results": []
+      }
+    }
+  },
+  "build_sources": {
+    "raspberry-pi/sdr-agent/controller/Cargo.toml": "a4c8e6c94d34249dc8fab858d6ddce46ae8b225891d323e88200c17a1e335824",
+    "raspberry-pi/sdr-agent/controller/src/main.rs": "eb2a75cddf609ae79d42eb1dbc0cad6897cc43a8c22e55f9f5b0ff35323f2789",
+    "raspberry-pi/sdr-agent/controller/src/cli/batch.rs": "d5abd701572cb4a365040290bd6cfb54a979ea1f462fafa511c95680906c9952",
+    "raspberry-pi/sdr-agent/controller/src/cli/console.rs": "f4807fa817362d41137e61ba22124d88fa3eeb6e972a38cb5c487fd86754c151",
+    "raspberry-pi/sdr-agent/controller/src/cli/health.rs": "335004ae5b8904aa699fe3a612da419783befe17c9dcdd3eda261b7de902d93f",
+    "jetson-agx/sdrharness/scripts/recover-p201-sdrd.sh": "2d65cd4dda02d8a2f2e70419fbd74c078de943b306a0e8b8be38d964c8f9da45"
+  },
+  "retained_release_files": [
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-unified-cli-v1/bin/sdr-agent",
+      "bytes": 2544408,
+      "sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+      "purpose": "current release"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-unified-cli-v1/manifest.json",
+      "bytes": 1283,
+      "sha256": "10dd994d248bb55bef0dc6dfeca05b9bb66138537de8604683b209c1bb3c755c",
+      "purpose": "current release"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-unified-cli-v1/scripts/recover-p201-sdrd.sh",
+      "bytes": 3310,
+      "sha256": "2d65cd4dda02d8a2f2e70419fbd74c078de943b306a0e8b8be38d964c8f9da45",
+      "purpose": "current release"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-unified-cli-v1/bin/sdr-agent",
+      "bytes": 1127192,
+      "sha256": "d722990c69ebdedfa4dec957f5c7c0ade9989524dfb3f00727c34ccb81f2f702",
+      "purpose": "tested rollback"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-unified-cli-v1/bin/sdr-agent-controller",
+      "bytes": 1110800,
+      "sha256": "3cbad970165b9b86d8bc6441e74ddf0d8bf9740c15e54cfcd94e8786269d16c6",
+      "purpose": "tested rollback"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-unified-cli-v1/bin/sdr-agent-health",
+      "bytes": 529096,
+      "sha256": "13102e3016cc2a8244cbceb99ae54dca7a26f2f025445e50e938e45e0f17138b",
+      "purpose": "tested rollback"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-unified-cli-v1/manifest.json",
+      "bytes": 548,
+      "sha256": "43cf085542cb0035d0639d629267a80039c29611727afd5ffad3f0a1beffd7c6",
+      "purpose": "tested rollback"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-unified-cli-v1/scripts/recover-p201-sdrd.sh",
+      "bytes": 3303,
+      "sha256": "5bc1c32d515fd53ce9f90a58d4eb749e68252c222b65be93a71047e422a873d5",
+      "purpose": "tested rollback"
+    }
+  ],
+  "cleanup": {
+    "status": "passed",
+    "temporary_roots": [
+      "/var/tmp/sdrharness-dev/unified-cli-907x",
+      "/var/tmp/sdrharness-dev/unified-cli-907x-cli",
+      "/var/tmp/sdrharness-dev/unified-cli-907x-cli2",
+      "/var/tmp/sdrharness-dev/unified-cli-907x-web",
+      "/var/tmp/sdrharness-dev/unified-cli-907x-web2",
+      "/var/tmp/sdrharness-dev/unified-cli-907x-web3",
+      "/var/tmp/sdrharness-dev/unified-cli-907x-web4"
+    ],
+    "retained_iq_files": 0,
+    "user_results_deleted": 0,
+    "removed": [
+      {
+        "path": "/var/tmp/sdrharness-dev/unified-cli-907x",
+        "files": 1794,
+        "logical_bytes": 815728120,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/unified-cli-907x-cli",
+        "files": 4,
+        "logical_bytes": 16365,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/unified-cli-907x-cli2",
+        "files": 3,
+        "logical_bytes": 15942,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/unified-cli-907x-web",
+        "files": 2,
+        "logical_bytes": 7541,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/unified-cli-907x-web2",
+        "files": 7,
+        "logical_bytes": 41711,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/unified-cli-907x-web3",
+        "files": 8,
+        "logical_bytes": 46409,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/unified-cli-907x-web4",
+        "files": 9,
+        "logical_bytes": 342798,
+        "verified_absent": true
+      }
+    ],
+    "files_removed": 1827,
+    "logical_bytes_removed": 816198886,
+    "processes_stopped": true,
+    "private_sockets_absent": true,
+    "p201_paths_absent": true,
+    "retained_release_hashes_verified": true
+  }
+}

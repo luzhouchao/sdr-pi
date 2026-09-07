@@ -3,8 +3,9 @@ use sdr_agent_controller::sdr::{RxInputIdentity, SdrEngine, SdrdAdapter};
 use std::net::SocketAddr;
 use std::time::Duration;
 
-fn run() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = std::env::args().skip(1);
+pub(super) fn run(
+    mut args: impl Iterator<Item = String>,
+) -> Result<(), Box<dyn std::error::Error>> {
     let mut address = None;
     let mut timeout = None;
     while let Some(argument) = args.next() {
@@ -50,11 +51,4 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Err("P201 RX1 health or capability check failed".into());
     }
     Ok(())
-}
-
-fn main() {
-    if let Err(error) = run() {
-        eprintln!("p201_health_check_error={error}");
-        std::process::exit(1);
-    }
 }

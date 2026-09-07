@@ -4,6 +4,6 @@
   "kind": "rx_only_candidate",
   "recognizer_available": false,
   "files": [
-    {"path": "bin/sdr-agent-controller", "bytes": 1, "sha256": "0000000000000000000000000000000000000000000000000000000000000000"}
+    {"path": "bin/sdr-agent", "bytes": 1, "sha256": "0000000000000000000000000000000000000000000000000000000000000000"}
   ]
 }

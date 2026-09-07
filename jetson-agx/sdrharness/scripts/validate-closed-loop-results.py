@@ -90,7 +90,7 @@ async def validate(root):
     provider['initial_survey']=dict(mode='disabled',start_hz=70000000,stop_hz=6000000000,step_hz=8000000,dwell_ms=5,gain_db=50)
     provider['result_storage']=dict(save_iq=False)
     web_provider=root/'web-provider.json';web_provider.write_text(json.dumps(provider));web_provider.chmod(0o600)
-    binary=root/'target/debug/sdr-agent-controller';console=root/'target/debug/sdr-agent';web_binary=root/'target/debug/sdr-agent-web-console'
+    binary=root/'target/debug/sdr-agent';console=root/'target/debug/sdr-agent';web_binary=root/'target/debug/sdr-agent-web-console'
     webenv={**env,'SDR_WEB_LISTEN_HOST':'127.0.0.1','SDR_WEB_LISTEN_PORT':str(web_port),
         'SDR_WEB_STATE_PATH':str(root/'state.json'),'SDR_WEB_AGENT_BINARY':str(console),'SDR_WEB_REQUEST_PATH':str(root/'request.json'),
         'SDR_WEB_SESSION_SOCKET':str(session_socket),'SDR_WEB_SDRD_ADDRESS':'192.168.1.10:43110','SDR_WEB_PROVIDER_CONFIG_PATH':str(web_provider),

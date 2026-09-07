@@ -43,8 +43,15 @@ fn check(values: Vec<Value>, healthy: bool) {
         }
         commands
     });
-    let result = Command::new(env!("CARGO_BIN_EXE_sdr-agent-health"))
-        .args(["--sdrd", &address.to_string(), "--timeout-ms", "500"])
+    let result = Command::new(env!("CARGO_BIN_EXE_sdr-agent"))
+        .args([
+            "--mode",
+            "health",
+            "--sdrd",
+            &address.to_string(),
+            "--timeout-ms",
+            "500",
+        ])
         .output()
         .unwrap();
     assert_eq!(
@@ -137,7 +144,8 @@ fn command_surface_and_timeout_are_bounded() {
         vec!["--sdrd"],
         vec!["--sdrd", "bad-address"],
     ] {
-        assert!(!Command::new(env!("CARGO_BIN_EXE_sdr-agent-health"))
+        assert!(!Command::new(env!("CARGO_BIN_EXE_sdr-agent"))
+            .args(["--mode", "health"])
             .args(args)
             .output()
             .unwrap()
@@ -158,8 +166,15 @@ fn stalled_endpoint_times_out_without_mutation() {
         assert_eq!(line, "SDRD/1 HELLO 1\n");
         thread::sleep(Duration::from_millis(100));
     });
-    assert!(!Command::new(env!("CARGO_BIN_EXE_sdr-agent-health"))
-        .args(["--sdrd", &address.to_string(), "--timeout-ms", "20"])
+    assert!(!Command::new(env!("CARGO_BIN_EXE_sdr-agent"))
+        .args([
+            "--mode",
+            "health",
+            "--sdrd",
+            &address.to_string(),
+            "--timeout-ms",
+            "20"
+        ])
         .output()
         .unwrap()
         .status

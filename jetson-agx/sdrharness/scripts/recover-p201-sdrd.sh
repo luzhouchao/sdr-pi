@@ -5,7 +5,7 @@ readonly p201_host="192.168.1.10"
 readonly p201_password_file="/home/jetson/.config/sdrharness/p201-root.password"
 readonly p201_known_hosts="/home/jetson/.ssh/known_hosts"
 readonly recovery_lock="/run/sdrharness-p201-recovery/recovery.lock"
-readonly health_probe="/home/jetson/.local/lib/sdrharness/bin/sdr-agent-health"
+readonly health_probe="/home/jetson/.local/lib/sdrharness/bin/sdr-agent"
 
 umask 077
 
@@ -97,7 +97,7 @@ nc -z -w 3 "${p201_host}" 43110 || {
   echo "p201_recovery_error=sdrd_unreachable" >&2
   exit 1
 }
-timeout 6 "${health_probe}" \
+timeout 6 "${health_probe}" --mode health \
   --sdrd "${p201_host}:43110" \
   --timeout-ms 1000
 echo "p201_recovery_result=healthy"

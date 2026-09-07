@@ -57,7 +57,7 @@ async def validate(root, replay_only=False):
     assert txplan['tx_samples']==21000000 and txplan['tx_gain_db']==70
     available=shutil.disk_usage(root).free;assert available>8*1024*1024
     env={**os.environ,'TMPDIR':str(root/'tmp'),'PYTHONDONTWRITEBYTECODE':'1','TRITON_CACHE_DIR':str(root/'triton'),'CUDA_CACHE_PATH':str(root/'cuda-cache')}
-    binary=root/'target/debug/sdr-agent-controller';example=root/'target/debug/examples/recognize-received-window'
+    binary=root/'target/debug/sdr-agent';example=root/'target/debug/examples/recognize-received-window'
     generation=time.time_ns()//1000000;paths=[];processes=[];tx=None;txpid=None;worker_pid=None
     report={'schema_version':1,'status':'failed','maximum_rx_bytes':802804,'maximum_tx_samples':21000000,'tx_nominal_seconds':10,'tx_plan':txplan,'source_group':'b210-rml-train-'+sha(tile),'capture_session_id':f'b210-pilot-{generation}','receive_domain_only':True,'reviewed_labels':0,'v1b_complete':False,'recognizer_available':False,'free_bytes':available,'cases':{}}
     if prior is not None:

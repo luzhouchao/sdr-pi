@@ -138,13 +138,16 @@ runtime flock, accepts only one expected daemon/listener or a fully stopped
 zero/zero state, and uses the retained `/sd/sdr-agent/current/S60sdrd` entry.
 The Web unit wants this oneshot so an AGX/Web restart performs the same check.
 
-Install `bin/sdr-agent-health` from the native build alongside the recovery
-script. This small read-only entry reuses the Controller's strict SDRD Adapter
+Install the single `bin/sdr-agent` from the native build alongside the recovery
+script. Its `--mode health` path reuses the Controller's strict SDRD Adapter
 and sends only HELLO/CAPABILITIES/HEALTH/QUIT. It requires a verified RX1 identity,
 healthy flags and receive capabilities; a parsed unhealthy response exits
 nonzero. The recovery script gives it a six-second outer deadline and the unit
-has a 45-second startup budget. It does not depend on upgrading the installed
-general Controller or enabling recognition. See
+has a 45-second startup budget. It neither opens an interactive session nor
+enables recognition. The former `sdr-agent-controller` and `sdr-agent-health`
+executables are merged into this entry; keep old artifacts only in the named
+rollback release. Web still has its HTTP server, which launches this same
+`sdr-agent` in interactive mode. See
 [`../../docs/P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md`](../../docs/P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md).
 
 The explicitly authorized persistent-host-key setup and real reboot validation

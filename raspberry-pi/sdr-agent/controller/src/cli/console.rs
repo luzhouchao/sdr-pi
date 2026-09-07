@@ -68,14 +68,7 @@ struct LoadedTerminalSession {
     summary: String,
 }
 
-fn main() {
-    if let Err(error) = run() {
-        eprintln!("sdr_agent_error={error}");
-        std::process::exit(1);
-    }
-}
-
-fn run() -> AppResult<()> {
+pub(super) fn run() -> AppResult<()> {
     let options = Options::parse()?;
     let bytes = read_bounded(fs::File::open(&options.request_path)?)?;
     let template: PlanRequest = serde_json::from_slice(&bytes)?;

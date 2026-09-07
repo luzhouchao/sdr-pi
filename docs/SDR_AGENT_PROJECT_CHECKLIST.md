@@ -1,6 +1,6 @@
 # SDR Agent project checklist
 
-Last reviewed: 2026-09-06
+Last reviewed: 2026-09-07
 
 This is the living source of truth for implementation status. Check an item only
 after the exact wording is implemented and verified. Split partial work into a
@@ -12,18 +12,18 @@ Sections 1–6 are now the unified RX-only chapter plan and replace the earlier
 [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md);
 this file retains the detailed delivery and evidence ledger.
 
-## 当前交付状态速览（2026-09-06）
+## 当前交付状态速览（2026-09-07）
 
 以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
 编号表示范围，不表示施工先后；实际顺序见
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
-S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成，生产服务未替换。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
+S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；Worker、识别 Web、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
 - [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
 - [x] AGX 扫频/精查、结果存储和 RX 语料基础、split 隔离完成（第1/4/5章）。
 - [x] RF-v1 预处理、用户训练 epoch-10 checkpoint 的 validation 和 FP16 选择完成。
 - [x] 共享 RMS/四窗/full-logit/mean-logit runtime、golden 和有限实收故障清理完成。
-- [x] S1：准入/health/人工批准源码、测试及隔离真实 Worker 验证完成；生产服务未替换。
+- [x] S1：准入/health/人工批准源码、测试及隔离真实 Worker 验证完成；统一 CLI 已含 Controller 侧代码，生产 Worker/准入配置未替换，能力仍为 false。
 - [x] S2：统一完整结果与 Planner 紧凑 observation、四状态/校准身份、RF-v1 batch 严格转换和真实报告 replay 完成；生产阈值未冻结，能力仍为 false。
 - [x] S3：Worker 单等待位、整批 deadline、取消确认、强杀/重启清理和指标完成源码及有限真实候选验证；未部署，能力仍为 false。
 - [x] S4：共享 GPU 调度与持续资源源码/隔离验收；GPU 温度缺失按用户明确豁免保持未测，生产部署另属 A1。
@@ -451,7 +451,8 @@ Evidence:
         see
         [`SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md`](SDR_AGENT_SDRD_STARTUP_RECOVERY_VALIDATION_2026-09-03.md).
   - [x] Replace recovery's outdated general CLI dependency with the deployed
-        read-only `sdr-agent-health`, reusing strict Controller Adapter parsing
+        read-only `sdr-agent-health` (subsequently consolidated unchanged into
+        `sdr-agent --mode health`; see unified CLI validation below), reusing strict Controller Adapter parsing
         and requiring healthy verified RX1/capabilities for success. 11 test
         functions, already-running/timer-start/flock rejection, state restoration
         and exact cleanup pass. Preserve the original early-journal assertion
@@ -465,6 +466,17 @@ Evidence:
         an unchanged global pin across a real reboot plus subsequent idle-daemon
         recovery; see
         [`SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md).
+- [x] Consolidate interactive Agent, scripted Controller and read-only recovery
+      into the single installed `sdr-agent` CLI, preserving protocol/policy and
+      admission gates. The old generic installed CLI failed `rx_input` parsing;
+      Web already used a compatible interactive client. 125 tests, strict health,
+      live RX/timeout/cancel, installed Web browser archive/delete/stop, actual
+      deployment/rollback and recovery passed. Removed old active CLI entries;
+      existing user results and session IDs preserved (normal 48-event restart
+      compaction still applies). Seven exact temporary roots / 816,198,886 logical
+      bytes cleaned; only inventoried release/rollback artifacts retained, no new
+      IQ. Production recognition remains unavailable and A1 incomplete. See
+      [unified CLI validation](UNIFIED_CLI_VALIDATION_2026-09-07.md).
 - [x] Complete a full 1,800-second long-duration reconnect and fault-recovery
       test on the real SDR, covering 100 bounded acquisitions, three
       profile-applied client disconnects, two idle-daemon timer recoveries,

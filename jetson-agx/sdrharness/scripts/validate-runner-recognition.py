@@ -63,7 +63,7 @@ def require_idle_radio(snapshot, connections):
 
 async def validate(feature):
     assert feature.resolve()==feature and feature.parent==Path('/var/tmp/sdrharness-dev')
-    binary=feature/'target/debug/sdr-agent-controller';console=feature/'target/debug/sdr-agent';web=feature/'target/debug/sdr-agent-web-console'
+    binary=feature/'target/debug/sdr-agent';console=feature/'target/debug/sdr-agent';web=feature/'target/debug/sdr-agent-web-console'
     generation=int(time.time()*1000);gate=feature/'gate';runtime=feature/'mamba'
     summary_path=feature/f'live-summary-{generation}.json'
     gateway_port,backend_port,archive_port=port(),port(),port();assert len({gateway_port,backend_port,archive_port})==3

@@ -27,9 +27,10 @@ controller="${repo_root}/raspberry-pi/sdr-agent/controller"
   cargo clippy --all-targets -- -D warnings
   cargo build --locked --release --bins
 )
-install -m 0755 "${controller}/target/release/sdr-agent-controller" "${artifact_root}/bin/"
 install -m 0755 "${controller}/target/release/sdr-agent" "${artifact_root}/bin/"
-install -m 0755 "${controller}/target/release/sdr-agent-health" "${artifact_root}/bin/"
+# This directory is generated build staging, not the installed runtime or a
+# retained rollback release. Do not publish obsolete binaries from older builds.
+rm -f -- "${artifact_root}/bin/sdr-agent-controller" "${artifact_root}/bin/sdr-agent-health"
 
 web_console="${repo_root}/raspberry-pi/sdr-agent/web-console"
 (

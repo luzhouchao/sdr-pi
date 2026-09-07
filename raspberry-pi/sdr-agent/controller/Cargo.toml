@@ -6,6 +6,10 @@ rust-version = "1.75"
 description = "Deterministic safety controller for the Raspberry Pi SDR agent"
 license = "MIT"
 
+[[bin]]
+name = "sdr-agent"
+path = "src/main.rs"
+
 [dependencies]
 libc = "0.2"
 serde = { version = "=1.0.229", features = ["derive"] }

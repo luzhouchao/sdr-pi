@@ -65,8 +65,17 @@ and SDRD transport deadlines remain independently bounded by `--timeout-ms` and
 
 Safe live health observation:
 
+`sdr-agent` is the sole Controller executable. Without `--mode`, it starts the
+interactive terminal session also used by Web. Script callers must specify
+`--mode plan`, `observe`, `sweep`, `execute`, `cancel`, or `run-once` (existing
+recognition modes keep their admission gates). The old `sdr-agent-controller`
+default-plan invocation becomes `sdr-agent --mode plan`. Recovery uses
+`sdr-agent --mode health --sdrd HOST:PORT`; this checks RX1 health and exits
+nonzero on an unhealthy device without starting a session. `--help` prints the
+entry choices. The Cargo package/library name remains `sdr-agent-controller`.
+
 ```bash
-sdr-agent-controller \
+sdr-agent \
   --mode observe \
   --sdrd 192.168.1.10:43110 \
   --sdrd-timeout-ms 5000
@@ -326,7 +335,7 @@ observe-plan-validate-approve-execute-observe cycle and appends a root-only
 JSONL audit trail:
 
 ```bash
-sdr-agent-controller \
+sdr-agent \
   --mode run-once \
   --request controller/config/runner.development.example.json \
   --socket /run/sdr-agent/planner.sock \
@@ -349,7 +358,7 @@ envelope containing the original `PlanRequest` and `PlanResponse`, reruns Rust
 policy validation, then requires explicit operator approval when needed:
 
 ```bash
-sdr-agent-controller \
+sdr-agent \
   --mode execute \
   --request controller/config/execution.development.example.json \
   --sdrd 192.168.1.10:43110 \
@@ -360,7 +369,7 @@ Recovery tooling can request the same generation-correlated cancellation
 without a Planner call:
 
 ```bash
-sdr-agent-controller \
+sdr-agent \
   --mode cancel \
   --session-generation 77 \
   --sdrd 192.168.1.10:43110
@@ -370,7 +379,7 @@ The AGX software-aggregate sweep entry point uses the same validated plan file
 in tests and operations:
 
 ```bash
-sdr-agent-controller \
+sdr-agent \
   --mode sweep \
   --request controller/config/sweep.software-aggregate.example.json \
   --sdrd 192.168.1.10:43110
@@ -383,7 +392,7 @@ For a development smoke test, a natural-language instruction can replace the
 instruction in a bounded context file without changing its health or limits:
 
 ```bash
-cargo run -- \
+cargo run -- --mode plan \
   --socket /run/user/$(id -u)/sdr-agent/planner.sock \
   --request config/request.example.json \
   --instruction "保持当前状态并说明原因"

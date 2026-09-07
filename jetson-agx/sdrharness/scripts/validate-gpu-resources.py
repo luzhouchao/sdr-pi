@@ -82,7 +82,7 @@ async def validate(root, *, allow_missing_gpu_temperature=False):
     fixture = json.loads((root/'replay.json').read_text())
     assert (root/'model.f32').stat().st_size == 32768
     assert sha(root/'model.f32') == fixture['batch']['model_bytes_sha256']
-    controller = root/'target/debug/sdr-agent-controller'
+    controller = root/'target/debug/sdr-agent'
     runtime, gate = root/'mamba', root/'gate'
     port, backend = s4a.unused_port(), s4a.unused_port()
     assert port != backend

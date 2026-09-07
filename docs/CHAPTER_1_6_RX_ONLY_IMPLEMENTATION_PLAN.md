@@ -39,6 +39,11 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 `recognizer_available=false` 继续成立。高 softmax、四窗一致和有限实收成功都不
 能替代独立标注准确率、OOD false acceptance 或生产 Worker 验收。
 
+2026-09-07 运行入口更新：[统一 CLI](UNIFIED_CLI_VALIDATION_2026-09-07.md) 已将
+当前 Controller/交互代码装入单个 `sdr-agent`，并供 Web 与恢复服务调用。
+这是 RX 控制入口交付；下文各识别单元的“未部署”仍指生产识别系统未整体上线，
+Worker、识别 Web、校准/profile 和准入配置未随本次入口合并部署，A1 保持未完成。
+
 ## 第1章：Agent/Harness 与用户界面
 
 ### 已完成
