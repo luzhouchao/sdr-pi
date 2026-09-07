@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Explicitly authorized 2440-MHz B210 TX / P201 RX finite engineering check."""
+"""Registered 2440/2455-MHz B210 TX / P201 RX finite engineering check."""
 if not __debug__:
     raise RuntimeError('optimized Python would disable validation; refusing to run')
 
@@ -44,10 +44,11 @@ for pid in Path('/proc').iterdir():
     return 'python3 -c '+shlex.quote(code)
 
 
-async def run(feature, binary, mode="rml", rx_gain_db=50):
+async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000):
     assert feature.resolve() == feature and feature.parent == Path('/var/tmp/sdrharness-dev')
     assert feature.name.startswith('b210-') and feature.name.replace('-', '').isalnum()
     assert mode in ('rml', 'tone') and rx_gain_db in (40, 50)
+    assert type(center_hz) is int and center_hz in (2440000000,2455000000)
     audit_path = feature / 'link-summary.json'
     assert not audit_path.exists(), 'refusing to overwrite evidence'
     # Exclusive attempt receipt prevents concurrent/repeated RF starts, even after a crash.
@@ -55,6 +56,9 @@ async def run(feature, binary, mode="rml", rx_gain_db=50):
         json.dump({'mode':mode,'rx_gain_db':rx_gain_db,'started_at_ns':time.time_ns()},receipt)
     tx_plan = (dict(tx_gain_db=70) if mode == 'tone' else
                json.loads((feature / 'transmission-plan.json').read_text()))
+    if mode=='rml':
+        assert tx_plan['center_hz']==center_hz
+        if center_hz==2455000000:assert tx_plan['schema_version']==4
     assert tx_plan['tx_gain_db'] in ((70,) if mode == 'tone' else (0, 40, 70))
     rate = 2500000 if mode == 'tone' else 2100000
     rx_bw = 1000000 if mode == 'tone' else 1500000
@@ -62,7 +66,7 @@ async def run(feature, binary, mode="rml", rx_gain_db=50):
     processes = []
     audit = dict(status='failed',generation=generation,feature_directory=str(feature),
                  mode=mode,max_rx_bytes=786420,max_tx_samples=(25000000 if mode == "tone" else tx_plan["tx_samples"]),tx_nominal_seconds=(10 if mode == "tone" else tx_plan["tx_nominal_seconds"]),
-                 center_hz=2440000000,rate_sps=rate,bandwidth_hz=rx_bw,
+                 center_hz=center_hz,rate_sps=rate,bandwidth_hz=rx_bw,
                  tx_gain_db=tx_plan['tx_gain_db'],rx_gain_db=rx_gain_db,rx_input='RX1/RX0/A_BALANCED',
                  antenna_connection=True,recognizer_available=False,locked_test_read=False,
                  controller_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
@@ -90,7 +94,7 @@ async def run(feature, binary, mode="rml", rx_gain_db=50):
     audit['sdrd_pid'] = daemon
     async def capture(tag, gen):
         plan = dict(sweep_id=f'b210-{tag}-{gen}',session_generation=gen,
-                    frequencies=dict(kind='centers',centers_hz=[2440000000]),
+                    frequencies=dict(kind='centers',centers_hz=[center_hz]),
                     sample_rate_hz=rate,rf_bandwidth_hz=rx_bw,gain_db=rx_gain_db,
                     settle_ms=500,frame_samples=65535,aggregate_frames=1,
                     point_timeout_ms=1000,detection_threshold_db=12.)
@@ -137,7 +141,7 @@ async def run(feature, binary, mode="rml", rx_gain_db=50):
             tx_args = ('timeout --signal=INT --kill-after=2s 35s '
                        '/usr/lib/uhd/examples/tx_waveforms '
                        '--args type=b200,serial=2508504 --channels 0 --ant TX/RX '
-                       '--freq 2440000000 --rate 2500000 --bw 500000 '
+                       f'--freq {center_hz} --rate 2500000 --bw 500000 '
                        '--gain 70 --wave-type SINE --wave-freq 100000 --ampl 0.2 '
                        '--nsamps 25000000')
             audit['tx_command'] = tx_args
@@ -187,6 +191,7 @@ async def run(feature, binary, mode="rml", rx_gain_db=50):
         # A bounded, already-connected read-only sampler catches the short
         # retune/settle window without SSH startup latency.
         sampler_cmd = 'echo WATCHING; n=0; while test "$n" -lt 1000; do v=$(cat /sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency); if test "$v" -ge 2439999900 && test "$v" -le 2440000100; then echo APPLIED; break; fi; n=$((n+1)); usleep 10000; done; n=0; while test "$n" -lt 200; do v=$(cat /sys/bus/iio/devices/iio:device3/buffer/enable); if test "$v" = 1; then echo RX_ACTIVE; exit 0; fi; n=$((n+1)); usleep 10000; done; exit 1'
+        sampler_cmd=sampler_cmd.replace('2439999900',str(center_hz-100)).replace('2440000100',str(center_hz+100))
         sampler = await asyncio.create_subprocess_exec(*rf.SSH,sampler_cmd,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE)
         processes.append(sampler)
         assert (await asyncio.wait_for(sampler.stdout.readline(),5)).strip()==b'WATCHING'
@@ -255,9 +260,10 @@ if __name__=='__main__':
     p.add_argument('--controller',type=Path,required=True)
     p.add_argument('--mode',choices=['rml','tone'],default='rml')
     p.add_argument('--rx-gain-db',type=int,choices=[40,50],default=50,help='40 dB is link diagnostic only; frozen RF-v1 remains 50 dB')
+    p.add_argument('--center-hz',type=int,choices=[2440000000,2455000000],default=2440000000)
     a=p.parse_args()
     async def main():
         task=asyncio.current_task()
         for sig in (signal.SIGINT,signal.SIGTERM):asyncio.get_running_loop().add_signal_handler(sig,task.cancel)
-        await run(a.directory,a.controller,a.mode,a.rx_gain_db)
+        await run(a.directory,a.controller,a.mode,a.rx_gain_db,a.center_hz)
     asyncio.run(main())

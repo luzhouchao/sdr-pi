@@ -127,16 +127,18 @@ def acquire(binary):
     assert live.document(ROOT/'filter-preflight.json')==dict(contract=contract,source_retention=retention)
     lo.acquire(binary,root=ROOT,cases=CASES,feature_path=feature)
 
-async def infer():
-    report,tensors=prepare();assert report==live.document(ROOT/'prepared.json'),'sealed preparation changed'
-    assert len(tensors)<=12
-    lo.save(ROOT/'inference-started.json',dict(maximum_experiment_windows=48,actual_windows=4*len(tensors)))
+async def infer(*, root=None, prepare_function=None, max_inputs=12):
+    feature=ROOT if root is None else root
+    assert max_inputs in (12,16) and feature.resolve()==feature
+    report,tensors=(prepare_function or prepare)();assert report==live.document(feature/'prepared.json'),'sealed preparation changed'
+    assert len(tensors)<=max_inputs
+    lo.save(feature/'inference-started.json',dict(maximum_experiment_windows=4*max_inputs,actual_windows=4*len(tensors)))
     receipt=dict(status='skipped_no_qualified_fixed_blocks' if not tensors else 'failed',results={},model_windows=0,planned_model_windows=4*len(tensors),
                  warmup_windows=0,recognizer_available=False,independent_labels=0,production_profile_compatible=False,
                  result_semantics='fixed-window single-source engineering comparison; not production classified')
-    if not tensors:lo.save(ROOT/'inference.json',receipt);return
+    if not tensors:lo.save(feature/'inference.json',receipt);return
     from gpu_lease import GpuLease
-    lease=GpuLease(ROOT/'gpu-gate','mamba');token=None
+    lease=GpuLease(feature/'gpu-gate','mamba');token=None
     try:
         token=await lease.acquire(time.monotonic()+10,request='b210-fixed-lo-rejection')
         worker=live.affine.module('reject_worker','amc-mamba-worker.py')
@@ -157,7 +159,7 @@ async def infer():
         receipt['failure']=f'{type(error).__name__}: {error}';raise
     finally:
         if token is not None:lease.release(token)
-        receipt['gpu_lease']=lease.metrics.copy();lease.close();lo.save(ROOT/'inference.json',receipt)
+        receipt['gpu_lease']=lease.metrics.copy();lease.close();lo.save(feature/'inference.json',receipt)
 
 def verify_retained():
     record=live.affine.ROOT/'docs/B210_LO_REJECTION_EVIDENCE_2026-09-07.json'

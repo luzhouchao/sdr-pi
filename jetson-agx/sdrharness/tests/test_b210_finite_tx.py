@@ -17,7 +17,7 @@ spec.loader.exec_module(tx)
 
 
 class FiniteTxTests(unittest.TestCase):
-    def run_case(self, go=True, tamper=False, extended=False, invalid=False, single=False, bad_unit=False, lo_offset=None, bad_version=False):
+    def run_case(self, go=True, tamper=False, extended=False, invalid=False, single=False, bad_unit=False, lo_offset=None, bad_version=False, margin_peak=None, bad_margin=False):
         # Caller supplies the feature TMPDIR; no files touch user results.
         root = Path(tempfile.mkdtemp(prefix='fifo-',dir=os.environ['TMPDIR']))
         payload = bytes(range(256))*(32 if single else 128)
@@ -35,6 +35,14 @@ class FiniteTxTests(unittest.TestCase):
             plan.update(schema_version=2 if bad_version else 3,tx_lo_offset_hz=lo_offset,
                         tx_requested_lo_hz=2440000000+lo_offset,diagnostic_contract='b210_1024_lo_offset_v1')
         bad_offset=lo_offset is not None and (lo_offset not in (-250000,0,250000) or bad_version)
+        if margin_peak is not None:
+            lo_offset=250000
+            plan.update(schema_version=4,center_hz=2455000000,tx_lo_offset_hz=250000,
+                        tx_requested_lo_hz=2455250000,complex_peak=margin_peak,diagnostic_contract='b210_2455_margin_v1',
+                        parent_payload_sha256='c8e3d54629eb7dde75e6a49554090f570522e7b438d2602dce85a18cd1d771f9',
+                        source_gain_multiplier=1. if margin_peak==.2 else 1.5)
+            if bad_margin:plan['parent_payload_sha256']='0'*64
+        bad_margin=bad_margin or (margin_peak is not None and margin_peak not in (.2,.3))
         if invalid:
             plan['tx_samples'] += 1
         (root/'transmission-plan.json').write_text(json.dumps(plan))
@@ -47,6 +55,7 @@ class FiniteTxTests(unittest.TestCase):
             self.assertNotIn('--repeat',args)
             self.assertEqual(args[args.index('--spb')+1],'1024' if single else '10000')
             if lo_offset is not None:self.assertEqual(args[args.index('--lo-offset')+1],str(lo_offset))
+            self.assertEqual(args[args.index('--freq')+1],str(2455000000 if margin_peak is not None else 2440000000))
             fifo=args[args.index('--file')+1]
             child=real_popen([sys.executable,'-c',
                 'import sys,hashlib,json; f=open(sys.argv[1],"rb"); h=hashlib.sha256(); n=0\n'
@@ -61,12 +70,12 @@ class FiniteTxTests(unittest.TestCase):
                  patch.object(tx.select,'select',fake_select), \
                  patch.object(tx.os,'read',lambda fd,n: (b'GO\n' if go else b'') if fd==0 else original_read(fd,n)), \
                  patch.object(tx.signal,'signal'):
-                if not go or tamper or invalid or bad_unit or bad_offset:
+                if not go or tamper or invalid or bad_unit or bad_offset or bad_margin:
                     with self.assertRaises(AssertionError):tx.transmit(root)
                 else:tx.transmit(root)
             self.assertFalse((root/'tx.fc32.fifo').exists())
             self.assertTrue(all(p.poll() is not None for p in launched))
-            if tamper or invalid or bad_unit or bad_offset:
+            if tamper or invalid or bad_unit or bad_offset or bad_margin:
                 self.assertFalse(launched)
             elif go:
                 result=json.loads((root/'tx-uhd.log').read_text())
@@ -82,6 +91,14 @@ class FiniteTxTests(unittest.TestCase):
                 if child.poll() is None:child.kill();child.wait()
             import shutil
             shutil.rmtree(root)
+
+    def test_margin_amplitudes_keep_finite_1024_stream(self):
+        for peak in (.2,.3):self.run_case(single=True,margin_peak=peak)
+
+    def test_margin_unregistered_peak_parent_and_tamper_rejected(self):
+        self.run_case(single=True,margin_peak=.4)
+        self.run_case(single=True,margin_peak=.3,bad_margin=True)
+        self.run_case(single=True,margin_peak=.3,tamper=True)
 
     def test_registered_lo_offsets_preserve_payload_and_bound(self):
         for offset in (-250000,0,250000):self.run_case(single=True,lo_offset=offset)

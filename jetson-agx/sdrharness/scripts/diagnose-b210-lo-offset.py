@@ -109,29 +109,34 @@ def analyze():
         report['cases'][tag]=result
     return report
 
-def acquire(binary, *, root=ROOT, cases=CASES, feature_path=feature):
+def acquire(binary, *, root=ROOT, cases=CASES, feature_path=feature, center_hz=2440000000,
+            validate_source=validate_plan, seal_source=seal_case):
     assert root.resolve()==root and root.is_dir()
     assert 1<=len(cases)<=5 and len({tag for tag,_ in cases})==len(cases)
+    assert center_hz in (2440000000,2455000000)
+    for tag,value in cases:
+        validate_source(feature_path(tag),value)
+        assert not (feature_path(tag)/'link-summary.json').exists() and not (feature_path(tag)/'link-started.json').exists()
     save(root/'matrix-started.json',dict(cases=cases,max_rx_bytes=786420*(1+len(cases)),max_nominal_tx_seconds=10*(1+len(cases)),free_bytes=shutil.disk_usage(root).free))
     assert shutil.disk_usage(root).free>64*1024*1024
     for tag,offset in (('tone',0),*cases):
         case_root=feature_path(tag)
         assert case_root.resolve()==case_root and case_root.is_dir()
-        if tag!='tone':validate_plan(case_root,offset)
+        if tag!='tone':validate_source(case_root,offset)
         args=['timeout','--signal=TERM','--kill-after=20s','180s','python3',SCRIPTS/'validate-b210-p201-link.py',
-              '--directory',case_root,'--controller',binary,'--mode','tone' if tag=='tone' else 'rml','--rx-gain-db','40']
+              '--directory',case_root,'--controller',binary,'--mode','tone' if tag=='tone' else 'rml','--rx-gain-db','40','--center-hz',str(center_hz)]
         with (case_root/'runner.log').open('x') as log:
             subprocess.run(list(map(str,args)),stdout=log,stderr=subprocess.STDOUT,check=True,timeout=205)
         if tag=='tone':
-            live.validate_capture_root(case_root,'tone')
+            live.validate_capture_root(case_root,'tone',expected_center_hz=center_hz)
             result=live.match.tone_metrics(case_root);save(root/'tone-check.json',dict(metrics=result,assessment=live.match.assess_tone(result)))
             assert live.match.assess_tone(result)['passed'],'tone gate failed'
         else:
             for name in ('tx-summary.json','tx-uhd.log'):
                 command(['scp','-F','/home/jetson/.ssh/config',f'nx:{case_root}/{name}',case_root/name])
-            seal_case(case_root,offset)
+            seal_source(case_root,offset)
         print(json.dumps({'completed':tag}),flush=True)
-    save(root/'seal.json',dict(tone=live.validate_capture_root(feature_path('tone'),'tone'),cases={tag:seal_case(feature_path(tag),off) for tag,off in cases}))
+    save(root/'seal.json',dict(tone=live.validate_capture_root(feature_path('tone'),'tone',expected_center_hz=center_hz),cases={tag:seal_source(feature_path(tag),off) for tag,off in cases}))
 
 def plot(report,destination):
     import matplotlib

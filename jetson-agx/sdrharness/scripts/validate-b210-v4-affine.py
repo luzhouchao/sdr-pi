@@ -33,8 +33,9 @@ def document(path):
     return json.loads(read(path))
 
 
-def validate_capture_root(root, mode, *, single_source_sha256=None):
+def validate_capture_root(root, mode, *, single_source_sha256=None, expected_center_hz=2440000000):
     """Bind native reports, physical identity, raw files and requested SigMF settings."""
+    assert expected_center_hz in (2440000000,2455000000)
     link = document(root/'link-summary.json')
     tx_samples=21000000
     payload_hash=affine.paired.SOURCE_HASH
@@ -44,7 +45,7 @@ def validate_capture_root(root, mode, *, single_source_sha256=None):
         tx_samples=20971520;payload_hash=single_source_sha256
     rate,width = (2500000,1000000) if mode=='tone' else (2100000,1500000)
     assert link['status']=='transport_completed_pending_signal_analysis'
-    for key,value in dict(mode=mode,center_hz=2440000000,rate_sps=rate,bandwidth_hz=width,
+    for key,value in dict(mode=mode,center_hz=expected_center_hz,rate_sps=rate,bandwidth_hz=width,
                           rx_gain_db=40,tx_gain_db=70,rx_input='RX1/RX0/A_BALANCED',
                           max_rx_bytes=786420,tx_nominal_seconds=10,
                           max_tx_samples=25000000 if mode=='tone' else tx_samples).items():
@@ -75,7 +76,7 @@ def validate_capture_root(root, mode, *, single_source_sha256=None):
         assert report['session_generation']==point['session_generation']==plan['session_generation']==generation
         assert report['sweep_id']==plan['sweep_id']==f'b210-{tag}-{generation}'
         assert point['rx_input']==RX_IDENTITY
-        for key,value in dict(point_index=0,requested_center_hz=2440000000,actual_center_hz=2440000000,
+        for key,value in dict(point_index=0,requested_center_hz=expected_center_hz,actual_center_hz=expected_center_hz,
                               sample_rate_hz=rate,rf_bandwidth_hz=width,captured_samples=65535,
                               dropped_samples=0,overflow=False,clipped_samples=0,status_flags=0).items():
             assert point[key]==value,key
@@ -86,7 +87,7 @@ def validate_capture_root(root, mode, *, single_source_sha256=None):
         for key,value in dict(sample_rate_hz=rate,rf_bandwidth_hz=width,gain_db=40,
                               settle_ms=500,frame_samples=65535,aggregate_frames=1,point_timeout_ms=1000).items():
             assert plan[key]==value,key
-        assert plan['frequencies']==dict(kind='centers',centers_hz=[2440000000])
+        assert plan['frequencies']==dict(kind='centers',centers_hz=[expected_center_hz])
         dataset = report['dataset']
         assert dataset['bytes']==262140 and dataset['datatype']=='ci16_le' and dataset['format']=='sigmf'
         data,meta = Path(dataset['data_path']),Path(dataset['metadata_path'])
@@ -98,7 +99,7 @@ def validate_capture_root(root, mode, *, single_source_sha256=None):
         assert metadata['global']['core:datatype']=='ci16_le'
         assert metadata['global']['core:sample_rate']==rate
         assert metadata['global']['sdrharness:sample_layout']=='interleaved_iq'
-        assert metadata['captures']==[{'core:sample_start':0,'core:frequency':2440000000,
+        assert metadata['captures']==[{'core:sample_start':0,'core:frequency':expected_center_hz,
                                       'sdrharness:point_index':0,'sdrharness:rf_bandwidth_hz':width,
                                       'sdrharness:gain_db':40}]
         for path in (data,meta,root/f'{tag}-report.json'):

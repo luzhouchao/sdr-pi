@@ -653,8 +653,19 @@ aggregation, result persistence and model-facing summaries.
           retention rule, 53 inventoried files (~3.3 MB) remain for sealed replay.
           See [LO rejection validation](B210_LO_REJECTION_VALIDATION_2026-09-07.md)
           and [retained evidence](B210_LO_REJECTION_EVIDENCE_2026-09-07.json).
-    - [ ] Qualify fresh 1024-source controls before further bidirectional
-          bias/classifier validation; no retrospective acceptance of failed captures.
+    - [x] Complete the registered 2455-MHz 1024-source amplitude ABBA comparison
+          (.2/.3/.3/.2), with explicit version-4 source lineage and strict center
+          binding. One fixed low1 block passes source/background controls; source,
+          filtered source, raw RX and FIR RX all predict ID 0 in all four windows.
+          16 experimental model windows + 2 warmups, 101 software tests, 15 real
+          captures/restorations and precise cleanup verified; 67 inventoried files
+          (~4.1 MB) retain the complete success/failure matrix. See
+          [2455 margin validation](B210_2455_MARGIN_VALIDATION_2026-09-07.md).
+    - [ ] Establish repeatable source/background qualification across a fixed
+          matrix: the 2455-MHz ABBA trial admits only one of four cases, so neither
+          full-matrix reliability nor a benefit from increasing amplitude is
+          established. Preserve failures; no retrospective gate or window changes,
+          production admission, or qualified bidirectional-bias claim.
   - [ ] This pilot's complete TX-off/source-match RF acceptance: post-TX capture
         failed with `summary_clipped`; successful received-window inference
         predicted experimental ID 18 versus source nominal ID 0. Preserve the
