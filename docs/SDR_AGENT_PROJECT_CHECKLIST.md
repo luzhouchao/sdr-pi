@@ -19,6 +19,7 @@ this file retains the detailed delivery and evidence ledger.
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
+- [x] Web 界面重构：固定导航、可读对话与频谱、折叠配置/诊断、全局优先停止、完整确认/错误反馈和响应式交互已实现；原生及浏览器验证、实际部署/回滚、用户会话/结果保留和精确清理完成。见 [UI 验收](validation/WEB_UI_REDESIGN_VALIDATION_2026-09-07.md)。不部署日志/监控，不开放识别。
 - [x] Web 后台升级：已核对旧制品与源码差异，补齐旧进程输出隔离，验收重启不重扫、request/session/generation 隔离、停止/断连完整恢复、浏览器结果查看/删除、原用户结果保留及实际升级/回滚；精确清理完成。见 [Web 验收](validation/WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)。不开放识别，不部署日志/监控配置。
 - [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
 - [x] AGX 扫频/精查、结果存储和 RX 语料基础、split 隔离完成（第1/4/5章）。
@@ -146,7 +147,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
       automatically compact obsolete planning turns at a configurable 50–95%
       threshold (default 90%) while retaining the newest complete Rust-validated
       PlanningContext as authoritative.
-- [x] Provide a top-bar gear beside LAN status that opens a separate settings
+- [x] Provide a persistent navigation settings entry that opens a separate settings
       page for model/API, context, compaction and initial-survey configuration;
       keep edits local until explicit save, warn on unsaved navigation, write
       the private file atomically as mode `0600`, and live-validate the deployed
@@ -155,7 +156,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
       rows, one optional per-scan `ci16_le` SigMF dataset pair, a manually saved
       raw-IQ switch, strict capture-root validation, and an operator delete path
       that removes only the indexed result and its managed files.
-- [x] Implement the top-level current-sweep card as an entry to a dedicated
+- [x] Implement the current-session result shortcut and persistent archive navigation to a dedicated
       aggregate-results view with saved history, a real-data SVG power trace,
       noise baseline, candidate markers/table, scan metrics and raw-IQ state;
       keep charts out of the terminal workspace and cover the backing result

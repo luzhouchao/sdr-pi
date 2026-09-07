@@ -1,5 +1,15 @@
 const view = {
   state: null,
+  stateEpoch: 0,
+  resultEpoch: 0,
+  resultDetailEpoch: 0,
+  corpusDetailEpoch: 0,
+  recognitionDetailEpoch: 0,
+  commandPending: false,
+  commandFeedbackEpoch: 0,
+  sessionPending: false,
+  online: false,
+  drafts: new Map(),
   active: null,
   provider: null,
   providerModels: [],
@@ -13,6 +23,8 @@ const view = {
   selectedCorpusId: null,
   selectedCorpus: null,
   settingsDirty: false,
+  settingsRevision: 0,
+  modelQueryEpoch: 0,
   settingsOpen: false,
   resultsOpen: false,
   corpusOpen: false,
@@ -24,18 +36,32 @@ const view = {
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
+    signal: AbortSignal.timeout(12000),
     ...options,
     headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
   });
-  const payload = await response.json();
+  let payload;
+  try { payload = await response.json(); }
+  catch { throw new Error('服务返回了无法读取的响应'); }
   if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
   return payload;
 }
 
 async function loadState({ keepScroll = true } = {}) {
   const nearBottom = view.terminal.scrollHeight - view.terminal.scrollTop - view.terminal.clientHeight < 70;
-  view.state = await api('/api/state');
+  const epoch = ++view.stateEpoch;
+  const state = await api('/api/state');
+  if (epoch !== view.stateEpoch) return;
+  const previousId = view.active?.id;
+  view.state = state;
   view.active = view.state.sessions.find((item) => item.id === view.state.active_session_id) || null;
+  if (previousId !== view.active?.id) {
+    if (previousId && state.sessions.some(session => session.id === previousId)) view.drafts.set(previousId, view.input.value);
+    view.input.value = view.drafts.get(view.active?.id) || '';
+    setText('#command-feedback', '');
+  }
+  for (const id of view.drafts.keys()) if (!state.sessions.some(session => session.id === id)) view.drafts.delete(id);
+  setText('#last-synced', '已同步 · ' + new Date().toLocaleTimeString('zh-CN', { hour12: false }));
   render();
   if (!keepScroll || nearBottom) scrollBottom();
 }
@@ -46,13 +72,12 @@ function render() {
   renderOverview();
   renderModelTrace();
   renderCurrentRecognition();
-  const enabled = Boolean(view.active);
-  document.querySelectorAll('[data-command], #command-input, #command-form button, #auto-form input, #auto-form button').forEach((element) => { element.disabled = !enabled; });
+  renderControls();
 }
 
 async function loadProvider() {
   view.provider = await api('/api/provider');
-  renderProvider();
+  if (!view.settingsDirty) renderProvider();
 }
 
 function renderProvider() {
@@ -155,70 +180,49 @@ function formatBytes(value) {
 }
 
 function markSettingsDirty(dirty = true) {
+  if (dirty) view.settingsRevision += 1;
   view.settingsDirty = dirty;
   document.querySelector('#settings-dirty-dot').hidden = !dirty;
   document.querySelector('#settings-save-state').textContent = dirty ? '有未保存修改' : '已载入当前设置';
   document.querySelector('#settings-view').classList.toggle('dirty', dirty);
 }
 
-function showSettings() {
-  view.settingsOpen = true;
-  view.resultsOpen = false;
-  view.corpusOpen = false;
-  document.querySelector('#console-view').hidden = true;
-  document.querySelector('#results-view').hidden = true;
-  document.querySelector('#corpus-view').hidden = true;
-  document.querySelector('#settings-view').hidden = false;
-  document.querySelector('#corpus-entry').setAttribute('aria-expanded', 'false');
-  document.querySelector('#corpus-entry').classList.remove('active');
-  document.querySelector('#settings-entry').setAttribute('aria-expanded', 'true');
-  document.querySelector('#settings-entry').classList.add('active');
-  document.querySelector('#settings-title').focus?.();
+async function navigate(page) {
+  const previous = document.querySelector('.page-view:not([hidden])')?.id;
+  if (view.settingsDirty && page !== 'settings') {
+    if (!await confirmAction('设置尚未保存，放弃修改并离开？')) return false;
+    renderProvider();
+    clearModelInventory();
+  }
+  view.settingsOpen = page === 'settings';
+  view.resultsOpen = page === 'results';
+  view.corpusOpen = page === 'corpus';
+  for (const name of ['console', 'results', 'corpus', 'settings']) {
+    document.querySelector('#' + name + '-view').hidden = name !== page;
+    const entry = document.querySelector('#' + name + '-entry');
+    if (entry) {
+      entry.classList.toggle('active', name === page);
+      entry.setAttribute('aria-current', name === page ? 'page' : 'false');
+    }
+  }
+  document.querySelector('#settings-entry').setAttribute('aria-expanded', String(view.settingsOpen));
+  document.querySelector('#corpus-entry').setAttribute('aria-expanded', String(view.corpusOpen));
+  setText('#page-name', {console: '接收工作台', results: '频谱与历史结果', corpus: '接收语料', settings: '设置'}[page]);
+  document.body.dataset.page = page;
+  if (previous !== page + '-view') {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    document.querySelector('#' + page + '-view').focus({ preventScroll: true });
+  }
+  return true;
 }
-
-function showConsole() {
-  if (view.settingsDirty && !window.confirm('设置尚未保存，放弃修改并返回运行台？')) return;
-  if (view.settingsDirty) renderProvider();
-  view.settingsOpen = false;
-  view.resultsOpen = false;
-  view.corpusOpen = false;
-  document.querySelector('#settings-view').hidden = true;
-  document.querySelector('#results-view').hidden = true;
-  document.querySelector('#corpus-view').hidden = true;
-  document.querySelector('#console-view').hidden = false;
-  document.querySelector('#settings-entry').setAttribute('aria-expanded', 'false');
-  document.querySelector('#settings-entry').classList.remove('active');
-  document.querySelector('#corpus-entry').setAttribute('aria-expanded', 'false');
-  document.querySelector('#corpus-entry').classList.remove('active');
-}
-
+async function showSettings() { return navigate('settings'); }
+async function showConsole() { return navigate('console'); }
 async function showResults() {
-  view.settingsOpen = false;
-  view.resultsOpen = true;
-  view.corpusOpen = false;
-  document.querySelector('#console-view').hidden = true;
-  document.querySelector('#settings-view').hidden = true;
-  document.querySelector('#corpus-view').hidden = true;
-  document.querySelector('#results-view').hidden = false;
-  document.querySelector('#settings-entry').setAttribute('aria-expanded', 'false');
-  document.querySelector('#settings-entry').classList.remove('active');
-  document.querySelector('#corpus-entry').setAttribute('aria-expanded', 'false');
-  document.querySelector('#corpus-entry').classList.remove('active');
+  if (!await navigate('results')) return;
   try { await Promise.all([loadResults({ selectLatest: true }), loadRecognitions()]); } catch (error) { toast(error.message); }
 }
-
 async function showCorpus() {
-  view.settingsOpen = false;
-  view.resultsOpen = false;
-  view.corpusOpen = true;
-  document.querySelector('#console-view').hidden = true;
-  document.querySelector('#settings-view').hidden = true;
-  document.querySelector('#results-view').hidden = true;
-  document.querySelector('#corpus-view').hidden = false;
-  document.querySelector('#settings-entry').setAttribute('aria-expanded', 'false');
-  document.querySelector('#settings-entry').classList.remove('active');
-  document.querySelector('#corpus-entry').setAttribute('aria-expanded', 'true');
-  document.querySelector('#corpus-entry').classList.add('active');
+  if (!await navigate('corpus')) return;
   try { await loadCorpus({ selectLatest: true }); } catch (error) { toast(error.message); }
 }
 
@@ -235,6 +239,7 @@ function discardSettings() {
 async function saveProvider(event) {
   event.preventDefault();
   const form = document.querySelector('#provider-form');
+  form.querySelectorAll('details').forEach(section => { if (section.querySelector(':invalid')) section.open = true; });
   if (!form.reportValidity()) return;
   const payload = {
     api: document.querySelector('#provider-api').value,
@@ -247,12 +252,23 @@ async function saveProvider(event) {
     initial_survey: surveyPayload(),
     result_storage: { save_iq: document.querySelector('#save-iq').checked },
   };
+  const revision = view.settingsRevision;
+  const button = document.querySelector('#save-settings');
+  if (button.disabled) return;
+  button.disabled = true;
+  button.textContent = '正在保存…';
   try {
     view.provider = await api('/api/provider', { method: 'PUT', body: JSON.stringify(payload) });
-    document.querySelector('#provider-api-key').value = '';
-    renderProvider();
-    toast('设置已保存，将用于下一个新对话');
+    if (revision === view.settingsRevision) {
+      document.querySelector('#provider-api-key').value = '';
+      renderProvider();
+      toast('设置已保存，将用于下一个新对话');
+    } else {
+      if (document.querySelector('#provider-api-key').value === payload.api_key) document.querySelector('#provider-api-key').value = '';
+      toast('提交的设置已保存；当前仍有未保存修改。');
+    }
   } catch (error) { toast(error.message); }
+  finally { button.disabled = false; button.textContent = '保存设置'; }
 }
 
 async function queryProviderModels() {
@@ -261,6 +277,7 @@ async function queryProviderModels() {
   if (!baseUrl.reportValidity()) return;
   const button = document.querySelector('#query-provider-models');
   clearModelInventory();
+  const epoch = view.modelQueryEpoch;
   const modelList = document.querySelector('#provider-model-list');
   modelList.replaceChildren(new Option('正在查询…', ''));
   modelList.disabled = true;
@@ -272,9 +289,11 @@ async function queryProviderModels() {
       method: 'POST',
       body: JSON.stringify({ base_url: baseUrl.value.trim(), api_key: apiKey.value }),
     });
+    if (epoch !== view.modelQueryEpoch) return;
     renderModelInventory(result.models);
     toast(`上游返回 ${result.models.length} 个模型`);
   } catch (error) {
+    if (epoch !== view.modelQueryEpoch) return;
     modelList.replaceChildren(new Option('查询失败，请检查上方状态', ''));
     setModelInventoryStatus(error.message, 'error');
     toast(error.message);
@@ -317,6 +336,7 @@ function setModelInventoryStatus(message, state) {
 }
 
 function clearModelInventory() {
+  view.modelQueryEpoch += 1;
   view.providerModels = [];
   document.querySelector('#provider-model-options').replaceChildren();
   const select = document.querySelector('#provider-model-list');
@@ -326,7 +346,7 @@ function clearModelInventory() {
 }
 
 async function clearProvider() {
-  if (!window.confirm('清除私密上游配置？新对话将回退到部署环境配置。')) return;
+  if (!await confirmAction('清除私密上游配置？新对话将回退到部署环境配置。')) return;
   try {
     view.provider = await api('/api/provider', { method: 'DELETE' });
     document.querySelector('#provider-form').reset();
@@ -361,10 +381,14 @@ function apiLabel(apiName) {
 }
 
 function renderSessions() {
+  const focused = document.activeElement?.dataset.sessionId;
   view.sessions.replaceChildren();
   for (const session of [...view.state.sessions].sort((a, b) => b.last_used_at_ms - a.last_used_at_ms)) {
     const button = document.createElement('button');
     button.type = 'button';
+    button.dataset.sessionId = session.id;
+    button.setAttribute('aria-pressed', String(session.id === view.state.active_session_id));
+    button.disabled = view.sessionPending;
     button.className = `session${session.id === view.state.active_session_id ? ' active' : ''}`;
     const title = document.createElement('strong');
     title.textContent = session.title;
@@ -373,25 +397,33 @@ function renderSessions() {
     button.append(title, meta);
     button.addEventListener('click', () => activate(session.id));
     view.sessions.append(button);
+    if (focused === session.id) button.focus({ preventScroll: true });
   }
 }
 
 function renderTerminal() {
+  const signature = JSON.stringify([view.active?.id, view.active?.events, view.active?.status, view.active?.compaction_count]);
+  if (signature === view.terminalSignature) return;
+  view.terminalSignature = signature;
   const activeTitle = document.querySelector('#active-title');
   const activeMeta = document.querySelector('#active-meta');
   view.terminal.replaceChildren();
+  const raw = document.querySelector('#raw-log');
+  raw.replaceChildren();
+  setText('#log-count', (view.active?.events.length || 0) + ' 条原始记录');
   if (!view.active) {
     activeTitle.textContent = '未选择对话';
     activeMeta.textContent = '新建对话后将连接 sdr-agent';
     const empty = document.createElement('div');
     empty.className = 'terminal-empty';
-    empty.textContent = '尚无终端输出';
+    empty.innerHTML = '<strong>从一次接收会话开始</strong><p>新建会话连接控制器。首次扫描将使用已保存的设置；历史结果始终可以查看。</p>';
     view.terminal.append(empty);
     return;
   }
   activeTitle.textContent = view.active.title;
   const compacted = view.active.compaction_count || 0;
-  activeMeta.textContent = `${statusLabel(view.active.status)} · ${view.active.events.length} 条可见记录${compacted ? ` · 已压缩 ${compacted} 次` : ''}`;
+  activeMeta.textContent = `${statusLabel(view.active.status)} · ${view.active.events.length} 条记录${compacted ? ` · 已压缩 ${compacted} 次` : ''}`;
+  let visibleCount = 0;
   for (const event of view.active.events) {
     const row = document.createElement('div');
     row.className = `line ${safeKind(event.kind)}`;
@@ -404,7 +436,17 @@ function renderTerminal() {
     text.className = 'text';
     text.textContent = event.text;
     row.append(time, kind, text);
-    view.terminal.append(row);
+    raw.append(row.cloneNode(true));
+    const visible = !['prompt', 'decision', 'search'].includes(event.kind)
+      && (event.kind !== 'system' || !/^(终端进程已启动|SDR Agent 已连接|SDR Agent>)/.test(event.text));
+    if (visible) {
+      text.textContent = event.text.replace(/^(Operator>|Agent>)\s*/, '');
+      view.terminal.append(row);
+      visibleCount += 1;
+    }
+  }
+  if (!visibleCount) {
+    const empty = document.createElement('p'); empty.className = 'terminal-empty'; empty.textContent = '会话已连接，等待新消息。原始记录可在诊断中查看。'; view.terminal.append(empty);
   }
 }
 
@@ -436,10 +478,17 @@ function renderOverview() {
     : latestText('sweep') || initialSurveyLabel(view.active?.initial_survey_status));
   setText('#qwen-status', latestText('qwen') || '尚无模型输出');
   setText('#cruise-status', latestText('cruise') || '逐步批准模式');
+  setText('#session-survey', initialSurveyLabel(view.active?.initial_survey_status));
+  setText('#receive-feedback', latestText('sweep') || '尚无接收进度反馈');
+  setText('#session-result', plot ? formatFrequency(plot.points[0][0]) + '–' + formatFrequency(plot.points.at(-1)[0]) : '尚无本会话曲线');
+  document.querySelector('#receive-status').dataset.state = view.active?.initial_survey_status || 'empty';
 }
 
 async function loadResults({ selectLatest = false } = {}) {
-  view.results = await api('/api/results');
+  const epoch = ++view.resultEpoch;
+  const results = await api('/api/results');
+  if (epoch !== view.resultEpoch) return;
+  view.results = results;
   document.querySelector('#results-count').textContent = `${view.results.length} 次已保存采集`;
   renderResultsList();
   if (!view.results.length) {
@@ -468,13 +517,13 @@ function renderResultsList() {
     button.type = 'button';
     button.className = `result-list-item${result.id === view.selectedResultId ? ' active' : ''}`;
     const kind = document.createElement('small');
-    kind.textContent = result.kind === 'initial' ? 'INITIAL SURVEY' : 'PLANNED SWEEP';
+    kind.textContent = result.kind === 'initial' ? '首次扫描' : '计划扫频';
     const title = document.createElement('strong');
     title.textContent = result.sweep_id;
     const meta = document.createElement('span');
     meta.textContent = `${formatDate(result.created_at_ms)} · ${result.point_count} 点 · ${result.candidate_count} 候选`;
     button.append(kind, title, meta);
-    button.addEventListener('click', () => selectResult(result.id));
+    button.addEventListener('click', () => selectResult(result.id).catch(error => toast(error.message)));
     list.append(button);
   }
 }
@@ -482,8 +531,16 @@ function renderResultsList() {
 async function selectResult(id, { rerenderList = true } = {}) {
   view.selectedResultId = id;
   if (rerenderList) renderResultsList();
-  const result = await api(`/api/results/${id}`);
-  if (view.selectedResultId !== id) return;
+  if (view.selectedResult?.summary.id !== id) {
+    view.selectedResult = null;
+    renderResultDetail();
+    document.querySelector('#results-empty').textContent = '正在读取这次采集…';
+  }
+  const epoch = ++view.resultDetailEpoch;
+  let result;
+  try { result = await api('/api/results/' + id); }
+  catch (error) { if (view.selectedResultId === id && epoch === view.resultDetailEpoch) document.querySelector('#results-empty').textContent = '读取失败：' + error.message + '。请选择记录重试。'; throw error; }
+  if (view.selectedResultId !== id || epoch !== view.resultDetailEpoch) return;
   view.selectedResult = result;
   renderResultDetail();
 }
@@ -493,6 +550,7 @@ function renderResultDetail() {
   const content = document.querySelector('#result-content');
   if (!view.selectedResult) {
     empty.hidden = false;
+    empty.textContent = '还没有聚合结果。完成一次扫描后，功率曲线和候选会保存在这里。';
     content.hidden = true;
     return;
   }
@@ -501,7 +559,7 @@ function renderResultDetail() {
   const { summary, sweep_plot: plot } = view.selectedResult;
   const firstHz = plot.points[0][0];
   const lastHz = plot.points[plot.points.length - 1][0];
-  setText('#result-kind', plot.kind === 'initial' ? 'INITIAL SURVEY' : 'PLANNED SWEEP');
+  setText('#result-kind', plot.kind === 'initial' ? '首次扫描' : '计划扫频');
   setText('#result-title', plot.sweep_id);
   setText('#result-time', `${formatDate(summary.created_at_ms)} · AGX 处理后结果`);
   setText('#result-band', `${formatFrequency(firstHz)}–${formatFrequency(lastHz)}`);
@@ -554,18 +612,27 @@ function renderCandidateTable(candidates) {
 }
 
 function renderSpectrum(plot) {
+  const dataBody = document.querySelector('#spectrum-data');
+  dataBody.replaceChildren();
+  for (const [frequency, power] of plot.points) {
+    const row = document.createElement('tr');
+    for (const value of [formatFrequency(frequency), power.toFixed(1) + ' dBFS', plot.noise_floor_dbfs.toFixed(1) + ' dBFS']) {
+      const cell = document.createElement('td'); cell.textContent = value; row.append(cell);
+    }
+    dataBody.append(row);
+  }
   const svg = document.querySelector('#spectrum-plot');
   svg.replaceChildren();
-  const title = svgNode('title');
+  const title = svgNode('title', { id: 'spectrum-title' });
   title.textContent = `${plot.sweep_id} 扫频功率图`;
-  const desc = svgNode('desc');
+  const desc = svgNode('desc', { id: 'spectrum-desc' });
   desc.textContent = `${plot.points.length} 个真实频点，噪声基线 ${plot.noise_floor_dbfs.toFixed(1)} dBFS，${plot.candidates.length} 个候选。`;
   svg.append(title, desc);
   const defs = svgNode('defs');
   const gradient = svgNode('linearGradient', { id: 'trace-gradient', x1: '0', y1: '0', x2: '0', y2: '1' });
   gradient.append(
-    svgNode('stop', { offset: '0%', 'stop-color': '#51d5e6', 'stop-opacity': '.25' }),
-    svgNode('stop', { offset: '100%', 'stop-color': '#51d5e6', 'stop-opacity': '0' }),
+    svgNode('stop', { offset: '0%', 'stop-color': '#19756a', 'stop-opacity': '.25' }),
+    svgNode('stop', { offset: '100%', 'stop-color': '#19756a', 'stop-opacity': '0' }),
   );
   defs.append(gradient);
   svg.append(defs);
@@ -591,7 +658,7 @@ function renderSpectrum(plot) {
     const px = left + ratio * (right - left);
     svg.append(svgNode('line', { x1: px, y1: top, x2: px, y2: bottom, class: 'grid' }));
     const label = svgNode('text', { x: px, y: bottom + 24, class: 'axis-label', 'text-anchor': index === 0 ? 'start' : index === 6 ? 'end' : 'middle' });
-    label.textContent = formatAxisFrequency(minHz + ratio * (maxHz - minHz));
+    label.textContent = formatAxisFrequency(minHz + ratio * (maxHz - minHz), maxHz - minHz);
     svg.append(label);
   }
   const points = plot.points.map(([hz, power]) => `${x(hz).toFixed(2)},${y(power).toFixed(2)}`);
@@ -620,7 +687,7 @@ async function deleteSelectedResult() {
   if (!view.selectedResult) return;
   const { id, sweep_id: sweepId, iq_bytes: iqBytes } = view.selectedResult.summary;
   const suffix = iqBytes ? `，并删除 ${formatBytes(iqBytes)} 原始 IQ` : '';
-  if (!window.confirm(`删除扫频结果 ${sweepId}${suffix}？此操作无法撤销。`)) return;
+  if (!await confirmAction(`删除扫频结果 ${sweepId}${suffix}？此操作无法撤销。`)) return;
   try {
     await api(`/api/results/${id}`, { method: 'DELETE' });
     view.selectedResult = null;
@@ -673,7 +740,7 @@ function renderCorpusList() {
     const meta = document.createElement('span');
     meta.textContent = `${formatDate(result.created_at_ms)} · ${formatBytes(result.iq_bytes)} · seq ${result.sequence}`;
     button.append(kind, title, meta);
-    button.addEventListener('click', () => selectCorpus(result.result_id));
+    button.addEventListener('click', () => selectCorpus(result.result_id).catch(error => toast(error.message)));
     list.append(button);
   }
 }
@@ -681,8 +748,14 @@ function renderCorpusList() {
 async function selectCorpus(resultId, { rerenderList = true } = {}) {
   view.selectedCorpusId = resultId;
   if (rerenderList) renderCorpusList();
-  const result = await api(`/api/corpus/${encodeURIComponent(resultId)}`);
-  if (view.selectedCorpusId !== resultId) return;
+  const epoch = ++view.corpusDetailEpoch;
+  view.selectedCorpus = null;
+  renderCorpusDetail();
+  document.querySelector('#corpus-empty').textContent = '正在读取语料…';
+  let result;
+  try { result = await api('/api/corpus/' + encodeURIComponent(resultId)); }
+  catch (error) { if (epoch === view.corpusDetailEpoch) document.querySelector('#corpus-empty').textContent = '读取失败：' + error.message + '。请选择记录重试。'; throw error; }
+  if (view.selectedCorpusId !== resultId || epoch !== view.corpusDetailEpoch) return;
   view.selectedCorpus = result;
   renderCorpusDetail();
 }
@@ -721,7 +794,7 @@ function renderCorpusDetail() {
 async function deleteSelectedCorpus() {
   if (!view.selectedCorpus) return;
   const { result_id: resultId, iq_bytes: iqBytes } = view.selectedCorpus.summary;
-  if (!window.confirm(`删除接收语料 ${resultId}，并移除此记录的 ${formatBytes(iqBytes)} IQ 引用？其他语料的共享 IQ 和分组约束会保留。此操作无法撤销。`)) return;
+  if (!await confirmAction(`删除接收语料 ${resultId}，并移除此记录的 ${formatBytes(iqBytes)} IQ 引用？其他语料的共享 IQ 和分组约束会保留。此操作无法撤销。`)) return;
   try {
     await api(`/api/corpus/${encodeURIComponent(resultId)}`, { method: 'DELETE' });
     view.selectedCorpus = null;
@@ -755,8 +828,10 @@ function formatFrequencySpan(value) {
   return `${(value / 1000).toFixed(1)} kHz`;
 }
 
-function formatAxisFrequency(value) {
-  return value >= 1000000000 ? `${(value / 1000000000).toFixed(2)}G` : `${(value / 1000000).toFixed(0)}M`;
+function formatAxisFrequency(value, span) {
+  const tickMHz = Math.max(span / 6 / 1000000, 0.000001);
+  const precision = Math.min(6, Math.max(0, 1 - Math.floor(Math.log10(tickMHz))));
+  return (value / 1000000).toFixed(precision) + ' MHz';
 }
 
 function latestText(kind) {
@@ -765,29 +840,58 @@ function latestText(kind) {
 }
 
 async function createSession() {
+  if (view.sessionPending) return;
+  const survey = view.provider?.initial_survey;
+  const note = survey?.mode === 'disabled' ? '首次扫描已关闭。' : '新会话将按已保存设置执行首次扫描。';
+  const eviction = view.state?.sessions.length >= 2 ? '最久未使用的非活动会话将被移出；已保存结果不受影响。' : '';
+  if (!await confirmAction('创建新会话？' + note + eviction)) return;
+  await changeSession('/api/sessions');
+}
+async function changeSession(path) {
+  if (view.sessionPending) return;
+  view.sessionPending = true;
+  ++view.stateEpoch;
+  renderControls();
   try {
-    await api('/api/sessions', { method: 'POST', body: JSON.stringify({}) });
+    await api(path, { method: 'POST', body: '{}' });
     await loadState({ keepScroll: false });
   } catch (error) { toast(error.message); }
+  finally { view.sessionPending = false; renderControls(); }
 }
-
 async function activate(id) {
   if (id === view.state.active_session_id) return;
-  try {
-    await api(`/api/sessions/${encodeURIComponent(id)}/activate`, { method: 'POST', body: '{}' });
-    await loadState({ keepScroll: false });
-  } catch (error) { toast(error.message); }
+  await changeSession('/api/sessions/' + encodeURIComponent(id) + '/activate');
 }
-
-async function send(command) {
+async function send(command, { fromInput = false } = {}) {
   if (!view.active || !command.trim()) return;
+  if (new TextEncoder().encode(command.trim()).length > 1024) { toast('指令超出 1024 字节，请缩短后发送。'); return; }
+  const stopping = command.trim() === '/stop';
+  if ((view.commandPending || view.sessionPending) && !stopping) return;
+  const sessionId = view.active.id;
+  const feedbackEpoch = ++view.commandFeedbackEpoch;
+  const draft = view.input.value;
+  if (!stopping) view.commandPending = true;
+  renderControls();
+  setText('#command-feedback', stopping ? '正在发送停止请求；等待控制器确认…' : '正在发送…');
   try {
-    await api(`/api/sessions/${encodeURIComponent(view.active.id)}/command`, {
+    await api('/api/sessions/' + encodeURIComponent(sessionId) + '/command', {
       method: 'POST', body: JSON.stringify({ command }),
     });
-    view.input.value = '';
+    if (fromInput && view.active?.id === sessionId && view.input.value === draft) { view.input.value = ''; view.drafts.delete(sessionId); }
+    if (feedbackEpoch === view.commandFeedbackEpoch && view.active?.id === sessionId) setText('#command-feedback', stopping ? '停止请求已送达；请查看控制器的停止与恢复反馈。' : '已送达控制器');
     await loadState({ keepScroll: false });
-  } catch (error) { toast(error.message); }
+  } catch (error) {
+    if (feedbackEpoch === view.commandFeedbackEpoch && view.active?.id === sessionId) setText('#command-feedback', '未确认送达：' + error.message + '。请核对状态后重试。');
+    toast(error.message);
+  } finally { if (!stopping) view.commandPending = false; renderControls(); }
+}
+function renderControls() {
+  const enabled = Boolean(view.active);
+  document.querySelectorAll('[data-command], #command-input, #command-form button, #auto-form input, #auto-form button').forEach(element => {
+    element.disabled = !enabled || (element.dataset.command !== '/stop' && (view.sessionPending || view.commandPending));
+  });
+  document.querySelector('#new-session').disabled = view.sessionPending || !view.state;
+  document.querySelectorAll('.session').forEach(element => { element.disabled = view.sessionPending; });
 }
 
 async function startAuto(event) {
@@ -801,34 +905,58 @@ async function startAuto(event) {
 }
 
 function connectEvents() {
+  if (view.eventSource) return;
   const source = new EventSource('/api/events');
-  source.onopen = () => {
-    setConnection(true, '局域网实时连接');
-    loadState().catch((error) => toast(error.message));
+  view.eventSource = source;
+  let refreshing = false;
+  let refreshAgain = false;
+  const refresh = async () => {
+    if (refreshing) { refreshAgain = true; return; }
+    refreshing = true;
+    try {
+      await loadState();
+      setConnection(true, '实时连接');
+      if (view.resultsOpen) {
+        try { await loadResults(); } catch (error) { toast(error.message); }
+      }
+    } catch (error) { setConnection(false, '状态同步失败'); }
+    finally {
+      refreshing = false;
+      if (refreshAgain) { refreshAgain = false; source.onmessage(); }
+    }
   };
-  source.onerror = () => setConnection(false, '正在重新连接');
+  source.onopen = refresh;
+  source.onerror = () => setConnection(false, '连接中断 · 正在重连');
   source.onmessage = () => {
-    clearTimeout(view.reloadTimer);
-    view.reloadTimer = setTimeout(async () => {
-      try {
-        await loadState();
-        if (view.resultsOpen) await loadResults();
-      } catch (error) { toast(error.message); }
-    }, 80);
+    if (refreshing) { refreshAgain = true; return; }
+    if (view.reloadTimer) return;
+    view.reloadTimer = setTimeout(() => {
+      view.reloadTimer = null;
+      refresh();
+    }, 100);
   };
 }
-
 function setConnection(online, text) {
-  const node = document.querySelector('.connection');
-  node.classList.toggle('online', online);
+  view.online = online;
+  document.querySelector('.connection').classList.toggle('online', online);
   setText('#connection-text', text);
+  document.querySelector('#connection-alert').hidden = online && !view.partialLoadError;
 }
-
+async function retryConnection() {
+  setText('#connection-text', '正在同步…');
+  const results = await Promise.allSettled([loadState(), view.settingsDirty ? Promise.resolve() : loadProvider(), refreshCorpusCount()]);
+  const failed = results.filter(result => result.status === 'rejected');
+  view.partialLoadError = results.slice(1).some(result => result.status === 'rejected');
+  setConnection(results[0].status === 'fulfilled', results[0].status === 'fulfilled' ? '状态已同步' : '连接中断 · 正在重连');
+  if (failed.length) toast('部分内容未载入，请使用重新连接重试。');
+  connectEvents();
+}
 function toast(message) {
   const node = document.querySelector('#toast');
   node.textContent = message;
   node.classList.add('show');
-  setTimeout(() => node.classList.remove('show'), 3000);
+  clearTimeout(view.toastTimer);
+  view.toastTimer = setTimeout(() => node.classList.remove('show'), 7000);
 }
 
 function scrollBottom() { view.terminal.scrollTop = view.terminal.scrollHeight; }
@@ -862,13 +990,14 @@ document.querySelector('#provider-model-list').addEventListener('change', (event
   if (event.target.value) {
     document.querySelector('#provider-model').value = event.target.value;
     applySelectedModel(event.target.value);
+    markSettingsDirty();
   }
 });
 document.querySelector('#provider-base-url').addEventListener('input', () => {
-  if (view.providerModels.length) clearModelInventory();
+  clearModelInventory();
 });
 document.querySelector('#provider-api-key').addEventListener('input', () => {
-  if (view.providerModels.length) clearModelInventory();
+  clearModelInventory();
 });
 document.querySelector('#preset-opencode').addEventListener('click', presetOpenCode);
 document.querySelector('#preset-custom').addEventListener('click', clearProviderFields);
@@ -877,7 +1006,15 @@ document.querySelector('#settings-back').addEventListener('click', showConsole);
 document.querySelector('#corpus-entry').addEventListener('click', showCorpus);
 document.querySelector('#corpus-back').addEventListener('click', showConsole);
 document.querySelector('#delete-corpus').addEventListener('click', deleteSelectedCorpus);
-document.querySelector('#sweep-results-entry').addEventListener('click', showResults);
+document.querySelector('#sweep-results-entry').addEventListener('click', async () => {
+  const sessionId = view.active?.id;
+  const sweepId = view.active?.sweep_plot?.sweep_id;
+  await showResults();
+  if (!view.resultsOpen || view.active?.id !== sessionId || !sweepId) return;
+  const match = view.results.find(result => result.session_id === sessionId && result.sweep_id === sweepId);
+  if (match) { try { await selectResult(match.id); } catch (error) { toast(error.message); } }
+  else toast('本会话曲线尚未归档或已删除；这里显示已保存的历史结果。');
+});
 document.querySelector('#results-back').addEventListener('click', showConsole);
 document.querySelector('#delete-result').addEventListener('click', deleteSelectedResult);
 document.querySelector('#discard-settings').addEventListener('click', discardSettings);
@@ -892,9 +1029,9 @@ document.querySelectorAll('input[name="survey-mode"]').forEach((radio) => radio.
 document.querySelector('#scroll-bottom').addEventListener('click', scrollBottom);
 document.querySelector('#auto-form').addEventListener('submit', startAuto);
 document.querySelectorAll('[data-command]').forEach((button) => button.addEventListener('click', () => send(button.dataset.command)));
-document.querySelector('#command-form').addEventListener('submit', (event) => { event.preventDefault(); send(view.input.value); });
+document.querySelector('#command-form').addEventListener('submit', (event) => { event.preventDefault(); send(view.input.value, { fromInput: true }); });
 view.input.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter' && event.ctrlKey) { event.preventDefault(); send(view.input.value); }
+  if (event.key === 'Enter' && event.ctrlKey) { event.preventDefault(); send(view.input.value, { fromInput: true }); }
 });
 window.addEventListener('beforeunload', (event) => {
   if (!view.settingsDirty) return;
@@ -902,9 +1039,10 @@ window.addEventListener('beforeunload', (event) => {
   event.returnValue = '';
 });
 
-Promise.all([loadState({ keepScroll: false }), loadProvider(), refreshCorpusCount()])
-  .then(connectEvents)
-  .catch((error) => toast(error.message));
+document.querySelector('#console-entry').addEventListener('click', showConsole);
+document.querySelector('#results-entry').addEventListener('click', showResults);
+document.querySelector('#retry-connection').addEventListener('click', retryConnection);
+retryConnection();
 
 
 const recognitionStatuses = { classified: '已分类', rejected: '已拒识', unavailable: '不可用', error: '错误' };
@@ -918,6 +1056,7 @@ async function loadRecognitions(before = '') {
   setText('#recognition-count', `${records.length} 条记录 · 每页最多 50 条`);
   document.querySelector('#recognition-older').hidden = records.length < 50;
   renderRecognitionList();
+  setText('#recognition-empty', '还没有识别记录。信号识别目前不可用。');
   document.querySelector('#recognition-empty').hidden = records.length > 0;
   document.querySelector('#recognition-content').hidden = true;
   if (records.length) await selectRecognition(records[0].id);
@@ -944,8 +1083,13 @@ async function selectRecognition(id) {
   view.selectedRecognitionId = id;
   renderRecognitionList();
   document.querySelector('#recognition-content').hidden = true;
-  const record = await api(`/api/recognition-results/${id}`);
-  if (view.selectedRecognitionId !== id) return;
+  const epoch = ++view.recognitionDetailEpoch;
+  document.querySelector('#recognition-empty').hidden = false;
+  setText('#recognition-empty', '正在读取识别记录…');
+  let record;
+  try { record = await api('/api/recognition-results/' + id); }
+  catch (error) { if (epoch === view.recognitionDetailEpoch) setText('#recognition-empty', '读取失败：' + error.message); throw error; }
+  if (view.selectedRecognitionId !== id || epoch !== view.recognitionDetailEpoch) return;
   const o = record.observation;
   document.querySelector('#recognition-content').dataset.recordId = String(id);
   document.querySelector('#recognition-empty').hidden = true;
@@ -990,7 +1134,7 @@ document.querySelector('#recognition-refresh').addEventListener('click', () => l
 document.querySelector('#recognition-older').addEventListener('click', () => loadRecognitions(view.recognitions.at(-1)?.id).catch(error => toast(error.message)));
 document.querySelector('#recognition-delete').addEventListener('click', async () => {
   const id = view.selectedRecognitionId;
-  if (!id || !window.confirm('删除这条识别记录？此操作不会删除原始采集或接收语料。')) return;
+  if (!id || !await confirmAction('删除这条识别记录？此操作不会删除原始采集或接收语料。')) return;
   try {
     await api(`/api/recognition-results/${id}`, { method: 'DELETE' });
     if (view.selectedRecognitionId === id) view.selectedRecognitionId = null;
@@ -1032,3 +1176,24 @@ document.querySelector('#current-recognition-open').addEventListener('click', as
     await selectRecognition(id);
   } catch (error) { toast(error.message); }
 });
+
+async function confirmAction(message) {
+  const dialog = document.querySelector('#confirm-dialog');
+  if (dialog.open) return false;
+  const previous = document.activeElement;
+  document.querySelector('#confirm-message').textContent = message;
+  document.querySelector('#confirm-accept').textContent = message.startsWith('删除') ? '确认删除' : message.startsWith('创建') ? '创建会话' : '放弃并离开';
+  dialog.returnValue = 'cancel';
+  dialog.showModal();
+  document.querySelector('#confirm-cancel').focus();
+  return new Promise(resolve => dialog.addEventListener('close', () => {
+    if (previous?.isConnected) previous.focus({ preventScroll: true });
+    resolve(dialog.returnValue === 'confirm');
+  }, { once: true }));
+}
+
+const mobileLayout = window.matchMedia('(max-width: 700px)');
+const updateSessionPicker = () => { document.querySelector('#session-picker').open = !mobileLayout.matches; };
+mobileLayout.addEventListener('change', updateSessionPicker);
+updateSessionPicker();
+document.querySelector('#dialog-stop').addEventListener('click', () => document.querySelector('#confirm-dialog').close('cancel'));

@@ -1,72 +1,71 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SDR Web Console</title>
-  <link rel="stylesheet" href="/styles.css">
-</head>
-<body>
-  <header class="topbar">
-    <div><p class="eyebrow">AGX CONTROL PLANE</p><h1>SDR Web Console</h1></div>
-    <div class="topbar-actions">
-      <button id="corpus-entry" class="settings-entry" type="button" aria-controls="corpus-view" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5C4 5.1 7.6 4 12 4s8 1.1 8 2.5S16.4 9 12 9 4 7.9 4 6.5Zm0 0v5C4 12.9 7.6 14 12 14s8-1.1 8-2.5v-5m-16 5v5C4 17.9 7.6 19 12 19s8-1.1 8-2.5v-5"/></svg>
-        <span id="corpus-entry-label">接收语料</span>
-      </button>
-      <button id="settings-entry" class="settings-entry" type="button" aria-controls="settings-view" aria-expanded="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Zm8.2 4.8v-2l-2.3-.8a7 7 0 0 0-.6-1.5l1.1-2.2L17 5.1l-2.2 1.1a7 7 0 0 0-1.5-.6L12.5 3h-2l-.8 2.6a7 7 0 0 0-1.5.6L6 5.1 4.6 6.5l1.1 2.2a7 7 0 0 0-.6 1.5l-2.3.8v2l2.3.8a7 7 0 0 0 .6 1.5l-1.1 2.2L6 18.9l2.2-1.1a7 7 0 0 0 1.5.6l.8 2.6h2l.8-2.6a7 7 0 0 0 1.5-.6l2.2 1.1 1.4-1.4-1.1-2.2a7 7 0 0 0 .6-1.5l2.3-.8Z"/></svg>
-        <span>设置</span><i id="settings-dirty-dot" aria-label="有未保存修改" hidden></i>
-      </button>
-      <div class="connection"><span id="connection-dot"></span><span id="connection-text">正在连接</span></div>
-    </div>
-  </header>
-
-  <main>
-    <section id="console-view" class="page-view">
-      <section class="overview" aria-label="系统状态">
-        <button id="sweep-results-entry" class="status-card status-entry accent-cyan" type="button" aria-controls="results-view"><span>当前扫频 <i>查看采集/识别结果 →</i></span><strong id="sweep-status">尚无扫频输出</strong></button>
-        <article class="status-card accent-violet"><span>上游模型最近返回</span><strong id="qwen-status">尚无模型输出</strong></article>
-        <article class="status-card accent-amber"><span>控制器</span><strong id="controller-status">等待活动对话</strong></article>
-        <article class="status-card accent-green"><span>运行授权</span><strong id="cruise-status">逐步批准模式</strong></article>
-      </section>
-      <section class="workspace">
-        <aside class="sessions-panel">
-          <div class="panel-title"><div><span>对话</span><small>最多保留 2 个</small></div><button id="new-session" class="icon-button" type="button" title="新建对话">＋</button></div>
-          <div id="sessions" class="sessions"></div>
-          <p class="retention-note">新建第 3 个对话时，自动丢弃最久未使用的非活动对话。上下文达到设置阈值后才计为自动压缩。</p>
-        </aside>
-        <section class="console-panel">
-          <div class="console-header"><div><span id="active-title">未选择对话</span><small id="active-meta">启动一个对话以连接 sdr-agent</small></div><button id="scroll-bottom" class="ghost-button" type="button">回到底部</button></div>
-          <section id="current-recognition" class="authorization-rail" aria-label="当前对话识别结果" hidden>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f5f6f3"><title>SDR Harness · 接收工作台</title><link rel="stylesheet" href="/styles.css"></head>
+<body data-page="console" data-ui-version="20260907-web-ui-v2">
+<a class="skip-link" href="#console-view">跳到主要内容</a>
+<aside class="app-sidebar" aria-label="应用导航">
+  <div class="brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 18h4l3-8 6 14 4-10 3 4h2"/></svg></span><div><strong>SDR Harness</strong><small>接收与频谱分析</small></div></div>
+  <nav class="main-nav" aria-label="主导航">
+    <button id="console-entry" class="active" aria-current="page" type="button"><span aria-hidden="true">◫</span>接收工作台</button>
+    <button id="results-entry" type="button"><span aria-hidden="true">≋</span>频谱结果</button>
+    <button id="corpus-entry" type="button" aria-controls="corpus-view" aria-expanded="false"><span aria-hidden="true">▤</span><span id="corpus-entry-label">接收语料</span></button>
+    <button id="settings-entry" type="button" aria-controls="settings-view" aria-expanded="false"><span aria-hidden="true">⚙</span>设置<i id="settings-dirty-dot" aria-label="有未保存修改" hidden></i></button>
+  </nav>
+  <details id="session-picker" open><summary class="mobile-session-summary">会话与新建</summary><section class="sessions-panel" aria-label="接收会话">
+    <div class="panel-title"><div><span>会话</span><small>最多 2 个 · 单一活动会话</small></div><button id="new-session" class="icon-button" type="button" aria-label="新建会话" title="新建会话">＋</button></div>
+    <div id="sessions" class="sessions"></div>
+    <details class="retention-note"><summary>会话如何保留</summary><p>新建第 3 个会话会移出最久未使用的非活动会话。已保存结果不受影响。切换或恢复会话不会重复首次扫描。</p></details>
+  </section>
+</details>
+  <div class="sidebar-foot"><span class="scope-tag">仅接收</span><p>P201 接收 · AGX 处理</p><small>识别能力未开放</small></div>
+</aside>
+<div class="app-main">
+<header class="topbar"><div class="page-location"><span id="page-name">接收工作台</span><span class="scope-tag">仅接收</span></div><div class="topbar-actions"><div class="connection" role="status"><span id="connection-dot"></span><span id="connection-text">正在连接</span></div><button type="button" data-command="/stop" class="emergency-stop">■ 立即停止</button></div></header>
+<div id="connection-alert" class="connection-alert" role="status"><span>正在同步状态；断连时已显示内容可能过时，接收不会因关闭页面而停止。</span><button id="retry-connection" type="button">重新连接</button></div>
+<main>
+<section id="console-view" class="page-view" tabindex="-1" aria-label="接收工作台">
+  <div class="view-heading"><div><p class="section-kicker">当前会话</p><h1 id="active-title">正在载入会话…</h1><p id="active-meta">连接后恢复上一次会话</p></div><span id="last-synced" class="muted">等待同步</span></div>
+  <div class="workspace">
+    <section class="console-panel" aria-label="会话消息">
+      <div class="console-header"><div><strong>对话</strong><span>指令、计划与接收反馈</span></div><button id="scroll-bottom" class="ghost-button" type="button">最新消息 ↓</button></div>
+                <section id="current-recognition" class="authorization-rail" aria-label="当前对话识别结果" hidden>
             <div class="rail-copy"><small>当前对话 · 最近一次识别</small><strong id="current-recognition-status"></strong><p id="current-recognition-meaning"></p><small id="current-recognition-time"></small></div>
             <button id="current-recognition-open" class="ghost-button" type="button">查看这次识别记录</button>
           </section>
-          <section class="authorization-rail" aria-labelledby="authorization-title">
-            <div class="rail-copy"><small>RUN AUTHORIZATION</small><strong id="authorization-title">选择谁决定下一步</strong><p>两种模式都经过 Rust 安全校验；不会放宽频段、时长、字节或独占限制。</p></div>
+
+      <div id="terminal" class="terminal" role="log" aria-live="polite" aria-relevant="additions text" tabindex="0" aria-label="会话消息流"><div class="terminal-empty">正在读取会话…</div></div>
+      <div class="composer">
+        <div class="controls" aria-label="计划与会话控制"><button type="button" class="approve-button" data-command="/approve">✓ 批准计划</button><button type="button" class="reject-button" data-command="/reject">拒绝</button><span class="control-spacer"></span><button type="button" data-command="/pause">暂停</button><button type="button" data-command="/resume">恢复</button><button type="button" data-command="/status">查看状态</button></div>
+        <form id="command-form" class="command-form"><label class="sr-only" for="command-input">发送给接收助手的指令</label><div><textarea id="command-input" rows="2" maxlength="1024" placeholder="描述接收任务，或输入 /help 查看命令"></textarea><button type="submit">发送 ↑</button></div><div class="composer-foot"><small>Ctrl + Enter 发送 · 可在生成期间停止</small><span id="command-feedback" role="status"></span></div></form>
+      </div>
+    </section>
+    <aside class="context-panel" aria-label="当前接收与系统状态">
+      <section id="receive-status" class="receive-card"><div class="section-heading"><h2>接收进度</h2><span class="state-dot" aria-hidden="true"></span></div><strong id="session-survey">等待会话</strong><p id="receive-feedback">尚无接收反馈</p><small>仅显示控制器已上报的进度</small></section>
+      <button id="sweep-results-entry" class="result-shortcut" type="button" aria-controls="results-view"><span>本会话最近结果 <b aria-hidden="true">↗</b></span><strong id="session-result">尚无曲线</strong><small id="sweep-status">查看频谱与历史结果</small></button>
+      <section class="system-summary"><h2>系统状态</h2><dl><dt>控制器连接</dt><dd id="controller-status">等待状态</dd><dt>信号识别</dt><dd>不可用 · 尚未生产准入</dd></dl><p>控制器连接不代表射频链路已验证；查看状态可获取最新反馈。</p></section>
+      <details class="mode-disclosure"><summary>运行模式与自动巡航</summary>          <section class="authorization-rail" aria-labelledby="authorization-title">
+            <div class="rail-copy"><small>运行权限</small><strong id="authorization-title">运行模式</strong><p>两种模式都经过 Rust 安全校验；不会放宽频段、时长、字节或独占限制。</p></div>
             <button type="button" data-command="/mode manual" class="mode-card manual-mode"><span>逐步批准</span><small>每个可执行动作都停在人工批准门前</small></button>
             <form id="auto-form" class="mode-card auto-mode"><label for="auto-mission">受限自动巡航</label><div class="auto-mission-row"><input id="auto-mission" maxlength="700" placeholder="例如：在允许频段内寻找活动并根据结果继续" required><button type="submit">启动巡航</button></div><div class="auto-budget-row"><label for="auto-steps"><span>最多步数</span><input id="auto-steps" type="number" min="1" max="128" step="1" value="8" required></label><label for="auto-seconds"><span>总时长（秒）</span><input id="auto-seconds" type="number" min="10" max="1800" step="1" value="120" required></label><small>IQ 预算按步数 × 单动作上限自动推导；两类失败各重试 5 次</small></div></form>
-            <button type="button" data-command="/stop" class="emergency-stop">■ 立即停止</button>
+
           </section>
-          <section id="model-trace" class="model-trace" hidden aria-label="模型透明度">
-            <div class="trace-heading"><div><small>MODEL TRACE</small><strong>本轮模型上下文与决策</strong></div><span id="thinking-live" hidden>生成中</span></div>
+</details>
+      <details class="status-disclosure"><summary>上游与授权详情</summary><h3>上游最近回复</h3><p id="qwen-status">尚无模型输出</p><h3>运行授权</h3><p id="cruise-status">逐步批准模式</p></details>
+    </aside>
+  </div>
+  <details class="diagnostics"><summary><span>技术诊断与原始记录</span><small id="log-count">0 条原始记录</small></summary>          <section id="model-trace" class="model-trace" hidden aria-label="模型透明度">
+            <div class="trace-heading"><div><small>模型上下文</small><strong>本轮模型上下文与决策</strong></div><span id="thinking-live" hidden>生成中</span></div>
             <div class="trace-grid">
               <details id="model-input-panel"><summary>实际注入模型的上下文</summary><pre id="model-input-content"></pre></details>
               <details id="thinking-panel" hidden><summary>上游模型 reasoning</summary><pre id="thinking-content"></pre></details>
-              <div id="decision-panel" class="decision-panel" hidden><small>RUST VALIDATION BASIS</small><p id="decision-content"></p></div>
+              <div id="decision-panel" class="decision-panel" hidden><small>控制器校验依据</small><p id="decision-content"></p></div>
             </div>
           </section>
-          <div id="terminal" class="terminal" role="log" aria-live="polite"></div>
-          <div class="controls" aria-label="快捷控制"><button type="button" data-command="/approve">✓ 批准</button><button type="button" data-command="/reject">× 拒绝</button><button type="button" data-command="/pause">Ⅱ 暂停</button><button type="button" data-command="/resume">▶ 恢复</button><button type="button" data-command="/status">● 状态</button></div>
-          <form id="command-form" class="command-form"><label for="command-input">终端输入</label><div><textarea id="command-input" rows="2" maxlength="2048" placeholder="输入自然语言指令或 /help；Ctrl+Enter 发送"></textarea><button type="submit">发送</button></div><small>按钮和手动输入都会以 <code>Operator&gt;</code> 记录在上方终端中。</small></form>
-        </section>
-      </section>
-    </section>
-
-    <section id="results-view" class="page-view results-view" hidden aria-labelledby="results-title">
+<div id="raw-log" class="raw-log" tabindex="0" aria-label="完整原始记录"></div></details>
+</section>
+    <section id="results-view" class="page-view results-view" tabindex="-1" hidden aria-labelledby="results-title">
       <div class="results-heading">
-        <div><p class="eyebrow">AGX AGGREGATE ARCHIVE</p><h2 id="results-title">采集与识别结果</h2><p>每条曲线都来自一次真实 RX 扫频；AGX 保存功率、噪声基线与候选，原始 IQ 仅在设置开启时保留。</p></div>
-        <button id="results-back" class="ghost-button" type="button">返回运行台</button>
+        <div><h2 id="results-title">频谱与历史结果</h2><p>每条曲线都来自一次真实 RX 扫频；AGX 保存功率、噪声基线与候选，原始 IQ 仅在设置开启时保留。</p></div>
+        <button id="results-back" class="ghost-button" type="button">返回工作台</button>
       </div>
       <div class="archive-tabs" aria-label="结果类型"><button id="archive-sweeps" class="ghost-button" type="button" aria-pressed="true">扫频采集</button><button id="archive-recognitions" class="ghost-button" type="button" aria-pressed="false">识别记录</button></div>
       <div id="capture-archive" class="results-workspace">
@@ -82,10 +81,11 @@
               <div><span>频段</span><strong id="result-band">—</strong></div><div><span>频点</span><strong id="result-points">—</strong></div><div><span>固定增益</span><strong id="result-gain">—</strong></div><div><span>噪声基线</span><strong id="result-noise">—</strong></div><div><span>候选</span><strong id="result-candidates">—</strong></div><div><span>耗时</span><strong id="result-elapsed">—</strong></div>
             </div>
             <figure class="spectrum-card">
-              <figcaption><div><small>AGX SOFTWARE AGGREGATE</small><strong>频点功率 / dBFS</strong></div><span><i class="legend-trace"></i>功率轨迹 <i class="legend-noise"></i>噪声基线 <i class="legend-candidate"></i>候选</span></figcaption>
+              <figcaption><div><small>接收功率</small><strong>频点功率 / dBFS</strong></div><span><i class="legend-trace"></i>功率轨迹 <i class="legend-noise"></i>噪声基线 <i class="legend-candidate"></i>候选</span></figcaption>
               <svg id="spectrum-plot" viewBox="0 0 1000 360" role="img" aria-labelledby="spectrum-title spectrum-desc"><title id="spectrum-title">扫频功率图</title><desc id="spectrum-desc">横轴为频率，纵轴为 dBFS 功率，包含噪声基线和候选标记。</desc></svg>
             </figure>
-            <section class="dataset-strip"><div><small>RAW IQ DATASET</small><strong id="dataset-state">本次未保存原始 IQ</strong><p id="dataset-detail">聚合结果仍已保存在 AGX。</p></div></section>
+            <details class="spectrum-data-panel"><summary>查看频点数据 <small>窄屏可横向滚动图表，也可在这里读取数值</small></summary><div class="candidate-table-wrap"><table><thead><tr><th>频率</th><th>功率</th><th>噪声基线</th></tr></thead><tbody id="spectrum-data"></tbody></table></div></details>
+            <section class="dataset-strip"><div><small>原始数据</small><strong id="dataset-state">本次未保存原始 IQ</strong><p id="dataset-detail">聚合结果仍已保存在 AGX。</p></div></section>
             <section class="candidate-section"><div class="section-heading"><h3>候选信号</h3><span id="candidate-count">0 个</span></div><div class="candidate-table-wrap"><table><thead><tr><th>候选</th><th>中心频率</th><th>带宽</th><th>峰值</th><th>信噪比</th><th>覆盖点数</th></tr></thead><tbody id="candidate-table"></tbody></table></div></section>
           </div>
         </section>
@@ -102,10 +102,10 @@
       </section>
     </section>
 
-    <section id="corpus-view" class="page-view results-view" hidden aria-labelledby="corpus-title">
+    <section id="corpus-view" class="page-view results-view" tabindex="-1" hidden aria-labelledby="corpus-title">
       <div class="results-heading">
-        <div><p class="eyebrow">P201 RX-ONLY CORPUS</p><h2 id="corpus-title">接收语料</h2><p>每条记录都是一个版本化、内容哈希的 P201 RX1 采集包。没有独立标注的现场 IQ 固定显示为 unknown，不参与准确率。</p></div>
-        <button id="corpus-back" class="ghost-button" type="button">返回运行台</button>
+        <div><h2 id="corpus-title">接收语料</h2><p>每条记录都是一个版本化、内容哈希的 P201 RX1 采集包。没有独立标注的现场 IQ 固定显示为 unknown，不参与准确率。</p></div>
+        <button id="corpus-back" class="ghost-button" type="button">返回工作台</button>
       </div>
       <div class="results-workspace">
         <aside class="results-list-panel">
@@ -119,7 +119,7 @@
             <div class="result-metrics" aria-label="接收语料指标">
               <div><span>中心频率</span><strong id="corpus-center">—</strong></div><div><span>采样率</span><strong id="corpus-rate">—</strong></div><div><span>RF 带宽</span><strong id="corpus-bandwidth">—</strong></div><div><span>固定增益</span><strong id="corpus-gain">—</strong></div><div><span>原始 RMS</span><strong id="corpus-rms">—</strong></div><div><span>实测 SNR</span><strong id="corpus-snr">—</strong></div>
             </div>
-            <section class="dataset-strip corpus-dataset"><div><small>APPLICATION-OWNED RAW IQ</small><strong id="corpus-iq-state">—</strong><p id="corpus-iq-detail">—</p></div></section>
+            <section class="dataset-strip corpus-dataset"><div><small>原始数据</small><strong id="corpus-iq-state">—</strong><p id="corpus-iq-detail">—</p></div></section>
             <section class="corpus-facts" aria-label="语料合同">
               <div><span>接收口</span><strong>RX1 / RX0 / voltage0,1 / A_BALANCED</strong></div>
               <div><span>标签来源</span><strong id="corpus-label">unknown</strong></div>
@@ -137,14 +137,14 @@
       </div>
     </section>
 
-    <section id="settings-view" class="page-view settings-view" hidden aria-labelledby="settings-title">
+    <section id="settings-view" class="page-view settings-view" tabindex="-1" hidden aria-labelledby="settings-title">
       <div class="settings-heading">
-        <div><p class="eyebrow">RADIO + AGENT CONFIG</p><h2 id="settings-title">设置</h2><p>修改先留在本页，点击“保存设置”后才写入；只影响下一个新对话。</p></div>
-        <div class="settings-state"><span id="settings-save-state">已载入当前设置</span><button id="settings-back" class="ghost-button" type="button">返回运行台</button></div>
+        <div><h2 id="settings-title">设置</h2><p>修改先留在本页，点击“保存设置”后才写入；只影响下一个新对话。</p></div>
+        <div class="settings-state"><span id="settings-save-state">已载入当前设置</span><button id="settings-back" class="ghost-button" type="button">返回工作台</button></div>
       </div>
-      <form id="provider-form" class="settings-form" autocomplete="off">
-        <section class="settings-card model-settings">
-          <div class="settings-card-title"><span class="card-index">MODEL</span><div><h3>模型接入</h3><p id="provider-status">尚未配置第三方上游</p></div><div class="provider-presets"><button id="preset-opencode" type="button">OpenCode Go</button><button id="preset-custom" type="button">清空字段</button></div></div>
+      <form novalidate id="provider-form" class="settings-form" autocomplete="off">
+        <details class="settings-card model-settings"><summary><span><strong>模型与 API</strong><small>连接协议、地址、密钥与模型查询</small></span><span class="disclosure-hint">展开设置</span></summary>
+          <div class="settings-card-title"><div><h3>模型接入</h3><p id="provider-status">尚未配置第三方上游</p></div><div class="provider-presets"><button id="preset-opencode" type="button">OpenCode Go</button><button id="preset-custom" type="button">清空字段</button></div></div>
           <div class="settings-grid">
             <label><span>API 协议</span><select id="provider-api" required><option value="openai-completions">OpenAI Chat Completions</option><option value="openai-responses">OpenAI Responses</option></select></label>
             <label class="span-2"><span>Base URL</span><input id="provider-base-url" type="url" maxlength="2048" placeholder="https://api.example.com/v1" required></label>
@@ -152,16 +152,16 @@
             <div class="model-field span-2"><label for="provider-model">Model ID</label><div class="model-query-row"><input id="provider-model" list="provider-model-options" maxlength="256" placeholder="deepseek-v4-flash" required><datalist id="provider-model-options"></datalist><button id="query-provider-models" type="button">查询上游模型</button></div></div>
             <label class="span-2"><span>API Key</span><input id="provider-api-key" type="password" maxlength="4096" autocomplete="new-password" placeholder="密钥不回显；同一 Base URL 下留空可保留原密钥"></label>
           </div>
-          <section id="model-inventory" class="model-inventory" aria-live="polite" hidden><div><span class="inventory-signal" aria-hidden="true"></span><p><small>UPSTREAM INVENTORY</small><strong id="model-inventory-status">等待查询</strong></p></div><select id="provider-model-list" aria-label="上游返回的模型"></select><p>选择后写入 Model ID，也可以手工填写。</p></section>
-        </section>
+          <section id="model-inventory" class="model-inventory" aria-live="polite" hidden><div><span class="inventory-signal" aria-hidden="true"></span><p><small>上游模型</small><strong id="model-inventory-status">等待查询</strong></p></div><select id="provider-model-list" aria-label="上游返回的模型"></select><p>选择后写入 Model ID，也可以手工填写。</p></section>
+        </details>
 
-        <section class="settings-card context-settings">
-          <div class="settings-card-title"><span class="card-index">CONTEXT</span><div><h3>Agent 上下文</h3><p>边界可手填，也可由模型清单带回；默认占用 90% 时自动压缩。</p></div></div>
+        <details class="settings-card context-settings"><summary><span><strong>上下文与压缩</strong><small>模型窗口与自动压缩阈值</small></span><span class="disclosure-hint">展开设置</span></summary>
+          <div class="settings-card-title"><div><h3>Agent 上下文</h3><p>边界可手填，也可由模型清单带回；默认占用 90% 时自动压缩。</p></div></div>
           <div class="settings-grid two-columns"><label><span>上下文窗口（tokens）</span><input id="provider-context-window" type="number" min="8192" max="1000000" step="1" value="196608" required></label><label><span>自动压缩阈值（%）</span><input id="provider-compression-threshold" type="number" min="50" max="95" step="1" value="90" required></label></div>
-        </section>
+        </details>
 
-        <section class="settings-card survey-settings">
-          <div class="settings-card-title"><span class="card-index">SURVEY</span><div><h3>首次频谱建立</h3><p>每个新对话最多执行一次受限 RX 扫描；切换对话和服务恢复不会重扫。</p></div></div>
+        <details class="settings-card survey-settings"><summary><span><strong>首次扫描</strong><small>扫描范围、步进、增益与接收预算</small></span><span class="disclosure-hint">展开设置</span></summary>
+          <div class="settings-card-title"><div><h3>首次频谱建立</h3><p>每个新对话最多执行一次受限 RX 扫描；切换对话和服务恢复不会重扫。</p></div></div>
           <div class="survey-mode" role="radiogroup" aria-label="首次扫描模式">
             <label><input type="radio" name="survey-mode" value="full_band" checked><span><strong>默认全频段</strong><small>70 MHz–6 GHz</small></span></label>
             <label><input type="radio" name="survey-mode" value="custom_band"><span><strong>手动指定</strong><small>填写起止频率</small></span></label>
@@ -169,19 +169,21 @@
           </div>
           <div id="survey-fields" class="settings-grid survey-fields"><label><span>起始频率（MHz）</span><input id="survey-start-mhz" type="number" min="70" max="6000" step="0.001" value="70" required></label><label><span>终止频率（MHz）</span><input id="survey-stop-mhz" type="number" min="70" max="6000" step="0.001" value="6000" required></label><label><span>步进（MHz）</span><input id="survey-step-mhz" type="number" min="0.001" max="8" step="0.001" value="8" required></label><label><span>每点停留（ms）</span><input id="survey-dwell-ms" type="number" min="0" max="1000" step="1" value="5" required></label><label><span>固定接收增益（dB）</span><input id="survey-gain-db" type="number" min="0" max="60" step="1" value="20" required><small>全频扫描建议先用 20；若出现削顶请降低。</small></label></div>
           <div id="survey-budget" class="survey-budget" aria-live="polite"><span class="scan-line" aria-hidden="true"><i></i></span><div><small>扫描预算预览</small><strong id="survey-budget-summary">743 点 · 约 189 秒 · 约 11.6 MiB</strong></div><p id="survey-budget-detail">仅 RX，固定 20 dB 增益，10 MHz 采样率，4096 samples/点；可随时停止并恢复射频状态。</p></div>
-        </section>
+        </details>
 
-        <section class="settings-card storage-settings">
-          <div class="settings-card-title"><span class="card-index">STORAGE</span><div><h3>采集结果存储</h3><p>聚合曲线和候选始终保存在 AGX；可选地把一次扫描的所有原始窗口保存为一组 SigMF 文件。</p></div></div>
+        <details class="settings-card storage-settings"><summary><span><strong>结果与 IQ 存储</strong><small>聚合结果常驻，原始 IQ 按需保存</small></span><span class="disclosure-hint">展开设置</span></summary>
+          <div class="settings-card-title"><div><h3>采集结果存储</h3><p>聚合曲线和候选始终保存在 AGX；可选地把一次扫描的所有原始窗口保存为一组 SigMF 文件。</p></div></div>
           <label class="storage-toggle" for="save-iq"><span><strong>保存原始 IQ（SigMF）</strong><small>关闭时只保存处理后的频率、功率、噪声基线和候选；开启后仅影响下一个新对话。</small></span><input id="save-iq" type="checkbox"><i aria-hidden="true"></i></label>
-          <div class="storage-format"><small>DATASET LAYOUT</small><strong>一次扫描 = 1 × .sigmf-data + 1 × .sigmf-meta</strong><p><code>ci16_le</code> 交错 IQ；元数据记录每个窗口的 sample start、中心频率、采样率、带宽和固定增益，方便后续识别模型读取。</p></div>
-        </section>
+          <div class="storage-format"><small>存储格式</small><strong>一次扫描 = 1 × .sigmf-data + 1 × .sigmf-meta</strong><p><code>ci16_le</code> 交错 IQ；元数据记录每个窗口的 sample start、中心频率、采样率、带宽和固定增益，方便后续识别模型读取。</p></div>
+        </details>
 
-        <div class="settings-actions"><p>设置写入 AGX 上 mode <code>0600</code> 的私密文件，Git 不跟踪。</p><button id="discard-settings" class="ghost-button" type="button">放弃修改</button><button id="save-settings" type="submit">保存设置</button></div>
+        <div class="settings-actions"><p>显式保存后生效于下一个新会话；当前会话保持原设置。</p><button id="discard-settings" class="ghost-button" type="button">放弃修改</button><button id="save-settings" type="submit">保存设置</button></div>
       </form>
     </section>
   </main>
+</div>
   <div id="toast" class="toast" role="status"></div>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-message"><form method="dialog"><span class="dialog-symbol" aria-hidden="true">!</span><h2 id="confirm-title">请确认操作</h2><p id="confirm-message"></p><button id="dialog-stop" type="button" data-command="/stop" class="dialog-stop">■ 立即停止接收</button><div class="dialog-actions"><button id="confirm-cancel" value="cancel" autofocus>取消</button><button id="confirm-accept" value="confirm" class="confirm-accept">确认</button></div></form></dialog>
   <script src="/app.js" defer></script>
 </body>
 </html>

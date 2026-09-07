@@ -1,0 +1,575 @@
+{
+  "schema_version": 1,
+  "feature_id": "web-ui-20260907-2238",
+  "baseline": {
+    "feature_id": "web-ui-20260907-2238",
+    "baseline_commit": "a41a8715a8334be530c9785180a71cc36d7fbbae",
+    "session_ids": [
+      "session-1788263597140",
+      "session-1788261263788"
+    ],
+    "surveys": {
+      "session-1788263597140": "complete",
+      "session-1788261263788": "complete"
+    },
+    "active_session_id": "session-1788261263788",
+    "controller_generation": 1788784154440,
+    "results": [
+      {
+        "id": 8,
+        "session_id": "session-1788263597140",
+        "sweep_id": "request-2",
+        "kind": "planned",
+        "created_at_ms": 1788325769453,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 2389,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.34516,
+        "iq_bytes": 0
+      },
+      {
+        "id": 6,
+        "session_id": "session-1788263597140",
+        "sweep_id": "request-1",
+        "kind": "planned",
+        "created_at_ms": 1788316632994,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 2355,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.241394,
+        "iq_bytes": 0
+      }
+    ],
+    "corpus": [
+      {
+        "result_id": "p201-p201-corpus-20260905-rx1-433m-147",
+        "capture_session_id": "p201-corpus-20260905-rx1-433m",
+        "captured_at_utc": "2026-09-04T18:18:46Z",
+        "capture_day": "2026-09-04",
+        "plan_id": "p201-corpus-rx1-433m-20260905",
+        "profile_id": "rml2018a-d8-current-integration-v1",
+        "profile_sha256": "7d2347550939be13d3ccde84add514ca5b4e549783fbc8e724124b4f0f4358ba",
+        "preprocess_id": "legacy_adc_unit_rms_v0",
+        "preprocess_sha256": "20f2f21b9d01a5163806a2b1e88c2e1ff0975647eb9da27071ea3f1d61a80303",
+        "center_hz": 433920000,
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_mode": "manual",
+        "rx_gain_db": 50.0,
+        "sequence": 147,
+        "samples": 4096,
+        "iq_bytes": 16384,
+        "iq_sha256": "19b9b543188e1a3092e29eeed1232da5586a8c10fe9cd2fa21318d6365993ccb",
+        "raw_rms_dbfs": -54.432029724121094,
+        "measured_snr_db": 33.73674011230469,
+        "clipped_samples": 0,
+        "dropped_samples": 0,
+        "overflow": false,
+        "health_flags": 0,
+        "healthy": true,
+        "label_provenance": "unknown",
+        "label_reason": "no_independent_label",
+        "manual_delete_path": "/api/corpus/p201-p201-corpus-20260905-rx1-433m-147",
+        "created_at_ms": 1788546063999
+      }
+    ],
+    "health": {
+      "ready": true,
+      "recognizer_available": false,
+      "schema_version": 1,
+      "service": "web"
+    },
+    "hashes": {
+      "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "c2e19b171e30475a06e38a074ec55282bf55f0f3ffe5de6cf1a8a730b957a0fe",
+      "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+      "/etc/systemd/system/sdrharness-web.service": "a51f2cbe4d773ef809c646dd2ee81f6fc8a160944ef10f4e4512a251e501d5ab",
+      "/etc/sdrharness/runtime.env": "8de3b79d181e5fbbbf408eba6ab71e2b35cff67954d222a632396bd8f63afc6d",
+      "/etc/sdrharness/request.json": "75eb9e268066cd1b5cacc54ecf0c2a86debe235413766b450c7611d670967a15",
+      "/var/lib/sdrharness/web-console/provider.json": "eeb926f47dcaf4ca6a41b1b894f8cc0e6de5254e10598455016f5e3d49a0313d"
+    }
+  },
+  "release_verification_v1": {
+    "new": {
+      "bytes": 3287547,
+      "installed": false,
+      "manifest_sha256": "964d203bd228c0add5c762e65755027615b9f240a0eb833d57361d16229756fa",
+      "recognizer_available": false,
+      "release_id": "20260907-web-ui-v1",
+      "schema_version": 1,
+      "verified_files": 3
+    },
+    "rollback": {
+      "bytes": 3279180,
+      "installed": false,
+      "manifest_sha256": "b8d5c860d7938363fc38aba8215edefeba770cbfb3b6c0ee853971a1ba87e186",
+      "recognizer_available": false,
+      "release_id": "20260907-before-web-ui-v1",
+      "schema_version": 1,
+      "verified_files": 3
+    },
+    "native_smoke": {
+      "health": {
+        "ready": true,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "service": "web"
+      },
+      "static_hashes": {
+        "index.html": "18fa228b834e0c0b9260edfd3bb9d1c4ac73d6c67ebd4df956ec12fd20a5dcf6",
+        "styles.css": "0bbc89ce6ba27cee36adc5ddaeaf8d013600e4dd11ed4635a408e7c30e8e43ad",
+        "app.js": "dc33d976fb08c3d252eade75a222ae7055e9d97b1b46c72200f703e9e8187738"
+      },
+      "hardware_access": false,
+      "private_sessions": 0
+    }
+  },
+  "release_verification_v2": {
+    "new": {
+      "bytes": 3287547,
+      "installed": false,
+      "manifest_sha256": "774776f4de760d6a286136b5038dd24c1faa3fb140e0da0eac7e92c6eb937cc1",
+      "recognizer_available": false,
+      "release_id": "20260907-web-ui-v2",
+      "schema_version": 1,
+      "verified_files": 3
+    },
+    "rollback": {
+      "bytes": 3279180,
+      "installed": false,
+      "manifest_sha256": "b8d5c860d7938363fc38aba8215edefeba770cbfb3b6c0ee853971a1ba87e186",
+      "recognizer_available": false,
+      "release_id": "20260907-before-web-ui-v1",
+      "schema_version": 1,
+      "verified_files": 3
+    },
+    "native_smoke": {
+      "health": {
+        "ready": true,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "service": "web"
+      },
+      "static_hashes": {
+        "index.html": "1b4a5aeca0ed37687c06d67da8e3206c221d73e4d4d3da1fbddaf74137ff62e7",
+        "styles.css": "0bbc89ce6ba27cee36adc5ddaeaf8d013600e4dd11ed4635a408e7c30e8e43ad",
+        "app.js": "2a40bfdb48a336f43f3c8b7db2e34567dbfdf5a268c784b8352a04b0d07421be"
+      },
+      "hardware_access": false,
+      "private_sessions": 0
+    }
+  },
+  "deployment": [
+    {
+      "label": "installed",
+      "pid": 496036,
+      "binary_sha256": "feac34377874d9f9fd9d8d6cc95133fddb1d5fac9ab1676e7906b40eab76982e",
+      "controller_children": [
+        "496039 sdr-agent"
+      ],
+      "controller_generation": 1788787498449,
+      "sessions": [
+        "session-1788263597140",
+        "session-1788261263788"
+      ],
+      "surveys": {
+        "session-1788263597140": "complete",
+        "session-1788261263788": "complete"
+      },
+      "result_ids": [
+        8,
+        6
+      ],
+      "corpus_ids": [
+        "p201-p201-corpus-20260905-rx1-433m-147"
+      ],
+      "health": {
+        "ready": true,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "service": "web"
+      }
+    },
+    {
+      "label": "rollback-verified",
+      "pid": 496064,
+      "binary_sha256": "c2e19b171e30475a06e38a074ec55282bf55f0f3ffe5de6cf1a8a730b957a0fe",
+      "controller_children": [
+        "496067 sdr-agent"
+      ],
+      "controller_generation": 1788787499253,
+      "sessions": [
+        "session-1788263597140",
+        "session-1788261263788"
+      ],
+      "surveys": {
+        "session-1788263597140": "complete",
+        "session-1788261263788": "complete"
+      },
+      "result_ids": [
+        8,
+        6
+      ],
+      "corpus_ids": [
+        "p201-p201-corpus-20260905-rx1-433m-147"
+      ],
+      "health": {
+        "ready": true,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "service": "web"
+      }
+    },
+    {
+      "label": "final-installed",
+      "pid": 496092,
+      "binary_sha256": "feac34377874d9f9fd9d8d6cc95133fddb1d5fac9ab1676e7906b40eab76982e",
+      "controller_children": [
+        "496095 sdr-agent"
+      ],
+      "controller_generation": 1788787500149,
+      "sessions": [
+        "session-1788263597140",
+        "session-1788261263788"
+      ],
+      "surveys": {
+        "session-1788263597140": "complete",
+        "session-1788261263788": "complete"
+      },
+      "result_ids": [
+        8,
+        6
+      ],
+      "corpus_ids": [
+        "p201-p201-corpus-20260905-rx1-433m-147"
+      ],
+      "health": {
+        "ready": true,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "service": "web"
+      }
+    },
+    {
+      "label": "installed",
+      "pid": 496587,
+      "binary_sha256": "7c374774b006ca8633fb74589878bc8af073f4d738ec95f87982d61cc2b6acf4",
+      "controller_children": [
+        "496590 sdr-agent"
+      ],
+      "controller_generation": 1788787717951,
+      "sessions": [
+        "session-1788263597140",
+        "session-1788261263788"
+      ],
+      "surveys": {
+        "session-1788263597140": "complete",
+        "session-1788261263788": "complete"
+      },
+      "result_ids": [
+        8,
+        6
+      ],
+      "corpus_ids": [
+        "p201-p201-corpus-20260905-rx1-433m-147"
+      ],
+      "health": {
+        "ready": true,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "service": "web"
+      }
+    }
+  ],
+  "tests": {
+    "rust_web_passed": 36,
+    "rust_fixture_exports_ignored": 2,
+    "node_passed": 10,
+    "node_cases": [
+      "late state cannot replace a newer session snapshot",
+      "stop bypasses a pending command and late acknowledgement preserves new draft",
+      "acknowledgement for old session cannot clear current session input",
+      "late result detail cannot replace the selected result",
+      "unsaved navigation cancel retains local settings and page",
+      "provider failure does not prevent SSE connection or loaded state",
+      "oversized UTF-8 command rejected without API write",
+      "malformed successful HTTP response is an explicit error",
+      "SSE coalesces bursts while state is loading instead of starving rendering",
+      "narrow-band spectrum axes keep adjacent tick labels distinct"
+    ],
+    "native_smoke": {
+      "health": {
+        "ready": true,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "service": "web"
+      },
+      "static_hashes": {
+        "index.html": "1b4a5aeca0ed37687c06d67da8e3206c221d73e4d4d3da1fbddaf74137ff62e7",
+        "styles.css": "0bbc89ce6ba27cee36adc5ddaeaf8d013600e4dd11ed4635a408e7c30e8e43ad",
+        "app.js": "2a40bfdb48a336f43f3c8b7db2e34567dbfdf5a268c784b8352a04b0d07421be"
+      },
+      "hardware_access": false,
+      "private_sessions": 0
+    },
+    "browser": {
+      "engine": "Codex Chromium in-app browser",
+      "viewports": [
+        [
+          1440,
+          900
+        ],
+        [
+          1280,
+          800
+        ],
+        [
+          390,
+          844
+        ]
+      ],
+      "checks": [
+        "navigation and collapsed settings",
+        "model query and explicit save with masked key",
+        "custom survey budget 41 points 656 KiB",
+        "unsaved cancel with Escape and discard confirmation",
+        "Tab focus trap and focus return",
+        "synthetic cancel-delete and confirmed delete of result 9001",
+        "shortcut approve reject pause resume status stop",
+        "Ctrl+Enter and new/switch session with maximum two entries",
+        "SSE streaming text and delayed-state recovery",
+        "disconnect and error with stop remaining enabled",
+        "late detail selection retained second result",
+        "plot and 41-row accessible data table",
+        "production session restore results corpus and settings read-only",
+        "final real narrow-band tick labels are distinct"
+      ],
+      "console_errors": [],
+      "networkidle_used": false,
+      "rf_actions": false
+    }
+  },
+  "contrast_samples": [
+    {
+      "text": "#202d2a",
+      "background": "#ffffff",
+      "ratio": 14.28
+    },
+    {
+      "text": "#65716c",
+      "background": "#f5f6f3",
+      "ratio": 4.69
+    },
+    {
+      "text": "#ffffff",
+      "background": "#b33939",
+      "ratio": 5.9
+    },
+    {
+      "text": "#ffffff",
+      "background": "#176557",
+      "ratio": 6.92
+    },
+    {
+      "text": "#68746b",
+      "background": "#ffffff",
+      "ratio": 4.88
+    },
+    {
+      "text": "#536b5b",
+      "background": "#e9f0e8",
+      "ratio": 5.0
+    }
+  ],
+  "retained_release_files": [
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-ui-v2/release.json",
+      "bytes": 613,
+      "sha256": "774776f4de760d6a286136b5038dd24c1faa3fb140e0da0eac7e92c6eb937cc1"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-ui-v2/sdr-agent-web-console",
+      "bytes": 3286304,
+      "sha256": "7c374774b006ca8633fb74589878bc8af073f4d738ec95f87982d61cc2b6acf4"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-ui-v2/sdrharness-web.service",
+      "bytes": 873,
+      "sha256": "a51f2cbe4d773ef809c646dd2ee81f6fc8a160944ef10f4e4512a251e501d5ab"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-ui-v2/source-receipt.json",
+      "bytes": 370,
+      "sha256": "136b15837511241b4a785f1af9bbfc939507cf0dcb61ca7b82f3e0ec891d39fa"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-web-ui-v1/release.json",
+      "bytes": 620,
+      "sha256": "b8d5c860d7938363fc38aba8215edefeba770cbfb3b6c0ee853971a1ba87e186"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-web-ui-v1/sdr-agent-web-console",
+      "bytes": 3278112,
+      "sha256": "c2e19b171e30475a06e38a074ec55282bf55f0f3ffe5de6cf1a8a730b957a0fe"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-web-ui-v1/sdrharness-web.service",
+      "bytes": 873,
+      "sha256": "a51f2cbe4d773ef809c646dd2ee81f6fc8a160944ef10f4e4512a251e501d5ab"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-web-ui-v1/source-receipt.json",
+      "bytes": 195,
+      "sha256": "54b9b165a6c8422dc479f3fec9b526b5ff530047d5ecab5ef7fe75aeb59d70bf"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "/var/tmp/sdrharness-dev/web-ui-20260907-2238/evidence/preview-desktop.png",
+      "bytes": 54084,
+      "sha256": "0db258a7baefbaaff961763c40d651cf12d43ff9ee7c51005253670100e860e9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-ui-20260907-2238/evidence/preview-mobile-settings.png",
+      "bytes": 16291,
+      "sha256": "ea1cde0d4b920477fccc3ebaaa93b01a195f23a35caa80b858845c8e356afb6a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-ui-20260907-2238/evidence/production-spectrum.png",
+      "bytes": 33721,
+      "sha256": "88951092ead0766dfbfeb311420889cfaa52651594cb5aee813406134166aee9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-ui-20260907-2238/evidence/production-workspace.png",
+      "bytes": 32935,
+      "sha256": "84413639700727ad8aa92cbfbf7c5c0c5d6e6cf042f42529ec9a55ab683eec7e"
+    }
+  ],
+  "screenshot_provenance": {
+    "production-workspace.png": {
+      "source": "production read-only",
+      "session": "session-1788261263788"
+    },
+    "production-spectrum.png": {
+      "source": "production read-only",
+      "result_id": 8,
+      "request": "request-2",
+      "session": "session-1788263597140"
+    },
+    "preview-desktop.png": {
+      "source": "synthetic fixture",
+      "session": "preview-a",
+      "result_id": 9001
+    },
+    "preview-mobile-settings.png": {
+      "source": "synthetic fixture",
+      "session": "preview-a"
+    }
+  },
+  "local_delivery_mirrors": {
+    "root": "C:/Users/20642/.codex/visualizations/2026/09/07/01a07be3-0ca3-7cb1-b673-ba657903420b/sdr-ui",
+    "files": [
+      "preview-desktop.png",
+      "preview-mobile-settings.png",
+      "production-spectrum.png",
+      "production-workspace.png"
+    ],
+    "purpose": "Codex inline screenshot delivery; identical bytes to AGX evidence"
+  },
+  "boundaries": {
+    "recognizer_available": false,
+    "controller_binary_unchanged": true,
+    "backend_rust_sources_unchanged": true,
+    "provider_request_runtime_unit_hashes_unchanged": true,
+    "new_rf_capture_requested": false,
+    "locked_test_read": false,
+    "model_training": false,
+    "monitor_deployment": false
+  },
+  "temporary_receipts": [
+    {
+      "path": "/var/tmp/sdrharness-dev/web-ui-20260907-2238/test.log",
+      "bytes": 8751,
+      "sha256": "9c217c8754efe167fc2ae5886fca1a7504607142567f0ce9c145aa8b9fac5038"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-ui-20260907-2238/ui-test.log",
+      "bytes": 2039,
+      "sha256": "159a6c32b32f0c001ceb167d1b456f06dbce2f36998e09540d92bf06a5908af9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-ui-20260907-2238/build.log",
+      "bytes": 3269,
+      "sha256": "b6b563a308e3f427f7279054f6d8bf8ffe621217c275465874a5dd7a12a67637"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-ui-20260907-2238/deploy.py",
+      "bytes": 6685,
+      "sha256": "4366de104fa02580f23c1d4fd5136eaa42a793350743ceee29934ec7a9785c0f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/web-ui-20260907-2238/deploy-v2.py",
+      "bytes": 6496,
+      "sha256": "60dfbf481311af219205973104571c1fec13dd54e08a6db88e90ae02f07833fb"
+    }
+  ],
+  "cleanup": {
+    "removed_file_count": 6701,
+    "removed_logical_bytes": 971493196,
+    "removed_paths": [
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/build.log",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/deploy-v2.py",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/cargo",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/preview-server.py",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/ui-state.test.cjs",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/ui-test.log",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/test.log",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/preview.log",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/target",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/native",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/deploy.py",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/native.log",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/preview",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/cache",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/tmp",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/evidence/contrast.json",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/evidence/release-verification.json",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/evidence/baseline.json",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/evidence/release-verification-v2.json",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/evidence/deployment-v2.json",
+      "/var/tmp/sdrharness-dev/web-ui-20260907-2238/evidence/deployment.json",
+      "/home/jetson/.local/lib/sdrharness/releases/20260907-web-ui-v1"
+    ],
+    "private_socket_absent": "/run/sdr-agent/web-ui-20260907-2238-private.sock",
+    "preview_process_stopped": 494308,
+    "retained_screenshot_count": 4,
+    "retained_screenshot_bytes": 137031,
+    "retained_release_count": 2,
+    "retained_release_files": 8,
+    "retained_release_bytes": 6567960,
+    "removed_intermediate_release": [
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-ui-v1/source-receipt.json",
+        "bytes": 370,
+        "sha256": "697d1dc81e1b57858f0220f6bf58fc8e1d946a2e41f765d97c58f4c9e43f7933"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-ui-v1/release.json",
+        "bytes": 613,
+        "sha256": "964d203bd228c0add5c762e65755027615b9f240a0eb833d57361d16229756fa"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-ui-v1/sdrharness-web.service",
+        "bytes": 873,
+        "sha256": "a51f2cbe4d773ef809c646dd2ee81f6fc8a160944ef10f4e4512a251e501d5ab"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-ui-v1/sdr-agent-web-console",
+        "bytes": 3286304,
+        "sha256": "feac34377874d9f9fd9d8d6cc95133fddb1d5fac9ab1676e7906b40eab76982e"
+      }
+    ],
+    "user_results_preserved": true
+  }
+}
