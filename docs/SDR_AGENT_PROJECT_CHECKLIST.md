@@ -42,7 +42,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
   - [ ] V1b：获得并审核足够的独立 known-RF/OOD 标签；实际覆盖达到预注册条件。
 - [ ] V2：根据 validation 和独立证据冻结校准/拒识，并完成独立验收。
 - [ ] V3：标签空间与模型准入。
-  - [ ] V3a：用户指定名称顺序已落实；正式生产名称证据与接入仍待验收。
+  - [x] V3a：按用户要求以 4090 原始标签表为准，核对源码、Adapter 的 Y.argmax 语义及报告 raw_label_id，24/24 与截图一致，冻结 server-v1 及来源哈希。映射选择/来源核对完成，生产 name_evidence 接入仍属 A1。
     - [x] 按用户 2026-09-08 截图冻结 operator-v1 的 0–23 映射，接入名称读取默认值并保留旧实验哈希；无模型/数据集操作。见 [映射记录](validation/RML2018A_LABEL_MAPPING_VALIDATION_2026-09-08.md)。
   - [ ] V3b：规则冻结后执行一次 locked test；不得用 test 反复调参。
 - [ ] A1：production profile、可回滚部署、RX-only 矩阵验收和真实正向 capability。
@@ -942,10 +942,12 @@ recognition; it does not own hardware control or another runtime backend.
       to freeze scalar calibration plus confidence/agreement/SNR/bandwidth
       acceptance thresholds, then perform one locked test admission. The new
       validation-only temperature candidate `1.34647` remains non-production.
-- [ ] Validate production name evidence/integration for the operator-selected
-      RML2018A mapping. The naming order is now explicitly selected, while
-      historical hash-pinned results and non-admitted provisional runtime labels
-      remain unchanged; see [mapping decision](validation/RML2018A_LABEL_MAPPING_VALIDATION_2026-09-08.md).
+- [x] Freeze the operator-designated 4090 RML2018A raw-ID/name map: AST-extracted
+      RADIOML2018A_RAW_LABELS and the report raw_label_id/raw_label agree 24/24,
+      with the Adapter explicitly indexing names by argmax(Y). Pin source/report
+      hashes and distinguish the separate common12 canonical index. Historical
+      artifacts and non-admitted runtime labels stay unchanged; production
+      name_evidence integration remains A1. See [mapping decision](validation/RML2018A_LABEL_MAPPING_VALIDATION_2026-09-08.md).
 
 Evidence:
 

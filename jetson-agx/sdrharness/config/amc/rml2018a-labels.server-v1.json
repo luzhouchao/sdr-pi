@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "mapping_id": "rml2018a-server-labels-v1",
+  "dataset": "RadioML 2018.01A",
+  "index_semantics": "zero-based argmax of the original 24-column one-hot Y; no output permutation",
+  "classes": [
+    "OOK",
+    "4ASK",
+    "8ASK",
+    "BPSK",
+    "QPSK",
+    "8PSK",
+    "16PSK",
+    "32PSK",
+    "16APSK",
+    "32APSK",
+    "64APSK",
+    "128APSK",
+    "16QAM",
+    "32QAM",
+    "64QAM",
+    "128QAM",
+    "256QAM",
+    "AM-SSB-WC",
+    "AM-SSB-SC",
+    "AM-DSB-WC",
+    "AM-DSB-SC",
+    "FM",
+    "GMSK",
+    "OQPSK"
+  ],
+  "descriptions_zh": [
+    "开关键控",
+    "四进制幅移键控",
+    "八进制幅移键控",
+    "二进制相移键控",
+    "四相相移键控",
+    "八进制相移键控",
+    "十六进制相移键控",
+    "三十二进制相移键控",
+    "十六进制幅相键控",
+    "三十二进制幅相键控",
+    "六十四进制幅相键控",
+    "一百二十八进制幅相键控",
+    "十六进制正交幅度调制",
+    "三十二进制正交幅度调制",
+    "六十四进制正交幅度调制",
+    "一百二十八进制正交幅度调制",
+    "二百五十六进制正交幅度调制",
+    "带载波单边带调幅",
+    "抑制载波单边带调幅",
+    "带载波双边带调幅",
+    "抑制载波双边带调幅",
+    "调频",
+    "高斯最小频移键控",
+    "偏移四相相移键控"
+  ],
+  "provenance": {
+    "kind": "operator_designated_server_source",
+    "verified_at": "2026-09-08",
+    "ssh_alias": "4090-via-aliyun",
+    "server_user": "lzc",
+    "repository": "/home/lzc/sdrharness",
+    "git_commit": "988e9e22468eaa7c87453218d4a73a20806fd267",
+    "referenced_files_match_commit": true,
+    "files": [
+      {
+        "path": "/home/lzc/sdrharness/source/sdr_amc/labels.py",
+        "bytes": 1793,
+        "sha256": "30b233ad3f57c28caf52adab36ef4baeba8a361e75bd154b6aa6d71ceb331a91"
+      },
+      {
+        "path": "/home/lzc/sdrharness/reports/canonical-label-map.json",
+        "bytes": 11981,
+        "sha256": "61839847402fb1492e75d3872ca85ab1b838f01da24ce76ad90612eaf06aa60b"
+      },
+      {
+        "path": "/home/lzc/sdrharness/source/sdr_amc/adapters.py",
+        "bytes": 7356,
+        "sha256": "679eb7b401cf9550eddf3ea1cc2f01a48355cac95d52d63cf5849f3687e50a78"
+      },
+      {
+        "path": "/home/lzc/sdrharness/source/sdr_amc/audit.py",
+        "bytes": 24259,
+        "sha256": "928abe150092dcde2d0a3a2ec92e390a56682bf1da9db2ee64a7f0f4847da4b7"
+      }
+    ],
+    "authoritative_symbol": "RADIOML2018A_RAW_LABELS",
+    "report_fields": [
+      "source=RadioML2018.01A",
+      "raw_label_id",
+      "raw_label"
+    ],
+    "adapter_semantics": "raw_id = argmax(Y[row]); raw_label = RADIOML2018A_RAW_LABELS[raw_id]",
+    "comparison_to_operator_v1": {
+      "path": "jetson-agx/sdrharness/config/amc/rml2018a-labels.operator-v1.json",
+      "sha256": "3ca235c692b37cea23675625a102a91602cf0a573c2ffac3949b61857d4a893f",
+      "matching_entries": 24,
+      "total_entries": 24
+    },
+    "chinese_descriptions_source": "user screenshot recorded in operator-v1"
+  },
+  "caveat": "Use the 24 original raw IDs, not the separate sdr_amc_common12_v1 canonical_index/logit order. Server source/report consistency is verified; independent RF labels and production model admission are separate. Historical hash-pinned artifacts remain unchanged."
+}
