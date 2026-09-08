@@ -1,0 +1,270 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "a5f9157",
+  "scope": "Restore local Spark selection and surface Planner provider errors; online gateway work deferred by user",
+  "installation": {
+    "config_before_sha256": "c716fee5924d8710f5507fb9f96a76aa06e0f349b85835a46213e5f5effa3a13",
+    "previous_selection": {
+      "api": "openai-responses",
+      "provider": "gpt-5.6-luna",
+      "model": "gpt-5.6-luna",
+      "context_window": 500000
+    },
+    "backups_created": 0,
+    "operator_requested_no_backup": true,
+    "session_ids": [
+      "session-1788840214179",
+      "session-1788840575092"
+    ],
+    "result_count": 5,
+    "corpus_count": 1,
+    "spark_pid_before": "1150",
+    "binary_hashes": {
+      "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+      "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "9095a1be2aedd57cb08d02b9d1e772ab8f17137e84160877194baf14b474449d"
+    },
+    "config_after_sha256": "9af4bc617f1eecc3944c369fe511cdaae304bea7914d29b9aff9da64bad68857",
+    "selected": {
+      "api": "openai-completions",
+      "base_url": "http://127.0.0.1:8010/v1",
+      "provider": "spark-local",
+      "model": "spark-x2.5-4b",
+      "context_window": 32768
+    },
+    "initial_survey_unchanged": true,
+    "result_storage_unchanged": true,
+    "user_results_and_sessions_preserved": true,
+    "planner_pid": "532272",
+    "web_pid": "532294",
+    "health": {
+      "ready": true,
+      "recognizer_available": false,
+      "schema_version": 1,
+      "service": "web"
+    },
+    "preserved_application_counts": {
+      "sessions": 2,
+      "results": 5,
+      "corpus": 1
+    }
+  },
+  "tests": {
+    "planner": 60,
+    "web_ui": 12,
+    "passed": 72
+  },
+  "local_one_shot": {
+    "protocol_version": 1,
+    "request_id": 9081002,
+    "session_generation": 1788841557353,
+    "status": "ok",
+    "action": {
+      "kind": "hold",
+      "reason": "你好，我是接收式 SDR 规划模块，当前不操作硬件。"
+    },
+    "planner": {
+      "provider": "spark-local",
+      "model": "spark-x2.5-4b"
+    }
+  },
+  "local_interactive_events": [
+    {
+      "protocol_version": 1,
+      "session_generation": 1788841557353,
+      "type": "event",
+      "event": "agent_start"
+    },
+    {
+      "protocol_version": 1,
+      "command_id": 2,
+      "session_generation": 1788841557353,
+      "type": "response",
+      "command": "prompt",
+      "success": true,
+      "data": {
+        "accepted": true
+      }
+    },
+    {
+      "protocol_version": 1,
+      "session_generation": 1788841557353,
+      "type": "event",
+      "event": "tool_start",
+      "data": {
+        "name": "submit_plan"
+      }
+    },
+    {
+      "protocol_version": 1,
+      "session_generation": 1788841557353,
+      "type": "event",
+      "event": "plan_proposed",
+      "data": {
+        "protocol_version": 1,
+        "request_id": 9081003,
+        "session_generation": 1788841557353,
+        "status": "ok",
+        "action": {
+          "kind": "hold",
+          "reason": "你好，我是接收式 SDR 规划模块，当前不操作硬件。"
+        },
+        "planner": {
+          "provider": "spark-local",
+          "model": "spark-x2.5-4b"
+        }
+      }
+    },
+    {
+      "protocol_version": 1,
+      "session_generation": 1788841557353,
+      "type": "event",
+      "event": "tool_end",
+      "data": {
+        "name": "submit_plan",
+        "is_error": false
+      }
+    },
+    {
+      "protocol_version": 1,
+      "session_generation": 1788841557353,
+      "type": "event",
+      "event": "queue_update",
+      "data": {
+        "queued": 0
+      }
+    },
+    {
+      "protocol_version": 1,
+      "session_generation": 1788841557353,
+      "type": "event",
+      "event": "agent_end"
+    }
+  ],
+  "production_browser": {
+    "session_id": "session-1788840575092",
+    "events": [
+      {
+        "id": 22,
+        "timestamp_ms": 1788841870670,
+        "kind": "operator",
+        "text": "Operator> 你好，你是谁？请只回复身份并保持等待，不操作硬件。"
+      },
+      {
+        "id": 23,
+        "timestamp_ms": 1788841870680,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 24,
+        "timestamp_ms": 1788841875391,
+        "kind": "plan",
+        "text": "已验证计划：保持当前状态：你好，我是接收式 SDR 规划模块，当前处于空闲等待状态，不操作硬件。"
+      },
+      {
+        "id": 25,
+        "timestamp_ms": 1788841875392,
+        "kind": "decision",
+        "text": "决策依据> request=1、generation=1788841690347 与当前上下文一致；状态=Idle；保持不触发硬件，原因文本已通过长度和可打印字符校验"
+      },
+      {
+        "id": 26,
+        "timestamp_ms": 1788841875400,
+        "kind": "qwen",
+        "text": "Agent> 你好，我是接收式 SDR 规划模块，当前处于空闲等待状态，不操作硬件。"
+      },
+      {
+        "id": 27,
+        "timestamp_ms": 1788841875401,
+        "kind": "system",
+        "text": "该计划当前没有生产执行器，仅记录建议，不会操作硬件。"
+      }
+    ],
+    "browser_errors": [],
+    "results_corpus_unchanged": true,
+    "existing_session_used": true,
+    "no_new_survey": true,
+    "reply": "Agent> 你好，我是接收式 SDR 规划模块，当前处于空闲等待状态，不操作硬件。"
+  },
+  "backups_created": 0,
+  "operator_no_backup": true,
+  "recognizer_available": false,
+  "rx_captures_started": 0,
+  "mamba_experiments": 0,
+  "source_files": [
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/main.mjs",
+      "bytes": 12779,
+      "sha256": "a6082026bf78cda34497b2b4eb793d0eb8e080bef28ca8d90b62b7065631eaab"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/session-runtime.mjs",
+      "bytes": 12306,
+      "sha256": "3a2ef074f0dbcce7e6f1b2193a18f5166ea02ee7df846adce3d8bcefbdb94bfc"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/planner-failure.mjs",
+      "bytes": 1515,
+      "sha256": "fafc5b15070cd96dff5cc5068399504a0ca6de7a18a076eeece8ce59f11fbc8c"
+    }
+  ],
+  "temporary_receipts": [
+    {
+      "path": "/var/tmp/sdrharness-dev/planner-fix-908a/local-probe.json",
+      "bytes": 314,
+      "sha256": "0abeac55005ad989e09109e809a1babfb231d20ff59632ea9bf51c948d16ddb1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/planner-fix-908a/local-probe-final.json",
+      "bytes": 314,
+      "sha256": "fb786d8353df80ca02d6231fdc2626c78a1d107d822976a3c3b2d3f1725273dd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/planner-fix-908a/local-session-final.json",
+      "bytes": 1502,
+      "sha256": "2614a66571679d22c5f4d3e408ede74a68f7403136967d53dc8295a95602171c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/planner-fix-908a/tests-final-local.log",
+      "bytes": 13671,
+      "sha256": "c5aa511f8820b1e99b7b91aa6e8158f624b6028bd2943faf4b5e3e349961d836"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/planner-fix-908a/local-working.png",
+      "bytes": 167195,
+      "sha256": "bb2e4e6c578d18e84fa96035dd1a4e262868f05f16037bcf33bd4bd734c05f32"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/planner-fix-908a/probe-local.py",
+      "bytes": 3287,
+      "sha256": "82e6435e8e9e36fceb2f9005d8bfa96dba7752bc7305843570b2ee59256f61d7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/planner-fix-908a/browser-local.py",
+      "bytes": 2294,
+      "sha256": "441ff863327767b760c1b2e012b9a5970932bf881063025e54f9862a810d0cab"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/planner-fix-908a/install-local.py",
+      "bytes": 3880,
+      "sha256": "368c08f1a74a87cd188462b1db67c02c6aede3413c1b8a7a821a89ae97ff279a"
+    }
+  ],
+  "online_findings_not_delivered": [
+    "Node default CA trust rejected endpoint certificate; system CA validation worked in private test",
+    "Gateway rejected Responses shorthand message type and named tool_choice; malformed SSE error obscured its reason",
+    "All gateway-specific protocol, tests and systemd CA edits were discarded before local deployment"
+  ],
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/planner-fix-908a",
+    "deleted_files": 96,
+    "deleted_bytes": 1112890,
+    "verified_absent": true,
+    "private_sockets_absent": [
+      "/run/user/1000/sdrharness/planner-fix-908a-planner.sock",
+      "/run/user/1000/sdrharness/planner-fix-908a-session.sock"
+    ],
+    "external_retained_files": 0,
+    "backups": 0
+  }
+}

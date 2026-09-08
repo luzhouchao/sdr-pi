@@ -11,6 +11,7 @@ import { resolveModelProfile } from "./model-profile.mjs";
 import { loadProviderSelection } from "./provider-config.mjs";
 import { validateRuntimeSocketPath } from "./runtime-path.mjs";
 import { RunLease } from "./run-lease.mjs";
+import { describeMissingPlan, formatUpstreamError } from "./planner-failure.mjs";
 import { SessionRuntime } from "./session-runtime.mjs";
 import { startSessionServer } from "./session-server.mjs";
 import { createSparkJsonPlanningStream } from "./spark-stream.mjs";
@@ -147,7 +148,7 @@ async function handleFrame(frame) {
       request,
       runtime.plannerMeta,
       "error",
-      describeMissingPlan(runtime.agent),
+      runtime.describeFailure([request.request_id]),
     );
   }
   return makeResponse(request, runtime.plannerMeta, submittedPlans[0]);
@@ -257,7 +258,11 @@ function createPlanningAgent({
       return undefined;
     },
   });
-  return { agent, plannerMeta };
+  return {
+    agent, plannerMeta,
+    describeFailure: (requestIds) => describeMissingPlan(agent, requestIds, [providerConfig.apiKey]),
+    formatError: (error) => formatUpstreamError(error, [providerConfig.apiKey]),
+  };
 }
 
 function loadConfig() {
@@ -340,18 +345,4 @@ function boundedInteger(name, fallback, minimum, maximum) {
 function safeMessage(error) {
   const message = error instanceof Error ? error.message : String(error);
   return message.replace(/[\r\n\u0000-\u001f\u007f]+/gu, " ").slice(0, 512);
-}
-
-function describeMissingPlan(agent) {
-  const messages = agent?.state?.messages;
-  const assistant = Array.isArray(messages)
-    ? messages.findLast((message) => message?.role === "assistant")
-    : undefined;
-  if (assistant?.errorMessage) {
-    return `model request failed: ${safeMessage(assistant.errorMessage)}`;
-  }
-  const stopReason = typeof assistant?.stopReason === "string"
-    ? safeMessage(assistant.stopReason)
-    : "unknown";
-  return `model ended without submit_plan (stop_reason=${stopReason})`;
 }

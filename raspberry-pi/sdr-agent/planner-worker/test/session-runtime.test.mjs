@@ -371,3 +371,20 @@ test("shares one inference lease with the one-shot planner", async () => {
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(lease.state().busy, false);
 });
+
+
+test("surfaces provider failure and releases the run without proposing a plan", async () => {
+  const lease = new RunLease();
+  const { instance, getFake } = runtime(false, lease, false);
+  const events = [];
+  await instance.dispatch(command("open_session", 1), e => events.push(e));
+  getFake().state = {messages:[{role:"assistant",stopReason:"error",errorMessage:"Connection error."}]};
+  await instance.dispatch(command("prompt", 2, {context:context()}), e => events.push(e));
+  await new Promise(resolve => setImmediate(resolve));
+  const error = events.find(e => e.event === "agent_error");
+  assert.match(error.data.error, /request=9.*连接失败/u);
+  assert.equal(events.some(e => e.event === "plan_proposed"), false);
+  const release = lease.acquire("after_failure");
+  assert.equal(typeof release, "function");
+  release();
+});

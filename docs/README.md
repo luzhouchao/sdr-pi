@@ -15,7 +15,9 @@
 | [validation/](validation/README.md) | 按主题索引的已执行验证、部署和回滚记录 |
 | [evidence/](evidence/README.md) | 原始审计 JSON、保留证据清单、预登记计划和图表 |
 
-最近完成[新版网页日常 RX 使用验收](validation/DAILY_RX_USE_VALIDATION_2026-09-08.md)：
+最近完成[本地 Planner 恢复](validation/LOCAL_PLANNER_REPAIR_VALIDATION_2026-09-08.md)：
+本地 Spark 已在原会话验证正常回复，在线网关按用户要求暂不处理。
+此前完成[新版网页日常 RX 使用验收](validation/DAILY_RX_USE_VALIDATION_2026-09-08.md)：
 三段实收、停止恢复、结果管理与监控共存通过，实际发现的扫描/取消文案已修正。
 此前完成[非模型运维部署](validation/OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md)：
 Web/Planner 专用日志、只读健康与本地去重告警已安装，识别仍关闭。

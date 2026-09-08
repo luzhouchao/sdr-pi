@@ -3,6 +3,7 @@
 // Pi's Agent loop. See THIRD_PARTY_NOTICES.md.
 
 import { makeResponse, parseRequest } from "./protocol.mjs";
+import { describeMissingPlan, formatUpstreamError } from "./planner-failure.mjs";
 import {
   boundedText,
   makeSessionEvent,
@@ -25,6 +26,8 @@ export class SessionRuntime {
     this.pendingPlanRequestIds = new Set();
     this.emit = () => {};
     this.releaseRun = undefined;
+    this.describeFailure = (ids) => describeMissingPlan(this.agent, ids);
+    this.formatError = formatUpstreamError;
   }
 
   async dispatch(command, emit) {
@@ -84,6 +87,8 @@ export class SessionRuntime {
     });
     this.agent = created?.agent ?? created;
     this.plannerMeta = created?.plannerMeta ?? this.plannerMeta;
+    this.describeFailure = created?.describeFailure ?? ((ids) => describeMissingPlan(this.agent, ids));
+    this.formatError = created?.formatError ?? formatUpstreamError;
     this.agent.steeringMode = "one-at-a-time";
     this.agent.followUpMode = "one-at-a-time";
     this.pendingPlanRequestIds.clear();
@@ -193,15 +198,15 @@ export class SessionRuntime {
       .then(() => agent.prompt(JSON.stringify(context)))
       .then(() => {
         if (this.sessionGeneration === generation && this.agent === agent && this.pendingPlanRequestIds.size > 0) {
-          const missing = [...this.pendingPlanRequestIds].join(",");
+          const missing = [...this.pendingPlanRequestIds];
           emitIfCurrent("agent_error", {
-            error: `上游模型结束了本轮生成，但 request=${missing} 没有提交下一步计划`,
+            error: this.describeFailure(missing),
           });
         }
       })
       .catch((error) => {
         emitIfCurrent("agent_error", {
-          error: boundedText(error, 512, "Agent run failed"),
+          error: this.formatError(error),
         });
       })
       .finally(() => {
