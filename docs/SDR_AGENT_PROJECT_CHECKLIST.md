@@ -48,7 +48,6 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
 - [ ] O1：持续运行和运维。
   - [x] O1a：固定 seed 的故障/fuzz 矩阵、8 MiB×4 audit 轮转、只读健康/本地去重告警、发布校验与私有升级/回滚演练完成源码、隔离验证及清理。原隔离验证见 [O1a 验证](validation/OPERATIONS_O1A_VALIDATION_2026-09-06.md)。
   - [ ] O1b：24 小时完整闭环 soak；不替代人工批准策略或自动触发决策。
-- [ ] 第7章设备/辐射源身份识别：后续独立范围，不计入当前调制识别交付。
 
 真实候选继续 `recognizer_available=false`。软件实现、隔离验证、安装部署和
 科学准入分别记账；小项完成不能使仍缺其余条件的父项被勾选。
@@ -1123,19 +1122,14 @@ Evidence:
 
 ## 7. Emitter/radiation-source identification
 
-- [ ] Define whether the first target is modulation class, protocol/family,
-      transmitter model, or individual physical emitter identity.
-- [ ] Define lawful collection scope, labels, calibration, channel conditions,
-      train/test separation, and unknown-emitter handling.
-- [ ] Build a real-device RF-fingerprint dataset covering repeat captures,
-      frequencies, gains, temperatures, locations, and channel variation.
-- [ ] Implement frequency-offset, phase-noise, transient, PA-nonlinearity, and
-      other candidate fingerprint features or end-to-end representations.
-- [ ] Establish open-set rejection and confidence calibration.
-- [ ] Validate device-level confusion, cross-day generalization, channel
-      robustness, spoofing risk, and conclusion limits.
-- [ ] Integrate only after modulation recognition and the bounded capture path
-      are stable.
+2026-09-08 用户明确暂缓设备/辐射源身份识别，已将其总览项和七个子项移出当前
+待办，不计入未完成条目。这是范围暂缓，不是验收完成，也不是永久退役。
+原目标定义、采集/标签规范、RF 指纹数据、特征、开放集校准、鲁棒性验证及集成
+条目保留在 `9dcb86e` 的 Git 历史中；只有用户明确恢复此范围后再重新评估排期。
+当前继续以第1—6章 RX-only 调制识别为交付范围，模型工作暂停等既有约束不变。
+
+本次仅调整文档范围；链接、条目数量及 diff 核对通过，无代码、部署、射频或
+模型操作，无新增临时数据或保留制品。
 
 ## 8. Verification, deployment, and operations
 
