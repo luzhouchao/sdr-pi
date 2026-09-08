@@ -15,7 +15,9 @@
 | [validation/](validation/README.md) | 按主题索引的已执行验证、部署和回滚记录 |
 | [evidence/](evidence/README.md) | 原始审计 JSON、保留证据清单、预登记计划和图表 |
 
-最近完成[非模型运维部署](validation/OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md)：
+最近完成[新版网页日常 RX 使用验收](validation/DAILY_RX_USE_VALIDATION_2026-09-08.md)：
+三段实收、停止恢复、结果管理与监控共存通过，实际发现的扫描/取消文案已修正。
+此前完成[非模型运维部署](validation/OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md)：
 Web/Planner 专用日志、只读健康与本地去重告警已安装，识别仍关闭。
 此前完成[Web 界面重构与部署验收](validation/WEB_UI_REDESIGN_VALIDATION_2026-09-07.md)：
 固定导航、折叠设置和可读频谱已安装，原会话/结果保留，识别仍关闭。

@@ -68,3 +68,34 @@ test('narrow-band spectrum axes keep adjacent tick labels distinct',()=>{
  const h=harness();const labels=vm.runInContext('Array.from({length:7},(_,i)=>formatAxisFrequency(2420000000+i*20000000/6,20000000))',h.context);
  assert.equal(new Set(labels).size,7);assert.equal(labels[0],'2420.0 MHz');assert.equal(labels[6],'2440.0 MHz');
 });
+
+
+test('survey presentation distinguishes explicit cancellation without hiding failures',()=>{
+ const h=harness();
+ const present=(status,events)=>{
+  h.context.sample={initial_survey_status:status,events};
+  return vm.runInContext('initialSurveyLabel(initialSurveyState(sample))',h.context);
+ };
+ const cancelled={kind:'sweep',text:'首次扫频已取消并完成恢复：capture_failed_restored'};
+ assert.equal(present('running',[]),'首次扫描进行中');
+ assert.equal(present('failed',[cancelled]),'首次扫描已取消');
+ assert.equal(h.context.sample.initial_survey_status,'failed');
+ assert.equal(present('failed',[cancelled,{kind:'sweep',text:'首次扫频失败：timeout'}]),'首次扫频失败');
+ assert.equal(present('failed',[{kind:'system',text:'会话已停止；旧计划已失效。'}]),'首次扫频失败');
+ assert.equal(present('failed',[{...cancelled,kind:'operator'}]),'首次扫频失败');
+ assert.equal(present('complete',[cancelled]),'首次频谱已建立');
+ assert.equal(present('failed',[]),'首次扫频失败');
+});
+
+
+test('confirmed cancellation is readable while the full diagnostic stays intact',()=>{
+ const h=harness();
+ h.context.event={kind:'sweep',text:'首次扫频已取消并完成恢复：remote_error metadata={"request_id":5}'};
+ const original=h.context.event.text;
+ assert.match(vm.runInContext('operatorEventText(event)',h.context),/完整记录可在诊断中查看/);
+ assert.equal(h.context.event.text,original);
+ h.context.event.kind='operator';
+ assert.equal(vm.runInContext('operatorEventText(event)',h.context),original);
+ h.context.event={kind:'sweep',text:'首次扫频失败：timeout'};
+ assert.equal(vm.runInContext('operatorEventText(event)',h.context),'首次扫频失败：timeout');
+});

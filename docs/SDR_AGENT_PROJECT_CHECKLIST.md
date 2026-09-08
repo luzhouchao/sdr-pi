@@ -19,6 +19,7 @@ this file retains the detailed delivery and evidence ledger.
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
+- [x] 日常 RX 使用验收：新版实际 Web/Planner/P201 完成 433 MHz、2.4 GHz、5.8 GHz 有界接收、曲线/频点表、接收中停止、健康监控共存、重启保留和确认删除；修复自定义扫描与主动取消状态文案，最终安装/回滚及精确清理通过。见 [日常 RX 验收](validation/DAILY_RX_USE_VALIDATION_2026-09-08.md)。只保留未标注功率摘要，不完成 A1/O1b。
 - [x] 非模型运维部署：已安装 Web/Planner 专用限额日志、30 秒只读健康和本地去重告警；实际 Planner health 兼容、停服/恢复、日志轮转、配置回滚、用户结果保留及精确清理通过。见 [运维部署](validation/OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md)。不覆盖未部署的识别 Worker/GPU gateway，不完成 A1/O1b。
 - [x] Web 界面重构：固定导航、可读对话与频谱、折叠配置/诊断、全局优先停止、完整确认/错误反馈和响应式交互已实现；原生及浏览器验证、实际部署/回滚、用户会话/结果保留和精确清理完成。见 [UI 验收](validation/WEB_UI_REDESIGN_VALIDATION_2026-09-07.md)。不部署日志/监控，不开放识别。
 - [x] Web 后台升级：已核对旧制品与源码差异，补齐旧进程输出隔离，验收重启不重扫、request/session/generation 隔离、停止/断连完整恢复、浏览器结果查看/删除、原用户结果保留及实际升级/回滚；精确清理完成。见 [Web 验收](validation/WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)。不开放识别，不部署日志/监控配置。

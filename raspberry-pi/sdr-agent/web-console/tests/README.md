@@ -41,3 +41,17 @@ with a persistent SSE connection.
 Stop this process and delete only its verified feature directory after recording
 the minimal needed screenshots/test receipts. Do not point tests at production,
 create production sessions or delete user results to verify the UI.
+
+## Installed daily RX acceptance
+
+The authorized real-device workflow is
+`jetson-agx/sdrharness/scripts/validate-daily-rx-use.py --root /var/tmp/sdrharness-dev/UNIQUE`.
+It runs against the actual installed Web/Planner services, temporarily binding
+private Web state/results/configuration so test conversations do not evict the
+operator's histories. It receives at most 41 points / 671,744 bytes across three
+bands and one cancellation, with no model prompt or retained IQ. It uses actual
+confirmation controls, checks current cancellation labels, monitors during RX,
+restores the original service configuration, and verifies user data preservation.
+This is not the fixture preview: use only with the finite RX authorization and
+preflight/cleanup in AGENTS.md. Evidence and recovery steps are in
+[the daily RX report](../../../../docs/validation/DAILY_RX_USE_VALIDATION_2026-09-08.md).

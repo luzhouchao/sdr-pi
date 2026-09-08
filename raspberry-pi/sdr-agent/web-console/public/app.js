@@ -440,7 +440,7 @@ function renderTerminal() {
     const visible = !['prompt', 'decision', 'search'].includes(event.kind)
       && (event.kind !== 'system' || !/^(终端进程已启动|SDR Agent 已连接|SDR Agent>)/.test(event.text));
     if (visible) {
-      text.textContent = event.text.replace(/^(Operator>|Agent>)\s*/, '');
+      text.textContent = operatorEventText(event).replace(/^(Operator>|Agent>)\s*/, '');
       view.terminal.append(row);
       visibleCount += 1;
     }
@@ -475,13 +475,13 @@ function renderOverview() {
   const plot = view.active?.sweep_plot;
   setText('#sweep-status', plot
     ? `${plot.sweep_id} · ${plot.points.length} 点 · ${plot.candidates.length} 个候选`
-    : latestText('sweep') || initialSurveyLabel(view.active?.initial_survey_status));
+    : latestText('sweep') || initialSurveyLabel(initialSurveyState(view.active)));
   setText('#qwen-status', latestText('qwen') || '尚无模型输出');
   setText('#cruise-status', latestText('cruise') || '逐步批准模式');
-  setText('#session-survey', initialSurveyLabel(view.active?.initial_survey_status));
+  setText('#session-survey', initialSurveyLabel(initialSurveyState(view.active)));
   setText('#receive-feedback', latestText('sweep') || '尚无接收进度反馈');
   setText('#session-result', plot ? formatFrequency(plot.points[0][0]) + '–' + formatFrequency(plot.points.at(-1)[0]) : '尚无本会话曲线');
-  document.querySelector('#receive-status').dataset.state = view.active?.initial_survey_status || 'empty';
+  document.querySelector('#receive-status').dataset.state = initialSurveyState(view.active) || 'empty';
 }
 
 async function loadResults({ selectLatest = false } = {}) {
@@ -834,9 +834,15 @@ function formatAxisFrequency(value, span) {
   return (value / 1000000).toFixed(precision) + ' MHz';
 }
 
+function operatorEventText(event) {
+  if (event?.kind === 'sweep' && event.text.startsWith('首次扫频已取消并完成恢复：')) {
+    return '首次扫描已取消。控制器已报告射频状态恢复，完整记录可在诊断中查看。';
+  }
+  return event?.text || '';
+}
 function latestText(kind) {
   if (!view.active) return '';
-  return [...view.active.events].reverse().find((event) => event.kind === kind)?.text || '';
+  return operatorEventText([...view.active.events].reverse().find((event) => event.kind === kind));
 }
 
 async function createSession() {
@@ -970,13 +976,22 @@ function formatTokens(value) {
 }
 function sessionMeta(session) {
   const compacted = session.compaction_count || 0;
-  const survey = initialSurveyLabel(session.initial_survey_status, true);
+  const survey = initialSurveyLabel(initialSurveyState(session), true);
   return `${statusLabel(session.status)}${survey ? ` · ${survey}` : ''}${compacted ? ` · 已压缩 ${compacted} 次` : ''}`;
+}
+function initialSurveyState(session) {
+  const status = session?.initial_survey_status;
+  if (status !== 'failed') return status;
+  // Keep the persisted fail-closed status. Only the current session's explicit
+  // Controller cancellation record changes its presentation, never a /stop input.
+  const lastSurvey = [...(session.events || [])].reverse().find(event =>
+    event.kind === 'sweep' && event.text.startsWith('首次扫频'));
+  return lastSurvey?.text.startsWith('首次扫频已取消并完成恢复：') ? 'cancelled' : status;
 }
 function initialSurveyLabel(status, compact = false) {
   const labels = compact
-    ? { pending: '待初扫', running: '初扫中', complete: '初扫完成', failed: '初扫失败', skipped: '' }
-    : { pending: '首次扫频等待启动', running: '首次全频扫描中', complete: '首次频谱已建立', failed: '首次扫频失败', skipped: '首次扫描已关闭' };
+    ? { pending: '待初扫', running: '初扫中', complete: '初扫完成', failed: '初扫失败', cancelled: '初扫已取消', skipped: '' }
+    : { pending: '首次扫频等待启动', running: '首次扫描进行中', complete: '首次频谱已建立', failed: '首次扫频失败', cancelled: '首次扫描已取消', skipped: '首次扫描已关闭' };
   return labels[status] ?? (compact ? '' : '尚无扫频输出');
 }
 function statusLabel(status) {

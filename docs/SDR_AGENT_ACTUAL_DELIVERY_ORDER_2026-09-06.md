@@ -19,7 +19,9 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 已有源码、对应隔离验证和清理�
 
 [非模型运维配置部署](validation/OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md)已完成：
 Web/Planner 日志限额、实际 health 兼容、只读定时检查、本地去重告警和配置回滚
-均已验收。Web 界面、恢复及运维三个单元不要重做。
+均已验收。随后用户授权的[日常 RX 使用验收](validation/DAILY_RX_USE_VALIDATION_2026-09-08.md)
+也完成三段有限实收、结果管理、停止/监控共存和状态文案修正。上述已完成单元
+不要重做。
 
 ## 后续选择
 

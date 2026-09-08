@@ -1,0 +1,1852 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "0078372",
+  "branch": "codex/recognizer-amc-offline-validation",
+  "scope": "Daily RX use on installed services, two finite matrices plus actual-record browser replay; not A1/O1b",
+  "recognizer_available": false,
+  "model_experiments": 0,
+  "tx_operations": 0,
+  "raw_iq_retained_bytes": 0,
+  "rx_attempts": [
+    {
+      "schema_version": 1,
+      "status": "passed",
+      "root": "/var/tmp/sdrharness-dev/rx-daily-908a",
+      "cases": [
+        {
+          "name": "433mhz",
+          "session_id": "session-1788832624982",
+          "generation": 1788919019735,
+          "maximum_bytes": 49152,
+          "result_id": 1,
+          "detail": {
+            "summary": {
+              "id": 1,
+              "session_id": "session-1788832624982",
+              "sweep_id": "initial-1788919019735",
+              "kind": "initial",
+              "created_at_ms": 1788832626123,
+              "point_count": 3,
+              "candidate_count": 0,
+              "elapsed_ms": 1091,
+              "gain_db": 20,
+              "noise_floor_dbfs": -53.430756,
+              "iq_bytes": 0
+            },
+            "sweep_plot": {
+              "schema_version": 1,
+              "sweep_id": "initial-1788919019735",
+              "kind": "initial",
+              "elapsed_ms": 1091,
+              "gain_db": 20,
+              "noise_floor_dbfs": -53.430756,
+              "points": [
+                [
+                  433000000,
+                  -53.430756
+                ],
+                [
+                  434000000,
+                  -53.31843
+                ],
+                [
+                  435000000,
+                  -53.588367
+                ]
+              ],
+              "candidates": []
+            }
+          },
+          "observation": {
+            "age_ms": 0,
+            "health": {
+              "sdr_online": true,
+              "can_retune": true,
+              "can_capture_iq": true,
+              "recognizer_available": false,
+              "dropped_observations": 0
+            },
+            "candidates": [],
+            "latest_sweep": {
+              "sweep_id": "initial-1788919019735",
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "fixed_gain_db": 20,
+              "noise_floor_dbfs": -53.430756,
+              "points": [
+                [
+                  433000000,
+                  -53.430756
+                ],
+                [
+                  434000000,
+                  -53.31843
+                ],
+                [
+                  435000000,
+                  -53.588367
+                ]
+              ]
+            }
+          },
+          "radio_restored": true
+        },
+        {
+          "name": "24ghz",
+          "session_id": "session-1788832628110",
+          "generation": 1788919019736,
+          "maximum_bytes": 180224,
+          "result_id": 2,
+          "detail": {
+            "summary": {
+              "id": 2,
+              "session_id": "session-1788832628110",
+              "sweep_id": "initial-1788919019736",
+              "kind": "initial",
+              "created_at_ms": 1788832629900,
+              "point_count": 11,
+              "candidate_count": 1,
+              "elapsed_ms": 1713,
+              "gain_db": 20,
+              "noise_floor_dbfs": -53.869724,
+              "iq_bytes": 0
+            },
+            "sweep_plot": {
+              "schema_version": 1,
+              "sweep_id": "initial-1788919019736",
+              "kind": "initial",
+              "elapsed_ms": 1713,
+              "gain_db": 20,
+              "noise_floor_dbfs": -53.869724,
+              "points": [
+                [
+                  2400000000,
+                  -54.122242
+                ],
+                [
+                  2408000000,
+                  -51.950905
+                ],
+                [
+                  2416000000,
+                  -53.869724
+                ],
+                [
+                  2424000000,
+                  -53.998814
+                ],
+                [
+                  2432000000,
+                  -53.401226
+                ],
+                [
+                  2440000000,
+                  -53.434155
+                ],
+                [
+                  2448000000,
+                  -54.153378
+                ],
+                [
+                  2456000000,
+                  -40.143047
+                ],
+                [
+                  2464000000,
+                  -53.664577
+                ],
+                [
+                  2472000000,
+                  -53.99019
+                ],
+                [
+                  2480000000,
+                  -53.993862
+                ]
+              ],
+              "candidates": [
+                {
+                  "id": "initial-1788919019736-1",
+                  "start_hz": 2451000000,
+                  "stop_hz": 2461000000,
+                  "center_hz": 2456000000,
+                  "bandwidth_hz": 10000000,
+                  "peak_dbfs": -40.143047,
+                  "snr_db": 13.726677,
+                  "point_count": 1
+                }
+              ]
+            }
+          },
+          "observation": {
+            "age_ms": 0,
+            "health": {
+              "sdr_online": true,
+              "can_retune": true,
+              "can_capture_iq": true,
+              "recognizer_available": false,
+              "dropped_observations": 0
+            },
+            "candidates": [
+              {
+                "id": "initial-1788919019736-1",
+                "center_hz": 2456000000,
+                "bandwidth_hz": 10000000,
+                "peak_dbfs": -40.143047,
+                "snr_db": 13.726677,
+                "age_ms": 0
+              }
+            ],
+            "latest_sweep": {
+              "sweep_id": "initial-1788919019736",
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "fixed_gain_db": 20,
+              "noise_floor_dbfs": -53.869724,
+              "points": [
+                [
+                  2400000000,
+                  -54.122242
+                ],
+                [
+                  2408000000,
+                  -51.950905
+                ],
+                [
+                  2416000000,
+                  -53.869724
+                ],
+                [
+                  2424000000,
+                  -53.998814
+                ],
+                [
+                  2432000000,
+                  -53.401226
+                ],
+                [
+                  2440000000,
+                  -53.434155
+                ],
+                [
+                  2448000000,
+                  -54.153378
+                ],
+                [
+                  2456000000,
+                  -40.143047
+                ],
+                [
+                  2464000000,
+                  -53.664577
+                ],
+                [
+                  2472000000,
+                  -53.99019
+                ],
+                [
+                  2480000000,
+                  -53.993862
+                ]
+              ]
+            }
+          },
+          "radio_restored": true
+        },
+        {
+          "name": "58ghz",
+          "session_id": "session-1788832631745",
+          "generation": 1788919019737,
+          "maximum_bytes": 180224,
+          "result_id": 3,
+          "detail": {
+            "summary": {
+              "id": 3,
+              "session_id": "session-1788832631745",
+              "sweep_id": "initial-1788919019737",
+              "kind": "initial",
+              "created_at_ms": 1788832633487,
+              "point_count": 11,
+              "candidate_count": 0,
+              "elapsed_ms": 1691,
+              "gain_db": 20,
+              "noise_floor_dbfs": -52.76848,
+              "iq_bytes": 0
+            },
+            "sweep_plot": {
+              "schema_version": 1,
+              "sweep_id": "initial-1788919019737",
+              "kind": "initial",
+              "elapsed_ms": 1691,
+              "gain_db": 20,
+              "noise_floor_dbfs": -52.76848,
+              "points": [
+                [
+                  5725000000,
+                  -52.92585
+                ],
+                [
+                  5733000000,
+                  -52.870228
+                ],
+                [
+                  5741000000,
+                  -52.76848
+                ],
+                [
+                  5749000000,
+                  -52.267307
+                ],
+                [
+                  5757000000,
+                  -52.611813
+                ],
+                [
+                  5765000000,
+                  -53.316315
+                ],
+                [
+                  5773000000,
+                  -53.119053
+                ],
+                [
+                  5781000000,
+                  -53.313385
+                ],
+                [
+                  5789000000,
+                  -52.639713
+                ],
+                [
+                  5797000000,
+                  -52.522106
+                ],
+                [
+                  5805000000,
+                  -52.23623
+                ]
+              ],
+              "candidates": []
+            }
+          },
+          "observation": {
+            "age_ms": 0,
+            "health": {
+              "sdr_online": true,
+              "can_retune": true,
+              "can_capture_iq": true,
+              "recognizer_available": false,
+              "dropped_observations": 0
+            },
+            "candidates": [],
+            "latest_sweep": {
+              "sweep_id": "initial-1788919019737",
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "fixed_gain_db": 20,
+              "noise_floor_dbfs": -52.76848,
+              "points": [
+                [
+                  5725000000,
+                  -52.92585
+                ],
+                [
+                  5733000000,
+                  -52.870228
+                ],
+                [
+                  5741000000,
+                  -52.76848
+                ],
+                [
+                  5749000000,
+                  -52.267307
+                ],
+                [
+                  5757000000,
+                  -52.611813
+                ],
+                [
+                  5765000000,
+                  -53.316315
+                ],
+                [
+                  5773000000,
+                  -53.119053
+                ],
+                [
+                  5781000000,
+                  -53.313385
+                ],
+                [
+                  5789000000,
+                  -52.639713
+                ],
+                [
+                  5797000000,
+                  -52.522106
+                ],
+                [
+                  5805000000,
+                  -52.23623
+                ]
+              ]
+            }
+          },
+          "radio_restored": true
+        },
+        {
+          "name": "stop",
+          "session_id": "session-1788832635698",
+          "generation": 1788919019738,
+          "maximum_bytes": 262144,
+          "visible_running_label": "首次全频扫描中",
+          "health_during_rx": {
+            "schema_version": 1,
+            "statuses": {
+              "web": "healthy",
+              "planner": "healthy",
+              "disk": "healthy"
+            }
+          },
+          "stop_and_restore_ms": 721,
+          "visible_stopped_label": "首次扫频失败",
+          "stop_events": [
+            "首次扫频已取消并完成恢复：remote_error: capture_failed_restored metadata={\"dropped_samples\":0,\"error\":\"capture_failed_restored\",\"generation\":1788919019738,\"health\":{\"flags\":8,\"healthy\":false,\"source\":\"iio_adapter\"},\"overflow\":false,\"request_id\":5,\"schema_version\":1,\"sequence\":52,\"session_generation\":1788919019738,\"status\":\"error\",\"timeout\":{\"elapsed_us\":1726,\"limit_ms\":250,\"timed_out\":false}}",
+            "会话已停止；旧计划已失效。"
+          ],
+          "radio_restored": true
+        }
+      ],
+      "plans": [
+        {
+          "name": "433mhz",
+          "start_hz": 433000000,
+          "stop_hz": 435000000,
+          "step_hz": 1000000,
+          "dwell_ms": 20,
+          "gain_db": 20,
+          "points": 3,
+          "sample_rate_hz": 10000000,
+          "rf_bandwidth_hz": 10000000,
+          "samples_per_point": 4096,
+          "point_deadline_ms": 250,
+          "aggregate_frames": 1,
+          "save_iq": false,
+          "input": "RX1/RX0/A_BALANCED",
+          "maximum_bytes": 49152
+        },
+        {
+          "name": "24ghz",
+          "start_hz": 2400000000,
+          "stop_hz": 2480000000,
+          "step_hz": 8000000,
+          "dwell_ms": 20,
+          "gain_db": 20,
+          "points": 11,
+          "sample_rate_hz": 10000000,
+          "rf_bandwidth_hz": 10000000,
+          "samples_per_point": 4096,
+          "point_deadline_ms": 250,
+          "aggregate_frames": 1,
+          "save_iq": false,
+          "input": "RX1/RX0/A_BALANCED",
+          "maximum_bytes": 180224
+        },
+        {
+          "name": "58ghz",
+          "start_hz": 5725000000,
+          "stop_hz": 5805000000,
+          "step_hz": 8000000,
+          "dwell_ms": 20,
+          "gain_db": 20,
+          "points": 11,
+          "sample_rate_hz": 10000000,
+          "rf_bandwidth_hz": 10000000,
+          "samples_per_point": 4096,
+          "point_deadline_ms": 250,
+          "aggregate_frames": 1,
+          "save_iq": false,
+          "input": "RX1/RX0/A_BALANCED",
+          "maximum_bytes": 180224
+        },
+        {
+          "name": "stop",
+          "start_hz": 2455000000,
+          "stop_hz": 2470000000,
+          "step_hz": 1000000,
+          "dwell_ms": 1000,
+          "gain_db": 20,
+          "points": 16,
+          "sample_rate_hz": 10000000,
+          "rf_bandwidth_hz": 10000000,
+          "samples_per_point": 4096,
+          "point_deadline_ms": 250,
+          "aggregate_frames": 1,
+          "save_iq": false,
+          "input": "RX1/RX0/A_BALANCED",
+          "maximum_bytes": 262144
+        }
+      ],
+      "generations": [
+        {
+          "generation": 1788919019735,
+          "paths": [
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019735-0",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019735-1",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019735-2"
+          ]
+        },
+        {
+          "generation": 1788919019736,
+          "paths": [
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019736-0",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019736-1",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019736-2",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019736-3",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019736-4",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019736-5",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019736-6",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019736-7",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019736-8",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019736-9",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019736-10"
+          ]
+        },
+        {
+          "generation": 1788919019737,
+          "paths": [
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019737-0",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019737-1",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019737-2",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019737-3",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019737-4",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019737-5",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019737-6",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019737-7",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019737-8",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019737-9",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019737-10"
+          ]
+        },
+        {
+          "generation": 1788919019738,
+          "paths": [
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-0",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-1",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-2",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-3",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-4",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-5",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-6",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-7",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-8",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-9",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-10",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-11",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-12",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-13",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-14",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919019738-15"
+          ]
+        }
+      ],
+      "rx_only": true,
+      "recognizer_available": false,
+      "browser_errors": [],
+      "requests": [
+        {
+          "method": "PUT",
+          "path": "/api/provider"
+        },
+        {
+          "method": "POST",
+          "path": "/api/sessions"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/provider"
+        },
+        {
+          "method": "POST",
+          "path": "/api/sessions"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/provider"
+        },
+        {
+          "method": "POST",
+          "path": "/api/sessions"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/provider"
+        },
+        {
+          "method": "POST",
+          "path": "/api/sessions"
+        },
+        {
+          "method": "POST",
+          "path": "/api/sessions/session-1788832635698/command"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/results/3"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/results/2"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/results/1"
+        }
+      ],
+      "started_at_ms": 1788832619113,
+      "protected_before": {
+        "/api/state": "36a5a2e0773856f7fd7bd3eacff2361fa778ba76260ae176b9e1f770a63d2071",
+        "/api/results": "e4fb2ffb75eb4b113c878ad5e3a61d5f046697e5c78b8bee9c81000c373402c5",
+        "/api/corpus": "556aab46922f65fb174305485acf5dffc290bc0aa1c62edb959fd19d61a66245"
+      },
+      "protected_session_ids": [
+        "session-1788263597140",
+        "session-1788261263788"
+      ],
+      "protected_config_hashes": {
+        "/etc/sdrharness/runtime.env": "8de3b79d181e5fbbbf408eba6ab71e2b35cff67954d222a632396bd8f63afc6d",
+        "/etc/sdrharness/request.json": "75eb9e268066cd1b5cacc54ecf0c2a86debe235413766b450c7611d670967a15",
+        "/var/lib/sdrharness/web-console/provider.json": "eeb926f47dcaf4ca6a41b1b894f8cc0e6de5254e10598455016f5e3d49a0313d",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "7c374774b006ca8633fb74589878bc8af073f4d738ec95f87982d61cc2b6acf4"
+      },
+      "sdrd_pid": "5909",
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "budget": {
+        "maximum_points": 41,
+        "maximum_rx_bytes": 671744,
+        "conservative_rx_duration_ms": 51291,
+        "test_wall_deadline_seconds": 300,
+        "free_bytes": 809801596928,
+        "stop": "Visible /stop; dedicated CLI cancel; finally removes overlay and restores original Web"
+      },
+      "health_before_rx": {
+        "schema_version": 1,
+        "statuses": {
+          "web": "healthy",
+          "planner": "healthy",
+          "disk": "healthy"
+        }
+      },
+      "restart_and_manual_delete": {
+        "preserved_results": 3,
+        "cancel_kept_results": true,
+        "deleted_test_results": 3,
+        "remaining": 0
+      },
+      "health_after": {
+        "schema_version": 1,
+        "statuses": {
+          "web": "healthy",
+          "planner": "healthy",
+          "disk": "healthy"
+        }
+      },
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid_after": "5909",
+      "protected_results_unchanged": true,
+      "protected_sessions_restored": true,
+      "config_binary_hashes_unchanged": true,
+      "p201_paths_absent": true,
+      "overlay_removed": true,
+      "final_web_pid": "521068",
+      "validator_sha256": "b8bcf9c2adec502d74b61be8e96ff29e07c105b47e943045ad0e1db784c7bc2a"
+    },
+    {
+      "schema_version": 1,
+      "status": "passed",
+      "root": "/var/tmp/sdrharness-dev/rx-daily-908b",
+      "cases": [
+        {
+          "name": "433mhz",
+          "session_id": "session-1788833123514",
+          "generation": 1788919518218,
+          "maximum_bytes": 49152,
+          "result_id": 1,
+          "detail": {
+            "summary": {
+              "id": 1,
+              "session_id": "session-1788833123514",
+              "sweep_id": "initial-1788919518218",
+              "kind": "initial",
+              "created_at_ms": 1788833124654,
+              "point_count": 3,
+              "candidate_count": 0,
+              "elapsed_ms": 1090,
+              "gain_db": 20,
+              "noise_floor_dbfs": -53.076443,
+              "iq_bytes": 0
+            },
+            "sweep_plot": {
+              "schema_version": 1,
+              "sweep_id": "initial-1788919518218",
+              "kind": "initial",
+              "elapsed_ms": 1090,
+              "gain_db": 20,
+              "noise_floor_dbfs": -53.076443,
+              "points": [
+                [
+                  433000000,
+                  -53.24166
+                ],
+                [
+                  434000000,
+                  -53.073826
+                ],
+                [
+                  435000000,
+                  -53.076443
+                ]
+              ],
+              "candidates": []
+            }
+          },
+          "observation": {
+            "age_ms": 0,
+            "health": {
+              "sdr_online": true,
+              "can_retune": true,
+              "can_capture_iq": true,
+              "recognizer_available": false,
+              "dropped_observations": 0
+            },
+            "candidates": [],
+            "latest_sweep": {
+              "sweep_id": "initial-1788919518218",
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "fixed_gain_db": 20,
+              "noise_floor_dbfs": -53.076443,
+              "points": [
+                [
+                  433000000,
+                  -53.24166
+                ],
+                [
+                  434000000,
+                  -53.073826
+                ],
+                [
+                  435000000,
+                  -53.076443
+                ]
+              ]
+            }
+          },
+          "radio_restored": true
+        },
+        {
+          "name": "24ghz",
+          "session_id": "session-1788833126640",
+          "generation": 1788919518219,
+          "maximum_bytes": 180224,
+          "result_id": 2,
+          "detail": {
+            "summary": {
+              "id": 2,
+              "session_id": "session-1788833126640",
+              "sweep_id": "initial-1788919518219",
+              "kind": "initial",
+              "created_at_ms": 1788833128436,
+              "point_count": 11,
+              "candidate_count": 1,
+              "elapsed_ms": 1714,
+              "gain_db": 20,
+              "noise_floor_dbfs": -53.562283,
+              "iq_bytes": 0
+            },
+            "sweep_plot": {
+              "schema_version": 1,
+              "sweep_id": "initial-1788919518219",
+              "kind": "initial",
+              "elapsed_ms": 1714,
+              "gain_db": 20,
+              "noise_floor_dbfs": -53.562283,
+              "points": [
+                [
+                  2400000000,
+                  -54.25366
+                ],
+                [
+                  2408000000,
+                  -53.391113
+                ],
+                [
+                  2416000000,
+                  -47.44814
+                ],
+                [
+                  2424000000,
+                  -53.562283
+                ],
+                [
+                  2432000000,
+                  -53.967564
+                ],
+                [
+                  2440000000,
+                  -53.234894
+                ],
+                [
+                  2448000000,
+                  -48.70899
+                ],
+                [
+                  2456000000,
+                  -53.88052
+                ],
+                [
+                  2464000000,
+                  -36.510445
+                ],
+                [
+                  2472000000,
+                  -53.80228
+                ],
+                [
+                  2480000000,
+                  -53.767532
+                ]
+              ],
+              "candidates": [
+                {
+                  "id": "initial-1788919518219-1",
+                  "start_hz": 2459000000,
+                  "stop_hz": 2469000000,
+                  "center_hz": 2464000000,
+                  "bandwidth_hz": 10000000,
+                  "peak_dbfs": -36.510445,
+                  "snr_db": 17.051838,
+                  "point_count": 1
+                }
+              ]
+            }
+          },
+          "observation": {
+            "age_ms": 0,
+            "health": {
+              "sdr_online": true,
+              "can_retune": true,
+              "can_capture_iq": true,
+              "recognizer_available": false,
+              "dropped_observations": 0
+            },
+            "candidates": [
+              {
+                "id": "initial-1788919518219-1",
+                "center_hz": 2464000000,
+                "bandwidth_hz": 10000000,
+                "peak_dbfs": -36.510445,
+                "snr_db": 17.051838,
+                "age_ms": 0
+              }
+            ],
+            "latest_sweep": {
+              "sweep_id": "initial-1788919518219",
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "fixed_gain_db": 20,
+              "noise_floor_dbfs": -53.562283,
+              "points": [
+                [
+                  2400000000,
+                  -54.25366
+                ],
+                [
+                  2408000000,
+                  -53.391113
+                ],
+                [
+                  2416000000,
+                  -47.44814
+                ],
+                [
+                  2424000000,
+                  -53.562283
+                ],
+                [
+                  2432000000,
+                  -53.967564
+                ],
+                [
+                  2440000000,
+                  -53.234894
+                ],
+                [
+                  2448000000,
+                  -48.70899
+                ],
+                [
+                  2456000000,
+                  -53.88052
+                ],
+                [
+                  2464000000,
+                  -36.510445
+                ],
+                [
+                  2472000000,
+                  -53.80228
+                ],
+                [
+                  2480000000,
+                  -53.767532
+                ]
+              ]
+            }
+          },
+          "radio_restored": true
+        },
+        {
+          "name": "58ghz",
+          "session_id": "session-1788833130342",
+          "generation": 1788919518220,
+          "maximum_bytes": 180224,
+          "result_id": 3,
+          "detail": {
+            "summary": {
+              "id": 3,
+              "session_id": "session-1788833130342",
+              "sweep_id": "initial-1788919518220",
+              "kind": "initial",
+              "created_at_ms": 1788833132087,
+              "point_count": 11,
+              "candidate_count": 1,
+              "elapsed_ms": 1693,
+              "gain_db": 20,
+              "noise_floor_dbfs": -52.76451,
+              "iq_bytes": 0
+            },
+            "sweep_plot": {
+              "schema_version": 1,
+              "sweep_id": "initial-1788919518220",
+              "kind": "initial",
+              "elapsed_ms": 1693,
+              "gain_db": 20,
+              "noise_floor_dbfs": -52.76451,
+              "points": [
+                [
+                  5725000000,
+                  -52.861916
+                ],
+                [
+                  5733000000,
+                  -52.731625
+                ],
+                [
+                  5741000000,
+                  -46.35569
+                ],
+                [
+                  5749000000,
+                  -53.470764
+                ],
+                [
+                  5757000000,
+                  -53.14615
+                ],
+                [
+                  5765000000,
+                  -53.060867
+                ],
+                [
+                  5773000000,
+                  -52.835705
+                ],
+                [
+                  5781000000,
+                  -36.722237
+                ],
+                [
+                  5789000000,
+                  -52.76451
+                ],
+                [
+                  5797000000,
+                  -52.388016
+                ],
+                [
+                  5805000000,
+                  -52.548027
+                ]
+              ],
+              "candidates": [
+                {
+                  "id": "initial-1788919518220-1",
+                  "start_hz": 5776000000,
+                  "stop_hz": 5786000000,
+                  "center_hz": 5781000000,
+                  "bandwidth_hz": 10000000,
+                  "peak_dbfs": -36.722237,
+                  "snr_db": 16.042274,
+                  "point_count": 1
+                }
+              ]
+            }
+          },
+          "observation": {
+            "age_ms": 0,
+            "health": {
+              "sdr_online": true,
+              "can_retune": true,
+              "can_capture_iq": true,
+              "recognizer_available": false,
+              "dropped_observations": 0
+            },
+            "candidates": [
+              {
+                "id": "initial-1788919518220-1",
+                "center_hz": 5781000000,
+                "bandwidth_hz": 10000000,
+                "peak_dbfs": -36.722237,
+                "snr_db": 16.042274,
+                "age_ms": 0
+              }
+            ],
+            "latest_sweep": {
+              "sweep_id": "initial-1788919518220",
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "fixed_gain_db": 20,
+              "noise_floor_dbfs": -52.76451,
+              "points": [
+                [
+                  5725000000,
+                  -52.861916
+                ],
+                [
+                  5733000000,
+                  -52.731625
+                ],
+                [
+                  5741000000,
+                  -46.35569
+                ],
+                [
+                  5749000000,
+                  -53.470764
+                ],
+                [
+                  5757000000,
+                  -53.14615
+                ],
+                [
+                  5765000000,
+                  -53.060867
+                ],
+                [
+                  5773000000,
+                  -52.835705
+                ],
+                [
+                  5781000000,
+                  -36.722237
+                ],
+                [
+                  5789000000,
+                  -52.76451
+                ],
+                [
+                  5797000000,
+                  -52.388016
+                ],
+                [
+                  5805000000,
+                  -52.548027
+                ]
+              ]
+            }
+          },
+          "radio_restored": true
+        },
+        {
+          "name": "stop",
+          "session_id": "session-1788833134331",
+          "generation": 1788919518221,
+          "maximum_bytes": 262144,
+          "visible_running_label": "首次扫描进行中",
+          "health_during_rx": {
+            "schema_version": 1,
+            "statuses": {
+              "web": "healthy",
+              "planner": "healthy",
+              "disk": "healthy"
+            }
+          },
+          "stop_and_restore_ms": 684,
+          "visible_stopped_label": "首次扫描已取消",
+          "stop_events": [
+            "首次扫频已取消并完成恢复：remote_error: capture_failed_restored metadata={\"dropped_samples\":0,\"error\":\"capture_failed_restored\",\"generation\":1788919518221,\"health\":{\"flags\":8,\"healthy\":false,\"source\":\"iio_adapter\"},\"overflow\":false,\"request_id\":5,\"schema_version\":1,\"sequence\":78,\"session_generation\":1788919518221,\"status\":\"error\",\"timeout\":{\"elapsed_us\":1611,\"limit_ms\":250,\"timed_out\":false}}",
+            "会话已停止；旧计划已失效。"
+          ],
+          "radio_restored": true
+        }
+      ],
+      "plans": [
+        {
+          "name": "433mhz",
+          "start_hz": 433000000,
+          "stop_hz": 435000000,
+          "step_hz": 1000000,
+          "dwell_ms": 20,
+          "gain_db": 20,
+          "points": 3,
+          "sample_rate_hz": 10000000,
+          "rf_bandwidth_hz": 10000000,
+          "samples_per_point": 4096,
+          "point_deadline_ms": 250,
+          "aggregate_frames": 1,
+          "save_iq": false,
+          "input": "RX1/RX0/A_BALANCED",
+          "maximum_bytes": 49152
+        },
+        {
+          "name": "24ghz",
+          "start_hz": 2400000000,
+          "stop_hz": 2480000000,
+          "step_hz": 8000000,
+          "dwell_ms": 20,
+          "gain_db": 20,
+          "points": 11,
+          "sample_rate_hz": 10000000,
+          "rf_bandwidth_hz": 10000000,
+          "samples_per_point": 4096,
+          "point_deadline_ms": 250,
+          "aggregate_frames": 1,
+          "save_iq": false,
+          "input": "RX1/RX0/A_BALANCED",
+          "maximum_bytes": 180224
+        },
+        {
+          "name": "58ghz",
+          "start_hz": 5725000000,
+          "stop_hz": 5805000000,
+          "step_hz": 8000000,
+          "dwell_ms": 20,
+          "gain_db": 20,
+          "points": 11,
+          "sample_rate_hz": 10000000,
+          "rf_bandwidth_hz": 10000000,
+          "samples_per_point": 4096,
+          "point_deadline_ms": 250,
+          "aggregate_frames": 1,
+          "save_iq": false,
+          "input": "RX1/RX0/A_BALANCED",
+          "maximum_bytes": 180224
+        },
+        {
+          "name": "stop",
+          "start_hz": 2455000000,
+          "stop_hz": 2470000000,
+          "step_hz": 1000000,
+          "dwell_ms": 1000,
+          "gain_db": 20,
+          "points": 16,
+          "sample_rate_hz": 10000000,
+          "rf_bandwidth_hz": 10000000,
+          "samples_per_point": 4096,
+          "point_deadline_ms": 250,
+          "aggregate_frames": 1,
+          "save_iq": false,
+          "input": "RX1/RX0/A_BALANCED",
+          "maximum_bytes": 262144
+        }
+      ],
+      "generations": [
+        {
+          "generation": 1788919518218,
+          "paths": [
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518218-0",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518218-1",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518218-2"
+          ]
+        },
+        {
+          "generation": 1788919518219,
+          "paths": [
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518219-0",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518219-1",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518219-2",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518219-3",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518219-4",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518219-5",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518219-6",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518219-7",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518219-8",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518219-9",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518219-10"
+          ]
+        },
+        {
+          "generation": 1788919518220,
+          "paths": [
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518220-0",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518220-1",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518220-2",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518220-3",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518220-4",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518220-5",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518220-6",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518220-7",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518220-8",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518220-9",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518220-10"
+          ]
+        },
+        {
+          "generation": 1788919518221,
+          "paths": [
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-0",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-1",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-2",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-3",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-4",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-5",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-6",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-7",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-8",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-9",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-10",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-11",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-12",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-13",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-14",
+            "/tmp/sdr-agent-dev/agx-sweep-1788919518221-15"
+          ]
+        }
+      ],
+      "rx_only": true,
+      "recognizer_available": false,
+      "browser_errors": [],
+      "requests": [
+        {
+          "method": "PUT",
+          "path": "/api/provider"
+        },
+        {
+          "method": "POST",
+          "path": "/api/sessions"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/provider"
+        },
+        {
+          "method": "POST",
+          "path": "/api/sessions"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/provider"
+        },
+        {
+          "method": "POST",
+          "path": "/api/sessions"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/provider"
+        },
+        {
+          "method": "POST",
+          "path": "/api/sessions"
+        },
+        {
+          "method": "POST",
+          "path": "/api/sessions/session-1788833134331/command"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/results/3"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/results/2"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/results/1"
+        }
+      ],
+      "started_at_ms": 1788833117598,
+      "validator_sha256": "373180147b3ec589a89f589e3b9c806eb3de61e677502ecf629460b54191153b",
+      "protected_before": {
+        "/api/state": "4a0eeaea3bc21d4f185503255b8421a340f61539fa295b0b503e3ad9ce8205ef",
+        "/api/results": "e4fb2ffb75eb4b113c878ad5e3a61d5f046697e5c78b8bee9c81000c373402c5",
+        "/api/corpus": "556aab46922f65fb174305485acf5dffc290bc0aa1c62edb959fd19d61a66245"
+      },
+      "protected_session_ids": [
+        "session-1788263597140",
+        "session-1788261263788"
+      ],
+      "protected_config_hashes": {
+        "/etc/sdrharness/runtime.env": "8de3b79d181e5fbbbf408eba6ab71e2b35cff67954d222a632396bd8f63afc6d",
+        "/etc/sdrharness/request.json": "75eb9e268066cd1b5cacc54ecf0c2a86debe235413766b450c7611d670967a15",
+        "/var/lib/sdrharness/web-console/provider.json": "eeb926f47dcaf4ca6a41b1b894f8cc0e6de5254e10598455016f5e3d49a0313d",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+        "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "90990dcb5512cdb48360d189a368400a2e288ad978fd2c53d99bf766086299fc"
+      },
+      "sdrd_pid": "5909",
+      "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "budget": {
+        "maximum_points": 41,
+        "maximum_rx_bytes": 671744,
+        "conservative_rx_duration_ms": 51291,
+        "test_wall_deadline_seconds": 300,
+        "free_bytes": 808970743808,
+        "stop": "Visible /stop; dedicated CLI cancel; finally removes overlay and restores original Web"
+      },
+      "health_before_rx": {
+        "schema_version": 1,
+        "statuses": {
+          "web": "healthy",
+          "planner": "healthy",
+          "disk": "healthy"
+        }
+      },
+      "restart_and_manual_delete": {
+        "preserved_results": 3,
+        "cancel_kept_results": true,
+        "deleted_test_results": 3,
+        "remaining": 0
+      },
+      "health_after": {
+        "schema_version": 1,
+        "statuses": {
+          "web": "healthy",
+          "planner": "healthy",
+          "disk": "healthy"
+        }
+      },
+      "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "sdrd_pid_after": "5909",
+      "protected_results_unchanged": true,
+      "protected_sessions_restored": true,
+      "config_binary_hashes_unchanged": true,
+      "p201_paths_absent": true,
+      "overlay_removed": true,
+      "final_web_pid": "524426"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/web-console/public/app.js",
+      "bytes": 59828,
+      "sha256": "b3d37e5c9dfa3d12b7aab77e13b8f343e7aa6745b7490ea6591fb268024cbda8"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/web-console/public/index.html",
+      "bytes": 24906,
+      "sha256": "01effe8c6fcaa90301d32dd91c61a372a7111fb6d71aaedbf7aaeab970834def"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/web-console/public/styles.css",
+      "bytes": 27664,
+      "sha256": "cb4e41d316a210ddf9086db2e35f6fbb80480dd6a306900639c3afaeeca3262f"
+    },
+    {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-daily-rx-use.py",
+      "bytes": 19400,
+      "sha256": "373180147b3ec589a89f589e3b9c806eb3de61e677502ecf629460b54191153b"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/web-console/tests/ui-state.test.cjs",
+      "bytes": 6925,
+      "sha256": "e4b7eeffc1dfa21f55629f6d79e6b2087bf9fddcad900b1b04b46fe817092471"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/web-console/src/main.rs",
+      "bytes": 121203,
+      "sha256": "43fa157eb8d820e2ed8ad8ed1c3e81d13373c9d625b36ee3ba55cc897d71df3e"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/web-console/Cargo.lock",
+      "bytes": 19300,
+      "sha256": "3e8fe11008885c5f2dc823d89a3ae69b927151436aca0fec4a9ff0217b720be7"
+    }
+  ],
+  "temporary_receipts": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908a/24ghz.png",
+      "bytes": 159379,
+      "sha256": "b99f7dc24424e961fe9d5c5bfd67d890e33abcb187649bf254d37270ab715f89"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908a/433mhz.png",
+      "bytes": 153536,
+      "sha256": "c0636e51b0515fb68c8704d0bfef66da303f7935fa5fb63d2f63c30f2b8e6630"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908a/58ghz.png",
+      "bytes": 180382,
+      "sha256": "f810419b0cc2521bcce44164607ac292fef3660ce14a309b13f0f5455d0a9baa"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908a/audit.json",
+      "bytes": 20213,
+      "sha256": "ef56530b3ade1c2bd2873088ab41bd833024dc6108a5ec7900e71a7ee9a52041"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908a/mobile-results.png",
+      "bytes": 118375,
+      "sha256": "a1b95274786d8efc89aac5c6281af182d8d84e8993964bc2f7ce91f47e700843"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908a/paths-before-rx.json",
+      "bytes": 2473,
+      "sha256": "d3089916a362f42ae18e11e639456aa2e23e5e4dc2d417d3a4930c04eaf611cc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908a/plan.json",
+      "bytes": 4658,
+      "sha256": "38487da2ac0e4e4d24d8c677b1b0b35f8a9ab442097725f368d6dbea54821058"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908a/receiving.png",
+      "bytes": 152162,
+      "sha256": "80b447bbaefaeb69e97448f2ec29750423e0e68aafee835bfd7cbc8bfa621edf"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908a/request.json",
+      "bytes": 624,
+      "sha256": "a3943932e39d86ed84fc7246854f6f08c6f52b4be1a455c5e00815a9f38b86cb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908a/state.json",
+      "bytes": 9753,
+      "sha256": "424f8a49529d57dad5dfcff8945cecab3120b07c846288707eae40d928017a03"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908b/24ghz.png",
+      "bytes": 160739,
+      "sha256": "19234aef9662ff6802c4ae96fa2b0fb74bc5b8b60fddf4e4dc167bd7b63fb2ec"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908b/433mhz.png",
+      "bytes": 152079,
+      "sha256": "2b685815d8aa08767a28a395d3d5da4ea7e98b1d990058381e0ae655213ffde6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908b/58ghz.png",
+      "bytes": 186542,
+      "sha256": "8d1941dfc97c1e0e146893e0b085da16b7ef913101504973bab13212be2741e9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908b/audit.json",
+      "bytes": 20800,
+      "sha256": "e23d7f6bbfc434a3baf36cd3e0c8d822cde9a7978e5ddad3f85e824ee55f9e32"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908b/cancelled.png",
+      "bytes": 176092,
+      "sha256": "7d6b6307a02071d2de25bff746dd161abe20eb552ce418e6594af2301b8edd16"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908b/mobile-results.png",
+      "bytes": 115574,
+      "sha256": "ccc3a20d9a03f3ad798a5b52960a69bdffb2607d9cfe9c4dad3793568d62b8a8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908b/paths-before-rx.json",
+      "bytes": 2473,
+      "sha256": "13e03c24e23b48856e9c26c43f9f7bbf437a3c6976044ba59c29306d23214ce3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908b/plan.json",
+      "bytes": 4748,
+      "sha256": "a1d23ff30d09141494c60c51dae11c83ddec2a48e46af984014c881b454829a7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908b/receiving.png",
+      "bytes": 151015,
+      "sha256": "0234dfbca054cff0c363ad49e8e03b2e1fc027a68dbcc1eeee3693a1d888249a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908b/request.json",
+      "bytes": 624,
+      "sha256": "5eff36464a3af53e25bce1536c03ff4b0cbbe02388245e94d4ed4a4eec902385"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908b/state.json",
+      "bytes": 10698,
+      "sha256": "51d6a1c59a772279211bf50689ce8cebe3b6e7089818fea7d8d8aa7d60de48b3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908build/ui-tests.log",
+      "bytes": 2269,
+      "sha256": "9e901016c20b5b403738d88121bf680e92ce5d24a4b684a6ca4f05434ccffafd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908build/ui-tests-final.log",
+      "bytes": 2490,
+      "sha256": "5c0ffaa7006682cadc09f3c68b913385f075e4caf9e217009cfe335c8e9c528d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908build/web-tests.log",
+      "bytes": 6357,
+      "sha256": "3cf7b154e3ed93d060d69dcfdae39053bc93c20d3c92404369b9a9cabcc49fcd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908build/build.log",
+      "bytes": 2605,
+      "sha256": "7547735921882b2b09cc3cdd28936b108ca62e6d47a1a1d72bfc1ce7b4c1d6df"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908build/build-final.log",
+      "bytes": 166,
+      "sha256": "80aac16543602ebb02fca2112c4f2defd0ec212419f07fc96b13433012f440f6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908build/deploy.py",
+      "bytes": 3592,
+      "sha256": "6ff56d3bb5bda09c1c7f66b182cd683af5d9635da4b705a66e0bfe8d8b5e4270"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908build/replay-browser.py",
+      "bytes": 2556,
+      "sha256": "f70c05fa3ab41a824c4703cfc5257dd54eb13b52f3f1fdd108190a081ff423f6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rx-daily-908build/cancelled-readable.png",
+      "bytes": 138937,
+      "sha256": "67434dbc18ca37564f3ce23ba03da31223dd2c0cc91936fd15770c8ffdb36f50"
+    }
+  ],
+  "deployment": {
+    "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "stages": [
+      {
+        "phase": "install",
+        "web_pid": "523991",
+        "artifact": {
+          "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console",
+          "bytes": 3282208,
+          "sha256": "90990dcb5512cdb48360d189a368400a2e288ad978fd2c53d99bf766086299fc"
+        },
+        "health": {
+          "schema_version": 1,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "healthy"
+          }
+        },
+        "user_data_and_config_preserved": true,
+        "radio_restored": true
+      },
+      {
+        "phase": "rollback",
+        "web_pid": "524056",
+        "artifact": {
+          "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console",
+          "bytes": 3286304,
+          "sha256": "7c374774b006ca8633fb74589878bc8af073f4d738ec95f87982d61cc2b6acf4"
+        },
+        "health": {
+          "schema_version": 1,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "healthy"
+          }
+        },
+        "user_data_and_config_preserved": true,
+        "radio_restored": true
+      },
+      {
+        "phase": "final-install",
+        "web_pid": "524120",
+        "artifact": {
+          "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console",
+          "bytes": 3282208,
+          "sha256": "90990dcb5512cdb48360d189a368400a2e288ad978fd2c53d99bf766086299fc"
+        },
+        "health": {
+          "schema_version": 1,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "healthy"
+          }
+        },
+        "user_data_and_config_preserved": true,
+        "radio_restored": true
+      },
+      {
+        "phase": "final-v2",
+        "web_pid": "524813",
+        "artifact": {
+          "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console",
+          "bytes": 3282208,
+          "sha256": "9095a1be2aedd57cb08d02b9d1e772ab8f17137e84160877194baf14b474449d"
+        },
+        "health": {
+          "schema_version": 1,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "healthy"
+          }
+        },
+        "user_data_and_config_preserved": true,
+        "radio_restored": true
+      }
+    ],
+    "protected": {
+      "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+      "/etc/sdrharness/runtime.env": "8de3b79d181e5fbbbf408eba6ab71e2b35cff67954d222a632396bd8f63afc6d",
+      "/etc/sdrharness/request.json": "75eb9e268066cd1b5cacc54ecf0c2a86debe235413766b450c7611d670967a15",
+      "/var/lib/sdrharness/web-console/provider.json": "eeb926f47dcaf4ca6a41b1b894f8cc0e6de5254e10598455016f5e3d49a0313d"
+    },
+    "packages": [
+      {
+        "schema_version": 1,
+        "release_id": "20260908-before-rx-daily-ui-v1",
+        "verified_files": 2,
+        "bytes": 3286386,
+        "recognizer_available": false,
+        "installed": false,
+        "manifest_sha256": "d07d610fa09d99fc6f98787f806eb60806bb0a84dd9e5ab22e33d31b66734e37"
+      },
+      {
+        "schema_version": 1,
+        "release_id": "20260908-rx-daily-ui-v1",
+        "verified_files": 2,
+        "bytes": 3282892,
+        "recognizer_available": false,
+        "installed": false,
+        "manifest_sha256": "5f13692be7eb92a30b5cc5e2d8be04d97f10fece19b2edc7c5250a7fcc1174fa"
+      },
+      {
+        "schema_version": 1,
+        "release_id": "20260908-rx-daily-ui-v2",
+        "verified_files": 2,
+        "bytes": 3282976,
+        "recognizer_available": false,
+        "installed": false,
+        "manifest_sha256": "d43d00902f6f601aa37c0ba17d76f2db6a30ff9e51b91fbeeab898c88c588777"
+      }
+    ],
+    "retained": [
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-daily-ui-v1/release.json",
+        "bytes": 460,
+        "sha256": "d07d610fa09d99fc6f98787f806eb60806bb0a84dd9e5ab22e33d31b66734e37"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-daily-ui-v1/sdr-agent-web-console",
+        "bytes": 3286304,
+        "sha256": "7c374774b006ca8633fb74589878bc8af073f4d738ec95f87982d61cc2b6acf4"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-daily-ui-v1/source.json",
+        "bytes": 82,
+        "sha256": "5a6e110efc313f0b1b4e302e2dc768b767fc75ac475c26be1dddd6b82f05bef8"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v1/release.json",
+        "bytes": 454,
+        "sha256": "5f13692be7eb92a30b5cc5e2d8be04d97f10fece19b2edc7c5250a7fcc1174fa"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v1/sdr-agent-web-console",
+        "bytes": 3282208,
+        "sha256": "90990dcb5512cdb48360d189a368400a2e288ad978fd2c53d99bf766086299fc"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v1/source.json",
+        "bytes": 684,
+        "sha256": "3cefd442c76b451317cb7e257b8d90451553b38b6b01bcaf3201b2dd4222b044"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v2/release.json",
+        "bytes": 454,
+        "sha256": "d43d00902f6f601aa37c0ba17d76f2db6a30ff9e51b91fbeeab898c88c588777"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v2/sdr-agent-web-console",
+        "bytes": 3282208,
+        "sha256": "9095a1be2aedd57cb08d02b9d1e772ab8f17137e84160877194baf14b474449d"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v2/source.json",
+        "bytes": 768,
+        "sha256": "85c56e35063985de557670223688f920ec636d11e162a360f95ad29010587b1c"
+      }
+    ],
+    "baseline": {
+      "sessions": [
+        {
+          "id": "session-1788263597140",
+          "initial_survey_status": "complete"
+        },
+        {
+          "id": "session-1788261263788",
+          "initial_survey_status": "complete"
+        }
+      ],
+      "result_count": 2,
+      "corpus_count": 1
+    }
+  },
+  "final_browser_replay": {
+    "kind": "browser replay of actual final RX cancellation record using final installed HTTP assets; no new RX",
+    "parent_state_sha256": "51d6a1c59a772279211bf50689ce8cebe3b6e7089818fea7d8d8aa7d60de48b3",
+    "real_session_id": "session-1788833134331",
+    "summary_readable": true,
+    "raw_diagnostics_unchanged": true,
+    "installed_assets_match_source": true,
+    "production_state_results_corpus_unchanged": true,
+    "browser_errors": [],
+    "rx_calls": 0
+  },
+  "checks": {
+    "ui_tests": 12,
+    "web_tests": 36,
+    "web_ignored_explicit_exporters": 2,
+    "javascript_syntax": "passed",
+    "python_ast": "passed",
+    "native_build": "AArch64 stripped release",
+    "browser_errors": 0,
+    "notes": "No Rust/backend source changes; final diagnostic wording uses actual cancelled-session replay with installed static assets, no extra RF."
+  },
+  "monitoring": {
+    "captured_snapshot_count": 36,
+    "state_transition_events": [],
+    "all_captured_statuses_healthy": true,
+    "first": {
+      "events": [],
+      "free_bytes": 809802051584,
+      "observed_at_unix_ms": 1788832576230,
+      "recognizer_available": false,
+      "schema_version": 1,
+      "statuses": {
+        "disk": "healthy",
+        "planner": "healthy",
+        "web": "healthy"
+      }
+    },
+    "last": {
+      "events": [],
+      "free_bytes": 808966418432,
+      "observed_at_unix_ms": 1788833496221,
+      "recognizer_available": false,
+      "schema_version": 1,
+      "statuses": {
+        "disk": "healthy",
+        "planner": "healthy",
+        "web": "healthy"
+      }
+    },
+    "health_timer": "active",
+    "p201_recovery_timer": "active"
+  },
+  "final_installed_web": {
+    "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console",
+    "bytes": 3282208,
+    "sha256": "9095a1be2aedd57cb08d02b9d1e772ab8f17137e84160877194baf14b474449d"
+  },
+  "final_service": "MainPID=524813\nNRestarts=0\nBindPaths=\nActiveState=active\nDropInPaths=/etc/systemd/system/sdrharness-web.service.d/30-operations.conf\n",
+  "retained_release_roots": [
+    "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-daily-ui-v1",
+    "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v2"
+  ],
+  "retained_release_files": [
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-daily-ui-v1/release.json",
+      "bytes": 460,
+      "sha256": "d07d610fa09d99fc6f98787f806eb60806bb0a84dd9e5ab22e33d31b66734e37"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-daily-ui-v1/sdr-agent-web-console",
+      "bytes": 3286304,
+      "sha256": "7c374774b006ca8633fb74589878bc8af073f4d738ec95f87982d61cc2b6acf4"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-daily-ui-v1/source.json",
+      "bytes": 82,
+      "sha256": "5a6e110efc313f0b1b4e302e2dc768b767fc75ac475c26be1dddd6b82f05bef8"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v2/release.json",
+      "bytes": 454,
+      "sha256": "d43d00902f6f601aa37c0ba17d76f2db6a30ff9e51b91fbeeab898c88c588777"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v2/sdr-agent-web-console",
+      "bytes": 3282208,
+      "sha256": "9095a1be2aedd57cb08d02b9d1e772ab8f17137e84160877194baf14b474449d"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v2/source.json",
+      "bytes": 768,
+      "sha256": "85c56e35063985de557670223688f920ec636d11e162a360f95ad29010587b1c"
+    }
+  ],
+  "retired_intermediate_files": [
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v1/release.json",
+      "bytes": 454,
+      "sha256": "5f13692be7eb92a30b5cc5e2d8be04d97f10fece19b2edc7c5250a7fcc1174fa"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v1/sdr-agent-web-console",
+      "bytes": 3282208,
+      "sha256": "90990dcb5512cdb48360d189a368400a2e288ad978fd2c53d99bf766086299fc"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v1/source.json",
+      "bytes": 684,
+      "sha256": "3cefd442c76b451317cb7e257b8d90451553b38b6b01bcaf3201b2dd4222b044"
+    }
+  ],
+  "cleanup": {
+    "status": "complete",
+    "roots": [
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-daily-908a",
+        "files": 88,
+        "logical_bytes": 1710226,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-daily-908b",
+        "files": 89,
+        "logical_bytes": 1890055,
+        "verified_absent": true
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rx-daily-908build",
+        "files": 2001,
+        "logical_bytes": 887585485,
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v1",
+        "files": 3,
+        "logical_bytes": 3283346,
+        "verified_absent": true
+      }
+    ],
+    "deleted_files": 2181,
+    "deleted_logical_bytes": 894469112,
+    "feature_processes_remaining": [],
+    "private_sockets_created": 0,
+    "p201_paths_verified_absent": 82,
+    "retained_release_files": 6,
+    "retained_release_bytes": 6570276,
+    "new_iq_retained_bytes": 0,
+    "user_results_and_prior_rf_evidence_deleted": false
+  }
+}
