@@ -69,7 +69,7 @@ DATASET_SPECS: dict[str, dict[str, Any]] = {
         "test_samples": 383_387,
         "seed": 44,
         "input_layout": "NT2",
-        "labels": REPO_ROOT / "jetson-agx" / "sdrharness" / "config" / "amc" / "rml2018a-labels.json",
+        "labels": REPO_ROOT / "jetson-agx" / "sdrharness" / "config" / "amc" / "rml2018a-labels.operator-v1.json",
     },
     "hisarmod2019": {
         "dataset": ASSET_ROOT / "datasets" / "hisarmod2019" / "HisarMod2019.01.h5",

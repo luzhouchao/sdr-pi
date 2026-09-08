@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "mapping_id": "rml2018a-operator-labels-v1",
+  "dataset": "RadioML 2018.01A",
+  "index_semantics": "zero-based argmax of the original 24-column one-hot Y; no output permutation",
+  "classes": [
+    "OOK",
+    "4ASK",
+    "8ASK",
+    "BPSK",
+    "QPSK",
+    "8PSK",
+    "16PSK",
+    "32PSK",
+    "16APSK",
+    "32APSK",
+    "64APSK",
+    "128APSK",
+    "16QAM",
+    "32QAM",
+    "64QAM",
+    "128QAM",
+    "256QAM",
+    "AM-SSB-WC",
+    "AM-SSB-SC",
+    "AM-DSB-WC",
+    "AM-DSB-SC",
+    "FM",
+    "GMSK",
+    "OQPSK"
+  ],
+  "descriptions_zh": [
+    "开关键控",
+    "四进制幅移键控",
+    "八进制幅移键控",
+    "二进制相移键控",
+    "四相相移键控",
+    "八进制相移键控",
+    "十六进制相移键控",
+    "三十二进制相移键控",
+    "十六进制幅相键控",
+    "三十二进制幅相键控",
+    "六十四进制幅相键控",
+    "一百二十八进制幅相键控",
+    "十六进制正交幅度调制",
+    "三十二进制正交幅度调制",
+    "六十四进制正交幅度调制",
+    "一百二十八进制正交幅度调制",
+    "二百五十六进制正交幅度调制",
+    "带载波单边带调幅",
+    "抑制载波单边带调幅",
+    "带载波双边带调幅",
+    "抑制载波双边带调幅",
+    "调频",
+    "高斯最小频移键控",
+    "偏移四相相移键控"
+  ],
+  "provenance": {
+    "kind": "operator_specified",
+    "decision_date": "2026-09-08",
+    "instruction": "2018的数字标签就这么映射",
+    "source_attachment": {
+      "path": "/home/jetson/.codex/attachments/d835f427-27ee-4fce-8501-55ea1eed5f5b/codex-clipboard-29535076-c773-4eb8-9ea8-b24a9be86323.png",
+      "bytes": 165068,
+      "sha256": "87daaa7ed4282eb7f4301de7351f50b4d18696de32ca4b5bcc41f7ab6bca58a3"
+    },
+    "supersedes_for_future_name_interpretation": {
+      "path": "jetson-agx/sdrharness/config/amc/rml2018a-labels.json",
+      "sha256": "0c269924bb74cf23584ad7584808d1bb263cdf03680f723f4cc40f165e6eafc8"
+    }
+  },
+  "caveat": "Project naming order explicitly selected by the operator. This is not independent RF-label or production-admission evidence. Preserve numeric IDs and historical hash-pinned labels/results; do not reorder model outputs or retroactively rename archived records."
+}

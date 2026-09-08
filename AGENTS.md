@@ -60,7 +60,10 @@ Cargo 包/库名 `sdr-agent-controller` 无需改名；不要另建重复实现�
 - 保持 `recognizer_available=false`。未来能力必须来自负责的 Adapter/Worker
   实测健康与已准入制品，不能由配置、测试替身或接口存在推定为 true。
 - 独立 known-RF/OOD 证据不足时，不冻结生产温度或拒识阈值。数字 ID 可信，
-  文本名称仍 provisional；用户提供的诊断名称表不自动成为正式映射证据。
+  文本名称生产证据仍须独立验收。用户已于 2026-09-08 明确指定 RML2018A 名称顺序，
+  后续解释采用 [operator-v1 映射](jetson-agx/sdrharness/config/amc/rml2018a-labels.operator-v1.json)；
+  不自行改回旧 classes.txt 顺序，也不追溯改写冻结映射/归档。用户指定不等同于
+  独立 RF 标签或生产 name_status=verified，未准入运行结果仍保持 provisional。
 - 未标注实收只证明链路/质量。模型 top-1、置信度、unknown 理由或已用于诊断的
   train 波形不能充当独立标签；保持 source/session/day 与派生血缘的集合隔离。
 - Planner 只接收有界摘要；IQ 路径、张量、完整 logits 和内部完整记录不进入 Planner。

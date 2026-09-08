@@ -60,6 +60,8 @@
 
 ## 数据、预处理与模型历史
 
+- [RML2018.01A 用户指定名称映射](RML2018A_LABEL_MAPPING_VALIDATION_2026-09-08.md)
+
 - [AGX AMC-Mamba D8 离线部署与完整测试集验证 — 2026-09-04](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
 - [AGX Spark/Mamba resource and Planner validation — 2026-09-04](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md)
 - [AMC corpus contract validation (2026-09-05)](AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md)

@@ -248,8 +248,9 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
       [`RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md`](validation/RF_V1_EVIDENCE_V1A_VALIDATION_2026-09-06.md)。
 - [ ] 补充独立标注 known-RF/OOD 数据，冻结 calibration 与 acceptance threshold，
       再查看该 checkpoint 的 locked test。
-- [ ] 解决 RML2018A 数字 ID 到名称顺序争议；解决前数字 ID 是唯一可信类别身份，
-      文本名称必须标为 provisional。
+- [ ] 完成 RML2018A 正式生产名称证据/接入验收；名称顺序已按用户
+      [operator-v1 决定](validation/RML2018A_LABEL_MAPPING_VALIDATION_2026-09-08.md)落实，
+      未准入运行结果仍使用数字 ID 与 provisional 名称，历史记录不改写。
 
 ## 第6章：AGX Mamba 调制识别与拒识
 

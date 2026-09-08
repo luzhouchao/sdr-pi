@@ -42,7 +42,8 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
   - [ ] V1b：获得并审核足够的独立 known-RF/OOD 标签；实际覆盖达到预注册条件。
 - [ ] V2：根据 validation 和独立证据冻结校准/拒识，并完成独立验收。
 - [ ] V3：标签空间与模型准入。
-  - [ ] V3a：解决数字 ID/文本名称映射证据问题；解决前文本仍 provisional。
+  - [ ] V3a：用户指定名称顺序已落实；正式生产名称证据与接入仍待验收。
+    - [x] 按用户 2026-09-08 截图冻结 operator-v1 的 0–23 映射，接入名称读取默认值并保留旧实验哈希；无模型/数据集操作。见 [映射记录](validation/RML2018A_LABEL_MAPPING_VALIDATION_2026-09-08.md)。
   - [ ] V3b：规则冻结后执行一次 locked test；不得用 test 反复调参。
 - [ ] A1：production profile、可回滚部署、RX-only 矩阵验收和真实正向 capability。
 - [ ] O1：持续运行和运维。
@@ -941,8 +942,10 @@ recognition; it does not own hardware control or another runtime backend.
       to freeze scalar calibration plus confidence/agreement/SNR/bandwidth
       acceptance thresholds, then perform one locked test admission. The new
       validation-only temperature candidate `1.34647` remains non-production.
-- [ ] Resolve the RML2018A numeric-ID/name-order dispute; until then, retain the
-      numeric ID as trusted identity and mark every text name provisional.
+- [ ] Validate production name evidence/integration for the operator-selected
+      RML2018A mapping. The naming order is now explicitly selected, while
+      historical hash-pinned results and non-admitted provisional runtime labels
+      remain unchanged; see [mapping decision](validation/RML2018A_LABEL_MAPPING_VALIDATION_2026-09-08.md).
 
 Evidence:
 
