@@ -26,6 +26,8 @@ import {
   requireSubmitPlan,
 } from "./protocol.mjs";
 
+import { parseSurveyRequest, validateSurveyParameters, surveyParametersSchema, surveyParametersPrompt } from "./survey-parameters.mjs";
+
 const config = loadConfig();
 const defaultPlannerMeta = { provider: config.provider, model: config.model };
 const runLease = new RunLease();
@@ -99,7 +101,7 @@ async function handleFrame(frame) {
   }
   let request;
   try {
-    request = parseRequest(frame);
+    request = JSON.parse(frame)?.operation === "survey_parameters" ? parseSurveyRequest(frame) : parseRequest(frame);
   } catch (error) {
     return makeErrorResponse(request, defaultPlannerMeta, "error", error);
   }
@@ -113,7 +115,8 @@ async function handleFrame(frame) {
   let runtime;
   try {
     runtime = createPlanningAgent({
-      sessionGeneration: request.session_generation,
+      sessionGeneration: request.session_generation ?? request.request_id,
+      surveyRequest: request.operation === "survey_parameters" ? request : undefined,
       terminateAfterPlan: true,
       onPlan: (action) => {
         if (submittedPlans.length !== 0) {
@@ -151,6 +154,9 @@ async function handleFrame(frame) {
       runtime.describeFailure([request.request_id]),
     );
   }
+  if (request.operation === "survey_parameters") {
+    return { protocol_version: 1, request_id: request.request_id, status: "ok", parameters: submittedPlans[0], planner: runtime.plannerMeta };
+  }
   return makeResponse(request, runtime.plannerMeta, submittedPlans[0]);
 }
 
@@ -159,6 +165,7 @@ function createPlanningAgent({
   onPlan,
   onSearchEvent = () => {},
   terminateAfterPlan,
+  surveyRequest,
 }) {
   const providerConfig = loadProviderSelection(config);
   const plannerMeta = { provider: providerConfig.provider, model: providerConfig.model };
@@ -193,7 +200,7 @@ function createPlanningAgent({
     label: "Submit SDR plan",
     description: "Submit exactly one structured SDR action proposal to the deterministic Rust controller.",
     executionMode: "sequential",
-    parameters: Type.Object({
+    parameters: surveyRequest ? surveyParametersSchema : Type.Object({
       action: Type.Union([
         Type.Literal("hold"),
         Type.Literal("survey_band"),
@@ -214,7 +221,7 @@ function createPlanningAgent({
       samples: Type.Optional(Type.Integer({ minimum: 1 })),
     }),
     execute: async (_toolCallId, params) => {
-      onPlan(normalizeAction(params));
+      onPlan(surveyRequest ? validateSurveyParameters(params, surveyRequest) : normalizeAction(params));
       return {
         content: [{ type: "text", text: "Plan submitted for deterministic validation." }],
         details: {},
@@ -228,7 +235,7 @@ function createPlanningAgent({
 
   const agent = new Agent({
     initialState: {
-      systemPrompt: PLANNER_SYSTEM_PROMPT,
+      systemPrompt: surveyRequest ? surveyParametersPrompt : PLANNER_SYSTEM_PROMPT,
       model,
       thinkingLevel: model.reasoning ? "low" : "off",
       tools: [submitPlan],
@@ -236,7 +243,7 @@ function createPlanningAgent({
     },
     streamFn: sparkLocal
       ? createSparkJsonPlanningStream(baseStream, {
-        webSearch,
+        webSearch: surveyRequest ? undefined : webSearch,
         maxSearches: config.webSearchMaxSearches,
         onSearchEvent,
       })

@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "a862128",
+  "scope": "Readable frequency display and settings-only mixed manual/AI first-survey parameter suggestions",
+  "installed": {
+    "web_sha256": "a1bbcde69c311fd33cfbe44dcbc36f2fac1033f013efa1daf8f6b718be965cc6",
+    "web_bytes": 3323168,
+    "existing_rollback_sha256": "9095a1be2aedd57cb08d02b9d1e772ab8f17137e84160877194baf14b474449d",
+    "rollback_verified": true,
+    "config_unchanged": true,
+    "cli_unchanged": true,
+    "static_assets_match_source": true,
+    "sessions_preserved": 2,
+    "results_preserved": 5,
+    "corpus_preserved": 1,
+    "initial_survey_status": [
+      "complete",
+      "complete"
+    ],
+    "health": {
+      "ready": true,
+      "recognizer_available": false,
+      "schema_version": 1,
+      "service": "web"
+    },
+    "backups_created": 0
+  },
+  "browser": {
+    "mixed": {
+      "initial_survey": {
+        "dwell_ms": 500,
+        "gain_db": 20,
+        "mode": "custom_band",
+        "start_hz": 2400000000,
+        "step_hz": 1000000,
+        "stop_hz": 2483500000
+      },
+      "planner": {
+        "model": "spark-x2.5-4b",
+        "provider": "spark-local"
+      }
+    },
+    "all_auto": {
+      "initial_survey": {
+        "dwell_ms": 10,
+        "gain_db": 20,
+        "mode": "custom_band",
+        "start_hz": 2400000000,
+        "step_hz": 1000000,
+        "stop_hz": 2483500000
+      },
+      "planner": {
+        "model": "spark-x2.5-4b",
+        "provider": "spark-local"
+      }
+    },
+    "formatted": "首次扫频已开始：2.4–2.4835 GHz，12 个点，步进 8 MHz",
+    "saved_payload": [
+      {
+        "mode": "custom_band",
+        "start_hz": 2400000000,
+        "stop_hz": 2483500000,
+        "step_hz": 1000000,
+        "dwell_ms": 500,
+        "gain_db": 20
+      }
+    ],
+    "save_intercepted": true,
+    "browser_errors": [],
+    "mobile_no_overflow": true
+  },
+  "native_mixed": {
+    "request": {
+      "protocol_version": 1,
+      "operation": "survey_parameters",
+      "request_id": 1788843890104,
+      "start_hz": 2400000000,
+      "stop_hz": 2483500000,
+      "step_hz": 1000000,
+      "dwell_ms": null,
+      "gain_db": null
+    },
+    "response": {
+      "protocol_version": 1,
+      "request_id": 1788843890104,
+      "status": "ok",
+      "parameters": {
+        "step_hz": 1000000,
+        "dwell_ms": 10,
+        "gain_db": 20
+      },
+      "planner": {
+        "provider": "spark-local",
+        "model": "spark-x2.5-4b"
+      }
+    }
+  },
+  "normal_planner": {
+    "protocol_version": 1,
+    "request_id": 1788844260020,
+    "session_generation": 1788844260020,
+    "status": "ok",
+    "action": {
+      "kind": "hold",
+      "reason": "你好，已收到，当前设备未在线且无可用能力，保持等待，不操作硬件。"
+    },
+    "planner": {
+      "provider": "spark-local",
+      "model": "spark-x2.5-4b"
+    }
+  },
+  "tests": {
+    "planner": 62,
+    "web_ui": 14,
+    "rust_passed": 37,
+    "rust_ignored_fixture_exporters": 2,
+    "clippy": "passed -D warnings",
+    "fmt": "passed"
+  },
+  "rx_started": 0,
+  "private_sockets_created": 0,
+  "backups_created": 0,
+  "online_gateway_verified": false,
+  "frequency_dom_replay_verified": true,
+  "invalid_http_requests_rejected": 400,
+  "source_files": [
+    {
+      "path": "raspberry-pi/sdr-agent/planner-worker/src/main.mjs",
+      "bytes": 13509,
+      "sha256": "3c4edb8a181ad6d215a0687af7f1fb2b1b0012bc4cdc005e487160da25e7069e"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/planner-worker/src/survey-parameters.mjs",
+      "bytes": 2886,
+      "sha256": "46a78c9b50ea6d838a17a207598bf91b7206e035d21095b34bd2b7cf1fa094d8"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/web-console/src/main.rs",
+      "bytes": 127453,
+      "sha256": "8ad383cc1155b015d7c4bc7b7cb91f7e218a71ca9276ed3bc800b72a66fc63d3"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/web-console/public/app.js",
+      "bytes": 64436,
+      "sha256": "dab1b2d08658b20cef15ed7c0c5310d54b82f7efe73e92c3885bf7726f8b1085"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/web-console/public/index.html",
+      "bytes": 25684,
+      "sha256": "e8d8bcb5fc1dbd690025e60ceae111caec3770683a7c75292e9b31db886829dd"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/web-console/public/styles.css",
+      "bytes": 27865,
+      "sha256": "fff2e86fa74a7c6a40aabcca80f31039d69c3f93d3eae118e5cb5e9a656f7cee"
+    }
+  ],
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/survey-assist-908b",
+    "deleted_files": 2618,
+    "deleted_bytes": 1135804015,
+    "new_external_retained_files": 0,
+    "verified_absent": true
+  }
+}

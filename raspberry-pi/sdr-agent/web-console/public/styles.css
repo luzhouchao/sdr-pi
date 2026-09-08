@@ -28,3 +28,7 @@ main{padding:28px 34px 36px;max-width:1800px;margin:0 auto}.page-view{outline:no
 .brand-mark svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}.mobile-session-summary{display:none}.dialog-stop{margin-top:18px;padding:6px 0;font-size:11px;color:#a93535;border:0;background:transparent}#dialog-stop:hover{background:#faece8}
 @media(max-width:700px){.mobile-session-summary{display:flex;font-size:11px;min-height:40px;color:var(--muted);border-top:1px solid var(--line);margin-top:10px}.sessions-panel{margin-top:0;border:0;padding-top:4px}.spectrum-card{padding-bottom:8px}}
 .spectrum-data-panel{margin:0 0 20px;font-size:12px}.spectrum-data-panel summary small{font-size:10px;font-weight:400}.spectrum-data-panel .candidate-table-wrap{max-height:300px;overflow:auto}
+
+.survey-assistant { display: flex; align-items: center; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+.survey-assistant p { flex: 1 1 280px; margin: 0; }
+.survey-fields select { margin-bottom: 8px; }

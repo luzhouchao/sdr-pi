@@ -104,8 +104,66 @@ function renderProvider() {
   document.querySelector('#survey-gain-db').value = survey.gain_db ?? 20;
   document.querySelector('#save-iq').checked = Boolean(view.provider.result_storage?.save_iq);
   document.querySelector('#provider-api-key').value = '';
+  surveyRecommendation = null;
+  for (const [name] of surveyParameterFields) document.querySelector(`#survey-${name}-source`).value = 'manual';
+  document.querySelector('#survey-assistant-status').textContent = '使用已保存的上游模型；只生成建议，不会启动扫描。手填参数保持不变。';
   updateSurveyControls();
   markSettingsDirty(false);
+}
+
+const surveyParameterFields = [
+  ['step', 'step_hz', '#survey-step-mhz'],
+  ['dwell', 'dwell_ms', '#survey-dwell-ms'],
+  ['gain', 'gain_db', '#survey-gain-db'],
+];
+let surveyRecommendation = null;
+let surveySuggestionPending = false;
+
+function surveySuggestionPayload() {
+  const survey = surveyPayload();
+  delete survey.mode;
+  for (const [name, key] of surveyParameterFields) {
+    if (document.querySelector(`#survey-${name}-source`).value === 'ai') survey[key] = null;
+  }
+  return survey;
+}
+
+function surveyNeedsSuggestion() {
+  return surveyMode() === 'custom_band' && surveyParameterFields.some(([name]) => document.querySelector(`#survey-${name}-source`).value === 'ai');
+}
+
+function surveySuggestionCurrent() {
+  return surveyRecommendation === JSON.stringify(surveySuggestionPayload());
+}
+
+async function suggestSurveyParameters() {
+  if (surveySuggestionPending || !surveyNeedsSuggestion()) return;
+  for (const input of document.querySelectorAll('#survey-fields input:not(:disabled)')) {
+    if (!input.reportValidity()) return;
+  }
+  const request = surveySuggestionPayload();
+  const fingerprint = JSON.stringify(request);
+  const revision = view.settingsRevision;
+  const button = document.querySelector('#suggest-survey');
+  const status = document.querySelector('#survey-assistant-status');
+  surveySuggestionPending = true;
+  surveyRecommendation = null;
+  button.disabled = true;
+  status.textContent = '正在请已保存的上游模型选择参数…不会启动扫描。';
+  try {
+    const result = await api('/api/survey/parameters', { method: 'POST', body: JSON.stringify(request), signal: AbortSignal.timeout(130000) });
+    if (revision !== view.settingsRevision || fingerprint !== JSON.stringify(surveySuggestionPayload()) || !surveyNeedsSuggestion()) {
+      status.textContent = '设置已变化，迟到的建议已丢弃，请重新生成。';
+      return;
+    }
+    for (const [name, key, selector] of surveyParameterFields) {
+      if (request[key] === null) document.querySelector(selector).value = key === 'step_hz' ? hzToMhz(result.initial_survey[key]) : result.initial_survey[key];
+    }
+    surveyRecommendation = fingerprint;
+    markSettingsDirty();
+    status.textContent = `${result.planner?.model || '上游模型'} 已填入建议。请查看参数与预算，再保存设置；新对话才会扫描。增益为建议值，未经现场测量。`;
+  } catch (error) { status.textContent = `选参失败：${error.message}。未保存或启动扫描。`; }
+  finally { surveySuggestionPending = false; updateSurveyControls(); }
 }
 
 function defaultSurvey() {
@@ -139,6 +197,12 @@ function updateSurveyControls() {
   document.querySelectorAll('#survey-fields input').forEach((input) => {
     input.disabled = mode === 'disabled' || (mode === 'full_band' && input.id !== 'survey-gain-db');
   });
+  for (const [name, , selector] of surveyParameterFields) {
+    const source = document.querySelector(`#survey-${name}-source`);
+    source.disabled = mode !== 'custom_band';
+    if (mode === 'custom_band') document.querySelector(selector).disabled = source.value === 'ai';
+  }
+  document.querySelector('#suggest-survey').disabled = surveySuggestionPending || !surveyNeedsSuggestion();
   document.querySelector('#survey-fields').classList.toggle('fields-disabled', mode === 'disabled');
   updateSurveyBudget();
 }
@@ -151,6 +215,12 @@ function updateSurveyBudget() {
     budget.dataset.state = 'disabled';
     summary.textContent = '首次扫描已关闭';
     detail.textContent = '新对话会直接进入控制台，不建立初始频谱。';
+    return;
+  }
+  if (surveyNeedsSuggestion() && !surveySuggestionCurrent()) {
+    budget.dataset.state = 'disabled';
+    summary.textContent = '等待 AI 填写参数';
+    detail.textContent = '填写起止频率和需要固定的参数，再点击“让 AI 填写待选参数”。';
     return;
   }
   const survey = surveyPayload();
@@ -241,6 +311,10 @@ async function saveProvider(event) {
   const form = document.querySelector('#provider-form');
   form.querySelectorAll('details').forEach(section => { if (section.querySelector(':invalid')) section.open = true; });
   if (!form.reportValidity()) return;
+  if (surveyNeedsSuggestion() && !surveySuggestionCurrent()) {
+    toast('请先让 AI 填写待选参数并查看预算，再保存设置。');
+    return;
+  }
   const payload = {
     api: document.querySelector('#provider-api').value,
     base_url: document.querySelector('#provider-base-url').value.trim(),
@@ -817,16 +891,21 @@ function formatDuration(value) {
   return `${(value / 1000).toFixed(value < 10000 ? 1 : 0)} s`;
 }
 
+function frequencyUnit(value) {
+  return Math.abs(value) >= 1e9 ? [1e9, 'GHz'] : Math.abs(value) >= 1e6 ? [1e6, 'MHz'] : Math.abs(value) >= 1e3 ? [1e3, 'kHz'] : [1, 'Hz'];
+}
+function frequencyNumber(value, scale) {
+  return String(Number((Number(value) / scale).toFixed(Math.log10(scale))));
+}
 function formatFrequency(value) {
-  if (value >= 1000000000) return `${(value / 1000000000).toFixed(3)} GHz`;
-  if (value >= 1000000) return `${(value / 1000000).toFixed(3)} MHz`;
-  return `${Math.round(value / 1000)} kHz`;
+  const [scale, unit] = frequencyUnit(value);
+  return `${frequencyNumber(value, scale)} ${unit}`;
 }
-
-function formatFrequencySpan(value) {
-  if (value >= 1000000) return `${(value / 1000000).toFixed(2)} MHz`;
-  return `${(value / 1000).toFixed(1)} kHz`;
+function formatFrequencyRange(start, stop) {
+  const [scale, unit] = frequencyUnit(Math.min(Math.abs(start), Math.abs(stop)));
+  return `${frequencyNumber(start, scale)}–${frequencyNumber(stop, scale)} ${unit}`;
 }
+function formatFrequencySpan(value) { return formatFrequency(value); }
 
 function formatAxisFrequency(value, span) {
   const tickMHz = Math.max(span / 6 / 1000000, 0.000001);
@@ -837,6 +916,11 @@ function formatAxisFrequency(value, span) {
 function operatorEventText(event) {
   if (event?.kind === 'sweep' && event.text.startsWith('首次扫频已取消并完成恢复：')) {
     return '首次扫描已取消。控制器已报告射频状态恢复，完整记录可在诊断中查看。';
+  }
+  if (event?.kind === 'sweep') {
+    return (event.text || '')
+      .replace(/(\d+)–(\d+) Hz/g, (_, start, stop) => formatFrequencyRange(Number(start), Number(stop)))
+      .replace(/(\d+) Hz/g, (_, hz) => formatFrequency(Number(hz)));
   }
   return event?.text || '';
 }
@@ -1033,6 +1117,12 @@ document.querySelector('#sweep-results-entry').addEventListener('click', async (
 document.querySelector('#results-back').addEventListener('click', showConsole);
 document.querySelector('#delete-result').addEventListener('click', deleteSelectedResult);
 document.querySelector('#discard-settings').addEventListener('click', discardSettings);
+document.querySelector('#suggest-survey').addEventListener('click', suggestSurveyParameters);
+for (const [name] of surveyParameterFields) document.querySelector(`#survey-${name}-source`).addEventListener('change', () => {
+  surveyRecommendation = null;
+  updateSurveyControls();
+  markSettingsDirty();
+});
 document.querySelector('#provider-form').addEventListener('input', (event) => {
   if (event.target.closest('#survey-fields') || event.target.name === 'survey-mode') updateSurveyBudget();
   markSettingsDirty();

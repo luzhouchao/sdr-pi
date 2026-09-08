@@ -19,6 +19,7 @@ this file retains the detailed delivery and evidence ledger.
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
+- [x] 首次扫描混合选参与频率显示：步进/停留/增益逐项手填或 AI 补齐，双层校验、迟到隔离与具体预算预览；实际本地模型/浏览器、Web 安装及已有制品回滚、用户数据保护和精确清理通过。见 [选参验收](validation/SURVEY_PARAMETER_ASSIST_VALIDATION_2026-09-08.md)。选参本身不执行 RF，不开放识别。
 - [x] 本地 Planner 恢复：恢复完整 Spark 本地选择并重新连接原会话，共享有界脱敏错误反馈；原生单次/交互及实际网页 hold 验证通过，72 项回归和精确清理完成。按用户要求不新增备份，在线网关工作暂缓。见 [本地修复](validation/LOCAL_PLANNER_REPAIR_VALIDATION_2026-09-08.md)。
 - [x] 日常 RX 使用验收：新版实际 Web/Planner/P201 完成 433 MHz、2.4 GHz、5.8 GHz 有界接收、曲线/频点表、接收中停止、健康监控共存、重启保留和确认删除；修复自定义扫描与主动取消状态文案，最终安装/回滚及精确清理通过。见 [日常 RX 验收](validation/DAILY_RX_USE_VALIDATION_2026-09-08.md)。只保留未标注功率摘要，不完成 A1/O1b。
 - [x] 非模型运维部署：已安装 Web/Planner 专用限额日志、30 秒只读健康和本地去重告警；实际 Planner health 兼容、停服/恢复、日志轮转、配置回滚、用户结果保留及精确清理通过。见 [运维部署](validation/OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md)。不覆盖未部署的识别 Worker/GPU gateway，不完成 A1/O1b。

@@ -120,3 +120,41 @@ deletion removes only the selected indexed result and its managed files.
   CUDA/Mamba Worker, and do not promote it until the RF preprocessing,
   retraining, label and rejection gates pass.
 - Keep all processing on AGX; the retired FPGA path must not return.
+
+## Web first-survey parameter suggestions (2026-09-08)
+
+The Web settings page can independently fix step, settling time and gain, or ask
+its saved upstream Planner to fill any subset. `POST /api/survey/parameters`
+accepts integer `start_hz`, `stop_hz`, and nullable `step_hz`, `dwell_ms`, `gain_db`.
+Null means model-selected; non-null values are immutable. The endpoint never
+creates a session, saves settings, starts RX or sends an execution command.
+
+Web uses `SDR_WEB_PLANNER_SOCKET` (default `/run/sdr-agent/planner.sock`). The
+existing bounded one-shot socket accepts a separate `operation=survey_parameters`
+frame with `protocol_version=1`, a correlated `request_id` and those five fields.
+It shares the existing inference lease and provider selection with normal
+Planner requests. Its only tool uses a three-integer suggestion schema; no web
+search, hardware tools, observations or IQ are provided. Existing action/session
+protocols and Controller execution rules are unchanged.
+
+Both Worker and Rust reject changes to fixed fields, malformed/extra output,
+step outside 1 kHz–8 MHz, dwell outside 0–1000 ms, gain outside 0–60 dB, more than
+768 points or a conservative duration over 300 seconds. Rust preserves the exact
+requested endpoints. Sample rate/bandwidth remain 10 MHz and frame size remains
+4096 complex int16 samples per point. These are the existing first-survey
+execution settings, not additional model-selected fields.
+
+The response contains a validated concrete `initial_survey` and Planner identity.
+The page discards suggestions received after settings edits, invalidates an old
+suggestion when its input changes, and requires successful generation before
+saving AI-selected fields. Saving stores concrete values in the existing config;
+AI/manual selector state is intentionally not persisted or re-run at startup.
+The normal new-session confirmation and once-only initial-survey claim still
+control RX. Requests are bounded by the Planner's existing timeout (at most
+120 s), a 125 s Web exchange and a 130 s browser request. Failure has no default
+parameter fallback and no execution side effects.
+
+Frequency display selects Hz/kHz/MHz/GHz and retains integer-Hz precision without
+trailing zeroes. Only rendered sweep text is reformatted; original session events
+and protocol Hz integers remain unchanged (for example 2400000000–2483500000 Hz
+renders as 2.4–2.4835 GHz).

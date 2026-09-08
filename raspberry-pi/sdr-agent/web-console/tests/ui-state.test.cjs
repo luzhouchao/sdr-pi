@@ -99,3 +99,24 @@ test('confirmed cancellation is readable while the full diagnostic stays intact'
  h.context.event={kind:'sweep',text:'首次扫频失败：timeout'};
  assert.equal(vm.runInContext('operatorEventText(event)',h.context),'首次扫频失败：timeout');
 });
+
+test('frequency display keeps Hz precision and does not rewrite persisted sweep evidence',()=>{
+ const h=harness();
+ assert.equal(h.context.formatFrequencyRange(2400000000,2483500000),'2.4–2.4835 GHz');
+ assert.equal(h.context.formatFrequency(433920000),'433.92 MHz');
+ assert.equal(h.context.formatFrequency(2400000001),'2.400000001 GHz');
+ const event={kind:'sweep',text:'首次扫频已开始：2400000000–2483500000 Hz，12 个点，步进 8000000 Hz'};
+ assert.equal(h.context.operatorEventText(event),'首次扫频已开始：2.4–2.4835 GHz，12 个点，步进 8 MHz');
+ assert.match(event.text,/2400000000/);
+});
+test('mixed survey selection sends null only for AI fields and drops late suggestions',async()=>{
+ const h=harness();h.context.surveyMode=()=> 'custom_band';
+ h.node('#survey-start-mhz').value='2400';h.node('#survey-stop-mhz').value='2483.5';h.node('#survey-step-mhz').value='1';h.node('#survey-dwell-ms').value='5';h.node('#survey-gain-db').value='20';
+ h.node('#survey-step-source').value='manual';h.node('#survey-dwell-source').value='ai';h.node('#survey-gain-source').value='ai';
+ const req=h.context.surveySuggestionPayload();assert.equal(req.step_hz,1000000);assert.equal(req.dwell_ms,null);assert.equal(req.gain_db,null);
+ const pending=deferred();h.context.api=()=>pending.promise;
+ const run=h.context.suggestSurveyParameters();h.view.settingsRevision++;h.node('#survey-step-mhz').value='2';
+ pending.resolve({initial_survey:{step_hz:1000000,dwell_ms:10,gain_db:30},planner:{model:'test'}});await run;
+ assert.equal(h.node('#survey-step-mhz').value,'2');assert.equal(h.node('#survey-gain-db').value,'20');assert.match(h.node('#survey-assistant-status').textContent,/迟到/);
+ assert.equal(h.context.surveySuggestionCurrent(),false);
+});

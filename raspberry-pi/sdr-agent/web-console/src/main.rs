@@ -71,6 +71,7 @@ struct Config {
     agent_binary: PathBuf,
     request_path: PathBuf,
     session_socket: PathBuf,
+    planner_socket: PathBuf,
     sdrd_address: String,
     provider_config_path: PathBuf,
     result_db_path: PathBuf,
@@ -406,6 +407,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 .delete(delete_provider_config),
         )
         .route("/api/provider/models", post(discover_provider_models))
+        .route("/api/survey/parameters", post(suggest_survey_parameters))
         .route(
             "/api/recognition-results",
             get(list_recognition_results).post(post_recognition_result),
@@ -474,6 +476,7 @@ impl Config {
                 "/opt/sdr-agent/current/bin/sdr-agent",
             ),
             request_path: env_path("SDR_WEB_REQUEST_PATH", "/etc/sdr-agent/request.json"),
+            planner_socket: env_path("SDR_WEB_PLANNER_SOCKET", "/run/sdr-agent/planner.sock"),
             session_socket: env_path("SDR_WEB_SESSION_SOCKET", "/run/sdr-agent/session.sock"),
             sdrd_address: env::var("SDR_WEB_SDRD_ADDRESS")
                 .unwrap_or_else(|_| "192.168.1.10:43110".into()),
@@ -2325,6 +2328,140 @@ const fn default_compression_threshold_percent() -> u8 {
     DEFAULT_COMPRESSION_THRESHOLD_PERCENT
 }
 
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct SurveyParameterRequest {
+    start_hz: u64,
+    stop_hz: u64,
+    step_hz: Option<u64>,
+    dwell_ms: Option<u64>,
+    gain_db: Option<i16>,
+}
+
+fn survey_suggestion(
+    request: &SurveyParameterRequest,
+    parameters: serde_json::Value,
+) -> ApiResult<InitialSurveyConfig> {
+    #[derive(Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Parameters {
+        step_hz: u64,
+        dwell_ms: u64,
+        gain_db: i16,
+    }
+    let p: Parameters = serde_json::from_value(parameters).map_err(|_| {
+        ApiError(
+            StatusCode::BAD_GATEWAY,
+            "模型未返回完整的整数扫描参数".into(),
+        )
+    })?;
+    if request.step_hz.is_some_and(|v| v != p.step_hz)
+        || request.dwell_ms.is_some_and(|v| v != p.dwell_ms)
+        || request.gain_db.is_some_and(|v| v != p.gain_db)
+    {
+        return Err(ApiError(
+            StatusCode::BAD_GATEWAY,
+            "模型修改了手动指定参数，建议已拒绝".into(),
+        ));
+    }
+    let survey = InitialSurveyConfig {
+        mode: "custom_band".into(),
+        start_hz: request.start_hz,
+        stop_hz: request.stop_hz,
+        step_hz: p.step_hz,
+        dwell_ms: p.dwell_ms,
+        gain_db: p.gain_db,
+    };
+    validate_initial_survey(&survey)?;
+    if survey.step_hz < 1000 {
+        return Err(ApiError(
+            StatusCode::BAD_GATEWAY,
+            "模型建议步进小于 1 kHz".into(),
+        ));
+    }
+    Ok(survey)
+}
+
+async fn suggest_survey_parameters(
+    State(state): State<AppState>,
+    Json(request): Json<SurveyParameterRequest>,
+) -> ApiResult<Json<serde_json::Value>> {
+    // Settings-only call: no Controller command, session mutation or RF execution.
+    let _gate = state
+        .model_query_gate
+        .try_lock()
+        .map_err(|_| ApiError(StatusCode::CONFLICT, "模型查询正在进行，请稍后重试".into()))?;
+    if request.start_hz < DEFAULT_SURVEY_START_HZ
+        || request.stop_hz > DEFAULT_SURVEY_STOP_HZ
+        || request.start_hz > request.stop_hz
+        || request
+            .step_hz
+            .is_some_and(|v| !(1000..=DEFAULT_SURVEY_STEP_HZ).contains(&v))
+        || request.dwell_ms.is_some_and(|v| v > 1000)
+        || request.gain_db.is_some_and(|v| !(0..=60).contains(&v))
+    {
+        return Err(ApiError(
+            StatusCode::BAD_REQUEST,
+            "请填写有效起止频率和手动参数".into(),
+        ));
+    }
+    let provider_before = fs::read(&state.config.provider_config_path)
+        .map_err(|_| ApiError(StatusCode::BAD_REQUEST, "请先保存上游模型配置".into()))?;
+    let request_id = now_ms();
+    let mut frame = serde_json::to_value(&request).map_err(internal_error)?;
+    frame["protocol_version"] = 1.into();
+    frame["operation"] = "survey_parameters".into();
+    frame["request_id"] = request_id.into();
+    let exchange = async {
+        let mut socket = tokio::net::UnixStream::connect(&state.config.planner_socket).await?;
+        let mut bytes = serde_json::to_vec(&frame)?;
+        bytes.push(b'\n');
+        socket.write_all(&bytes).await?;
+        let mut reply = Vec::new();
+        socket
+            .take((MAX_FRAME_BYTES + 1) as u64)
+            .read_to_end(&mut reply)
+            .await?;
+        if reply.len() > MAX_FRAME_BYTES {
+            return Err(std::io::Error::other("oversized planner response"));
+        }
+        serde_json::from_slice::<serde_json::Value>(&reply).map_err(std::io::Error::other)
+    };
+    let reply = tokio::time::timeout(Duration::from_secs(125), exchange)
+        .await
+        .map_err(|_| {
+            ApiError(
+                StatusCode::GATEWAY_TIMEOUT,
+                "模型选参超时，未保存或启动扫描".into(),
+            )
+        })?
+        .map_err(|_| {
+            ApiError(
+                StatusCode::BAD_GATEWAY,
+                "模型选参服务连接失败或响应无效".into(),
+            )
+        })?;
+    if fs::read(&state.config.provider_config_path).ok().as_ref() != Some(&provider_before) {
+        return Err(ApiError(
+            StatusCode::CONFLICT,
+            "模型配置已变化，请重新生成参数".into(),
+        ));
+    }
+    if reply["protocol_version"] != 1
+        || reply["request_id"] != request_id
+        || reply["status"] != "ok"
+    {
+        return Err(ApiError(
+            StatusCode::BAD_GATEWAY,
+            "模型未生成有效参数（可能忙碌、请求失败或超出预算），未保存或启动扫描".into(),
+        ));
+    }
+    let survey = survey_suggestion(&request, reply["parameters"].clone())?;
+    Ok(Json(
+        serde_json::json!({ "initial_survey": survey, "planner": reply["planner"] }),
+    ))
+}
+
 fn default_initial_survey() -> InitialSurveyConfig {
     InitialSurveyConfig {
         mode: "full_band".into(),
@@ -2936,6 +3073,42 @@ mod tests {
             assert_eq!(inner.persisted.sessions[0].initial_survey_status, "failed");
         }
         fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn survey_suggestions_preserve_manual_fields_and_existing_budgets() {
+        let request = SurveyParameterRequest {
+            start_hz: 2_400_000_000,
+            stop_hz: 2_483_500_000,
+            step_hz: Some(1_000_000),
+            dwell_ms: None,
+            gain_db: None,
+        };
+        assert!(survey_suggestion(
+            &request,
+            serde_json::json!({"step_hz":1_000_000,"dwell_ms":10,"gain_db":20})
+        )
+        .is_ok());
+        for p in [
+            serde_json::json!({"step_hz":8_000_000,"dwell_ms":10,"gain_db":20}),
+            serde_json::json!({"step_hz":1_000_000,"dwell_ms":1001,"gain_db":20}),
+            serde_json::json!({"step_hz":1_000_000,"dwell_ms":10,"gain_db":61}),
+            serde_json::json!({"step_hz":1_000_000,"dwell_ms":10,"gain_db":20,"extra":1}),
+        ] {
+            assert!(survey_suggestion(&request, p).is_err());
+        }
+        let wide = SurveyParameterRequest {
+            start_hz: 70_000_000,
+            stop_hz: 6_000_000_000,
+            step_hz: None,
+            dwell_ms: None,
+            gain_db: None,
+        };
+        assert!(survey_suggestion(
+            &wide,
+            serde_json::json!({"step_hz":8_000_000,"dwell_ms":1000,"gain_db":20})
+        )
+        .is_err());
     }
 
     #[test]
