@@ -1,0 +1,31 @@
+[Unit]
+Description=Read-only SDR Web/Planner and disk health
+After=network.target
+
+[Service]
+Type=oneshot
+User=jetson
+Group=jetson
+ExecStart=/usr/bin/python3 -B /home/jetson/.local/lib/sdrharness/scripts/operations-health.py --config /etc/sdrharness/health.json --state /var/lib/sdrharness/health/state.json
+StateDirectory=sdrharness/health
+StateDirectoryMode=0700
+TimeoutStartSec=10
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+IPAddressDeny=any
+IPAddressAllow=localhost
+MemoryMax=96M
+TasksMax=16
+LogNamespace=sdrharness
+StandardOutput=journal
+StandardError=journal
+# Exit 2 is unhealthy; exit 3 is a monitor/configuration failure.
+# The timer retries observations only. No restart, RF, model or remote alert action.

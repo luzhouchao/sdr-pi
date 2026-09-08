@@ -1,8 +1,29 @@
 # O1a 日志、健康、升级与回滚
 
-这是 AGX 候选运行栈的可重复运维交付，未安装新服务。P201 仍只提供有界 Linux/IIO
+O1a 原先完成候选工具与隔离验证。2026-09-08 已完成[RX-only 运维配置部署](../validation/OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md)，
+实际安装 Web/Planner 日志与只读监控；Mamba/GPU gateway 和识别准入仍未部署。P201 仍只提供有界 Linux/IIO
 RX，AGX 处理/保存/推理；不增加 TX、FPGA/BOOT、NX offload。V1b/V2/V3b/A1 数据与
 生产准入门不因运维工具可用而完成。实际完成状态以权威 checklist 为准。
+
+## 已安装 RX-only 运维入口
+
+- `systemctl status sdrharness-health.timer sdrharness-health.service`：定时器 active；
+  oneshot 正常完成后 inactive 是预期状态，核对 Result/ExecMainStatus。
+- `sudo journalctl --namespace=sdrharness -u sdrharness-health.service -n 20`：
+  本地健康快照；`events=[]` 没有告警，alert/recovered 是状态变化。
+- `sudo journalctl --namespace=sdrharness -u sdrharness-web.service -u sdrharness-planner.service -n 50`：
+  Web/Planner 当前日志；旧日志仍在原 journal，未追溯迁移。
+- `sudo journalctl --namespace=sdrharness --disk-usage`：专用日志占用；不要对公共
+  journal 或用户结果目录执行清理。
+- `/etc/sdrharness/health.json` 只覆盖 Web、Planner 与应用磁盘 4 GiB 余量。
+  P201 继续既有 recovery；Mamba 和 Spark gateway 不在此监控范围。不能把
+  liveness 当作模型准确率、生产能力或完整 SDR 接收健康。
+
+安装源为 `health.rx-only.json`、`journald-sdrharness.rx-only.conf`、
+`service-logging.rx-only.conf` 及正式 `sdrharness-health.service/.timer`；以下
+candidate/example 仍用于未来协调识别部署，不应覆盖当前配置。具体哈希、保留
+包、实际配置回滚与验收边界见本次验证记录。当前交互没有启用工程 recognition
+JSONL audit；不为“部署轮转”创建第二套结果或审计实现。
 
 ## 日志保留
 

@@ -1,6 +1,6 @@
 # SDR Agent project checklist
 
-Last reviewed: 2026-09-07
+Last reviewed: 2026-09-08
 
 This is the living source of truth for implementation status. Check an item only
 after the exact wording is implemented and verified. Split partial work into a
@@ -12,13 +12,14 @@ Sections 1–6 are now the unified RX-only chapter plan and replace the earlier
 [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md);
 this file retains the detailed delivery and evidence ledger.
 
-## 当前交付状态速览（2026-09-07）
+## 当前交付状态速览（2026-09-08）
 
 以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
 编号表示范围，不表示施工先后；实际顺序见
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
+- [x] 非模型运维部署：已安装 Web/Planner 专用限额日志、30 秒只读健康和本地去重告警；实际 Planner health 兼容、停服/恢复、日志轮转、配置回滚、用户结果保留及精确清理通过。见 [运维部署](validation/OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md)。不覆盖未部署的识别 Worker/GPU gateway，不完成 A1/O1b。
 - [x] Web 界面重构：固定导航、可读对话与频谱、折叠配置/诊断、全局优先停止、完整确认/错误反馈和响应式交互已实现；原生及浏览器验证、实际部署/回滚、用户会话/结果保留和精确清理完成。见 [UI 验收](validation/WEB_UI_REDESIGN_VALIDATION_2026-09-07.md)。不部署日志/监控，不开放识别。
 - [x] Web 后台升级：已核对旧制品与源码差异，补齐旧进程输出隔离，验收重启不重扫、request/session/generation 隔离、停止/断连完整恢复、浏览器结果查看/删除、原用户结果保留及实际升级/回滚；精确清理完成。见 [Web 验收](validation/WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)。不开放识别，不部署日志/监控配置。
 - [x] P201 RX1 有界采集/传输、停止、恢复、固定输入身份及长期重连验证完成（第3章）。
@@ -44,7 +45,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
   - [ ] V3b：规则冻结后执行一次 locked test；不得用 test 反复调参。
 - [ ] A1：production profile、可回滚部署、RX-only 矩阵验收和真实正向 capability。
 - [ ] O1：持续运行和运维。
-  - [x] O1a：固定 seed 的故障/fuzz 矩阵、8 MiB×4 audit 轮转、只读健康/本地去重告警、发布校验与私有升级/回滚演练完成源码、隔离验证及清理。生产配置未安装；见 [O1a 验证](validation/OPERATIONS_O1A_VALIDATION_2026-09-06.md)。
+  - [x] O1a：固定 seed 的故障/fuzz 矩阵、8 MiB×4 audit 轮转、只读健康/本地去重告警、发布校验与私有升级/回滚演练完成源码、隔离验证及清理。原隔离验证见 [O1a 验证](validation/OPERATIONS_O1A_VALIDATION_2026-09-06.md)。
   - [ ] O1b：24 小时完整闭环 soak；不替代人工批准策略或自动触发决策。
 - [ ] 第7章设备/辐射源身份识别：后续独立范围，不计入当前调制识别交付。
 
@@ -1186,8 +1187,13 @@ Evidence:
       local alert transitions, immutable candidate release verification and
       upgrade/rollback procedures. P201 follows its existing deployment workflow
       and Pi stays standby; user results are excluded from log/rollback cleanup.
-  - [ ] A1: install/validate production log and monitoring configuration plus
-        admitted coordinated deployment/rollback; O1a did not replace services.
+  - [x] Install RX-only Web/Planner bounded journald and read-only local health,
+        verify actual Planner health compatibility, fault deduplication/recovery,
+        rotation, configuration rollback and user-data preservation; exact cleanup
+        complete. See [deployment](validation/OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md).
+  - [ ] A1: extend monitoring/logging to the admitted coordinated recognition
+        deployment and validate its rollback; current RX-only monitoring does not
+        cover undeployed Mamba or GPU gateway.
 
 ## Current next milestone
 

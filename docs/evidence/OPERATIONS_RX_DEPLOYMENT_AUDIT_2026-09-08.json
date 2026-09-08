@@ -1,0 +1,959 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "c00cf8a35c2c2938feffb3b0f2e589504a556fea",
+  "scope": "RX-only Web/Planner journald and read-only local monitoring deployment; not A1/O1b",
+  "recognizer_available": false,
+  "rx_capture_calls": 0,
+  "tx_operations": 0,
+  "model_experiments": 0,
+  "baseline": {
+    "services": {
+      "sdrharness-web.service": "MainPID=496587\nExecMainStartTimestamp=Mon 2026-09-07 21:28:37 CST\nLogNamespace=\nActiveState=active\nUnitFileState=enabled\n",
+      "sdrharness-planner.service": "MainPID=62839\nExecMainStartTimestamp=Thu 2026-09-03 13:39:00 CST\nLogNamespace=\nActiveState=active\nUnitFileState=enabled\n",
+      "spark-x25.service": "MainPID=1150\nExecMainStartTimestamp=Wed 2026-09-02 16:35:11 CST\nLogNamespace=\nActiveState=active\nUnitFileState=enabled\n",
+      "sdrharness-p201-sdrd-recovery.timer": "ActiveState=active\nUnitFileState=enabled\n"
+    },
+    "config_binary_hashes": {
+      "/etc/sdrharness/runtime.env": "8de3b79d181e5fbbbf408eba6ab71e2b35cff67954d222a632396bd8f63afc6d",
+      "/etc/sdrharness/request.json": "75eb9e268066cd1b5cacc54ecf0c2a86debe235413766b450c7611d670967a15",
+      "/var/lib/sdrharness/web-console/provider.json": "eeb926f47dcaf4ca6a41b1b894f8cc0e6de5254e10598455016f5e3d49a0313d",
+      "/home/jetson/.local/lib/sdrharness/bin/sdr-agent": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+      "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console": "7c374774b006ca8633fb74589878bc8af073f4d738ec95f87982d61cc2b6acf4"
+    },
+    "sdrd_pid": "5909",
+    "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "sessions": [
+      {
+        "id": "session-1788263597140",
+        "status": "stored",
+        "initial_survey_status": "complete"
+      },
+      {
+        "id": "session-1788261263788",
+        "status": "connected",
+        "initial_survey_status": "complete"
+      }
+    ],
+    "results_corpus": {
+      "results": {
+        "count": 2,
+        "canonical_sha256": "e4fb2ffb75eb4b113c878ad5e3a61d5f046697e5c78b8bee9c81000c373402c5"
+      },
+      "corpus": {
+        "count": 1,
+        "canonical_sha256": "556aab46922f65fb174305485acf5dffc290bc0aa1c62edb959fd19d61a66245"
+      }
+    },
+    "old_planner_health": "request contains unknown field operation"
+  },
+  "installation": {
+    "phase": "final-install",
+    "created_paths": [
+      {
+        "release_file": "operations-health.py",
+        "destination": "/home/jetson/.local/lib/sdrharness/scripts/operations-health.py",
+        "mode": "0o755",
+        "owner": "root:root",
+        "previously_absent": true,
+        "bytes": 9086,
+        "sha256": "ac21d70ba6e5d5b9c1edcce153be6a3f5675cde1d63c47f87a4d19b2afab4c15",
+        "actual_mode": "0o755",
+        "actual_uid": 0
+      },
+      {
+        "release_file": "health.json",
+        "destination": "/etc/sdrharness/health.json",
+        "mode": "0o600",
+        "owner": "jetson:jetson",
+        "previously_absent": true,
+        "bytes": 287,
+        "sha256": "f4094cfb437b8bcd5aaaad808f39022d1941a6c7c0810254e1e39c71a6236a1f",
+        "actual_mode": "0o600",
+        "actual_uid": 1000
+      },
+      {
+        "release_file": "sdrharness-health.service",
+        "destination": "/etc/systemd/system/sdrharness-health.service",
+        "mode": "0o644",
+        "owner": "root:root",
+        "previously_absent": true,
+        "bytes": 914,
+        "sha256": "57f692d19b597ddfe7b4cb98ca6fe7a67d0240e225e7b32cdf221146c3eae852",
+        "actual_mode": "0o644",
+        "actual_uid": 0
+      },
+      {
+        "release_file": "sdrharness-health.timer",
+        "destination": "/etc/systemd/system/sdrharness-health.timer",
+        "mode": "0o644",
+        "owner": "root:root",
+        "previously_absent": true,
+        "bytes": 194,
+        "sha256": "140c9c94fd582775716471dce2cc37947fb1c24d340bcd38251c48aad8a1b5aa",
+        "actual_mode": "0o644",
+        "actual_uid": 0
+      },
+      {
+        "release_file": "journald-sdrharness.conf",
+        "destination": "/etc/systemd/journald@sdrharness.conf",
+        "mode": "0o644",
+        "owner": "root:root",
+        "previously_absent": true,
+        "bytes": 292,
+        "sha256": "ba58abc5514c5fd75eef05aecf79bab1274e19f2f46cf3646b4e584b9b23970f",
+        "actual_mode": "0o644",
+        "actual_uid": 0
+      },
+      {
+        "release_file": "web-logging.conf",
+        "destination": "/etc/systemd/system/sdrharness-web.service.d/30-operations.conf",
+        "mode": "0o644",
+        "owner": "root:root",
+        "previously_absent": true,
+        "bytes": 153,
+        "sha256": "3e25c48943c1068883430f34d83393de429ef03c1a4d3625337f999b5392cb5a",
+        "actual_mode": "0o644",
+        "actual_uid": 0
+      },
+      {
+        "release_file": "planner-logging.conf",
+        "destination": "/etc/systemd/system/sdrharness-planner.service.d/30-operations.conf",
+        "mode": "0o644",
+        "owner": "root:root",
+        "previously_absent": true,
+        "bytes": 153,
+        "sha256": "3e25c48943c1068883430f34d83393de429ef03c1a4d3625337f999b5392cb5a",
+        "actual_mode": "0o644",
+        "actual_uid": 0
+      }
+    ],
+    "stages": [
+      {
+        "session_ids": [
+          "session-1788263597140",
+          "session-1788261263788"
+        ],
+        "surveys": "complete",
+        "results_unchanged": true,
+        "corpus_unchanged": true,
+        "config_and_binary_hashes_unchanged": true,
+        "radio_unchanged": true,
+        "sdrd_pid": "5909",
+        "web_pid": "518663",
+        "planner_pid": "518641",
+        "phase": "install",
+        "health_state": {
+          "schema_version": 1,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "healthy"
+          }
+        },
+        "web_log_namespace": "sdrharness",
+        "planner_log_namespace": "sdrharness"
+      },
+      {
+        "session_ids": [
+          "session-1788263597140",
+          "session-1788261263788"
+        ],
+        "surveys": "complete",
+        "results_unchanged": true,
+        "corpus_unchanged": true,
+        "config_and_binary_hashes_unchanged": true,
+        "radio_unchanged": true,
+        "sdrd_pid": "5909",
+        "web_pid": "519237",
+        "planner_pid": "519216",
+        "phase": "rollback",
+        "web_log_namespace": "",
+        "planner_log_namespace": ""
+      },
+      {
+        "session_ids": [
+          "session-1788263597140",
+          "session-1788261263788"
+        ],
+        "surveys": "complete",
+        "results_unchanged": true,
+        "corpus_unchanged": true,
+        "config_and_binary_hashes_unchanged": true,
+        "radio_unchanged": true,
+        "sdrd_pid": "5909",
+        "web_pid": "519366",
+        "planner_pid": "519344",
+        "phase": "final-install",
+        "health_state": {
+          "schema_version": 1,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "healthy"
+          }
+        },
+        "web_log_namespace": "sdrharness",
+        "planner_log_namespace": "sdrharness"
+      }
+    ],
+    "baseline_commit": "c00cf8a35c2c2938feffb3b0f2e589504a556fea",
+    "planner_source_receipts": [
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/context-policy.mjs",
+        "bytes": 1095,
+        "sha256": "770c7ff1a1b2fabd4532120277aeeacd1ab61d0bada252c92f7c58f92f61b7f7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/main.mjs",
+        "bytes": 13013,
+        "sha256": "f091d57bef5f993b702e42ef8c2bbb5bf03c5f56b50a727c31c973f89e976471"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/model-profile.mjs",
+        "bytes": 1384,
+        "sha256": "a37af4e9669d3c0021e08835e2e4fc3d823d76d75dfbe078b25d2b153c6eeb39"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/protocol.mjs",
+        "bytes": 11120,
+        "sha256": "672ec011b88f80dc1fd7229f7e6cac0afaffdc22291aa3ca5213d8aead15d635"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/provider-config.mjs",
+        "bytes": 6369,
+        "sha256": "380f55f5d2ec0669c54a72d08ed86ff49ef990a2c0ecd343d3779d9f19ffe8f8"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/recognition-observation.mjs",
+        "bytes": 4867,
+        "sha256": "5960c40db37ff789a09c55233dd31bc6bc3af784e632494175405e71dba80db2"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/run-lease.mjs",
+        "bytes": 554,
+        "sha256": "270a6344aaf0b6bb48bafb11ef054c33fdbc162972c835801c9fdee9f18f3801"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/runtime-path.mjs",
+        "bytes": 625,
+        "sha256": "ba64cd053b22f1fbd4f5c11d1e24a0bbec169d13167f28825cf0045e84bdb8fb"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/session-protocol.mjs",
+        "bytes": 4278,
+        "sha256": "247cd537d0ee427065ae1175135527d00489fa8452976c31a8885bac7373eae9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/session-runtime.mjs",
+        "bytes": 12023,
+        "sha256": "12eeadb6fda1f287e887be63874cc40b2cc89b5d4499663d923ab5099ccfd619"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/session-server.mjs",
+        "bytes": 4440,
+        "sha256": "ec9c9778e8343f3b11b90a6134fec608e19fdca8a7f7070bcdb37be6ce438b28"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/spark-stream.mjs",
+        "bytes": 9908,
+        "sha256": "72cf8e03edfe1fbd1dda4e6588cc1205656307249c45b6e173654ab140d8395e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/system-prompt.mjs",
+        "bytes": 5813,
+        "sha256": "a12faa1687a4373deb6d12fb5603a7fdc87abf061d320ea24f310e4571cd7abe"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/web-search.mjs",
+        "bytes": 7514,
+        "sha256": "cbb0931d9ba720ef3ecc4b298ddf7a6f31596029241b6a2a806a0ee6b6add57f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/package-lock.json",
+        "bytes": 46255,
+        "sha256": "3fc44c093f79008fbcba90d961987dbb9e798991ad434a2bddbf3a44e7d50b88"
+      },
+      {
+        "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/package.json",
+        "bytes": 360,
+        "sha256": "2284652d079b6461af4766cf26ded62924e694f635366aad32303ffcae2dfbf5"
+      }
+    ],
+    "release": {
+      "schema_version": 1,
+      "release_id": "20260908-rx-operations-v1",
+      "verified_files": 8,
+      "bytes": 14937,
+      "recognizer_available": false,
+      "installed": false,
+      "manifest_sha256": "5955d127d09bb0bd8b7a7cd2af794b1d30830704f192d653b5d7915723100dc7"
+    },
+    "rollback": {
+      "schema_version": 1,
+      "release_id": "20260908-before-rx-operations-v1",
+      "verified_files": 3,
+      "bytes": 3471,
+      "recognizer_available": false,
+      "installed": false,
+      "manifest_sha256": "b4d1b684eaeb48c2d9ab1cfc5434676ef26a3b52f15a4bf0c3934de329c282b6"
+    }
+  },
+  "tests": {
+    "python_operations_passed": 10,
+    "node_passed": 56,
+    "systemd_verify": "exit 0 with three pre-existing unrelated unit warnings",
+    "python_ast": "passed",
+    "rust_frontend_changes": false
+  },
+  "fault_matrix": [
+    {
+      "case": "unchanged healthy is quiet",
+      "exit": 0,
+      "snapshot": {
+        "events": [],
+        "free_bytes": 809819029504,
+        "observed_at_unix_ms": 1788830992898,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "statuses": {
+          "disk": "healthy",
+          "planner": "healthy",
+          "web": "healthy"
+        }
+      }
+    },
+    {
+      "case": "Web stopped produces one alert",
+      "exit": 2,
+      "snapshot": {
+        "events": [
+          {
+            "event": "alert",
+            "service": "web",
+            "status": "unavailable"
+          }
+        ],
+        "free_bytes": 809818959872,
+        "observed_at_unix_ms": 1788830993405,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "statuses": {
+          "disk": "healthy",
+          "planner": "healthy",
+          "web": "unavailable"
+        }
+      }
+    },
+    {
+      "case": "Web remains down: no duplicate alert",
+      "exit": 2,
+      "snapshot": {
+        "events": [],
+        "free_bytes": 809818959872,
+        "observed_at_unix_ms": 1788830993774,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "statuses": {
+          "disk": "healthy",
+          "planner": "healthy",
+          "web": "unavailable"
+        }
+      }
+    },
+    {
+      "case": "Planner stopped produces one additional alert",
+      "exit": 2,
+      "snapshot": {
+        "events": [
+          {
+            "event": "alert",
+            "service": "planner",
+            "status": "unavailable"
+          }
+        ],
+        "free_bytes": 809818976256,
+        "observed_at_unix_ms": 1788830994179,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "statuses": {
+          "disk": "healthy",
+          "planner": "unavailable",
+          "web": "unavailable"
+        }
+      }
+    },
+    {
+      "case": "Both remain down: no duplicate alert or restart",
+      "exit": 2,
+      "snapshot": {
+        "events": [],
+        "free_bytes": 809818972160,
+        "observed_at_unix_ms": 1788830994533,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "statuses": {
+          "disk": "healthy",
+          "planner": "unavailable",
+          "web": "unavailable"
+        }
+      }
+    },
+    {
+      "case": "Planner recovery independent of Web",
+      "exit": 2,
+      "snapshot": {
+        "events": [
+          {
+            "event": "recovered",
+            "service": "planner",
+            "status": "healthy"
+          }
+        ],
+        "free_bytes": 809818951680,
+        "observed_at_unix_ms": 1788830996248,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "statuses": {
+          "disk": "healthy",
+          "planner": "healthy",
+          "web": "unavailable"
+        }
+      }
+    },
+    {
+      "case": "Web recovered once",
+      "exit": 0,
+      "snapshot": {
+        "events": [
+          {
+            "event": "recovered",
+            "service": "web",
+            "status": "healthy"
+          }
+        ],
+        "free_bytes": 809818931200,
+        "observed_at_unix_ms": 1788830997234,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "statuses": {
+          "disk": "healthy",
+          "planner": "healthy",
+          "web": "healthy"
+        }
+      }
+    },
+    {
+      "case": "Recovery remains quiet",
+      "exit": 0,
+      "snapshot": {
+        "events": [],
+        "free_bytes": 809818927104,
+        "observed_at_unix_ms": 1788830997606,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "statuses": {
+          "disk": "healthy",
+          "planner": "healthy",
+          "web": "healthy"
+        }
+      }
+    },
+    {
+      "case": "private simulated space threshold; no disk filling",
+      "snapshots": [
+        {
+          "schema_version": 1,
+          "observed_at_unix_ms": 1788830997750,
+          "recognizer_available": false,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "low_space"
+          },
+          "events": [
+            {
+              "service": "disk",
+              "status": "low_space",
+              "event": "alert"
+            },
+            {
+              "service": "planner",
+              "status": "healthy",
+              "event": "healthy"
+            },
+            {
+              "service": "web",
+              "status": "healthy",
+              "event": "healthy"
+            }
+          ],
+          "free_bytes": 809818939392
+        },
+        {
+          "schema_version": 1,
+          "observed_at_unix_ms": 1788830997762,
+          "recognizer_available": false,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "low_space"
+          },
+          "events": [],
+          "free_bytes": 809818935296
+        },
+        {
+          "schema_version": 1,
+          "observed_at_unix_ms": 1788830997773,
+          "recognizer_available": false,
+          "statuses": {
+            "web": "healthy",
+            "planner": "healthy",
+            "disk": "healthy"
+          },
+          "events": [
+            {
+              "service": "disk",
+              "status": "healthy",
+              "event": "recovered"
+            }
+          ],
+          "free_bytes": 809818935296
+        }
+      ]
+    }
+  ],
+  "journal_rotation": {
+    "namespace": "/var/log/journal/5dbfb12414a3456d9014d88183e338b1.sdrharness",
+    "rotation_exercised": true,
+    "files": [
+      {
+        "path": "/var/log/journal/5dbfb12414a3456d9014d88183e338b1.sdrharness/user-1000@0e936bdab83f402a8e0136b1913e24f8-0000000000000003-00065aeea512a653.journal",
+        "bytes": 8388608
+      },
+      {
+        "path": "/var/log/journal/5dbfb12414a3456d9014d88183e338b1.sdrharness/system@9b16a6c7deb54b95a93c0137479c056a-0000000000000001-00065aeea50c100d.journal",
+        "bytes": 8388608
+      },
+      {
+        "path": "/var/log/journal/5dbfb12414a3456d9014d88183e338b1.sdrharness/user-1000.journal",
+        "bytes": 8388608
+      },
+      {
+        "path": "/var/log/journal/5dbfb12414a3456d9014d88183e338b1.sdrharness/system.journal",
+        "bytes": 8388608
+      }
+    ],
+    "logical_bytes": 33554432,
+    "configured_system_max_bytes": 134217728,
+    "configured_runtime_max_bytes": 33554432,
+    "configured_file_max_bytes": 8388608
+  },
+  "automatic_timer": {
+    "snapshots": [
+      {
+        "events": [],
+        "free_bytes": 809800957952,
+        "observed_at_unix_ms": 1788831242233,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "statuses": {
+          "disk": "healthy",
+          "planner": "healthy",
+          "web": "healthy"
+        }
+      },
+      {
+        "events": [],
+        "free_bytes": 809800650752,
+        "observed_at_unix_ms": 1788831274226,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "statuses": {
+          "disk": "healthy",
+          "planner": "healthy",
+          "web": "healthy"
+        }
+      },
+      {
+        "events": [],
+        "free_bytes": 809800630272,
+        "observed_at_unix_ms": 1788831305566,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "statuses": {
+          "disk": "healthy",
+          "planner": "healthy",
+          "web": "healthy"
+        }
+      },
+      {
+        "events": [],
+        "free_bytes": 809800593408,
+        "observed_at_unix_ms": 1788831337230,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "statuses": {
+          "disk": "healthy",
+          "planner": "healthy",
+          "web": "healthy"
+        }
+      }
+    ],
+    "intervals_ms": [
+      31993,
+      31340,
+      31664
+    ],
+    "manual_starts_during_this_interval": 0,
+    "timer": "LastTriggerUSec=Tue 2026-09-08 09:35:37 CST\nActiveState=active\nUnitFileState=enabled",
+    "service": "Result=success\nExecMainStatus=0\nCPUUsageNSec=224594000\nIPAddressAllow=127.0.0.0/8 ::1/128\nIPAddressDeny=0.0.0.0/0 ::/0"
+  },
+  "final_state": {
+    "session_ids": [
+      "session-1788263597140",
+      "session-1788261263788"
+    ],
+    "surveys": "complete",
+    "results_unchanged": true,
+    "corpus_unchanged": true,
+    "config_and_binary_hashes_unchanged": true,
+    "radio_unchanged": true,
+    "sdrd_pid": "5909",
+    "web_pid": "519366",
+    "planner_pid": "519344"
+  },
+  "status_response": [
+    {
+      "id": 250,
+      "timestamp_ms": 1788831112997,
+      "kind": "system",
+      "text": "控制器状态：空闲，可以接收新任务；运行模式：逐步人工批准。"
+    },
+    {
+      "id": 251,
+      "timestamp_ms": 1788831113002,
+      "kind": "system",
+      "text": "Agent 会话：已打开；上游模型：空闲；等待处理的消息：0 条。"
+    },
+    {
+      "id": 252,
+      "timestamp_ms": 1788831113002,
+      "kind": "system",
+      "text": "人工批准：没有待处理计划；下一请求编号：1；安全代次：1788831083467。"
+    },
+    {
+      "id": 253,
+      "timestamp_ms": 1788831113003,
+      "kind": "cruise",
+      "text": "巡航状态：未启用；当前每个可执行动作都需要人工批准。"
+    },
+    {
+      "id": 254,
+      "timestamp_ms": 1788831113004,
+      "kind": "prompt",
+      "text": "SDR Agent> "
+    }
+  ],
+  "failure": {
+    "case": "first high-frequency manual fault harness",
+    "reason": "default systemd 5 starts/10s gate prevented new invocation; harness read previous log; fixed by reset-failed between deliberate rapid invocations and checking fresh InvocationID; production StartLimit unchanged",
+    "recorded_cases_before_failure": [
+      {
+        "case": "unchanged healthy is quiet",
+        "exit": 0,
+        "snapshot": {
+          "events": [],
+          "free_bytes": 809819627520,
+          "observed_at_unix_ms": 1788830949297,
+          "recognizer_available": false,
+          "schema_version": 1,
+          "statuses": {
+            "disk": "healthy",
+            "planner": "healthy",
+            "web": "healthy"
+          }
+        }
+      },
+      {
+        "case": "Web stopped produces one alert",
+        "exit": 2,
+        "snapshot": {
+          "events": [
+            {
+              "event": "alert",
+              "service": "web",
+              "status": "unavailable"
+            }
+          ],
+          "free_bytes": 809819643904,
+          "observed_at_unix_ms": 1788830949760,
+          "recognizer_available": false,
+          "schema_version": 1,
+          "statuses": {
+            "disk": "healthy",
+            "planner": "healthy",
+            "web": "unavailable"
+          }
+        }
+      },
+      {
+        "case": "Web remains down: no duplicate alert",
+        "exit": 2,
+        "snapshot": {
+          "events": [],
+          "free_bytes": 809819561984,
+          "observed_at_unix_ms": 1788830950089,
+          "recognizer_available": false,
+          "schema_version": 1,
+          "statuses": {
+            "disk": "healthy",
+            "planner": "healthy",
+            "web": "unavailable"
+          }
+        }
+      },
+      {
+        "case": "Planner stopped produces one additional alert",
+        "exit": 2,
+        "snapshot": {
+          "events": [
+            {
+              "event": "alert",
+              "service": "planner",
+              "status": "unavailable"
+            }
+          ],
+          "free_bytes": 809819574272,
+          "observed_at_unix_ms": 1788830950448,
+          "recognizer_available": false,
+          "schema_version": 1,
+          "statuses": {
+            "disk": "healthy",
+            "planner": "unavailable",
+            "web": "unavailable"
+          }
+        }
+      }
+    ],
+    "finally_recovered_services": true
+  },
+  "retained_releases": [
+    {
+      "root": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-operations-v1",
+      "purpose": "current deployment",
+      "verify": {
+        "schema_version": 1,
+        "release_id": "20260908-rx-operations-v1",
+        "verified_files": 8,
+        "bytes": 14937,
+        "recognizer_available": false,
+        "installed": false,
+        "manifest_sha256": "5955d127d09bb0bd8b7a7cd2af794b1d30830704f192d653b5d7915723100dc7"
+      },
+      "files": [
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-operations-v1/health.json",
+          "bytes": 287,
+          "sha256": "f4094cfb437b8bcd5aaaad808f39022d1941a6c7c0810254e1e39c71a6236a1f"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-operations-v1/journald-sdrharness.conf",
+          "bytes": 292,
+          "sha256": "ba58abc5514c5fd75eef05aecf79bab1274e19f2f46cf3646b4e584b9b23970f"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-operations-v1/operations-health.py",
+          "bytes": 9086,
+          "sha256": "ac21d70ba6e5d5b9c1edcce153be6a3f5675cde1d63c47f87a4d19b2afab4c15"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-operations-v1/planner-logging.conf",
+          "bytes": 153,
+          "sha256": "3e25c48943c1068883430f34d83393de429ef03c1a4d3625337f999b5392cb5a"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-operations-v1/release.json",
+          "bytes": 1384,
+          "sha256": "5955d127d09bb0bd8b7a7cd2af794b1d30830704f192d653b5d7915723100dc7"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-operations-v1/sdrharness-health.service",
+          "bytes": 914,
+          "sha256": "57f692d19b597ddfe7b4cb98ca6fe7a67d0240e225e7b32cdf221146c3eae852"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-operations-v1/sdrharness-health.timer",
+          "bytes": 194,
+          "sha256": "140c9c94fd582775716471dce2cc37947fb1c24d340bcd38251c48aad8a1b5aa"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-operations-v1/source-receipt.json",
+          "bytes": 3858,
+          "sha256": "e7d630525509d0b332e27b70a49f82d53599f1bea525ca9690b41edf3d01108d"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-operations-v1/web-logging.conf",
+          "bytes": 153,
+          "sha256": "3e25c48943c1068883430f34d83393de429ef03c1a4d3625337f999b5392cb5a"
+        }
+      ],
+      "manual_delete": "After superseded / rollback explicitly discarded and canonical path verified: rm -r -- /home/jetson/.local/lib/sdrharness/releases/20260908-rx-operations-v1"
+    },
+    {
+      "root": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-operations-v1",
+      "purpose": "configuration rollback; no database/source rewind",
+      "verify": {
+        "schema_version": 1,
+        "release_id": "20260908-before-rx-operations-v1",
+        "verified_files": 3,
+        "bytes": 3471,
+        "recognizer_available": false,
+        "installed": false,
+        "manifest_sha256": "b4d1b684eaeb48c2d9ab1cfc5434676ef26a3b52f15a4bf0c3934de329c282b6"
+      },
+      "files": [
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-operations-v1/release.json",
+          "bytes": 623,
+          "sha256": "b4d1b684eaeb48c2d9ab1cfc5434676ef26a3b52f15a4bf0c3934de329c282b6"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-operations-v1/rollback.json",
+          "bytes": 1738,
+          "sha256": "5ea653f6e658a1b30efaa04f93bc4d0e39d9a6a3d90f264bfe915facb7760b88"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-operations-v1/sdrharness-planner.service",
+          "bytes": 860,
+          "sha256": "60af8acef00909e58cbca5c84cbb76515722a4ce96905dc189cd30c9562cf6f4"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-operations-v1/sdrharness-web.service",
+          "bytes": 873,
+          "sha256": "a51f2cbe4d773ef809c646dd2ee81f6fc8a160944ef10f4e4512a251e501d5ab"
+        }
+      ],
+      "manual_delete": "After superseded / rollback explicitly discarded and canonical path verified: rm -r -- /home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-operations-v1"
+    }
+  ],
+  "temporary_receipts": [
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/faults-final.json",
+      "bytes": 4984,
+      "sha256": "aef9f3385b8e83f9b45d11b278874561a6a6f126c5c175325096d5f97676b18c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/faults-final.log",
+      "bytes": 267,
+      "sha256": "6d4d4a4896c15a77ed4c7fa97ef3c9187e7be68ed8c9125c99aed361c196d8ed"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/faults.json",
+      "bytes": 1738,
+      "sha256": "72bf9e994fea31c99bb11a0b5f5ff26ef15f51216109a9c2273fff16544978ee"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/faults.log",
+      "bytes": 730,
+      "sha256": "68c4172bc6ef5eb9f5e460187dc893c551d3fd6ff4537dcd5c4076c1ef63c14c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/faults.py",
+      "bytes": 5185,
+      "sha256": "12d12d58abca6841145c429ad330d6ae40cd7618802aea6ea3c4ecffaa405915"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/final-audit.py",
+      "bytes": 5703,
+      "sha256": "3d5bac447024ff9437862c26fa8f612eda3fe36f5ad657c1ae7f7aea730c62e1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/final-install.log",
+      "bytes": 491,
+      "sha256": "70cff6e38d086ab3ddabc36f272a7b9b4fa6924901436e1259c4a911bc6ea5c5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/install.json",
+      "bytes": 7533,
+      "sha256": "c68230bd08b24dee8e52f953012a3507c41b54115c97d3f3316dd3aadaa65f93"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/install.log",
+      "bytes": 485,
+      "sha256": "de87146c9c866b22f6c50bfc054dcefc21944bf65836c49274583445b071ffa7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/install.py",
+      "bytes": 8883,
+      "sha256": "e7674ab06a522b92ecbe8eab9210b4c155a4bed63e130dde33ae3f9316994ab7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/node-tests.log",
+      "bytes": 10488,
+      "sha256": "fb419712c4a0bc981711428af127cd9e5313276fdd0f0b38a2aa989f0ecf853d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/python-tests.log",
+      "bytes": 109,
+      "sha256": "4bdab9e4aa3ee0edf51ac3b56fd5c2a99f00d129522d5eed7e9784a12f06e476"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/rollback.log",
+      "bytes": 354,
+      "sha256": "d505d6b105cb7567cd802507cc87e5c469d570af3d340c9b528f43a2d7f3f581"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/rotation.json",
+      "bytes": 942,
+      "sha256": "cde82200a6dfff2354aae24734f655771b62d35d70760e4bd2da81ff26c95fc3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/space-state.json",
+      "bytes": 94,
+      "sha256": "06edc19afcd260a8cc70a1bcec10b9090905f0e9462fb65f978d37b3f11595e7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/space-state.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/status-response.json",
+      "bytes": 837,
+      "sha256": "b7bb908441c26dc1775d16ccfda0cb2df8e7d8ced7eee8aa29d9e52edd46ec47"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/ops-908a/unit-check.log",
+      "bytes": 496,
+      "sha256": "37b67b8be743b90f4ae72b889efccd27569518b85baa45ab368c5c6438eec3ec"
+    }
+  ],
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/ops-908a",
+    "regular_files": 19,
+    "logical_bytes": 96579,
+    "feature_processes_remaining": [],
+    "p201_temp_paths_created": 0,
+    "new_iq_retained_bytes": 0,
+    "user_results_or_existing_evidence_deleted": false,
+    "status": "complete",
+    "verified_absent": true
+  },
+  "retained_release_files": 13,
+  "retained_release_bytes": 20415,
+  "operational_data": {
+    "journal_namespace": "/var/log/journal/5dbfb12414a3456d9014d88183e338b1.sdrharness",
+    "journal_managed_by": "journald 128 MiB persistent / 32 MiB runtime / 8 MiB files / 14 days; no user-results cleanup",
+    "health_state": {
+      "path": "/var/lib/sdrharness/health/state.json",
+      "bytes": 94,
+      "sha256": "06edc19afcd260a8cc70a1bcec10b9090905f0e9462fb65f978d37b3f11595e7"
+    },
+    "health_lock": {
+      "path": "/var/lib/sdrharness/health/state.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "note": "Live state and logs are installed service data, not retained diagnostic/IQ packages; hashes are point-in-time."
+  }
+}

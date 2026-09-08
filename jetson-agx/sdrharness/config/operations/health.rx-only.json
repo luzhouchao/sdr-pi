@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "probes": [
+    {"name": "web", "kind": "http", "endpoint": "http://127.0.0.1:8787/api/health"},
+    {"name": "planner", "kind": "unix", "endpoint": "/run/sdr-agent/planner.sock"}
+  ],
+  "disk_path": "/var/lib/sdrharness",
+  "minimum_free_bytes": 4294967296
+}

@@ -1,0 +1,11 @@
+[Unit]
+Description=Observe SDR Web/Planner and disk every 30 seconds
+
+[Timer]
+OnBootSec=30s
+OnUnitInactiveSec=30s
+AccuracySec=2s
+Unit=sdrharness-health.service
+
+[Install]
+WantedBy=timers.target
