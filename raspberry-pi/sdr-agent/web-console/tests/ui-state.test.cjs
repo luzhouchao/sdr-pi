@@ -120,3 +120,27 @@ test('mixed survey selection sends null only for AI fields and drops late sugges
  assert.equal(h.node('#survey-step-mhz').value,'2');assert.equal(h.node('#survey-gain-db').value,'20');assert.match(h.node('#survey-assistant-status').textContent,/迟到/);
  assert.equal(h.context.surveySuggestionCurrent(),false);
 });
+
+test('ordinary hold reply appears once while original plan and notice stay in the audit',()=>{
+ const h=harness();const events=[{kind:'operator',text:'你好'},
+ {kind:'plan',text:'已验证计划：保持当前状态：你好，不操作硬件。'},
+ {kind:'decision',text:'validated request=1'},
+ {kind:'qwen',text:'Agent> 你好，不操作硬件。'},
+ {kind:'system',text:'该计划当前没有生产执行器，仅记录建议，不会操作硬件。'}];
+ const original=JSON.stringify(events);const hidden=h.context.redundantHoldEvents(events);
+ assert.deepEqual(events.filter(e=>hidden.has(e)),[events[1],events[4]]);
+ assert.equal(JSON.stringify(events),original);
+ assert.equal(h.context.redundantHoldEvents(events.slice(0,3)).size,0);
+});
+test('hold presentation never hides hardware plans, unmatched replies, warnings or later turns',()=>{
+ const h=harness();const plan={kind:'plan',text:'已验证计划：保持当前状态：你好'};
+ const reply={kind:'qwen',text:'Agent> 你好'};
+ for (const events of [[plan,{kind:'operator',text:'新问题'},reply],
+ [plan,{...reply,text:'Agent> 不同回复'}],
+ [{kind:'plan',text:'已验证计划：扫描频段'},reply],
+ [{...plan,kind:'operator'},reply]]) assert.equal(h.context.redundantHoldEvents(events).size,0);
+ const warning={kind:'system',text:'设备连接失败'};
+ assert.equal(h.context.redundantHoldEvents([plan,reply,warning]).has(warning),false);
+ const later={kind:'system',text:'该计划当前没有生产执行器，仅记录建议，不会操作硬件。'};
+ assert.equal(h.context.redundantHoldEvents([plan,reply,{kind:'operator',text:'继续'},later]).has(later),false);
+});

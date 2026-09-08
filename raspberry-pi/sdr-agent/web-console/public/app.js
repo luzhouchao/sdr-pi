@@ -498,6 +498,7 @@ function renderTerminal() {
   const compacted = view.active.compaction_count || 0;
   activeMeta.textContent = `${statusLabel(view.active.status)} · ${view.active.events.length} 条记录${compacted ? ` · 已压缩 ${compacted} 次` : ''}`;
   let visibleCount = 0;
+  const redundant = redundantHoldEvents(view.active.events);
   for (const event of view.active.events) {
     const row = document.createElement('div');
     row.className = `line ${safeKind(event.kind)}`;
@@ -511,7 +512,7 @@ function renderTerminal() {
     text.textContent = event.text;
     row.append(time, kind, text);
     raw.append(row.cloneNode(true));
-    const visible = !['prompt', 'decision', 'search'].includes(event.kind)
+    const visible = !redundant.has(event) && !['prompt', 'decision', 'search'].includes(event.kind)
       && (event.kind !== 'system' || !/^(终端进程已启动|SDR Agent 已连接|SDR Agent>)/.test(event.text));
     if (visible) {
       text.textContent = operatorEventText(event).replace(/^(Operator>|Agent>)\s*/, '');
@@ -911,6 +912,25 @@ function formatAxisFrequency(value, span) {
   const tickMHz = Math.max(span / 6 / 1000000, 0.000001);
   const precision = Math.min(6, Math.max(0, 1 - Math.floor(Math.log10(tickMHz))));
   return (value / 1000000).toFixed(precision) + ' MHz';
+}
+
+// Match only the Controller's adjacent hold-plan / reply sequence. Never dedupe
+// arbitrary equal messages, cross operator turns, or remove the raw audit log.
+function redundantHoldEvents(events) {
+  const hidden = new Set();
+  const prefix = '已验证计划：保持当前状态：';
+  for (let i = 0; i < events.length; i += 1) {
+    const plan = events[i];
+    if (plan.kind !== 'plan' || !plan.text.startsWith(prefix)) continue;
+    let next = i + 1;
+    while (events[next]?.kind === 'decision') next += 1;
+    const reply = events[next];
+    if (reply?.kind !== 'qwen' || reply.text !== `Agent> ${plan.text.slice(prefix.length)}`) continue;
+    hidden.add(plan);
+    const notice = events[next + 1];
+    if (notice?.kind === 'system' && notice.text === '该计划当前没有生产执行器，仅记录建议，不会操作硬件。') hidden.add(notice);
+  }
+  return hidden;
 }
 
 function operatorEventText(event) {

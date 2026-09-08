@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "0de8e5a",
+  "scope": "Web-only exact adjacent hold reply presentation deduplication",
+  "installation": {
+    "web_sha256": "a3668851bc9a4ff2504fddd26e17ff434388787b26466edcf96a7ca3e3c17527",
+    "web_bytes": 3323168,
+    "previous_web_sha256": "a1bbcde69c311fd33cfbe44dcbc36f2fac1033f013efa1daf8f6b718be965cc6",
+    "config_unchanged": true,
+    "sessions_preserved": 2,
+    "results_preserved": 5,
+    "corpus_preserved": 1,
+    "no_rescan": true,
+    "installed_js_matches_source": true,
+    "health": {
+      "ready": true,
+      "recognizer_available": false,
+      "schema_version": 1,
+      "service": "web"
+    }
+  },
+  "browser": {
+    "single_reply": true,
+    "all_raw_events_preserved": true,
+    "partial_plan_kept": true,
+    "hardware_plan_approval_and_failure_kept": true,
+    "browser_errors": [],
+    "replay_only": true
+  },
+  "preview": {
+    "single_reply": true,
+    "all_raw_events_preserved": true,
+    "partial_plan_kept": true,
+    "hardware_plan_approval_and_failure_kept": true,
+    "browser_errors": [],
+    "replay_only": true
+  },
+  "tests_passed": 16,
+  "release_build": "passed",
+  "rust_source_changed": false,
+  "planner_restarted": false,
+  "model_requests": 0,
+  "rf_captures": 0,
+  "backups_created": 0,
+  "rollback_exercised": false,
+  "source_files": [
+    {
+      "path": "raspberry-pi/sdr-agent/web-console/public/app.js",
+      "bytes": 65410,
+      "sha256": "ca10baa91364caf5838ac8bd0fd0921bc18f36b9c3ff9ab7a126b113251d16ff"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/web-console/tests/ui-state.test.cjs",
+      "bytes": 10358,
+      "sha256": "5aba58e10112bdd16ce8bac3ac21508264041bcf4a98910b1e89122ec5a94708"
+    }
+  ],
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/hold-display-908c",
+    "deleted_files": 711,
+    "deleted_bytes": 222667160,
+    "external_retained_files": 0,
+    "private_sockets_created": 0,
+    "verified_absent": true
+  }
+}
