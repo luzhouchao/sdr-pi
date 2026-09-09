@@ -736,8 +736,15 @@ aggregation, result persistence and model-facing summaries.
             controls; no FPGA/BOOT change. Frozen Controller/profile still
             requires RX1; RX2 is an explicit diagnostic path. See the same record.
       - [ ] Execute antenna/50-ohm termination/antenna input isolation with actual
-            connection evidence. Operator confirmed no termination is available;
-            open-circuit RX is not a substitute and no physical comparison ran.
+            connection evidence. Terminations became available on 2026-09-09;
+            six terminated RX1 backgrounds are complete, but same-session antenna
+            controls are still missing. Open-circuit RX is not a substitute.
+        - [x] Capture six fixed 2455-MHz terminated RX1 backgrounds with external
+              TX stopped; validate native data, both-channel restoration, exact
+              replay and cleanup. Retain 25 files / 1,611,184 bytes. FIR RMS
+              medians 0.614–0.674 ADC are below historical antenna backgrounds,
+              without a physical-cause or full-isolation claim. See
+              [termination background](validation/P201_TERMINATION_BACKGROUND_VALIDATION_2026-09-09.md).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original
