@@ -17,6 +17,7 @@
 ## 保留数据的删除依据
 
 - [P201 50Ω负载六次背景证据与清理](P201_TERMINATION_BACKGROUND_EVIDENCE_2026-09-09.json)
+- [P201 接回原天线六次背景证据与清理](P201_ANTENNA_RETURN_EVIDENCE_2026-09-09.json)
 
 - [Web UI 制品、截图与清理审计](WEB_UI_REDESIGN_AUDIT_2026-09-07.json)
 

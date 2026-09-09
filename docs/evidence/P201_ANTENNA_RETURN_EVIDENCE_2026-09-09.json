@@ -1,0 +1,327 @@
+{
+  "schema_id": "p201_antenna_return_evidence_v1",
+  "purpose": "Reproduce all six antenna-return backgrounds and compare with preceding sealed termination evidence; no IQ copies",
+  "root": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b",
+  "parent": {
+    "path": "/home/jetson/sdrharness/docs/evidence/P201_TERMINATION_BACKGROUND_EVIDENCE_2026-09-09.json",
+    "sha256": "f90067f42a49c3cc966975539c041df80daec94b42da25e5c4b219f8ba7358a4",
+    "audit_path": "/var/tmp/sdrharness-dev/p201-termination-20260909a/audit.json"
+  },
+  "physical_connection": "operator confirmed original antenna returned to P201 RX1; external TX remains terminated and stopped",
+  "model": "not invoked",
+  "profile": "same finite diagnostic RX settings as preceding termination; no production admission",
+  "preprocess": {
+    "schema_id": "b210_separated_lo_fixed_fir_v1",
+    "sample_rate_hz": 2100000,
+    "tx_lo_offset_hz": 250000,
+    "taps": 257,
+    "cutoff_hz": 175000,
+    "kaiser_beta": 8.0,
+    "raw_halo_samples": 128,
+    "coefficients_sha256": "d0e12014bedae088b71366497299adc3a1be0a45cf622e9cbb346d4ea0c8c8be",
+    "passband_max_amplitude_error": 6.72315640199983e-05,
+    "stopband_max_db": -86.48358432113966,
+    "source_mean_preserved": true,
+    "production_enabled": false
+  },
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/audit.json",
+      "bytes": 23003,
+      "sha256": "31227ab1759de49fdd88b9df2f1c6c77463066694de8b910d11777a293406507"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-00/antenna-return-1788955440561-1788955440561-1788955443171689907.sigmf-data",
+      "bytes": 262140,
+      "sha256": "4143b873c5b960d999d3ee5d5aa20503de3fa13403515695d83601343ead2f17",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440561",
+      "session_generation": 1788955440561,
+      "request_id": 5,
+      "sequence": 1077
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-00/antenna-return-1788955440561-1788955440561-1788955443171689907.sigmf-meta",
+      "bytes": 487,
+      "sha256": "22f92e58452c1aa658023eba5c8b6f2ddf4cf5bc9c764497e64d24b7147d9fd8",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440561",
+      "session_generation": 1788955440561,
+      "request_id": 5,
+      "sequence": 1077
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-00/plan.json",
+      "bytes": 387,
+      "sha256": "9a933ae0dd3c800258780b953aa84eabd132a2249b2475735ae162571f657fab",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440561",
+      "session_generation": 1788955440561,
+      "request_id": 5,
+      "sequence": 1077
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-00/report.json",
+      "bytes": 2256,
+      "sha256": "ce8d9012c96f9538eb6b0125da89e6d26e8cc61c14748474ca17b45b5a545d4a",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440561",
+      "session_generation": 1788955440561,
+      "request_id": 5,
+      "sequence": 1077
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-01/antenna-return-1788955440562-1788955440562-1788955449065059508.sigmf-data",
+      "bytes": 262140,
+      "sha256": "95291d644ac15981ec8fc7983975fbb8a33049e738c103c1579f1a00430f66d2",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440562",
+      "session_generation": 1788955440562,
+      "request_id": 5,
+      "sequence": 1078
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-01/antenna-return-1788955440562-1788955440562-1788955449065059508.sigmf-meta",
+      "bytes": 487,
+      "sha256": "21ae5f1f886a19084d305c5e6368fc18bd3fb0086aa1a9b09eb67848942d5f1d",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440562",
+      "session_generation": 1788955440562,
+      "request_id": 5,
+      "sequence": 1078
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-01/plan.json",
+      "bytes": 387,
+      "sha256": "5d70415c85dd530acca74a294620fc03dd167887c533614ac109a599d23aeda9",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440562",
+      "session_generation": 1788955440562,
+      "request_id": 5,
+      "sequence": 1078
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-01/report.json",
+      "bytes": 2255,
+      "sha256": "a528b365d5873e83458d4ce8edb66143d993d5c439ecd0e84124c8b66586c5d0",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440562",
+      "session_generation": 1788955440562,
+      "request_id": 5,
+      "sequence": 1078
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-02/antenna-return-1788955440563-1788955440563-1788955454939447765.sigmf-data",
+      "bytes": 262140,
+      "sha256": "fbb3b790ee9455286bbd68bb1c4a7fc99d0ea0bfc83016e2cfc32c2e040ebd44",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440563",
+      "session_generation": 1788955440563,
+      "request_id": 5,
+      "sequence": 1079
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-02/antenna-return-1788955440563-1788955440563-1788955454939447765.sigmf-meta",
+      "bytes": 487,
+      "sha256": "a2fbb611bd63c70e8e145fe75456253a1dfc818d6af669f682710b42c39b3141",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440563",
+      "session_generation": 1788955440563,
+      "request_id": 5,
+      "sequence": 1079
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-02/plan.json",
+      "bytes": 387,
+      "sha256": "15405262d32dc9415c039c9e17e04829fec7f798fd2bdb7407929182b02eaf9b",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440563",
+      "session_generation": 1788955440563,
+      "request_id": 5,
+      "sequence": 1079
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-02/report.json",
+      "bytes": 2253,
+      "sha256": "8320f34b40448a90630c75bd3e7e712027a44d101bfaa0231818f9fc519a12bc",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440563",
+      "session_generation": 1788955440563,
+      "request_id": 5,
+      "sequence": 1079
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-03/antenna-return-1788955440564-1788955440564-1788955460822769716.sigmf-data",
+      "bytes": 262140,
+      "sha256": "0b2ac5b2e6cba596d49c3ece47ad91616ab62a6421a1425d9a77ffbbbcb59567",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440564",
+      "session_generation": 1788955440564,
+      "request_id": 5,
+      "sequence": 1080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-03/antenna-return-1788955440564-1788955440564-1788955460822769716.sigmf-meta",
+      "bytes": 487,
+      "sha256": "7a17a52f8c03ae6684f8bb9b614e6f6fbe280d24a1c725dc5caf7f1990a75a18",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440564",
+      "session_generation": 1788955440564,
+      "request_id": 5,
+      "sequence": 1080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-03/plan.json",
+      "bytes": 387,
+      "sha256": "8e8ee418b26f1581e242a52bb8e064d99741bd6f36486165c4431c1fed1fae30",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440564",
+      "session_generation": 1788955440564,
+      "request_id": 5,
+      "sequence": 1080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-03/report.json",
+      "bytes": 2255,
+      "sha256": "b47d2c6d44fa49eb0f5173a34bc5680f028e32120c7b312f4382ff80e32c3750",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440564",
+      "session_generation": 1788955440564,
+      "request_id": 5,
+      "sequence": 1080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-04/antenna-return-1788955440565-1788955440565-1788955466676055619.sigmf-data",
+      "bytes": 262140,
+      "sha256": "212d34f3c7abc4cabc4ae490a4ec1f77577382d2b393d611b439c77f4dd30e70",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440565",
+      "session_generation": 1788955440565,
+      "request_id": 5,
+      "sequence": 1081
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-04/antenna-return-1788955440565-1788955440565-1788955466676055619.sigmf-meta",
+      "bytes": 487,
+      "sha256": "44746745cf707a2a8f772a8864d3c5507130b1d9960d5e86c1341b5c68da1915",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440565",
+      "session_generation": 1788955440565,
+      "request_id": 5,
+      "sequence": 1081
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-04/plan.json",
+      "bytes": 387,
+      "sha256": "e18ea7f07e9025ff2ad009dea7a5a410ca927254c7573100b2c40aa4955b81bf",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440565",
+      "session_generation": 1788955440565,
+      "request_id": 5,
+      "sequence": 1081
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-04/report.json",
+      "bytes": 2254,
+      "sha256": "677f7e04814f65d9fd6ed60d5dcf3a867b1ecaa95db7da4b729cd99382e1331b",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440565",
+      "session_generation": 1788955440565,
+      "request_id": 5,
+      "sequence": 1081
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-05/antenna-return-1788955440566-1788955440566-1788955472519181694.sigmf-data",
+      "bytes": 262140,
+      "sha256": "b3c2f15a22b3c6456e1cce4ec1f7c44df8b7d6b6ea3752e7e7e9da91c8c9edba",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440566",
+      "session_generation": 1788955440566,
+      "request_id": 5,
+      "sequence": 1082
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-05/antenna-return-1788955440566-1788955440566-1788955472519181694.sigmf-meta",
+      "bytes": 487,
+      "sha256": "648a3bb1a23d2f935aa5a0cec655333ddc98cecb3aadd10f72cb41a32edc8937",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440566",
+      "session_generation": 1788955440566,
+      "request_id": 5,
+      "sequence": 1082
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-05/plan.json",
+      "bytes": 387,
+      "sha256": "1a9a5e12a628da8a96c374e59317eba24db11baeae76ebc230cf039b6812aa3f",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440566",
+      "session_generation": 1788955440566,
+      "request_id": 5,
+      "sequence": 1082
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-05/report.json",
+      "bytes": 2254,
+      "sha256": "98fb0f8f86c59b79f64bc9a7ed5531ca3c4ec23f6af98351d309e693f3bf815d",
+      "source": "P201 RX1 original antenna returned; external TX terminated and stopped",
+      "capture": "antenna-return-1788955440566",
+      "session_generation": 1788955440566,
+      "request_id": 5,
+      "sequence": 1082
+    }
+  ],
+  "file_count": 25,
+  "total_bytes": 1614614,
+  "raw_iq_bytes": 1572840,
+  "cleanup": {
+    "removed_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/active.json",
+        "bytes": 58
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-00/stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-01/stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-02/stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-03/stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-04/stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/capture-05/stderr.log",
+        "bytes": 0
+      }
+    ],
+    "removed_count": 7,
+    "removed_bytes": 58,
+    "removed_directories": [
+      "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/scratch"
+    ],
+    "all_absent_verified": true,
+    "runner_exited": true,
+    "p201_transients_absent": [
+      "/tmp/sdr-agent-dev/agx-sweep-1788955440561-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788955440562-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788955440563-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788955440564-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788955440565-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788955440566-0"
+    ],
+    "nx_created_files": 0,
+    "created_sockets": 0
+  },
+  "manual_delete_command": "python3 - <<'DELETE'\nfrom pathlib import Path\nimport hashlib,json\np=Path('/home/jetson/sdrharness/docs/evidence/P201_ANTENNA_RETURN_EVIDENCE_2026-09-09.json')\na=json.loads(p.read_text());r=Path(a['root'])\nassert r.resolve()==r and r.name=='p201-antenna-return-20260909b'\nassert {str(x) for x in r.rglob('*') if x.is_file()}=={x['path'] for x in a['files']}\nfor x in a['files']:\n f=Path(x['path']);assert f.resolve()==f and not f.is_symlink()\n b=f.read_bytes();assert len(b)==x['bytes'] and hashlib.sha256(b).hexdigest()==x['sha256']\nfor x in a['files']: Path(x['path']).unlink()\nfor d in sorted((d for d in r.rglob('*') if d.is_dir()),key=lambda d:len(d.parts),reverse=True): d.rmdir()\nr.rmdir();assert not r.exists()\nDELETE"
+}

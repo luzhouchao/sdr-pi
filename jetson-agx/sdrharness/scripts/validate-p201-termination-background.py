@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Six fixed RX1 termination captures; no transmitter or model invocation."""
+"""Six fixed RX1 termination or antenna-return captures; no TX or model invocation."""
 import argparse
 import hashlib
 import importlib.util
@@ -80,7 +80,7 @@ def compact_stats(raw):
             if key not in ('raw_segments', 'filtered_segments')}
 
 
-def acquire():
+def acquire(condition):
     assert ROOT.resolve() == ROOT and not ROOT.exists()
     assert 'torch' not in sys.modules
     password = Path('/home/jetson/.config/sdrharness/p201-root.password')
@@ -92,16 +92,17 @@ def acquire():
     available = shutil.disk_usage(ROOT).free
     assert available > 1572840 + 16 * 1024 * 1024
     generation = int(time.time() * 1000)
-    plans = [dict(sweep_id=f'termination-{generation+i}', session_generation=generation+i,
+    plans = [dict(sweep_id=f'{condition}-{generation+i}', session_generation=generation+i,
         frequencies=dict(kind='centers', centers_hz=[2455000000]), sample_rate_hz=2100000,
         rf_bandwidth_hz=1500000, gain_db=40, settle_ms=500, frame_samples=65535,
         aggregate_frames=1, point_timeout_ms=1000, detection_threshold_db=12.) for i in range(6)]
     remote_paths = [f'/tmp/sdr-agent-dev/agx-sweep-{p["session_generation"]}-0' for p in plans]
-    audit = dict(schema_id='p201_termination_background_v1', status='preflight',
+    audit = dict(schema_id='p201_input_background_v2', status='preflight', input_condition=condition,
         base_head=command(['git', '-C', REPO, 'rev-parse', 'HEAD']).strip(),
-        physical_connection='operator confirmed 50-ohm load on P201 RX1 and previous external TX port',
+        physical_connection=('operator confirmed original antenna returned to P201 RX1; external TX remains terminated and stopped'
+            if condition == 'antenna-return' else 'operator confirmed 50-ohm load on P201 RX1 and previous external TX port'),
         root=str(ROOT), plans=plans, maximum_rx_bytes=1572840, free_bytes_before=available,
-        capture_seconds_per_point=65535/2100000, expected_wall_seconds=15, overall_deadline_seconds=120,
+        capture_seconds_per_point=65535/2100000, expected_wall_seconds=40, overall_deadline_seconds=120,
         per_controller_deadline_seconds=15, inter_capture_delay_seconds=1,
         p201_transients=remote_paths, nx_transients=[], rows=[],
         stop='SIGINT/SIGTERM to runner; dedicated sdr-agent --mode cancel for active generation',
@@ -109,7 +110,18 @@ def acquire():
         runner_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         filter_contract=bg.repair.filter_contract(), analysis_numpy=bg.np.__version__,
         model_windows=0, tx_operations=0, recognizer_available=False, independent_labels=0,
-        historical_comparison_only=True)
+        historical_comparison_only=condition != 'antenna-return',
+        comparison_design='sequential termination then antenna; not a bracketed antenna/termination/antenna experiment')
+    if condition == 'antenna-return':
+        inventory = REPO / 'docs/evidence/P201_TERMINATION_BACKGROUND_EVIDENCE_2026-09-09.json'
+        parent = json.loads(inventory.read_text())
+        for row in parent['files']:
+            path = Path(row['path'])
+            assert path.resolve() == path and not path.is_symlink()
+            data = path.read_bytes()
+            assert len(data) == row['bytes'] and hashlib.sha256(data).hexdigest() == row['sha256']
+        audit['parent_evidence'] = dict(path=str(inventory), sha256=hashlib.sha256(inventory.read_bytes()).hexdigest(),
+                                        audit_path=str(Path(parent['root']) / 'audit.json'))
     save(ROOT / 'audit.json', audit)
     before = None
     try:
@@ -120,6 +132,10 @@ def acquire():
         assert ssh(f'readlink /proc/{daemon[0]}/exe').strip() == '/sd/sdr-agent/current/sdrd'
         audit['daemon_pid'] = daemon[0]
         audit['daemon_sha256'] = ssh('sha256sum /sd/sdr-agent/current/sdrd').split()[0]
+        if condition == 'antenna-return':
+            parent_audit = json.loads(Path(audit['parent_evidence']['audit_path']).read_text())
+            for key in ('daemon_sha256', 'controller_sha256', 'filter_contract', 'analysis_numpy'):
+                assert audit[key] == parent_audit[key], f'comparison identity changed: {key}'
         audit['health_before'] = json.loads(command([BINARY, '--mode', 'health', '--sdrd', '192.168.1.10:43110']))
         assert audit['health_before']['healthy']
         before = ssh(STATE)
@@ -213,7 +229,10 @@ if __name__ == '__main__':
     choice = parser.add_mutually_exclusive_group(required=True)
     choice.add_argument('--acquire', action='store_true')
     choice.add_argument('--verify', action='store_true')
+    parser.add_argument('--condition', choices=('termination', 'antenna-return'), default='termination')
     args = parser.parse_args()
+    if args.condition == 'antenna-return':
+        ROOT = Path('/var/tmp/sdrharness-dev/p201-antenna-return-20260909b')
     if args.verify:
         verify()
     else:
@@ -222,4 +241,4 @@ if __name__ == '__main__':
         for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGALRM):
             signal.signal(sig, abort)
         signal.alarm(120)
-        acquire()
+        acquire(args.condition)
