@@ -1,0 +1,176 @@
+{
+  "schema_id": "historical_background_compact_v1",
+  "parents": [
+    {
+      "path": "/var/tmp/sdrharness-dev/historical-background-20260909f/summary.json",
+      "sha256": "6a800c1eec9c8ae0b66ac7ced80783b315e811167577ef41ec464460249b42fb"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/evidence/P201_BACKGROUND_MAP_2026-09-09-summary.json",
+      "sha256": "2905494f758d49b31581687b80b53c1fe13f986bc483374ecc0c5518fd4610c6"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/evidence/P201_WIFI5_BACKGROUND_2026-09-09-summary.json",
+      "sha256": "b61a5f91d49e8fecbe1d2a457f29334876bc5bdb29c875a45172ca32c543bdcb"
+    }
+  ],
+  "run_count": 1586,
+  "date_range": [
+    "2026-08-16T10:26:28.312961+00:00",
+    "2026-09-06T04:06:49.257884+00:00"
+  ],
+  "day_counts": {
+    "2026-08-16": 81,
+    "2026-08-17": 144,
+    "2026-08-18": 144,
+    "2026-08-19": 144,
+    "2026-08-20": 144,
+    "2026-08-21": 133,
+    "2026-08-22": 144,
+    "2026-08-23": 144,
+    "2026-08-24": 144,
+    "2026-08-25": 144,
+    "2026-08-26": 144,
+    "2026-08-27": 67,
+    "2026-09-06": 9
+  },
+  "target_comparison": [
+    {
+      "target_mhz": 2410,
+      "historical_subband_centers_mhz": [
+        2409.5,
+        2410.5
+      ],
+      "historical_median_db": -81.98237800598145,
+      "historical_p95_db": -75.91458034515381,
+      "sep6_p95_db": -76.14864501953124
+    },
+    {
+      "target_mhz": 2418.491304,
+      "historical_subband_centers_mhz": [
+        2418.5
+      ],
+      "historical_median_db": -82.50246047973633,
+      "historical_p95_db": -77.32111930847168,
+      "sep6_p95_db": -79.5814697265625
+    },
+    {
+      "target_mhz": 2424.455072,
+      "historical_subband_centers_mhz": [
+        2424.5
+      ],
+      "historical_median_db": -85.15911865234375,
+      "historical_p95_db": -80.47419166564941,
+      "sep6_p95_db": -84.51734924316406
+    },
+    {
+      "target_mhz": 2433.997101,
+      "historical_subband_centers_mhz": [
+        2433.5
+      ],
+      "historical_median_db": -85.93365478515625,
+      "historical_p95_db": -81.33919906616211,
+      "sep6_p95_db": -80.65107421875
+    },
+    {
+      "target_mhz": 2455,
+      "historical_subband_centers_mhz": [
+        2454.5,
+        2455.5
+      ],
+      "historical_median_db": -86.2575626373291,
+      "historical_p95_db": -81.43810176849365,
+      "sep6_p95_db": -83.35268173217773
+    },
+    {
+      "target_mhz": 2464,
+      "historical_subband_centers_mhz": [
+        2463.5,
+        2464.5
+      ],
+      "historical_median_db": -83.19817543029785,
+      "historical_p95_db": -74.9451150894165,
+      "sep6_p95_db": -75.79002990722657
+    },
+    {
+      "target_mhz": 5180,
+      "historical_subband_centers_mhz": [
+        5179.5,
+        5180.5
+      ],
+      "historical_median_db": -108.25866508483887,
+      "historical_p95_db": -92.97538661956787,
+      "sep6_p95_db": -90.78562393188477
+    },
+    {
+      "target_mhz": 5240,
+      "historical_subband_centers_mhz": [
+        5239.5,
+        5240.5
+      ],
+      "historical_median_db": -92.74152565002441,
+      "historical_p95_db": -85.03437995910645,
+      "sep6_p95_db": -86.77297592163086
+    },
+    {
+      "target_mhz": 5560,
+      "historical_subband_centers_mhz": [
+        5559.5,
+        5560.5
+      ],
+      "historical_median_db": -112.76679992675781,
+      "historical_p95_db": -112.45465087890625,
+      "sep6_p95_db": -110.5172103881836
+    },
+    {
+      "target_mhz": 5704,
+      "historical_subband_centers_mhz": [
+        5703.5,
+        5704.5
+      ],
+      "historical_median_db": -107.23432922363281,
+      "historical_p95_db": -98.27474308013916,
+      "sep6_p95_db": -99.9879020690918
+    },
+    {
+      "target_mhz": 5745,
+      "historical_subband_centers_mhz": [
+        5744.5,
+        5745.5
+      ],
+      "historical_median_db": -96.92296981811523,
+      "historical_p95_db": -88.94900321960449,
+      "sep6_p95_db": -96.11939010620117
+    },
+    {
+      "target_mhz": 5785,
+      "historical_subband_centers_mhz": [
+        5784.5,
+        5785.5
+      ],
+      "historical_median_db": -88.7414665222168,
+      "historical_p95_db": -82.4075174331665,
+      "sep6_p95_db": -85.32709045410157
+    },
+    {
+      "target_mhz": 5805,
+      "historical_subband_centers_mhz": [
+        5804.5,
+        5805.5
+      ],
+      "historical_median_db": -94.2223014831543,
+      "historical_p95_db": -84.03895473480225,
+      "sep6_p95_db": -86.79500961303711
+    },
+    {
+      "target_mhz": 5825,
+      "historical_subband_centers_mhz": [
+        5824.5,
+        5825.5
+      ],
+      "historical_median_db": -112.08676052093506,
+      "historical_p95_db": -107.52396774291992,
+      "sep6_p95_db": -108.53305854797364
+    }
+  ]
+}

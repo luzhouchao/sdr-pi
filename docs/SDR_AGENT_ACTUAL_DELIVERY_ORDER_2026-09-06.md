@@ -34,6 +34,9 @@ Web/Planner 日志限额、实际 health 兼容、只读定时检查、本地去
 随后用户要求查清干扰分布，已完成[2.4GHz三轮扫描及独立复测](validation/P201_BACKGROUND_MAP_VALIDATION_2026-09-09.md)。
 又按用户要求完成[5GHz常见Wi-Fi中心三轮抽样及复测](validation/P201_WIFI5_BACKGROUND_VALIDATION_2026-09-09.md)，
 只覆盖登记中心的1.5MHz窗口，不能当成5GHz全带连续覆盖。
+用户指定的[历史宽频记录对照](validation/HISTORICAL_BACKGROUND_COMPARISON_2026-09-09.md)
+也已完成：频段模式大体对应但存在变化，不能把不同增益/带宽/统计的读数
+直接等同，或将历史谱占用率解释为当前时间突发比例。
 当前应基于保留的频率/时间分布讨论来源控制实验或输入质量展示，不自动
 重扫或把本轮较弱频段固定为长期安全信道；模型与发射边界保持。
 

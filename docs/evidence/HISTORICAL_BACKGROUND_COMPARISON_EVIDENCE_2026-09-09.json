@@ -1,0 +1,50 @@
+{
+  "schema_id": "historical_background_comparison_evidence_v1",
+  "purpose": "Retain derived historical summaries and exact read-only input inventory; no copied source data or IQ",
+  "root": "/var/tmp/sdrharness-dev/historical-background-20260909f",
+  "source_root": "/home/jetson/agent/data/datasets/realtime_100_6000_A_20260816T111550Z_600s_256kfft",
+  "source_file_count": 4758,
+  "source_bytes_read": 4920782868,
+  "model": "not invoked",
+  "profile": "historical recorded gain60 BW30MHz; current gain20 BW1.5MHz; frequency-pattern comparison only",
+  "preprocess": "median overlapping records within each physical sweep/1MHz subband; then quantiles across sweeps",
+  "source_capture_session_identity": "1586 run identities and timestamps in summary.records; source CSV/metadata paths and hashes in source-manifest.jsonl",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/historical-background-20260909f/source-manifest.jsonl",
+      "bytes": 1397266,
+      "sha256": "a4956d51988abec886c17a5824cdba18ac6e755b47b5e40b4d419d0ca411574a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/historical-background-20260909f/summary.json",
+      "bytes": 3878990,
+      "sha256": "6a800c1eec9c8ae0b66ac7ced80783b315e811167577ef41ec464460249b42fb"
+    }
+  ],
+  "file_count": 2,
+  "total_bytes": 5276256,
+  "cleanup": {
+    "removed_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/historical-background-20260909f/scratch/matrix.npz",
+        "bytes": 18957900
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/historical-background-20260909f/scratch/matplotlib/fontlist-v330.json",
+        "bytes": 123432
+      }
+    ],
+    "removed_count": 2,
+    "removed_bytes": 19081332,
+    "removed_directories": [
+      "/var/tmp/sdrharness-dev/historical-background-20260909f/scratch/matplotlib",
+      "/var/tmp/sdrharness-dev/historical-background-20260909f/scratch"
+    ],
+    "all_absent_verified": true,
+    "processes_exited": true,
+    "hardware_calls": 0,
+    "source_files_modified": 0
+  },
+  "analysis_script_sha256": "424047d1e862a399697f01bb8da5cea26e863e5b850daf5f8d8f34d454381aaf",
+  "manual_delete_command": "python3 - <<'DELETE'\nfrom pathlib import Path\nimport hashlib,json\np=Path('/home/jetson/sdrharness/docs/evidence/HISTORICAL_BACKGROUND_COMPARISON_EVIDENCE_2026-09-09.json')\na=json.loads(p.read_text());r=Path(a['root'])\nassert r.resolve()==r and r.name=='historical-background-20260909f'\nassert {str(x) for x in r.rglob('*') if x.is_file()}=={x['path'] for x in a['files']}\nfor x in a['files']:\n f=Path(x['path']);assert f.resolve()==f and not f.is_symlink()\n b=f.read_bytes();assert len(b)==x['bytes'] and hashlib.sha256(b).hexdigest()==x['sha256']\nfor x in a['files']: Path(x['path']).unlink()\nfor d in sorted((d for d in r.rglob('*') if d.is_dir()),key=lambda d:len(d.parts),reverse=True): d.rmdir()\nr.rmdir();assert not r.exists()\nDELETE"
+}

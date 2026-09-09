@@ -60,6 +60,8 @@
 
 ## 数据、预处理与模型历史
 
+- [Agent历史1586轮宽频记录与当前背景对照](HISTORICAL_BACKGROUND_COMPARISON_2026-09-09.md)
+
 - [P201 5GHz Wi-Fi中心背景抽样与独立复测](P201_WIFI5_BACKGROUND_VALIDATION_2026-09-09.md)
 
 - [P201 2.4GHz背景分布：三轮全段扫描与独立复测](P201_BACKGROUND_MAP_VALIDATION_2026-09-09.md)

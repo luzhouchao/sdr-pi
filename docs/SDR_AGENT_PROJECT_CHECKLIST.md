@@ -773,6 +773,13 @@ aggregation, result persistence and model-facing summaries.
             coverage, protocol attribution or a permanently clean-channel claim.
             Retain 361 files / 26,038,557 bytes. See
             [5GHz background](validation/P201_WIFI5_BACKGROUND_VALIDATION_2026-09-09.md).
+      - [x] Read all 1,586 archived AGX Agent 100MHz–6GHz sweeps and compare
+            1MHz-subband frequency patterns with current 2.4/5GHz observations.
+            Per-run overlap deduplication, daily/overall statistics, independent
+            CSV checks, lineage and cleanup pass. Patterns broadly agree, with
+            explicit differences near 2460–2465MHz; metrics/gain/BW are not equal
+            and no same-source or protocol claim is made. See
+            [historical comparison](validation/HISTORICAL_BACKGROUND_COMPARISON_2026-09-09.md).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original
