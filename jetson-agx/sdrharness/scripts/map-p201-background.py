@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Finite 2.4-GHz antenna-background map using the installed RX-only Controller."""
+"""Finite 2.4-GHz map or 5-GHz Wi-Fi channel-center background survey using the installed RX-only Controller."""
 import argparse
 import hashlib
 import importlib.util
@@ -21,7 +21,10 @@ np = base.bg.np
 ROOT = Path('/var/tmp/sdrharness-dev/p201-background-map-20260909d')
 CENTERS = [2400600000 + round(i * 82300000 / 69) for i in range(70)]
 COUNT, RATE, BYTES = 65535, 2100000, 262140
-MAX_BYTES = 225 * BYTES
+BAND = "2.4g"
+ANCHOR = 2455000000
+MAX_POINTS = 225
+MAX_BYTES = MAX_POINTS * BYTES
 save, ssh = base.save, base.ssh
 
 
@@ -98,14 +101,15 @@ def native(root, plan):
 
 
 def select(sweeps):
-    assert len(sweeps) == 3 and all(len(s['rows']) == 70 for s in sweeps)
+    rounds = [[r for s in sweeps if s['round'] == i for r in s['rows']] for i in range(3)]
+    assert all(len(rows) == len(CENTERS) and sorted(r['center_hz'] for r in rows) == CENTERS for rows in rounds)
     ranking = []
     for c in CENTERS:
-        rows = [next(r for r in s['rows'] if r['center_hz'] == c) for s in sweeps]
+        rows = [next(r for r in group if r['center_hz'] == c) for group in rounds]
         score = float(np.median([r['statistics']['raw_rms']['p95'] for r in rows]))
         ranking.append(dict(center_hz=c, median_round_p95_rms=score))
     ranking.sort(key=lambda r: (-r['median_round_p95_rms'], r['center_hz']))
-    chosen = [2455000000]
+    chosen = [ANCHOR]
     for row in ranking:
         if all(abs(row['center_hz']-c) >= 4000000 for c in chosen):
             chosen.append(row['center_hz'])
@@ -113,7 +117,7 @@ def select(sweeps):
             break
     assert len(chosen) == 5
     return dict(centers_hz=chosen, ranking=ranking,
-                rule='2455MHz anchor plus four strongest median-round raw p95 RMS; >=4MHz separation')
+                rule=f'{ANCHOR/1e6:g}MHz anchor plus four strongest median-round raw p95 RMS; >=4MHz separation')
 
 
 def acquire():
@@ -125,9 +129,9 @@ def acquire():
     generation = int(time.time()*1000)
     audit = dict(schema_id='p201_background_map_v1', status='preflight', physical_input='operator confirmed RX1 antenna; external TX terminated and stopped',
         base_head=base.command(['git', '-C', base.REPO, 'rev-parse', 'HEAD']).strip(),
-        centers_hz=CENTERS, max_points=225, max_bytes=MAX_BYTES, free_bytes=shutil.disk_usage(ROOT).free,
+        band=BAND, centers_hz=CENTERS, max_points=MAX_POINTS, max_bytes=MAX_BYTES, free_bytes=shutil.disk_usage(ROOT).free,
         overall_deadline_seconds=1200, survey_call_deadline_seconds=300, focus_call_deadline_seconds=15,
-        estimated_wall_seconds=300, point_capture_deadline_ms=1000, sample_seconds=COUNT/RATE,
+        estimated_wall_seconds=450 if BAND == "5g" else 300, point_capture_deadline_ms=1000, sample_seconds=COUNT/RATE,
         runner_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         controller_sha256=hashlib.sha256(base.BINARY.read_bytes()).hexdigest(), numpy=np.__version__,
         tx_operations=0, model_windows=0, recognizer_available=False, independent_labels=0, sweeps=[])
@@ -168,7 +172,7 @@ def acquire():
                 '--sigmf-directory', str(root)], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             started = time.time()
             try:
-                out, err = p.communicate(json.dumps(plan), timeout=300 if phase=='survey' else 15)
+                out, err = p.communicate(json.dumps(plan), timeout=300 if len(centers)>1 else 15)
                 (root/'stderr.log').write_text(err)
                 assert p.returncode == 0, err[-2000:]
                 save(root/'report.json', json.loads(out))
@@ -191,7 +195,11 @@ def acquire():
                 save(ROOT/'audit.json', audit)
             audit['sweeps'][-1].update(restored=True, remote_absent=True)
             print(json.dumps(dict(completed=index, phase=phase, points=len(centers), elapsed=audit['sweeps'][-1]['elapsed_seconds'])), flush=True)
-        for round_index in range(3): capture(CENTERS, 'survey', round_index)
+        for round_index in range(3):
+            if BAND == '5g':
+                for center in CENTERS: capture([center], 'survey', round_index)
+            else:
+                capture(CENTERS, 'survey', round_index)
         audit['selection'] = select(audit['sweeps'])
         save(ROOT/'audit.json', audit)
         for round_index in range(3):
@@ -217,22 +225,30 @@ def acquire():
 
 def verify():
     audit = json.loads((ROOT/'audit.json').read_text())
-    assert audit['status']=='completed' and audit['restored'] and len(audit['sweeps'])==18
+    assert audit['status']=='completed' and audit['restored'] and len(audit['sweeps'])==(90 if BAND=='5g' else 18)
     assert audit['numpy']==np.__version__ and 'torch' not in sys.modules
     for s in audit['sweeps']:
         root=ROOT/f'capture-{s["index"]:02d}'
         result=native(root, json.loads((root/'plan.json').read_text()))
         assert result['hashes']==s['hashes'] and result['rows']==s['rows']
         assert s['restored'] and s['remote_absent']
-    assert select(audit['sweeps'][:3])==audit['selection']
-    print('225-point data, selection and exact numerical replay passed; no RF or model calls')
+    assert select([s for s in audit['sweeps'] if s['phase']=='survey'])==audit['selection']
+    print(f'{MAX_POINTS}-point data, selection and exact numerical replay passed; no RF or model calls')
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     g=parser.add_mutually_exclusive_group(required=True)
     g.add_argument('--acquire', action='store_true'); g.add_argument('--verify', action='store_true')
+    parser.add_argument('--band', choices=('2.4g', '5g'), default='2.4g')
     args=parser.parse_args()
+    if args.band == '5g':
+        BAND = '5g'
+        ROOT = Path('/var/tmp/sdrharness-dev/p201-wifi5-background-20260909e')
+        CENTERS = [int(m*1000000) for m in [*range(5180,5321,20), *range(5500,5721,20), *range(5745,5826,20)]]
+        ANCHOR = 5180000000
+        MAX_POINTS = 90
+        MAX_BYTES = MAX_POINTS * BYTES
     if args.verify: verify()
     else:
         def abort(signum, frame): raise RuntimeError(f'stop signal {signum}')

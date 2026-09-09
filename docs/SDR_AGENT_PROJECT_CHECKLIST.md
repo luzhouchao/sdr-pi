@@ -765,6 +765,14 @@ aggregation, result persistence and model-facing summaries.
             between windows; no protocol/source or long-term clean-channel claim.
             Retain 73 files / 64,602,034 bytes. See
             [background map](validation/P201_BACKGROUND_MAP_VALIDATION_2026-09-09.md).
+      - [x] Sample 25 common 5-GHz Wi-Fi channel centers × 3 rounds plus five
+            centers × 3 independent repeats at gain20dB/BW1.5MHz. All 90 native
+            captures, restorations, exact replay and cleanup pass. Short activity
+            recurs at 5805/5785/5745/5240MHz; sampled 5500–5720MHz centers remain
+            low during these windows. This is sparse center sampling, not full-band
+            coverage, protocol attribution or a permanently clean-channel claim.
+            Retain 361 files / 26,038,557 bytes. See
+            [5GHz background](validation/P201_WIFI5_BACKGROUND_VALIDATION_2026-09-09.md).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original

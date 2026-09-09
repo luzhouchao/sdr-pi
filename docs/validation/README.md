@@ -60,6 +60,8 @@
 
 ## 数据、预处理与模型历史
 
+- [P201 5GHz Wi-Fi中心背景抽样与独立复测](P201_WIFI5_BACKGROUND_VALIDATION_2026-09-09.md)
+
 - [P201 2.4GHz背景分布：三轮全段扫描与独立复测](P201_BACKGROUND_MAP_VALIDATION_2026-09-09.md)
 
 - [P201 RX1负载→天线→负载：反向三阶段背景隔离与恢复](P201_TERMINATION_BACKGROUND_VALIDATION_2026-09-09.md)
