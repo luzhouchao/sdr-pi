@@ -758,6 +758,13 @@ aggregation, result persistence and model-facing summaries.
               with no original 20-ADC display-line events. Retain 25 files /
               1,612,141 bytes; see the same validation record and
               [reverse bracket](evidence/P201_REVERSE_BRACKET_COMPARISON_2026-09-09.json).
+      - [x] Map ambient 2400–2483.5-MHz frequency/time distribution with 70
+            overlapping centers × 3 surveys and 5 centers × 3 independent repeats,
+            fixed gain20dB. All 225 points, 18 session restorations, exact replay
+            and cleanup pass. Strong activity clusters near 2410–2424MHz and varies
+            between windows; no protocol/source or long-term clean-channel claim.
+            Retain 73 files / 64,602,034 bytes. See
+            [background map](validation/P201_BACKGROUND_MAP_VALIDATION_2026-09-09.md).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original
