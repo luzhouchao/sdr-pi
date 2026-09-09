@@ -110,10 +110,12 @@ def acquire(condition):
         runner_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         filter_contract=bg.repair.filter_contract(), analysis_numpy=bg.np.__version__,
         model_windows=0, tx_operations=0, recognizer_available=False, independent_labels=0,
-        historical_comparison_only=condition != 'antenna-return',
-        comparison_design='sequential termination then antenna; not a bracketed antenna/termination/antenna experiment')
-    if condition == 'antenna-return':
-        inventory = REPO / 'docs/evidence/P201_TERMINATION_BACKGROUND_EVIDENCE_2026-09-09.json'
+        historical_comparison_only=condition == 'termination',
+        comparison_design=('termination/antenna/termination reverse bracket' if condition == 'termination-return'
+            else 'sequential termination then antenna; not a bracketed experiment'))
+    if condition != 'termination':
+        inventory = REPO / ('docs/evidence/P201_ANTENNA_RETURN_EVIDENCE_2026-09-09.json'
+            if condition == 'termination-return' else 'docs/evidence/P201_TERMINATION_BACKGROUND_EVIDENCE_2026-09-09.json')
         parent = json.loads(inventory.read_text())
         for row in parent['files']:
             path = Path(row['path'])
@@ -132,7 +134,7 @@ def acquire(condition):
         assert ssh(f'readlink /proc/{daemon[0]}/exe').strip() == '/sd/sdr-agent/current/sdrd'
         audit['daemon_pid'] = daemon[0]
         audit['daemon_sha256'] = ssh('sha256sum /sd/sdr-agent/current/sdrd').split()[0]
-        if condition == 'antenna-return':
+        if condition != 'termination':
             parent_audit = json.loads(Path(audit['parent_evidence']['audit_path']).read_text())
             for key in ('daemon_sha256', 'controller_sha256', 'filter_contract', 'analysis_numpy'):
                 assert audit[key] == parent_audit[key], f'comparison identity changed: {key}'
@@ -229,10 +231,12 @@ if __name__ == '__main__':
     choice = parser.add_mutually_exclusive_group(required=True)
     choice.add_argument('--acquire', action='store_true')
     choice.add_argument('--verify', action='store_true')
-    parser.add_argument('--condition', choices=('termination', 'antenna-return'), default='termination')
+    parser.add_argument('--condition', choices=('termination', 'antenna-return', 'termination-return'), default='termination')
     args = parser.parse_args()
     if args.condition == 'antenna-return':
         ROOT = Path('/var/tmp/sdrharness-dev/p201-antenna-return-20260909b')
+    elif args.condition == 'termination-return':
+        ROOT = Path('/var/tmp/sdrharness-dev/p201-termination-return-20260909c')
     if args.verify:
         verify()
     else:

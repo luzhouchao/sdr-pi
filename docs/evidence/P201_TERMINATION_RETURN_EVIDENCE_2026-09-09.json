@@ -1,0 +1,327 @@
+{
+  "schema_id": "p201_termination_return_evidence_v1",
+  "purpose": "Reproduce reverse-bracket termination background after antenna; necessary raw IQ retained once",
+  "root": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c",
+  "parent": {
+    "path": "/home/jetson/sdrharness/docs/evidence/P201_ANTENNA_RETURN_EVIDENCE_2026-09-09.json",
+    "sha256": "3297ade48e6c3ad2dea7c9db49157f4ef86e6225db789eeaf00a0e8a4379c265",
+    "audit_path": "/var/tmp/sdrharness-dev/p201-antenna-return-20260909b/audit.json"
+  },
+  "physical_connection": "operator confirmed 50-ohm load on P201 RX1 and previous external TX port",
+  "model": "not invoked",
+  "profile": "unchanged finite 2455MHz diagnostic RX settings; no production admission",
+  "preprocess": {
+    "schema_id": "b210_separated_lo_fixed_fir_v1",
+    "sample_rate_hz": 2100000,
+    "tx_lo_offset_hz": 250000,
+    "taps": 257,
+    "cutoff_hz": 175000,
+    "kaiser_beta": 8.0,
+    "raw_halo_samples": 128,
+    "coefficients_sha256": "d0e12014bedae088b71366497299adc3a1be0a45cf622e9cbb346d4ea0c8c8be",
+    "passband_max_amplitude_error": 6.72315640199983e-05,
+    "stopband_max_db": -86.48358432113966,
+    "source_mean_preserved": true,
+    "production_enabled": false
+  },
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/audit.json",
+      "bytes": 20395,
+      "sha256": "851ca3f8483e67b61b52380d536a90d2341a68f87a80615e9bdb72f39f7dc934"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-00/plan.json",
+      "bytes": 391,
+      "sha256": "02069a57b39373bcc6b0b4fc4c323ecabfcdda6dd5fa0cef94008697c08ddceb",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122099",
+      "session_generation": 1788956122099,
+      "request_id": 5,
+      "sequence": 1083
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-00/report.json",
+      "bytes": 2272,
+      "sha256": "9d3b33076697b19525c47a13a366e2202b4b45f32562eb43b4dd79504613e22f",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122099",
+      "session_generation": 1788956122099,
+      "request_id": 5,
+      "sequence": 1083
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-00/termination-return-1788956122099-1788956122099-1788956124832753717.sigmf-data",
+      "bytes": 262140,
+      "sha256": "a8704f795b340f6986f9564f4a77360d697ac09692e50aca9c5189ed943ef8bf",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122099",
+      "session_generation": 1788956122099,
+      "request_id": 5,
+      "sequence": 1083
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-00/termination-return-1788956122099-1788956122099-1788956124832753717.sigmf-meta",
+      "bytes": 487,
+      "sha256": "641dbf5bfdb066616829cf07442a58f770455d72927767151d5c2ec3c50097ab",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122099",
+      "session_generation": 1788956122099,
+      "request_id": 5,
+      "sequence": 1083
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-01/plan.json",
+      "bytes": 391,
+      "sha256": "d8057c1208bfe04bc8ef067b424244b7400b79ce83b81501f42a54ffd5fe7f4b",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122100",
+      "session_generation": 1788956122100,
+      "request_id": 5,
+      "sequence": 1084
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-01/report.json",
+      "bytes": 2270,
+      "sha256": "d9f04294d9a9f4b881b0fc2e74ac77ec334505a65dc7f40baeccf972296520bb",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122100",
+      "session_generation": 1788956122100,
+      "request_id": 5,
+      "sequence": 1084
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-01/termination-return-1788956122100-1788956122100-1788956130694907235.sigmf-data",
+      "bytes": 262140,
+      "sha256": "1108a76c253c5603825872f7c2b6538515429d56440db326fd1218db72c5f670",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122100",
+      "session_generation": 1788956122100,
+      "request_id": 5,
+      "sequence": 1084
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-01/termination-return-1788956122100-1788956122100-1788956130694907235.sigmf-meta",
+      "bytes": 487,
+      "sha256": "836bfc80f6338385a0c99e41f91922024b2205881f04a790b106f4f2e254f0db",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122100",
+      "session_generation": 1788956122100,
+      "request_id": 5,
+      "sequence": 1084
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-02/plan.json",
+      "bytes": 391,
+      "sha256": "5ba0694de44154aa0b62353389da031da71ce8baad4ee5cd484a8a55e04252f5",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122101",
+      "session_generation": 1788956122101,
+      "request_id": 5,
+      "sequence": 1085
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-02/report.json",
+      "bytes": 2274,
+      "sha256": "0f6f148f2c29cfab1addf02949b42d65cf76d045ca809467203270d98b0b7ae2",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122101",
+      "session_generation": 1788956122101,
+      "request_id": 5,
+      "sequence": 1085
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-02/termination-return-1788956122101-1788956122101-1788956136556386805.sigmf-data",
+      "bytes": 262140,
+      "sha256": "fa4ac2276348bba2c61681f2efc0790429d3eaafb886ce3a9c6459e4573ca5d1",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122101",
+      "session_generation": 1788956122101,
+      "request_id": 5,
+      "sequence": 1085
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-02/termination-return-1788956122101-1788956122101-1788956136556386805.sigmf-meta",
+      "bytes": 487,
+      "sha256": "10deabd500278c090e387d2a4700728af196907a3487ac76b8488ead64ba91be",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122101",
+      "session_generation": 1788956122101,
+      "request_id": 5,
+      "sequence": 1085
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-03/plan.json",
+      "bytes": 391,
+      "sha256": "a64542d53c9cdf7ff67aeb8799af4c8a6719c3954e15c1d1b767492a3c2827aa",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122102",
+      "session_generation": 1788956122102,
+      "request_id": 5,
+      "sequence": 1086
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-03/report.json",
+      "bytes": 2275,
+      "sha256": "f0fcbac10c36bea78c538bebcf704f9792b639f62d555764ff3f2bd0a39863c3",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122102",
+      "session_generation": 1788956122102,
+      "request_id": 5,
+      "sequence": 1086
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-03/termination-return-1788956122102-1788956122102-1788956142436651623.sigmf-data",
+      "bytes": 262140,
+      "sha256": "5b528d4a6a07b124d456820a9788533b109d5ff8ece1dc10205bcdf99bf4fa9b",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122102",
+      "session_generation": 1788956122102,
+      "request_id": 5,
+      "sequence": 1086
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-03/termination-return-1788956122102-1788956122102-1788956142436651623.sigmf-meta",
+      "bytes": 487,
+      "sha256": "0eeabdc093e6aa15481bb83f29b0656b99ad19669fb86e11907db0a47384564c",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122102",
+      "session_generation": 1788956122102,
+      "request_id": 5,
+      "sequence": 1086
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-04/plan.json",
+      "bytes": 391,
+      "sha256": "4522f652f20460613ececea5a771b790e713bb247b5982268a413d7e6b188700",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122103",
+      "session_generation": 1788956122103,
+      "request_id": 5,
+      "sequence": 1087
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-04/report.json",
+      "bytes": 2274,
+      "sha256": "28770d2e050a65fca84d43b55fd71428b4524691dc918d2ec4ad56df246e026e",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122103",
+      "session_generation": 1788956122103,
+      "request_id": 5,
+      "sequence": 1087
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-04/termination-return-1788956122103-1788956122103-1788956148311853885.sigmf-data",
+      "bytes": 262140,
+      "sha256": "daef98d457403247adf343057025341d1ac7213186874841062c61208136f3f2",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122103",
+      "session_generation": 1788956122103,
+      "request_id": 5,
+      "sequence": 1087
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-04/termination-return-1788956122103-1788956122103-1788956148311853885.sigmf-meta",
+      "bytes": 487,
+      "sha256": "bc670968dab37cf424513acd00fbae6dd85fca630ce1de88779909ffdd482310",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122103",
+      "session_generation": 1788956122103,
+      "request_id": 5,
+      "sequence": 1087
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-05/plan.json",
+      "bytes": 391,
+      "sha256": "e4bcf476eca79edbc1872f172c4026a08ab4fe714740d3c077056a3c222aef90",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122104",
+      "session_generation": 1788956122104,
+      "request_id": 5,
+      "sequence": 1088
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-05/report.json",
+      "bytes": 2273,
+      "sha256": "00b21592fdbe30bc2b4c4418b60d91122776470a1925ef718f3ebe8604f7b798",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122104",
+      "session_generation": 1788956122104,
+      "request_id": 5,
+      "sequence": 1088
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-05/termination-return-1788956122104-1788956122104-1788956154163911175.sigmf-data",
+      "bytes": 262140,
+      "sha256": "3ffd57cc9a86e91e5eabf79223a1685807cc6d2731655713822ac1a771d557d2",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122104",
+      "session_generation": 1788956122104,
+      "request_id": 5,
+      "sequence": 1088
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-05/termination-return-1788956122104-1788956122104-1788956154163911175.sigmf-meta",
+      "bytes": 487,
+      "sha256": "21d97b24c4512c934a0f54c299689ee7524671d21300d0f71e6726b811d85f09",
+      "source": "P201 RX1 returned to 50-ohm termination; external TX terminated and stopped",
+      "capture": "termination-return-1788956122104",
+      "session_generation": 1788956122104,
+      "request_id": 5,
+      "sequence": 1088
+    }
+  ],
+  "file_count": 25,
+  "total_bytes": 1612141,
+  "raw_iq_bytes": 1572840,
+  "cleanup": {
+    "removed_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/active.json",
+        "bytes": 58
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-00/stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-01/stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-02/stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-03/stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-04/stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/capture-05/stderr.log",
+        "bytes": 0
+      }
+    ],
+    "removed_count": 7,
+    "removed_bytes": 58,
+    "removed_directories": [
+      "/var/tmp/sdrharness-dev/p201-termination-return-20260909c/scratch"
+    ],
+    "all_absent_verified": true,
+    "runner_exited": true,
+    "p201_transients_absent": [
+      "/tmp/sdr-agent-dev/agx-sweep-1788956122099-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788956122100-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788956122101-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788956122102-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788956122103-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1788956122104-0"
+    ],
+    "nx_created_files": 0,
+    "created_sockets": 0
+  },
+  "manual_delete_command": "python3 - <<'DELETE'\nfrom pathlib import Path\nimport hashlib,json\np=Path('/home/jetson/sdrharness/docs/evidence/P201_TERMINATION_RETURN_EVIDENCE_2026-09-09.json')\na=json.loads(p.read_text());r=Path(a['root'])\nassert r.resolve()==r and r.name=='p201-termination-return-20260909c'\nassert {str(x) for x in r.rglob('*') if x.is_file()}=={x['path'] for x in a['files']}\nfor x in a['files']:\n f=Path(x['path']);assert f.resolve()==f and not f.is_symlink()\n b=f.read_bytes();assert len(b)==x['bytes'] and hashlib.sha256(b).hexdigest()==x['sha256']\nfor x in a['files']: Path(x['path']).unlink()\nfor d in sorted((d for d in r.rglob('*') if d.is_dir()),key=lambda d:len(d.parts),reverse=True): d.rmdir()\nr.rmdir();assert not r.exists()\nDELETE"
+}

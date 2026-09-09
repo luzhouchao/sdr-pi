@@ -735,11 +735,12 @@ aggregation, result persistence and model-facing summaries.
             to these two ports after vendor source proved fixed TRX switch
             controls; no FPGA/BOOT change. Frozen Controller/profile still
             requires RX1; RX2 is an explicit diagnostic path. See the same record.
-      - [ ] Execute antenna/50-ohm termination/antenna input isolation with actual
-            connection evidence. Terminations became available on 2026-09-09;
-            six terminated and six antenna-return RX1 backgrounds are complete.
-            This is a same-day sequential termination/antenna comparison; a
-            bracketed three-stage isolation is still missing.
+      - [x] Execute reversible three-stage antenna/50-ohm input isolation with
+            actual connection evidence. Operator's 2026-09-09 connection order
+            was termination/antenna/termination (reverse of the original wording).
+            All 18 captures, both-channel restoration, replay and cleanup pass;
+            high-background events occur in 0/6, 6/6, 0/6 captures. This completes
+            physical comparison, not specific source attribution or full RF admission.
         - [x] Capture six fixed 2455-MHz terminated RX1 backgrounds with external
               TX stopped; validate native data, both-channel restoration, exact
               replay and cleanup. Retain 25 files / 1,611,184 bytes. FIR RMS
@@ -752,6 +753,11 @@ aggregation, result persistence and model-facing summaries.
               restored radio, parent hashes and cleanup. No specific RF-source or
               hardware-cause claim; see the same record and
               [antenna evidence](evidence/P201_ANTENNA_RETURN_EVIDENCE_2026-09-09.json).
+        - [x] Return RX1 to 50-ohm termination after operator confirmation and
+              repeat six fixed captures: FIR maxima return to 1.025–3.469 ADC,
+              with no original 20-ADC display-line events. Retain 25 files /
+              1,612,141 bytes; see the same validation record and
+              [reverse bracket](evidence/P201_REVERSE_BRACKET_COMPARISON_2026-09-09.json).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original
