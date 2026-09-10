@@ -1,11 +1,14 @@
 # 项目文档入口
 
-日常继续开发只需要先读根目录的四份文件：
+默认阅读范围：
 
-1. [AGENTS.md](../AGENTS.md)：工作规则、硬件边界、证据保留与清理。
-2. [权威 checklist](SDR_AGENT_PROJECT_CHECKLIST.md)：哪些已完成、哪些仍未完成。
-3. [实际推进顺序](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)：下一独立单元及其依赖。
-4. [第1—6章范围](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)：各章完整交付边界。
+1. [AGENTS.md](../AGENTS.md)：工作规则与读取边界。
+2. [当前执行选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#当前执行选择)及[后续实验选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。
+3. [checklist 状态速览](SDR_AGENT_PROJECT_CHECKLIST.md#当前交付状态速览2026-09-10)；具体条目按任务定位。
+
+[章节范围](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)、接口和实验资料按需打开。
+**默认不读取实验正文、图表、计划、证据清单或原始数据**，也不递归展开下面的链接；
+需要核对参数、排查问题、执行相关硬件操作或复核结果时，只打开直接相关记录。
 
 然后按当前任务选择下面的目录，不必逐份重读历史实验。
 
@@ -15,24 +18,18 @@
 | [validation/](validation/README.md) | 按主题索引的已执行验证、部署和回滚记录 |
 | [evidence/](evidence/README.md) | 原始审计 JSON、保留证据清单、预登记计划和图表 |
 
-最近完成[普通对话重复展示修复](validation/HOLD_REPLY_DISPLAY_VALIDATION_2026-09-08.md)：
-匹配的 hold 计划只在诊断保留，主对话只显示一次回复。
-此前完成[首次扫描混合选参与频率显示](validation/SURVEY_PARAMETER_ASSIST_VALIDATION_2026-09-08.md)：
-参数可分别手填或由 AI 补齐，预算预览后保存；GHz/MHz 显示保留准确频率。
-此前完成[本地 Planner 恢复](validation/LOCAL_PLANNER_REPAIR_VALIDATION_2026-09-08.md)：
-本地 Spark 已在原会话验证正常回复，在线网关按用户要求暂不处理。
-此前完成[新版网页日常 RX 使用验收](validation/DAILY_RX_USE_VALIDATION_2026-09-08.md)：
-三段实收、停止恢复、结果管理与监控共存通过，实际发现的扫描/取消文案已修正。
-此前完成[非模型运维部署](validation/OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md)：
-Web/Planner 专用日志、只读健康与本地去重告警已安装，识别仍关闭。
-此前完成[Web 界面重构与部署验收](validation/WEB_UI_REDESIGN_VALIDATION_2026-09-07.md)：
-固定导航、折叠设置和可读频谱已安装，原会话/结果保留，识别仍关闭。
-此前完成[Web 后台升级与会话恢复验收](validation/WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)，
-Web 制品和退出预算已更新，原会话/结果保留并已实际回滚验证；识别仍关闭。
-此前已安装[统一 CLI](validation/UNIFIED_CLI_VALIDATION_2026-09-07.md)：
-Web/终端/脚本/恢复共用 `sdr-agent`。识别系统尚未整体生产准入；源码完成、隔离
-验证通过、实际安装和生产能力开放须分别核对。状态只在 checklist 维护，顺序
-只在推进文档维护。
+当前实验选择：后续收发默认 **433.920 MHz、当前433MHz天线**。参考参数见
+[后续实验选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。模型工作仍暂停。
+实验历史仅提供[索引链接](validation/README.md#近期射频排查2026-09-09至10)，需要时再读。
+
+其他资料入口（按需）：
+
+- [Agent、控制与部署记录](validation/README.md#agent控制与部署)
+- [识别软件交付记录](validation/README.md#识别软件交付)
+- [架构、接口与运维](reference/README.md)
+- [文档整理记录](validation/DOCS_CONSOLIDATION_2026-09-07.md)
+
+实际完成和部署状态以 checklist 对应条目为准，入口不重复维护历史结果。
 
 历史文档中的“下一步”“未完成”和旧命令只描述当时状态，不是新任务指令。
 早期 Pi 验证已合入[历史合订记录](validation/PI_BASELINE_HISTORY.md)。旧 ROADMAP、

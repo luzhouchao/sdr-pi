@@ -1,6 +1,6 @@
 # SDR Agent project checklist
 
-Last reviewed: 2026-09-08
+Last reviewed: 2026-09-10
 
 This is the living source of truth for implementation status. Check an item only
 after the exact wording is implemented and verified. Split partial work into a
@@ -12,13 +12,14 @@ Sections 1–6 are now the unified RX-only chapter plan and replace the earlier
 [`CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md);
 this file retains the detailed delivery and evidence ledger.
 
-## 当前交付状态速览（2026-09-08）
+## 当前交付状态速览（2026-09-10）
 
 以下是本文件各章节的当前交付索引；详细完成条件和证据仍见对应章节。
 编号表示范围，不表示施工先后；实际顺序见
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
+- [x] 2026-09-10 用户选择已记录：后续实验默认433.920MHz、当前433MHz天线；规则、推进顺序和文档入口已同步，近期RF验证/证据归入专门索引，旧失败和封存字节保持。仅文档整理，无RF或生产配置部署。见[整理记录](validation/DOCS_CONSOLIDATION_2026-09-07.md#2026-09-10实验频段选择与射频记录整理)。
 - [x] 普通对话去重展示：匹配 hold 回复时重复计划及对应执行器提示收进诊断，原记录/接收计划/批准/错误保留；前端回归、实际浏览器、安装及精确清理完成。见 [展示修复](validation/HOLD_REPLY_DISPLAY_VALIDATION_2026-09-08.md)。
 - [x] 首次扫描混合选参与频率显示：步进/停留/增益逐项手填或 AI 补齐，双层校验、迟到隔离与具体预算预览；实际本地模型/浏览器、Web 安装及已有制品回滚、用户数据保护和精确清理通过。见 [选参验收](validation/SURVEY_PARAMETER_ASSIST_VALIDATION_2026-09-08.md)。选参本身不执行 RF，不开放识别。
 - [x] 本地 Planner 恢复：恢复完整 Spark 本地选择并重新连接原会话，共享有界脱敏错误反馈；原生单次/交互及实际网页 hold 验证通过，72 项回归和精确清理完成。按用户要求不新增备份，在线网关工作暂缓。见 [本地修复](validation/LOCAL_PLANNER_REPAIR_VALIDATION_2026-09-08.md)。

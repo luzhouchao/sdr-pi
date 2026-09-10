@@ -1,7 +1,9 @@
 # 原始证据附件
 
-这里集中保存审计 JSON、保留文件清单、预登记计划和图表，均从旧 docs 根目录
-逐字节迁移；文件 SHA-256 不变。读结论请先看[验证索引](../validation/README.md)。
+此目录按需读取：索引仅提供链接，不默认展开实验记录或原始附件。
+
+这里集中保存审计 JSON、保留文件清单、预登记计划和图表。旧附件从 docs 根目录
+逐字节迁移，新试验附件直接归档于此；封存文件 SHA-256 保持不变。读结论请先看[验证索引](../validation/README.md)。
 
 - `*_EVIDENCE_*.json`：外部保留 IQ/诊断包的路径、用途、哈希和删除依据，必须保留。
 - `*_AUDIT_*.json` 及其他审计 JSON：有界结果、失败、执行/清理记录，不能当成新的标签或准入证据。
@@ -14,9 +16,26 @@
 以及其哈希未改动；开发清理不能删除这些用户数据。修改读取脚本的定位路径不
 会追溯改写旧审计记录的脚本哈希。
 
-## 保留数据的删除依据
+## 近期射频试验附件（2026-09-10）
+
+结论和各轮关系见[射频排查索引](../validation/README.md#近期射频排查2026-09-09至10)；计划是历史预登记，不是待执行命令。
 
 - [3500MHz低增益单音完整对照与失败证据](B210_3500_TONE_EVIDENCE_2026-09-10.json)
+- [3500MHz负载背景证据与清理](P201_3500_TERMINATION_EVIDENCE_2026-09-10.json)
+- [3500MHz重发预登记](B210_3500_RETRY_PLAN_2026-09-10.md)
+- [3500MHz重发证据库存](B210_3500_RETRY_EVIDENCE_2026-09-10.json)
+- [3500MHz增益矩阵预登记](B210_3500_GAIN_PLAN_2026-09-10.md)
+- [3500MHz增益矩阵证据清理](B210_3500_GAIN_EVIDENCE_2026-09-10.json)
+- [3500MHz历史增益预登记](B210_3500_TX70_RX50_PLAN_2026-09-10.md)
+- [3500MHz历史增益证据清理](B210_3500_TX70_RX50_EVIDENCE_2026-09-10.json)
+- [2440MHz回测预登记](B210_2440_RETURN_PLAN_2026-09-10.md)
+- [2440MHz回测证据清理](B210_2440_RETURN_EVIDENCE_2026-09-10.json)
+- [2440MHz换天线复测预登记](B210_2440_ANTENNA_CHANGE_PLAN_2026-09-10.md)
+- [2440MHz换天线成功证据](B210_2440_ANTENNA_CHANGE_EVIDENCE_2026-09-10.json)
+- [433MHz天线试验预登记](B210_433920_ANTENNA_PLAN_2026-09-10.md)
+- [433MHz天线试验证据](B210_433920_ANTENNA_EVIDENCE_2026-09-10.json)
+
+## 保留数据的删除依据
 
 - [历史宽频背景对照派生汇总与源文件清单](HISTORICAL_BACKGROUND_COMPARISON_EVIDENCE_2026-09-09.json)
 
@@ -48,23 +67,3 @@
 - [RF-aligned checkpoint 审计](../RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_AUDIT_2026-09-05.json)
 
 整理不能为了目录整齐改变这些引用或重新冻结模型配置。
-
-- [3500MHz负载背景证据与清理](P201_3500_TERMINATION_EVIDENCE_2026-09-10.json)
-
-- [3500MHz重发预登记](B210_3500_RETRY_PLAN_2026-09-10.md)
-- [3500MHz重发证据库存](B210_3500_RETRY_EVIDENCE_2026-09-10.json)
-
-- [3500MHz增益矩阵预登记](B210_3500_GAIN_PLAN_2026-09-10.md)
-- [3500MHz增益矩阵证据清理](B210_3500_GAIN_EVIDENCE_2026-09-10.json)
-
-- [3500MHz历史增益预登记](B210_3500_TX70_RX50_PLAN_2026-09-10.md)
-- [3500MHz历史增益证据清理](B210_3500_TX70_RX50_EVIDENCE_2026-09-10.json)
-
-- [2440MHz回测预登记](B210_2440_RETURN_PLAN_2026-09-10.md)
-- [2440MHz回测证据清理](B210_2440_RETURN_EVIDENCE_2026-09-10.json)
-
-- [2440MHz换天线复测预登记](B210_2440_ANTENNA_CHANGE_PLAN_2026-09-10.md)
-- [2440MHz换天线成功证据](B210_2440_ANTENNA_CHANGE_EVIDENCE_2026-09-10.json)
-
-- [433MHz天线试验预登记](B210_433920_ANTENNA_PLAN_2026-09-10.md)
-- [433MHz天线试验证据](B210_433920_ANTENNA_EVIDENCE_2026-09-10.json)
