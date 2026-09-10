@@ -62,3 +62,6 @@ fpga/nx_experiments/**/staged_robot_control_integration/
 Thumbs.db
 .idea/
 .vscode/
+
+# Machine-local CodeGraph index, rebuilt per checkout.
+/.codegraph/

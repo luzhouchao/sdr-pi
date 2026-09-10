@@ -139,4 +139,5 @@
 
 ## 维护记录
 
+- [CodeGraph本地初始化与CLI/MCP验收](CODEGRAPH_INITIALIZATION_2026-09-10.md)
 - [文档删并、迁移和链接验证](DOCS_CONSOLIDATION_2026-09-07.md)

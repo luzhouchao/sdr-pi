@@ -51,3 +51,17 @@ AGX 安装布局与命令见[部署入口](../../jetson-agx/sdrharness/README.md
 | Planner 第三方许可 | [Third-party notices](../../raspberry-pi/sdr-agent/planner-worker/THIRD_PARTY_NOTICES.md) |
 
 历史系统与Pi实验结果从[验证索引](../validation/README.md#组件目录中的历史实验)进入。
+
+## CodeGraph 代码导航
+
+本仓库已初始化本地CodeGraph。理解/定位代码优先使用`codegraph explore`，MCP调用传
+`projectPath=/home/jetson/sdrharness`；它不替代按需读取实验记录或真实测试。
+
+```bash
+codegraph status --json /home/jetson/sdrharness
+codegraph explore validate_rf_case
+codegraph sync /home/jetson/sdrharness
+```
+
+状态有待更新文件时使用sync。索引在`.codegraph/`，由Git忽略，其他checkout需要单独初始化；
+初始化和CLI/MCP验收见[记录](../validation/CODEGRAPH_INITIALIZATION_2026-09-10.md)。
