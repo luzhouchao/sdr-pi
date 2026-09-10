@@ -1,5 +1,7 @@
 # Raspberry Pi SDR Agent runtime
 
+当前状态以[项目入口](../../docs/README.md)和checklist为准；本文保留共享组件与历史Pi操作参考。
+
 > Historical/rollback runtime: new development targets the Jetson AGX clone at
 > `/home/jetson/sdrharness`. The implementations in this directory remain the
 > shared Controller, Planner and Web modules used by the AGX migration; the Pi

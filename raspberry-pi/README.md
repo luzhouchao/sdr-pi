@@ -1,5 +1,7 @@
 # Raspberry Pi 4B client
 
+本目录为历史/回滚及AGX复用组件，当前工作入口见[项目文档](../docs/README.md)；下面网络布局属于Pi参考配置。
+
 The Raspberry Pi uses its Ethernet port as a direct P201 Pro link and Wi-Fi for
 management:
 

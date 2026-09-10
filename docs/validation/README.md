@@ -6,11 +6,15 @@
 当前状态见[权威清单](../SDR_AGENT_PROJECT_CHECKLIST.md)，下一步见[推进顺序](../SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 旧命令、旧地址、当时的“未部署/下一步”仅描述原验证时点；不能直接照历史记录重跑 RF、训练或格式化操作。
 
-近期入口：[普通对话展示修复](HOLD_REPLY_DISPLAY_VALIDATION_2026-09-08.md)、[首次扫描混合选参](SURVEY_PARAMETER_ASSIST_VALIDATION_2026-09-08.md)、[本地 Planner 修复](LOCAL_PLANNER_REPAIR_VALIDATION_2026-09-08.md)、[日常 RX 使用验收](DAILY_RX_USE_VALIDATION_2026-09-08.md)、[非模型运维部署](OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md)、[Web 界面重构](WEB_UI_REDESIGN_VALIDATION_2026-09-07.md)、[Web 升级与会话恢复](WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)、
-[统一 CLI 部署](UNIFIED_CLI_VALIDATION_2026-09-07.md)、
-[P201 RX1/RX2](P201_RX_PORT_SELECTION_VALIDATION_2026-09-07.md)、
-[O1a](OPERATIONS_O1A_VALIDATION_2026-09-06.md)、
-[文档整理](DOCS_CONSOLIDATION_2026-09-07.md)。
+按主题定位，只打开需要的一组：
+
+- [近期射频排查](#近期射频排查2026-09-09至10)
+- [Agent、控制与部署](#agent控制与部署)
+- [识别软件交付](#识别软件交付)
+- [数据、预处理与模型历史](#数据预处理与模型历史)
+- [B210/P201 诊断](#b210p201-诊断)
+- [组件目录中的历史实验](#组件目录中的历史实验)
+- [文档维护](#维护记录)
 
 ## 近期射频排查（2026-09-09至10）
 
@@ -32,12 +36,13 @@
 
 ## Agent、控制与部署
 
+- [普通对话展示修复](HOLD_REPLY_DISPLAY_VALIDATION_2026-09-08.md)
+- [首次扫描混合选参](SURVEY_PARAMETER_ASSIST_VALIDATION_2026-09-08.md)
+- [本地 Planner 修复](LOCAL_PLANNER_REPAIR_VALIDATION_2026-09-08.md)
+- [Web 界面重构](WEB_UI_REDESIGN_VALIDATION_2026-09-07.md)
 - [新版网页日常 RX 使用验收](DAILY_RX_USE_VALIDATION_2026-09-08.md)
-
 - [非模型运维配置部署](OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md)
-
 - [Web 后台升级与会话恢复验收](WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)
-
 - [AGX Agent framework validation - 2026-09-01](AGX_FRAMEWORK_VALIDATION_2026-09-01.md)
 - [IIO refill 合同修复：异常长度失败关闭，尚无历史RF根因结论](IIO_REFILL_CONTRACT_VALIDATION_2026-09-07.md)
 - [P201 → AGX receive-profile validation (2026-09-02)](P201_AGX_RX_PROFILE_VALIDATION_2026-09-02.md)
@@ -81,7 +86,6 @@
 ## 数据、预处理与模型历史
 
 - [RML2018.01A 用户指定名称映射](RML2018A_LABEL_MAPPING_VALIDATION_2026-09-08.md)
-
 - [AGX AMC-Mamba D8 离线部署与完整测试集验证 — 2026-09-04](AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
 - [AGX Spark/Mamba resource and Planner validation — 2026-09-04](AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md)
 - [AMC corpus contract validation (2026-09-05)](AMC_CORPUS_CONTRACT_VALIDATION_2026-09-05.md)
@@ -120,6 +124,18 @@
 - [NX B210 RF A 到 P201 RX1 链路验证 — 2026-09-04](NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md)
 - [NX B210 → P201 RX1：2.440 GHz 延长回放验证](NX_B210_RML_2440_EXTENDED_VALIDATION_2026-09-06.md)
 - [NX B210 RML2018A → P201 2.440 GHz 有限验证](NX_B210_RML_2440_VALIDATION_2026-09-06.md)
+
+## 组件目录中的历史实验
+
+保留原目录以维持源码引用与历史命令的上下文；这些是当时记录，不是当前部署或待办。
+
+- [P201 系统基线](../../sdr-system/docs/BASELINE_2026-08-31.md)
+- [SDRD shadow 验证](../../sdr-system/docs/SDRD_SHADOW_VALIDATION_2026-08-31.md)
+- [SDRD controlled 接口验证](../../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md)
+- [SDRD IIO Adapter 验证](../../sdr-system/docs/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md)
+- [早期个人部署记录](../../sdr-system/docs/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md)
+- [Pi Rust/libiio 测试结果](../../raspberry-pi/p201pro-rust/TEST_RESULTS.md)
+- [Pi FFT 测试结果](../../raspberry-pi/p201pro-rust/FFT_BENCH_RESULTS.md)
 
 ## 维护记录
 

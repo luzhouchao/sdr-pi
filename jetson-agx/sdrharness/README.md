@@ -1,5 +1,7 @@
 # AGX SDR Harness migration entry
 
+当前状态和实验选择见[项目入口](../../docs/README.md)。本文是组件操作参考；[历史验证](../../docs/validation/README.md)按需打开，不把旧模型实验结果视为当前启用状态。
+
 This directory is the deployment-facing entry for cloning the repository to
 `/home/jetson/sdrharness` on the Jetson AGX Orin. It reuses the tested Rust
 Controller, Planner Worker and Web Console implementations; it does not fork or
@@ -14,11 +16,9 @@ copy those implementations into a second tree.
 - The Planner defaults to the local Spark-X2.5-4B BF16 endpoint. Pi Agent's
   Web-managed OpenAI-compatible Completions/Responses seam remains available
   for an explicit operator switch; there is no automatic cloud failover.
-- Offline CUDA/Mamba loading, full held-out corpus validation, a bounded
-  single-window capture and a versioned 4 × 1,024 P201 RX1-to-seed44 integration
-  capture now pass on AGX. The latter remains explicitly `integration_only`;
-  production Worker deployment is deferred until the RF preprocessing, trusted
-  labels, precision and rejection gates are frozen.
+- Model and RF experiment outcomes are historical evidence, indexed under
+  [validation](../../docs/validation/README.md#数据预处理与模型历史). Current admission and
+  deployment state come from the [project checklist](../../docs/SDR_AGENT_PROJECT_CHECKLIST.md).
 
 The external recognizer seam remains the bounded request/response contract.
 The experimental Worker uses PyTorch/CUDA/Mamba internally without exposing

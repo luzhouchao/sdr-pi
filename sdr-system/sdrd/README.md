@@ -1,5 +1,7 @@
 # `sdrd` control plane
 
+当前部署状态见[项目入口](../../docs/README.md)；[早期系统验证](../../docs/validation/README.md#组件目录中的历史实验)仅按需读取。
+
 `sdrd` is the C control-plane process intended to run on the P201 Pro's ARMv7
 Buildroot Linux. It supports shadow observation and controlled receive-only acquisition:
 

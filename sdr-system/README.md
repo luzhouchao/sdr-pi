@@ -1,5 +1,7 @@
 # P201 Pro embedded system
 
+当前状态与读取范围见[项目文档入口](../docs/README.md)；[系统历史验证](../docs/validation/README.md#组件目录中的历史实验)按需读取。
+
 This directory tracks only the configuration and evidence needed to optimize
 the P201 Pro embedded Linux/IIOD data path. It does not contain credentials,
 vendor firmware dumps, SD images, or BOOT binaries.

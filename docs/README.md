@@ -27,6 +27,8 @@
 - [Agent、控制与部署记录](validation/README.md#agent控制与部署)
 - [识别软件交付记录](validation/README.md#识别软件交付)
 - [架构、接口与运维](reference/README.md)
+- [各组件操作文档](reference/README.md#组件操作文档)
+- [完整实验附件目录](evidence/README.md#保留数据的删除依据)
 - [文档整理记录](validation/DOCS_CONSOLIDATION_2026-09-07.md)
 
 实际完成和部署状态以 checklist 对应条目为准，入口不重复维护历史结果。

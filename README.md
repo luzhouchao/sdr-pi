@@ -38,8 +38,9 @@ Completions/Responses 接口继续保留为人工选择的 provider，不做自�
 
 AGX 已接管 P201 接收和软件处理；网页、交互终端、脚本及恢复共用已安装的
 `sdr-agent`。RF-v1、epoch-10 FP16 和识别工程闭环已有隔离验证，完整生产识别
-尚未准入，`recognizer_available=false`。目前按用户选择先推进 Web 与运维部署，
-暂停训练、微调及进一步模型诊断。树莓派保留为历史/回滚基线。
+尚未准入，`recognizer_available=false`。训练、微调及进一步模型诊断按用户选择暂停，树莓派保留为历史/回滚基线。
+后续实验频段选择见[当前实验设置](docs/SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。
+实验记录和附件按需通过[文档入口](docs/README.md)读取，不默认展开历史资料。
 
 ## 目录
 
