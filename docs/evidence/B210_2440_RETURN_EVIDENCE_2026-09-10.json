@@ -1,0 +1,179 @@
+{
+  "root": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f",
+  "purpose": "Replay requested2440MHz return atTX70/RX50; preserve failed original tone gate and background bursts",
+  "base_head": "7577e3a9a9a6679d316d17a6751caee3d0cbc22d",
+  "source": "B2102508504 RF A/TX-RX channel0 to P201 RX1/RX0/A_BALANCED, confirmed spring antennas",
+  "identities": {
+    "baseline": {
+      "request_id": 5,
+      "sequence": 1428,
+      "session_generation": 1789023496345,
+      "raw_rms_p50": 8.968042195658903,
+      "raw_rms_max": 138.49269497883273,
+      "band_power_dbfs": -32.09936,
+      "iq_sha256": "9750b3946d79fa096bd007b037e4c09858af4df2858d41221226eee06adf6068"
+    },
+    "during-tx": {
+      "request_id": 5,
+      "sequence": 1429,
+      "session_generation": 1789023496346,
+      "raw_rms_p50": 5.427786189366,
+      "raw_rms_max": 283.2450076788645,
+      "band_power_dbfs": -31.9443,
+      "iq_sha256": "e8a4149e24e13eae80f2201888285358b8a59b9e9e6e85b8bb12c35242dede24"
+    },
+    "after-tx": {
+      "request_id": 5,
+      "sequence": 1430,
+      "session_generation": 1789023496347,
+      "raw_rms_p50": 12.654013830718544,
+      "raw_rms_max": 128.50592763565422,
+      "band_power_dbfs": -31.332212,
+      "iq_sha256": "f50755b5a086400c32d4e4ec4ee1f1a89f29046b0d0d2c2006d8d2a739d66a6e"
+    }
+  },
+  "profile": "diagnostic tone, no model RF-v1 admission",
+  "preprocess": "unchanged100kHz+/-5kHz same-bin20dB gates; raw128-sample complex RMS",
+  "model": null,
+  "recognizer_available": false,
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/after-tx/b210-after-tx-1789023496347-1789023496347-1789023513952536909.sigmf-data",
+      "bytes": 262140,
+      "sha256": "f50755b5a086400c32d4e4ec4ee1f1a89f29046b0d0d2c2006d8d2a739d66a6e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/after-tx/b210-after-tx-1789023496347-1789023496347-1789023513952536909.sigmf-meta",
+      "bytes": 487,
+      "sha256": "7ad517058a05c831e20adf0a82e0545719b1ffdafe8e4ef5aed98798824bb218"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/after-tx-report.json",
+      "bytes": 2240,
+      "sha256": "0478ab855485230d7ca4c6cacf6ea9446afc6640fc455b90c68bee3aea62301f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/analysis.json",
+      "bytes": 4686,
+      "sha256": "deee04b43e58dca559e817d07367e8b1e4b3603f1ecd34ba055c44213ed804cb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/baseline/b210-baseline-1789023496345-1789023496345-1789023496843424516.sigmf-data",
+      "bytes": 262140,
+      "sha256": "9750b3946d79fa096bd007b037e4c09858af4df2858d41221226eee06adf6068"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/baseline/b210-baseline-1789023496345-1789023496345-1789023496843424516.sigmf-meta",
+      "bytes": 487,
+      "sha256": "1bafea1d684400ad5cc6533ac6d640dbebc0241a2429fc08a0a38bc6c67f83da"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/baseline-report.json",
+      "bytes": 2240,
+      "sha256": "3445358b7fde7cca899224884a6f67a2bd19a556d5853031126dce3bef2062f2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/during-tx/b210-during-tx-1789023496346-1789023496346-1789023504078301570.sigmf-data",
+      "bytes": 262140,
+      "sha256": "e8a4149e24e13eae80f2201888285358b8a59b9e9e6e85b8bb12c35242dede24"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/during-tx/b210-during-tx-1789023496346-1789023496346-1789023504078301570.sigmf-meta",
+      "bytes": 487,
+      "sha256": "eea36c0c3a1013b49b9324ce05c10d6078cdb0ee53ff8477438889d5eb0db93f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/during-tx-report.json",
+      "bytes": 2245,
+      "sha256": "fab7b007992c672a40bd4311a5992e7c4c5c0d50dc6e86ea2d7574aedbd94496"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/link-started.json",
+      "bytes": 72,
+      "sha256": "71ac6eabd95e43ef2329ee7c01cfbf2c2683b50c188ab19d455009c11ba1be36"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/link-summary.json",
+      "bytes": 12397,
+      "sha256": "a7a9f04c6b7aaf97bf497a47a3893cbfbf0f3ff13f55756abda795b0ec108563"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/plan.json",
+      "bytes": 1092,
+      "sha256": "3ba2cc44158296301d2cee2919a4373a41e30649ddcd4b0d666bd6ee60b6e00c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/plot.py",
+      "bytes": 1462,
+      "sha256": "1ce822ccb11c00f86f6f37cff80c21932b4eb7672725c5ef2feb14ecfddddb95"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/postflight.json",
+      "bytes": 2122,
+      "sha256": "c5a2a1c30f1c245fd6bca45ab76e0cb587ed2e8db310fb13f34f72b935c539ae"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/preflight.json",
+      "bytes": 2299,
+      "sha256": "c4c01f1192afb8c295a151bdc740d2d977e1dcc2974c65c947112e7a6f89a476"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/run.py",
+      "bytes": 2455,
+      "sha256": "77eb5f126b7dcb64e5b55f202fd5d7ef3ac58f2bf32bf8ffe926a47fe820c8ec"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/tx-uhd.log",
+      "bytes": 1543,
+      "sha256": "0a06b00034256ce2594a3473de7c96dd2f32608faa125e54591525fe5c774f17"
+    }
+  ],
+  "file_count": 18,
+  "total_bytes": 822734,
+  "iq_bytes": 786420,
+  "figure": {
+    "path": "/home/jetson/sdrharness/docs/evidence/B210_2440_RETURN_2026-09-10.png",
+    "bytes": 263126,
+    "sha256": "0fb8c064f950143b67b8fd2338a708a1b1f9b07f744feb17c1570b78d6d99b19"
+  },
+  "cleanup": {
+    "explicit_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/after-tx-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/baseline-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/during-tx-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-2440-return-20260910f/scratch/mpl/fontlist-v330.json",
+        "bytes": 123432,
+        "sha256": "eb259634b9573f77592f50dbfff9d7b5ca5ed007d74334217897566d4ad62c57"
+      }
+    ],
+    "explicit_count": 4,
+    "explicit_bytes": 123432,
+    "unit_test_auto_removed_files": 3,
+    "unit_test_auto_removed_bytes": 786420,
+    "unit_test_note": "synthetic IQ temp names not logged, final scratch absent",
+    "total_removed_files": 7,
+    "total_removed_bytes": 909852,
+    "scratch_absent": true,
+    "nx_directory_absent": true,
+    "p201_paths_absent": [
+      "/tmp/sdr-agent-dev/agx-sweep-1789023496345-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1789023496346-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1789023496347-0"
+    ],
+    "new_sockets": 0
+  },
+  "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/b210-2440-return-20260910f"
+}

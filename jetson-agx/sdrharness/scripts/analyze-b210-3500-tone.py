@@ -14,16 +14,17 @@ spec=importlib.util.spec_from_file_location('tone_match',Path(__file__).with_nam
 match=importlib.util.module_from_spec(spec);spec.loader.exec_module(match)
 
 
-def prepare(expected_tx_gain=0, expected_rx_gain=20):
+def prepare(expected_tx_gain=0, expected_rx_gain=20, expected_center_hz=3500000000):
     audit=json.loads((ROOT/'link-summary.json').read_text())
     assert audit['status']=='transport_completed_pending_signal_analysis'
     assert type(expected_tx_gain) is int and type(expected_rx_gain) is int
-    assert (expected_tx_gain,expected_rx_gain) in ((0,20),(10,20),(20,20),(70,50))
-    assert audit['center_hz']==3500000000 and audit['rx_gain_db']==expected_rx_gain and audit['tx_gain_db']==expected_tx_gain
+    assert type(expected_center_hz) is int and expected_center_hz in (2440000000,3500000000)
+    assert (expected_tx_gain,expected_rx_gain) in (((70,50),) if expected_center_hz == 2440000000 else ((0,20),(10,20),(20,20),(70,50)))
+    assert audit['center_hz']==expected_center_hz and audit['rx_gain_db']==expected_rx_gain and audit['tx_gain_db']==expected_tx_gain
     assert audit['remote_tx_stopped'] and not audit['restoration_errors'] and audit['tx_exit_code']==0
     assert audit['radio_before']==audit['radio_after']
     log=(ROOT/'tx-uhd.log').read_text()
-    for label,value in [('Actual TX Rate',2.5),('Actual TX Freq',3500.),('Actual TX Gain',float(expected_tx_gain)),('Actual TX Bandwidth',500000.)]:
+    for label,value in [('Actual TX Rate',2.5),('Actual TX Freq',expected_center_hz/1e6),('Actual TX Gain',float(expected_tx_gain)),('Actual TX Bandwidth',500000.)]:
         values=re.findall(re.escape(label)+r': ([\d.+-]+)',log)
         assert len(values)==1 and float(values[0])==value,label
     assert 'LO: locked' in log and '--nsamps 25000000' in audit['tx_command']
@@ -33,10 +34,10 @@ def prepare(expected_tx_gain=0, expected_rx_gain=20):
         assert report['sweep_id']==plan['sweep_id'] and report['session_generation']==plan['session_generation']
         assert report['backend']=='agx_iq_software_aggregate' and len(report['points'])==1
         point=report['points'][0]
-        for k,v in dict(requested_center_hz=3500000000,sample_rate_hz=2500000,rf_bandwidth_hz=1000000,
+        for k,v in dict(requested_center_hz=expected_center_hz,sample_rate_hz=2500000,rf_bandwidth_hz=1000000,
             captured_samples=65535,dropped_samples=0,overflow=False,clipped_samples=0,status_flags=0,
             point_index=0,session_generation=audit['generation']+index).items():assert point[k]==v,k
-        assert abs(point['actual_center_hz']-3500000000)<=2
+        assert abs(point['actual_center_hz']-expected_center_hz)<=2
         assert point['health']==dict(healthy=True,flags=0,source='iio_adapter')
         assert point['timeout']['limit_ms']==1000 and not point['timeout']['timed_out']
         assert point['rx_input']['verified'] and point['rx_input']['front_panel_port']=='RX1'
@@ -47,7 +48,7 @@ def prepare(expected_tx_gain=0, expected_rx_gain=20):
         assert data.resolve().parent==meta.resolve().parent==ROOT/tag
         metadata=json.loads(meta.read_text());assert metadata['global']['core:sample_rate']==2500000
         assert metadata['global']['core:datatype']=='ci16_le'
-        assert metadata['captures']==[{'core:sample_start':0,'core:frequency':3500000000,'sdrharness:point_index':0,
+        assert metadata['captures']==[{'core:sample_start':0,'core:frequency':expected_center_hz,'sdrharness:point_index':0,
             'sdrharness:rf_bandwidth_hz':1000000,'sdrharness:gain_db':expected_rx_gain}]
         z,digest=match.read_iq(ROOT,tag);iq[tag]=z
         rms=np.array([np.sqrt(np.mean(abs(z[i:i+128])**2)) for i in range(0,len(z),128)])
@@ -55,7 +56,7 @@ def prepare(expected_tx_gain=0, expected_rx_gain=20):
             raw_rms_p50=float(np.median(rms)),raw_rms_max=float(rms.max()),band_power_dbfs=point['band_power_dbfs'],iq_sha256=digest)
         for p in (data,meta,ROOT/f'{tag}-report.json'):hashes[str(p)]=hashlib.sha256(p.read_bytes()).hexdigest()
     tone=match.tone_metrics(ROOT)
-    result=dict(schema_id='b210_3500_tone_analysis_v1',tone=tone,assessment=match.assess_tone(tone),native=rows,hashes=hashes,
+    result=dict(schema_id='b210_3500_tone_analysis_v1' if expected_center_hz == 3500000000 else 'b210_2440_return_tone_analysis_v1',tone=tone,assessment=match.assess_tone(tone),native=rows,hashes=hashes,
         thresholds=match.CONTROL_LIMITS,tx_log_sha256=hashlib.sha256(log.encode()).hexdigest(),
         tx_bandwidth_hz=500000,uhd_bandwidth_log_label='example prints MHz after Hz numeric value; --bw help specifies Hz',
         uhd_tail_markers=log.split('Done!')[-1].strip(),continuous_tx_proven=False,

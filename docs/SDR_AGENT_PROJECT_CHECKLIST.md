@@ -811,6 +811,11 @@ aggregation, result persistence and model-facing summaries.
             fails13.121/12.947dB controls and8.044dB spectral margin. TX stopped,
             cleanup/inventory complete; no production deployment/model admission.
             See [historical gain pair](validation/B210_3500_TX70_RX50_VALIDATION_2026-09-10.md).
+      - [x] Return to2440MHz at operator request, sameTX70/RX50, one tone trial.
+            Three native/replay/restoration checks pass; tone gate fails with
+            23.119/10.777dB controls and17.921dB spectral margin. Strong stopped
+            bursts retained, TX stopped and cleanup complete; no model admission.
+            See [2440MHz return](validation/B210_2440_RETURN_VALIDATION_2026-09-10.md).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original
