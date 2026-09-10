@@ -90,6 +90,13 @@ class RfCaseBoundsTests(unittest.TestCase):
             with self.assertRaises(AssertionError):link.validate_rf_case('tone',rx,3500000000,tx)
         with self.assertRaises(AssertionError):link.validate_rf_case('rml',50,3500000000,70)
 
+    def test_433920_requires_explicit_registered_tone_pair(self):
+        self.assertEqual(link.validate_rf_case('tone',50,433920000,70),70)
+        for mode,rx,center,tx in [('rml',50,433920000,70),('tone',20,433920000,70),
+                                ('tone',50,433920000,None),('tone',50,433920000,20),
+                                ('tone',50,433919999,70),('tone',50,433920001,70)]:
+            with self.assertRaises(AssertionError):link.validate_rf_case(mode,rx,center,tx)
+
     def test_historical_profiles_keep_their_gains(self):
         for center in (2440000000,2455000000):
             for mode in ('tone','rml'):

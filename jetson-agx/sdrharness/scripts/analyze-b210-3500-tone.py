@@ -18,8 +18,8 @@ def prepare(expected_tx_gain=0, expected_rx_gain=20, expected_center_hz=35000000
     audit=json.loads((ROOT/'link-summary.json').read_text())
     assert audit['status']=='transport_completed_pending_signal_analysis'
     assert type(expected_tx_gain) is int and type(expected_rx_gain) is int
-    assert type(expected_center_hz) is int and expected_center_hz in (2440000000,3500000000)
-    assert (expected_tx_gain,expected_rx_gain) in (((70,50),) if expected_center_hz == 2440000000 else ((0,20),(10,20),(20,20),(70,50)))
+    assert type(expected_center_hz) is int and expected_center_hz in (433920000,2440000000,3500000000)
+    assert (expected_tx_gain,expected_rx_gain) in (((70,50),) if expected_center_hz in (433920000,2440000000) else ((0,20),(10,20),(20,20),(70,50)))
     assert audit['center_hz']==expected_center_hz and audit['rx_gain_db']==expected_rx_gain and audit['tx_gain_db']==expected_tx_gain
     assert audit['remote_tx_stopped'] and not audit['restoration_errors'] and audit['tx_exit_code']==0
     assert audit['radio_before']==audit['radio_after']
@@ -56,7 +56,7 @@ def prepare(expected_tx_gain=0, expected_rx_gain=20, expected_center_hz=35000000
             raw_rms_p50=float(np.median(rms)),raw_rms_max=float(rms.max()),band_power_dbfs=point['band_power_dbfs'],iq_sha256=digest)
         for p in (data,meta,ROOT/f'{tag}-report.json'):hashes[str(p)]=hashlib.sha256(p.read_bytes()).hexdigest()
     tone=match.tone_metrics(ROOT)
-    result=dict(schema_id='b210_3500_tone_analysis_v1' if expected_center_hz == 3500000000 else 'b210_2440_return_tone_analysis_v1',tone=tone,assessment=match.assess_tone(tone),native=rows,hashes=hashes,
+    result=dict(schema_id='b210_3500_tone_analysis_v1' if expected_center_hz == 3500000000 else 'b210_433920_tone_analysis_v1' if expected_center_hz == 433920000 else 'b210_2440_return_tone_analysis_v1',tone=tone,assessment=match.assess_tone(tone),native=rows,hashes=hashes,
         thresholds=match.CONTROL_LIMITS,tx_log_sha256=hashlib.sha256(log.encode()).hexdigest(),
         tx_bandwidth_hz=500000,uhd_bandwidth_log_label='example prints MHz after Hz numeric value; --bw help specifies Hz',
         uhd_tail_markers=log.split('Done!')[-1].strip(),continuous_tx_proven=False,

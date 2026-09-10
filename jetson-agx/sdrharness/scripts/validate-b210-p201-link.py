@@ -30,6 +30,10 @@ STATE_COMMAND = rf.STATE_COMMAND.replace(' /sys/bus/iio/devices/iio:device*/scan
 
 def validate_rf_case(mode, rx_gain_db, center_hz, tx_gain_db=None):
     assert type(center_hz) is int
+    if center_hz == 433920000:
+        assert mode == 'tone' and rx_gain_db == 50
+        assert type(tx_gain_db) is int and tx_gain_db == 70
+        return 70
     if center_hz == 3500000000:
         assert mode == 'tone'
         if rx_gain_db == 50:
@@ -38,7 +42,7 @@ def validate_rf_case(mode, rx_gain_db, center_hz, tx_gain_db=None):
         assert rx_gain_db == 20
         assert tx_gain_db is None or (type(tx_gain_db) is int and tx_gain_db in (0, 10, 20))
         return 0 if tx_gain_db is None else tx_gain_db
-    assert tx_gain_db is None, 'explicit TX gain only registered for 3500MHz tone'
+    assert tx_gain_db is None, 'explicit TX gain requires a registered tone case'
     assert center_hz in (2440000000,2455000000)
     assert mode in ('rml','tone') and rx_gain_db in (40,50)
     return 70
@@ -292,8 +296,8 @@ if __name__=='__main__':
     p.add_argument('--controller',type=Path,required=True)
     p.add_argument('--mode',choices=['rml','tone'],default='rml')
     p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],default=50,help='3500MHz tone: RX20 with TX0/10/20, or explicit RX50/TX70')
-    p.add_argument('--center-hz',type=int,choices=[2440000000,2455000000,3500000000],default=2440000000)
-    p.add_argument('--tx-gain-db', type=int, choices=[0,10,20,70], default=None, help='explicit 3500MHz tone gain; default preserves original cases')
+    p.add_argument('--center-hz',type=int,choices=[433920000,2440000000,2455000000,3500000000],default=2440000000)
+    p.add_argument('--tx-gain-db', type=int, choices=[0,10,20,70], default=None, help='explicit registered tone gain; 433.920MHz requires TX70/RX50')
     a=p.parse_args()
     async def main():
         task=asyncio.current_task()

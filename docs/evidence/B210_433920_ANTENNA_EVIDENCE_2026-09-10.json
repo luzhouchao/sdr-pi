@@ -1,0 +1,184 @@
+{
+  "root": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h",
+  "purpose": "Replay433.920MHz tone success and stable stopped-background observations after433MHz antenna report",
+  "base_head": "70c4c74238f0a926dc5e93eea5727c7382042004",
+  "source": "B2102508504 RF A/TX-RX channel0 to P201 RX1/RX0/A_BALANCED, operator reports433MHz antenna; changed end/model unspecified",
+  "identities": {
+    "baseline": {
+      "request_id": 5,
+      "sequence": 1434,
+      "session_generation": 1789025376950,
+      "raw_rms_p50": 36.44355598054514,
+      "raw_rms_max": 39.529953041965534,
+      "band_power_dbfs": -35.012608,
+      "iq_sha256": "dc187f58ef3e8fd6c140be6191bafaf6c457f8407bc549af47590d88f2769761"
+    },
+    "during-tx": {
+      "request_id": 5,
+      "sequence": 1435,
+      "session_generation": 1789025376951,
+      "raw_rms_p50": 42.93440664602622,
+      "raw_rms_max": 47.0705089466855,
+      "band_power_dbfs": -33.560196,
+      "iq_sha256": "ff735179f9611d79efffcc90eb6a108db6bc4d830c92c65205217e8bb6e2483e"
+    },
+    "after-tx": {
+      "request_id": 5,
+      "sequence": 1436,
+      "session_generation": 1789025376952,
+      "raw_rms_p50": 36.41744729148946,
+      "raw_rms_max": 39.700932766120246,
+      "band_power_dbfs": -34.983032,
+      "iq_sha256": "24fe77ca1c448afff6e7c95d7b7311ecc481340516048065f3e58e7d56b89472"
+    }
+  },
+  "profile": "diagnostic tone only, no model/modulation RF-v1 admission",
+  "preprocess": "original100kHz+/-5kHz same-bin20dB gate; raw128-sample RMS; posthoc DC and centered RMS",
+  "model": null,
+  "recognizer_available": false,
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/after-tx/b210-after-tx-1789025376952-1789025376952-1789025394237529262.sigmf-data",
+      "bytes": 262140,
+      "sha256": "24fe77ca1c448afff6e7c95d7b7311ecc481340516048065f3e58e7d56b89472"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/after-tx/b210-after-tx-1789025376952-1789025376952-1789025394237529262.sigmf-meta",
+      "bytes": 486,
+      "sha256": "7d9eab2b2fa67173f3586c8e9d29c8b1c127164fda451e1bf70581519ba299a7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/after-tx-report.json",
+      "bytes": 2242,
+      "sha256": "ca3240700d4bd74d66cc87ffc19b794c49fea128d1bd08bcda0e213c6039d7f1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/analysis.json",
+      "bytes": 4706,
+      "sha256": "dc4f6bf63a766db0d4b97300cff47ea71a45a94792de4d2ff336fe11bf461ca0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/background-components.json",
+      "bytes": 1223,
+      "sha256": "2e13588b149b1e552413230e13de244191b5bc262bcd6e02858cac17a87a2ca1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/baseline/b210-baseline-1789025376950-1789025376950-1789025377449842618.sigmf-data",
+      "bytes": 262140,
+      "sha256": "dc187f58ef3e8fd6c140be6191bafaf6c457f8407bc549af47590d88f2769761"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/baseline/b210-baseline-1789025376950-1789025376950-1789025377449842618.sigmf-meta",
+      "bytes": 486,
+      "sha256": "0fcaf47ff746f2ef9d6f669bdc2ecf8a2b8a17453976e9d4b0bf718e5e5bf5bf"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/baseline-report.json",
+      "bytes": 2241,
+      "sha256": "b7f1245e9cba292cc0006e95d142a55ba3fe448f1bcf98f6bbc384cca7c39910"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/during-tx/b210-during-tx-1789025376951-1789025376951-1789025384421973044.sigmf-data",
+      "bytes": 262140,
+      "sha256": "ff735179f9611d79efffcc90eb6a108db6bc4d830c92c65205217e8bb6e2483e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/during-tx/b210-during-tx-1789025376951-1789025376951-1789025384421973044.sigmf-meta",
+      "bytes": 486,
+      "sha256": "52702a8836ac12a6e3f8a427e6332ea53c8ab4678bdcd005b459db9d049cadcc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/during-tx-report.json",
+      "bytes": 2245,
+      "sha256": "6028d0f69a37d006c5a618462df7a6d9d539a1fc23476dd3afd23d87627454b5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/link-started.json",
+      "bytes": 72,
+      "sha256": "6066ff38c7f34a8de37f74d0ef7a934ac53d70b8ded879369dd16dfba9012767"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/link-summary.json",
+      "bytes": 12398,
+      "sha256": "c979f9cdb5474c3fea707586c5767c6da6576065e834439c5778f943f06b0e19"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/plan.json",
+      "bytes": 1153,
+      "sha256": "aea256abf03649edc043b23583fce8d704756c7018cfab32c625dc3f7ca0d854"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/plot.py",
+      "bytes": 1843,
+      "sha256": "00c6edcf404f4c0715b651772e02ae9dd8ef5de7cc4db64680f50da8a127a5d7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/postflight.json",
+      "bytes": 2122,
+      "sha256": "c5a2a1c30f1c245fd6bca45ab76e0cb587ed2e8db310fb13f34f72b935c539ae"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/preflight.json",
+      "bytes": 2299,
+      "sha256": "c4c01f1192afb8c295a151bdc740d2d977e1dcc2974c65c947112e7a6f89a476"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/run.py",
+      "bytes": 2460,
+      "sha256": "9b9ef7c47d8fe3ab912b763e540504584cb1da9e05a210838f3e3f94346192e6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/tx-uhd.log",
+      "bytes": 1541,
+      "sha256": "3c844e09d17babf650c889c3a48c1cf3e2ebf71431db68c994cec23034e9f15e"
+    }
+  ],
+  "file_count": 19,
+  "total_bytes": 824423,
+  "iq_bytes": 786420,
+  "figure": {
+    "path": "/home/jetson/sdrharness/docs/evidence/B210_433920_ANTENNA_2026-09-10.png",
+    "bytes": 324782,
+    "sha256": "1dd9a5d4077fc9aac84f40e0b0b5f56aca8a90cb07af24f09c87425aad663650"
+  },
+  "cleanup": {
+    "explicit_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/after-tx-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/baseline-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/during-tx-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-433920-antenna-20260910h/scratch/mpl/fontlist-v330.json",
+        "bytes": 123432,
+        "sha256": "9986df0b298894c224de83b41572e9af90c0081dd1ccb4fb07b078dd375cdb27"
+      }
+    ],
+    "explicit_count": 4,
+    "explicit_bytes": 123432,
+    "test_auto_removed_files": 8,
+    "test_auto_removed_bytes": 786433,
+    "test_note": "5 paired files13bytes plus3 synthetic IQ786420bytes; random test path names not recorded, scratch absent",
+    "total_removed_files": 12,
+    "total_removed_bytes": 909865,
+    "scratch_absent": true,
+    "nx_directory_absent": true,
+    "p201_paths_absent": [
+      "/tmp/sdr-agent-dev/agx-sweep-1789025376950-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1789025376951-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1789025376952-0"
+    ],
+    "new_sockets": 0
+  },
+  "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/b210-433920-antenna-20260910h"
+}

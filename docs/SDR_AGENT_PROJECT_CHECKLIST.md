@@ -822,6 +822,13 @@ aggregation, result persistence and model-facing summaries.
             retain18 files/823,363bytes, remove4 files/123,432bytes. No antenna
             causal-effect/modulation/model claim. See
             [antenna-change success](validation/B210_2440_ANTENNA_CHANGE_VALIDATION_2026-09-10.md).
+      - [x] Test reported433MHz antenna at433.920MHz/TX70/RX50 once: original
+            tone gate passes44.621/44.269dB controls and54.756dB spectral margin.
+            Background steadier than recent2440MHz, not lower total RMS; no
+            calibrated noise/antenna causality claim. Three native/replay and
+            restoration checks plus17 tests pass; TX stopped, retain19 files/
+            824,423bytes, remove12 files/909,865bytes. See
+            [433MHz antenna](validation/B210_433920_ANTENNA_VALIDATION_2026-09-10.md).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original
