@@ -6,6 +6,7 @@
 
 | 主题 | 文档 |
 | --- | --- |
+| RadioML2018A全部原始样本的NX发射/AGX工程识别 | [全量脚本操作](RML2018A_FULL_RF_CAMPAIGN.md) |
 | Agent / Controller / Planner 分工 | [运行架构](SDR_AGENT_RUNTIME_DESIGN.md) |
 | 有界 RX、AGX 聚合和结果 | [采集处理架构](SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md) |
 | 识别接口、模型输入和准入 | [本地 Recognizer](LOCAL_RECOGNIZER_INTERFACE.md) |

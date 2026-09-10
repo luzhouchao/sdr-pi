@@ -19,11 +19,12 @@
 | [evidence/](evidence/README.md) | 原始审计 JSON、保留证据清单、预登记计划和图表 |
 
 当前实验选择：后续收发默认 **433.920 MHz、当前433MHz天线**。参考参数见
-[后续实验选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。模型工作仍暂停。
+[后续实验选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。当前仅恢复用户明确要求的RadioML2018A全量RF工程推理，训练/微调仍暂停。
 实验历史仅提供[索引链接](validation/README.md#近期射频排查2026-09-09至10)，需要时再读。
 
 其他资料入口（按需）：
 
+- [RadioML2018A全量RF脚本操作](reference/RML2018A_FULL_RF_CAMPAIGN.md)
 - [Agent、控制与部署记录](validation/README.md#agent控制与部署)
 - [识别软件交付记录](validation/README.md#识别软件交付)
 - [架构、接口与运维](reference/README.md)

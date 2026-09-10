@@ -1,0 +1,903 @@
+{
+  "schema_version": 1,
+  "purpose": "Reproduce all-row campaign framing failures, successful association with poor RF recognition, cancellation, retry and no-retransmit resume. Engineering evidence, not independent test admission.",
+  "source": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "bytes": 21449148312,
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "retention": "existing dataset, no additional copy; excluded from this cleanup"
+  },
+  "recognizer_available": false,
+  "cleanup": {
+    "items": [
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/scratch",
+        "files": 0,
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/owner.lock",
+        "files": 1,
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/scratch",
+        "files": 352,
+        "bytes": 20141729
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/owner.lock",
+        "files": 1,
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/scratch",
+        "files": 352,
+        "bytes": 20141729
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/owner.lock",
+        "files": 1,
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/attempts/batch-0022016-1789046850331515660/packet.fc32",
+        "files": 1,
+        "bytes": 208896
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-campaign-dev-20260910a",
+        "files": 0,
+        "bytes": 0
+      }
+    ],
+    "files": 708,
+    "bytes": 40492354,
+    "scope": "Final observed scratch/cache/lock/redundant-packet cleanup only. Unit-test TemporaryDirectory fixtures self-cleaned; earlier transient fixture byte totals were not logged."
+  },
+  "packages": [
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a",
+      "run_id": "718d9eb0b0fc4b12a5c0aa6150344a30",
+      "purpose": "Original unfiltered detector failure.",
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+      "model_checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+      "preprocess": "pilot synchronization and common CFO/phase correction; unfiltered single-1024 payload normalized by RMS; engineering diagnostic, not production four-window admission",
+      "file_count": 11,
+      "total_bytes": 278643,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/audit.json",
+          "bytes": 6580,
+          "sha256": "5ae8dc37cebd0eecfed0da78c233f5f5786170c5a4286d403c6155a22e7fc413"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/capture-complete.json",
+          "bytes": 420,
+          "sha256": "ed584bedd0ba95490effa097f1749983c103bd15808517108960c904090b9c1e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/report.json",
+          "bytes": 2258,
+          "sha256": "b2ac40b03c126df07413bb63080a1daed832091601ae285c0975bd9509220c2c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/rx/rml2018a-4267-1789045760700-1789045760700-1789045764906588576.sigmf-data",
+          "bytes": 262140,
+          "sha256": "53469b8c338cba6aef40d6007c63c8a1823584fe1deaa2bf3c4bede910776079"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/rx/rml2018a-4267-1789045760700-1789045760700-1789045764906588576.sigmf-meta",
+          "bytes": 486,
+          "sha256": "c16bb3b70dac39abfb113611cddcc8fb7689b2c2eb363f38bb9a621fbf702f3c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/rx-plan.json",
+          "bytes": 385,
+          "sha256": "ca38e1ff4976a84195deb7c87366336c1dfffdf58997a36ffb635f17cbeca961"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/source.json",
+          "bytes": 1419,
+          "sha256": "2426cbc24d9d4c048fdfc49d832444c0d574d6d11dc89048a7b65872f053587b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/tx-plan.json",
+          "bytes": 827,
+          "sha256": "5f9e17a4876cf429a946c6c069d038e239c0053b4f3ba16b6da9688f651822a9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/tx-summary.json",
+          "bytes": 397,
+          "sha256": "73b3bfb8d8f5e38ee19ac29f2e6085e533faa5a40f8f5a8cca4dfb28a229aec5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/tx-uhd.log",
+          "bytes": 1535,
+          "sha256": "083daa3b5d581a02c492da28c268c9ca9c7f923f3a279cc3f171bb44c6ffd31b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/run-plan.json",
+          "bytes": 2196,
+          "sha256": "b18c052ccd2ff69aeef97d94c7cb2ec914101b105e1f591e650d6201dd20f020"
+        }
+      ],
+      "audits": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/audit.json",
+          "batch": 4267,
+          "session_generation": 1789045760700,
+          "source_rows": [
+            102408,
+            102409,
+            102410,
+            102411,
+            102412,
+            102413,
+            102414,
+            102415,
+            102416,
+            102417,
+            102418,
+            102419,
+            102420,
+            102421,
+            102422,
+            102423,
+            102424,
+            102425,
+            102426,
+            102427,
+            102428,
+            102429,
+            102430,
+            102431
+          ],
+          "status": "sync_failed",
+          "restored": true,
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/rx/rml2018a-4267-1789045760700-1789045760700-1789045764906588576.sigmf-data",
+            "iq_sha256": "53469b8c338cba6aef40d6007c63c8a1823584fe1deaa2bf3c4bede910776079",
+            "metadata_sha256": "c16bb3b70dac39abfb113611cddcc8fb7689b2c2eb363f38bb9a621fbf702f3c",
+            "request_id": 5,
+            "sequence": 1437,
+            "session_generation": 1789045760700
+          },
+          "nx_removed": [
+            {
+              "name": "tx-uhd.log",
+              "bytes": 1535
+            },
+            {
+              "name": "rml2018a-nx-tx.py",
+              "bytes": 4475
+            },
+            {
+              "name": "tx-summary.json",
+              "bytes": 397
+            },
+            {
+              "name": "tx-started.json",
+              "bytes": 76
+            },
+            {
+              "name": "tx-plan.json",
+              "bytes": 827
+            },
+            {
+              "name": "rml2018a_campaign.py",
+              "bytes": 7496
+            },
+            {
+              "name": "packet.fc32",
+              "bytes": 208896
+            }
+          ]
+        }
+      ],
+      "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a",
+      "delete_precondition": "Only after confirming no runner/NX TX/P201 capture and verifying the exact resolved root; never delete the source dataset or other evidence roots."
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b",
+      "run_id": "18a77771b66c460f9bd2c14b8c74a8b6",
+      "purpose": "Filtered detector still missed trailing pilot; source-only predictions; GPU restore.",
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+      "model_checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+      "preprocess": "pilot synchronization and common CFO/phase correction; unfiltered single-1024 payload normalized by RMS; engineering diagnostic, not production four-window admission",
+      "file_count": 14,
+      "total_bytes": 309465,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/audit.json",
+          "bytes": 6580,
+          "sha256": "02751b5170bfb1919871d9e42075b4f9479b31ce2bc59d799080a3d067ca84d6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/capture-complete.json",
+          "bytes": 420,
+          "sha256": "55cb031904710e14cedf18e53398e7dd2b38372b083312669717dfad5010d450"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/predictions.json",
+          "bytes": 23769,
+          "sha256": "1ae957383769c699df4e47c965a6bbe13f704cf6ccced5542c3bcceef50757d0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/report.json",
+          "bytes": 2258,
+          "sha256": "cee35d2f0372a9e8331e526494da1aaf9dfe4482cc5f0eb44a7a0e1e8f0dbb73"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/rx/rml2018a-4267-1789046311181-1789046311181-1789046315098534073.sigmf-data",
+          "bytes": 262140,
+          "sha256": "6660901e853b36d52cb4a1073a69a22c1ec6134be8d7096fb253ab1154f953d5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/rx/rml2018a-4267-1789046311181-1789046311181-1789046315098534073.sigmf-meta",
+          "bytes": 486,
+          "sha256": "212c6894df939e5bc3b8f12f4a1c893e85e83fd573bc30f24a0c28195f9c4cfa"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/rx-plan.json",
+          "bytes": 385,
+          "sha256": "1855ddbdec92ed762568b1882dc6f623125b294d21b7d16dce8567794e0e3a92"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/source.json",
+          "bytes": 1419,
+          "sha256": "2426cbc24d9d4c048fdfc49d832444c0d574d6d11dc89048a7b65872f053587b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/tx-plan.json",
+          "bytes": 827,
+          "sha256": "b38e164630b2ac219cbfbc87ac5faaef391d9d0917b2f795b6ffa69baaa2a102"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/tx-summary.json",
+          "bytes": 397,
+          "sha256": "602514b8eacc541f40812a322bac2bae6d0a9324ae9f56ae5e40566eae6e02ae"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/tx-uhd.log",
+          "bytes": 1535,
+          "sha256": "083daa3b5d581a02c492da28c268c9ca9c7f923f3a279cc3f171bb44c6ffd31b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/gpu-isolation-1789046387429236942.json",
+          "bytes": 295,
+          "sha256": "f314226d1fee4a9447fe9d6a13e8f62411e4321c115fbd68160585690b8ac45c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/run-plan.json",
+          "bytes": 2700,
+          "sha256": "01c9424c6bfec9cea988c98fab6f21156b9e998f68cddd939a43143cb5d08a66"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/summary.json",
+          "bytes": 6254,
+          "sha256": "6b87d43dd964c80688c665efb5ee113228b5b7a317e9587c3712efc1c0b5127d"
+        }
+      ],
+      "audits": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/audit.json",
+          "batch": 4267,
+          "session_generation": 1789046311181,
+          "source_rows": [
+            102408,
+            102409,
+            102410,
+            102411,
+            102412,
+            102413,
+            102414,
+            102415,
+            102416,
+            102417,
+            102418,
+            102419,
+            102420,
+            102421,
+            102422,
+            102423,
+            102424,
+            102425,
+            102426,
+            102427,
+            102428,
+            102429,
+            102430,
+            102431
+          ],
+          "status": "sync_failed",
+          "restored": true,
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/rx/rml2018a-4267-1789046311181-1789046311181-1789046315098534073.sigmf-data",
+            "iq_sha256": "6660901e853b36d52cb4a1073a69a22c1ec6134be8d7096fb253ab1154f953d5",
+            "metadata_sha256": "212c6894df939e5bc3b8f12f4a1c893e85e83fd573bc30f24a0c28195f9c4cfa",
+            "request_id": 5,
+            "sequence": 1438,
+            "session_generation": 1789046311181
+          },
+          "nx_removed": [
+            {
+              "name": "tx-uhd.log",
+              "bytes": 1535
+            },
+            {
+              "name": "rml2018a-nx-tx.py",
+              "bytes": 4475
+            },
+            {
+              "name": "tx-summary.json",
+              "bytes": 397
+            },
+            {
+              "name": "tx-started.json",
+              "bytes": 76
+            },
+            {
+              "name": "tx-plan.json",
+              "bytes": 827
+            },
+            {
+              "name": "rml2018a_campaign.py",
+              "bytes": 8058
+            },
+            {
+              "name": "packet.fc32",
+              "bytes": 208896
+            }
+          ]
+        }
+      ],
+      "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b",
+      "delete_precondition": "Only after confirming no runner/NX TX/P201 capture and verifying the exact resolved root; never delete the source dataset or other evidence roots."
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c",
+      "run_id": "81d80cb6d24448eebbc34d6eab534511",
+      "purpose": "Final three RF/inference batches, preserved interrupted attempt, retry/resume, offline versioned recheck and final live state.",
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+      "model_checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+      "preprocess": "pilot synchronization and common CFO/phase correction; unfiltered single-1024 payload normalized by RMS; engineering diagnostic, not production four-window admission",
+      "file_count": 49,
+      "total_bytes": 991982,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/attempts/batch-0022016-1789046850331515660/audit.json",
+          "bytes": 5620,
+          "sha256": "bea9b351a95ddd27590c458826863e655891f273b80773ae9b1c93da8a7a6258"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/attempts/batch-0022016-1789046850331515660/rx/rml2018a-22016-1789046782464-1789046782464-1789046786548233386.sigmf-data",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/attempts/batch-0022016-1789046850331515660/rx-plan.json",
+          "bytes": 386,
+          "sha256": "6a00c899442cbe62bae2de0d6adef389ef0237c4dc60d29d04c064a92a9a703c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/attempts/batch-0022016-1789046850331515660/source.json",
+          "bytes": 1418,
+          "sha256": "ff4a0e939307c6952b8646c1ee579786e5c0bf0435c24b15fdeaffda10e050be"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/attempts/batch-0022016-1789046850331515660/tx-plan.json",
+          "bytes": 828,
+          "sha256": "10e28edee2495c19e3e9814772d47689c2f35202ac6d3d617ada6b666f40bc63"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/attempts/batch-0022016-1789046850331515660/tx-summary.json",
+          "bytes": 438,
+          "sha256": "2cf203df069a7eadeb6d7bcab485230b43c3babf4cdb6a67a36f08768d4386a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/attempts/batch-0022016-1789046850331515660/tx-uhd.log",
+          "bytes": 1526,
+          "sha256": "f3fc1f68e6d47c348d097b424f7506e27d9b29971da43ec628472b48a95b8eea"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/audit.json",
+          "bytes": 7037,
+          "sha256": "10c27bfbe781f85c73936351c87e3cb3a72add097cf169bcd45e05fe5893eb3d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/capture-complete.json",
+          "bytes": 421,
+          "sha256": "b147d3d81408aee3d958891a0cb964993ab792f1e3a5aa801cb4ab478c5d0a70"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/predictions.json",
+          "bytes": 43992,
+          "sha256": "2790247c0623d1b4e61d2b93e99d100131ddb2e4c69b7db657c79b54b3af7e57"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/report.json",
+          "bytes": 2256,
+          "sha256": "f9ed5d8640a4f22e9d25db987a6f900a35128b70450568e058cb1a40cde084cc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/rx/rml2018a-4267-1789046604997-1789046604997-1789046609223103326.sigmf-data",
+          "bytes": 262140,
+          "sha256": "734853f74029e8bebff8acf48528e2609b9e2e3f76be716c8ba937b16905e21e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/rx/rml2018a-4267-1789046604997-1789046604997-1789046609223103326.sigmf-meta",
+          "bytes": 486,
+          "sha256": "6afae76950c26592750ec9747362b2f9b6bb6f22b1090a0090fccabf44d1efb7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/rx-plan.json",
+          "bytes": 385,
+          "sha256": "e11c1a980e9d940c5d70be8b928f1d040cd62cd14e45ba60dac89c588bd5d08e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/source.json",
+          "bytes": 1419,
+          "sha256": "2426cbc24d9d4c048fdfc49d832444c0d574d6d11dc89048a7b65872f053587b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/tx-plan.json",
+          "bytes": 827,
+          "sha256": "4d5fe479cf50f2fc666632169b73c86ab685c2f944fa12327b9e09077cd02304"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/tx-summary.json",
+          "bytes": 397,
+          "sha256": "031b1d3bcdb55790cdd9e21ddde84990c80abefc51b036e9a7b5f7f7fc818df2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/tx-uhd.log",
+          "bytes": 1535,
+          "sha256": "d599af106550536b8906c479879ecb0566949ca61f04fc6630fac323bb24c100"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/audit.json",
+          "bytes": 7038,
+          "sha256": "59c17f84ce127ea10dcc852ec461a52905fb0ca124034405bfaa35ab734972d7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/capture-complete.json",
+          "bytes": 421,
+          "sha256": "ba49559fead55644962ec15bbaf17d5f8c132f6bda4972b77e86af0061d854a1"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/predictions.json",
+          "bytes": 43830,
+          "sha256": "d4227490d33b63e75395eb362e7985a3e034131ff058a4f2f06ab02a142c96c8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/report.json",
+          "bytes": 2255,
+          "sha256": "c81eb1d393ee921482e91132ff57f713e68dcde48b8cee63a4941222d9339c96"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/rx/rml2018a-4268-1789046620373-1789046620373-1789046624374791743.sigmf-data",
+          "bytes": 262140,
+          "sha256": "6e9e92769342683a3988f5a58adbbe4a29ba7a4244225c2047cee7a98d2d0f95"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/rx/rml2018a-4268-1789046620373-1789046620373-1789046624374791743.sigmf-meta",
+          "bytes": 486,
+          "sha256": "647cc4c683997b1ffbfa3e80a91e0c7ec5f9f877b10438ec397c3da5b6394e2b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/rx-plan.json",
+          "bytes": 385,
+          "sha256": "22ccb4d794d8b74b9eabe9b97251bb85106d5bfa35605c5f25fe75bb33d123da"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/source.json",
+          "bytes": 1419,
+          "sha256": "2545f55c5c795a4f725593dd3595416d0225cce59ff03c2f505ea6ddc337de5b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/tx-plan.json",
+          "bytes": 827,
+          "sha256": "49e3b63372f687d2b0c15780ceb1bbcf2f33be6b1c4f63e58b68005e6f42faad"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/tx-summary.json",
+          "bytes": 397,
+          "sha256": "bb3123ad5d4af587dcd20f44402b92fed663511bdcadd7b5a9d141ad2b54242a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/tx-uhd.log",
+          "bytes": 1535,
+          "sha256": "d599af106550536b8906c479879ecb0566949ca61f04fc6630fac323bb24c100"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/audit.json",
+          "bytes": 7039,
+          "sha256": "8cf310fa0dc2b40e57dcdb8628ae6d8fa82393606696ff548ecdccc982aa2a59"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/capture-complete.json",
+          "bytes": 421,
+          "sha256": "752529548d3fd831abbc971eb56300d7d2ad12de6bb6eccc1e47138a7da3cec5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/predictions.json",
+          "bytes": 44337,
+          "sha256": "82eec0f865b2e953d99651cfef949bfb3de219fa377e62ac7a009dae89810ec4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/report.json",
+          "bytes": 2261,
+          "sha256": "4a78e45984b47ad184e803990ff29c9531be3d076be1cfd43aa0bf9d9777ed33"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/rx/rml2018a-22016-1789046853114-1789046853114-1789046857196634241.sigmf-data",
+          "bytes": 262140,
+          "sha256": "0adb61504730237f9dc8a7f7a6af4137de2d9e6fc40ab68052e478dbb3873ebe"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/rx/rml2018a-22016-1789046853114-1789046853114-1789046857196634241.sigmf-meta",
+          "bytes": 486,
+          "sha256": "c3cc69184b1bc19cdbd41ab884ef293b0125896b35ce9d94222db7b00a887c13"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/rx-plan.json",
+          "bytes": 386,
+          "sha256": "b53a7c3bf37c8bfc7ed9ada1511dca53f4415c67c59224189aa4887e439bb449"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/source.json",
+          "bytes": 1418,
+          "sha256": "ff4a0e939307c6952b8646c1ee579786e5c0bf0435c24b15fdeaffda10e050be"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/tx-plan.json",
+          "bytes": 828,
+          "sha256": "10e28edee2495c19e3e9814772d47689c2f35202ac6d3d617ada6b666f40bc63"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/tx-summary.json",
+          "bytes": 398,
+          "sha256": "139189e5a5ba69635a6749950e985ab1e072bb93b07adfbbf4167efcd97f90fc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/tx-uhd.log",
+          "bytes": 1535,
+          "sha256": "d599af106550536b8906c479879ecb0566949ca61f04fc6630fac323bb24c100"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/cancel-validation.json",
+          "bytes": 547,
+          "sha256": "1933cd9a44a5136af9f93b4974cd0b66d3a343b7346a93db9149606b95fdfb18"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/cancel-validation.log",
+          "bytes": 1900,
+          "sha256": "c8c694ef2754ff3ad538da2d784d373579bc496c5591f0ad4fa1812bdb684e3a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/gpu-isolation-1789046700024344128.json",
+          "bytes": 295,
+          "sha256": "a3a2e2dbd929897054d7517b7718a6f1c88b83c4999c7363d0c39a9255e3d8eb"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/gpu-isolation-1789046880474313294.json",
+          "bytes": 295,
+          "sha256": "dd5757cd00052659a73db063845a8eb9f47623772a5eff2643a2e814dba8e7e2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/offline-sync-recheck-v1.json",
+          "bytes": 1882,
+          "sha256": "47723347f6901d1f0fdcff217089943e386e39263d5ce805869fc873ced7fa21"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/postflight.json",
+          "bytes": 3104,
+          "sha256": "8587300b82150046e5a8b2e73c1db7145eee2627eec72338117cf8dcca6242ab"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/resume-validation.json",
+          "bytes": 1910,
+          "sha256": "9bd443091791750127019611b9ec494a2985485e11902dc6e15f74f6d37d61d2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/run-plan.json",
+          "bytes": 2700,
+          "sha256": "73f43e76e77c18815fa0cb6b230f1b5d2571cfeb29a14607981eb5f3377fe048"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/summary.json",
+          "bytes": 6256,
+          "sha256": "5d99045b12388c2f65e7fe6d8fda0d7a487756cbd67853bbac6336098440294c"
+        }
+      ],
+      "audits": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/attempts/batch-0022016-1789046850331515660/audit.json",
+          "batch": 22016,
+          "session_generation": 1789046782464,
+          "source_rows": [
+            528384,
+            528385,
+            528386,
+            528387,
+            528388,
+            528389,
+            528390,
+            528391,
+            528392,
+            528393,
+            528394,
+            528395,
+            528396,
+            528397,
+            528398,
+            528399,
+            528400,
+            528401,
+            528402,
+            528403,
+            528404,
+            528405,
+            528406,
+            528407
+          ],
+          "status": "failed",
+          "restored": true,
+          "seal": null,
+          "nx_removed": [
+            {
+              "name": "tx-uhd.log",
+              "bytes": 1526
+            },
+            {
+              "name": "rml2018a-nx-tx.py",
+              "bytes": 4475
+            },
+            {
+              "name": "tx-summary.json",
+              "bytes": 438
+            },
+            {
+              "name": "tx-started.json",
+              "bytes": 77
+            },
+            {
+              "name": "tx-plan.json",
+              "bytes": 828
+            },
+            {
+              "name": "rml2018a_campaign.py",
+              "bytes": 8626
+            },
+            {
+              "name": "packet.fc32",
+              "bytes": 208896
+            }
+          ]
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/audit.json",
+          "batch": 4267,
+          "session_generation": 1789046604997,
+          "source_rows": [
+            102408,
+            102409,
+            102410,
+            102411,
+            102412,
+            102413,
+            102414,
+            102415,
+            102416,
+            102417,
+            102418,
+            102419,
+            102420,
+            102421,
+            102422,
+            102423,
+            102424,
+            102425,
+            102426,
+            102427,
+            102428,
+            102429,
+            102430,
+            102431
+          ],
+          "status": "synchronized",
+          "restored": true,
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/rx/rml2018a-4267-1789046604997-1789046604997-1789046609223103326.sigmf-data",
+            "iq_sha256": "734853f74029e8bebff8acf48528e2609b9e2e3f76be716c8ba937b16905e21e",
+            "metadata_sha256": "6afae76950c26592750ec9747362b2f9b6bb6f22b1090a0090fccabf44d1efb7",
+            "request_id": 5,
+            "sequence": 1439,
+            "session_generation": 1789046604997
+          },
+          "nx_removed": [
+            {
+              "name": "tx-uhd.log",
+              "bytes": 1535
+            },
+            {
+              "name": "rml2018a-nx-tx.py",
+              "bytes": 4475
+            },
+            {
+              "name": "tx-summary.json",
+              "bytes": 397
+            },
+            {
+              "name": "tx-started.json",
+              "bytes": 76
+            },
+            {
+              "name": "tx-plan.json",
+              "bytes": 827
+            },
+            {
+              "name": "rml2018a_campaign.py",
+              "bytes": 8626
+            },
+            {
+              "name": "packet.fc32",
+              "bytes": 208896
+            }
+          ]
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/audit.json",
+          "batch": 4268,
+          "session_generation": 1789046620373,
+          "source_rows": [
+            102432,
+            102433,
+            102434,
+            102435,
+            102436,
+            102437,
+            102438,
+            102439,
+            102440,
+            102441,
+            102442,
+            102443,
+            102444,
+            102445,
+            102446,
+            102447,
+            102448,
+            102449,
+            102450,
+            102451,
+            102452,
+            102453,
+            102454,
+            102455
+          ],
+          "status": "synchronized",
+          "restored": true,
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/rx/rml2018a-4268-1789046620373-1789046620373-1789046624374791743.sigmf-data",
+            "iq_sha256": "6e9e92769342683a3988f5a58adbbe4a29ba7a4244225c2047cee7a98d2d0f95",
+            "metadata_sha256": "647cc4c683997b1ffbfa3e80a91e0c7ec5f9f877b10438ec397c3da5b6394e2b",
+            "request_id": 5,
+            "sequence": 1440,
+            "session_generation": 1789046620373
+          },
+          "nx_removed": [
+            {
+              "name": "tx-uhd.log",
+              "bytes": 1535
+            },
+            {
+              "name": "rml2018a-nx-tx.py",
+              "bytes": 4475
+            },
+            {
+              "name": "tx-summary.json",
+              "bytes": 397
+            },
+            {
+              "name": "tx-started.json",
+              "bytes": 76
+            },
+            {
+              "name": "tx-plan.json",
+              "bytes": 827
+            },
+            {
+              "name": "rml2018a_campaign.py",
+              "bytes": 8626
+            },
+            {
+              "name": "packet.fc32",
+              "bytes": 208896
+            }
+          ]
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/audit.json",
+          "batch": 22016,
+          "session_generation": 1789046853114,
+          "source_rows": [
+            528384,
+            528385,
+            528386,
+            528387,
+            528388,
+            528389,
+            528390,
+            528391,
+            528392,
+            528393,
+            528394,
+            528395,
+            528396,
+            528397,
+            528398,
+            528399,
+            528400,
+            528401,
+            528402,
+            528403,
+            528404,
+            528405,
+            528406,
+            528407
+          ],
+          "status": "synchronized",
+          "restored": true,
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/rx/rml2018a-22016-1789046853114-1789046853114-1789046857196634241.sigmf-data",
+            "iq_sha256": "0adb61504730237f9dc8a7f7a6af4137de2d9e6fc40ab68052e478dbb3873ebe",
+            "metadata_sha256": "c3cc69184b1bc19cdbd41ab884ef293b0125896b35ce9d94222db7b00a887c13",
+            "request_id": 5,
+            "sequence": 1441,
+            "session_generation": 1789046853114
+          },
+          "nx_removed": [
+            {
+              "name": "tx-uhd.log",
+              "bytes": 1535
+            },
+            {
+              "name": "rml2018a-nx-tx.py",
+              "bytes": 4475
+            },
+            {
+              "name": "tx-summary.json",
+              "bytes": 398
+            },
+            {
+              "name": "tx-started.json",
+              "bytes": 77
+            },
+            {
+              "name": "tx-plan.json",
+              "bytes": 828
+            },
+            {
+              "name": "rml2018a_campaign.py",
+              "bytes": 8626
+            },
+            {
+              "name": "packet.fc32",
+              "bytes": 208896
+            }
+          ]
+        }
+      ],
+      "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c",
+      "delete_precondition": "Only after confirming no runner/NX TX/P201 capture and verifying the exact resolved root; never delete the source dataset or other evidence roots."
+    }
+  ],
+  "retained_files": 74,
+  "retained_bytes": 1580090,
+  "retained_iq_files": 6
+}

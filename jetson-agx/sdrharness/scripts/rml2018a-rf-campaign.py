@@ -1,0 +1,481 @@
+#!/usr/bin/env python3
+"""AGX all-row RadioML2018A campaign: plan, bounded acquire, infer and summarize."""
+import argparse
+import asyncio
+import contextlib
+import fcntl
+import importlib.util
+import json
+import math
+import multiprocessing
+import os
+import re
+from pathlib import Path
+import select
+import shlex
+import shutil
+import signal
+import subprocess
+import sys
+import time
+import uuid
+
+import h5py
+import numpy as np
+from rml2018a_campaign import (REPO, SCHEMA, RATE, CENTER, BW, RX_SAMPLES,
+    ROWS_PER_BATCH, batch_rows, budget, digest, file_hash, marker, normalize_window,
+    packet, require, save, synchronize, tx_plan)
+
+SCRIPTS = Path(__file__).resolve().parent
+DATASET = REPO/'local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5'
+LABELS = REPO/'jetson-agx/sdrharness/config/amc/rml2018a-labels.server-v1.json'
+PROFILE = REPO/'jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json'
+
+
+def module(name, filename):
+    spec = importlib.util.spec_from_file_location(name, SCRIPTS/filename)
+    result = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(result)
+    return result
+
+
+def document(path):
+    return json.loads(Path(path).read_text())
+
+
+def create_plan(root):
+    require(not root.exists(), 'run root already exists; use its existing plan')
+    require(root.resolve() == root and root.parent == Path('/var/tmp/sdrharness-dev') and
+            root.name.startswith('b210-rml2018a-') and root.name.replace('-', '').isalnum(), 'run root')
+    pins = document(REPO/'jetson-agx/sdrharness/config/amc/rf-preprocess-v1-selection-plan.json')['pinned_inputs']
+    require(DATASET.stat().st_size == pins['dataset']['bytes'], 'dataset size')
+    print('Checking full dataset SHA-256 (read-only)...', flush=True)
+    sha = file_hash(DATASET)
+    require(sha == pins['dataset']['sha256'], 'dataset hash')
+    with h5py.File(DATASET, 'r') as f:
+        require(f['X'].shape == (2555904, 1024, 2) and f['X'].dtype == np.dtype('float32'), 'X layout')
+        require(f['Y'].shape == (2555904, 24) and f['Z'].shape == (2555904, 1), 'labels layout')
+        total = len(f['X'])
+    b = budget(total)
+    require(shutil.disk_usage(root.parent).free > b['maximum_rx_iq_bytes'] +
+            b['metadata_and_predictions_reserve_bytes'] + 64*1024*1024, 'full campaign disk budget')
+    root.mkdir(mode=0o700)
+    plan = dict(schema=SCHEMA, run_id=uuid.uuid4().hex, source=dict(path=str(DATASET), sha256=sha,
+        bytes=DATASET.stat().st_size, mtime_ns=DATASET.stat().st_mtime_ns), budget=b,
+        scope='all original X/Y/Z rows, including historical train/validation/test membership',
+        semantics='all-row over-air engineering comparison, not independent locked-test admission',
+        train=False, recognizer_available=False, name_status='provisional',
+        label_map_sha256=file_hash(LABELS), profile_sha256=file_hash(PROFILE),
+        software={name: file_hash(SCRIPTS/name) for name in (
+            Path(__file__).name, 'rml2018a_campaign.py', 'rml2018a-nx-tx.py',
+            'amc-mamba-worker.py', 'amc-rf-v1-runtime.py', 'gpu_lease.py',
+            'validate-b210-multiclass.py', 'validate-p201-termination-background.py',
+            'validate-b210-p201-link.py')},
+        rf=dict(center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW, tx_gain_db=70,
+                rx_gain_db=50, peak=.2, tx_lo_offset_hz=250000, settle_ms=500,
+                point_deadline_ms=1000, rx_samples=RX_SAMPLES),
+        framing='24 independent1024 rows with per-row peak normalization, batch-specific pilot and guards',
+        preprocessing='pilot timing/CFO/phase correction then per-row complex RMS; no label-guided alignment',
+        created_unix_ns=time.time_ns(), base_head=subprocess.check_output(['git','-C',str(REPO),
+            'rev-parse','HEAD'], text=True).strip())
+    save(root/'run-plan.json', plan)
+    print(json.dumps(plan, indent=2), flush=True)
+
+
+def load_plan(root):
+    require(root.resolve() == root and root.parent == Path('/var/tmp/sdrharness-dev') and
+            root.name.startswith('b210-rml2018a-') and root.name.replace('-', '').isalnum(), 'run root')
+    p = document(root/'run-plan.json')
+    require(p['schema'] == SCHEMA and p['budget'] == budget(2555904), 'plan identity')
+    for name, sha in p['software'].items():
+        require(file_hash(SCRIPTS/name) == sha, 'software changed; new campaign required: '+name)
+    require(file_hash(LABELS) == p['label_map_sha256'] and file_hash(PROFILE) == p['profile_sha256'],
+            'label/profile changed')
+    stat = DATASET.stat()
+    require(p['source']['path'] == str(DATASET) and stat.st_size == p['source']['bytes'] and
+            stat.st_mtime_ns == p['source']['mtime_ns'], 'source identity changed; new plan required')
+    return p
+
+
+@contextlib.contextmanager
+def lock(root):
+    with (root/'owner.lock').open('a') as f:
+        fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        yield
+
+
+def read_line(process, timeout):
+    require(select.select([process.stdout], [], [], timeout)[0], 'remote response timeout')
+    line = process.stdout.readline()
+    require(line and len(line) < 16384, 'remote response EOF/size')
+    return line
+
+
+def native_check(root, plan):
+    report = document(root/'report.json')
+    require(report['sweep_id'] == plan['sweep_id'] and
+            report['session_generation'] == plan['session_generation'] and len(report['points']) == 1,
+            'capture association')
+    p = report['points'][0]
+    for k, v in dict(requested_center_hz=CENTER, sample_rate_hz=RATE, rf_bandwidth_hz=BW,
+                    captured_samples=RX_SAMPLES, dropped_samples=0, clipped_samples=0,
+                    overflow=False, status_flags=0, point_index=0,
+                    session_generation=plan['session_generation']).items():
+        require(p[k] == v, 'capture '+k)
+    require(abs(p['actual_center_hz']-CENTER) <= 2 and p['request_id'] > 0 and p['sequence'] > 0, 'RF identity')
+    require(p['health'] == dict(healthy=True, flags=0, source='iio_adapter') and
+            not p['timeout']['timed_out'] and p['timeout']['limit_ms'] == 1000, 'capture health')
+    rx = p['rx_input']
+    require(rx['verified'] and rx['front_panel_port'] == 'RX1' and rx['logical_channel'] == 'RX0'
+            and rx['rf_port_select'] == 'A_BALANCED', 'RX identity')
+    d = report['dataset']; data = Path(d['data_path']); meta = Path(d['metadata_path'])
+    require(data.resolve().parent == meta.resolve().parent == root/'rx' and d['bytes'] == RX_SAMPLES*4
+            and d['datatype'] == 'ci16_le' and d['format'] == 'sigmf', 'dataset identity')
+    raw = data.read_bytes(); require(len(raw) == RX_SAMPLES*4, 'IQ bytes')
+    metadata = document(meta)
+    require(metadata['global']['core:sample_rate'] == RATE and
+            metadata['global']['core:datatype'] == 'ci16_le', 'metadata layout')
+    require(metadata['captures'] == [{'core:sample_start':0, 'core:frequency':p['actual_center_hz'],
+            'sdrharness:point_index':0, 'sdrharness:rf_bandwidth_hz':BW, 'sdrharness:gain_db':50}], 'metadata RF')
+    v = np.frombuffer(raw, dtype='<i2').reshape(-1, 2)
+    return v[:,0].astype(float)+1j*v[:,1], dict(iq_path=str(data), iq_sha256=digest(raw),
+        metadata_sha256=file_hash(meta), request_id=p['request_id'], sequence=p['sequence'],
+        session_generation=p['session_generation'])
+
+
+def remote_cleanup(bg, remote):
+    allowed = ['rml2018a_campaign.py','rml2018a-nx-tx.py','packet.fc32','tx-plan.json',
+               'tx-started.json','tx-summary.json','tx-uhd.log']
+    code = ('import json;from pathlib import Path; p=Path('+repr(str(remote))+'); '
+            'rows=list(p.iterdir()); assert all(x.is_file() and not x.is_symlink() and '
+            'x.name in '+repr(allowed)+' for x in rows); '
+            'print(json.dumps([dict(name=x.name,bytes=x.stat().st_size) for x in rows])); '
+            '[x.unlink() for x in rows];p.rmdir();assert not p.exists()')
+    return json.loads(bg.command([*bg.NX, 'python3 -c '+shlex.quote(code)]))
+
+
+def acquire_batch(root, campaign, index, retry_failed=False):
+    bg = module('campaign_bg', 'validate-p201-termination-background.py')
+    link = module('campaign_link', 'validate-b210-p201-link.py')
+    dest = root/f'batch-{index:07d}'
+    if retry_failed and dest.exists():
+        audit = document(dest/'audit.json')
+        if audit['status'] != 'synchronized':
+            require(audit.get('restored') is True, 'retry requires verified restoration; inspect failed audit')
+            bg.tx_preflight(); bg.idle()
+            bg.ssh('test ! -e '+shlex.quote(audit['p201_path']))
+            bg.command([*bg.NX,'test ! -e '+shlex.quote(audit['remote'])])
+            attempts=root/'attempts'; attempts.mkdir(mode=0o700,exist_ok=True)
+            dest.rename(attempts/f'{dest.name}-{time.time_ns()}')
+    if (dest/'capture-complete.json').exists():
+        done=document(dest/'capture-complete.json')
+        require(done['audit_sha256']==file_hash(dest/'audit.json') and
+                done['rows']==batch_rows(campaign['budget']['rows'],index), 'completed batch changed')
+        _, seal = native_check(dest,document(dest/'rx-plan.json'))
+        require(seal==document(dest/'audit.json')['seal'], 'completed IQ changed')
+        return done
+    require(not dest.exists(), 'incomplete batch preserved; inspect before resuming or create new campaign')
+    rows = batch_rows(campaign['budget']['rows'], index)
+    with h5py.File(DATASET, 'r') as h5:
+        iq = h5['X'][rows]; labels = h5['Y'][rows]; snrs = h5['Z'][rows].ravel()
+    require(np.array_equal(labels, np.eye(24)[labels.argmax(axis=1)]), 'one-hot label')
+    require(np.isfinite(snrs).all(), 'source SNR')
+    frame, scales = packet(iq, campaign['run_id'], index)
+    txp = tx_plan(frame, campaign['run_id'], index, rows)
+    require(shutil.disk_usage(root).free > RX_SAMPLES*4 + frame.nbytes + 32*1024*1024, 'batch disk budget')
+    password=Path('/home/jetson/.config/sdrharness/p201-root.password')
+    require(password.is_file() and not password.is_symlink() and password.stat().st_mode & 0o777 == 0o600,
+            'protected password file required')
+    bg.tx_preflight(); bg.idle()
+    before = bg.ssh(bg.STATE); pid = bg.ssh('pidof sdrd').split()
+    require(len(pid) == 1, 'single sdrd required')
+    state = dict(zip(before.splitlines()[::2], before.splitlines()[1::2]))
+    require(all(v == '0' for k,v in state.items() if k.endswith(('_en','/enable'))), 'radio busy')
+    daemon_hash = bg.ssh('sha256sum /sd/sdr-agent/current/sdrd').split()[0]
+    require(daemon_hash == '83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f', 'daemon hash')
+    require(file_hash(bg.BINARY) == '24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f', 'Controller hash')
+    require(bg.ssh(f'readlink /proc/{pid[0]}/exe').strip() == '/sd/sdr-agent/current/sdrd', 'daemon executable')
+    bg.ssh('test -f /sd/sdr-agent/current/sdrd.conf && test -f /sd/sdr-agent/current/S60sdrd')
+    require(sum(':43110 ' in line for line in bg.ssh('netstat -lnt').splitlines()) == 1, 'single listener')
+    require(bg.command([*bg.NX,'sha256sum /usr/lib/uhd/examples/tx_samples_from_file']).split()[0] ==
+            'fe3aebc556c16a5065d63d4e6ef8f02ef277ac01dcf250a35dec58b84eceb5cf', 'NX UHD binary hash')
+    require(document_health(bg)['healthy'], 'preflight health')
+    dest.mkdir(mode=0o700)
+    (dest/'packet.fc32').write_bytes(frame.tobytes()); save(dest/'tx-plan.json', txp)
+    save(dest/'source.json', dict(rows=rows, class_ids=labels.argmax(axis=1).tolist(),
+         dataset_snr_db=snrs.tolist(), scales=scales.tolist(), original_iq_sha256=digest(iq.tobytes())))
+    generation = time.time_ns() // 1000000
+    rxp = dict(sweep_id=f'rml2018a-{index}-{generation}', session_generation=generation,
+        frequencies=dict(kind='centers', centers_hz=[CENTER]), sample_rate_hz=RATE,
+        rf_bandwidth_hz=BW, gain_db=50, settle_ms=500, frame_samples=RX_SAMPLES,
+        aggregate_frames=1, point_timeout_ms=1000, detection_threshold_db=12.)
+    remote = root.parent/f'{root.name}-b{index}'
+    p201 = f'/tmp/sdr-agent-dev/agx-sweep-{generation}-0'
+    save(dest/'rx-plan.json', rxp)
+    audit = dict(batch=index, status='failed', started_unix_ns=time.time_ns(), radio_before=before,
+        daemon_pid=pid[0], daemon_sha256=daemon_hash, remote=str(remote), p201_path=p201,
+        maximum_rx_bytes=RX_SAMPLES*4, free_bytes=shutil.disk_usage(root).free, tx_plan=txp,
+        stop='SIGINT/SIGTERM runner -> dedicated generation cancel + identified NX owner INT')
+    save(dest/'audit.json', audit)
+    print(json.dumps(dict(event='batch_plan',batch=index,rows=rows,rx=rxp,remote=str(remote),
+                         p201_path=p201,max_bytes=RX_SAMPLES*4,free_bytes=audit['free_bytes'])),flush=True)
+    tx = None; rx = None; owner = None; staged = False
+    try:
+        bg.ssh(f'test ! -e {p201}')
+        bg.command([*bg.NX, f'test ! -e {remote} && mkdir -m 700 {remote}']); staged = True
+        bg.command(['scp','-F','/home/jetson/.ssh/config','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
+                    str(SCRIPTS/'rml2018a_campaign.py'),str(SCRIPTS/'rml2018a-nx-tx.py'),
+                    str(dest/'packet.fc32'),str(dest/'tx-plan.json'),f'nx:{remote}/'],timeout=20)
+        cmd = (f'cd {remote} && export PYTHONDONTWRITEBYTECODE=1 TMPDIR={remote} XDG_CACHE_HOME={remote} '
+               f'&& echo OWNER $$ && exec timeout --signal=INT --kill-after=3s 58s python3 -B '
+               f'{remote}/rml2018a-nx-tx.py --directory {remote}')
+        tx = subprocess.Popen([*bg.NX,cmd],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,bufsize=0)
+        first = read_line(tx, 10).decode().strip().split()
+        require(len(first)==2 and first[0]=='OWNER' and first[1].isdigit(), 'TX owner receipt')
+        owner = int(first[1]); audit['owner_pid'] = owner
+        ready = json.loads(read_line(tx, 35)); require(ready['event']=='ready' and ready['batch']==index, 'TX ready')
+        audit['tx_ready'] = ready
+        tx.stdin.write(b'GO\n'); tx.stdin.flush()
+        require(json.loads(read_line(tx, 3))['event']=='tx_start', 'TX start acknowledgement')
+        audit['tx_start_ack_ns'] = time.time_ns()
+        (dest/'rx').mkdir()
+        rx = subprocess.Popen([str(bg.BINARY),'--mode','sweep','--sdrd','192.168.1.10:43110',
+                 '--sigmf-directory',str(dest/'rx')],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        try:
+            out, err = rx.communicate(json.dumps(rxp).encode(),timeout=15)
+            require(rx.returncode==0, 'RX failure: '+err.decode()[-1000:])
+            save(dest/'report.json',json.loads(out))
+        except BaseException:
+            bg.command([bg.BINARY,'--mode','cancel','--sdrd','192.168.1.10:43110',
+                        '--session-generation',str(generation)],timeout=6)
+            raise
+        bg.restoration(before)
+        out, err = tx.communicate(timeout=15)
+        require(tx.returncode==0, 'NX failure: '+err.decode()[-1000:])
+        audit['tx_stdout'] = out.decode(); audit['tx_stderr'] = err.decode()
+        bg.command(['scp','-F','/home/jetson/.ssh/config','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
+                    f'nx:{remote}/tx-summary.json',f'nx:{remote}/tx-uhd.log',str(dest)+'/'],timeout=15)
+        tx_result = document(dest/'tx-summary.json')
+        require(tx_result['status']=='fed_complete' and tx_result['bytes_written']==txp['tx_samples']*8
+                and tx_result['child_stopped'], 'TX byte/stop receipt')
+        log=(dest/'tx-uhd.log').read_text()
+        for label,value in [('Actual TX Rate',2.1),('Actual TX Freq',433.92),
+                            ('Actual TX Gain',70.),('Actual TX Bandwidth',1.5)]:
+            matches=re.findall(re.escape(label)+r': ([\d.+-]+)',log)
+            require(len(matches)==1 and abs(float(matches[0])-value)<1e-6, 'UHD readback '+label)
+        require('LO: locked' in log, 'TX LO unlocked')
+        audit['uhd_tail_markers']=log.split('Done!')[-1].strip()
+        raw, seal = native_check(dest,rxp)
+        audit['seal'] = seal
+        try:
+            _, sync = synchronize(raw,campaign['run_id'],index,len(rows))
+            audit['sync'] = sync; audit['status'] = 'synchronized'
+        except ValueError as e:
+            audit['status'] = 'sync_failed'; audit['sync_error'] = str(e)
+    except BaseException as e:
+        audit['error'] = f'{type(e).__name__}: {e}'
+        raise
+    finally:
+        if owner is not None and tx is not None and tx.poll() is None:
+            bg.command([*bg.NX, f'if test -d /proc/{owner}; then test "$(readlink /proc/{owner}/cwd)" = "{remote}" && kill -INT {owner}; fi'])
+        for process in (rx, tx):
+            if process is not None and process.poll() is None:
+                process.terminate()
+                try: process.communicate(timeout=8)
+                except subprocess.TimeoutExpired: process.kill(); process.communicate(timeout=3)
+        try:
+            audit['radio_after'] = bg.restoration(before)
+            require(bg.ssh('pidof sdrd').split()==pid, 'daemon changed')
+            require(bg.ssh('sha256sum /sd/sdr-agent/current/sdrd').split()[0]==daemon_hash,'daemon hash changed')
+            bg.ssh(f'test ! -e {p201}')
+            if staged:
+                bg.command([*bg.NX,link.remote_absence_command(remote,owner,
+                    audit.get('tx_ready',{}).get('child_pid'))])
+                # Preserve failed UHD startup/feed diagnostics before remote cleanup too.
+                for name in ('tx-uhd.log','tx-summary.json'):
+                    if not (dest/name).exists():
+                        present=bg.command([*bg.NX,f'if test -f {remote}/{name}; then echo yes; fi']).strip()
+                        if present=='yes':
+                            bg.command(['scp','-F','/home/jetson/.ssh/config','-o','BatchMode=yes',
+                                '-o','StrictHostKeyChecking=yes',f'nx:{remote}/{name}',str(dest/name)])
+                audit['remote_removed'] = remote_cleanup(bg,remote)
+            audit['nx_after'] = bg.tx_preflight()
+            audit['health_after'] = document_health(bg)
+            require(audit['health_after']['healthy'], 'postflight health')
+            audit['restored'] = True
+        finally:
+            audit['elapsed_seconds'] = (time.time_ns()-audit['started_unix_ns'])/1e9
+            save(dest/'audit.json',audit)
+    # Payload can be deterministically re-exported from the pinned HDF5; no duplicate retained source.
+    require(file_hash(dest/'packet.fc32')==txp['payload_sha256'], 'payload cleanup identity')
+    audit['local_removed_payload_bytes'] = (dest/'packet.fc32').stat().st_size
+    (dest/'packet.fc32').unlink()
+    save(dest/'audit.json',audit)
+    save(dest/'capture-complete.json',dict(status=audit['status'],audit_sha256=file_hash(dest/'audit.json'),rows=rows))
+    print(json.dumps(dict(event='captured',batch=index,status=audit['status'],seconds=audit['elapsed_seconds'])),flush=True)
+    return document(dest/'capture-complete.json')
+
+
+def document_health(bg):
+    return json.loads(bg.command([bg.BINARY,'--mode','health','--sdrd','192.168.1.10:43110']))
+
+
+def infer_batches(root, campaign, indices):
+    require(len(indices)<=32, 'bounded GPU shard: at most32 batches')
+    pending=[i for i in indices if not (root/f'batch-{i:07d}'/'predictions.json').exists()]
+    if not pending:
+        return
+    multi=module('campaign_multi','validate-b210-multiclass.py')
+    names=document(LABELS)['classes']
+    # Reuse existing bounded idle-Spark pause/restore watchdog, never stop an active request.
+    from gpu_lease import GpuLease
+    lease=GpuLease(root/'scratch'/'gpu-gate','mamba')
+    token=asyncio.run(lease.acquire(time.monotonic()+10,request='rml2018a-campaign'))
+    with contextlib.ExitStack() as stack:
+        stack.callback(lease.close)
+        stack.callback(lease.release,token)
+        stack.enter_context(multi.idle_spark_pause(evidence_root=root))
+        worker=module('campaign_model','amc-mamba-worker.py')
+        backend=worker.RfV1Backend(PROFILE)
+        end=time.monotonic()+580
+        for index in pending:
+            require(time.monotonic()<end, 'GPU shard deadline')
+            dest=root/f'batch-{index:07d}'; done=document(dest/'capture-complete.json')
+            require(file_hash(dest/'audit.json')==done['audit_sha256'], 'audit modified')
+            source=document(dest/'source.json'); raw,seal=native_check(dest,document(dest/'rx-plan.json'))
+            require(seal==document(dest/'audit.json')['seal'], 'RX evidence changed')
+            with h5py.File(DATASET,'r') as f:iq=f['X'][source['rows']]
+            require(digest(iq.tobytes())==source['original_iq_sha256'], 'source row changed')
+            received=None;sync=None
+            if done['status']=='synchronized':
+                received,sync=synchronize(raw,campaign['run_id'],index,len(iq))
+            outputs=[]
+            for k,row in enumerate(source['rows']):
+                require(time.monotonic()<end, 'GPU shard deadline')
+                z=iq[k,:,0].astype(float)+1j*iq[k,:,1]
+                entry=dict(row=row,true_id=source['class_ids'][k],dataset_snr_db=source['dataset_snr_db'][k],
+                    receive_status=done['status'],source_prediction=None,received_prediction=None)
+                for tag,data in [('source',z),('received',None if received is None else received[k])]:
+                    if data is None:continue
+                    tensor=normalize_window(data);logits,us=backend.classify_logits(tensor)
+                    prediction=int(np.argmax(logits))
+                    entry[tag+'_prediction']=dict(id=prediction,name=names[prediction],logits=logits,
+                        input_sha256=digest(tensor.tobytes()),inference_us=us)
+                if received is not None:
+                    entry['source_rx_correlation']=float(abs(np.vdot(z,received[k])) /
+                        max(np.linalg.norm(z)*np.linalg.norm(received[k]),1e-30))
+                outputs.append(entry)
+            save(dest/'predictions.json',dict(schema=SCHEMA,batch=index,rows=outputs,
+                audit_sha256=done['audit_sha256'],
+                sync=sync,model_identity=backend.admission_identity,profile_sha256=campaign['profile_sha256'],
+                label_map_sha256=campaign['label_map_sha256'],name_status='provisional',
+                uncalibrated=True,recognizer_available=False,
+                semantics='all-row engineering comparison; pilot aligned single1024 windows, no production four-window admission'))
+            print(json.dumps(dict(event='inferred',batch=index,rows=len(outputs))),flush=True)
+        del backend
+    if (root/'gpu-isolation.json').exists():
+        (root/'gpu-isolation.json').rename(root/f'gpu-isolation-{time.time_ns()}.json')
+
+
+def infer_child(root, campaign, indices):
+    # A fresh process per shard also releases CUDA and Torch's one-shot thread setup.
+    def abort(sig, frame):
+        raise RuntimeError(f'inference stopped by signal {sig}')
+    for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGALRM):
+        signal.signal(sig, abort)
+    signal.alarm(650)
+    try:
+        infer_batches(root, campaign, indices)
+    finally:
+        signal.alarm(0)
+        if (root/'gpu-isolation.json').exists():
+            (root/'gpu-isolation.json').rename(root/f'gpu-isolation-{time.time_ns()}.json')
+
+
+def infer_shard(root, campaign, indices):
+    if all((root/f'batch-{i:07d}'/'predictions.json').exists() for i in indices):
+        return
+    child = multiprocessing.get_context('spawn').Process(target=infer_child, args=(root,campaign,indices))
+    child.start()
+    try:
+        child.join(670)
+        require(child.exitcode == 0, f'inference child failed: {child.exitcode}')
+    finally:
+        if child.is_alive():
+            child.terminate(); child.join(15)
+        if child.is_alive():
+            child.kill(); child.join(5)
+        require(not child.is_alive(), 'inference child not stopped')
+        child.close()
+
+
+def summarize(root, campaign):
+    total=campaign['budget']['rows']; attempted=0; inferred=0; correct=0; source_correct=0; source_inferred=0
+    confusion=np.zeros((24,24),dtype=np.int64);by_snr={}; batches=0
+    for index in range(campaign['budget']['batches']):
+        completed=root/f'batch-{index:07d}'/'capture-complete.json'
+        if completed.exists():
+            done=document(completed)
+            require(done['rows']==batch_rows(total,index), 'capture row membership')
+            require(done['audit_sha256']==file_hash(completed.parent/'audit.json'), 'capture audit changed')
+            attempted+=len(done['rows'])
+        p=root/f'batch-{index:07d}'/'predictions.json'
+        if not p.exists():continue
+        result=document(p);require(result['batch']==index,'prediction batch identity')
+        require(completed.exists() and result['audit_sha256']==done['audit_sha256'], 'prediction association')
+        require([x['row'] for x in result['rows']]==batch_rows(total,index),'prediction row membership')
+        batches+=1
+        for row in result['rows']:
+            source_inferred+=1;source_correct+=int(row['source_prediction']['id']==row['true_id'])
+            bucket=by_snr.setdefault(str(row['dataset_snr_db']),dict(attempted=0,inferred=0,correct=0))
+            bucket['attempted']+=1
+            if row['received_prediction'] is not None:
+                inferred+=1;bucket['inferred']+=1;p=row['received_prediction']['id'];t=row['true_id']
+                confusion[t,p]+=1;correct+=int(p==t);bucket['correct']+=int(p==t)
+    value=dict(schema=SCHEMA,total_source_rows=total,attempted_rows=attempted,received_inferred_rows=inferred,
+        source_inferred_rows=source_inferred,receive_pending_or_failed_rows=attempted-inferred,
+        pending_inference_rows=attempted-source_inferred,not_yet_attempted_rows=total-attempted,completed_batches=batches,
+        complete=source_inferred==total,all_rows_received_and_inferred=inferred==total,
+        source_accuracy=source_correct/source_inferred if source_inferred else None,
+        received_correct=correct,source_correct=source_correct,confusion_matrix=confusion.tolist(),by_snr=by_snr,
+        received_accuracy=correct/inferred if inferred else None,
+        end_to_end_success_fraction=correct/attempted if attempted else None,
+        semantics='all-row engineering comparison, includes historical train/validation/test; not independent test accuracy',
+        recognizer_available=False)
+    save(root/'summary.json',value);print(json.dumps(value),flush=True)
+
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('command',choices=['plan','acquire','infer','run','summary'])
+    p.add_argument('--root',type=Path,required=True)
+    p.add_argument('--start-batch',type=int,default=0)
+    p.add_argument('--max-batches',type=int,default=1)
+    p.add_argument('--deadline-seconds',type=int,default=600)
+    p.add_argument('--retry-failed',action='store_true',help='archive restored failed attempts, then retry; never discard evidence')
+    args=p.parse_args();root=args.root
+    if args.command=='plan':create_plan(root);return
+    campaign=load_plan(root)
+    require(0<=args.start_batch<campaign['budget']['batches'] and args.max_batches>0, 'batch range')
+    stop=min(campaign['budget']['batches'],args.start_batch+args.max_batches)
+    require(60<=args.deadline_seconds<=30*86400,'finite deadline')
+    scratch=root/'scratch';scratch.mkdir(mode=0o700,exist_ok=True)
+    os.environ.update(TMPDIR=str(scratch),XDG_CACHE_HOME=str(scratch),TRITON_CACHE_DIR=str(scratch/'triton'),
+                      CUDA_CACHE_PATH=str(scratch/'cuda'),PYTHONDONTWRITEBYTECODE='1')
+    def abort(sig,frame):raise RuntimeError(f'campaign stopped by signal {sig}')
+    for sig in (signal.SIGINT,signal.SIGTERM,signal.SIGALRM):signal.signal(sig,abort)
+    signal.alarm(args.deadline_seconds)
+    with lock(root):
+        try:
+            if args.command=='summary':summarize(root,campaign);return
+            for start in range(args.start_batch,stop,32):
+                shard=list(range(start,min(stop,start+32)))
+                if args.command in ('acquire','run'):
+                    for index in shard:acquire_batch(root,campaign,index,args.retry_failed)
+                if args.command in ('infer','run'):infer_shard(root,campaign,shard)
+            if args.command in ('infer','run'):summarize(root,campaign)
+        finally:
+            signal.alarm(0)
+
+
+if __name__=='__main__':main()

@@ -1,0 +1,186 @@
+"""No hardware: packet identity, CFO/timing recovery, budgets and rejection."""
+import importlib.util
+import json
+import os
+from pathlib import Path
+import sys
+import tempfile
+import subprocess
+import hashlib
+import unittest
+from unittest.mock import patch, MagicMock
+
+import numpy as np
+
+SCRIPTS = Path(__file__).resolve().parents[1]/'scripts'
+sys.path.insert(0, str(SCRIPTS))
+import rml2018a_campaign as c
+
+
+def load(name, path):
+    spec=importlib.util.spec_from_file_location(name,path)
+    m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
+
+
+class CampaignTests(unittest.TestCase):
+    def source(self, count=24):
+        rng=np.random.default_rng(312)
+        return rng.normal(size=(count,1024,2)).astype('<f4')
+
+    def test_full_budget_and_tail_cover_exactly_once(self):
+        b=c.budget(2555904)
+        self.assertEqual(b['batches'],106496)
+        self.assertEqual(b['maximum_rx_iq_bytes'],27916861440)
+        self.assertEqual(c.batch_rows(25,0),list(range(24)))
+        self.assertEqual(c.batch_rows(25,1),[24])
+        self.assertEqual(c.batch_rows(2555904,106495)[-1],2555903)
+        for value in (-1,106496):
+            with self.assertRaises(ValueError):c.batch_rows(2555904,value)
+
+    def test_packet_peak_and_per_row_source_shape(self):
+        iq=self.source();frame,scales=c.packet(iq,'run',4)
+        self.assertEqual(frame.dtype,np.dtype('<c8'))
+        self.assertEqual(len(frame),26112)
+        data=frame[c.GUARD+c.MARKER:-c.GUARD].reshape(24,1024)
+        np.testing.assert_allclose(abs(data).max(axis=1),.2,atol=1e-7)
+        np.testing.assert_allclose(data/scales[:,None],iq[...,0]+1j*iq[...,1],rtol=2e-7)
+
+    def test_payload_hash_and_gain_frequency_identity_reject_before_uhd(self):
+        frame,_=c.packet(self.source(),'run',0);plan=c.tx_plan(frame,'run',0,range(24))
+        c.validate_tx(plan,frame.tobytes())
+        for key,value in [('center_hz',2440000000),('tx_gain_db',71),('tx_samples',1),
+                          ('serial','other'),('repeats',0),('rows',[0]*24)]:
+            changed={**plan,key:value}
+            with self.assertRaises(ValueError):c.validate_tx(changed,frame.tobytes())
+        with self.assertRaises(ValueError):c.validate_tx(plan,frame.tobytes()[:-1]+b'X')
+        nx=load('test_nx',SCRIPTS/'rml2018a-nx-tx.py')
+        with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:
+            root=Path(directory);(root/'tx-plan.json').write_text(json.dumps(plan));(root/'packet.fc32').write_bytes(b'bad')
+            with patch.object(nx.subprocess,'Popen') as spawn:
+                with self.assertRaises(ValueError):nx.transmit(root)
+                spawn.assert_not_called()
+
+    def test_marker_recovery_with_unknown_phase_cfo_and_partial_leading_packet(self):
+        iq=self.source();frame,scales=c.packet(iq,'session',3)
+        start=11937;n=np.arange(c.RX_SAMPLES)
+        raw=np.tile(frame,5)[start:start+c.RX_SAMPLES].astype(np.complex128)
+        raw=raw*1000*np.exp(1j*(.7+2*np.pi*710*n/c.RATE))
+        raw+=np.random.default_rng(11).normal(size=len(raw))*.02
+        recovered,report=c.synchronize(raw,'session',3,24)
+        expected=(iq[...,0]+1j*iq[...,1])*scales[:,None]*1000
+        self.assertGreater(report['marker_score'],.99)
+        self.assertAlmostEqual(report['estimated_cfo_hz'],710,delta=1)
+        self.assertLess(float(np.mean(abs(recovered-expected)**2)/np.mean(abs(expected)**2)),1e-4)
+
+    def test_wrong_batch_marker_and_silence_do_not_create_labels(self):
+        frame,_=c.packet(self.source(),'run',1)
+        raw=np.tile(frame,3)[:c.RX_SAMPLES]
+        with self.assertRaises(ValueError):c.synchronize(raw,'run',2,24)
+        with self.assertRaises(ValueError):c.synchronize(np.zeros(c.RX_SAMPLES),'run',1,24)
+        with self.assertRaises(ValueError):c.synchronize(raw[:-1],'run',1,24)
+
+    def test_detector_rejects_out_of_band_tone_but_preserves_payload(self):
+        frame,_=c.packet(self.source(),'tone',1)
+        n=np.arange(c.RX_SAMPLES)
+        raw=np.tile(frame,3)[:c.RX_SAMPLES]*np.exp(2j*np.pi*710*n/c.RATE)
+        raw+=2*np.exp(-2j*np.pi*589170*n/c.RATE)
+        recovered,report=c.synchronize(raw,'tone',1,24)
+        at=report['payload_marker_offset']+c.MARKER
+        expected=raw[at:at+24*1024]*np.exp(-2j*np.pi*report['estimated_cfo_hz']*
+            n[at:at+24*1024]/c.RATE+1j*report['phase_rotation_rad'])
+        np.testing.assert_allclose(recovered.ravel(),expected,rtol=1e-10)
+        self.assertGreater(report['marker_score'],.95)
+        self.assertFalse(report['detector_filter']['payload_filtered'])
+
+    def test_clean_trailing_pilot_anchors_previous_complete_repeated_payload(self):
+        frame,_=c.packet(self.source(),'tail',3)
+        raw=np.tile(frame,3)[:c.RX_SAMPLES].astype(np.complex128)
+        # First two markers erased by interference; third marker is intact but
+        # has fewer than 24 payload rows following it within the RX budget.
+        for k in (0,1):raw[k*len(frame)+c.GUARD:k*len(frame)+c.GUARD+c.MARKER]=0
+        recovered,report=c.synchronize(raw,'tail',3,24)
+        self.assertEqual(report['marker_offset'],2*len(frame)+c.GUARD)
+        self.assertEqual(report['payload_marker_offset'],len(frame)+c.GUARD)
+        expected=frame[c.GUARD+c.MARKER:-c.GUARD].reshape(24,1024)
+        np.testing.assert_allclose(recovered,expected,atol=1e-5)
+
+    def test_summary_distinguishes_captured_pending_inference_and_unattempted(self):
+        runner=load('campaign_summary',SCRIPTS/'rml2018a-rf-campaign.py')
+        with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:
+            root=Path(directory);batch=root/'batch-0000000';batch.mkdir()
+            c.save(batch/'audit.json',{'status':'sync_failed'})
+            c.save(batch/'capture-complete.json',dict(rows=list(range(24)),audit_sha256=c.file_hash(batch/'audit.json')))
+            with patch('builtins.print'):
+                runner.summarize(root,{'budget':c.budget(25)})
+            report=json.loads((root/'summary.json').read_text())
+            self.assertEqual(report['attempted_rows'],24)
+            self.assertEqual(report['pending_inference_rows'],24)
+            self.assertEqual(report['not_yet_attempted_rows'],1)
+            self.assertIsNone(report['received_accuracy'])
+            self.assertFalse(report['complete'])
+
+    def test_completed_resume_verifies_iq_without_transmit(self):
+        runner=load('campaign_resume',SCRIPTS/'rml2018a-rf-campaign.py')
+        with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:
+            root=Path(directory);batch=root/'batch-0000000';batch.mkdir()
+            c.save(batch/'audit.json',{'seal':{'iq_sha256':'expected'}})
+            c.save(batch/'rx-plan.json',{})
+            c.save(batch/'capture-complete.json',dict(rows=list(range(24)),audit_sha256=c.file_hash(batch/'audit.json')))
+            bg=MagicMock()
+            with patch.object(runner,'module',return_value=bg),patch.object(runner,'native_check',return_value=(None,{'iq_sha256':'expected'})):
+                runner.acquire_batch(root,{'budget':c.budget(25)},0)
+                bg.tx_preflight.assert_not_called()
+                bg.command.assert_not_called()
+            with patch.object(runner,'module',return_value=bg),patch.object(runner,'native_check',return_value=(None,{'iq_sha256':'tampered'})):
+                with self.assertRaisesRegex(ValueError,'completed IQ changed'):
+                    runner.acquire_batch(root,{'budget':c.budget(25)},0)
+
+    def test_normalization_keeps_constant_carrier_and_is_scale_invariant(self):
+        z=np.ones(1024)*(.2+.4j)
+        a=c.normalize_window(z)
+        np.testing.assert_array_equal(a,c.normalize_window(z*10))
+        self.assertGreater(abs(a.mean()),.6)
+        self.assertAlmostEqual(float(np.sqrt(np.mean(np.sum(a.astype(float)**2,axis=0)))),1,places=6)
+        with self.assertRaises(ValueError):c.normalize_window(np.zeros(1024))
+
+    def fifo_case(self, go):
+        nx=load('fifo_nx',SCRIPTS/'rml2018a-nx-tx.py')
+        frame,_=c.packet(self.source(2),'fifo-test',0)
+        plan=c.tx_plan(frame,'fifo-test',0,[0,1])
+        launched=[];real_popen=subprocess.Popen;real_select=nx.select.select;real_read=os.read
+        with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:
+            root=Path(directory);(root/'packet.fc32').write_bytes(frame.tobytes())
+            (root/'tx-plan.json').write_text(json.dumps(plan))
+            def fake_uhd(args,**kwargs):
+                self.assertEqual(args[args.index('--freq')+1],'433920000')
+                self.assertNotIn('--repeat',args)
+                code=('import sys,hashlib,json; f=open(sys.argv[1],"rb"); h=hashlib.sha256(); n=0\n'
+                      'while True:\n b=f.read(8192)\n if not b:break\n h.update(b);n+=len(b)\n'
+                      'print(json.dumps(dict(bytes=n,sha256=h.hexdigest())))')
+                child=real_popen([sys.executable,'-c',code,args[args.index('--file')+1]],**kwargs)
+                launched.append(child);return child
+            def fake_select(read,write,error,timeout):
+                return ([0],[],[]) if read==[0] else real_select(read,write,error,timeout)
+            with patch.object(nx.subprocess,'Popen',fake_uhd),patch.object(nx.select,'select',fake_select),\
+                 patch.object(nx.os,'read',lambda fd,n:(b'GO\n' if go else b'') if fd==0 else real_read(fd,n)),\
+                 patch.object(nx.signal,'signal'),patch.object(nx.signal,'alarm'):
+                if go:nx.transmit(root)
+                else:
+                    with self.assertRaises(ValueError):nx.transmit(root)
+            self.assertFalse((root/'packet.fifo').exists())
+            self.assertTrue(all(child.poll() is not None for child in launched))
+            audit=json.loads((root/'tx-summary.json').read_text())
+            self.assertTrue(audit['child_stopped'])
+            if go:
+                actual=json.loads((root/'tx-uhd.log').read_text())
+                expected=hashlib.sha256()
+                for _ in range(plan['repeats']):expected.update(frame.tobytes())
+                self.assertEqual(actual,dict(bytes=plan['tx_samples']*8,sha256=expected.hexdigest()))
+            else:self.assertEqual(audit['bytes_written'],0)
+
+    def test_finite_fifo_exact_bytes_and_child_exit(self):self.fifo_case(True)
+
+    def test_fifo_eof_before_go_cancels_without_payload(self):self.fifo_case(False)
+
+
+if __name__=='__main__':unittest.main()

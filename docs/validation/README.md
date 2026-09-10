@@ -21,6 +21,8 @@
 后续实验频段见[当前选择](../SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。
 下列为历史实测入口；通过仅指该记录中的工程门，不能把旧计划直接重跑。
 
+- [RadioML2018A全量脚本与有限先导](RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md)
+
 - [P201 RX1负载→天线→负载：反向三阶段背景隔离与恢复](P201_TERMINATION_BACKGROUND_VALIDATION_2026-09-09.md)
 - [P201 2.4GHz背景分布：三轮全段扫描与独立复测](P201_BACKGROUND_MAP_VALIDATION_2026-09-09.md)
 - [P201 5GHz Wi-Fi中心背景抽样与独立复测](P201_WIFI5_BACKGROUND_VALIDATION_2026-09-09.md)
