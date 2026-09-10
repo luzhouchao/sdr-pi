@@ -48,3 +48,5 @@
 - [RF-aligned checkpoint 审计](../RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_AUDIT_2026-09-05.json)
 
 整理不能为了目录整齐改变这些引用或重新冻结模型配置。
+
+- [3500MHz负载背景证据与清理](P201_3500_TERMINATION_EVIDENCE_2026-09-10.json)

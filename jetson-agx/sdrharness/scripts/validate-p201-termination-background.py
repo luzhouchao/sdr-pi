@@ -75,7 +75,54 @@ def restoration(before):
     raise RuntimeError('both RX channels / scan masks / buffers not restored')
 
 
+def native(root, plan):
+    if plan['frequencies']['centers_hz'] != [3500000000]:
+        return bg.native(root, plan)
+    assert bg.live.document(root / 'plan.json') == plan
+    report = bg.live.document(root / 'report.json')
+    assert report['backend'] == 'agx_iq_software_aggregate'
+    assert report['sweep_id'] == plan['sweep_id']
+    assert report['session_generation'] == plan['session_generation'] and len(report['points']) == 1
+    point = report['points'][0]
+    assert point['rx_input'] == bg.live.RX_IDENTITY
+    for key, value in dict(point_index=0, requested_center_hz=3500000000,
+        sample_rate_hz=2500000, rf_bandwidth_hz=1000000, captured_samples=65535,
+        dropped_samples=0, overflow=False, clipped_samples=0, status_flags=0,
+        session_generation=plan['session_generation']).items():
+        assert point[key] == value, key
+    assert abs(point['actual_center_hz'] - 3500000000) <= 2
+    assert point['health'] == dict(healthy=True, flags=0, source='iio_adapter')
+    assert not point['timeout']['timed_out'] and point['timeout']['limit_ms'] == 1000
+    assert point['request_id'] > 0 and point['sequence'] > 0
+    for key, value in dict(sample_rate_hz=2500000, rf_bandwidth_hz=1000000,
+        gain_db=20, settle_ms=500, frame_samples=65535, aggregate_frames=1,
+        point_timeout_ms=1000).items():
+        assert plan[key] == value, key
+    dataset = report['dataset']
+    assert dataset['bytes'] == 262140 and dataset['format'] == 'sigmf' and dataset['datatype'] == 'ci16_le'
+    data, meta = Path(dataset['data_path']), Path(dataset['metadata_path'])
+    assert data.resolve().parent == meta.resolve().parent == root.resolve()
+    metadata = bg.live.document(meta)
+    assert metadata['global']['core:sample_rate'] == 2500000
+    assert metadata['global']['core:datatype'] == 'ci16_le'
+    assert metadata['global']['sdrharness:sample_layout'] == 'interleaved_iq'
+    assert metadata['captures'] == [{'core:sample_start': 0, 'core:frequency': point['actual_center_hz'],
+        'sdrharness:point_index': 0, 'sdrharness:rf_bandwidth_hz': 1000000, 'sdrharness:gain_db': 20}]
+    raw = data.read_bytes()
+    assert len(raw) == 262140
+    values = bg.np.frombuffer(raw, dtype='<i2').reshape(-1, 2)
+    hashes = {str(path): hashlib.sha256(path.read_bytes()).hexdigest()
+              for path in (data, meta, root / 'report.json', root / 'plan.json')}
+    return dict(hashes=hashes, request_id=point['request_id'], sequence=point['sequence'],
+        session_generation=point['session_generation']), values[:, 0].astype(float) + 1j * values[:, 1].astype(float)
+
+
 def compact_stats(raw):
+    if ROOT.name == 'p201-3500-termination-20260910b':
+        rms = bg.np.array([bg.np.sqrt(bg.np.mean(abs(raw[i:i+128])**2))
+                          for i in range(0, len(raw), 128)])
+        return dict(raw=dict(p50=float(bg.np.median(rms)), maximum=float(rms.max())),
+                    analysis='unfiltered 128-sample complex RMS, including final partial block; ADC units')
     return {key: value for key, value in bg.stats(raw).items()
             if key not in ('raw_segments', 'filtered_segments')}
 
@@ -92,9 +139,10 @@ def acquire(condition):
     available = shutil.disk_usage(ROOT).free
     assert available > 1572840 + 16 * 1024 * 1024
     generation = int(time.time() * 1000)
+    is3500 = condition == 'termination-3500'
     plans = [dict(sweep_id=f'{condition}-{generation+i}', session_generation=generation+i,
-        frequencies=dict(kind='centers', centers_hz=[2455000000]), sample_rate_hz=2100000,
-        rf_bandwidth_hz=1500000, gain_db=40, settle_ms=500, frame_samples=65535,
+        frequencies=dict(kind='centers', centers_hz=[3500000000 if is3500 else 2455000000]), sample_rate_hz=2500000 if is3500 else 2100000,
+        rf_bandwidth_hz=1000000 if is3500 else 1500000, gain_db=20 if is3500 else 40, settle_ms=500, frame_samples=65535,
         aggregate_frames=1, point_timeout_ms=1000, detection_threshold_db=12.) for i in range(6)]
     remote_paths = [f'/tmp/sdr-agent-dev/agx-sweep-{p["session_generation"]}-0' for p in plans]
     audit = dict(schema_id='p201_input_background_v2', status='preflight', input_condition=condition,
@@ -102,18 +150,18 @@ def acquire(condition):
         physical_connection=('operator confirmed original antenna returned to P201 RX1; external TX remains terminated and stopped'
             if condition == 'antenna-return' else 'operator confirmed 50-ohm load on P201 RX1 and previous external TX port'),
         root=str(ROOT), plans=plans, maximum_rx_bytes=1572840, free_bytes_before=available,
-        capture_seconds_per_point=65535/2100000, expected_wall_seconds=40, overall_deadline_seconds=120,
+        capture_seconds_per_point=65535/(2500000 if is3500 else 2100000), expected_wall_seconds=40, overall_deadline_seconds=120,
         per_controller_deadline_seconds=15, inter_capture_delay_seconds=1,
         p201_transients=remote_paths, nx_transients=[], rows=[],
         stop='SIGINT/SIGTERM to runner; dedicated sdr-agent --mode cancel for active generation',
         controller_sha256=hashlib.sha256(BINARY.read_bytes()).hexdigest(),
         runner_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-        filter_contract=bg.repair.filter_contract(), analysis_numpy=bg.np.__version__,
+        filter_contract=None if is3500 else bg.repair.filter_contract(), analysis_numpy=bg.np.__version__,
         model_windows=0, tx_operations=0, recognizer_available=False, independent_labels=0,
         historical_comparison_only=condition == 'termination',
         comparison_design=('termination/antenna/termination reverse bracket' if condition == 'termination-return'
-            else 'sequential termination then antenna; not a bracketed experiment'))
-    if condition != 'termination':
+            else 'separate-session 3500MHz antenna comparison; not bracketed' if is3500 else 'sequential termination then antenna; not a bracketed experiment'))
+    if condition in ('antenna-return', 'termination-return'):
         inventory = REPO / ('docs/evidence/P201_ANTENNA_RETURN_EVIDENCE_2026-09-09.json'
             if condition == 'termination-return' else 'docs/evidence/P201_TERMINATION_BACKGROUND_EVIDENCE_2026-09-09.json')
         parent = json.loads(inventory.read_text())
@@ -124,6 +172,15 @@ def acquire(condition):
             assert len(data) == row['bytes'] and hashlib.sha256(data).hexdigest() == row['sha256']
         audit['parent_evidence'] = dict(path=str(inventory), sha256=hashlib.sha256(inventory.read_bytes()).hexdigest(),
                                         audit_path=str(Path(parent['root']) / 'audit.json'))
+    if is3500:
+        inventory = REPO / 'docs/evidence/B210_3500_TONE_EVIDENCE_2026-09-10.json'
+        parent = json.loads(inventory.read_text())
+        for row in parent['files']:
+            path = Path(row['path'])
+            data = path.read_bytes()
+            assert len(data) == row['bytes'] and hashlib.sha256(data).hexdigest() == row['sha256']
+        audit['parent_evidence'] = dict(path=str(inventory), sha256=hashlib.sha256(inventory.read_bytes()).hexdigest())
+        assert audit['controller_sha256'] == '24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f'
     save(ROOT / 'audit.json', audit)
     before = None
     try:
@@ -134,10 +191,15 @@ def acquire(condition):
         assert ssh(f'readlink /proc/{daemon[0]}/exe').strip() == '/sd/sdr-agent/current/sdrd'
         audit['daemon_pid'] = daemon[0]
         audit['daemon_sha256'] = ssh('sha256sum /sd/sdr-agent/current/sdrd').split()[0]
-        if condition != 'termination':
+        if is3500:
+            assert audit['daemon_sha256'] == '83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f'
+        if condition in ('antenna-return', 'termination-return'):
             parent_audit = json.loads(Path(audit['parent_evidence']['audit_path']).read_text())
             for key in ('daemon_sha256', 'controller_sha256', 'filter_contract', 'analysis_numpy'):
                 assert audit[key] == parent_audit[key], f'comparison identity changed: {key}'
+        ssh('test -f /sd/sdr-agent/current/sdrd.conf && test -f /sd/sdr-agent/current/S60sdrd')
+        listeners = ssh('netstat -lnt')
+        assert sum(':43110 ' in line for line in listeners.splitlines()) == 1
         audit['health_before'] = json.loads(command([BINARY, '--mode', 'health', '--sdrd', '192.168.1.10:43110']))
         assert audit['health_before']['healthy']
         before = ssh(STATE)
@@ -168,7 +230,7 @@ def acquire(condition):
                 (capture_root / 'stderr.log').write_text(err)
                 assert p.returncode == 0, err[-2000:]
                 save(capture_root / 'report.json', json.loads(out))
-                seal, raw = bg.native(capture_root, plan)
+                seal, raw = native(capture_root, plan)
                 audit['rows'].append(dict(index=index, started_unix=started, elapsed_seconds=time.time()-started,
                                          seal=seal, statistics=compact_stats(raw)))
             except BaseException:
@@ -219,7 +281,7 @@ def verify():
     assert audit['status'] == 'completed' and len(audit['rows']) == 6
     assert audit['analysis_numpy'] == bg.np.__version__ and 'torch' not in sys.modules
     for index, row in enumerate(audit['rows']):
-        seal, raw = bg.native(ROOT / f'capture-{index:02d}', audit['plans'][index])
+        seal, raw = native(ROOT / f'capture-{index:02d}', audit['plans'][index])
         assert seal == row['seal'] and compact_stats(raw) == row['statistics']
         assert row['radio_restored'] and row['p201_transient_absent']
     assert audit['restored'] and audit['all_p201_transients_absent']
@@ -231,12 +293,14 @@ if __name__ == '__main__':
     choice = parser.add_mutually_exclusive_group(required=True)
     choice.add_argument('--acquire', action='store_true')
     choice.add_argument('--verify', action='store_true')
-    parser.add_argument('--condition', choices=('termination', 'antenna-return', 'termination-return'), default='termination')
+    parser.add_argument('--condition', choices=('termination', 'antenna-return', 'termination-return', 'termination-3500'), default='termination')
     args = parser.parse_args()
     if args.condition == 'antenna-return':
         ROOT = Path('/var/tmp/sdrharness-dev/p201-antenna-return-20260909b')
     elif args.condition == 'termination-return':
         ROOT = Path('/var/tmp/sdrharness-dev/p201-termination-return-20260909c')
+    if args.condition == 'termination-3500':
+        ROOT = Path('/var/tmp/sdrharness-dev/p201-3500-termination-20260910b')
     if args.verify:
         verify()
     else:

@@ -1,0 +1,259 @@
+{
+  "schema_id": "p201_3500_termination_evidence_v1",
+  "root": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b",
+  "purpose": "Replay six terminated RX captures and compare with retained 3500MHz antenna pilot; no IQ duplication",
+  "source": "P201 RX1/RX0/A_BALANCED; both ports terminated per operator",
+  "session": "termination-3500-1789017336737",
+  "identities": [
+    {
+      "hashes": {
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-00/termination-3500-1789017336737-1789017336737-1789017339628434597.sigmf-data": "5338722d1349d45d281d24f2a15a9c923f11d7c0925089473f821600705a8827",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-00/termination-3500-1789017336737-1789017336737-1789017339628434597.sigmf-meta": "885332910ced8a5552724aff44bb190186c2da0ff5578aea77539f3f44ad38eb",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-00/report.json": "ac2844f72dfc975c85456c265297142af98764eca567527163367ece396575a2",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-00/plan.json": "c342ddf7c61e62aa935bc995efd7d78328fe81193ddb0f60a0b3c7a0decef45e"
+      },
+      "request_id": 5,
+      "sequence": 1407,
+      "session_generation": 1789017336737
+    },
+    {
+      "hashes": {
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-01/termination-3500-1789017336738-1789017336738-1789017344933674025.sigmf-data": "2d8f76e8b66ac1e5295b9b9200e0414391c547a21fdfa99232619e2952d7c354",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-01/termination-3500-1789017336738-1789017336738-1789017344933674025.sigmf-meta": "a8918585cd3be797432c8299521bc87f86ba418fa1e6bd805896a3f86522463c",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-01/report.json": "31d1d65ff2d3bf31ce83a82041bba120fd2f9ee1ff9340f96995c3f19a7d63b3",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-01/plan.json": "f90baef5c8a92051caf1bd5111d114288d979a30593a72b99775256c2642cb70"
+      },
+      "request_id": 5,
+      "sequence": 1408,
+      "session_generation": 1789017336738
+    },
+    {
+      "hashes": {
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-02/termination-3500-1789017336739-1789017336739-1789017350249834881.sigmf-data": "ff6137c1c7cc5f85040186632e4ce169c9ff240d6b02d7c2286c8c4b22b58445",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-02/termination-3500-1789017336739-1789017336739-1789017350249834881.sigmf-meta": "13b23f00752a80eebbb694dae13e98a2085122cf167d7e1d125f792568864f1c",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-02/report.json": "0bd261ff337d0b83b679d01ceface3e663ba3edd6f9657f3426e82a8f4f4d8b3",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-02/plan.json": "d28d0a32e6b2e1016b4599787f4ebfa288d9717db0db0214d8503efd84743bb5"
+      },
+      "request_id": 5,
+      "sequence": 1409,
+      "session_generation": 1789017336739
+    },
+    {
+      "hashes": {
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-03/termination-3500-1789017336740-1789017336740-1789017355596349354.sigmf-data": "78c71ff121fa1f8450b3f9de5bf370bc96bbc90d1ab9d4e4b87c91c39b81b4d4",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-03/termination-3500-1789017336740-1789017336740-1789017355596349354.sigmf-meta": "df8f37a5cd8f625a8585684da9b0f0ce2a8804e9a3b152d12a0deb3e04cf0160",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-03/report.json": "9027180e2193f0cda89da1cb5cbb327d3187abaef50c2ca51d645bffc5fbf88f",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-03/plan.json": "444e00671c3edb8098e62556f89d3dae30b44f47ea1ebc9c9ab4a2d1c5eab89a"
+      },
+      "request_id": 5,
+      "sequence": 1410,
+      "session_generation": 1789017336740
+    },
+    {
+      "hashes": {
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-04/termination-3500-1789017336741-1789017336741-1789017360892016871.sigmf-data": "8b684a25435a9bbdbdd99846a8f7a98bbbe7f5e4cc04ba59a9429c1b58f49c32",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-04/termination-3500-1789017336741-1789017336741-1789017360892016871.sigmf-meta": "929db3b565b82b12fdbd91b54c14299236a582b33adb3e2cf416505eee971248",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-04/report.json": "87f7fb6909d2de0ba1444a062669cea1fdb870522fe16f90163935c94a24c3f8",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-04/plan.json": "a711f4bf2d8890162b1ed34780aca3ac6ad312d271856e1ad4d7dbd67c2f35d5"
+      },
+      "request_id": 5,
+      "sequence": 1411,
+      "session_generation": 1789017336741
+    },
+    {
+      "hashes": {
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-05/termination-3500-1789017336742-1789017336742-1789017366179282425.sigmf-data": "5cf5efc57b63cd6caa081538b84b730cc8ef93bf6a0d790f0f4e490f2a9a8ab0",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-05/termination-3500-1789017336742-1789017336742-1789017366179282425.sigmf-meta": "673ced7f6f1c31f8af031af27d5a9dccc08aec91e96078a5f9f3ad67426358c3",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-05/report.json": "5e9a8fc4eed99aaac1807170a1a70a5f008e5970c86b1886e3a14e75cb8a600a",
+        "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-05/plan.json": "d6e8902c0e3a206e9b7b163e6869039950dadd6ac25502e793ee5f1e48c8c5e0"
+      },
+      "request_id": 5,
+      "sequence": 1412,
+      "session_generation": 1789017336742
+    }
+  ],
+  "parent_evidence": {
+    "path": "/home/jetson/sdrharness/docs/evidence/B210_3500_TONE_EVIDENCE_2026-09-10.json",
+    "sha256": "74111d40ebbbdd0f3d9d75ebe4466f0eb8d8ba59dad31cbc754ee24592b6b9d2"
+  },
+  "profile": "bounded diagnostic RX; not model RF-v1 admission",
+  "preprocess": "unfiltered 128-sample complex RMS; final partial block included",
+  "model": null,
+  "recognizer_available": false,
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/audit.json",
+      "bytes": 16744,
+      "sha256": "206a286993ff3a1be5afc715a06bf08e34786008a3affc1a7d935aea527d4e2b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-00/plan.json",
+      "bytes": 389,
+      "sha256": "c342ddf7c61e62aa935bc995efd7d78328fe81193ddb0f60a0b3c7a0decef45e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-00/report.json",
+      "bytes": 2266,
+      "sha256": "ac2844f72dfc975c85456c265297142af98764eca567527163367ece396575a2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-00/termination-3500-1789017336737-1789017336737-1789017339628434597.sigmf-data",
+      "bytes": 262140,
+      "sha256": "5338722d1349d45d281d24f2a15a9c923f11d7c0925089473f821600705a8827"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-00/termination-3500-1789017336737-1789017336737-1789017339628434597.sigmf-meta",
+      "bytes": 487,
+      "sha256": "885332910ced8a5552724aff44bb190186c2da0ff5578aea77539f3f44ad38eb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-01/plan.json",
+      "bytes": 389,
+      "sha256": "f90baef5c8a92051caf1bd5111d114288d979a30593a72b99775256c2642cb70"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-01/report.json",
+      "bytes": 2265,
+      "sha256": "31d1d65ff2d3bf31ce83a82041bba120fd2f9ee1ff9340f96995c3f19a7d63b3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-01/termination-3500-1789017336738-1789017336738-1789017344933674025.sigmf-data",
+      "bytes": 262140,
+      "sha256": "2d8f76e8b66ac1e5295b9b9200e0414391c547a21fdfa99232619e2952d7c354"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-01/termination-3500-1789017336738-1789017336738-1789017344933674025.sigmf-meta",
+      "bytes": 487,
+      "sha256": "a8918585cd3be797432c8299521bc87f86ba418fa1e6bd805896a3f86522463c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-02/plan.json",
+      "bytes": 389,
+      "sha256": "d28d0a32e6b2e1016b4599787f4ebfa288d9717db0db0214d8503efd84743bb5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-02/report.json",
+      "bytes": 2266,
+      "sha256": "0bd261ff337d0b83b679d01ceface3e663ba3edd6f9657f3426e82a8f4f4d8b3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-02/termination-3500-1789017336739-1789017336739-1789017350249834881.sigmf-data",
+      "bytes": 262140,
+      "sha256": "ff6137c1c7cc5f85040186632e4ce169c9ff240d6b02d7c2286c8c4b22b58445"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-02/termination-3500-1789017336739-1789017336739-1789017350249834881.sigmf-meta",
+      "bytes": 487,
+      "sha256": "13b23f00752a80eebbb694dae13e98a2085122cf167d7e1d125f792568864f1c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-03/plan.json",
+      "bytes": 389,
+      "sha256": "444e00671c3edb8098e62556f89d3dae30b44f47ea1ebc9c9ab4a2d1c5eab89a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-03/report.json",
+      "bytes": 2263,
+      "sha256": "9027180e2193f0cda89da1cb5cbb327d3187abaef50c2ca51d645bffc5fbf88f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-03/termination-3500-1789017336740-1789017336740-1789017355596349354.sigmf-data",
+      "bytes": 262140,
+      "sha256": "78c71ff121fa1f8450b3f9de5bf370bc96bbc90d1ab9d4e4b87c91c39b81b4d4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-03/termination-3500-1789017336740-1789017336740-1789017355596349354.sigmf-meta",
+      "bytes": 487,
+      "sha256": "df8f37a5cd8f625a8585684da9b0f0ce2a8804e9a3b152d12a0deb3e04cf0160"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-04/plan.json",
+      "bytes": 389,
+      "sha256": "a711f4bf2d8890162b1ed34780aca3ac6ad312d271856e1ad4d7dbd67c2f35d5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-04/report.json",
+      "bytes": 2263,
+      "sha256": "87f7fb6909d2de0ba1444a062669cea1fdb870522fe16f90163935c94a24c3f8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-04/termination-3500-1789017336741-1789017336741-1789017360892016871.sigmf-data",
+      "bytes": 262140,
+      "sha256": "8b684a25435a9bbdbdd99846a8f7a98bbbe7f5e4cc04ba59a9429c1b58f49c32"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-04/termination-3500-1789017336741-1789017336741-1789017360892016871.sigmf-meta",
+      "bytes": 487,
+      "sha256": "929db3b565b82b12fdbd91b54c14299236a582b33adb3e2cf416505eee971248"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-05/plan.json",
+      "bytes": 389,
+      "sha256": "d6e8902c0e3a206e9b7b163e6869039950dadd6ac25502e793ee5f1e48c8c5e0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-05/report.json",
+      "bytes": 2264,
+      "sha256": "5e9a8fc4eed99aaac1807170a1a70a5f008e5970c86b1886e3a14e75cb8a600a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-05/termination-3500-1789017336742-1789017336742-1789017366179282425.sigmf-data",
+      "bytes": 262140,
+      "sha256": "5cf5efc57b63cd6caa081538b84b730cc8ef93bf6a0d790f0f4e490f2a9a8ab0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-05/termination-3500-1789017336742-1789017336742-1789017366179282425.sigmf-meta",
+      "bytes": 487,
+      "sha256": "673ced7f6f1c31f8af031af27d5a9dccc08aec91e96078a5f9f3ad67426358c3"
+    }
+  ],
+  "file_count": 25,
+  "total_bytes": 1608427,
+  "iq_bytes": 1572840,
+  "cleanup": {
+    "files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-00/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-01/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-02/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-03/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-04/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/capture-05/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/p201-3500-termination-20260910b/active.json",
+        "bytes": 58,
+        "sha256": "830537acb8f841da06f5adcf5f5a54cbebada788630c3a8467c963d4c98e90e4"
+      }
+    ],
+    "file_count": 7,
+    "total_bytes": 58,
+    "scratch_absent": true,
+    "p201_transients_absent": true,
+    "nx_transients": [],
+    "new_sockets": []
+  },
+  "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/p201-3500-termination-20260910b"
+}

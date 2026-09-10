@@ -114,3 +114,5 @@
 ## 维护记录
 
 - [文档删并、迁移和链接验证](DOCS_CONSOLIDATION_2026-09-07.md)
+
+- [3500MHz双端50Ω负载背景对照](P201_3500_TERMINATION_VALIDATION_2026-09-10.md)

@@ -788,6 +788,13 @@ aggregation, result persistence and model-facing summaries.
             source-match/model admission or hardware-fault claim. Retain15 files /
             816,510 bytes. See
             [3500-MHz tone](validation/B210_3500_TONE_VALIDATION_2026-09-10.md).
+      - [x] Compare six 3500-MHz RX1 termination captures with the retained antenna
+            pilot at identical RX settings. RMS medians1.490–1.527 ADC vs antenna
+            stopped1.429–1.432; no marked antenna background rise in these windows.
+            Native/replay, both-channel restoration and TX-idle checks pass;
+            retain25 files/1,608,427 bytes, remove7 files/58 bytes. Link tone
+            qualification remains failed. See
+            [3500-MHz termination](validation/P201_3500_TERMINATION_VALIDATION_2026-09-10.md).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original
