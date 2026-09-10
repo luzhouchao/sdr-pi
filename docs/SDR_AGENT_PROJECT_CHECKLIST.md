@@ -795,6 +795,11 @@ aggregation, result persistence and model-facing summaries.
             retain25 files/1,608,427 bytes, remove7 files/58 bytes. Link tone
             qualification remains failed. See
             [3500-MHz termination](validation/P201_3500_TERMINATION_VALIDATION_2026-09-10.md).
+      - [x] Execute operator-requested 3500MHz antenna reconnection retry once,
+            unchanged TX0/RX20. Three native/replay and restoration checks pass;
+            tone gate fails7.800/10.667dB controls and9.944dB spectral margin.
+            TX stopped, evidence retained and cleanup complete. See
+            [antenna retry](validation/B210_3500_RETRY_VALIDATION_2026-09-10.md).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original

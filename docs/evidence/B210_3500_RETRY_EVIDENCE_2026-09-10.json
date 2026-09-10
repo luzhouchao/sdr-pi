@@ -1,0 +1,151 @@
+{
+  "root": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c",
+  "purpose": "Replay explicitly requested 3500MHz antenna retry, preserve failed tone qualification",
+  "base_head": "c4344bfe644de3acff8ef3973c401cfc09ce80fd",
+  "source": "B210 serial2508504 RF A/TX-RX channel0 to P201 RX1/RX0/A_BALANCED, operator reports antennas reconnected",
+  "session_generation": 1789018278512,
+  "capture_identities": {
+    "baseline": {
+      "request_id": 5,
+      "sequence": 1413,
+      "session_generation": 1789018278512,
+      "raw_rms_p50": 1.5155444566227676,
+      "raw_rms_max": 1.875,
+      "band_power_dbfs": -62.573467,
+      "iq_sha256": "d2e2be9d7904be1c7883f74e6dab5804c9e9f883d77e739c55f3d2e2dd1fe0b3"
+    },
+    "during-tx": {
+      "request_id": 5,
+      "sequence": 1414,
+      "session_generation": 1789018278513,
+      "raw_rms_p50": 1.3721561500062593,
+      "raw_rms_max": 1.7611253504506714,
+      "band_power_dbfs": -63.36919,
+      "iq_sha256": "94155f2740f09511863eb5672e8be61184db5d39a589c4dc400faddce0709d0d"
+    },
+    "after-tx": {
+      "request_id": 5,
+      "sequence": 1415,
+      "session_generation": 1789018278514,
+      "raw_rms_p50": 1.3664506943172154,
+      "raw_rms_max": 1.7522307211095234,
+      "band_power_dbfs": -63.477478,
+      "iq_sha256": "a8cbeafb08649c0e28a619d241da104546bf8f4a22d1d2586c5c88ddf2c91a8d"
+    }
+  },
+  "profile": "bounded diagnostic tone, no model admission",
+  "preprocess": "original 100kHz +/-5kHz Hann-bin comparison, unchanged20dB thresholds; unfiltered128-sample RMS",
+  "model": null,
+  "recognizer_available": false,
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/after-tx/b210-after-tx-1789018278514-1789018278514-1789018296088905119.sigmf-data",
+      "bytes": 262140,
+      "sha256": "a8cbeafb08649c0e28a619d241da104546bf8f4a22d1d2586c5c88ddf2c91a8d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/after-tx/b210-after-tx-1789018278514-1789018278514-1789018296088905119.sigmf-meta",
+      "bytes": 487,
+      "sha256": "945779f255828e5c976e987b808d15e61caddfe3ebb5038b0a3b303ff24386dd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/after-tx-report.json",
+      "bytes": 2256,
+      "sha256": "f78b4a737099aff71534e6186c2692e98f6f3699506c7b94860d40b6d1663248"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/analysis.json",
+      "bytes": 4741,
+      "sha256": "20102c9c72257b33d12968ba51ee9fadc8bd2b7cffb33fdc97063ae251c95cc0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/baseline/b210-baseline-1789018278512-1789018278512-1789018279009569768.sigmf-data",
+      "bytes": 262140,
+      "sha256": "d2e2be9d7904be1c7883f74e6dab5804c9e9f883d77e739c55f3d2e2dd1fe0b3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/baseline/b210-baseline-1789018278512-1789018278512-1789018279009569768.sigmf-meta",
+      "bytes": 487,
+      "sha256": "fb396823fc20e0b491d5021d1ceea49b8c3dc3c4fdea4b08c398f1312d225843"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/baseline-report.json",
+      "bytes": 2256,
+      "sha256": "837bc4f28228a7b79f1236c1f52d3eec0c918b8e7cb07396ae456146626fb83c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/during-tx/b210-during-tx-1789018278513-1789018278513-1789018286264804766.sigmf-data",
+      "bytes": 262140,
+      "sha256": "94155f2740f09511863eb5672e8be61184db5d39a589c4dc400faddce0709d0d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/during-tx/b210-during-tx-1789018278513-1789018278513-1789018286264804766.sigmf-meta",
+      "bytes": 487,
+      "sha256": "3de2525b3bb37d2fd8141c7838a27d3f0f208139517dc1a01b1912d2ab7e41b4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/during-tx-report.json",
+      "bytes": 2259,
+      "sha256": "2e0a06608309d68b80c13859ec33ce67abbcafd79fa33444e3643a7453c539e4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/link-started.json",
+      "bytes": 72,
+      "sha256": "258b9b70b959c023ce3286fe2a52ba4fe1b186c7bf3c52ce680e35ab761a6c2e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/link-summary.json",
+      "bytes": 12448,
+      "sha256": "01fb9149dd6415b75f6db976977e449f59c507e99a7cb5ae243433c6fa9fa0cc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/postflight.json",
+      "bytes": 2122,
+      "sha256": "c5a2a1c30f1c245fd6bca45ab76e0cb587ed2e8db310fb13f34f72b935c539ae"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/preflight.json",
+      "bytes": 2299,
+      "sha256": "c4c01f1192afb8c295a151bdc740d2d977e1dcc2974c65c947112e7a6f89a476"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/run.py",
+      "bytes": 2462,
+      "sha256": "ff1666a2911a0a0e306d2dcd6be0dcf4e42c4489f97ace46d8c6a2ccd86a102f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/tx-uhd.log",
+      "bytes": 1541,
+      "sha256": "4dc8e09f97ccca8c8c2f741f1e9f88b154f564843597ba4804b9fdb557cedec5"
+    }
+  ],
+  "file_count": 16,
+  "total_bytes": 820337,
+  "iq_bytes": 786420,
+  "cleanup": {
+    "files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/after-tx-stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/baseline-stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c/during-tx-stderr.log",
+        "bytes": 0
+      }
+    ],
+    "file_count": 3,
+    "total_bytes": 0,
+    "scratch_absent": true,
+    "nx_directory_absent": true,
+    "p201_paths_absent": [
+      "/tmp/sdr-agent-dev/agx-sweep-1789018278512-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1789018278513-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1789018278514-0"
+    ]
+  },
+  "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/b210-3500-antenna-retry-20260910c"
+}
