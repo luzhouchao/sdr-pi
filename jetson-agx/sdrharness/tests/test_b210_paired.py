@@ -84,6 +84,12 @@ class RfCaseBoundsTests(unittest.TestCase):
         for mode,rx,center in [('rml',20,3500000000),('tone',40,3500000000),('tone',40,2455000000)]:
             with self.assertRaises(AssertionError):link.validate_rf_case(mode,rx,center,10)
 
+    def test_3500_historical_gain_pair_requires_explicit_exact_pair(self):
+        self.assertEqual(link.validate_rf_case('tone',50,3500000000,70),70)
+        for rx,tx in ((20,70),(40,70),(50,None),(50,0),(50,20),(50,60),(50,71)):
+            with self.assertRaises(AssertionError):link.validate_rf_case('tone',rx,3500000000,tx)
+        with self.assertRaises(AssertionError):link.validate_rf_case('rml',50,3500000000,70)
+
     def test_historical_profiles_keep_their_gains(self):
         for center in (2440000000,2455000000):
             for mode in ('tone','rml'):

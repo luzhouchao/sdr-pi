@@ -31,7 +31,11 @@ STATE_COMMAND = rf.STATE_COMMAND.replace(' /sys/bus/iio/devices/iio:device*/scan
 def validate_rf_case(mode, rx_gain_db, center_hz, tx_gain_db=None):
     assert type(center_hz) is int
     if center_hz == 3500000000:
-        assert mode == 'tone' and rx_gain_db == 20
+        assert mode == 'tone'
+        if rx_gain_db == 50:
+            assert type(tx_gain_db) is int and tx_gain_db == 70
+            return 70
+        assert rx_gain_db == 20
         assert tx_gain_db is None or (type(tx_gain_db) is int and tx_gain_db in (0, 10, 20))
         return 0 if tx_gain_db is None else tx_gain_db
     assert tx_gain_db is None, 'explicit TX gain only registered for 3500MHz tone'
@@ -164,7 +168,7 @@ async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000, 
     try:
         audit['baseline'] = await capture('baseline',generation)
         if mode == 'tone':
-            # 3500-MHz case is tone-only, RX20, with explicitly selected TX0/10/20.
+            # 3500MHz tone admits registered RX20/TX0,10,20 or explicit RX50/TX70.
             # Sample count remains finite even if the SSH link fails.
             tx_args = ('timeout --signal=INT --kill-after=2s 35s '
                        '/usr/lib/uhd/examples/tx_waveforms '
@@ -287,9 +291,9 @@ if __name__=='__main__':
     p.add_argument('--directory',type=Path,required=True)
     p.add_argument('--controller',type=Path,required=True)
     p.add_argument('--mode',choices=['rml','tone'],default='rml')
-    p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],default=50,help='3500-MHz tone requires20; other profiles unchanged')
+    p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],default=50,help='3500MHz tone: RX20 with TX0/10/20, or explicit RX50/TX70')
     p.add_argument('--center-hz',type=int,choices=[2440000000,2455000000,3500000000],default=2440000000)
-    p.add_argument('--tx-gain-db', type=int, choices=[0,10,20], default=None, help='explicit 3500MHz tone gain; default preserves original cases')
+    p.add_argument('--tx-gain-db', type=int, choices=[0,10,20,70], default=None, help='explicit 3500MHz tone gain; default preserves original cases')
     a=p.parse_args()
     async def main():
         task=asyncio.current_task()

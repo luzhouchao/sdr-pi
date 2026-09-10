@@ -14,11 +14,12 @@ spec=importlib.util.spec_from_file_location('tone_match',Path(__file__).with_nam
 match=importlib.util.module_from_spec(spec);spec.loader.exec_module(match)
 
 
-def prepare(expected_tx_gain=0):
+def prepare(expected_tx_gain=0, expected_rx_gain=20):
     audit=json.loads((ROOT/'link-summary.json').read_text())
     assert audit['status']=='transport_completed_pending_signal_analysis'
-    assert type(expected_tx_gain) is int and expected_tx_gain in (0,10,20)
-    assert audit['center_hz']==3500000000 and audit['rx_gain_db']==20 and audit['tx_gain_db']==expected_tx_gain
+    assert type(expected_tx_gain) is int and type(expected_rx_gain) is int
+    assert (expected_tx_gain,expected_rx_gain) in ((0,20),(10,20),(20,20),(70,50))
+    assert audit['center_hz']==3500000000 and audit['rx_gain_db']==expected_rx_gain and audit['tx_gain_db']==expected_tx_gain
     assert audit['remote_tx_stopped'] and not audit['restoration_errors'] and audit['tx_exit_code']==0
     assert audit['radio_before']==audit['radio_after']
     log=(ROOT/'tx-uhd.log').read_text()
@@ -47,7 +48,7 @@ def prepare(expected_tx_gain=0):
         metadata=json.loads(meta.read_text());assert metadata['global']['core:sample_rate']==2500000
         assert metadata['global']['core:datatype']=='ci16_le'
         assert metadata['captures']==[{'core:sample_start':0,'core:frequency':3500000000,'sdrharness:point_index':0,
-            'sdrharness:rf_bandwidth_hz':1000000,'sdrharness:gain_db':20}]
+            'sdrharness:rf_bandwidth_hz':1000000,'sdrharness:gain_db':expected_rx_gain}]
         z,digest=match.read_iq(ROOT,tag);iq[tag]=z
         rms=np.array([np.sqrt(np.mean(abs(z[i:i+128])**2)) for i in range(0,len(z),128)])
         rows[tag]=dict(request_id=point['request_id'],sequence=point['sequence'],session_generation=point['session_generation'],

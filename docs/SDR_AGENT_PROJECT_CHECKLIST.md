@@ -806,6 +806,11 @@ aggregation, result persistence and model-facing summaries.
             TX stopped; retain52 files/2,470,747bytes, remove17 files/786,433bytes.
             No production deployment/model admission. See
             [gain matrix](validation/B210_3500_GAIN_VALIDATION_2026-09-10.md).
+      - [x] Execute explicitly requested historical TX70/RX50 pair at3500MHz once.
+            Three native/replay/restoration checks and16 tests pass; tone gate
+            fails13.121/12.947dB controls and8.044dB spectral margin. TX stopped,
+            cleanup/inventory complete; no production deployment/model admission.
+            See [historical gain pair](validation/B210_3500_TX70_RX50_VALIDATION_2026-09-10.md).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original

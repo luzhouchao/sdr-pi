@@ -1,0 +1,166 @@
+{
+  "root": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e",
+  "purpose": "Replay operator-requested historical TX70/RX50 gain pair at3500MHz and preserve failed qualification",
+  "base_head": "3b5ffc21a045d68e67f231b8aef8c8a71c27ae8e",
+  "source": "B2102508504 RF A/TX-RX channel0 to P201 RX1/RX0/A_BALANCED, confirmed spring antennas",
+  "identities": {
+    "baseline": {
+      "request_id": 5,
+      "sequence": 1425,
+      "session_generation": 1789021989889,
+      "raw_rms_p50": 2.8118040970399774,
+      "raw_rms_max": 8.96782442959272,
+      "band_power_dbfs": -54.302227,
+      "iq_sha256": "b1e0ec88ffae489eb7875b3fb97c3456cd319f51c183f2bbf9e3837c4af2062f"
+    },
+    "during-tx": {
+      "request_id": 5,
+      "sequence": 1426,
+      "session_generation": 1789021989890,
+      "raw_rms_p50": 3.556453330408755,
+      "raw_rms_max": 14.140754488357402,
+      "band_power_dbfs": -52.28948,
+      "iq_sha256": "715c787f004b4dc00b93e75c2d3cb3d366bf855244f43b06e6202616be861a55"
+    },
+    "after-tx": {
+      "request_id": 5,
+      "sequence": 1427,
+      "session_generation": 1789021989891,
+      "raw_rms_p50": 2.6787647747409107,
+      "raw_rms_max": 8.493563739679594,
+      "band_power_dbfs": -56.040455,
+      "iq_sha256": "6eb233943094651c7da69d3ea55c168e435bc209d0011b5312160e897decc1b3"
+    }
+  },
+  "profile": "diagnostic tone only; no production RF-v1 admission",
+  "preprocess": "unchanged+100kHz+/-5kHz same-bin20dB gates; unfiltered128-sample RMS; separately labelled posthoc Hann inspection",
+  "model": null,
+  "recognizer_available": false,
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/after-tx/b210-after-tx-1789021989891-1789021989891-1789022007223416096.sigmf-data",
+      "bytes": 262140,
+      "sha256": "6eb233943094651c7da69d3ea55c168e435bc209d0011b5312160e897decc1b3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/after-tx/b210-after-tx-1789021989891-1789021989891-1789022007223416096.sigmf-meta",
+      "bytes": 487,
+      "sha256": "5db11848a012a9f37dfdcacc384a208a6ff6976556b21deb77e85bea27bf18ec"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/after-tx-report.json",
+      "bytes": 2246,
+      "sha256": "984f317d2c4968e740489b66d630c8eca312dee27624bc6c5c7bc13bc1ce59e5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/analysis.json",
+      "bytes": 4716,
+      "sha256": "e7ceec47e0c14d1f97c156af183884ec936c1c306d7308bb911587b3c21779f2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/baseline/b210-baseline-1789021989889-1789021989889-1789021990380577035.sigmf-data",
+      "bytes": 262140,
+      "sha256": "b1e0ec88ffae489eb7875b3fb97c3456cd319f51c183f2bbf9e3837c4af2062f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/baseline/b210-baseline-1789021989889-1789021989889-1789021990380577035.sigmf-meta",
+      "bytes": 487,
+      "sha256": "4eb715923fedbe9a4a1aba3b1a1fb804f54f1d886a6e2748b04c163e244a38c7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/baseline-report.json",
+      "bytes": 2247,
+      "sha256": "b71a87913b34334b9b6c825c21dc3eaad6a82f4aecb5faa0ea6334e971968529"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/during-tx/b210-during-tx-1789021989890-1789021989890-1789021997370183613.sigmf-data",
+      "bytes": 262140,
+      "sha256": "715c787f004b4dc00b93e75c2d3cb3d366bf855244f43b06e6202616be861a55"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/during-tx/b210-during-tx-1789021989890-1789021989890-1789021997370183613.sigmf-meta",
+      "bytes": 487,
+      "sha256": "858fb041fa11f843dbf195be6f2535576c5e1bb99cdf4fa8c4156e9a25989ca2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/during-tx-report.json",
+      "bytes": 2252,
+      "sha256": "771cbcb247b0d6cadd56689090a9b5d9d5c5a420e168654618869d48753bc6b9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/link-started.json",
+      "bytes": 72,
+      "sha256": "4c39eb195775af909d7403df2a758edf62b1d9716a2007409cefb5d4f4c077a6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/link-summary.json",
+      "bytes": 12420,
+      "sha256": "2aa7f868717a5e383b1075501dfe51a37ce2ed334beb41ff3d51c29a96fdb19f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/plan.json",
+      "bytes": 1153,
+      "sha256": "9cb24fbee07da22f5bfd53368474790c822d4e37080799c0cddfac6582a23ffa"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/postflight.json",
+      "bytes": 2122,
+      "sha256": "c5a2a1c30f1c245fd6bca45ab76e0cb587ed2e8db310fb13f34f72b935c539ae"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/preflight.json",
+      "bytes": 2299,
+      "sha256": "c4c01f1192afb8c295a151bdc740d2d977e1dcc2974c65c947112e7a6f89a476"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/run.py",
+      "bytes": 2461,
+      "sha256": "dc8a24a3ce8400dd5aa10a4d2d417d1d37795fdd3f59ea78264a03557626e3b0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/tx-uhd.log",
+      "bytes": 1543,
+      "sha256": "4621bc8b7dbcd606eb999ebc34bde2628df404732f42856db582b8cebae9e0c9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/wide-inspection.json",
+      "bytes": 1797,
+      "sha256": "270681875bc5d15fa14bbde11032b294e23260017124519bf2cc987911711124"
+    }
+  ],
+  "file_count": 18,
+  "total_bytes": 823209,
+  "iq_bytes": 786420,
+  "cleanup": {
+    "explicit_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/after-tx-stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/baseline-stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e/during-tx-stderr.log",
+        "bytes": 0
+      }
+    ],
+    "explicit_count": 3,
+    "explicit_bytes": 0,
+    "unit_test_auto_removed_files": 8,
+    "unit_test_auto_removed_bytes": 786433,
+    "unit_test_note": "5 paired files13bytes,3 synthetic IQ786420bytes; random subdirectory names not retained, scratch empty checked",
+    "total_removed_files": 11,
+    "total_removed_bytes": 786433,
+    "scratch_absent": true,
+    "nx_directory_absent": true,
+    "p201_paths_absent": [
+      "/tmp/sdr-agent-dev/agx-sweep-1789021989889-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1789021989890-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1789021989891-0"
+    ],
+    "new_sockets": 0
+  },
+  "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/b210-3500-tx70-rx50-20260910e"
+}
