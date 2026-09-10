@@ -60,6 +60,8 @@
 
 ## 数据、预处理与模型历史
 
+- [3500MHz低增益弹簧天线单音：流程完成，信号门未通过](B210_3500_TONE_VALIDATION_2026-09-10.md)
+
 - [Agent历史1586轮宽频记录与当前背景对照](HISTORICAL_BACKGROUND_COMPARISON_2026-09-09.md)
 
 - [P201 5GHz Wi-Fi中心背景抽样与独立复测](P201_WIFI5_BACKGROUND_VALIDATION_2026-09-09.md)

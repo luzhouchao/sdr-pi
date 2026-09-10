@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Registered 2440/2455-MHz B210 TX / P201 RX finite engineering check."""
+"""Registered 2440/2455-MHz checks and a bounded 3500-MHz low-gain tone pilot."""
 if not __debug__:
     raise RuntimeError('optimized Python would disable validation; refusing to run')
 
@@ -20,7 +20,22 @@ SCRIPTS = Path(__file__).parent
 spec = importlib.util.spec_from_file_location('rf_rx', SCRIPTS / 'validate-rf-v1-runtime-live.py')
 rf = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(rf)
-NX = ['ssh','-F','/home/jetson/.ssh/config','-o','ConnectTimeout=20','-o','ServerAliveInterval=5','-o','ServerAliveCountMax=3','nx']
+NX = ['ssh','-F','/home/jetson/.ssh/config','-o','StrictHostKeyChecking=yes','-o','BatchMode=yes','-o','ConnectTimeout=20','-o','ServerAliveInterval=5','-o','ServerAliveCountMax=3','nx']
+STATE_COMMAND = rf.STATE_COMMAND.replace(' /sys/bus/iio/devices/iio:device*/scan_elements',
+    ' /sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode'
+    ' /sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain'
+    ' /sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select'
+    ' /sys/bus/iio/devices/iio:device*/scan_elements')
+
+
+def validate_rf_case(mode, rx_gain_db, center_hz):
+    assert type(center_hz) is int
+    if center_hz == 3500000000:
+        assert mode == 'tone' and rx_gain_db == 20
+        return 0
+    assert center_hz in (2440000000,2455000000)
+    assert mode in ('rml','tone') and rx_gain_db in (40,50)
+    return 70
 
 
 def remote_absence_command(feature,owner,child):
@@ -47,14 +62,13 @@ for pid in Path('/proc').iterdir():
 async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000):
     assert feature.resolve() == feature and feature.parent == Path('/var/tmp/sdrharness-dev')
     assert feature.name.startswith('b210-') and feature.name.replace('-', '').isalnum()
-    assert mode in ('rml', 'tone') and rx_gain_db in (40, 50)
-    assert type(center_hz) is int and center_hz in (2440000000,2455000000)
+    tone_gain = validate_rf_case(mode, rx_gain_db, center_hz)
     audit_path = feature / 'link-summary.json'
     assert not audit_path.exists(), 'refusing to overwrite evidence'
     # Exclusive attempt receipt prevents concurrent/repeated RF starts, even after a crash.
     with (feature / 'link-started.json').open('x') as receipt:
         json.dump({'mode':mode,'rx_gain_db':rx_gain_db,'started_at_ns':time.time_ns()},receipt)
-    tx_plan = (dict(tx_gain_db=70) if mode == 'tone' else
+    tx_plan = (dict(tx_gain_db=tone_gain) if mode == 'tone' else
                json.loads((feature / 'transmission-plan.json').read_text()))
     if mode=='rml':
         assert tx_plan['center_hz']==center_hz
@@ -63,7 +77,7 @@ async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000):
             if tx_plan['schema_version']==5:
                 from b210_multiclass_contract import validate
                 assert validate(feature)==tx_plan
-    assert tx_plan['tx_gain_db'] in ((70,) if mode == 'tone' else (0, 40, 70))
+    assert tx_plan['tx_gain_db'] in ((tone_gain,) if mode == 'tone' else (0, 40, 70))
     rate = 2500000 if mode == 'tone' else 2100000
     rx_bw = 1000000 if mode == 'tone' else 1500000
     generation = int(time.time()*1000)
@@ -86,16 +100,24 @@ async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000):
         assert process.returncode == 0, err.decode()[-2000:]
         return out.decode()
     async def radio():
-        return await command([*rf.SSH,rf.STATE_COMMAND])
+        return await command([*rf.SSH,STATE_COMMAND])
     before = await radio()
     audit['radio_before'] = before
     state = dict(zip(before.splitlines()[::2],before.splitlines()[1::2]))
     assert all(v=='0' for p,v in state.items() if p.endswith('/enable') or p.endswith('_en'))
+    if center_hz == 3500000000:
+        assert all(state[f'/sys/bus/iio/devices/iio:device0/in_voltage{i}_gain_control_mode']=='manual' for i in (0,1))
     connections = await command([*rf.SSH,'netstat -nt 2>/dev/null; true'])
-    assert not any(':30431 ' in l and 'ESTABLISHED' in l for l in connections.splitlines())
+    assert not any('ESTABLISHED' in l and (':30431 ' in l or ':43110 ' in l) for l in connections.splitlines())
     daemon = (await command([*rf.SSH,'pidof sdrd'])).strip()
     assert len(daemon.split()) == 1
     audit['sdrd_pid'] = daemon
+    async def restored_radio():
+        for _ in range(30):
+            after = await radio()
+            if rf.restored_state(before,after): return after
+            await asyncio.sleep(.1)
+        raise AssertionError('P201 two-channel restoration mismatch')
     async def capture(tag, gen):
         plan = dict(sweep_id=f'b210-{tag}-{gen}',session_generation=gen,
                     frequencies=dict(kind='centers',centers_hz=[center_hz]),
@@ -123,7 +145,7 @@ async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000):
         assert process.returncode == 0, err.decode()[-2000:]
         result = json.loads(out)
         (feature/f'{tag}-report.json').write_text(json.dumps(result,indent=2)+'\n')
-        assert rf.restored_state(before,await radio()), 'P201 restoration mismatch'
+        await restored_radio()
         return result
     print(json.dumps({k:v for k,v in audit.items() if k!='radio_before'}),flush=True)
     tx = None
@@ -140,18 +162,18 @@ async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000):
     try:
         audit['baseline'] = await capture('baseline',generation)
         if mode == 'tone':
-            # Fixed historical single-tone diagnostic, moved into the authorized
-            # 2.4-GHz band. Sample count is finite even if the SSH link fails.
+            # The new 3500-MHz case is tone-only at TX gain0/RX gain20.
+            # Sample count remains finite even if the SSH link fails.
             tx_args = ('timeout --signal=INT --kill-after=2s 35s '
                        '/usr/lib/uhd/examples/tx_waveforms '
                        '--args type=b200,serial=2508504 --channels 0 --ant TX/RX '
                        f'--freq {center_hz} --rate 2500000 --bw 500000 '
-                       '--gain 70 --wave-type SINE --wave-freq 100000 --ampl 0.2 '
+                       f'--gain {tone_gain} --wave-type SINE --wave-freq 100000 --ampl 0.2 '
                        '--nsamps 25000000')
             audit['tx_command'] = tx_args
             print(json.dumps(dict(event='finite_tone_plan',command=tx_args,
                                   max_tx_samples=25000000,nominal_seconds=10)),flush=True)
-            owned_args=f'cd {feature} && echo TX_OWNER $$ && exec '+tx_args
+            owned_args=f'cd {feature} && export TMPDIR={feature} XDG_CACHE_HOME={feature} && echo TX_OWNER $$ && exec '+tx_args
             tx = await asyncio.create_subprocess_exec(*NX,owned_args,stdout=asyncio.subprocess.PIPE,
                                                      stderr=asyncio.subprocess.STDOUT)
             processes.append(tx)
@@ -245,7 +267,7 @@ async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000):
                         break
                     except AssertionError:await asyncio.sleep(.2)
                 else:errors.append('remote TX process or FIFO remains')
-            audit['radio_after']=await radio()
+            audit['radio_after']=await restored_radio()
             if not rf.restored_state(before,audit['radio_after']):errors.append('radio restoration mismatch')
             if (await command([*rf.SSH,'pidof sdrd'])).strip()!=daemon:errors.append('daemon changed')
             for gen in (generation,generation+1,generation+2):
@@ -263,8 +285,8 @@ if __name__=='__main__':
     p.add_argument('--directory',type=Path,required=True)
     p.add_argument('--controller',type=Path,required=True)
     p.add_argument('--mode',choices=['rml','tone'],default='rml')
-    p.add_argument('--rx-gain-db',type=int,choices=[40,50],default=50,help='40 dB is link diagnostic only; frozen RF-v1 remains 50 dB')
-    p.add_argument('--center-hz',type=int,choices=[2440000000,2455000000],default=2440000000)
+    p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],default=50,help='3500-MHz tone requires20; other profiles unchanged')
+    p.add_argument('--center-hz',type=int,choices=[2440000000,2455000000,3500000000],default=2440000000)
     a=p.parse_args()
     async def main():
         task=asyncio.current_task()

@@ -1,0 +1,166 @@
+{
+  "schema_id": "b210_3500_tone_evidence_v1",
+  "purpose": "Retain complete single low-gain TX attempt including both stopped controls and failed tone gate; no selective retry",
+  "root": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a",
+  "source": "B210 serial2508504 RF A/TX-RX channel0 -> air -> P201 RX1, operator reports broadband spring antennas",
+  "model": "not invoked",
+  "profile": "TX3500MHz SINE+100kHz gain0 amplitude0.2 25M samples at2.5MS/s; RX20dB BW1MHz 65535 samples per phase",
+  "preprocess": "legacy fixed tone search100kHz +/-5kHz, same-bin controls and20dB margins",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/after-tx/b210-after-tx-1789014145593-1789014145593-1789014163431909808.sigmf-data",
+      "bytes": 262140,
+      "sha256": "77f94f93326abf9fb0acab9058fe4d6ecf2df14a774755893fbf3484410a26ea",
+      "phase": "after-tx",
+      "session_generation": 1789014145593,
+      "request_id": 5,
+      "sequence": 1406
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/after-tx/b210-after-tx-1789014145593-1789014145593-1789014163431909808.sigmf-meta",
+      "bytes": 487,
+      "sha256": "9f1dbfb236e6154fbc7744b851f5ba3a5cd2fb6b651cab77726338b1bb727704",
+      "phase": "after-tx",
+      "session_generation": 1789014145593,
+      "request_id": 5,
+      "sequence": 1406
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/after-tx-report.json",
+      "bytes": 2240,
+      "sha256": "63d70bec1e0f9119d20cf196296c99cfb5720847498afe1c9b999753a21b9624",
+      "phase": "after-tx",
+      "session_generation": 1789014145593,
+      "request_id": 5,
+      "sequence": 1406
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/analysis.json",
+      "bytes": 4693,
+      "sha256": "3c630b6c3acc3dbe96d4d39a71eacf6bfca6bb5612ea2c5c16c4b0b5566d5ddd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/baseline/b210-baseline-1789014145591-1789014145591-1789014146086768079.sigmf-data",
+      "bytes": 262140,
+      "sha256": "e53db9e777abde4c8ef253f6b304b92a47cb3a5e0c42e2d26df166ed4d894169",
+      "phase": "baseline",
+      "session_generation": 1789014145591,
+      "request_id": 5,
+      "sequence": 1404
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/baseline/b210-baseline-1789014145591-1789014145591-1789014146086768079.sigmf-meta",
+      "bytes": 487,
+      "sha256": "fabc82512162a0100d054972c16aa5b7846abc6978c26226cc0efe46cab8820b",
+      "phase": "baseline",
+      "session_generation": 1789014145591,
+      "request_id": 5,
+      "sequence": 1404
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/baseline-report.json",
+      "bytes": 2242,
+      "sha256": "0b4f14feb33423b4114e57757fd3712bde55c97d9cfdcd584ad31ddfddd0b370",
+      "phase": "baseline",
+      "session_generation": 1789014145591,
+      "request_id": 5,
+      "sequence": 1404
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/during-tx/b210-during-tx-1789014145592-1789014145592-1789014154128344294.sigmf-data",
+      "bytes": 262140,
+      "sha256": "a68ba62be9a009aaba84827a290335cfcab4d1d665f6cc8e120da9dcccebc84e",
+      "phase": "during-tx",
+      "session_generation": 1789014145592,
+      "request_id": 5,
+      "sequence": 1405
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/during-tx/b210-during-tx-1789014145592-1789014145592-1789014154128344294.sigmf-meta",
+      "bytes": 487,
+      "sha256": "242f49c021203ad82095cde13beb5d72ee08df60a84f6e33c568f4c446e609a9",
+      "phase": "during-tx",
+      "session_generation": 1789014145592,
+      "request_id": 5,
+      "sequence": 1405
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/during-tx-report.json",
+      "bytes": 2246,
+      "sha256": "7b470323b658c971789a9b5fe737b0a2f6916916dd4d47c8ce39848e57ee4568",
+      "phase": "during-tx",
+      "session_generation": 1789014145592,
+      "request_id": 5,
+      "sequence": 1405
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/link-started.json",
+      "bytes": 72,
+      "sha256": "8a72ce7d3569d023572cb20efb45690333f9d06ccded7dee6e815589075348b6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/link-summary.json",
+      "bytes": 12398,
+      "sha256": "d9d6a8b5bea25a3fe04879db702b5531953bacd0f0a19ef656689126e0dd9940"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/postflight.json",
+      "bytes": 2216,
+      "sha256": "7cb99c8eabaa40b5408fad3412904d9b1516b4b632770a0876fd6eb13300a780"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/preflight.json",
+      "bytes": 980,
+      "sha256": "082cfebe8da002fc3b4883c3acbaa19275a658aae0e90cb56e5b7e0fa4e78ba3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/tx-uhd.log",
+      "bytes": 1542,
+      "sha256": "b039c6d9de85f234596c2b580f56e0f87ee13dc34fb09a84c9e99679f1bfaa2b"
+    }
+  ],
+  "file_count": 15,
+  "total_bytes": 816510,
+  "raw_iq_bytes": 786420,
+  "qualification_passed": false,
+  "cleanup": {
+    "explicitly_removed_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/baseline-stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/during-tx-stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/after-tx-stderr.log",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/scratch/matplotlib/fontlist-v330.json",
+        "bytes": 123432
+      }
+    ],
+    "explicit_removed_count": 4,
+    "explicit_removed_bytes": 123432,
+    "test_fixture_removed_count": 3,
+    "test_fixture_removed_bytes": 786420,
+    "test_fixture_paths": "TemporaryDirectory under registered scratch; random child names not separately retained",
+    "removed_directories": [
+      "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/scratch/matplotlib",
+      "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a/scratch"
+    ],
+    "all_explicit_paths_absent": true,
+    "runner_and_tx_exited": true,
+    "nx_directory_removed": "/var/tmp/sdrharness-dev/b210-3500-spring-20260910a",
+    "nx_retained_files": 0,
+    "p201_paths_absent": [
+      "/tmp/sdr-agent-dev/agx-sweep-1789014145591-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1789014145592-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1789014145593-0"
+    ],
+    "created_sockets": 0
+  },
+  "manual_delete_command": "python3 - <<'DELETE'\nfrom pathlib import Path\nimport hashlib,json\np=Path('/home/jetson/sdrharness/docs/evidence/B210_3500_TONE_EVIDENCE_2026-09-10.json')\na=json.loads(p.read_text());r=Path(a['root'])\nassert r.resolve()==r and r.name=='b210-3500-spring-20260910a'\nassert {str(x) for x in r.rglob('*') if x.is_file()}=={x['path'] for x in a['files']}\nfor x in a['files']:\n f=Path(x['path']);assert f.resolve()==f and not f.is_symlink()\n b=f.read_bytes();assert len(b)==x['bytes'] and hashlib.sha256(b).hexdigest()==x['sha256']\nfor x in a['files']: Path(x['path']).unlink()\nfor d in sorted((d for d in r.rglob('*') if d.is_dir()),key=lambda d:len(d.parts),reverse=True): d.rmdir()\nr.rmdir();assert not r.exists()\nDELETE"
+}

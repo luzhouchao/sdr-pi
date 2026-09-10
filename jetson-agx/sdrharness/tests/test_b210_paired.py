@@ -65,4 +65,22 @@ class PairedTests(unittest.TestCase):
             (root/'link-started.json').unlink();root.rmdir()
 
 
+class RfCaseBoundsTests(unittest.TestCase):
+    def test_3500_tone_has_fixed_low_gain(self):
+        self.assertEqual(link.validate_rf_case('tone',20,3500000000),0)
+
+    def test_3500_does_not_enable_rml_other_gains_or_neighbor_frequencies(self):
+        cases=[('rml',20,3500000000),('tone',40,3500000000),('tone',50,3500000000),
+               ('tone',20,3499999999),('tone',20,3500000001),('tone',20,True)]
+        for args in cases:
+            with self.subTest(args=args), self.assertRaises(AssertionError):
+                link.validate_rf_case(*args)
+
+    def test_historical_profiles_keep_their_gains(self):
+        for center in (2440000000,2455000000):
+            for mode in ('tone','rml'):
+                for gain in (40,50):self.assertEqual(link.validate_rf_case(mode,gain,center),70)
+            with self.assertRaises(AssertionError):link.validate_rf_case('tone',20,center)
+
+
 if __name__=='__main__':unittest.main()

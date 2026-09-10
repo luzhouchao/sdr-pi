@@ -780,6 +780,14 @@ aggregation, result persistence and model-facing summaries.
             explicit differences near 2460–2465MHz; metrics/gain/BW are not equal
             and no same-source or protocol claim is made. See
             [historical comparison](validation/HISTORICAL_BACKGROUND_COMPARISON_2026-09-09.md).
+      - [x] Implement and execute the explicitly authorized 3500-MHz spring-antenna
+            tone pilot (TX gain0, RX gain20, one nominal10s TX and three controls).
+            Native transport, both-channel restoration, TX stop and cleanup pass;
+            tone qualification fails (17.62/12.46dB stopped contrasts,11.36dB
+            spectral margin vs20dB gates). Preserve failure, no gain escalation,
+            source-match/model admission or hardware-fault claim. Retain15 files /
+            816,510 bytes. See
+            [3500-MHz tone](validation/B210_3500_TONE_VALIDATION_2026-09-10.md).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original

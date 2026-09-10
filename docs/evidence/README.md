@@ -16,6 +16,8 @@
 
 ## 保留数据的删除依据
 
+- [3500MHz低增益单音完整对照与失败证据](B210_3500_TONE_EVIDENCE_2026-09-10.json)
+
 - [历史宽频背景对照派生汇总与源文件清单](HISTORICAL_BACKGROUND_COMPARISON_EVIDENCE_2026-09-09.json)
 
 - [P201 5GHz Wi-Fi中心90次背景证据与清理](P201_WIFI5_BACKGROUND_EVIDENCE_2026-09-09.json)
