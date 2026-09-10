@@ -816,6 +816,12 @@ aggregation, result persistence and model-facing summaries.
             23.119/10.777dB controls and17.921dB spectral margin. Strong stopped
             bursts retained, TX stopped and cleanup complete; no model admission.
             See [2440MHz return](validation/B210_2440_RETURN_VALIDATION_2026-09-10.md).
+      - [x] Repeat2440MHz/TX70/RX50 once after operator antenna change:
+            original tone gate passes37.037/40.902dB controls,35.889dB spectral
+            margin. Three native/replay/restoration checks pass, TX stopped;
+            retain18 files/823,363bytes, remove4 files/123,432bytes. No antenna
+            causal-effect/modulation/model claim. See
+            [antenna-change success](validation/B210_2440_ANTENNA_CHANGE_VALIDATION_2026-09-10.md).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original
