@@ -800,6 +800,12 @@ aggregation, result persistence and model-facing summaries.
             tone gate fails7.800/10.667dB controls and9.944dB spectral margin.
             TX stopped, evidence retained and cleanup complete. See
             [antenna retry](validation/B210_3500_RETRY_VALIDATION_2026-09-10.md).
+      - [x] Execute explicitly approved3500MHz TX0/10/20dB matrix at fixedRX20:
+            nine native/replay/restoration checks and15 source/bounds tests pass.
+            All three tone gates fail; no confirmed gain response or hardware fault.
+            TX stopped; retain52 files/2,470,747bytes, remove17 files/786,433bytes.
+            No production deployment/model admission. See
+            [gain matrix](validation/B210_3500_GAIN_VALIDATION_2026-09-10.md).
       - [x] Retry RX1 with the operator's new dual-band antenna using one tone
             and three unchanged .2-amplitude 1024-source repetitions. All three
             fixed source/residual checks pass; each fails at least one original

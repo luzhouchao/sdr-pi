@@ -28,11 +28,13 @@ STATE_COMMAND = rf.STATE_COMMAND.replace(' /sys/bus/iio/devices/iio:device*/scan
     ' /sys/bus/iio/devices/iio:device*/scan_elements')
 
 
-def validate_rf_case(mode, rx_gain_db, center_hz):
+def validate_rf_case(mode, rx_gain_db, center_hz, tx_gain_db=None):
     assert type(center_hz) is int
     if center_hz == 3500000000:
         assert mode == 'tone' and rx_gain_db == 20
-        return 0
+        assert tx_gain_db is None or (type(tx_gain_db) is int and tx_gain_db in (0, 10, 20))
+        return 0 if tx_gain_db is None else tx_gain_db
+    assert tx_gain_db is None, 'explicit TX gain only registered for 3500MHz tone'
     assert center_hz in (2440000000,2455000000)
     assert mode in ('rml','tone') and rx_gain_db in (40,50)
     return 70
@@ -59,10 +61,10 @@ for pid in Path('/proc').iterdir():
     return 'python3 -c '+shlex.quote(code)
 
 
-async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000):
+async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000, tx_gain_db=None):
     assert feature.resolve() == feature and feature.parent == Path('/var/tmp/sdrharness-dev')
     assert feature.name.startswith('b210-') and feature.name.replace('-', '').isalnum()
-    tone_gain = validate_rf_case(mode, rx_gain_db, center_hz)
+    tone_gain = validate_rf_case(mode, rx_gain_db, center_hz, tx_gain_db)
     audit_path = feature / 'link-summary.json'
     assert not audit_path.exists(), 'refusing to overwrite evidence'
     # Exclusive attempt receipt prevents concurrent/repeated RF starts, even after a crash.
@@ -162,7 +164,7 @@ async def run(feature, binary, mode="rml", rx_gain_db=50, center_hz=2440000000):
     try:
         audit['baseline'] = await capture('baseline',generation)
         if mode == 'tone':
-            # The new 3500-MHz case is tone-only at TX gain0/RX gain20.
+            # 3500-MHz case is tone-only, RX20, with explicitly selected TX0/10/20.
             # Sample count remains finite even if the SSH link fails.
             tx_args = ('timeout --signal=INT --kill-after=2s 35s '
                        '/usr/lib/uhd/examples/tx_waveforms '
@@ -287,9 +289,10 @@ if __name__=='__main__':
     p.add_argument('--mode',choices=['rml','tone'],default='rml')
     p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],default=50,help='3500-MHz tone requires20; other profiles unchanged')
     p.add_argument('--center-hz',type=int,choices=[2440000000,2455000000,3500000000],default=2440000000)
+    p.add_argument('--tx-gain-db', type=int, choices=[0,10,20], default=None, help='explicit 3500MHz tone gain; default preserves original cases')
     a=p.parse_args()
     async def main():
         task=asyncio.current_task()
         for sig in (signal.SIGINT,signal.SIGTERM):asyncio.get_running_loop().add_signal_handler(sig,task.cancel)
-        await run(a.directory,a.controller,a.mode,a.rx_gain_db,a.center_hz)
+        await run(a.directory,a.controller,a.mode,a.rx_gain_db,a.center_hz,a.tx_gain_db)
     asyncio.run(main())

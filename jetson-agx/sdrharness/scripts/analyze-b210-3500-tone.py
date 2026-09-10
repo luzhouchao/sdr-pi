@@ -14,14 +14,15 @@ spec=importlib.util.spec_from_file_location('tone_match',Path(__file__).with_nam
 match=importlib.util.module_from_spec(spec);spec.loader.exec_module(match)
 
 
-def prepare():
+def prepare(expected_tx_gain=0):
     audit=json.loads((ROOT/'link-summary.json').read_text())
     assert audit['status']=='transport_completed_pending_signal_analysis'
-    assert audit['center_hz']==3500000000 and audit['rx_gain_db']==20 and audit['tx_gain_db']==0
+    assert type(expected_tx_gain) is int and expected_tx_gain in (0,10,20)
+    assert audit['center_hz']==3500000000 and audit['rx_gain_db']==20 and audit['tx_gain_db']==expected_tx_gain
     assert audit['remote_tx_stopped'] and not audit['restoration_errors'] and audit['tx_exit_code']==0
     assert audit['radio_before']==audit['radio_after']
     log=(ROOT/'tx-uhd.log').read_text()
-    for label,value in [('Actual TX Rate',2.5),('Actual TX Freq',3500.),('Actual TX Gain',0.),('Actual TX Bandwidth',500000.)]:
+    for label,value in [('Actual TX Rate',2.5),('Actual TX Freq',3500.),('Actual TX Gain',float(expected_tx_gain)),('Actual TX Bandwidth',500000.)]:
         values=re.findall(re.escape(label)+r': ([\d.+-]+)',log)
         assert len(values)==1 and float(values[0])==value,label
     assert 'LO: locked' in log and '--nsamps 25000000' in audit['tx_command']

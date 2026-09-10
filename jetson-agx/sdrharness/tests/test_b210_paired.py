@@ -76,6 +76,14 @@ class RfCaseBoundsTests(unittest.TestCase):
             with self.subTest(args=args), self.assertRaises(AssertionError):
                 link.validate_rf_case(*args)
 
+    def test_explicit_3500_gain_matrix_and_rejection(self):
+        for gain in (0,10,20):
+            self.assertEqual(link.validate_rf_case('tone',20,3500000000,gain),gain)
+        for gain in (-1,1,30,70,True,10.0):
+            with self.assertRaises(AssertionError):link.validate_rf_case('tone',20,3500000000,gain)
+        for mode,rx,center in [('rml',20,3500000000),('tone',40,3500000000),('tone',40,2455000000)]:
+            with self.assertRaises(AssertionError):link.validate_rf_case(mode,rx,center,10)
+
     def test_historical_profiles_keep_their_gains(self):
         for center in (2440000000,2455000000):
             for mode in ('tone','rml'):
