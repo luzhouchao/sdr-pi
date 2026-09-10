@@ -1,0 +1,767 @@
+{
+  "schema": "rml2018a-historical-filter-comparison-v1",
+  "root": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c",
+  "run_id": "81d80cb6d24448eebbc34d6eab534511",
+  "parent_plan_sha256": "73f43e76e77c18815fa0cb6b230f1b5d2571cfeb29a14607981eb5f3377fe048",
+  "script_sha256": "a3b202ffe2c6265b549a78d5ee9f694b4fe3ec6255ab601d9af2a9316d6789fc",
+  "historical_filter_script_sha256": "a1697d637481fa10f7d8fee5e16257c3909c40917bddf4c706e695045d3f2d16",
+  "filter_contract": {
+    "schema_id": "b210_separated_lo_fixed_fir_v1",
+    "sample_rate_hz": 2100000,
+    "tx_lo_offset_hz": 250000,
+    "taps": 257,
+    "cutoff_hz": 175000,
+    "kaiser_beta": 8.0,
+    "raw_halo_samples": 128,
+    "coefficients_sha256": "d0e12014bedae088b71366497299adc3a1be0a45cf622e9cbb346d4ea0c8c8be",
+    "passband_max_amplitude_error": 6.72315640199983e-05,
+    "stopband_max_db": -86.48358432113966,
+    "source_mean_preserved": true,
+    "production_enabled": false
+  },
+  "new_rf_captures": 0,
+  "model_inferences": 0,
+  "recognizer_available": false,
+  "timing_refit": false,
+  "results": [
+    {
+      "batch": 4267,
+      "audit_path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/audit.json",
+      "audit_sha256": "10c27bfbe781f85c73936351c87e3cb3a72add097cf169bcd45e05fe5893eb3d",
+      "iq_sha256": "734853f74029e8bebff8acf48528e2609b9e2e3f76be716c8ba937b16905e21e",
+      "request_id": 5,
+      "session_generation": 1789046604997,
+      "source_iq_sha256": "e5b9894a2ddb15839e71c6a34e6278060a81a7a41702895cc01e963a36eb9180",
+      "fixed_sync": {
+        "marker_score": 0.7567157479577218,
+        "marker_offset": 49375,
+        "payload_marker_offset": 23263,
+        "payload_marker_score": 0.7215188386045583,
+        "estimated_cfo_hz": 657.499895167121,
+        "phase_rotation_rad": 0.536537665419662,
+        "detector_filter": {
+          "kind": "129-tap Hamming FIR",
+          "cutoff_hz": 500000,
+          "payload_filtered": false
+        },
+        "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+      },
+      "rows": [
+        {
+          "row": 102408,
+          "raw_coherence": 0.18014853295261957,
+          "filtered_coherence": 0.7276616724254052,
+          "filtered_to_filtered_coherence": 0.7288499272758673,
+          "source_power_retention": 1.0012159961090294,
+          "source_distortion_power": 0.002536950421994812,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102409,
+          "raw_coherence": 0.17716475996102915,
+          "filtered_coherence": 0.7452073322121403,
+          "filtered_to_filtered_coherence": 0.7458056787915466,
+          "source_power_retention": 0.9995943798007413,
+          "source_distortion_power": 0.0006943461255427461,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102410,
+          "raw_coherence": 0.2094399322520227,
+          "filtered_coherence": 0.7950212624074483,
+          "filtered_to_filtered_coherence": 0.7956599683991903,
+          "source_power_retention": 0.9990348106521275,
+          "source_distortion_power": 0.0012242832215393525,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102411,
+          "raw_coherence": 0.18233225780376425,
+          "filtered_coherence": 0.7482548342660861,
+          "filtered_to_filtered_coherence": 0.7484779528958628,
+          "source_power_retention": 0.9971140810930641,
+          "source_distortion_power": 0.0018727390123098868,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102412,
+          "raw_coherence": 0.2074661001968329,
+          "filtered_coherence": 0.7776208005417533,
+          "filtered_to_filtered_coherence": 0.7774303356724702,
+          "source_power_retention": 0.9991611696415041,
+          "source_distortion_power": 0.0004149440484180924,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102413,
+          "raw_coherence": 0.19231000161475983,
+          "filtered_coherence": 0.7596049453355778,
+          "filtered_to_filtered_coherence": 0.7590033503466305,
+          "source_power_retention": 0.9982872090361756,
+          "source_distortion_power": 0.0009347560796446581,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102414,
+          "raw_coherence": 0.19234990973953767,
+          "filtered_coherence": 0.783111032882648,
+          "filtered_to_filtered_coherence": 0.7853662422779556,
+          "source_power_retention": 0.9977441070773913,
+          "source_distortion_power": 0.002296860747191059,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102415,
+          "raw_coherence": 0.2149330041700344,
+          "filtered_coherence": 0.8358428686406738,
+          "filtered_to_filtered_coherence": 0.8365268729711716,
+          "source_power_retention": 0.9974105111525159,
+          "source_distortion_power": 0.0027972488225650504,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102416,
+          "raw_coherence": 0.16449567020670172,
+          "filtered_coherence": 0.6848675576278621,
+          "filtered_to_filtered_coherence": 0.6856727182242204,
+          "source_power_retention": 0.9983043787770861,
+          "source_distortion_power": 0.002085817468949073,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102417,
+          "raw_coherence": 0.17043922748395507,
+          "filtered_coherence": 0.7187815766532437,
+          "filtered_to_filtered_coherence": 0.7186534475339468,
+          "source_power_retention": 1.0005128027756989,
+          "source_distortion_power": 0.000561196256803907,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102418,
+          "raw_coherence": 0.18774639490687756,
+          "filtered_coherence": 0.7390234029270465,
+          "filtered_to_filtered_coherence": 0.7405054412338188,
+          "source_power_retention": 0.9992838059579534,
+          "source_distortion_power": 0.0014220838214921232,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102419,
+          "raw_coherence": 0.21413008184032878,
+          "filtered_coherence": 0.8112773897671921,
+          "filtered_to_filtered_coherence": 0.8112862962049097,
+          "source_power_retention": 0.998568900440519,
+          "source_distortion_power": 0.0011701576365650555,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102420,
+          "raw_coherence": 0.20312448630565658,
+          "filtered_coherence": 0.7725563682515265,
+          "filtered_to_filtered_coherence": 0.7728663910038633,
+          "source_power_retention": 0.9981412778959892,
+          "source_distortion_power": 0.0005366683558791175,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102421,
+          "raw_coherence": 0.2097011347029848,
+          "filtered_coherence": 0.7994443447861903,
+          "filtered_to_filtered_coherence": 0.7998547446042962,
+          "source_power_retention": 0.9992025994224485,
+          "source_distortion_power": 0.0004443125607602636,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102422,
+          "raw_coherence": 0.18782696671554835,
+          "filtered_coherence": 0.7846338405246274,
+          "filtered_to_filtered_coherence": 0.7849031682401654,
+          "source_power_retention": 1.0009474359226869,
+          "source_distortion_power": 0.0010247052694154302,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102423,
+          "raw_coherence": 0.21326380318946722,
+          "filtered_coherence": 0.7982845401696835,
+          "filtered_to_filtered_coherence": 0.7994080887784862,
+          "source_power_retention": 0.9961883502664004,
+          "source_distortion_power": 0.0013992263796476644,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102424,
+          "raw_coherence": 0.18103202603961877,
+          "filtered_coherence": 0.7460095456071738,
+          "filtered_to_filtered_coherence": 0.7455417926809121,
+          "source_power_retention": 1.0001672022622734,
+          "source_distortion_power": 0.0006572075533139377,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102425,
+          "raw_coherence": 0.19047410323800423,
+          "filtered_coherence": 0.7708780242041523,
+          "filtered_to_filtered_coherence": 0.7710932734652506,
+          "source_power_retention": 0.9980487803890199,
+          "source_distortion_power": 0.0007054928344687276,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102426,
+          "raw_coherence": 0.18199881099157125,
+          "filtered_coherence": 0.736190965982253,
+          "filtered_to_filtered_coherence": 0.7371176565737849,
+          "source_power_retention": 0.9988280793001576,
+          "source_distortion_power": 0.0011187350879276574,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102427,
+          "raw_coherence": 0.19426975314808548,
+          "filtered_coherence": 0.7657605861672041,
+          "filtered_to_filtered_coherence": 0.7660718772473277,
+          "source_power_retention": 0.9990187145076871,
+          "source_distortion_power": 0.0010140529985305095,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102428,
+          "raw_coherence": 0.19325662709860034,
+          "filtered_coherence": 0.7694263252556233,
+          "filtered_to_filtered_coherence": 0.7691413531004518,
+          "source_power_retention": 0.9998467132078959,
+          "source_distortion_power": 0.0007101602494900428,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102429,
+          "raw_coherence": 0.16718711636288966,
+          "filtered_coherence": 0.7200690300310307,
+          "filtered_to_filtered_coherence": 0.7207874302844504,
+          "source_power_retention": 0.9976401776344621,
+          "source_distortion_power": 0.0010709965232539164,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102430,
+          "raw_coherence": 0.17080557037810448,
+          "filtered_coherence": 0.699822257877907,
+          "filtered_to_filtered_coherence": 0.7001724556959507,
+          "source_power_retention": 1.0015288538885199,
+          "source_distortion_power": 0.001163509014611748,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102431,
+          "raw_coherence": 0.1655253384764537,
+          "filtered_coherence": 0.7131923353123928,
+          "filtered_to_filtered_coherence": 0.7130836171490026,
+          "source_power_retention": 0.9987564522693617,
+          "source_distortion_power": 0.00032528092127315293,
+          "source_filter_eligible": true
+        }
+      ],
+      "raw_coherence_mean": 0.189642567073977,
+      "filtered_coherence_mean": 0.7584392849940351,
+      "rx_power_removed_fraction": 0.9376196937410036,
+      "dominant_baseband_hz": -589159.9908445869,
+      "peak_plus_minus_2khz_spectral_fraction": 0.8262894778847546
+    },
+    {
+      "batch": 4268,
+      "audit_path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/audit.json",
+      "audit_sha256": "59c17f84ce127ea10dcc852ec461a52905fb0ca124034405bfaa35ab734972d7",
+      "iq_sha256": "6e9e92769342683a3988f5a58adbbe4a29ba7a4244225c2047cee7a98d2d0f95",
+      "request_id": 5,
+      "session_generation": 1789046620373,
+      "source_iq_sha256": "641f1aba15d2d22074d7b38bccdb87e2400379416fc62240c87c45fe472ddde8",
+      "fixed_sync": {
+        "marker_score": 0.7413928236503727,
+        "marker_offset": 59232,
+        "payload_marker_offset": 33120,
+        "payload_marker_score": 0.7270619977200591,
+        "estimated_cfo_hz": 514.3486755070658,
+        "phase_rotation_rad": 2.027925808388731,
+        "detector_filter": {
+          "kind": "129-tap Hamming FIR",
+          "cutoff_hz": 500000,
+          "payload_filtered": false
+        },
+        "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+      },
+      "rows": [
+        {
+          "row": 102432,
+          "raw_coherence": 0.1508225189461029,
+          "filtered_coherence": 0.6950291344141116,
+          "filtered_to_filtered_coherence": 0.6955220305636285,
+          "source_power_retention": 1.001223899611523,
+          "source_distortion_power": 0.00362831406588049,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102433,
+          "raw_coherence": 0.17241048172202922,
+          "filtered_coherence": 0.7209656926093247,
+          "filtered_to_filtered_coherence": 0.7218486890543151,
+          "source_power_retention": 0.9988100992304972,
+          "source_distortion_power": 0.0011363759029226627,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102434,
+          "raw_coherence": 0.14303703594856554,
+          "filtered_coherence": 0.6592492394383361,
+          "filtered_to_filtered_coherence": 0.6599246784042123,
+          "source_power_retention": 1.0009799639161825,
+          "source_distortion_power": 0.0008433222843084704,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102435,
+          "raw_coherence": 0.16870536031414038,
+          "filtered_coherence": 0.733502992522098,
+          "filtered_to_filtered_coherence": 0.7334382246525799,
+          "source_power_retention": 0.9978795675355678,
+          "source_distortion_power": 0.0007318594269400436,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102436,
+          "raw_coherence": 0.1807217587088418,
+          "filtered_coherence": 0.749473211263161,
+          "filtered_to_filtered_coherence": 0.7491160587211843,
+          "source_power_retention": 1.0004286612892648,
+          "source_distortion_power": 0.0004491678560883642,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102437,
+          "raw_coherence": 0.1865730025702696,
+          "filtered_coherence": 0.7603710319040485,
+          "filtered_to_filtered_coherence": 0.7602274315723405,
+          "source_power_retention": 1.000108859498909,
+          "source_distortion_power": 0.0008488496864057707,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102438,
+          "raw_coherence": 0.16995553640721967,
+          "filtered_coherence": 0.7141266948359395,
+          "filtered_to_filtered_coherence": 0.7154989287031196,
+          "source_power_retention": 0.9956088212207469,
+          "source_distortion_power": 0.003079864097460579,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102439,
+          "raw_coherence": 0.17458824785136684,
+          "filtered_coherence": 0.7640363551885601,
+          "filtered_to_filtered_coherence": 0.7643832635052386,
+          "source_power_retention": 0.998215636637624,
+          "source_distortion_power": 0.0020167657144446343,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102440,
+          "raw_coherence": 0.17062018019263514,
+          "filtered_coherence": 0.7264579679385138,
+          "filtered_to_filtered_coherence": 0.7263109434101848,
+          "source_power_retention": 0.9994447359009079,
+          "source_distortion_power": 0.0001955248374924805,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102441,
+          "raw_coherence": 0.16535831508420165,
+          "filtered_coherence": 0.6952530992784801,
+          "filtered_to_filtered_coherence": 0.6956705787370827,
+          "source_power_retention": 0.9995785556210957,
+          "source_distortion_power": 0.0001973578114118104,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102442,
+          "raw_coherence": 0.1738190351203345,
+          "filtered_coherence": 0.7178960888832425,
+          "filtered_to_filtered_coherence": 0.7178789081014694,
+          "source_power_retention": 0.9999288749394369,
+          "source_distortion_power": 4.813051984221611e-05,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102443,
+          "raw_coherence": 0.16676213752954913,
+          "filtered_coherence": 0.723191122091193,
+          "filtered_to_filtered_coherence": 0.7232158280984302,
+          "source_power_retention": 0.9989839331335194,
+          "source_distortion_power": 0.0009479461401991664,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102444,
+          "raw_coherence": 0.16954031594989183,
+          "filtered_coherence": 0.7456593855972113,
+          "filtered_to_filtered_coherence": 0.7463784366175549,
+          "source_power_retention": 1.0001339654948203,
+          "source_distortion_power": 0.002052605323697944,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102445,
+          "raw_coherence": 0.15560788747466883,
+          "filtered_coherence": 0.7230459103216227,
+          "filtered_to_filtered_coherence": 0.7238087500095918,
+          "source_power_retention": 0.9967382672731975,
+          "source_distortion_power": 0.0008806879620425611,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102446,
+          "raw_coherence": 0.13552004165651424,
+          "filtered_coherence": 0.6339813596527325,
+          "filtered_to_filtered_coherence": 0.6337708745465817,
+          "source_power_retention": 0.9999965356120423,
+          "source_distortion_power": 6.698001394854235e-05,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102447,
+          "raw_coherence": 0.1506989963835051,
+          "filtered_coherence": 0.6762793371623869,
+          "filtered_to_filtered_coherence": 0.675598370272608,
+          "source_power_retention": 0.9983838176847889,
+          "source_distortion_power": 0.00037879480101522106,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102448,
+          "raw_coherence": 0.14747031724837628,
+          "filtered_coherence": 0.6844522035293714,
+          "filtered_to_filtered_coherence": 0.6857751013987132,
+          "source_power_retention": 0.9984535475177887,
+          "source_distortion_power": 0.0012375886358137432,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102449,
+          "raw_coherence": 0.17582934781488602,
+          "filtered_coherence": 0.7636370129487065,
+          "filtered_to_filtered_coherence": 0.7641344021669959,
+          "source_power_retention": 1.0006467070784482,
+          "source_distortion_power": 0.000531804542191241,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102450,
+          "raw_coherence": 0.15419664809488917,
+          "filtered_coherence": 0.6830223533401417,
+          "filtered_to_filtered_coherence": 0.6830648867404813,
+          "source_power_retention": 0.9999828096454026,
+          "source_distortion_power": 3.9391294385569764e-05,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102451,
+          "raw_coherence": 0.18157055472719408,
+          "filtered_coherence": 0.7617332170146662,
+          "filtered_to_filtered_coherence": 0.7630696596023048,
+          "source_power_retention": 0.9995939331916364,
+          "source_distortion_power": 0.0009418413213995324,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102452,
+          "raw_coherence": 0.15368272769322835,
+          "filtered_coherence": 0.7017632003710381,
+          "filtered_to_filtered_coherence": 0.7013751507810564,
+          "source_power_retention": 0.9962291535294209,
+          "source_distortion_power": 0.0018537082929807778,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102453,
+          "raw_coherence": 0.19939167944086417,
+          "filtered_coherence": 0.7975196127801089,
+          "filtered_to_filtered_coherence": 0.7976275514864405,
+          "source_power_retention": 1.0007868887315794,
+          "source_distortion_power": 0.0008327225068330584,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102454,
+          "raw_coherence": 0.15490397213530324,
+          "filtered_coherence": 0.6836440590409297,
+          "filtered_to_filtered_coherence": 0.6834343445132793,
+          "source_power_retention": 0.999262174970687,
+          "source_distortion_power": 0.00044574795135548574,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 102455,
+          "raw_coherence": 0.16673325487672463,
+          "filtered_coherence": 0.7082856308822357,
+          "filtered_to_filtered_coherence": 0.7086318528361728,
+          "source_power_retention": 0.9990144344414866,
+          "source_distortion_power": 0.00030239063321806927,
+          "source_filter_eligible": true
+        }
+      ],
+      "raw_coherence_mean": 0.16535497307880426,
+      "filtered_coherence_mean": 0.7176073297086734,
+      "rx_power_removed_fraction": 0.9469825202126034,
+      "dominant_baseband_hz": -589159.9908445869,
+      "peak_plus_minus_2khz_spectral_fraction": 0.8371731651491647
+    },
+    {
+      "batch": 22016,
+      "audit_path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/audit.json",
+      "audit_sha256": "8cf310fa0dc2b40e57dcdb8628ae6d8fa82393606696ff548ecdccc982aa2a59",
+      "iq_sha256": "0adb61504730237f9dc8a7f7a6af4137de2d9e6fc40ab68052e478dbb3873ebe",
+      "request_id": 5,
+      "session_generation": 1789046853114,
+      "source_iq_sha256": "651306fe240c3e445858672699756af388057f560481f3fa8b390029e2f2c1c0",
+      "fixed_sync": {
+        "marker_score": 0.7201225403379284,
+        "marker_offset": 379,
+        "payload_marker_offset": 379,
+        "payload_marker_score": 0.7201225403379284,
+        "estimated_cfo_hz": 594.7592005354325,
+        "phase_rotation_rad": -1.7438713768381,
+        "detector_filter": {
+          "kind": "129-tap Hamming FIR",
+          "cutoff_hz": 500000,
+          "payload_filtered": false
+        },
+        "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+      },
+      "rows": [
+        {
+          "row": 528384,
+          "raw_coherence": 0.192680680439054,
+          "filtered_coherence": 0.7874295475217613,
+          "filtered_to_filtered_coherence": 0.7869501883039002,
+          "source_power_retention": 0.9997376052432689,
+          "source_distortion_power": 0.00224611374382727,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528385,
+          "raw_coherence": 0.18314203987700553,
+          "filtered_coherence": 0.7454185210828681,
+          "filtered_to_filtered_coherence": 0.7457664805111588,
+          "source_power_retention": 0.9976602534210044,
+          "source_distortion_power": 0.0017799794918885415,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528386,
+          "raw_coherence": 0.18408461583418192,
+          "filtered_coherence": 0.7231081996527999,
+          "filtered_to_filtered_coherence": 0.7240180539962517,
+          "source_power_retention": 0.9974635140446386,
+          "source_distortion_power": 0.0018735556417346956,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528387,
+          "raw_coherence": 0.20653813718254638,
+          "filtered_coherence": 0.7730178904548146,
+          "filtered_to_filtered_coherence": 0.7737739636881389,
+          "source_power_retention": 1.0001641518245667,
+          "source_distortion_power": 0.0014228350344708642,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528388,
+          "raw_coherence": 0.19482608738605844,
+          "filtered_coherence": 0.7805147655418117,
+          "filtered_to_filtered_coherence": 0.7804591229098014,
+          "source_power_retention": 0.99848665912118,
+          "source_distortion_power": 0.000793546067690353,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528389,
+          "raw_coherence": 0.1899012727845845,
+          "filtered_coherence": 0.77925026955456,
+          "filtered_to_filtered_coherence": 0.7802260676332273,
+          "source_power_retention": 0.9985246424000352,
+          "source_distortion_power": 0.0003336328138386128,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528390,
+          "raw_coherence": 0.19597920583093356,
+          "filtered_coherence": 0.7668062840191462,
+          "filtered_to_filtered_coherence": 0.7663855743421025,
+          "source_power_retention": 1.0006192661361046,
+          "source_distortion_power": 0.0005714729337514004,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528391,
+          "raw_coherence": 0.19619740099500638,
+          "filtered_coherence": 0.7787313551731981,
+          "filtered_to_filtered_coherence": 0.7792339280537628,
+          "source_power_retention": 0.9988195872628399,
+          "source_distortion_power": 0.00048008369510980616,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528392,
+          "raw_coherence": 0.18119750918858318,
+          "filtered_coherence": 0.7621912468517822,
+          "filtered_to_filtered_coherence": 0.7615185102425416,
+          "source_power_retention": 0.9995948263629192,
+          "source_distortion_power": 0.0008594214024412758,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528393,
+          "raw_coherence": 0.19070686911054602,
+          "filtered_coherence": 0.7585637873242148,
+          "filtered_to_filtered_coherence": 0.7591829897233713,
+          "source_power_retention": 0.9990428102764364,
+          "source_distortion_power": 0.0005584469063132546,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528394,
+          "raw_coherence": 0.18395127594553712,
+          "filtered_coherence": 0.7494743215237497,
+          "filtered_to_filtered_coherence": 0.7500314587540354,
+          "source_power_retention": 0.998816874149666,
+          "source_distortion_power": 0.0009344270833325366,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528395,
+          "raw_coherence": 0.1780758453864692,
+          "filtered_coherence": 0.7269940670574193,
+          "filtered_to_filtered_coherence": 0.7277083937509348,
+          "source_power_retention": 0.9983695939522748,
+          "source_distortion_power": 0.0016602674468723794,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528396,
+          "raw_coherence": 0.17510236378295296,
+          "filtered_coherence": 0.6918226831457301,
+          "filtered_to_filtered_coherence": 0.691366798351666,
+          "source_power_retention": 0.998535972411435,
+          "source_distortion_power": 0.0013508585109964842,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528397,
+          "raw_coherence": 0.2045291683784316,
+          "filtered_coherence": 0.7824671073002294,
+          "filtered_to_filtered_coherence": 0.785108667526907,
+          "source_power_retention": 0.9979898004737109,
+          "source_distortion_power": 0.0015562664112159922,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528398,
+          "raw_coherence": 0.20734046902310846,
+          "filtered_coherence": 0.7964166938354611,
+          "filtered_to_filtered_coherence": 0.7958238653352678,
+          "source_power_retention": 0.997523767574793,
+          "source_distortion_power": 0.003013658544732053,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528399,
+          "raw_coherence": 0.1996546345646659,
+          "filtered_coherence": 0.7747906891202913,
+          "filtered_to_filtered_coherence": 0.7755046422775507,
+          "source_power_retention": 0.9971141560354987,
+          "source_distortion_power": 0.001607703065074092,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528400,
+          "raw_coherence": 0.15985185135282715,
+          "filtered_coherence": 0.7087755961925809,
+          "filtered_to_filtered_coherence": 0.7095497136256582,
+          "source_power_retention": 0.9985585995763697,
+          "source_distortion_power": 0.0011672908435704278,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528401,
+          "raw_coherence": 0.1720433472604318,
+          "filtered_coherence": 0.7257420183158251,
+          "filtered_to_filtered_coherence": 0.725480721634429,
+          "source_power_retention": 0.9999666108278441,
+          "source_distortion_power": 0.0015117139600739665,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528402,
+          "raw_coherence": 0.18329558377179073,
+          "filtered_coherence": 0.7558508621063954,
+          "filtered_to_filtered_coherence": 0.7570766610599486,
+          "source_power_retention": 0.9980631557274229,
+          "source_distortion_power": 0.0011695888381258919,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528403,
+          "raw_coherence": 0.18337203279440348,
+          "filtered_coherence": 0.7820550052152552,
+          "filtered_to_filtered_coherence": 0.7821661990814008,
+          "source_power_retention": 0.9989824330510625,
+          "source_distortion_power": 0.0006343261228717333,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528404,
+          "raw_coherence": 0.20042299701975144,
+          "filtered_coherence": 0.7928755691868834,
+          "filtered_to_filtered_coherence": 0.7931456461701912,
+          "source_power_retention": 0.9980293476974631,
+          "source_distortion_power": 0.0017248769746261749,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528405,
+          "raw_coherence": 0.203673380880305,
+          "filtered_coherence": 0.7759701401701248,
+          "filtered_to_filtered_coherence": 0.7762940844230873,
+          "source_power_retention": 0.9980027394498181,
+          "source_distortion_power": 0.0019510981830900187,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528406,
+          "raw_coherence": 0.18768425257641283,
+          "filtered_coherence": 0.7479984889900975,
+          "filtered_to_filtered_coherence": 0.7495897280719297,
+          "source_power_retention": 0.996893924009592,
+          "source_distortion_power": 0.001695263939524585,
+          "source_filter_eligible": true
+        },
+        {
+          "row": 528407,
+          "raw_coherence": 0.18528589073996304,
+          "filtered_coherence": 0.7499032013225854,
+          "filtered_to_filtered_coherence": 0.7494585811360769,
+          "source_power_retention": 0.9989799180547971,
+          "source_distortion_power": 0.0014190112087243752,
+          "source_filter_eligible": true
+        }
+      ],
+      "raw_coherence_mean": 0.18914737133773127,
+      "filtered_coherence_mean": 0.7590070129441494,
+      "rx_power_removed_fraction": 0.9381098237779103,
+      "dominant_baseband_hz": -589159.9908445869,
+      "peak_plus_minus_2khz_spectral_fraction": 0.8191697089385804
+    }
+  ],
+  "interpretation": "Post-hoc engineering waveform comparison; no new accuracy claim or physical interferer identification."
+}

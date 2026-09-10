@@ -108,3 +108,65 @@ AGX最终清理708个cache/lock/冗余packet文件，共40,492,354字节，三�
 版本化离线复核、模型预测和恢复/续跑凭据；无权重/原始源IQ副本入Git。
 每文件路径、大小、SHA-256、run/source/request/session、模型/profile/preprocess身份与
 人工删除根见库存。清理完成不意味着这些必要证据被删除。
+
+## 2026-09-10：按用户要求复查2.4GHz历史识别方法
+
+本次只读历史文档/源码及已保留IQ，**新增RF采集0、模型推理0**。上一节0/72及旧审计保持。
+基线8c51c0d；[离线复核脚本](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-campaign-filter.py)
+输出[版本化逐行统计](../evidence/RML2018A_HISTORICAL_FILTER_COMPARISON_2026-09-10.json)。
+
+先前“波形失真”描述过于笼统：现已量化一个主要问题是**额外窄带分量进入模型输入**。
+三份当前实收Hann频谱的最大峰均在基带−589.160kHz，该峰±2kHz占各自全段谱功率
+81.92%–83.72%。这是基带频率和窗内谱功率比例，不是Wi-Fi识别、绝对dBm或已测SNR。
+分量物理来源仍未定位，也不能据此认定天线故障或ADC削顶。
+
+历史不是“2.4GHz所有样本都成功”：
+
+- [2440MHz早期保真度实验](B210_RX_FIDELITY_VALIDATION_2026-09-06.md)中，源ID0、
+  实收ID18；仅CFO/带限均未修复。后来通过[TX LO正负偏移对照](B210_LO_OFFSET_VALIDATION_2026-09-06.md)
+  证明当时有随TX LO移动的额外载波，符合LO泄漏/载波馈通。
+- [固定泄漏抑制](B210_LO_REJECTION_VALIDATION_2026-09-07.md)使用TX LO+250kHz，
+  AGX再用257-tap、175kHz cutoff、Kaiser beta8 FIR滤模型输入，保留DC、丢弃边缘halo；
+  该次来源相关显著改善，但背景门失败，模型没有运行。
+- [2455MHz 24类×3样本](B210_MULTICLASS_VALIDATION_2026-09-07.md)实际源69/72正确、
+  原始实收30/72、固定FIR实收56/72；不是72/72。每条发一个1024点源并循环约10秒，
+  RX40dB，固定4096点四窗共享RMS/mean-logit。滤波前验证每条源功率保留≥99%、
+  归一化失真≤1%；失败/预测回退也纳入分母。
+
+当前campaign沿用了TX LO+250kHz、TX70及2.1MS/s/BW1.5MHz，但RX50dB，
+每批拼接24个不同1024点源、重复约4秒、使用pilot对齐和单窗推理；
+**仅同步检测有500kHz FIR，实际模型payload没有175kHz FIR**。因此遗漏了历史有效的
+模型输入滤波对照；这不是已经证实的频段或天线单因素失败。
+
+离线复用旧`repair-b210-lo-leakage.py`的同一FIR系数（SHA-256
+`d0e12014bedae088b71366497299adc3a1be0a45cf622e9cbb346d4ea0c8c8be`），
+固定原audit的payload位置/CFO/相位，不重新找窗、拟合增益或根据预测调参数。
+RX使用两端完整128点halo；源保真使用实际24条拼接帧及其邻居/保护区，
+而非假装每条在当前TX中独自周期重复。
+
+| 当前batch | 原始复相关均值 | 旧FIR后复相关均值 | payload接收功率被滤除 |
+| --- | ---: | ---: | ---: |
+| 4267 | 0.189643 | 0.758439 | 93.762% |
+| 4268 | 0.165355 | 0.717607 | 94.698% |
+| 22016 | 0.189147 | 0.759007 | 93.811% |
+
+72/72源样本达到旧FIR的源保真条件：最小功率保留99.5609%、最大失真功率0.3629%。
+复相关是逐1024点的非中心化复相关幅值，与旧记录的中心化四窗来源门不是同一统计量。
+滤波使当前约0.18相关提高到约0.75，直接支持额外频带分量是主要污染；
+仍不证明余下差异全部来自背景或滤波后分类必然正确。没有为本次滤波结果运行模型。
+不能将本先导72条通过源保真推广到全库，特别是不同SNR/带宽及拼接边界。
+
+检查包括父级audit/IQ/source行/TX帧哈希、固定行号与FIFO帧重建、旧FIR系数哈希、
+独立FFT卷积对坐标/数值验证（误差小于1e−9），以及旧汇总的69/30/56计数复核。
+所有计算在内存完成，无新增IQ/张量/缓存副本或硬件进程，没有开发临时目录需删除；
+只增加Git中的脚本与派生统计。原保留清单74份文件全部哈希仍匹配。
+
+复核命令只打印JSON，不更改campaign及旧证据：
+
+```bash
+cd /home/jetson/sdrharness
+PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 \
+  local-assets/amc-eval/runtime/venv/bin/python -B \
+  jetson-agx/sdrharness/scripts/diagnose-rml2018a-campaign-filter.py \
+  --root /var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c
+```
