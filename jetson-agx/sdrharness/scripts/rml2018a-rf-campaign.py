@@ -24,7 +24,7 @@ import h5py
 import numpy as np
 from rml2018a_campaign import (REPO, SCHEMA, RATE, CENTER, BW, RX_SAMPLES,
     ROWS_PER_BATCH, batch_rows, budget, digest, file_hash, marker, normalize_window,
-    packet, require, save, synchronize, tx_plan)
+    packet, receive_quality, require, save, synchronize, tx_plan)
 
 SCRIPTS = Path(__file__).resolve().parent
 DATASET = REPO/'local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5'
@@ -75,6 +75,10 @@ def create_plan(root):
                 rx_gain_db=50, peak=.2, tx_lo_offset_hz=250000, settle_ms=500,
                 point_deadline_ms=1000, rx_samples=RX_SAMPLES),
         framing='24 independent1024 rows with per-row peak normalization, batch-specific pilot and guards',
+        quality_contract=dict(source_snr_db='original dataset Z; never relabeled as received SINR',
+            rx_sinr='total desired modulation power / (interference + noise); dB; unmeasured is null',
+            source_reference='X already contains source impairments; not a clean signal reference',
+            estimator=None, source_rx_correlation='waveform fidelity only, not SINR'),
         preprocessing='pilot timing/CFO/phase correction then per-row complex RMS; no label-guided alignment',
         created_unix_ns=time.time_ns(), base_head=subprocess.check_output(['git','-C',str(REPO),
             'rev-parse','HEAD'], text=True).strip())
@@ -87,6 +91,7 @@ def load_plan(root):
             root.name.startswith('b210-rml2018a-') and root.name.replace('-', '').isalnum(), 'run root')
     p = document(root/'run-plan.json')
     require(p['schema'] == SCHEMA and p['budget'] == budget(2555904), 'plan identity')
+    require(p['rf']['center_hz'] == CENTER, 'RF center changed; new campaign required')
     for name, sha in p['software'].items():
         require(file_hash(SCRIPTS/name) == sha, 'software changed; new campaign required: '+name)
     require(file_hash(LABELS) == p['label_map_sha256'] and file_hash(PROFILE) == p['profile_sha256'],
@@ -202,8 +207,8 @@ def acquire_batch(root, campaign, index, retry_failed=False):
     require(document_health(bg)['healthy'], 'preflight health')
     dest.mkdir(mode=0o700)
     (dest/'packet.fc32').write_bytes(frame.tobytes()); save(dest/'tx-plan.json', txp)
-    save(dest/'source.json', dict(rows=rows, class_ids=labels.argmax(axis=1).tolist(),
-         dataset_snr_db=snrs.tolist(), scales=scales.tolist(), original_iq_sha256=digest(iq.tobytes())))
+    save(dest/'source.json', dict(schema=SCHEMA, rows=rows, class_ids=labels.argmax(axis=1).tolist(),
+         source_snr_db=snrs.tolist(), scales=scales.tolist(), original_iq_sha256=digest(iq.tobytes())))
     generation = time.time_ns() // 1000000
     rxp = dict(sweep_id=f'rml2018a-{index}-{generation}', session_generation=generation,
         frequencies=dict(kind='centers', centers_hz=[CENTER]), sample_rate_hz=RATE,
@@ -259,7 +264,7 @@ def acquire_batch(root, campaign, index, retry_failed=False):
         require(tx_result['status']=='fed_complete' and tx_result['bytes_written']==txp['tx_samples']*8
                 and tx_result['child_stopped'], 'TX byte/stop receipt')
         log=(dest/'tx-uhd.log').read_text()
-        for label,value in [('Actual TX Rate',2.1),('Actual TX Freq',433.92),
+        for label,value in [('Actual TX Rate',2.1),('Actual TX Freq',CENTER/1e6),
                             ('Actual TX Gain',70.),('Actual TX Bandwidth',1.5)]:
             matches=re.findall(re.escape(label)+r': ([\d.+-]+)',log)
             require(len(matches)==1 and abs(float(matches[0])-value)<1e-6, 'UHD readback '+label)
@@ -272,6 +277,7 @@ def acquire_batch(root, campaign, index, retry_failed=False):
             audit['sync'] = sync; audit['status'] = 'synchronized'
         except ValueError as e:
             audit['status'] = 'sync_failed'; audit['sync_error'] = str(e)
+        audit['receive_quality'] = receive_quality(audit['status'])
     except BaseException as e:
         audit['error'] = f'{type(e).__name__}: {e}'
         raise
@@ -353,8 +359,9 @@ def infer_batches(root, campaign, indices):
             for k,row in enumerate(source['rows']):
                 require(time.monotonic()<end, 'GPU shard deadline')
                 z=iq[k,:,0].astype(float)+1j*iq[k,:,1]
-                entry=dict(row=row,true_id=source['class_ids'][k],dataset_snr_db=source['dataset_snr_db'][k],
-                    receive_status=done['status'],source_prediction=None,received_prediction=None)
+                entry=dict(row=row,true_id=source['class_ids'][k],source_snr_db=source['source_snr_db'][k],
+                    receive_status=done['status'],source_prediction=None,received_prediction=None,
+                    **receive_quality(done['status']))
                 for tag,data in [('source',z),('received',None if received is None else received[k])]:
                     if data is None:continue
                     tensor=normalize_window(data);logits,us=backend.classify_logits(tensor)
@@ -411,7 +418,8 @@ def infer_shard(root, campaign, indices):
 
 def summarize(root, campaign):
     total=campaign['budget']['rows']; attempted=0; inferred=0; correct=0; source_correct=0; source_inferred=0
-    confusion=np.zeros((24,24),dtype=np.int64);by_snr={}; batches=0
+    confusion=np.zeros((24,24),dtype=np.int64);by_source_snr={}; batches=0
+    sinr_unmeasured=0; sinr_reasons={}
     for index in range(campaign['budget']['batches']):
         completed=root/f'batch-{index:07d}'/'capture-complete.json'
         if completed.exists():
@@ -422,12 +430,18 @@ def summarize(root, campaign):
         p=root/f'batch-{index:07d}'/'predictions.json'
         if not p.exists():continue
         result=document(p);require(result['batch']==index,'prediction batch identity')
+        require(result['schema']==SCHEMA, 'prediction schema changed; do not relabel archived results')
         require(completed.exists() and result['audit_sha256']==done['audit_sha256'], 'prediction association')
         require([x['row'] for x in result['rows']]==batch_rows(total,index),'prediction row membership')
         batches+=1
         for row in result['rows']:
             source_inferred+=1;source_correct+=int(row['source_prediction']['id']==row['true_id'])
-            bucket=by_snr.setdefault(str(row['dataset_snr_db']),dict(attempted=0,inferred=0,correct=0))
+            # v2 has no validated SINR estimator; reject invented numeric values.
+            quality=receive_quality(row['receive_status'])
+            require(all(k in row and row[k]==v for k,v in quality.items()), 'unsupported SINR measurement')
+            sinr_unmeasured+=1
+            reason=row['rx_sinr_reason'];sinr_reasons[reason]=sinr_reasons.get(reason,0)+1
+            bucket=by_source_snr.setdefault(str(row['source_snr_db']),dict(attempted=0,inferred=0,correct=0))
             bucket['attempted']+=1
             if row['received_prediction'] is not None:
                 inferred+=1;bucket['inferred']+=1;p=row['received_prediction']['id'];t=row['true_id']
@@ -437,7 +451,11 @@ def summarize(root, campaign):
         pending_inference_rows=attempted-source_inferred,not_yet_attempted_rows=total-attempted,completed_batches=batches,
         complete=source_inferred==total,all_rows_received_and_inferred=inferred==total,
         source_accuracy=source_correct/source_inferred if source_inferred else None,
-        received_correct=correct,source_correct=source_correct,confusion_matrix=confusion.tolist(),by_snr=by_snr,
+        received_correct=correct,source_correct=source_correct,confusion_matrix=confusion.tolist(),
+        by_source_snr_db=by_source_snr,
+        rx_sinr=dict(status='not_measured',measured_rows=0,not_measured_rows=sinr_unmeasured,
+            pending_quality_rows=attempted-source_inferred,not_measured_reasons=sinr_reasons,
+            by_rx_sinr_db={},method=None),
         received_accuracy=correct/inferred if inferred else None,
         end_to_end_success_fraction=correct/attempted if attempted else None,
         semantics='all-row engineering comparison, includes historical train/validation/test; not independent test accuracy',

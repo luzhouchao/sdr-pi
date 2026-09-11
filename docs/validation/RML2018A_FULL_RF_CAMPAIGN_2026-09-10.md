@@ -170,3 +170,37 @@ PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 \
   jetson-agx/sdrharness/scripts/diagnose-rml2018a-campaign-filter.py \
   --root /var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c
 ```
+
+## 2026-09-11：回到2.4GHz与SINR记录合同
+
+基线`53424fd`，分支`codex/sdr-improvements`。用户明确报告已换成2.4GHz并要求代码使用SINR记录，
+随后指出原始X已经包含源噪声/损伤，真实收发又叠加环境和硬件影响。本单元只交付参数及记录合同，
+新增RF采集0、发射0、模型推理0、生产部署0；用户报告接法不等于已核实天线型号。
+
+- 新campaign schema为`rml2018a-all-row-rf-v2`，固定2455MHz（沿用历史中心，未经本轮背景扫描），
+  TX70/RX50、2.1MS/s、BW1.5MHz、峰值0.2及TX LO+250kHz保持。NX从已校验计划取中心频率，
+  AGX的计划、原生接收校验和UHD readback使用同一CENTER，消除旧433.92硬编码。
+- source及prediction字段`source_snr_db`原样保留Z。X本身含噪声/信道损伤，
+  原标签、源/实收相关度以及对已含噪X拟合的残差均不能作为总接收SINR。
+  此次不更换数据集、训练模型或添加生成器。
+- capture audit及prediction加入`rx_sinr_db=null`、`rx_sinr_status=not_measured`、
+  方法/测量带宽null、参考位置及模拟带宽。同步成功仍缺干净参考及已验证分量估计器；
+  同步失败另记原因。没有用0dB填缺失，也没有把同步导频质量当作payload SINR。
+- 汇总明确`by_source_snr_db`，另列接收SINR已测0、未测原因、待生成逐行质量记录数量及空接收SINR分组。
+  当前版本拒绝带伪造数字SINR/已测状态的prediction，以及旧schema结果混入新汇总。
+- 旧计划仍因schema/软件身份拒绝复用，不能更新旧plan的哈希来迁移。
+  导频生成独立固定v1种子，保证旧433MHz帧仍可供离线重建；历史结果和原证据不改写。
+
+15项`test_rml2018a_campaign.py`测试通过，包括旧433MHz频率/旧schema在UHD前拒绝、
+新2455MHz参数传到模拟文件消费者、有限FIFO精确字节及子进程退出、停止/续跑、同步与
+旧导频逐字节稳定性；源+30/−20dB、未同步样本均不产生实测SINR，0及30dB伪造值拒绝，
+源SNR分组和失败分母保留。测试只用本地模拟文件消费者，没有连接NX/P201或调用UHD。
+代码AST、文档链接及diff另经检查。新频点当前接法的实机收发与接收SINR估计均未完成。
+
+测试临时根`/var/tmp/sdrharness-dev/rml2018a-sinr-20260911-sLitie`；各TemporaryDirectory退出前
+逐文件统计并删除22个文件、75,413字节（统计最终删除时文件大小，不计覆写/管道流量），
+测试FIFO已移除且模拟子进程全部退出。顶层空目录交付前移除，无本单元外部保留文件或IQ副本。
+此前74份RF证据1,580,090字节保持原路径和哈希，删除依据仍见原库存；封存证据未重写。
+
+当前建议保留RadioML主对照，先做新频段高源SNR基线再扩档；严格接收SINR曲线另须验证
+干净参考/分量估计器和带宽，不能把上述字段实现勾成SINR实测或全库质量通过。

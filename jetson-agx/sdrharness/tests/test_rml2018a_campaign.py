@@ -48,7 +48,7 @@ class CampaignTests(unittest.TestCase):
     def test_payload_hash_and_gain_frequency_identity_reject_before_uhd(self):
         frame,_=c.packet(self.source(),'run',0);plan=c.tx_plan(frame,'run',0,range(24))
         c.validate_tx(plan,frame.tobytes())
-        for key,value in [('center_hz',2440000000),('tx_gain_db',71),('tx_samples',1),
+        for key,value in [('center_hz',433920000),('center_hz',2440000000),('schema','rml2018a-all-row-rf-v1'),('tx_gain_db',71),('tx_samples',1),
                           ('serial','other'),('repeats',0),('rows',[0]*24)]:
             changed={**plan,key:value}
             with self.assertRaises(ValueError):c.validate_tx(changed,frame.tobytes())
@@ -117,7 +117,55 @@ class CampaignTests(unittest.TestCase):
             self.assertEqual(report['pending_inference_rows'],24)
             self.assertEqual(report['not_yet_attempted_rows'],1)
             self.assertIsNone(report['received_accuracy'])
+            self.assertEqual(report['rx_sinr']['pending_quality_rows'],24)
+            self.assertEqual(report['rx_sinr']['measured_rows'],0)
             self.assertFalse(report['complete'])
+
+    def test_noisy_source_label_and_failed_sync_never_become_measured_sinr(self):
+        runner=load('campaign_quality',SCRIPTS/'rml2018a-rf-campaign.py')
+        with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:
+            root=Path(directory);batch=root/'batch-0000000';batch.mkdir()
+            c.save(batch/'audit.json',{'status':'synchronized'})
+            seal=c.file_hash(batch/'audit.json')
+            c.save(batch/'capture-complete.json',dict(rows=[0,1],audit_sha256=seal))
+            entries=[dict(row=k,true_id=0,source_snr_db=snr,receive_status=status,
+                source_prediction={'id':0},received_prediction=prediction,
+                **c.receive_quality(status)) for k,snr,status,prediction in (
+                    (0,30,'synchronized',{'id':0}),(1,-20,'sync_failed',None))]
+            result=dict(schema=c.SCHEMA,batch=0,audit_sha256=seal,rows=entries)
+            c.save(batch/'predictions.json',result)
+            with patch('builtins.print'):runner.summarize(root,{'budget':c.budget(2)})
+            report=json.loads((root/'summary.json').read_text())
+            self.assertEqual(set(report['by_source_snr_db']),{'30','-20'})
+            self.assertNotIn('by_snr',report)
+            self.assertEqual(report['rx_sinr']['measured_rows'],0)
+            self.assertEqual(report['rx_sinr']['not_measured_rows'],2)
+            self.assertEqual(report['rx_sinr']['by_rx_sinr_db'],{})
+            self.assertEqual(report['rx_sinr']['not_measured_reasons'],{
+                'no_clean_reference_or_validated_component_estimator':1,'payload_not_synchronized':1})
+            self.assertEqual(report['end_to_end_success_fraction'],.5)
+            for key,value in [('rx_sinr_db',30),('rx_sinr_db',0),('rx_sinr_status','measured')]:
+                changed=dict(entries[0]);changed[key]=value
+                c.save(batch/'predictions.json',{**result,'rows':[changed,entries[1]]})
+                with self.assertRaisesRegex(ValueError,'unsupported SINR measurement'):
+                    runner.summarize(root,{'budget':c.budget(2)})
+            c.save(batch/'predictions.json',{**result,'schema':'rml2018a-all-row-rf-v1'})
+            with self.assertRaisesRegex(ValueError,'prediction schema changed'):
+                runner.summarize(root,{'budget':c.budget(2)})
+
+    def test_archived_pilot_remains_byte_identical_across_record_schema_change(self):
+        bits=np.unpackbits(np.frombuffer(hashlib.shake_256(
+            b'rml2018a-all-row-rf-v1:archive:4267').digest(32),dtype=np.uint8))
+        chips=((bits[::2].astype(float)*2-1)+1j*(bits[1::2].astype(float)*2-1))/np.sqrt(2)
+        np.testing.assert_array_equal(c.marker('archive',4267),np.tile(np.repeat(chips,4),2)*.2)
+
+    def test_old_frequency_plan_rejected_before_software_or_device_access(self):
+        runner=load('campaign_plan_frequency',SCRIPTS/'rml2018a-rf-campaign.py')
+        plan=dict(schema=c.SCHEMA,budget=c.budget(2555904),rf={'center_hz':433920000})
+        with patch.object(runner,'document',return_value=plan),patch.object(runner,'file_hash') as hash_file:
+            with self.assertRaisesRegex(ValueError,'RF center changed'):
+                runner.load_plan(Path('/var/tmp/sdrharness-dev/b210-rml2018a-fake-plan'))
+            hash_file.assert_not_called()
 
     def test_completed_resume_verifies_iq_without_transmit(self):
         runner=load('campaign_resume',SCRIPTS/'rml2018a-rf-campaign.py')
@@ -152,7 +200,7 @@ class CampaignTests(unittest.TestCase):
             root=Path(directory);(root/'packet.fc32').write_bytes(frame.tobytes())
             (root/'tx-plan.json').write_text(json.dumps(plan))
             def fake_uhd(args,**kwargs):
-                self.assertEqual(args[args.index('--freq')+1],'433920000')
+                self.assertEqual(args[args.index('--freq')+1],'2455000000')
                 self.assertNotIn('--repeat',args)
                 code=('import sys,hashlib,json; f=open(sys.argv[1],"rb"); h=hashlib.sha256(); n=0\n'
                       'while True:\n b=f.read(8192)\n if not b:break\n h.update(b);n+=len(b)\n'

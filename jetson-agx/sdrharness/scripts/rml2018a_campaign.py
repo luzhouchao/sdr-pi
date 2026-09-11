@@ -6,9 +6,12 @@ from pathlib import Path
 
 import numpy as np
 
-SCHEMA = 'rml2018a-all-row-rf-v1'
+SCHEMA = 'rml2018a-all-row-rf-v2'
+# Freeze pilot generation independently of record schema/frequency changes so
+# archived v1 frames remain reproducible for read-only diagnostics.
+PILOT_SCHEMA = 'rml2018a-all-row-rf-v1'
 RATE = 2100000
-CENTER = 433920000
+CENTER = 2455000000
 BW = 1500000
 RX_SAMPLES = 65535
 ROWS_PER_BATCH = 24
@@ -50,7 +53,7 @@ def save(path, value):
 def marker(run_id, batch):
     # Batch-specific QPSK pilot, pulse width4 and two equal512-sample halves.
     bits = np.unpackbits(np.frombuffer(hashlib.shake_256(
-        f'{SCHEMA}:{run_id}:{batch}'.encode()).digest(32), dtype=np.uint8))
+        f'{PILOT_SCHEMA}:{run_id}:{batch}'.encode()).digest(32), dtype=np.uint8))
     chips = ((bits[::2].astype(float) * 2 - 1) +
              1j * (bits[1::2].astype(float) * 2 - 1)) / np.sqrt(2)
     return np.tile(np.repeat(chips, 4), 2) * .2
@@ -173,6 +176,22 @@ def normalize_window(z):
     rms = np.sqrt(np.mean(abs(z)**2))
     require(rms > 0 and np.isfinite(rms), 'model zero RMS')
     return np.ascontiguousarray(np.stack((z.real, z.imag)) / rms, dtype=np.float32)
+
+
+def receive_quality(receive_status):
+    """Do not infer total SINR from noisy dataset X, its Z label or coherence.
+
+    X already includes source-generation impairments. RX-minus-X residuals
+    describe additional link error, not total signal/(interference+noise).
+    No calibrated component separation estimator is implemented here.
+    """
+    require(receive_status in ('synchronized', 'sync_failed'), 'receive quality status')
+    return dict(rx_sinr_db=None, rx_sinr_status='not_measured',
+        rx_sinr_reason=('no_clean_reference_or_validated_component_estimator'
+                        if receive_status == 'synchronized' else 'payload_not_synchronized'),
+        rx_sinr_method=None, rx_sinr_measurement_bandwidth_hz=None,
+        rx_sinr_reference_plane='received_payload_before_rms',
+        rx_payload_filter='none', rx_sample_rate_hz=RATE, rx_rf_bandwidth_hz=BW)
 
 
 def batch_rows(total, batch):

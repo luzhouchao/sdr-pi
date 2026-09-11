@@ -15,8 +15,9 @@ NX 不需要安装 h5py、PyTorch 或 Python UHD；复用已核对的 UHD 文件
 
 ## 帧、参数和预算
 
-固定 433.920 MHz、2.1 MS/s、TX/RX BW 1.5 MHz、TX70/RX50、TX 峰值 0.2、
-TX LO offset +250 kHz；使用已报告的433MHz天线，P201身份为 RX1/RX0/A_BALANCED。
+2026-09-11用户报告已换回2.4GHz；当前固定 **2455 MHz**、2.1 MS/s、TX/RX BW 1.5 MHz、TX70/RX50、TX 峰值 0.2、
+TX LO offset +250 kHz；天线具体型号/参数未核实，P201身份为 RX1/RX0/A_BALANCED。
+2455MHz沿用历史实验中心，不表示本轮已扫描确认空闲；新参数尚未实机发射/采集验证。
 不支持在命令行任意改频率/增益，不无衰减同轴直连。
 
 每批最多24个独立1024点样本，各自按复数峰值缩放，前面加入由 run/batch 派生的1024点
@@ -31,7 +32,7 @@ P201每批接收65535个复数ci16样本（262140字节），500ms settle、1000
 报告同时保存锚点标记与payload前标记的位置/得分，不将受干扰标记的得分冒充通过。
 单个源/实收1024点窗口均做复数RMS归一化，沿用冻结epoch-10、FP16 autocast/FP32权重。
 这是工程单窗比较，区别于生产RF-v1四窗/mean-logit准入。
-Z仅为原始数据集的标称SNR，不是当前空口接收SNR。
+Z仅为原始数据集的标称SNR，不是当前空口接收SNR/SINR。
 
 | 项目 | 全库预算 |
 | --- | ---: |
@@ -45,6 +46,30 @@ Z仅为原始数据集的标称SNR，不是当前空口接收SNR。
 初始代码的10秒/批估计尚未验证，实际耗时以验证记录为准，不能用空口样本时长代替SSH、
 设备初始化、恢复与推理耗时。全量属于多日运行，此工具尚无全库长期稳定性验收。
 
+## 源SNR与接收SINR记录（v2）
+
+`rml2018a-all-row-rf-v2`将原`dataset_snr_db`明确为`source_snr_db`，值仍原样取自Z。
+原始X已包含源生成时的噪声/信道损伤，真实收发再引入环境干扰、噪声及硬件失真。
+不把这些影响都当成独立可加的白噪声，也不通过改标签将X变为干净参考。
+
+- 每行保存`rx_sinr_db`、`rx_sinr_status`、`rx_sinr_reason`、`rx_sinr_method`和
+  `rx_sinr_measurement_bandwidth_hz`。当前没有已验证的有效信号/干扰噪声分量估计器，
+  数值、方法及测量带宽均为`null`，状态`not_measured`，不是0dB。
+- 同步成功仍为`no_clean_reference_or_validated_component_estimator`；同步失败为
+  `payload_not_synchronized`。采集audit也记录这一状态，不必等推理结束才知道未测。
+- `rx_sinr_reference_plane=received_payload_before_rms`、`rx_payload_filter=none`，
+  同时记录2.1MS/s采样率和1.5MHz模拟带宽；模拟带宽不冒充SINR测量等效噪声带宽。
+- `source_rx_correlation`只表征波形一致性，不能换算成总SINR；用已含噪X计算残差，
+  也不能隔离原始有效信号与全部噪声干扰。导频质量不能冒充每条payload的SINR。
+- 汇总`by_source_snr_db`替代含糊的`by_snr`；`rx_sinr`单列已测/未测/待生成逐行质量记录
+  的数量、未测原因和空的`by_rx_sinr_db`。当前版本拒绝伪造的数字SINR或已测状态。
+  `not_measured_rows`统计已生成prediction行，`pending_quality_rows`为已采集但尚无prediction行。
+
+继续以RadioML作源数据/空口工程对照，先高源SNR基线再扩档。若另需严格接收SINR曲线，
+须单独验证干净参考/分量估计方法、测量带宽与硬件失真边界，不能用本轮空字段宣称完成。
+不需要因此重做训练数据集；本单元未新增生成器、滤波、模型推理或RF执行。
+旧v1计划/审计/结果保持原字节，新源码拒绝混用旧计划；导频种子合同仍固定v1以便离线重建历史帧。
+
 ## 在AGX执行
 
 使用已有运行环境，所有路径绝对化。以下 `plan` 仅读取/校验约21.45GB源文件，不发射。
@@ -55,7 +80,7 @@ cd /home/jetson/sdrharness
 export PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1
 RML_PY=/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python
 RML_RUNNER=/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py
-RML_ROOT=/var/tmp/sdrharness-dev/b210-rml2018a-full-20260910
+RML_ROOT=/var/tmp/sdrharness-dev/b210-rml2018a-2455-20260911
 "$RML_PY" -B "$RML_RUNNER" plan --root "$RML_ROOT"
 "$RML_PY" -B "$RML_RUNNER" run --root "$RML_ROOT" --start-batch 0 --max-batches 32 --deadline-seconds 1800
 ```
@@ -90,7 +115,7 @@ NX另有55秒alarm/58秒外层timeout及有限字节上限；不要用`kill -9`�
 停止/恢复audit、源与实收24维logits/数字ID/输入哈希/时延/相关度。原始源IQ不额外长期复制。
 run-plan保存源文件、软件和模型/profile/标签身份；TX包在成功后删除，NX与P201只留瞬时副本。
 
-汇总分别列出已采集、待推理、未尝试、实收预测、混淆矩阵及按源SNR分组统计。
+汇总分别列出已采集、待推理、未尝试、实收预测、混淆矩阵、按源SNR分组统计及接收SINR测量状态。
 `received_accuracy`只针对已有实收预测；`end_to_end_success_fraction`以已采集行为分母，
 待推理和接收失败都不算成功。`complete`表示所有源行已有工程结果（允许sync_failed），
 只有`all_rows_received_and_inferred=true`才表示全库每行都获得实收预测。
