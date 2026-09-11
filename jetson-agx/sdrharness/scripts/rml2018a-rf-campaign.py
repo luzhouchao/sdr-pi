@@ -499,23 +499,34 @@ def summarize(root, campaign):
     save(root/'summary.json',value);print(json.dumps(value),flush=True)
 
 
+def selected_batches(total, start, count, explicit=None):
+    if explicit is not None:
+        require(start==0 and count==1, 'explicit batches cannot be combined with range overrides')
+        require(1<=len(explicit)<=32 and len(set(explicit))==len(explicit) and
+                all(type(i) is int and 0<=i<total for i in explicit), '1-32 unique in-range batches required')
+        return list(explicit)
+    require(0<=start<total and count>0, 'batch range')
+    return list(range(start,min(total,start+count)))
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('command',choices=['plan','acquire','infer','run','summary'])
     p.add_argument('--root',type=Path,required=True)
     p.add_argument('--start-batch',type=int,default=0)
     p.add_argument('--max-batches',type=int,default=1)
+    p.add_argument('--batch-indices',type=int,nargs='+',help='explicit ordered pilot/shard, 1-32 unique batches; no range overrides')
     p.add_argument('--deadline-seconds',type=int,default=600)
     p.add_argument('--retry-failed',action='store_true',help='archive restored failed attempts, then retry; never discard evidence')
     p.add_argument('--rx-gain-db',type=int,choices=[40,50],help='plan only; default40; all execution uses the sealed plan')
     p.add_argument('--tx-gain-db',type=int,choices=[70,80],help='plan only; default70; all execution uses the sealed plan')
     args=p.parse_args();root=args.root
     if args.command=='plan':
+        require(args.batch_indices is None,'batch selection is execution-only; preregister pilot separately')
         create_plan(root,40 if args.rx_gain_db is None else args.rx_gain_db,70 if args.tx_gain_db is None else args.tx_gain_db);return
     require(args.rx_gain_db is None and args.tx_gain_db is None,'RF gains are sealed in run-plan; create a new plan to change them')
     campaign=load_plan(root)
-    require(0<=args.start_batch<campaign['budget']['batches'] and args.max_batches>0, 'batch range')
-    stop=min(campaign['budget']['batches'],args.start_batch+args.max_batches)
+    indices=selected_batches(campaign['budget']['batches'],args.start_batch,args.max_batches,args.batch_indices)
     require(60<=args.deadline_seconds<=30*86400,'finite deadline')
     scratch=root/'scratch';scratch.mkdir(mode=0o700,exist_ok=True)
     os.environ.update(TMPDIR=str(scratch),XDG_CACHE_HOME=str(scratch),TRITON_CACHE_DIR=str(scratch/'triton'),
@@ -526,8 +537,8 @@ def main():
     with lock(root):
         try:
             if args.command=='summary':summarize(root,campaign);return
-            for start in range(args.start_batch,stop,32):
-                shard=list(range(start,min(stop,start+32)))
+            for offset in range(0,len(indices),32):
+                shard=indices[offset:offset+32]
                 if args.command in ('acquire','run'):
                     for index in shard:acquire_batch(root,campaign,index,args.retry_failed)
                 if args.command in ('infer','run'):infer_shard(root,campaign,shard)

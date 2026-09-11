@@ -23,6 +23,15 @@ def load(name, path):
 
 
 class CampaignTests(unittest.TestCase):
+    def test_explicit_pilot_selection_preserves_order_and_rejects_ambiguous_budget(self):
+        runner=load('campaign_selection',SCRIPTS/'rml2018a-rf-campaign.py')
+        self.assertEqual(runner.selected_batches(106496,0,1,[22016,4267]),[22016,4267])
+        self.assertEqual(runner.selected_batches(5,3,10),[3,4])
+        for values in ([],[1,1],[-1],[106496],[True],list(range(33))):
+            with self.assertRaises(ValueError):runner.selected_batches(106496,0,1,values)
+        for start,count in ((1,1),(0,2)):
+            with self.assertRaises(ValueError):runner.selected_batches(106496,start,count,[1])
+
     def source(self, count=24):
         rng=np.random.default_rng(312)
         return rng.normal(size=(count,1024,2)).astype('<f4')

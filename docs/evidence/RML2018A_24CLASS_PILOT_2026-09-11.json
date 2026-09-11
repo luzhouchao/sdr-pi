@@ -1,0 +1,3368 @@
+{
+  "schema": "rml-24class-pilot-evidence-v1",
+  "purpose": "24-class high-source-SNR engineering RF pilot: preserve every source/received prediction, IQ, conditional quality and restoration without source IQ copies.",
+  "root": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911",
+  "base_head": "6fbd815dc478924c7e404c77247279bb0b8cff21",
+  "run_id": "b3f377dc5da645e987de1290b3d6b52c",
+  "source": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "bytes": 21449148312,
+    "mtime_ns": 1627354882000000000
+  },
+  "rf": {
+    "center_hz": 2455000000,
+    "rate_sps": 2100000,
+    "bandwidth_hz": 1500000,
+    "tx_gain_db": 80,
+    "rx_gain_db": 40,
+    "peak": 0.2,
+    "tx_lo_offset_hz": 250000,
+    "settle_ms": 500,
+    "point_deadline_ms": 1000,
+    "rx_samples": 65535
+  },
+  "model_identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+  "name_status": "provisional",
+  "preprocess": "pilot-only timing/CFO/common phase; unfiltered payload; single1024 complex RMS",
+  "result": {
+    "classes": [
+      {
+        "class_id": 0,
+        "name": "OOK",
+        "batch": 4352,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 21,
+        "received_prediction_ids": {
+          "0": 21,
+          "18": 1,
+          "1": 1,
+          "9": 1
+        },
+        "sinr_counts": {
+          "estimated": 20,
+          "invalid": 4
+        },
+        "estimated_sinr_db": {
+          "min": -3.883170699645451,
+          "median": -1.9836114422500555,
+          "max": -1.0394670838335418
+        },
+        "sync": {
+          "marker_score": 0.8555235437288385,
+          "marker_offset": 7808,
+          "payload_marker_offset": 7808,
+          "payload_marker_score": 0.8555235437288385,
+          "estimated_cfo_hz": 3473.621049701055,
+          "phase_rotation_rad": -3.0791730997479396,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "S",
+        "request_id": 5,
+        "session_generation": 1789129512192,
+        "audit_sha256": "890fafc60d2b101c6f4fc068785ab95a6b99f59482ad1ddd713ea3eab054fc71"
+      },
+      {
+        "class_id": 1,
+        "name": "4ASK",
+        "batch": 8790,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 22,
+        "received_correct": 12,
+        "received_prediction_ids": {
+          "0": 7,
+          "1": 12,
+          "2": 5
+        },
+        "sinr_counts": {
+          "invalid": 7,
+          "estimated": 17
+        },
+        "estimated_sinr_db": {
+          "min": -7.4673493607413475,
+          "median": -3.116630674019131,
+          "max": -1.8544205457929839
+        },
+        "sync": {
+          "marker_score": 0.8648238605337548,
+          "marker_offset": 54180,
+          "payload_marker_offset": 28068,
+          "payload_marker_score": 0.6685849592933447,
+          "estimated_cfo_hz": 3502.4159085776596,
+          "phase_rotation_rad": -3.071321888130892,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129527846,
+        "audit_sha256": "e12720cbd161a01278dfce5cc9877d3e31d007edcc8ce47bd93d1c4797fec060"
+      },
+      {
+        "class_id": 2,
+        "name": "8ASK",
+        "batch": 13227,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 7,
+        "received_prediction_ids": {
+          "2": 7,
+          "0": 9,
+          "12": 1,
+          "17": 4,
+          "18": 2,
+          "1": 1
+        },
+        "sinr_counts": {
+          "estimated": 6,
+          "invalid": 18
+        },
+        "estimated_sinr_db": {
+          "min": -6.153332062324647,
+          "median": -2.2220108991746974,
+          "max": -0.5529029231916253
+        },
+        "sync": {
+          "marker_score": 0.8778531689317907,
+          "marker_offset": 39306,
+          "payload_marker_offset": 39306,
+          "payload_marker_score": 0.8778531689317907,
+          "estimated_cfo_hz": 3506.7324433148337,
+          "phase_rotation_rad": 2.5562066749493777,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129543521,
+        "audit_sha256": "003355b1260f51a141b813233203028ac0e9124303ce3c7b8d132ede8ced51f5"
+      },
+      {
+        "class_id": 3,
+        "name": "BPSK",
+        "batch": 17664,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 24,
+        "received_prediction_ids": {
+          "3": 24
+        },
+        "sinr_counts": {
+          "estimated": 23,
+          "invalid": 1
+        },
+        "estimated_sinr_db": {
+          "min": -1.366905577618593,
+          "median": 0.4259831390112435,
+          "max": 0.8785247076832052
+        },
+        "sync": {
+          "marker_score": 0.8687608582420059,
+          "marker_offset": 54191,
+          "payload_marker_offset": 28079,
+          "payload_marker_score": 0.8315731162224513,
+          "estimated_cfo_hz": 3513.2685306018852,
+          "phase_rotation_rad": 1.4828509828210523,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129559080,
+        "audit_sha256": "7a4940bfbf2cb8837b9ab3a9ade59696ec2bc1d383280f4047d8cb8e52e3cf42"
+      },
+      {
+        "class_id": 4,
+        "name": "QPSK",
+        "batch": 22102,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 7,
+        "received_prediction_ids": {
+          "4": 7,
+          "14": 1,
+          "16": 1,
+          "0": 2,
+          "23": 3,
+          "3": 5,
+          "18": 1,
+          "21": 1,
+          "9": 1,
+          "12": 1,
+          "5": 1
+        },
+        "sinr_counts": {
+          "estimated": 6,
+          "invalid": 18
+        },
+        "estimated_sinr_db": {
+          "min": -2.847472000682058,
+          "median": 0.42761584158364624,
+          "max": 1.229458717079735
+        },
+        "sync": {
+          "marker_score": 0.8627727059643175,
+          "marker_offset": 318,
+          "payload_marker_offset": 318,
+          "payload_marker_score": 0.8627727059643175,
+          "estimated_cfo_hz": 3558.0497609101253,
+          "phase_rotation_rad": 0.690778490263164,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129574338,
+        "audit_sha256": "e138f3c5b81888b5f0ce8265009b46b5bfea2a43e81152c1056ca639c6242640"
+      },
+      {
+        "class_id": 5,
+        "name": "8PSK",
+        "batch": 26539,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 8,
+        "received_prediction_ids": {
+          "5": 8,
+          "16": 4,
+          "7": 6,
+          "4": 2,
+          "21": 1,
+          "22": 1,
+          "0": 2
+        },
+        "sinr_counts": {
+          "estimated": 21,
+          "invalid": 3
+        },
+        "estimated_sinr_db": {
+          "min": -3.627651053507404,
+          "median": -1.9008818200353204,
+          "max": 1.3167761368717632
+        },
+        "sync": {
+          "marker_score": 0.8289006872827103,
+          "marker_offset": 60798,
+          "payload_marker_offset": 34686,
+          "payload_marker_score": 0.7958675261318422,
+          "estimated_cfo_hz": 3528.4790382590527,
+          "phase_rotation_rad": 2.9967637073842632,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "S",
+        "request_id": 5,
+        "session_generation": 1789129589489,
+        "audit_sha256": "3cede7b044a9857e6a89e412300980aa07bd4fc0aa1b7b5ac957291d872f3321"
+      },
+      {
+        "class_id": 6,
+        "name": "16PSK",
+        "batch": 30976,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 0,
+        "received_prediction_ids": {
+          "4": 1,
+          "7": 11,
+          "9": 7,
+          "5": 3,
+          "11": 1,
+          "16": 1
+        },
+        "sinr_counts": {
+          "estimated": 19,
+          "invalid": 5
+        },
+        "estimated_sinr_db": {
+          "min": -3.042195834867918,
+          "median": 1.0383564202281246,
+          "max": 1.705294736753019
+        },
+        "sync": {
+          "marker_score": 0.883883722561133,
+          "marker_offset": 55642,
+          "payload_marker_offset": 29530,
+          "payload_marker_score": 0.7774266288071511,
+          "estimated_cfo_hz": 3521.6542936249634,
+          "phase_rotation_rad": -2.293947856956937,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129604737,
+        "audit_sha256": "cf8f102365764a66fcbfe3057579fce6c06ba686cc4bdad5b2b0a587c9dfce54"
+      },
+      {
+        "class_id": 7,
+        "name": "32PSK",
+        "batch": 35414,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 5,
+        "received_prediction_ids": {
+          "7": 5,
+          "5": 7,
+          "4": 3,
+          "10": 1,
+          "8": 4,
+          "11": 1,
+          "15": 1,
+          "6": 1,
+          "14": 1
+        },
+        "sinr_counts": {
+          "estimated": 23,
+          "invalid": 1
+        },
+        "estimated_sinr_db": {
+          "min": -4.45033471778377,
+          "median": -2.5115612070351423,
+          "max": 1.7338867166247065
+        },
+        "sync": {
+          "marker_score": 0.8921265876607112,
+          "marker_offset": 63244,
+          "payload_marker_offset": 37132,
+          "payload_marker_score": 0.43536093813933324,
+          "estimated_cfo_hz": 3530.464964283108,
+          "phase_rotation_rad": 2.7673990850254557,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129620418,
+        "audit_sha256": "09aecfe98b981a24e8db63f1b75e0e4abcbe9b13876284ec598862efe4ba61ce"
+      },
+      {
+        "class_id": 8,
+        "name": "16APSK",
+        "batch": 39851,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 4,
+        "received_prediction_ids": {
+          "8": 4,
+          "7": 5,
+          "0": 4,
+          "16": 1,
+          "5": 2,
+          "4": 2,
+          "6": 2,
+          "9": 1,
+          "11": 1,
+          "20": 1,
+          "3": 1
+        },
+        "sinr_counts": {
+          "estimated": 16,
+          "invalid": 8
+        },
+        "estimated_sinr_db": {
+          "min": -1.304450490661795,
+          "median": 0.2706098165556728,
+          "max": 1.0067241721883582
+        },
+        "sync": {
+          "marker_score": 0.8534829120861548,
+          "marker_offset": 8942,
+          "payload_marker_offset": 8942,
+          "payload_marker_score": 0.8534829120861548,
+          "estimated_cfo_hz": 3543.5166958780255,
+          "phase_rotation_rad": 1.9865986764565529,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129635668,
+        "audit_sha256": "0b8a9d6986e91215ec9d80e05e20117e1a7d6c7e67a2bd1337cccd060ed79ee8"
+      },
+      {
+        "class_id": 9,
+        "name": "32APSK",
+        "batch": 44288,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 6,
+        "received_prediction_ids": {
+          "10": 7,
+          "8": 7,
+          "16": 1,
+          "9": 6,
+          "11": 2,
+          "0": 1
+        },
+        "sinr_counts": {
+          "estimated": 23,
+          "invalid": 1
+        },
+        "estimated_sinr_db": {
+          "min": -1.9252339411889698,
+          "median": 1.105201316361759,
+          "max": 2.1536393240006073
+        },
+        "sync": {
+          "marker_score": 0.8909262391084974,
+          "marker_offset": 1965,
+          "payload_marker_offset": 1965,
+          "payload_marker_score": 0.8909262391084974,
+          "estimated_cfo_hz": 3546.423718384094,
+          "phase_rotation_rad": -1.402954872949015,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "S",
+        "request_id": 5,
+        "session_generation": 1789129651240,
+        "audit_sha256": "44be607214a2da04f23fef56d3eb159ca0e488f75cf321b8b99683ee0bb107af"
+      },
+      {
+        "class_id": 10,
+        "name": "64APSK",
+        "batch": 48726,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 0,
+        "received_prediction_ids": {
+          "14": 1,
+          "13": 3,
+          "8": 7,
+          "7": 1,
+          "5": 3,
+          "0": 1,
+          "2": 1,
+          "18": 1,
+          "23": 1,
+          "3": 2,
+          "12": 2,
+          "17": 1
+        },
+        "sinr_counts": {
+          "invalid": 11,
+          "estimated": 13
+        },
+        "estimated_sinr_db": {
+          "min": -3.6865834778413253,
+          "median": -0.6954966228250964,
+          "max": 0.8540049709886404
+        },
+        "sync": {
+          "marker_score": 0.8213752726849445,
+          "marker_offset": 19284,
+          "payload_marker_offset": 19284,
+          "payload_marker_score": 0.8213752726849445,
+          "estimated_cfo_hz": 3492.168552039523,
+          "phase_rotation_rad": 2.591749668305055,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129666802,
+        "audit_sha256": "b4aefddf5790c650e0ccfa80099de3e098f3655cb4da5f32128a3c98813eb6bc"
+      },
+      {
+        "class_id": 11,
+        "name": "128APSK",
+        "batch": 53163,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 1,
+        "received_prediction_ids": {
+          "0": 5,
+          "3": 4,
+          "6": 1,
+          "12": 1,
+          "1": 1,
+          "7": 1,
+          "13": 1,
+          "8": 6,
+          "10": 2,
+          "11": 1,
+          "9": 1
+        },
+        "sinr_counts": {
+          "invalid": 12,
+          "estimated": 12
+        },
+        "estimated_sinr_db": {
+          "min": -2.0612628490892972,
+          "median": 0.2142870007133797,
+          "max": 0.7255277032400819
+        },
+        "sync": {
+          "marker_score": 0.8696360318312064,
+          "marker_offset": 59056,
+          "payload_marker_offset": 32944,
+          "payload_marker_score": 0.26516181700638386,
+          "estimated_cfo_hz": 3540.0619036877233,
+          "phase_rotation_rad": -0.6376398850372312,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "S",
+        "request_id": 5,
+        "session_generation": 1789129682174,
+        "audit_sha256": "d5e94e2c6c0c58657082623d4c576ae5511a354a4351e5d7ebff23116c12ea78"
+      },
+      {
+        "class_id": 12,
+        "name": "16QAM",
+        "batch": 57600,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 0,
+        "received_prediction_ids": {
+          "16": 1,
+          "9": 2,
+          "10": 4,
+          "13": 1,
+          "11": 3,
+          "8": 7,
+          "7": 1,
+          "14": 2,
+          "3": 1,
+          "20": 1,
+          "0": 1
+        },
+        "sinr_counts": {
+          "estimated": 21,
+          "invalid": 3
+        },
+        "estimated_sinr_db": {
+          "min": -4.394853731429328,
+          "median": -3.315084741971777,
+          "max": 0.5921082275592188
+        },
+        "sync": {
+          "marker_score": 0.864400872062765,
+          "marker_offset": 34091,
+          "payload_marker_offset": 34091,
+          "payload_marker_score": 0.864400872062765,
+          "estimated_cfo_hz": 3544.1873572603286,
+          "phase_rotation_rad": 1.976978220455105,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129697518,
+        "audit_sha256": "180839aa43b16e70a07ae629cd5e3502020412b5f3f2f69fb19bb76329f9a05a"
+      },
+      {
+        "class_id": 13,
+        "name": "32QAM",
+        "batch": 62038,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 1,
+        "received_prediction_ids": {
+          "4": 2,
+          "7": 3,
+          "8": 11,
+          "5": 3,
+          "13": 1,
+          "6": 1,
+          "0": 2,
+          "11": 1
+        },
+        "sinr_counts": {
+          "estimated": 21,
+          "invalid": 3
+        },
+        "estimated_sinr_db": {
+          "min": -1.6172816890018447,
+          "median": -0.5729391957461714,
+          "max": 1.2678593265267166
+        },
+        "sync": {
+          "marker_score": 0.8474106835787004,
+          "marker_offset": 15522,
+          "payload_marker_offset": 15522,
+          "payload_marker_score": 0.8474106835787004,
+          "estimated_cfo_hz": 3551.2377004682744,
+          "phase_rotation_rad": 0.9599830651484264,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "S",
+        "request_id": 5,
+        "session_generation": 1789129712999,
+        "audit_sha256": "7eed1001bc94b30ee782e0410a7296daef99b57f1fab38e3b4eb0faea06a2142"
+      },
+      {
+        "class_id": 14,
+        "name": "64QAM",
+        "batch": 66475,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 23,
+        "received_correct": 1,
+        "received_prediction_ids": {
+          "13": 4,
+          "12": 1,
+          "15": 3,
+          "7": 2,
+          "10": 3,
+          "11": 2,
+          "4": 2,
+          "8": 5,
+          "14": 1,
+          "9": 1
+        },
+        "sinr_counts": {
+          "estimated": 24
+        },
+        "estimated_sinr_db": {
+          "min": -5.954868787929489,
+          "median": 0.0483451292965156,
+          "max": 1.46201950162137
+        },
+        "sync": {
+          "marker_score": 0.9067257939061509,
+          "marker_offset": 6332,
+          "payload_marker_offset": 6332,
+          "payload_marker_score": 0.9067257939061509,
+          "estimated_cfo_hz": 3537.53900353903,
+          "phase_rotation_rad": -1.922233541128487,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129728450,
+        "audit_sha256": "76952e0ab6ad9ca1daf1ea5a3587a3a38bc2ebd88368f6eb5755f6ec916e19d8"
+      },
+      {
+        "class_id": 15,
+        "name": "128QAM",
+        "batch": 70912,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 23,
+        "received_correct": 0,
+        "received_prediction_ids": {
+          "16": 1,
+          "8": 15,
+          "5": 2,
+          "13": 1,
+          "7": 3,
+          "11": 1,
+          "6": 1
+        },
+        "sinr_counts": {
+          "estimated": 24
+        },
+        "estimated_sinr_db": {
+          "min": -3.545323991035614,
+          "median": -0.12970648415540675,
+          "max": 0.5304734661482604
+        },
+        "sync": {
+          "marker_score": 0.8860064962810875,
+          "marker_offset": 51877,
+          "payload_marker_offset": 25765,
+          "payload_marker_score": 0.7970307848948556,
+          "estimated_cfo_hz": 3553.3846829169793,
+          "phase_rotation_rad": 0.6905800905707214,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129744000,
+        "audit_sha256": "994637a7a35af69e1528547ff88b3a53280b35f841a047ee739d04fe200abd6c"
+      },
+      {
+        "class_id": 16,
+        "name": "256QAM",
+        "batch": 75350,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 19,
+        "received_correct": 1,
+        "received_prediction_ids": {
+          "5": 2,
+          "6": 1,
+          "8": 10,
+          "4": 1,
+          "7": 2,
+          "9": 2,
+          "3": 3,
+          "23": 1,
+          "16": 1,
+          "21": 1
+        },
+        "sinr_counts": {
+          "estimated": 16,
+          "invalid": 8
+        },
+        "estimated_sinr_db": {
+          "min": -0.947163519065986,
+          "median": -0.05558065317510502,
+          "max": 0.6348385221806413
+        },
+        "sync": {
+          "marker_score": 0.852264682850283,
+          "marker_offset": 23640,
+          "payload_marker_offset": 23640,
+          "payload_marker_score": 0.852264682850283,
+          "estimated_cfo_hz": 3522.5746385303787,
+          "phase_rotation_rad": 2.549751826538854,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "S",
+        "request_id": 5,
+        "session_generation": 1789129760297,
+        "audit_sha256": "33444d9e6f0ea7b64eb49f445c544dad1d7a45f75c648e90d969f142ab5fd418"
+      },
+      {
+        "class_id": 17,
+        "name": "AM-SSB-WC",
+        "batch": 79787,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 15,
+        "received_correct": 10,
+        "received_prediction_ids": {
+          "17": 10,
+          "0": 3,
+          "18": 9,
+          "12": 1,
+          "9": 1
+        },
+        "sinr_counts": {
+          "invalid": 24
+        },
+        "estimated_sinr_db": null,
+        "sync": {
+          "marker_score": 0.8388941835762784,
+          "marker_offset": 56068,
+          "payload_marker_offset": 29956,
+          "payload_marker_score": 0.7830777985803848,
+          "estimated_cfo_hz": 3519.592866020128,
+          "phase_rotation_rad": 2.3775851021034025,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129775754,
+        "audit_sha256": "bd2fa248f140248d982ec8ce12cc8af7ff9d48f26bf7925fc153eb7a7124d08d"
+      },
+      {
+        "class_id": 18,
+        "name": "AM-SSB-SC",
+        "batch": 84224,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 21,
+        "received_correct": 13,
+        "received_prediction_ids": {
+          "18": 13,
+          "17": 11
+        },
+        "sinr_counts": {
+          "invalid": 24
+        },
+        "estimated_sinr_db": null,
+        "sync": {
+          "marker_score": 0.8834345400586391,
+          "marker_offset": 47961,
+          "payload_marker_offset": 21849,
+          "payload_marker_score": 0.793648342107072,
+          "estimated_cfo_hz": 3546.959973153818,
+          "phase_rotation_rad": 0.08374990112390436,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "S",
+        "request_id": 5,
+        "session_generation": 1789129791957,
+        "audit_sha256": "26da7b970e94568d0bc70959c58428410343cab90946b48452f2a1f7ac753352"
+      },
+      {
+        "class_id": 19,
+        "name": "AM-DSB-WC",
+        "batch": 88662,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 20,
+        "received_prediction_ids": {
+          "23": 1,
+          "19": 20,
+          "0": 2,
+          "20": 1
+        },
+        "sinr_counts": {
+          "estimated": 21,
+          "invalid": 3
+        },
+        "estimated_sinr_db": {
+          "min": -2.3414337215320016,
+          "median": 1.5539958765789526,
+          "max": 2.213289180832028
+        },
+        "sync": {
+          "marker_score": 0.8704217423371426,
+          "marker_offset": 43524,
+          "payload_marker_offset": 17412,
+          "payload_marker_score": 0.7923535912629823,
+          "estimated_cfo_hz": 3563.146579060143,
+          "phase_rotation_rad": -1.7909072477760601,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129807914,
+        "audit_sha256": "8ef440d82df0ead01db9efa9fd10c271d042868a9abec4104dd5421aab8a6861"
+      },
+      {
+        "class_id": 20,
+        "name": "AM-DSB-SC",
+        "batch": 93099,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 12,
+        "received_correct": 8,
+        "received_prediction_ids": {
+          "20": 8,
+          "19": 14,
+          "0": 2
+        },
+        "sinr_counts": {
+          "estimated": 21,
+          "invalid": 3
+        },
+        "estimated_sinr_db": {
+          "min": -2.4208099437712685,
+          "median": 1.1553458849689926,
+          "max": 2.400292080561668
+        },
+        "sync": {
+          "marker_score": 0.8694779800319916,
+          "marker_offset": 52694,
+          "payload_marker_offset": 26582,
+          "payload_marker_score": 0.8684236945723891,
+          "estimated_cfo_hz": 3539.2009360382035,
+          "phase_rotation_rad": 0.4179281797265851,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129823654,
+        "audit_sha256": "571fc1b2c75b8e719a4a090e9b44d7645a5ab38ef72166bad04bc010bbaf3c15"
+      },
+      {
+        "class_id": 21,
+        "name": "FM",
+        "batch": 97536,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 20,
+        "received_prediction_ids": {
+          "21": 20,
+          "0": 3,
+          "17": 1
+        },
+        "sinr_counts": {
+          "estimated": 20,
+          "invalid": 4
+        },
+        "estimated_sinr_db": {
+          "min": 3.666356211013391,
+          "median": 4.926354192393591,
+          "max": 5.30671180211592
+        },
+        "sync": {
+          "marker_score": 0.8906800175780514,
+          "marker_offset": 43181,
+          "payload_marker_offset": 17069,
+          "payload_marker_score": 0.22651980183269999,
+          "estimated_cfo_hz": 3565.320978941594,
+          "phase_rotation_rad": 0.17545762578905233,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129839144,
+        "audit_sha256": "1bbbbfc5a91739ee255d21d373d67b8570ad2c0b4811f49982ad17bd932b51e6"
+      },
+      {
+        "class_id": 22,
+        "name": "GMSK",
+        "batch": 101974,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 20,
+        "received_prediction_ids": {
+          "22": 20,
+          "0": 4
+        },
+        "sinr_counts": {
+          "estimated": 20,
+          "invalid": 4
+        },
+        "estimated_sinr_db": {
+          "min": 3.9729905470707134,
+          "median": 4.273798441324239,
+          "max": 4.5585563431806255
+        },
+        "sync": {
+          "marker_score": 0.8984922528520849,
+          "marker_offset": 39183,
+          "payload_marker_offset": 39183,
+          "payload_marker_score": 0.8984922528520849,
+          "estimated_cfo_hz": 3571.3594292102,
+          "phase_rotation_rad": -0.8577950419698637,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "U",
+        "request_id": 5,
+        "session_generation": 1789129854915,
+        "audit_sha256": "3248183a97143862a56d17609ed7b4cd29ef4191efff7098dad45ff52cb3b74e"
+      },
+      {
+        "class_id": 23,
+        "name": "OQPSK",
+        "batch": 106411,
+        "source_rows": 24,
+        "synchronized_rows": 24,
+        "source_correct": 24,
+        "received_correct": 18,
+        "received_prediction_ids": {
+          "4": 3,
+          "23": 18,
+          "5": 2,
+          "16": 1
+        },
+        "sinr_counts": {
+          "estimated": 24
+        },
+        "estimated_sinr_db": {
+          "min": -5.09601686389277,
+          "median": 1.2921060665141537,
+          "max": 2.2046260760604417
+        },
+        "sync": {
+          "marker_score": 0.8569720958534347,
+          "marker_offset": 13539,
+          "payload_marker_offset": 13539,
+          "payload_marker_score": 0.8569720958534347,
+          "estimated_cfo_hz": 3585.775327424437,
+          "phase_rotation_rad": 1.029165907619129,
+          "cfo_search_max_hz": 14500,
+          "cfo_limit_hz": 17000,
+          "detector_filter": {
+            "kind": "129-tap Hamming FIR",
+            "cutoff_hz": 500000,
+            "payload_filtered": false
+          },
+          "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+        },
+        "sync_error": null,
+        "uhd_tail_markers": "S",
+        "request_id": 5,
+        "session_generation": 1789129871743,
+        "audit_sha256": "45de49a06a9acb299108aaac099c543ae1f677f2a50e07b9b9389bd123438d07"
+      }
+    ],
+    "source_rows": 576,
+    "source_correct": 543,
+    "received_rows": 576,
+    "received_correct": 207,
+    "quality_counts": {
+      "estimated": 411,
+      "invalid": 165
+    },
+    "input_hashes_verified": 1152,
+    "model_warmup_windows": 2
+  },
+  "recognizer_available": false,
+  "cleanup": {
+    "removed_file_count": 359,
+    "removed_bytes": 20321999,
+    "removed_directory_count": 56,
+    "details_path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/cleanup.json",
+    "automatic_cleanup": {
+      "nx_files": 168,
+      "nx_bytes": 5588424,
+      "source_packet_files": 24,
+      "source_packet_bytes": 5013504
+    }
+  },
+  "retained_file_count": 273,
+  "retained_bytes": 9482313,
+  "iq_file_count": 24,
+  "iq_bytes": 6291360,
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0004352/audit.json",
+      "bytes": 40850,
+      "sha256": "890fafc60d2b101c6f4fc068785ab95a6b99f59482ad1ddd713ea3eab054fc71",
+      "batch": 4352,
+      "request_id": 5,
+      "session_generation": 1789129512192
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0004352/capture-complete.json",
+      "bytes": 421,
+      "sha256": "b9e266a7845d3ed7ba9503c9bf88bdc5f2012ac4a339bc409b8f95835fd45419",
+      "batch": 4352,
+      "request_id": 5,
+      "session_generation": 1789129512192
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0004352/predictions.json",
+      "bytes": 75718,
+      "sha256": "337d006fa38f51225f745fef24430aef966007c6afa641878fcaecb1c6c58637",
+      "batch": 4352,
+      "request_id": 5,
+      "session_generation": 1789129512192
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0004352/report.json",
+      "bytes": 2264,
+      "sha256": "1e88bf3898bc21aab9f65b79d7c2f98f032327c39eb9087b4fd411951826ccfe",
+      "batch": 4352,
+      "request_id": 5,
+      "session_generation": 1789129512192
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0004352/rx/rml2018a-4352-1789129512192-1789129512192-1789129516271963163.sigmf-data",
+      "bytes": 262140,
+      "sha256": "3aa1ec37ff27543a5a5693b4d28def4bffd66e8a3a9ec29ca77243fef704eb79",
+      "batch": 4352,
+      "request_id": 5,
+      "session_generation": 1789129512192
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0004352/rx/rml2018a-4352-1789129512192-1789129512192-1789129516271963163.sigmf-meta",
+      "bytes": 487,
+      "sha256": "c50e72e30f6fe9a9aee54790fcf50b16feb16eba9cf16165d0fd8488c6c83351",
+      "batch": 4352,
+      "request_id": 5,
+      "session_generation": 1789129512192
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0004352/rx-plan.json",
+      "bytes": 386,
+      "sha256": "45c557cd357a2b8b046fab1aa01fefc9159c296ea4d44c91717e260930a6fac4",
+      "batch": 4352,
+      "request_id": 5,
+      "session_generation": 1789129512192
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0004352/source.json",
+      "bytes": 1457,
+      "sha256": "e4b08dfc90a35b33783068154abf994998f6033a9d637f26d91da45e32b48274",
+      "batch": 4352,
+      "request_id": 5,
+      "session_generation": 1789129512192
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0004352/tx-plan.json",
+      "bytes": 828,
+      "sha256": "b366b43baecbc4cdc3d1856870fb3d62a7bfeb82ad7256c441abe5a334e5389b",
+      "batch": 4352,
+      "request_id": 5,
+      "session_generation": 1789129512192
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0004352/tx-summary.json",
+      "bytes": 397,
+      "sha256": "a767d454afe675ecacb38735c69a5f0221fbceb00f60e60b6f2daba6934fde77",
+      "batch": 4352,
+      "request_id": 5,
+      "session_generation": 1789129512192
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0004352/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "099dc1e7ec4c0a31dbccb51c43763dcfd32c97d1f2506db3230982f097261fab",
+      "batch": 4352,
+      "request_id": 5,
+      "session_generation": 1789129512192
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0008790/audit.json",
+      "bytes": 40832,
+      "sha256": "e12720cbd161a01278dfce5cc9877d3e31d007edcc8ce47bd93d1c4797fec060",
+      "batch": 8790,
+      "request_id": 5,
+      "session_generation": 1789129527846
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0008790/capture-complete.json",
+      "bytes": 421,
+      "sha256": "0e5996b7b7f7ca6d16f98ee0546868ec1767f3b5fb544b4f90fc15578bed162b",
+      "batch": 8790,
+      "request_id": 5,
+      "session_generation": 1789129527846
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0008790/predictions.json",
+      "bytes": 75886,
+      "sha256": "d6df24b24328c173373836f5ba8505125d1fe10fc6497d0736e3bf3951053885",
+      "batch": 8790,
+      "request_id": 5,
+      "session_generation": 1789129527846
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0008790/report.json",
+      "bytes": 2264,
+      "sha256": "b1c517afd5960972e3f679bf5fcbaeb74090fb77554baac4a766cb2ab061af30",
+      "batch": 8790,
+      "request_id": 5,
+      "session_generation": 1789129527846
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0008790/rx/rml2018a-8790-1789129527846-1789129527846-1789129531864630700.sigmf-data",
+      "bytes": 262140,
+      "sha256": "ffcf1f8e139d73aa0239758e7cb30c6be13f83ef9e8fc1427d8037704a5a283e",
+      "batch": 8790,
+      "request_id": 5,
+      "session_generation": 1789129527846
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0008790/rx/rml2018a-8790-1789129527846-1789129527846-1789129531864630700.sigmf-meta",
+      "bytes": 487,
+      "sha256": "0fb9b4ba78fa9b0d4b1f009e33ce3e825c4ac2a1306f766a3fa0c9b2c6714534",
+      "batch": 8790,
+      "request_id": 5,
+      "session_generation": 1789129527846
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0008790/rx-plan.json",
+      "bytes": 386,
+      "sha256": "75cd766ec3864243de268c4ed0f196ed273ab7655dcaedac35a0c06dd4bc85b8",
+      "batch": 8790,
+      "request_id": 5,
+      "session_generation": 1789129527846
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0008790/source.json",
+      "bytes": 1458,
+      "sha256": "a300812600ce2a3e4579d1580040b2e7459000578ab3217a3cc9081292a3707f",
+      "batch": 8790,
+      "request_id": 5,
+      "session_generation": 1789129527846
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0008790/tx-plan.json",
+      "bytes": 828,
+      "sha256": "10c0ceaa982331a23d3ef11d37a52cbb0576a04e90b6c1c4908f81f7b213d222",
+      "batch": 8790,
+      "request_id": 5,
+      "session_generation": 1789129527846
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0008790/tx-summary.json",
+      "bytes": 397,
+      "sha256": "de527bdaed9797c21dee1e4d08d8d36d0d62579e48ab41eb07d9bc814b472eaa",
+      "batch": 8790,
+      "request_id": 5,
+      "session_generation": 1789129527846
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0008790/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 8790,
+      "request_id": 5,
+      "session_generation": 1789129527846
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0013227/audit.json",
+      "bytes": 41075,
+      "sha256": "003355b1260f51a141b813233203028ac0e9124303ce3c7b8d132ede8ced51f5",
+      "batch": 13227,
+      "request_id": 5,
+      "session_generation": 1789129543521
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0013227/capture-complete.json",
+      "bytes": 421,
+      "sha256": "668572703e97c8b1de5ebdc74a95f97bf5cd860d81537997a975ab36d6ea0c19",
+      "batch": 13227,
+      "request_id": 5,
+      "session_generation": 1789129543521
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0013227/predictions.json",
+      "bytes": 76209,
+      "sha256": "cac87cfad25b6cbf0830d8e580c460a10d416bf21a98922fef68de01322e066a",
+      "batch": 13227,
+      "request_id": 5,
+      "session_generation": 1789129543521
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0013227/report.json",
+      "bytes": 2268,
+      "sha256": "da166a7db24235cf53cd685ec1e17af201dacb4b5e463a35418f8fbd5bd38486",
+      "batch": 13227,
+      "request_id": 5,
+      "session_generation": 1789129543521
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0013227/rx/rml2018a-13227-1789129543521-1789129543521-1789129547651049934.sigmf-data",
+      "bytes": 262140,
+      "sha256": "a8980de0b75cfdf396f5259b46ba884565125a29abd2a3faabf5a4f5476052ef",
+      "batch": 13227,
+      "request_id": 5,
+      "session_generation": 1789129543521
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0013227/rx/rml2018a-13227-1789129543521-1789129543521-1789129547651049934.sigmf-meta",
+      "bytes": 487,
+      "sha256": "b8e9ec67427ee3d71392b6e865c41c95be44f86f1c135cb3c3e49690ca6180c1",
+      "batch": 13227,
+      "request_id": 5,
+      "session_generation": 1789129543521
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0013227/rx-plan.json",
+      "bytes": 387,
+      "sha256": "e051e671ce38c6662cffd09217f04041f616fe57258b7db5c2c99aeb93dd9874",
+      "batch": 13227,
+      "request_id": 5,
+      "session_generation": 1789129543521
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0013227/source.json",
+      "bytes": 1463,
+      "sha256": "90d898b5d31f2625d27067b2f79b9b2a53f1d82335749d4d5084e392c90e9bbd",
+      "batch": 13227,
+      "request_id": 5,
+      "session_generation": 1789129543521
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0013227/tx-plan.json",
+      "bytes": 829,
+      "sha256": "d345c51f8dcbf0f12f1b65193026996aca2f936329d0d0ffe588104efd591de6",
+      "batch": 13227,
+      "request_id": 5,
+      "session_generation": 1789129543521
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0013227/tx-summary.json",
+      "bytes": 398,
+      "sha256": "00ab88b682944b5d3fceb33006efefb70d58b6c5794d869ec4744c8420e5fa2c",
+      "batch": 13227,
+      "request_id": 5,
+      "session_generation": 1789129543521
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0013227/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 13227,
+      "request_id": 5,
+      "session_generation": 1789129543521
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0017664/audit.json",
+      "bytes": 40772,
+      "sha256": "7a4940bfbf2cb8837b9ab3a9ade59696ec2bc1d383280f4047d8cb8e52e3cf42",
+      "batch": 17664,
+      "request_id": 5,
+      "session_generation": 1789129559080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0017664/capture-complete.json",
+      "bytes": 421,
+      "sha256": "bb6c306b1ed1b1fbcba2be41d3923912a6de4a29a0dd2aaa2d1d720b6d4e982f",
+      "batch": 17664,
+      "request_id": 5,
+      "session_generation": 1789129559080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0017664/predictions.json",
+      "bytes": 75849,
+      "sha256": "ea351547fea6c6571d84525f675da3e6294557e9c4dfb7015301337a66a2eb2d",
+      "batch": 17664,
+      "request_id": 5,
+      "session_generation": 1789129559080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0017664/report.json",
+      "bytes": 2268,
+      "sha256": "5c34f1ea1dd33f46dbd5bbcef50b92dc9ba4a8876659f064530f63e5df70b453",
+      "batch": 17664,
+      "request_id": 5,
+      "session_generation": 1789129559080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0017664/rx/rml2018a-17664-1789129559080-1789129559080-1789129563043028701.sigmf-data",
+      "bytes": 262140,
+      "sha256": "8f618c1ff452f0249f0e7ff4e1a8f0a868f03fd225ffc0a649f8a95593bd1145",
+      "batch": 17664,
+      "request_id": 5,
+      "session_generation": 1789129559080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0017664/rx/rml2018a-17664-1789129559080-1789129559080-1789129563043028701.sigmf-meta",
+      "bytes": 487,
+      "sha256": "257861633679a648967bcffa280303f21a95a407a12afecaf49e3bca8995d57b",
+      "batch": 17664,
+      "request_id": 5,
+      "session_generation": 1789129559080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0017664/rx-plan.json",
+      "bytes": 387,
+      "sha256": "b93b63a6a5104a29aa0bd259e59b45e84db53f2b14d6f9609458da40e938b6e5",
+      "batch": 17664,
+      "request_id": 5,
+      "session_generation": 1789129559080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0017664/source.json",
+      "bytes": 1460,
+      "sha256": "0f27ea560e7048f8301193cb4d519b7436dfd1b8e77e8e12392c49b76ae93e6c",
+      "batch": 17664,
+      "request_id": 5,
+      "session_generation": 1789129559080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0017664/tx-plan.json",
+      "bytes": 829,
+      "sha256": "4ebf27f05e7365c292941b1af20b01d7748ebd345445eba971aefa83ed62cfb3",
+      "batch": 17664,
+      "request_id": 5,
+      "session_generation": 1789129559080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0017664/tx-summary.json",
+      "bytes": 398,
+      "sha256": "52bf9a2d73a8b357397bac005ba4990879cceb637e83daa6a975bbeac525db99",
+      "batch": 17664,
+      "request_id": 5,
+      "session_generation": 1789129559080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0017664/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 17664,
+      "request_id": 5,
+      "session_generation": 1789129559080
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0022102/audit.json",
+      "bytes": 41058,
+      "sha256": "e138f3c5b81888b5f0ce8265009b46b5bfea2a43e81152c1056ca639c6242640",
+      "batch": 22102,
+      "request_id": 5,
+      "session_generation": 1789129574338
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0022102/capture-complete.json",
+      "bytes": 421,
+      "sha256": "c3002b452b31a4399dca08906368e1c436cf2f2b56b8aac19fccce911b0f4104",
+      "batch": 22102,
+      "request_id": 5,
+      "session_generation": 1789129574338
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0022102/predictions.json",
+      "bytes": 76915,
+      "sha256": "06814c810c7d87c7131ca4afac57c16aabba7e40676bf63c6f1e8cf140ca9bfa",
+      "batch": 22102,
+      "request_id": 5,
+      "session_generation": 1789129574338
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0022102/report.json",
+      "bytes": 2264,
+      "sha256": "825c3c7c9d655566e59d528f353e0a921dc3ba6129c3eb1af9eacbb35e5e7877",
+      "batch": 22102,
+      "request_id": 5,
+      "session_generation": 1789129574338
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0022102/rx/rml2018a-22102-1789129574338-1789129574338-1789129578347027166.sigmf-data",
+      "bytes": 262140,
+      "sha256": "da8a3c53c215b09eaaa63f574531181289ae76ca61b4c1cef33e743c73579df7",
+      "batch": 22102,
+      "request_id": 5,
+      "session_generation": 1789129574338
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0022102/rx/rml2018a-22102-1789129574338-1789129574338-1789129578347027166.sigmf-meta",
+      "bytes": 487,
+      "sha256": "5b6820a3ae4a06f4195780a8cdbb7e6d7ee4ee443935f725639601a43c274c29",
+      "batch": 22102,
+      "request_id": 5,
+      "session_generation": 1789129574338
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0022102/rx-plan.json",
+      "bytes": 387,
+      "sha256": "bcaafeb4287cf92dcda03aefb58713d1a2d848b8064ecc6b8b51b0784232ec2b",
+      "batch": 22102,
+      "request_id": 5,
+      "session_generation": 1789129574338
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0022102/source.json",
+      "bytes": 1455,
+      "sha256": "93c2e42cee0fabb75288e29b516e7e63ecdea7e674aa36fb667f639b34222ddf",
+      "batch": 22102,
+      "request_id": 5,
+      "session_generation": 1789129574338
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0022102/tx-plan.json",
+      "bytes": 829,
+      "sha256": "c64e05cdf226b95754581de5ce6c289b5c9047da29b9d4333272798223cafbda",
+      "batch": 22102,
+      "request_id": 5,
+      "session_generation": 1789129574338
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0022102/tx-summary.json",
+      "bytes": 398,
+      "sha256": "90537e6c9a75acc7e794879f1063a660c7b7d124b7d42b97733bbc424de13158",
+      "batch": 22102,
+      "request_id": 5,
+      "session_generation": 1789129574338
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0022102/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 22102,
+      "request_id": 5,
+      "session_generation": 1789129574338
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0026539/audit.json",
+      "bytes": 40820,
+      "sha256": "3cede7b044a9857e6a89e412300980aa07bd4fc0aa1b7b5ac957291d872f3321",
+      "batch": 26539,
+      "request_id": 5,
+      "session_generation": 1789129589489
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0026539/capture-complete.json",
+      "bytes": 421,
+      "sha256": "164cc41aebde01d3488742a8ec52183c526e57138bdac44f9fcd37f9c93e2fcc",
+      "batch": 26539,
+      "request_id": 5,
+      "session_generation": 1789129589489
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0026539/predictions.json",
+      "bytes": 76195,
+      "sha256": "50924f5f78cf9223690c6b4a5baf220744c88e2569cac1da1843ce4708232d7c",
+      "batch": 26539,
+      "request_id": 5,
+      "session_generation": 1789129589489
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0026539/report.json",
+      "bytes": 2268,
+      "sha256": "d62337ec935f3eac124bfe8027976c55d9249d8bfb9395a6b32093be4d74cefe",
+      "batch": 26539,
+      "request_id": 5,
+      "session_generation": 1789129589489
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0026539/rx/rml2018a-26539-1789129589489-1789129589489-1789129593427304561.sigmf-data",
+      "bytes": 262140,
+      "sha256": "9fb7cf482d6e3716164c5b6dafb3bccfeab73cdfc7188b3efba17617f7931be8",
+      "batch": 26539,
+      "request_id": 5,
+      "session_generation": 1789129589489
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0026539/rx/rml2018a-26539-1789129589489-1789129589489-1789129593427304561.sigmf-meta",
+      "bytes": 487,
+      "sha256": "5dbd904af3b5acfee65eec0b08332da28876c74975e641337dfb83cdc109334e",
+      "batch": 26539,
+      "request_id": 5,
+      "session_generation": 1789129589489
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0026539/rx-plan.json",
+      "bytes": 387,
+      "sha256": "b27753d251a48cd89aecff5961d8288dc8700670c085c1eaf80971933a4f8807",
+      "batch": 26539,
+      "request_id": 5,
+      "session_generation": 1789129589489
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0026539/source.json",
+      "bytes": 1458,
+      "sha256": "cecae2aa1df4f1c10cf7ccfbac3c12f7b0f9bcbb8d3bd3014d7655084b615a21",
+      "batch": 26539,
+      "request_id": 5,
+      "session_generation": 1789129589489
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0026539/tx-plan.json",
+      "bytes": 829,
+      "sha256": "93b769416e0e249779c9bc0e3c4e83f20330b135c5dbb9923d3ee490ad8978ee",
+      "batch": 26539,
+      "request_id": 5,
+      "session_generation": 1789129589489
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0026539/tx-summary.json",
+      "bytes": 398,
+      "sha256": "bfa01699d7c69c798fc358dd7fe4897d58bcb067849f39d934527229fadbce03",
+      "batch": 26539,
+      "request_id": 5,
+      "session_generation": 1789129589489
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0026539/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "099dc1e7ec4c0a31dbccb51c43763dcfd32c97d1f2506db3230982f097261fab",
+      "batch": 26539,
+      "request_id": 5,
+      "session_generation": 1789129589489
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0030976/audit.json",
+      "bytes": 40804,
+      "sha256": "cf8f102365764a66fcbfe3057579fce6c06ba686cc4bdad5b2b0a587c9dfce54",
+      "batch": 30976,
+      "request_id": 5,
+      "session_generation": 1789129604737
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0030976/capture-complete.json",
+      "bytes": 421,
+      "sha256": "80d992fe669b9fe643ab659720438dba9623e8154843fe81f8669f04e60c47af",
+      "batch": 30976,
+      "request_id": 5,
+      "session_generation": 1789129604737
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0030976/predictions.json",
+      "bytes": 75724,
+      "sha256": "cf3c710b4bc3f234404b53e5739f3e870b7ea056058b868ccc3e204f1cfb554e",
+      "batch": 30976,
+      "request_id": 5,
+      "session_generation": 1789129604737
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0030976/report.json",
+      "bytes": 2268,
+      "sha256": "2255b5fcdb4e19aff4a5c8c78bc37c6c1b267b38c80b9826ba1c0db01104a7d8",
+      "batch": 30976,
+      "request_id": 5,
+      "session_generation": 1789129604737
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0030976/rx/rml2018a-30976-1789129604737-1789129604737-1789129608768490957.sigmf-data",
+      "bytes": 262140,
+      "sha256": "5ec60e108fda9118d3e00f830c96216f89168c2bfec759eeb7205d5fd1297968",
+      "batch": 30976,
+      "request_id": 5,
+      "session_generation": 1789129604737
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0030976/rx/rml2018a-30976-1789129604737-1789129604737-1789129608768490957.sigmf-meta",
+      "bytes": 487,
+      "sha256": "e957ec752ea26cc81001f064ecf56a8048141aa21bd70e453ab989b6cd38e01a",
+      "batch": 30976,
+      "request_id": 5,
+      "session_generation": 1789129604737
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0030976/rx-plan.json",
+      "bytes": 387,
+      "sha256": "e8bc73176eecd4ce70a25e6c089ac729fadd57a946cdd53c137ceaee8a0bd734",
+      "batch": 30976,
+      "request_id": 5,
+      "session_generation": 1789129604737
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0030976/source.json",
+      "bytes": 1457,
+      "sha256": "e82be65eb362b6716f3e30f8d76554fa36d90fe59db1ae006e14ec1aa24d3ef6",
+      "batch": 30976,
+      "request_id": 5,
+      "session_generation": 1789129604737
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0030976/tx-plan.json",
+      "bytes": 829,
+      "sha256": "1fc3e46250f54a6da73db5663a5b393cd645f293755c43eb192efc9b6765ecf0",
+      "batch": 30976,
+      "request_id": 5,
+      "session_generation": 1789129604737
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0030976/tx-summary.json",
+      "bytes": 398,
+      "sha256": "5c62b680cb40ae30f674ea702cb7a48a189a16457a82a022e2a4d98fa8fd3b4e",
+      "batch": 30976,
+      "request_id": 5,
+      "session_generation": 1789129604737
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0030976/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 30976,
+      "request_id": 5,
+      "session_generation": 1789129604737
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0035414/audit.json",
+      "bytes": 40756,
+      "sha256": "09aecfe98b981a24e8db63f1b75e0e4abcbe9b13876284ec598862efe4ba61ce",
+      "batch": 35414,
+      "request_id": 5,
+      "session_generation": 1789129620418
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0035414/capture-complete.json",
+      "bytes": 421,
+      "sha256": "d03c381f520c63098a52eefd70c21f24f64c82f1c21dd3372c127241bad46105",
+      "batch": 35414,
+      "request_id": 5,
+      "session_generation": 1789129620418
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0035414/predictions.json",
+      "bytes": 75693,
+      "sha256": "36d3dbaf32d103c0aa27d6cb753ce6ab351e446b73236603c80a99b5fe7da20b",
+      "batch": 35414,
+      "request_id": 5,
+      "session_generation": 1789129620418
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0035414/report.json",
+      "bytes": 2268,
+      "sha256": "8b20f39b8753181e222c69d977cfdd6fd0248bb13ecee75c72f8081d04112364",
+      "batch": 35414,
+      "request_id": 5,
+      "session_generation": 1789129620418
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0035414/rx/rml2018a-35414-1789129620418-1789129620418-1789129624324369112.sigmf-data",
+      "bytes": 262140,
+      "sha256": "01b237b6f82ebcdd334e072f8463349c7817e1be46483444049e5eaf97a6a391",
+      "batch": 35414,
+      "request_id": 5,
+      "session_generation": 1789129620418
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0035414/rx/rml2018a-35414-1789129620418-1789129620418-1789129624324369112.sigmf-meta",
+      "bytes": 487,
+      "sha256": "1a0d3f8ca82c27e9dc1bef6da99b5cba436150ebe65586ebddcb705e7faa8417",
+      "batch": 35414,
+      "request_id": 5,
+      "session_generation": 1789129620418
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0035414/rx-plan.json",
+      "bytes": 387,
+      "sha256": "c1fc14e7b826b67be55b834eca15ef341c1254a7502e55c330f55edfd5689b74",
+      "batch": 35414,
+      "request_id": 5,
+      "session_generation": 1789129620418
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0035414/source.json",
+      "bytes": 1456,
+      "sha256": "6e187f9f2d447243e50ef0aa3bceb947534fa93058774a44109c4fc3d72e1d21",
+      "batch": 35414,
+      "request_id": 5,
+      "session_generation": 1789129620418
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0035414/tx-plan.json",
+      "bytes": 829,
+      "sha256": "8a8c2e5c823a82001c9824360a18e8b752e1b739856b93a601e4b87de5cf0c94",
+      "batch": 35414,
+      "request_id": 5,
+      "session_generation": 1789129620418
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0035414/tx-summary.json",
+      "bytes": 398,
+      "sha256": "be42f257678f108a9b5da4c3d24b07b4a88fe6baef2d67be3dc1edce5c93b91c",
+      "batch": 35414,
+      "request_id": 5,
+      "session_generation": 1789129620418
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0035414/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 35414,
+      "request_id": 5,
+      "session_generation": 1789129620418
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0039851/audit.json",
+      "bytes": 40931,
+      "sha256": "0b8a9d6986e91215ec9d80e05e20117e1a7d6c7e67a2bd1337cccd060ed79ee8",
+      "batch": 39851,
+      "request_id": 5,
+      "session_generation": 1789129635668
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0039851/capture-complete.json",
+      "bytes": 421,
+      "sha256": "fda0fab59585832d553eef696a12efa95144b0093dbedbb3405383acefbc1d5b",
+      "batch": 39851,
+      "request_id": 5,
+      "session_generation": 1789129635668
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0039851/predictions.json",
+      "bytes": 76108,
+      "sha256": "ff6fabf86034e6fc70a76cd1a9edec17a70d5af26dbcaddc5a2d76fb3487dc21",
+      "batch": 39851,
+      "request_id": 5,
+      "session_generation": 1789129635668
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0039851/report.json",
+      "bytes": 2269,
+      "sha256": "cc56de2b7428c55e25c7f183daab48418df683b035a21166ce0890e5c6ff9798",
+      "batch": 39851,
+      "request_id": 5,
+      "session_generation": 1789129635668
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0039851/rx/rml2018a-39851-1789129635668-1789129635668-1789129639576167448.sigmf-data",
+      "bytes": 262140,
+      "sha256": "e3895d4609bb1fe637124a8b06ecc9ec9c47b956524aba77eb6cd552bce23e12",
+      "batch": 39851,
+      "request_id": 5,
+      "session_generation": 1789129635668
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0039851/rx/rml2018a-39851-1789129635668-1789129635668-1789129639576167448.sigmf-meta",
+      "bytes": 487,
+      "sha256": "9c3b77d8eeba9dda410d30bf8da8921f91a4667d47dbbe2466ca263ba9d15d58",
+      "batch": 39851,
+      "request_id": 5,
+      "session_generation": 1789129635668
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0039851/rx-plan.json",
+      "bytes": 387,
+      "sha256": "52096a62e97a1504329e8f09cc82f03db284382e9c5976f5aef9cdf84976b465",
+      "batch": 39851,
+      "request_id": 5,
+      "session_generation": 1789129635668
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0039851/source.json",
+      "bytes": 1456,
+      "sha256": "0d3394698ba84423f445d5abaf2be648ff2b5a1071863fce368755ecc80d9937",
+      "batch": 39851,
+      "request_id": 5,
+      "session_generation": 1789129635668
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0039851/tx-plan.json",
+      "bytes": 829,
+      "sha256": "c27c42554a62c30553f36b63926d6fc3b552aecac94ff6f95a084d3584ef1432",
+      "batch": 39851,
+      "request_id": 5,
+      "session_generation": 1789129635668
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0039851/tx-summary.json",
+      "bytes": 398,
+      "sha256": "a4211188ac89ced95bf34facbf2a8b8ad3f1b1a3387771eb2c9f63582670482f",
+      "batch": 39851,
+      "request_id": 5,
+      "session_generation": 1789129635668
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0039851/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 39851,
+      "request_id": 5,
+      "session_generation": 1789129635668
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0044288/audit.json",
+      "bytes": 40795,
+      "sha256": "44be607214a2da04f23fef56d3eb159ca0e488f75cf321b8b99683ee0bb107af",
+      "batch": 44288,
+      "request_id": 5,
+      "session_generation": 1789129651240
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0044288/capture-complete.json",
+      "bytes": 445,
+      "sha256": "5156d2d19443ee67a6408fac614037766211405e05943bec4d2992d7361270f6",
+      "batch": 44288,
+      "request_id": 5,
+      "session_generation": 1789129651240
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0044288/predictions.json",
+      "bytes": 75537,
+      "sha256": "89ba2674e2f1c6fd408376ecb8159ae0d4f7f09cffec10388809ef1fa5b9d0a3",
+      "batch": 44288,
+      "request_id": 5,
+      "session_generation": 1789129651240
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0044288/report.json",
+      "bytes": 2265,
+      "sha256": "a5cc2388e57fde5c3704f542f6bf1bc2dd9d6db9f5c4fede281d574c740395fd",
+      "batch": 44288,
+      "request_id": 5,
+      "session_generation": 1789129651240
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0044288/rx/rml2018a-44288-1789129651240-1789129651240-1789129655174458325.sigmf-data",
+      "bytes": 262140,
+      "sha256": "b12e8cfc7505adfe5a7f0fe93403000cade76d8501d1b2b86690cd0dcc89ef27",
+      "batch": 44288,
+      "request_id": 5,
+      "session_generation": 1789129651240
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0044288/rx/rml2018a-44288-1789129651240-1789129651240-1789129655174458325.sigmf-meta",
+      "bytes": 487,
+      "sha256": "cc938e0e681670fe7534604ca183c0200e67cd3f1626cdf43f805cc25db2a9e2",
+      "batch": 44288,
+      "request_id": 5,
+      "session_generation": 1789129651240
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0044288/rx-plan.json",
+      "bytes": 387,
+      "sha256": "a65ea87dff469595bf9a18f116c79f60c8e75dfb36acec9715dd18e702a12f0f",
+      "batch": 44288,
+      "request_id": 5,
+      "session_generation": 1789129651240
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0044288/source.json",
+      "bytes": 1483,
+      "sha256": "0ec3c2cf2aa096b3b26a1df0068d7a8d248f1356d26d5843ac7148d6976f7cf2",
+      "batch": 44288,
+      "request_id": 5,
+      "session_generation": 1789129651240
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0044288/tx-plan.json",
+      "bytes": 853,
+      "sha256": "52e0a9364c0f5c676ac10f54dc3a8a2fc67e5a0f6466267ec6e1e1d707967840",
+      "batch": 44288,
+      "request_id": 5,
+      "session_generation": 1789129651240
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0044288/tx-summary.json",
+      "bytes": 398,
+      "sha256": "c6aa02727a134e7a7f4261b744500945b3fc72b1fabc2ff0ed78b5f29dd8f423",
+      "batch": 44288,
+      "request_id": 5,
+      "session_generation": 1789129651240
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0044288/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "099dc1e7ec4c0a31dbccb51c43763dcfd32c97d1f2506db3230982f097261fab",
+      "batch": 44288,
+      "request_id": 5,
+      "session_generation": 1789129651240
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0048726/audit.json",
+      "bytes": 40992,
+      "sha256": "b4aefddf5790c650e0ccfa80099de3e098f3655cb4da5f32128a3c98813eb6bc",
+      "batch": 48726,
+      "request_id": 5,
+      "session_generation": 1789129666802
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0048726/capture-complete.json",
+      "bytes": 445,
+      "sha256": "bfa4931f6b9f1f6e3623bfbe7639fad049c6c11cb0fc911594cfd33aa21a01a0",
+      "batch": 48726,
+      "request_id": 5,
+      "session_generation": 1789129666802
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0048726/predictions.json",
+      "bytes": 76444,
+      "sha256": "d15890953a0c31bd8ce90f93ba3c03c29d24b73b989dbcac9a099bdc82e0d61c",
+      "batch": 48726,
+      "request_id": 5,
+      "session_generation": 1789129666802
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0048726/report.json",
+      "bytes": 2266,
+      "sha256": "ba7095d499fa7662ea75964a1944a4ff5ec54007f0d9ecd198ab308b83f881cf",
+      "batch": 48726,
+      "request_id": 5,
+      "session_generation": 1789129666802
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0048726/rx/rml2018a-48726-1789129666802-1789129666802-1789129670819953556.sigmf-data",
+      "bytes": 262140,
+      "sha256": "4c1d2e6e3cafa4c1d76fda6e34cac8e0d1283fb97b722aef9baa46c8cce90283",
+      "batch": 48726,
+      "request_id": 5,
+      "session_generation": 1789129666802
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0048726/rx/rml2018a-48726-1789129666802-1789129666802-1789129670819953556.sigmf-meta",
+      "bytes": 487,
+      "sha256": "57615f77a696dd20f63d2d11a34439970bb53022e6e9896ba332d0a0211fb210",
+      "batch": 48726,
+      "request_id": 5,
+      "session_generation": 1789129666802
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0048726/rx-plan.json",
+      "bytes": 387,
+      "sha256": "7776f3e3d6ee2ccfc27ca208c5c13e51ef2fd9c2f59949dcf70444e092314d60",
+      "batch": 48726,
+      "request_id": 5,
+      "session_generation": 1789129666802
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0048726/source.json",
+      "bytes": 1501,
+      "sha256": "fcb62cc3c436d71fd285677b4ab841f89c4f2ac93901305362d9f282d64f42a1",
+      "batch": 48726,
+      "request_id": 5,
+      "session_generation": 1789129666802
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0048726/tx-plan.json",
+      "bytes": 853,
+      "sha256": "e2c02a0653ad482d25e3062215ffa985c593e5d80b8c1a8e492b45e0ef9abfb3",
+      "batch": 48726,
+      "request_id": 5,
+      "session_generation": 1789129666802
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0048726/tx-summary.json",
+      "bytes": 398,
+      "sha256": "cfa87195c39fda6a543bb6a17491af53984b3f8d1858f0a0f1a740b34d0305b3",
+      "batch": 48726,
+      "request_id": 5,
+      "session_generation": 1789129666802
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0048726/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 48726,
+      "request_id": 5,
+      "session_generation": 1789129666802
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0053163/audit.json",
+      "bytes": 41031,
+      "sha256": "d5e94e2c6c0c58657082623d4c576ae5511a354a4351e5d7ebff23116c12ea78",
+      "batch": 53163,
+      "request_id": 5,
+      "session_generation": 1789129682174
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0053163/capture-complete.json",
+      "bytes": 445,
+      "sha256": "1879506cb8720332ca49294f1fdebf6bea15b42b5358e36f074205b828e9eb40",
+      "batch": 53163,
+      "request_id": 5,
+      "session_generation": 1789129682174
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0053163/predictions.json",
+      "bytes": 76461,
+      "sha256": "7074b9c4480714a4d7eb05612f24981e15fc8e2cb9db09c657a655fc82595895",
+      "batch": 53163,
+      "request_id": 5,
+      "session_generation": 1789129682174
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0053163/report.json",
+      "bytes": 2266,
+      "sha256": "b1c5ad038b6d555fa7aa7cdc85669e0cfe9134a745e7838abd1f53452433b2f7",
+      "batch": 53163,
+      "request_id": 5,
+      "session_generation": 1789129682174
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0053163/rx/rml2018a-53163-1789129682174-1789129682174-1789129686179058824.sigmf-data",
+      "bytes": 262140,
+      "sha256": "35d1adc6fa0864125fe98aa606a5340b94790cbbdc31a41f3a94873711149300",
+      "batch": 53163,
+      "request_id": 5,
+      "session_generation": 1789129682174
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0053163/rx/rml2018a-53163-1789129682174-1789129682174-1789129686179058824.sigmf-meta",
+      "bytes": 487,
+      "sha256": "f7b632c9e24c3b992afe6a2730b152fe22e17b98b4a7f37b7c9c40689b567adf",
+      "batch": 53163,
+      "request_id": 5,
+      "session_generation": 1789129682174
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0053163/rx-plan.json",
+      "bytes": 387,
+      "sha256": "10c82b1f1a4e55ba063688772ebdca9521b78001b8d116e026ba614d59739bab",
+      "batch": 53163,
+      "request_id": 5,
+      "session_generation": 1789129682174
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0053163/source.json",
+      "bytes": 1505,
+      "sha256": "0ebc7081289d9bb27710b9a7b7734d35b510fc5f357590eb478c4b33b2b6499b",
+      "batch": 53163,
+      "request_id": 5,
+      "session_generation": 1789129682174
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0053163/tx-plan.json",
+      "bytes": 853,
+      "sha256": "a10eba50c1428aaa05254b8195a57736e54ba362f788a31a830fa68f2069a843",
+      "batch": 53163,
+      "request_id": 5,
+      "session_generation": 1789129682174
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0053163/tx-summary.json",
+      "bytes": 398,
+      "sha256": "3b0ef69665f6f79d15238d748315c747e064edf21410e57060df4bbd9cef8d0e",
+      "batch": 53163,
+      "request_id": 5,
+      "session_generation": 1789129682174
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0053163/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "099dc1e7ec4c0a31dbccb51c43763dcfd32c97d1f2506db3230982f097261fab",
+      "batch": 53163,
+      "request_id": 5,
+      "session_generation": 1789129682174
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0057600/audit.json",
+      "bytes": 40885,
+      "sha256": "180839aa43b16e70a07ae629cd5e3502020412b5f3f2f69fb19bb76329f9a05a",
+      "batch": 57600,
+      "request_id": 5,
+      "session_generation": 1789129697518
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0057600/capture-complete.json",
+      "bytes": 445,
+      "sha256": "05673c40214f8fda2c8ef84564dab9cc4dad6bc58e4e0371e420ed59e075ba5f",
+      "batch": 57600,
+      "request_id": 5,
+      "session_generation": 1789129697518
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0057600/predictions.json",
+      "bytes": 75449,
+      "sha256": "8904314fcdff433c3e9481bfd2911dcfaaed1689d6806cea826ac28c4535b7f2",
+      "batch": 57600,
+      "request_id": 5,
+      "session_generation": 1789129697518
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0057600/report.json",
+      "bytes": 2268,
+      "sha256": "33a2f14faed8db37189ef53e5cc3a59d010738fbd155f05d6bc83d2ca67f5b12",
+      "batch": 57600,
+      "request_id": 5,
+      "session_generation": 1789129697518
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0057600/rx/rml2018a-57600-1789129697518-1789129697518-1789129701639482827.sigmf-data",
+      "bytes": 262140,
+      "sha256": "72ccb3a9b9f6a9c7876e093e81bfc9d070f7e3831305d1f9c8a3843a9df3cd44",
+      "batch": 57600,
+      "request_id": 5,
+      "session_generation": 1789129697518
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0057600/rx/rml2018a-57600-1789129697518-1789129697518-1789129701639482827.sigmf-meta",
+      "bytes": 487,
+      "sha256": "f3fbcd15f9a4b2b3a0f7a6b02e986aa94e2b8a2d35e52e830c5a739328b852fa",
+      "batch": 57600,
+      "request_id": 5,
+      "session_generation": 1789129697518
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0057600/rx-plan.json",
+      "bytes": 387,
+      "sha256": "a502c80df0e5d35b991128f41d81b1dd3f46a7f8fba32a872f8f7a7e277a3d42",
+      "batch": 57600,
+      "request_id": 5,
+      "session_generation": 1789129697518
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0057600/source.json",
+      "bytes": 1505,
+      "sha256": "0a550d0d8c6807efb43619453d932b216f0fe1956b8147b969e03e298d6e21f9",
+      "batch": 57600,
+      "request_id": 5,
+      "session_generation": 1789129697518
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0057600/tx-plan.json",
+      "bytes": 853,
+      "sha256": "6c64f8ae6f9cd3b984b158d1a4fabcbcc68a4889ee72f6eec439aac7bf1e28b7",
+      "batch": 57600,
+      "request_id": 5,
+      "session_generation": 1789129697518
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0057600/tx-summary.json",
+      "bytes": 398,
+      "sha256": "dfc59a18c2663fd8b30ee1177743e0f3dc0ee873939104559c3a1bb80f350bfd",
+      "batch": 57600,
+      "request_id": 5,
+      "session_generation": 1789129697518
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0057600/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 57600,
+      "request_id": 5,
+      "session_generation": 1789129697518
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0062038/audit.json",
+      "bytes": 40890,
+      "sha256": "7eed1001bc94b30ee782e0410a7296daef99b57f1fab38e3b4eb0faea06a2142",
+      "batch": 62038,
+      "request_id": 5,
+      "session_generation": 1789129712999
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0062038/capture-complete.json",
+      "bytes": 445,
+      "sha256": "0f6a7de7f823bf6f7c32c9522aa6c4ddc835209f518610d94f65386f377eb3a1",
+      "batch": 62038,
+      "request_id": 5,
+      "session_generation": 1789129712999
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0062038/predictions.json",
+      "bytes": 76055,
+      "sha256": "e2d4e954431505f5c092f207efd94a989f178646115e30ca57f04d133b5a79c1",
+      "batch": 62038,
+      "request_id": 5,
+      "session_generation": 1789129712999
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0062038/report.json",
+      "bytes": 2268,
+      "sha256": "5e3c87d522b34dcbdc7b0f120511779a15e9159a7ed947e6d2c938de9015aa72",
+      "batch": 62038,
+      "request_id": 5,
+      "session_generation": 1789129712999
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0062038/rx/rml2018a-62038-1789129712999-1789129712999-1789129716938444886.sigmf-data",
+      "bytes": 262140,
+      "sha256": "2c4a9b2c51154b1d7d2d8ab08aee170e2f36c34f723fc126dee2747811b92ae4",
+      "batch": 62038,
+      "request_id": 5,
+      "session_generation": 1789129712999
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0062038/rx/rml2018a-62038-1789129712999-1789129712999-1789129716938444886.sigmf-meta",
+      "bytes": 487,
+      "sha256": "2e94b6f6e27819160ac0d7b4e81fd0841df460f5ab2391fef51d4dad9e26d1c8",
+      "batch": 62038,
+      "request_id": 5,
+      "session_generation": 1789129712999
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0062038/rx-plan.json",
+      "bytes": 387,
+      "sha256": "69768398f3bafd6b03c8659ad25838263c07edaee6a89ad595c1c2e733916935",
+      "batch": 62038,
+      "request_id": 5,
+      "session_generation": 1789129712999
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0062038/source.json",
+      "bytes": 1504,
+      "sha256": "5b006b625ca57923b1348e8069b878840082563a444ffe2dc13383949c5cd467",
+      "batch": 62038,
+      "request_id": 5,
+      "session_generation": 1789129712999
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0062038/tx-plan.json",
+      "bytes": 853,
+      "sha256": "15d85d078f3ce8d7a9588418f70d6a4d614f1857e84164853300c2c10c86ff0b",
+      "batch": 62038,
+      "request_id": 5,
+      "session_generation": 1789129712999
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0062038/tx-summary.json",
+      "bytes": 398,
+      "sha256": "f8060afcdc8bf4648c6babc4ccaeeffac337d1fc50d3dbb8f5cb8aedc9a89564",
+      "batch": 62038,
+      "request_id": 5,
+      "session_generation": 1789129712999
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0062038/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "099dc1e7ec4c0a31dbccb51c43763dcfd32c97d1f2506db3230982f097261fab",
+      "batch": 62038,
+      "request_id": 5,
+      "session_generation": 1789129712999
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0066475/audit.json",
+      "bytes": 40794,
+      "sha256": "76952e0ab6ad9ca1daf1ea5a3587a3a38bc2ebd88368f6eb5755f6ec916e19d8",
+      "batch": 66475,
+      "request_id": 5,
+      "session_generation": 1789129728450
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0066475/capture-complete.json",
+      "bytes": 445,
+      "sha256": "e61ac01fc997d799d215ba391324d22a8f1c8c22a6aba4b43c6edd6b3347c2c2",
+      "batch": 66475,
+      "request_id": 5,
+      "session_generation": 1789129728450
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0066475/predictions.json",
+      "bytes": 75437,
+      "sha256": "d2efcfebaff251f4d13ccd33cc70c7e8638285f8cf63b2cd6d0fa9f808f2c2a6",
+      "batch": 66475,
+      "request_id": 5,
+      "session_generation": 1789129728450
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0066475/report.json",
+      "bytes": 2269,
+      "sha256": "7f27ff3620ee794def84c7906c257c52be5f40514b0bb96d578bc5696b0d6872",
+      "batch": 66475,
+      "request_id": 5,
+      "session_generation": 1789129728450
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0066475/rx/rml2018a-66475-1789129728450-1789129728450-1789129732751122534.sigmf-data",
+      "bytes": 262140,
+      "sha256": "f3b3a7954de470d12dd156889c5c0185d22a46808ead90a7f4510c6a31527078",
+      "batch": 66475,
+      "request_id": 5,
+      "session_generation": 1789129728450
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0066475/rx/rml2018a-66475-1789129728450-1789129728450-1789129732751122534.sigmf-meta",
+      "bytes": 487,
+      "sha256": "e7f08385707386e73bed379dc9c2328544ac147879155d8d388de47fb0327fb9",
+      "batch": 66475,
+      "request_id": 5,
+      "session_generation": 1789129728450
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0066475/rx-plan.json",
+      "bytes": 387,
+      "sha256": "95b445daccb762fe61940f08e938468ea08bec86a0571af1a23fbe75ef4ef93c",
+      "batch": 66475,
+      "request_id": 5,
+      "session_generation": 1789129728450
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0066475/source.json",
+      "bytes": 1508,
+      "sha256": "6fdb5bbb9ae3739fa8a9b6f7ff486bc2d6d27e12e8abd6381ccfb8bfbc938d7e",
+      "batch": 66475,
+      "request_id": 5,
+      "session_generation": 1789129728450
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0066475/tx-plan.json",
+      "bytes": 853,
+      "sha256": "36544661fdec4476148862006ef9f313d8260957e88b0ca5fba1eaffc33fdee4",
+      "batch": 66475,
+      "request_id": 5,
+      "session_generation": 1789129728450
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0066475/tx-summary.json",
+      "bytes": 398,
+      "sha256": "9a6c388ed036ffc082cbffcda966ca953639d6e9b1c8ab17e6cc8a004a03b0bc",
+      "batch": 66475,
+      "request_id": 5,
+      "session_generation": 1789129728450
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0066475/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 66475,
+      "request_id": 5,
+      "session_generation": 1789129728450
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0070912/audit.json",
+      "bytes": 40816,
+      "sha256": "994637a7a35af69e1528547ff88b3a53280b35f841a047ee739d04fe200abd6c",
+      "batch": 70912,
+      "request_id": 5,
+      "session_generation": 1789129744000
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0070912/capture-complete.json",
+      "bytes": 445,
+      "sha256": "a09303f89f2027b7cfb87dd439c09aa3e2b4e13cbb3286f378d4342b583229e4",
+      "batch": 70912,
+      "request_id": 5,
+      "session_generation": 1789129744000
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0070912/predictions.json",
+      "bytes": 75545,
+      "sha256": "0024e2be91ad1862d8068986670219e66d0f2cd2d5ebd55b7a02f69ad00939bb",
+      "batch": 70912,
+      "request_id": 5,
+      "session_generation": 1789129744000
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0070912/report.json",
+      "bytes": 2269,
+      "sha256": "36fd7d0aa716e611b6df138e9f461c826fe3ff24df353fd0f6d626df1e860118",
+      "batch": 70912,
+      "request_id": 5,
+      "session_generation": 1789129744000
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0070912/rx/rml2018a-70912-1789129744000-1789129744000-1789129748036341004.sigmf-data",
+      "bytes": 262140,
+      "sha256": "82f96c43950e4c32f37d60f46f3ab0db7d10a8d1862b7be747ff27d8cfcfc5bf",
+      "batch": 70912,
+      "request_id": 5,
+      "session_generation": 1789129744000
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0070912/rx/rml2018a-70912-1789129744000-1789129744000-1789129748036341004.sigmf-meta",
+      "bytes": 487,
+      "sha256": "40305eaf6c474fc73e09bc073cba8e212fc5b2faa60302b46ddc1890b79becdc",
+      "batch": 70912,
+      "request_id": 5,
+      "session_generation": 1789129744000
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0070912/rx-plan.json",
+      "bytes": 387,
+      "sha256": "ccf989e192c05d525f0e97dd55e3d2014ebb20a1c8038e35898c248571f6b9a0",
+      "batch": 70912,
+      "request_id": 5,
+      "session_generation": 1789129744000
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0070912/source.json",
+      "bytes": 1508,
+      "sha256": "e7933005038f4b9481281655a0a0d0ef8b4fa923f4fe9f773b5fe5da37134ec4",
+      "batch": 70912,
+      "request_id": 5,
+      "session_generation": 1789129744000
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0070912/tx-plan.json",
+      "bytes": 853,
+      "sha256": "c1afdff766cef67701734d1b7876df9a7ea95e4f1116d62263a275bab845b227",
+      "batch": 70912,
+      "request_id": 5,
+      "session_generation": 1789129744000
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0070912/tx-summary.json",
+      "bytes": 398,
+      "sha256": "70ade5a28d0ddddcc15b7302dd12597e17c812996fcc606d1b8fd7c0d235557f",
+      "batch": 70912,
+      "request_id": 5,
+      "session_generation": 1789129744000
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0070912/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 70912,
+      "request_id": 5,
+      "session_generation": 1789129744000
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0075350/audit.json",
+      "bytes": 40949,
+      "sha256": "33444d9e6f0ea7b64eb49f445c544dad1d7a45f75c648e90d969f142ab5fd418",
+      "batch": 75350,
+      "request_id": 5,
+      "session_generation": 1789129760297
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0075350/capture-complete.json",
+      "bytes": 445,
+      "sha256": "495198a495d9e068e591d28801b3dd05959ea6159182f75f1a104a95f60f5662",
+      "batch": 75350,
+      "request_id": 5,
+      "session_generation": 1789129760297
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0075350/predictions.json",
+      "bytes": 75870,
+      "sha256": "37a958fe018093128f42278b0ad194d0e48158a8d66d1f020065ccab776a7fa7",
+      "batch": 75350,
+      "request_id": 5,
+      "session_generation": 1789129760297
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0075350/report.json",
+      "bytes": 2269,
+      "sha256": "14f14ec967abb7b96fc667a28afce6ad2d70dc4150f706a93a13bc31f8d7ed16",
+      "batch": 75350,
+      "request_id": 5,
+      "session_generation": 1789129760297
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0075350/rx/rml2018a-75350-1789129760297-1789129760297-1789129764291765189.sigmf-data",
+      "bytes": 262140,
+      "sha256": "651a271627ba9534b9441701ebd2afe375c42c8b3b44b88ffc55c1bacd11eb3d",
+      "batch": 75350,
+      "request_id": 5,
+      "session_generation": 1789129760297
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0075350/rx/rml2018a-75350-1789129760297-1789129760297-1789129764291765189.sigmf-meta",
+      "bytes": 487,
+      "sha256": "1e4453769c078922809e24193a04f1689f3b07873587b3736d3d8384d5faf1be",
+      "batch": 75350,
+      "request_id": 5,
+      "session_generation": 1789129760297
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0075350/rx-plan.json",
+      "bytes": 387,
+      "sha256": "7f7ca6c26063c96e7550c879d0c9da658f59e8917db54984b941bdc77018ad26",
+      "batch": 75350,
+      "request_id": 5,
+      "session_generation": 1789129760297
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0075350/source.json",
+      "bytes": 1503,
+      "sha256": "022109bd32f57020ba3cc926c09b7e6d979936c2f4135715207eaaef3de8e066",
+      "batch": 75350,
+      "request_id": 5,
+      "session_generation": 1789129760297
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0075350/tx-plan.json",
+      "bytes": 853,
+      "sha256": "df0946d284598dfb70a9b2c00664113b4af8f6ea388ed2e895273291b0331b5d",
+      "batch": 75350,
+      "request_id": 5,
+      "session_generation": 1789129760297
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0075350/tx-summary.json",
+      "bytes": 398,
+      "sha256": "cf92f31344610f46ee9186f7f8fa6bd9a2e07a0bbc782c445e4bf3b32b231ba4",
+      "batch": 75350,
+      "request_id": 5,
+      "session_generation": 1789129760297
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0075350/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "099dc1e7ec4c0a31dbccb51c43763dcfd32c97d1f2506db3230982f097261fab",
+      "batch": 75350,
+      "request_id": 5,
+      "session_generation": 1789129760297
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0079787/audit.json",
+      "bytes": 40162,
+      "sha256": "bd2fa248f140248d982ec8ce12cc8af7ff9d48f26bf7925fc153eb7a7124d08d",
+      "batch": 79787,
+      "request_id": 5,
+      "session_generation": 1789129775754
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0079787/capture-complete.json",
+      "bytes": 445,
+      "sha256": "56b45cb31cd779ec14892e4cd39dae32794ef82725701636645cec084070483d",
+      "batch": 79787,
+      "request_id": 5,
+      "session_generation": 1789129775754
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0079787/predictions.json",
+      "bytes": 75651,
+      "sha256": "9c54eea8c9bfe467e44adca38f69dae5d82702a8259cb6fb6f6d11e9a0cccd29",
+      "batch": 79787,
+      "request_id": 5,
+      "session_generation": 1789129775754
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0079787/report.json",
+      "bytes": 2269,
+      "sha256": "d67f6c2580d1b2d043ca590bcd8bb274bb6690724362b6df69b259c91c4be132",
+      "batch": 79787,
+      "request_id": 5,
+      "session_generation": 1789129775754
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0079787/rx/rml2018a-79787-1789129775754-1789129775754-1789129779796010483.sigmf-data",
+      "bytes": 262140,
+      "sha256": "07b04069918a396b3abf1a57029563ae6a08b8fe2b21b43932ad68cb75043d5f",
+      "batch": 79787,
+      "request_id": 5,
+      "session_generation": 1789129775754
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0079787/rx/rml2018a-79787-1789129775754-1789129775754-1789129779796010483.sigmf-meta",
+      "bytes": 487,
+      "sha256": "776b4c17653ce45d60c0cc908cd77ce5073b6bfba60d4c0f460b5ddee382dd14",
+      "batch": 79787,
+      "request_id": 5,
+      "session_generation": 1789129775754
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0079787/rx-plan.json",
+      "bytes": 387,
+      "sha256": "0ba8b13344bdf8d82eece6a6ad3bd546450a2fc7aa20066821b462ef9af399b4",
+      "batch": 79787,
+      "request_id": 5,
+      "session_generation": 1789129775754
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0079787/source.json",
+      "bytes": 1526,
+      "sha256": "668ea464fc4c294139cc6fd353afa4ee6bcabde6a4568670437e7cb13e55162d",
+      "batch": 79787,
+      "request_id": 5,
+      "session_generation": 1789129775754
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0079787/tx-plan.json",
+      "bytes": 853,
+      "sha256": "df2f90cc915e0a84e5c03d8543e6be22d4df8fa76fc01f6fc47b12bd451afb52",
+      "batch": 79787,
+      "request_id": 5,
+      "session_generation": 1789129775754
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0079787/tx-summary.json",
+      "bytes": 398,
+      "sha256": "0d6b5a2c17c49ec10b77b2acfef79c2747739f11290c2ad0ba182946efd20414",
+      "batch": 79787,
+      "request_id": 5,
+      "session_generation": 1789129775754
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0079787/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 79787,
+      "request_id": 5,
+      "session_generation": 1789129775754
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0084224/audit.json",
+      "bytes": 40974,
+      "sha256": "26da7b970e94568d0bc70959c58428410343cab90946b48452f2a1f7ac753352",
+      "batch": 84224,
+      "request_id": 5,
+      "session_generation": 1789129791957
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0084224/capture-complete.json",
+      "bytes": 445,
+      "sha256": "9a07924b88fba5d92a341e692bc193d9fc322e0b1955653d3c4c11f5ffddcc42",
+      "batch": 84224,
+      "request_id": 5,
+      "session_generation": 1789129791957
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0084224/predictions.json",
+      "bytes": 76419,
+      "sha256": "427ff1b03940b48f52274873ddf56f437bbe34673092c8c98a711807e7b97dc4",
+      "batch": 84224,
+      "request_id": 5,
+      "session_generation": 1789129791957
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0084224/report.json",
+      "bytes": 2264,
+      "sha256": "24fac2aee70be68ccd8db946e246b4ed8290ee52403cff26b27283987c0b0d11",
+      "batch": 84224,
+      "request_id": 5,
+      "session_generation": 1789129791957
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0084224/rx/rml2018a-84224-1789129791957-1789129791957-1789129795962765946.sigmf-data",
+      "bytes": 262140,
+      "sha256": "2873b05ebefadccda92d4d989673201a729ee0f099984925e3abba6c2c3bc2e7",
+      "batch": 84224,
+      "request_id": 5,
+      "session_generation": 1789129791957
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0084224/rx/rml2018a-84224-1789129791957-1789129791957-1789129795962765946.sigmf-meta",
+      "bytes": 487,
+      "sha256": "4a4efbe0c1fd66e762cc441d4b56221ea0f25c2ab2b36bbd3821fa648f4ae13b",
+      "batch": 84224,
+      "request_id": 5,
+      "session_generation": 1789129791957
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0084224/rx-plan.json",
+      "bytes": 387,
+      "sha256": "23fe15d1ee8175f73c559e62d727226e1399e1b9bb3402b8c0b787f46f20bce1",
+      "batch": 84224,
+      "request_id": 5,
+      "session_generation": 1789129791957
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0084224/source.json",
+      "bytes": 1518,
+      "sha256": "9b85a66aeb9841c256bd004cdfdbf0e1edbf4cdb78f2ef606fc4248c35aa41fc",
+      "batch": 84224,
+      "request_id": 5,
+      "session_generation": 1789129791957
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0084224/tx-plan.json",
+      "bytes": 853,
+      "sha256": "e2c954972817709a83d4310272cff5ceda52b9454a5fbcaf8451c725308cfdaf",
+      "batch": 84224,
+      "request_id": 5,
+      "session_generation": 1789129791957
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0084224/tx-summary.json",
+      "bytes": 398,
+      "sha256": "1f84765b199f8d01f59d778270bc120b39d136c26fc69c7f8ea54db72699c0f5",
+      "batch": 84224,
+      "request_id": 5,
+      "session_generation": 1789129791957
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0084224/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "099dc1e7ec4c0a31dbccb51c43763dcfd32c97d1f2506db3230982f097261fab",
+      "batch": 84224,
+      "request_id": 5,
+      "session_generation": 1789129791957
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0088662/audit.json",
+      "bytes": 40845,
+      "sha256": "8ef440d82df0ead01db9efa9fd10c271d042868a9abec4104dd5421aab8a6861",
+      "batch": 88662,
+      "request_id": 5,
+      "session_generation": 1789129807914
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0088662/capture-complete.json",
+      "bytes": 445,
+      "sha256": "4c3d4903397d01ede93dc839bb07d16d87330dacac4a6c567440f68ecc9bb9c0",
+      "batch": 88662,
+      "request_id": 5,
+      "session_generation": 1789129807914
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0088662/predictions.json",
+      "bytes": 76310,
+      "sha256": "46116080f9645509e017b21a03049d6b5abeb17c3f49a5b99d7e414ff4706cd9",
+      "batch": 88662,
+      "request_id": 5,
+      "session_generation": 1789129807914
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0088662/report.json",
+      "bytes": 2270,
+      "sha256": "1cd9f807322f07d7cb7e987714d177f359ae9000c33482737145281694ef23aa",
+      "batch": 88662,
+      "request_id": 5,
+      "session_generation": 1789129807914
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0088662/rx/rml2018a-88662-1789129807914-1789129807914-1789129812039009112.sigmf-data",
+      "bytes": 262140,
+      "sha256": "bf0ff3f14b956fd5f8bde8661662f9f992be1d0e81caaf99d1d016bd2eca14e6",
+      "batch": 88662,
+      "request_id": 5,
+      "session_generation": 1789129807914
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0088662/rx/rml2018a-88662-1789129807914-1789129807914-1789129812039009112.sigmf-meta",
+      "bytes": 487,
+      "sha256": "a387b77be52fc59824795e3ea66b0936d48b29852f8ae36b6c01e7ea1cb6b8d9",
+      "batch": 88662,
+      "request_id": 5,
+      "session_generation": 1789129807914
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0088662/rx-plan.json",
+      "bytes": 387,
+      "sha256": "7a42381d69fe4b5e7e690a39dd7fd3963d673a548baeb5ab30895c469ee44f4f",
+      "batch": 88662,
+      "request_id": 5,
+      "session_generation": 1789129807914
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0088662/source.json",
+      "bytes": 1501,
+      "sha256": "d80affcabb62198c06e9fefc09af0d9664d044ef43d1cd8df293d9991c7873c8",
+      "batch": 88662,
+      "request_id": 5,
+      "session_generation": 1789129807914
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0088662/tx-plan.json",
+      "bytes": 853,
+      "sha256": "59d4b40fda986eb337c6428db968cccd28b392a4a54910c5e1b02a094ca091a2",
+      "batch": 88662,
+      "request_id": 5,
+      "session_generation": 1789129807914
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0088662/tx-summary.json",
+      "bytes": 398,
+      "sha256": "d075004e60e754f9d1ba490f40c3992c8161c3ad5315dc5c998ac7a029cac1cf",
+      "batch": 88662,
+      "request_id": 5,
+      "session_generation": 1789129807914
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0088662/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 88662,
+      "request_id": 5,
+      "session_generation": 1789129807914
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0093099/audit.json",
+      "bytes": 40854,
+      "sha256": "571fc1b2c75b8e719a4a090e9b44d7645a5ab38ef72166bad04bc010bbaf3c15",
+      "batch": 93099,
+      "request_id": 5,
+      "session_generation": 1789129823654
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0093099/capture-complete.json",
+      "bytes": 445,
+      "sha256": "899df9601e7ea9d7a44a769048bda4651b6b9a2efac0f2e72dc404ebbaf53c43",
+      "batch": 93099,
+      "request_id": 5,
+      "session_generation": 1789129823654
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0093099/predictions.json",
+      "bytes": 76232,
+      "sha256": "9fb0c6ff17270bd001a63d582caa878ecb4e5af0785d2c8317b2e56a5748cc0e",
+      "batch": 93099,
+      "request_id": 5,
+      "session_generation": 1789129823654
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0093099/report.json",
+      "bytes": 2270,
+      "sha256": "11cea3840816539e83f1c046f2a9f9030b21996b845b7df344377521f8375ace",
+      "batch": 93099,
+      "request_id": 5,
+      "session_generation": 1789129823654
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0093099/rx/rml2018a-93099-1789129823654-1789129823654-1789129827815457892.sigmf-data",
+      "bytes": 262140,
+      "sha256": "02f7246f3a848c26a887e05ebf892ccf4ee5a0b93d3e9fe2aeeeefc6142aef5e",
+      "batch": 93099,
+      "request_id": 5,
+      "session_generation": 1789129823654
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0093099/rx/rml2018a-93099-1789129823654-1789129823654-1789129827815457892.sigmf-meta",
+      "bytes": 487,
+      "sha256": "c33c1ba3d7e01afd4a55931f4dc91e52a4fa6ee6ad036a21a5aa241b263fd9b4",
+      "batch": 93099,
+      "request_id": 5,
+      "session_generation": 1789129823654
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0093099/rx-plan.json",
+      "bytes": 387,
+      "sha256": "ac2cee0229c8fdf536a87a6643f4d6d3f8cb954b20796f2c0363027c9949907b",
+      "batch": 93099,
+      "request_id": 5,
+      "session_generation": 1789129823654
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0093099/source.json",
+      "bytes": 1505,
+      "sha256": "2ce5a4169dfcc3397950e718bffe97446adaa253ae00be16eff6c36113e374ce",
+      "batch": 93099,
+      "request_id": 5,
+      "session_generation": 1789129823654
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0093099/tx-plan.json",
+      "bytes": 853,
+      "sha256": "c191535732708786952ae9f96c5bb54c80c411c57d5223402a4c917e40e606cf",
+      "batch": 93099,
+      "request_id": 5,
+      "session_generation": 1789129823654
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0093099/tx-summary.json",
+      "bytes": 398,
+      "sha256": "94428838a308e616419f2a76b933258cc95e09552aa765ded1c4afc1789d76fe",
+      "batch": 93099,
+      "request_id": 5,
+      "session_generation": 1789129823654
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0093099/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 93099,
+      "request_id": 5,
+      "session_generation": 1789129823654
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0097536/audit.json",
+      "bytes": 40824,
+      "sha256": "1bbbbfc5a91739ee255d21d373d67b8570ad2c0b4811f49982ad17bd932b51e6",
+      "batch": 97536,
+      "request_id": 5,
+      "session_generation": 1789129839144
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0097536/capture-complete.json",
+      "bytes": 445,
+      "sha256": "13a79bd35797a92b98a3a5832c09c07262d983d56ab3fd845e1b7b4f85d40808",
+      "batch": 97536,
+      "request_id": 5,
+      "session_generation": 1789129839144
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0097536/predictions.json",
+      "bytes": 75923,
+      "sha256": "57ad0169e1e93c72465ac7280686bb3f0a5ce40e419038445f8b70ef581ff29b",
+      "batch": 97536,
+      "request_id": 5,
+      "session_generation": 1789129839144
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0097536/report.json",
+      "bytes": 2268,
+      "sha256": "88234ae96dd1cd54430e96f3672e437bc59df4f925b398915065f25dc4c34083",
+      "batch": 97536,
+      "request_id": 5,
+      "session_generation": 1789129839144
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0097536/rx/rml2018a-97536-1789129839144-1789129839144-1789129843119524993.sigmf-data",
+      "bytes": 262140,
+      "sha256": "7d4588f34bb45bde1f384fa52fcb4e473595384b36036dd33e49c289d4274f01",
+      "batch": 97536,
+      "request_id": 5,
+      "session_generation": 1789129839144
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0097536/rx/rml2018a-97536-1789129839144-1789129839144-1789129843119524993.sigmf-meta",
+      "bytes": 487,
+      "sha256": "81c67c794382a3a7679d052a0c871bb43c1ceee5925210ad0f0a20fb9e9cd255",
+      "batch": 97536,
+      "request_id": 5,
+      "session_generation": 1789129839144
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0097536/rx-plan.json",
+      "bytes": 387,
+      "sha256": "afb96de81b1206d3a2d330fc9a7d25f340e963f0f23594960f5944e7814656bf",
+      "batch": 97536,
+      "request_id": 5,
+      "session_generation": 1789129839144
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0097536/source.json",
+      "bytes": 1500,
+      "sha256": "4786f91dbe4dcce885a3a65e73266d330b7b85d2998cadbfb3aae2538cf8fbba",
+      "batch": 97536,
+      "request_id": 5,
+      "session_generation": 1789129839144
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0097536/tx-plan.json",
+      "bytes": 853,
+      "sha256": "7d5cfd5c462a16df7bdc0486183614d45ed6747e84c20c431c5292609067e2dc",
+      "batch": 97536,
+      "request_id": 5,
+      "session_generation": 1789129839144
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0097536/tx-summary.json",
+      "bytes": 398,
+      "sha256": "bfa30f3fb79a54275bc070abf9ce79f1c50c7fc7b2d48bb1c018a0bf9724f10a",
+      "batch": 97536,
+      "request_id": 5,
+      "session_generation": 1789129839144
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0097536/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 97536,
+      "request_id": 5,
+      "session_generation": 1789129839144
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0101974/audit.json",
+      "bytes": 40817,
+      "sha256": "3248183a97143862a56d17609ed7b4cd29ef4191efff7098dad45ff52cb3b74e",
+      "batch": 101974,
+      "request_id": 5,
+      "session_generation": 1789129854915
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0101974/capture-complete.json",
+      "bytes": 445,
+      "sha256": "7548ee4710273a0906f2332c3a437c82953c4cba6ed6b399595de1a04fd5ef89",
+      "batch": 101974,
+      "request_id": 5,
+      "session_generation": 1789129854915
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0101974/predictions.json",
+      "bytes": 76267,
+      "sha256": "7171083ab1ff2d8c6836cade705df23af9f9b58a066ee6f8287ee1299e10a9ee",
+      "batch": 101974,
+      "request_id": 5,
+      "session_generation": 1789129854915
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0101974/report.json",
+      "bytes": 2270,
+      "sha256": "5d5133608cea06416e69aeca7c8dc1b93fd87d50509279f88dfc1bee445fb3ee",
+      "batch": 101974,
+      "request_id": 5,
+      "session_generation": 1789129854915
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0101974/rx/rml2018a-101974-1789129854915-1789129854915-1789129859049624519.sigmf-data",
+      "bytes": 262140,
+      "sha256": "1f2b180680ac30dc548f739d5032d94e65824833ff2199098008f67282e78dc6",
+      "batch": 101974,
+      "request_id": 5,
+      "session_generation": 1789129854915
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0101974/rx/rml2018a-101974-1789129854915-1789129854915-1789129859049624519.sigmf-meta",
+      "bytes": 487,
+      "sha256": "1f9f36e6f0b47c14341b1b2a23f91b602efd788c92f05b4975037bd09ce0a4d6",
+      "batch": 101974,
+      "request_id": 5,
+      "session_generation": 1789129854915
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0101974/rx-plan.json",
+      "bytes": 388,
+      "sha256": "984e346621ce6271d34151d6cca67e28afdf4dfc3cd0d4071412474d2e823759",
+      "batch": 101974,
+      "request_id": 5,
+      "session_generation": 1789129854915
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0101974/source.json",
+      "bytes": 1498,
+      "sha256": "95beda5fdfd175b89440bd0df33be0a8b27743ca8df6fa6e631706909f0b23b9",
+      "batch": 101974,
+      "request_id": 5,
+      "session_generation": 1789129854915
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0101974/tx-plan.json",
+      "bytes": 854,
+      "sha256": "3a7294587c0e3ce7824462b049b62f150d6cfd64d1b4a9c9013159d5f241e21d",
+      "batch": 101974,
+      "request_id": 5,
+      "session_generation": 1789129854915
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0101974/tx-summary.json",
+      "bytes": 399,
+      "sha256": "bd1f032cbc676aa873caf33c982bb207af00fcac4c794bdda69b62cf222a2124",
+      "batch": 101974,
+      "request_id": 5,
+      "session_generation": 1789129854915
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0101974/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c",
+      "batch": 101974,
+      "request_id": 5,
+      "session_generation": 1789129854915
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0106411/audit.json",
+      "bytes": 40791,
+      "sha256": "45de49a06a9acb299108aaac099c543ae1f677f2a50e07b9b9389bd123438d07",
+      "batch": 106411,
+      "request_id": 5,
+      "session_generation": 1789129871743
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0106411/capture-complete.json",
+      "bytes": 445,
+      "sha256": "706c705cf5d1ce50470ee94e38d78a3d3b3cedad1467b07dda8a3504a3a293d9",
+      "batch": 106411,
+      "request_id": 5,
+      "session_generation": 1789129871743
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0106411/predictions.json",
+      "bytes": 75713,
+      "sha256": "3b2315fa62834bd3b667bf05cb478fcaa2138f07e5f84fc24a4aead82089baaf",
+      "batch": 106411,
+      "request_id": 5,
+      "session_generation": 1789129871743
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0106411/report.json",
+      "bytes": 2271,
+      "sha256": "13519bc44e343b420de02f45d7303a422aa40f5eef4a093fd4ada6031f10c561",
+      "batch": 106411,
+      "request_id": 5,
+      "session_generation": 1789129871743
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0106411/rx/rml2018a-106411-1789129871743-1789129871743-1789129875860750858.sigmf-data",
+      "bytes": 262140,
+      "sha256": "9563eb3789a20dace1e150993631e2b4cddb9a279696a124f06ccf485def65d6",
+      "batch": 106411,
+      "request_id": 5,
+      "session_generation": 1789129871743
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0106411/rx/rml2018a-106411-1789129871743-1789129871743-1789129875860750858.sigmf-meta",
+      "bytes": 487,
+      "sha256": "885ca72a3bf4daad1d63dacf3df83fc7b47a2f635bad2a9631399d51ec6b1c7b",
+      "batch": 106411,
+      "request_id": 5,
+      "session_generation": 1789129871743
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0106411/rx-plan.json",
+      "bytes": 388,
+      "sha256": "7718546687b2a5d8cc77a54e3550db5bcf22752389286f8f6efcbf29e86f19e7",
+      "batch": 106411,
+      "request_id": 5,
+      "session_generation": 1789129871743
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0106411/source.json",
+      "bytes": 1505,
+      "sha256": "ac329bbefa1c463cfbd65063e2e5a5a2717c03fcd415d27874acb53cb4249246",
+      "batch": 106411,
+      "request_id": 5,
+      "session_generation": 1789129871743
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0106411/tx-plan.json",
+      "bytes": 854,
+      "sha256": "7222809e66dc1394c4e3ae491ba9def845a47c22e14b3247d546ba70c9c61308",
+      "batch": 106411,
+      "request_id": 5,
+      "session_generation": 1789129871743
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0106411/tx-summary.json",
+      "bytes": 399,
+      "sha256": "f5a05297b2e47404819c48424386c4db46fc6c592436f6729342dba89e9f3020",
+      "batch": 106411,
+      "request_id": 5,
+      "session_generation": 1789129871743
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0106411/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "099dc1e7ec4c0a31dbccb51c43763dcfd32c97d1f2506db3230982f097261fab",
+      "batch": 106411,
+      "request_id": 5,
+      "session_generation": 1789129871743
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/cleanup.json",
+      "bytes": 110272,
+      "sha256": "b74314d4eb683fcbbcb2b846c79510b8ae7baed72231f096cd99372514dd93fd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/gpu-isolation-1789130052100367658.json",
+      "bytes": 295,
+      "sha256": "3cc7d5cad277f902a4c1fb58976b0534f54c04d40fa162cf67aaac1bab91cdf4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/pilot-plan.json",
+      "bytes": 21207,
+      "sha256": "ea5a5b4df1206f49256976cc101d496f65992fde791fab719d1b52f13aa587a0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/pilot-result.json",
+      "bytes": 39304,
+      "sha256": "f63adeed9f6ca4ed264ad760990c583d4c920a30900c612152d4611ae6a2a829"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/plot-pilot.py",
+      "bytes": 1525,
+      "sha256": "c73e4da27eb4228c4052c59fafe83a2e5a4a23b496f1056862655211c361a355"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/run-plan.json",
+      "bytes": 4554,
+      "sha256": "74726934b191eb95f27534d486d2cbe312856b99004c5ad6f470e8f6e857c354"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/summary.json",
+      "bytes": 8770,
+      "sha256": "ee1a55c0b15685216aa183a5c321c69e89a41a1d6eac3ad27b86b3bca08b5ab3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/tests.log",
+      "bytes": 5352,
+      "sha256": "10fec61fd127484a1fa8976c662001e8f2aeec0fe28f1a79c9cd52c1597a9e30"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/verify-pilot.py",
+      "bytes": 7498,
+      "sha256": "382896f4131b23f10f9d38774467bd7b7bedda6e8c39ce875199129af408d5a7"
+    }
+  ],
+  "plot": {
+    "path": "docs/evidence/RML2018A_24CLASS_PILOT_2026-09-11.png",
+    "bytes": 138259,
+    "sha256": "c4171a05e4f47545b5b5d557d3351dabe37509247106fd0faf37be858136b8cd"
+  },
+  "manual_delete": {
+    "preconditions": "Stop campaign/NX owners; verify P201 restored, same daemon and Spark resumed; verify root resolution and hashes. Remove only this pilot; preserve parent datasets and earlier evidence.",
+    "command": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911"
+  }
+}
