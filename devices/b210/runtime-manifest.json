@@ -1,0 +1,56 @@
+{
+  "schema": "b210-agx-runtime-v1",
+  "serial": "2508504",
+  "usb_vid": "2500",
+  "usb_pid": "0020",
+  "uhd_version": "4.1.0.5-3",
+  "fpga": "A7-100T",
+  "runtime_relative": "local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t",
+  "source_host": "nx",
+  "system_library": {
+    "path": "/usr/lib/aarch64-linux-gnu/libuhd.so.4.1.0",
+    "sha256": "357273c6059cc81d02585a79635e82d8a5bf1db46c07288e9fad0c7746ad9dc1"
+  },
+  "files": [
+    {
+      "path": "bin/tx_samples_from_file",
+      "bytes": 141600,
+      "sha256": "fe3aebc556c16a5065d63d4e6ef8f02ef277ac01dcf250a35dec58b84eceb5cf"
+    },
+    {
+      "path": "bin/uhd_config_info",
+      "bytes": 76048,
+      "sha256": "f492aa09a23bee53bb739ced7f432a9fc37ad8fd34045027e3eb447e25af2be5"
+    },
+    {
+      "path": "bin/uhd_find_devices",
+      "bytes": 92432,
+      "sha256": "7303a0de4a0fe39d0c19cbf5c1cf83b6e17ecf1b81d6add6b5be8574b3ff43f1"
+    },
+    {
+      "path": "bin/uhd_usrp_probe",
+      "bytes": 149792,
+      "sha256": "5dc55a472f9408ae09a890ac39ca625d3fbe1f4ded087ccb46c9a6a4a9be70e1"
+    },
+    {
+      "path": "images/usrp_b200_fw.hex",
+      "bytes": 514346,
+      "sha256": "cc8e4bc968d91d1a67c63871ce5b2c1613c49676fe363bf2f6e336059899ae5c"
+    },
+    {
+      "path": "images/usrp_b210_fpga.bin",
+      "bytes": 2898992,
+      "sha256": "ee03a9e38c83a1f6f327e7b560522c2a96629e7de574196092c1b830d05fcf9b"
+    },
+    {
+      "path": "nx-reference/SKILL.md",
+      "bytes": 1716,
+      "sha256": "74c3f60d82d0a92b7676925e782d99e550ea20208148bd2ce4a67c351b9461b4"
+    },
+    {
+      "path": "nx-reference/activate_b210.sh",
+      "bytes": 3518,
+      "sha256": "d2daefa09e6e6c0c2aa763595393b624129ecbf5eae6a3b937438c47e5b1bdca"
+    }
+  ]
+}

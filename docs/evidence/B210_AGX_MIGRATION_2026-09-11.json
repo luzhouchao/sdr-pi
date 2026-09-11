@@ -1,0 +1,174 @@
+{
+  "schema": "b210-agx-migration-evidence-v1",
+  "created_unix_ns": 1789133744986419694,
+  "base_head": "efb1e4dd1694d936a61d0fab10c8364ee7318f24",
+  "session": "b210-agx-migration-20260911",
+  "source_host": "nx",
+  "capture_id": null,
+  "request": "Migrate NX B210 runtime/programs to AGX; separate B210/P201 workspaces and share existing RadioML2018A",
+  "rf_streams": 0,
+  "model_inferences": 0,
+  "plan_run_id": "92f6072ca9824ce9afa17997a3d9d2bd",
+  "model_profile_preprocess": "No inference; plan pins existing frozen profile/software; no production admission",
+  "shared_dataset": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "bytes": 21449148312,
+    "mtime_ns": 1627354882000000000,
+    "device": 66305,
+    "inode": 47739861,
+    "shared_samefile": true,
+    "new_copies": 0
+  },
+  "packages": [
+    {
+      "root": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t",
+      "purpose": "Installed isolated B210 UHD/A7-100T runtime copied from NX; required for AGX operation",
+      "files": [
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/bin/tx_samples_from_file",
+          "bytes": 141600,
+          "sha256": "fe3aebc556c16a5065d63d4e6ef8f02ef277ac01dcf250a35dec58b84eceb5cf"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/bin/uhd_config_info",
+          "bytes": 76048,
+          "sha256": "f492aa09a23bee53bb739ced7f432a9fc37ad8fd34045027e3eb447e25af2be5"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/bin/uhd_find_devices",
+          "bytes": 92432,
+          "sha256": "7303a0de4a0fe39d0c19cbf5c1cf83b6e17ecf1b81d6add6b5be8574b3ff43f1"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/bin/uhd_usrp_probe",
+          "bytes": 149792,
+          "sha256": "5dc55a472f9408ae09a890ac39ca625d3fbe1f4ded087ccb46c9a6a4a9be70e1"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/images/usrp_b200_fw.hex",
+          "bytes": 514346,
+          "sha256": "cc8e4bc968d91d1a67c63871ce5b2c1613c49676fe363bf2f6e336059899ae5c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/images/usrp_b210_fpga.bin",
+          "bytes": 2898992,
+          "sha256": "ee03a9e38c83a1f6f327e7b560522c2a96629e7de574196092c1b830d05fcf9b"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/nx-reference/SKILL.md",
+          "bytes": 1716,
+          "sha256": "74c3f60d82d0a92b7676925e782d99e550ea20208148bd2ce4a67c351b9461b4"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/nx-reference/activate_b210.sh",
+          "bytes": 3518,
+          "sha256": "d2daefa09e6e6c0c2aa763595393b624129ecbf5eae6a3b937438c47e5b1bdca"
+        }
+      ],
+      "file_count": 8,
+      "total_bytes": 3878444,
+      "manual_delete": "rm -rf -- /home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-agx-probe-20260911",
+      "purpose": "Minimal no-RF USB probe, initial alias failure, final tests and verification evidence",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-agx-probe-20260911/discover.log",
+          "bytes": 415,
+          "sha256": "ed22aa13da3f224599adabea2323a84437b3aa3907a29257b1c11d064a36fa63"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-agx-probe-20260911/migration-verification.json",
+          "bytes": 2532,
+          "sha256": "fb48f416ead937bee3a2bafa6c11bc81f3ac175ed31017438e9220917da122e3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-agx-probe-20260911/plan-failed-before-rf.log",
+          "bytes": 1147,
+          "sha256": "6b8f7be5c910d7417b189d1cc44cbd8ce9aa8398f97c0012b365e16ee7f0c39d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-agx-probe-20260911/probe.log",
+          "bytes": 4366,
+          "sha256": "da66f779044d0b2341a446795108bf179bf08f5d4553116cba9cc328d57d6f46"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-agx-probe-20260911/result.json",
+          "bytes": 569,
+          "sha256": "4664edfa382d2c1c49d256a841d1551c9343d76de4d70723d740d2f0182e47b1"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-agx-probe-20260911/tests-complete.log",
+          "bytes": 6477,
+          "sha256": "bca1216ffecea9caf377081d4d84a476d4076a00409c7f4b1152ed4b33cb38e4"
+        }
+      ],
+      "file_count": 6,
+      "total_bytes": 15506,
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/b210-agx-probe-20260911"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-ready-20260911",
+      "purpose": "Final hash-pinned AGX plan; not executed and not a wired RF preregistration",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-ready-20260911/run-plan.json",
+          "bytes": 4989,
+          "sha256": "b284d3ef50b868b58dcd249b664918bb5d138a3f604fa8b91c77db067101b212"
+        }
+      ],
+      "file_count": 1,
+      "total_bytes": 4989,
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-agx-ready-20260911"
+    }
+  ],
+  "cleanup": {
+    "removed_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-agx-migration-20260911-WbMm5h/tests-initial.log",
+        "bytes": 5352,
+        "sha256": "ae5358f50e38c56109f923f5b8acb7cf049f07d42b1ca20784329254aff45d83"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-agx-migration-20260911-WbMm5h/plan-ready.log",
+        "bytes": 5034,
+        "sha256": "e61d9a1c0be3cc427bd397d6b5c1c82872aec313d00a7e48af69b3207aadf148"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-agx-migration-20260911-WbMm5h/tests-final.log",
+        "bytes": 6377,
+        "sha256": "7a352240a2f4348a2252ab6afc775447c79a493f048609fac8caa6794e7295f1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-agx-migration-20260911-WbMm5h/plan.log",
+        "bytes": 5034,
+        "sha256": "416a5e05d67242c5287af278e61c9609e1302e8675741e5e76c057e4f73bf75f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-agx-migration-20260911-WbMm5h/tests-verified.log",
+        "bytes": 6477,
+        "sha256": "0d782594421fd2bee02ef3f5bd86dfa69b7f24a1721916b7fe2f463fe09b772d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-migration-20260911/run-plan.json",
+        "bytes": 4989,
+        "sha256": "49db46d3370518e6b5720d8aaa824050a57b2a9e09aecaba4fc0e77d8ab00f2a"
+      }
+    ],
+    "removed_file_count": 6,
+    "removed_bytes": 33263,
+    "removed_roots": [
+      "/var/tmp/sdrharness-dev/b210-agx-migration-20260911-WbMm5h",
+      "/var/tmp/sdrharness-dev/b210-rml2018a-agx-migration-20260911"
+    ],
+    "verified_absent": true,
+    "nx_new_temp_files": 0,
+    "p201_new_temp_files": 0,
+    "new_sockets": 0,
+    "usb_holder_pids": [],
+    "note": "Unused intermediate plan inventoried and deleted; original failure log retained. Earlier empty failed-plan root removal is recorded in validation and adds zero file bytes."
+  },
+  "rollback": "NX original install/data retained; select NX only in a new explicit plan after reconnecting B210 there. AGX global UHD and P201 deployment were not replaced. Removing isolated runtime disables AGX B210 entry; do not delete shared dataset."
+}

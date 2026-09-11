@@ -7,6 +7,9 @@ P201 Pro SDR、Jetson AGX Orin、Rust 安全控制器、Pi Agent Planner 和后�
 `/home/jetson/sdrharness`。Pi 上已经完成的控制、扫频、Web Console 和回滚证据继续
 保留，但不再是新功能的算力或数据面目标。
 
+设备入口已分为[B210 USB](devices/b210/README.md)和[P201网口RX](devices/p201/README.md)，
+两者共享同一份RadioML2018A；目录与运行时说明见[设备工作区](devices/README.md)。
+
 ## 目标架构
 
 ```text

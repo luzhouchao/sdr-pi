@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""NX finite packet source. No RF until an exact GO line arrives on stdin."""
+"""Finite B210 packet source on NX or AGX. No RF until exact GO on stdin."""
 import argparse
 import errno
 import json
@@ -20,6 +20,8 @@ def transmit(root):
     plan = json.loads((root/'tx-plan.json').read_text())
     payload = (root/'packet.fc32').read_bytes()
     validate_tx(plan, payload)
+    executable=os.environ.get('SDRHARNESS_B210_TX_BINARY','/usr/lib/uhd/examples/tx_samples_from_file')
+    require(file_hash(executable)=='fe3aebc556c16a5065d63d4e6ef8f02ef277ac01dcf250a35dec58b84eceb5cf','UHD TX binary identity')
     with (root/'tx-started.json').open('x') as f:
         json.dump(dict(pid=os.getpid(), run_id=plan['run_id'], batch=plan['batch']), f)
     fifo = root/'packet.fifo'
@@ -36,7 +38,7 @@ def transmit(root):
         signal.signal(sig, abort)
     signal.alarm(55)
     try:
-        args = ['/usr/lib/uhd/examples/tx_samples_from_file', '--args', 'type=b200,serial=2508504',
+        args = [executable, '--args', 'type=b200,serial=2508504',
                 '--file', str(fifo), '--type', 'float', '--spb', '1024', '--rate', '2100000',
                 '--freq', str(plan['center_hz']), '--gain', str(plan['tx_gain_db']), '--ant', 'TX/RX', '--bw', '1500000',
                 '--channel', '0', '--subdev', 'A:A', '--lo-offset', '250000']

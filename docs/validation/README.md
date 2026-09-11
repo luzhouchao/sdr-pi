@@ -22,6 +22,7 @@
 下列为历史实测入口；通过仅指该记录中的工程门，不能把旧计划直接重跑。
 
 - [RadioML2018A全量脚本与有限先导](RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md)
+- [B210迁移AGX与双设备工作区](B210_AGX_MIGRATION_2026-09-11.md)
 
 - [P201 RX1负载→天线→负载：反向三阶段背景隔离与恢复](P201_TERMINATION_BACKGROUND_VALIDATION_2026-09-09.md)
 - [P201 2.4GHz背景分布：三轮全段扫描与独立复测](P201_BACKGROUND_MAP_VALIDATION_2026-09-09.md)

@@ -3,11 +3,12 @@
 [文档入口](../README.md) · [实机验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md)
 
 入口为 [AGX runner](../../jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py)，
-它按原 HDF5 行号读取全部 **2,555,904** 条 X/Y/Z，在 NX 上调用
-[有限 TX helper](../../jetson-agx/sdrharness/scripts/rml2018a-nx-tx.py)，再由既有
+它按原 HDF5 行号读取全部 **2,555,904** 条 X/Y/Z，按计划在AGX USB（当前默认）或NX上调用
+[有限 TX helper](../../jetson-agx/sdrharness/scripts/rml2018a-nx-tx.py)（历史文件名保留），再由既有
 `sdr-agent --mode sweep` 控制 P201 接收，AGX 冻结模型分别识别源样本和实收样本。
-NX 上用户称为 N210 的设备实际枚举为 B210，serial `2508504`。
-NX 不需要安装 h5py、PyTorch 或 Python UHD；复用已核对的 UHD 文件发射程序。
+用户称为N210的设备实际枚举为B210，serial `2508504`，现已迁到AGX USB。
+两个主机复用已核对的UHD文件发射程序，NX仍不需要h5py/PyTorch。
+设备程序/专用UHD镜像与P201接收入口分开，数据共享见[设备工作区](../../devices/README.md)。
 
 用户明确选择整个原始数据集，包括历史 train/validation/test 成员。本结果属于全量工程对照，
 不能作为独立 locked-test 准入成绩。训练/微调暂停，生产 `recognizer_available=false`，
@@ -18,7 +19,8 @@ NX 不需要安装 h5py、PyTorch 或 Python UHD；复用已核对的 UHD 文件
 2026-09-11用户报告已换回2.4GHz；当前固定 **2455 MHz**、2.1 MS/s、TX/RX BW 1.5 MHz、TX 峰值 0.2、
 TX LO offset +250 kHz；用户已确认换成2.4GHz天线（型号未报告），P201身份为 RX1/RX0/A_BALANCED。
 2455MHz沿用历史实验中心，不表示本轮已扫描确认空闲；已完成有限收发，质量失败及估计边界见实机验证。
-新计划默认TX70/RX40；`plan`仅允许登记TX70或80dB、RX40或50dB，执行时读取该计划，
+新计划默认AGX主机、TX0/RX20，作为后续低增益有线验证的起点，尚非收发通过配置。
+`plan`允许登记TX0/70/80dB、RX20/40/50dB，执行时读取该计划，
 不允许临时覆盖增益，不无衰减同轴直连。增益是设备设置值，不是发射功率dBm。
 本次有限70/40与80/40对照中，80/40两批均同步，但条件SINR仍低，不能据此认定全量参数合格；
 见[增益对照](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11发射增益与接收增益有限对照)。
@@ -143,7 +145,7 @@ export PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1
 RML_PY=/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python
 RML_RUNNER=/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py
 RML_ROOT=/var/tmp/sdrharness-dev/b210-rml2018a-2455-20260911
-"$RML_PY" -B "$RML_RUNNER" plan --root "$RML_ROOT" --tx-gain-db 70 --rx-gain-db 40
+"$RML_PY" -B "$RML_RUNNER" plan --root "$RML_ROOT" --tx-host agx --tx-gain-db 0 --rx-gain-db 20
 "$RML_PY" -B "$RML_RUNNER" run --root "$RML_ROOT" --start-batch 0 --max-batches 32 --deadline-seconds 1800
 ```
 
@@ -166,8 +168,13 @@ Spark忙会拒绝，已采集批次仍保留，可在空闲后续跑。此工程
 有限先导的行号、类别、SNR、射频/模型预算和失败策略须另行预登记；列表选取不是全库执行。
 `acquire`完成后可对同一列表运行`infer`，合为一个有界GPU分片，避免逐类反复加载模型。
 同步失败仍可保存源预测并进入分母；硬件/原生完整性/恢复失败按原门停止，不自动重试。
-`--tx-gain-db`和`--rx-gain-db`只用于`plan`；传给`acquire/infer/run/summary`会拒绝。
-更换增益必须新建根和计划；每行采集质量与summary保存实际计划TX/RX增益，NX UHD回读及RX元数据
+`--tx-host`、`--tx-gain-db`和`--rx-gain-db`只用于`plan`；传给`acquire/infer/run/summary`会拒绝。
+TX主机及传输代码身份写入plan；AGX还固定专用运行时manifest和UHD库/镜像哈希。
+AGX模式在本机独立临时目录暂存/启动/回收B210 helper，P201连接仍由原Controller与SSH恢复流程管理。
+NX模式只在显式登记`--tx-host nx`时使用；不能将旧NX计划改成AGX继续执行。
+两个模式保留有限字节、精确GO、deadline、取消和恢复门。迁移单元只完成无RF探测/软件验证，
+不把USB3/寄存器回环成功记成AGX发射与P201接收已通过。
+更换增益必须新建根和计划；每行采集质量与summary保存实际计划TX/RX增益，所选TX主机的UHD回读及RX元数据
 按相同值校验。代码支持某个增益不等于可持续发射授权，实际执行仍须明确的批次/时长/字节预算。
 
 `--retry-failed`仅重试已证明恢复完成的失败批次：先检查NX空闲及两端瞬时目录不存在，

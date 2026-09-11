@@ -20,6 +20,8 @@ this file retains the detailed delivery and evidence ledger.
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
 - [x] CodeGraph本地索引已初始化：180文件、5057节点、16234关系，CLI和MCP查源码/调用关系通过；索引Git忽略，实验资料仍按需读，不启动RF/模型。见[验收](validation/CODEGRAPH_INITIALIZATION_2026-09-10.md)。
+- [x] B210迁移AGX及双设备工作区：B210 USB与P201网口分别提供目录/执行入口，共享同一份RadioML2018A；NX的UHD工具和A7-100T/FX3运行时8文件已隔离安装，复用相同系统libuhd。实际USB3/两次寄存器回环、P201只读健康、最终AGX计划加载及43项测试通过；精确清理6文件33,263字节，运行时及最小证据已登记。无RF流/模型/生产部署。见[迁移验证](validation/B210_AGX_MIGRATION_2026-09-11.md)。
+- [ ] AGX本机B210→P201有线收发：确认30dB＋20dB串联衰减和15cm SMA线实际接法，登记TX0/RX20有限基线并验证收发、质量、取消和恢复；USB初始化及软件测试不代替此项。
 - [x] RadioML2018A全量工程脚本：原始2555904行规划、NX有限TX、P201原生RX、AGX冻结模型单窗对照、同步/失败分母、取消和批次续跑已实现；12项测试、72条有限实收关联/推理、主动中断/失败重试/不重发续跑与清理通过。源72/72正确，实收0/72正确，不能称为RF质量通过；未部署生产识别。见[验证](validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md)及[操作说明](reference/RML2018A_FULL_RF_CAMPAIGN.md)。
 - [ ] RadioML2018A全量RF质量与执行：按2026-09-11最新2.4GHz选择，先做有限背景/高源SNR收发基线并验证保真，再执行全部2555904条的发射/实收识别、全量统计及长时停止/恢复验证；不把上述433MHz的72条先导计为全库完成或独立准入。
 - [x] 2026-09-11频段与质量记录代码：campaign v2固定2455MHz，NX发射参数和AGX readback同源，原始Z保留为source_snr_db；新增rx_sinr_db/未测原因及分组语义，拒绝以原标签/相关度冒充总SINR，旧v1计划/结果不混用，历史导频可重建。15项无硬件测试和清理完成；仅源码，无新RF/推理/生产部署。见[验证](validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11回到24ghz与sinr记录合同)。

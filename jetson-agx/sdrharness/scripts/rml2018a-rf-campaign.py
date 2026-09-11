@@ -20,13 +20,15 @@ import sys
 import time
 import uuid
 
+SCRIPTS = Path(__file__).resolve().parent
+if str(SCRIPTS) not in sys.path:sys.path.insert(0,str(SCRIPTS))
+
 import h5py
 import numpy as np
 from rml2018a_campaign import (REPO, SCHEMA, RATE, CENTER, BW, RX_SAMPLES, CFO_SEARCH_MAX_HZ, CFO_LIMIT_HZ,
     ROWS_PER_BATCH, batch_rows, budget, digest, file_hash, marker, normalize_window,
     packet, receive_quality, registered_tx_gain, require, save, sinr_contract, synchronize, tx_plan, validate_receive_quality)
 
-SCRIPTS = Path(__file__).resolve().parent
 DATASET = REPO/'local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5'
 LABELS = REPO/'jetson-agx/sdrharness/config/amc/rml2018a-labels.server-v1.json'
 PROFILE = REPO/'jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json'
@@ -44,13 +46,26 @@ def document(path):
 
 
 def registered_rx_gain(value):
-    require(type(value) is int and value in (40,50), 'registered RX gain:40 or50 dB')
+    require(type(value) is int and value in (20,40,50), 'registered RX gain:20,40 or50 dB')
     return value
 
 
-def create_plan(root, rx_gain_db=40, tx_gain_db=70):
+def transport_module():
+    spec=importlib.util.spec_from_file_location('campaign_b210_transport',REPO/'devices/b210/transport.py')
+    value=importlib.util.module_from_spec(spec);spec.loader.exec_module(value);return value
+
+
+def campaign_software():
+    return {name:file_hash(SCRIPTS/name) for name in (
+        Path(__file__).resolve().name,'rml2018a_campaign.py','rml2018a-nx-tx.py',
+        'amc-mamba-worker.py','amc-rf-v1-runtime.py','gpu_lease.py',
+        'validate-b210-multiclass.py','validate-p201-termination-background.py','validate-b210-p201-link.py')}
+
+
+def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx'):
     rx_gain_db=registered_rx_gain(rx_gain_db)
     tx_gain_db=registered_tx_gain(tx_gain_db)
+    host_identity=transport_module().identity(tx_host)
     require(not root.exists(), 'run root already exists; use its existing plan')
     require(root.resolve() == root and root.parent == Path('/var/tmp/sdrharness-dev') and
             root.name.startswith('b210-rml2018a-') and root.name.replace('-', '').isalnum(), 'run root')
@@ -70,14 +85,11 @@ def create_plan(root, rx_gain_db=40, tx_gain_db=70):
     plan = dict(schema=SCHEMA, run_id=uuid.uuid4().hex, source=dict(path=str(DATASET), sha256=sha,
         bytes=DATASET.stat().st_size, mtime_ns=DATASET.stat().st_mtime_ns), budget=b,
         scope='all original X/Y/Z rows, including historical train/validation/test membership',
+        tx_host=tx_host,tx_host_identity=host_identity,
         semantics='all-row over-air engineering comparison, not independent locked-test admission',
         train=False, recognizer_available=False, name_status='provisional',
         label_map_sha256=file_hash(LABELS), profile_sha256=file_hash(PROFILE),
-        software={name: file_hash(SCRIPTS/name) for name in (
-            Path(__file__).name, 'rml2018a_campaign.py', 'rml2018a-nx-tx.py',
-            'amc-mamba-worker.py', 'amc-rf-v1-runtime.py', 'gpu_lease.py',
-            'validate-b210-multiclass.py', 'validate-p201-termination-background.py',
-            'validate-b210-p201-link.py')},
+        software=campaign_software(),
         rf=dict(center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW, tx_gain_db=tx_gain_db,
                 rx_gain_db=rx_gain_db, peak=.2, tx_lo_offset_hz=250000, settle_ms=500,
                 point_deadline_ms=1000, rx_samples=RX_SAMPLES),
@@ -103,6 +115,7 @@ def load_plan(root):
     require(p['rf']['center_hz'] == CENTER, 'RF center changed; new campaign required')
     registered_rx_gain(p['rf']['rx_gain_db'])
     registered_tx_gain(p['rf']['tx_gain_db'])
+    require(p['tx_host_identity']==transport_module().identity(p['tx_host']), 'TX host/runtime changed; new campaign required')
     for name, sha in p['software'].items():
         require(file_hash(SCRIPTS/name) == sha, 'software changed; new campaign required: '+name)
     require(file_hash(LABELS) == p['label_map_sha256'] and file_hash(PROFILE) == p['profile_sha256'],
@@ -160,7 +173,7 @@ def native_check(root, plan):
         session_generation=p['session_generation'])
 
 
-def remote_cleanup(bg, remote):
+def remote_cleanup(transport, remote):
     allowed = ['rml2018a_campaign.py','rml2018a-nx-tx.py','packet.fc32','tx-plan.json',
                'tx-started.json','tx-summary.json','tx-uhd.log']
     code = ('import json;from pathlib import Path; p=Path('+repr(str(remote))+'); '
@@ -168,7 +181,7 @@ def remote_cleanup(bg, remote):
             'x.name in '+repr(allowed)+' for x in rows); '
             'print(json.dumps([dict(name=x.name,bytes=x.stat().st_size) for x in rows])); '
             '[x.unlink() for x in rows];p.rmdir();assert not p.exists()')
-    return json.loads(bg.command([*bg.NX, 'python3 -c '+shlex.quote(code)]))
+    return json.loads(transport.run('python3 -c '+shlex.quote(code)))
 
 
 def acquire_batch(root, campaign, index, retry_failed=False):
@@ -176,14 +189,15 @@ def acquire_batch(root, campaign, index, retry_failed=False):
     tx_gain=registered_tx_gain(campaign['rf']['tx_gain_db'])
     bg = module('campaign_bg', 'validate-p201-termination-background.py')
     link = module('campaign_link', 'validate-b210-p201-link.py')
+    transport=transport_module().Transport(campaign.get('tx_host','nx'),bg)
     dest = root/f'batch-{index:07d}'
     if retry_failed and dest.exists():
         audit = document(dest/'audit.json')
         if audit['status'] != 'synchronized':
             require(audit.get('restored') is True, 'retry requires verified restoration; inspect failed audit')
-            bg.tx_preflight(); bg.idle()
+            transport.preflight(); bg.idle()
             bg.ssh('test ! -e '+shlex.quote(audit['p201_path']))
-            bg.command([*bg.NX,'test ! -e '+shlex.quote(audit['remote'])])
+            transport.run('test ! -e '+shlex.quote(audit['remote']))
             attempts=root/'attempts'; attempts.mkdir(mode=0o700,exist_ok=True)
             dest.rename(attempts/f'{dest.name}-{time.time_ns()}')
     if (dest/'capture-complete.json').exists():
@@ -205,7 +219,7 @@ def acquire_batch(root, campaign, index, retry_failed=False):
     password=Path('/home/jetson/.config/sdrharness/p201-root.password')
     require(password.is_file() and not password.is_symlink() and password.stat().st_mode & 0o777 == 0o600,
             'protected password file required')
-    bg.tx_preflight(); bg.idle()
+    transport.preflight(); bg.idle()
     before = bg.ssh(bg.STATE); pid = bg.ssh('pidof sdrd').split()
     require(len(pid) == 1, 'single sdrd required')
     state = dict(zip(before.splitlines()[::2], before.splitlines()[1::2]))
@@ -216,8 +230,8 @@ def acquire_batch(root, campaign, index, retry_failed=False):
     require(bg.ssh(f'readlink /proc/{pid[0]}/exe').strip() == '/sd/sdr-agent/current/sdrd', 'daemon executable')
     bg.ssh('test -f /sd/sdr-agent/current/sdrd.conf && test -f /sd/sdr-agent/current/S60sdrd')
     require(sum(':43110 ' in line for line in bg.ssh('netstat -lnt').splitlines()) == 1, 'single listener')
-    require(bg.command([*bg.NX,'sha256sum /usr/lib/uhd/examples/tx_samples_from_file']).split()[0] ==
-            'fe3aebc556c16a5065d63d4e6ef8f02ef277ac01dcf250a35dec58b84eceb5cf', 'NX UHD binary hash')
+    require(transport.run('sha256sum /usr/lib/uhd/examples/tx_samples_from_file').split()[0] ==
+            'fe3aebc556c16a5065d63d4e6ef8f02ef277ac01dcf250a35dec58b84eceb5cf', 'TX host UHD binary hash')
     require(document_health(bg)['healthy'], 'preflight health')
     dest.mkdir(mode=0o700)
     (dest/'packet.fc32').write_bytes(frame.tobytes()); save(dest/'tx-plan.json', txp)
@@ -231,24 +245,23 @@ def acquire_batch(root, campaign, index, retry_failed=False):
     remote = root.parent/f'{root.name}-b{index}'
     p201 = f'/tmp/sdr-agent-dev/agx-sweep-{generation}-0'
     save(dest/'rx-plan.json', rxp)
-    audit = dict(batch=index, status='failed', started_unix_ns=time.time_ns(), radio_before=before,
+    audit = dict(batch=index, tx_host=transport.host, status='failed', started_unix_ns=time.time_ns(), radio_before=before,
         daemon_pid=pid[0], daemon_sha256=daemon_hash, remote=str(remote), p201_path=p201,
         maximum_rx_bytes=RX_SAMPLES*4, free_bytes=shutil.disk_usage(root).free, tx_plan=txp,
-        stop='SIGINT/SIGTERM runner -> dedicated generation cancel + identified NX owner INT')
+        stop='SIGINT/SIGTERM runner -> dedicated P201 generation cancel + identified TX host owner INT')
     save(dest/'audit.json', audit)
     print(json.dumps(dict(event='batch_plan',batch=index,rows=rows,rx=rxp,remote=str(remote),
                          p201_path=p201,max_bytes=RX_SAMPLES*4,free_bytes=audit['free_bytes'])),flush=True)
     tx = None; rx = None; owner = None; staged = False
     try:
         bg.ssh(f'test ! -e {p201}')
-        bg.command([*bg.NX, f'test ! -e {remote} && mkdir -m 700 {remote}']); staged = True
-        bg.command(['scp','-F','/home/jetson/.ssh/config','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
-                    str(SCRIPTS/'rml2018a_campaign.py'),str(SCRIPTS/'rml2018a-nx-tx.py'),
-                    str(dest/'packet.fc32'),str(dest/'tx-plan.json'),f'nx:{remote}/'],timeout=20)
+        transport.run(f'test ! -e {remote} && mkdir -m 700 {remote}'); staged = True
+        transport.put([SCRIPTS/'rml2018a_campaign.py',SCRIPTS/'rml2018a-nx-tx.py',
+                       dest/'packet.fc32',dest/'tx-plan.json'],remote)
         cmd = (f'cd {remote} && export PYTHONDONTWRITEBYTECODE=1 TMPDIR={remote} XDG_CACHE_HOME={remote} '
                f'&& echo OWNER $$ && exec timeout --signal=INT --kill-after=3s 58s python3 -B '
                f'{remote}/rml2018a-nx-tx.py --directory {remote}')
-        tx = subprocess.Popen([*bg.NX,cmd],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,bufsize=0)
+        tx = transport.spawn(cmd)
         first = read_line(tx, 10).decode().strip().split()
         require(len(first)==2 and first[0]=='OWNER' and first[1].isdigit(), 'TX owner receipt')
         owner = int(first[1]); audit['owner_pid'] = owner
@@ -270,10 +283,9 @@ def acquire_batch(root, campaign, index, retry_failed=False):
             raise
         bg.restoration(before)
         out, err = tx.communicate(timeout=15)
-        require(tx.returncode==0, 'NX failure: '+err.decode()[-1000:])
+        require(tx.returncode==0, 'TX host failure: '+err.decode()[-1000:])
         audit['tx_stdout'] = out.decode(); audit['tx_stderr'] = err.decode()
-        bg.command(['scp','-F','/home/jetson/.ssh/config','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
-                    f'nx:{remote}/tx-summary.json',f'nx:{remote}/tx-uhd.log',str(dest)+'/'],timeout=15)
+        transport.get([remote/'tx-summary.json',remote/'tx-uhd.log'],dest)
         tx_result = document(dest/'tx-summary.json')
         require(tx_result['status']=='fed_complete' and tx_result['bytes_written']==txp['tx_samples']*8
                 and tx_result['child_stopped'], 'TX byte/stop receipt')
@@ -301,7 +313,7 @@ def acquire_batch(root, campaign, index, retry_failed=False):
         raise
     finally:
         if owner is not None and tx is not None and tx.poll() is None:
-            bg.command([*bg.NX, f'if test -d /proc/{owner}; then test "$(readlink /proc/{owner}/cwd)" = "{remote}" && kill -INT {owner}; fi'])
+            transport.run(f'if test -d /proc/{owner}; then test "$(readlink /proc/{owner}/cwd)" = "{remote}" && kill -INT {owner}; fi')
         for process in (rx, tx):
             if process is not None and process.poll() is None:
                 process.terminate()
@@ -313,17 +325,16 @@ def acquire_batch(root, campaign, index, retry_failed=False):
             require(bg.ssh('sha256sum /sd/sdr-agent/current/sdrd').split()[0]==daemon_hash,'daemon hash changed')
             bg.ssh(f'test ! -e {p201}')
             if staged:
-                bg.command([*bg.NX,link.remote_absence_command(remote,owner,
-                    audit.get('tx_ready',{}).get('child_pid'))])
+                transport.run(link.remote_absence_command(remote,owner,
+                    audit.get('tx_ready',{}).get('child_pid')))
                 # Preserve failed UHD startup/feed diagnostics before remote cleanup too.
                 for name in ('tx-uhd.log','tx-summary.json'):
                     if not (dest/name).exists():
-                        present=bg.command([*bg.NX,f'if test -f {remote}/{name}; then echo yes; fi']).strip()
+                        present=transport.run(f'if test -f {remote}/{name}; then echo yes; fi').strip()
                         if present=='yes':
-                            bg.command(['scp','-F','/home/jetson/.ssh/config','-o','BatchMode=yes',
-                                '-o','StrictHostKeyChecking=yes',f'nx:{remote}/{name}',str(dest/name)])
-                audit['remote_removed'] = remote_cleanup(bg,remote)
-            audit['nx_after'] = bg.tx_preflight()
+                            transport.get([remote/name],dest)
+                audit['remote_removed'] = remote_cleanup(transport,remote)
+            audit[transport.host+'_after'] = transport.preflight()
             audit['health_after'] = document_health(bg)
             require(audit['health_after']['healthy'], 'postflight health')
             audit['restored'] = True
@@ -518,13 +529,14 @@ def main():
     p.add_argument('--batch-indices',type=int,nargs='+',help='explicit ordered pilot/shard, 1-32 unique batches; no range overrides')
     p.add_argument('--deadline-seconds',type=int,default=600)
     p.add_argument('--retry-failed',action='store_true',help='archive restored failed attempts, then retry; never discard evidence')
-    p.add_argument('--rx-gain-db',type=int,choices=[40,50],help='plan only; default40; all execution uses the sealed plan')
-    p.add_argument('--tx-gain-db',type=int,choices=[70,80],help='plan only; default70; all execution uses the sealed plan')
+    p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],help='plan only; default20; all execution uses the sealed plan')
+    p.add_argument('--tx-gain-db',type=int,choices=[0,70,80],help='plan only; default0; all execution uses the sealed plan')
+    p.add_argument('--tx-host',choices=['agx','nx'],help='plan only; default agx; P201 remains network RX')
     args=p.parse_args();root=args.root
     if args.command=='plan':
         require(args.batch_indices is None,'batch selection is execution-only; preregister pilot separately')
-        create_plan(root,40 if args.rx_gain_db is None else args.rx_gain_db,70 if args.tx_gain_db is None else args.tx_gain_db);return
-    require(args.rx_gain_db is None and args.tx_gain_db is None,'RF gains are sealed in run-plan; create a new plan to change them')
+        create_plan(root,20 if args.rx_gain_db is None else args.rx_gain_db,0 if args.tx_gain_db is None else args.tx_gain_db,args.tx_host or 'agx');return
+    require(args.rx_gain_db is None and args.tx_gain_db is None and args.tx_host is None,'RF gains are sealed in run-plan; create a new plan to change them')
     campaign=load_plan(root)
     indices=selected_batches(campaign['budget']['batches'],args.start_batch,args.max_batches,args.batch_indices)
     require(60<=args.deadline_seconds<=30*86400,'finite deadline')

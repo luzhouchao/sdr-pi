@@ -227,7 +227,7 @@ class CampaignTests(unittest.TestCase):
         for gain in (69,71,81,90,True,80.):
             with self.assertRaises(ValueError):c.tx_plan(frame,'gain-test',0,range(24),gain)
 
-    def fifo_case(self, go, gain=70):
+    def fifo_case(self, go, gain=70, executable='/usr/lib/uhd/examples/tx_samples_from_file'):
         nx=load('fifo_nx',SCRIPTS/'rml2018a-nx-tx.py')
         frame,_=c.packet(self.source(2),'fifo-test',0)
         plan=c.tx_plan(frame,'fifo-test',0,[0,1],gain)
@@ -236,6 +236,7 @@ class CampaignTests(unittest.TestCase):
             root=Path(directory);(root/'packet.fc32').write_bytes(frame.tobytes())
             (root/'tx-plan.json').write_text(json.dumps(plan))
             def fake_uhd(args,**kwargs):
+                self.assertEqual(args[0],executable)
                 self.assertEqual(args[args.index('--freq')+1],'2455000000')
                 self.assertEqual(args[args.index('--gain')+1],str(gain))
                 self.assertNotIn('--repeat',args)
@@ -248,7 +249,9 @@ class CampaignTests(unittest.TestCase):
                 return ([0],[],[]) if read==[0] else real_select(read,write,error,timeout)
             with patch.object(nx.subprocess,'Popen',fake_uhd),patch.object(nx.select,'select',fake_select),\
                  patch.object(nx.os,'read',lambda fd,n:(b'GO\n' if go else b'') if fd==0 else real_read(fd,n)),\
-                 patch.object(nx.signal,'signal'),patch.object(nx.signal,'alarm'):
+                 patch.object(nx.signal,'signal'),patch.object(nx.signal,'alarm'),\
+                 patch.dict(os.environ,{'SDRHARNESS_B210_TX_BINARY':executable}),\
+                 patch.object(nx,'file_hash',side_effect=lambda p:'fe3aebc556c16a5065d63d4e6ef8f02ef277ac01dcf250a35dec58b84eceb5cf' if str(p)==executable else c.file_hash(p)):
                 if go:nx.transmit(root)
                 else:
                     with self.assertRaises(ValueError):nx.transmit(root)
@@ -266,6 +269,17 @@ class CampaignTests(unittest.TestCase):
     def test_finite_fifo_exact_bytes_and_child_exit(self):self.fifo_case(True)
 
     def test_higher_registered_gain_reaches_uhd_with_same_finite_budget(self):self.fifo_case(True,80)
+
+    def test_agx_low_gain_and_pinned_binary_override(self):self.fifo_case(True,0,'/fake/agx/tx_samples_from_file')
+
+    def test_unverified_uhd_binary_rejected_before_process(self):
+        nx=load('unverified_nx',SCRIPTS/'rml2018a-nx-tx.py')
+        frame,_=c.packet(self.source(2),'binary-test',0);plan=c.tx_plan(frame,'binary-test',0,[0,1],0)
+        with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:
+            root=Path(directory);(root/'packet.fc32').write_bytes(frame.tobytes());c.save(root/'tx-plan.json',plan)
+            with patch.object(nx,'file_hash',return_value='bad'),patch.object(nx.subprocess,'Popen') as launch:
+                with self.assertRaisesRegex(ValueError,'UHD TX binary identity'):nx.transmit(root)
+                launch.assert_not_called();self.assertFalse((root/'tx-started.json').exists())
 
     def test_fifo_eof_before_go_cancels_without_payload(self):self.fifo_case(False)
 
