@@ -1,0 +1,325 @@
+{
+  "schema": "rml-link-quality-evidence-v1",
+  "base_head": "104887b7f6b523e3e0c7985d6504622d4606d041",
+  "purpose": "Investigate low quality using four retained TX captures and fresh TX-off background; no interferer identity claim",
+  "packages": [
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-link-background-20260911",
+      "purpose": "TX-off2455MHz burst diagnosis; gain50 clipped failure or gain40 bounded background",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911/audit.json",
+          "bytes": 5699,
+          "sha256": "960a3478c864325031398600146778e5ab844d834641ea66da76571872319866"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911/capture-error.log",
+          "bytes": 964,
+          "sha256": "3da6d1b1fac4c8f327a01cbebefd1a423fd1e0835119195d8756245dc5b40d35"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911/capture-script-v1.py",
+          "bytes": 10933,
+          "sha256": "7c2aa5a133ea05830cacb5b2ed8bb2dee46c08cd33e89e1882277092f1c3d322"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911/point-0/rx-plan.json",
+          "bytes": 388,
+          "sha256": "a957f5fded547810174689489fa041fe6446b1d4cfd217a0f3a0fde68dcdf473"
+        }
+      ],
+      "file_count": 4,
+      "total_bytes": 17984,
+      "plans": [
+        {
+          "sweep_id": "link-background-1789109070696",
+          "session_generation": 1789109070696,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 50,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789109070697",
+          "session_generation": 1789109070697,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 50,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789109070698",
+          "session_generation": 1789109070698,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 50,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        }
+      ],
+      "capture_identities": [],
+      "tx_operations": 0,
+      "model_inferences": 0,
+      "preprocess": "native raw ci16;256-sample block power; no model/profile inference",
+      "restored": true,
+      "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/rml-link-background-20260911",
+      "delete_precondition": "Verify exact resolved root and no active collector; remove only this registered evidence root."
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40",
+      "purpose": "TX-off2455MHz burst diagnosis; gain50 clipped failure or gain40 bounded background",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/audit.json",
+          "bytes": 9257,
+          "sha256": "8c03b88858e841d62a3c743171a5626b2994c0fe97bb68ef3dc80efdf2793555"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-0/link-background-1789109232924-1789109232924-1789109233206738800.sigmf-data",
+          "bytes": 262140,
+          "sha256": "4be07ee4732b0af2859a3f94f54b8f0162bc0979785b9654d939dca627f63ace"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-0/link-background-1789109232924-1789109232924-1789109233206738800.sigmf-meta",
+          "bytes": 487,
+          "sha256": "bc94def1fd5a63d992c5e518d8a994c04858bbd7395423a7f92ecc28a1d5810e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-0/plan.json",
+          "bytes": 388,
+          "sha256": "87c6d3cd597babd42fe3b681c98aa830b69253f1a2dcba0be82ed2a20f92b9d6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-0/report.json",
+          "bytes": 2260,
+          "sha256": "1916d5a9bd34a5f250d08fb2d833ed0c85fbff6dde08cd6462d50f69c44d7dba"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-0/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-1/link-background-1789109232925-1789109232925-1789109237812759509.sigmf-data",
+          "bytes": 262140,
+          "sha256": "02f2ac4302812d1c1f49e0ef0277288b8c85f8205e7a78bcbfbc00ced566cff1"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-1/link-background-1789109232925-1789109232925-1789109237812759509.sigmf-meta",
+          "bytes": 487,
+          "sha256": "c47cb3515d59e01beb19de9ecad14f7bc58043eaf8cdc09150a172203be3d89f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-1/plan.json",
+          "bytes": 388,
+          "sha256": "129f74103f48967a895ee0d887ac62ccd4a17e41e8e54042f18e9ffeb88b719a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-1/report.json",
+          "bytes": 2262,
+          "sha256": "6328874c805a7bd84a54069ee4444e251e4ed111dd84fc64322976b8277c20fe"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-1/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-2/link-background-1789109232926-1789109232926-1789109242431220893.sigmf-data",
+          "bytes": 262140,
+          "sha256": "8751f954c1988836a33b2b06f97b590f4f00abce8105976d118c26b01598a337"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-2/link-background-1789109232926-1789109232926-1789109242431220893.sigmf-meta",
+          "bytes": 487,
+          "sha256": "b210ab291c768765380701f9c15b8688ad21409b3359154fdb33eb4814f881ac"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-2/plan.json",
+          "bytes": 388,
+          "sha256": "61c987fa0bd166e4ab30602c40d21594461ae38906afe5ea08338f054100959f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-2/report.json",
+          "bytes": 2262,
+          "sha256": "78bcf026c462882ef445ebae96737e02f5b461617b9a4a0d89c80b49d7fa47ef"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-2/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "file_count": 16,
+      "total_bytes": 805086,
+      "plans": [
+        {
+          "sweep_id": "link-background-1789109232924",
+          "session_generation": 1789109232924,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789109232925",
+          "session_generation": 1789109232925,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789109232926",
+          "session_generation": 1789109232926,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        }
+      ],
+      "capture_identities": [
+        {
+          "point": 0,
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-0/link-background-1789109232924-1789109232924-1789109233206738800.sigmf-data",
+            "iq_sha256": "4be07ee4732b0af2859a3f94f54b8f0162bc0979785b9654d939dca627f63ace",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-0/link-background-1789109232924-1789109232924-1789109233206738800.sigmf-data": "4be07ee4732b0af2859a3f94f54b8f0162bc0979785b9654d939dca627f63ace",
+              "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-0/link-background-1789109232924-1789109232924-1789109233206738800.sigmf-meta": "bc94def1fd5a63d992c5e518d8a994c04858bbd7395423a7f92ecc28a1d5810e",
+              "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-0/report.json": "1916d5a9bd34a5f250d08fb2d833ed0c85fbff6dde08cd6462d50f69c44d7dba",
+              "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-0/plan.json": "87c6d3cd597babd42fe3b681c98aa830b69253f1a2dcba0be82ed2a20f92b9d6"
+            },
+            "request_id": 5,
+            "session_generation": 1789109232924
+          }
+        },
+        {
+          "point": 1,
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-1/link-background-1789109232925-1789109232925-1789109237812759509.sigmf-data",
+            "iq_sha256": "02f2ac4302812d1c1f49e0ef0277288b8c85f8205e7a78bcbfbc00ced566cff1",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-1/link-background-1789109232925-1789109232925-1789109237812759509.sigmf-data": "02f2ac4302812d1c1f49e0ef0277288b8c85f8205e7a78bcbfbc00ced566cff1",
+              "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-1/link-background-1789109232925-1789109232925-1789109237812759509.sigmf-meta": "c47cb3515d59e01beb19de9ecad14f7bc58043eaf8cdc09150a172203be3d89f",
+              "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-1/report.json": "6328874c805a7bd84a54069ee4444e251e4ed111dd84fc64322976b8277c20fe",
+              "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-1/plan.json": "129f74103f48967a895ee0d887ac62ccd4a17e41e8e54042f18e9ffeb88b719a"
+            },
+            "request_id": 5,
+            "session_generation": 1789109232925
+          }
+        },
+        {
+          "point": 2,
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-2/link-background-1789109232926-1789109232926-1789109242431220893.sigmf-data",
+            "iq_sha256": "8751f954c1988836a33b2b06f97b590f4f00abce8105976d118c26b01598a337",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-2/link-background-1789109232926-1789109232926-1789109242431220893.sigmf-data": "8751f954c1988836a33b2b06f97b590f4f00abce8105976d118c26b01598a337",
+              "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-2/link-background-1789109232926-1789109232926-1789109242431220893.sigmf-meta": "b210ab291c768765380701f9c15b8688ad21409b3359154fdb33eb4814f881ac",
+              "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-2/report.json": "78bcf026c462882ef445ebae96737e02f5b461617b9a4a0d89c80b49d7fa47ef",
+              "/var/tmp/sdrharness-dev/rml-link-background-20260911-gain40/point-2/plan.json": "61c987fa0bd166e4ab30602c40d21594461ae38906afe5ea08338f054100959f"
+            },
+            "request_id": 5,
+            "session_generation": 1789109232926
+          }
+        }
+      ],
+      "tx_operations": 0,
+      "model_inferences": 0,
+      "preprocess": "native raw ci16;256-sample block power; no model/profile inference",
+      "restored": true,
+      "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/rml-link-background-20260911-gain40",
+      "delete_precondition": "Verify exact resolved root and no active collector; remove only this registered evidence root."
+    }
+  ],
+  "retained_files": 20,
+  "retained_bytes": 823070,
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/rml-link-check-20260911-ErozPb",
+    "files": 4,
+    "bytes": 190808
+  },
+  "new_tx_operations": 0,
+  "new_model_inferences": 0,
+  "new_successful_iq_files": 3,
+  "new_iq_bytes": 786420,
+  "gain50_attempts": 1,
+  "gain50_successes": 0,
+  "gain40_attempts": 3,
+  "gain40_successes": 3,
+  "prior49_files_verified_unchanged": true,
+  "artifacts": {
+    "jetson-agx/sdrharness/scripts/diagnose-rml2018a-link-quality.py": {
+      "bytes": 11866,
+      "sha256": "07c321ded96b79269200bf61d4e530bf0b2a36253ef2c296c998686890dc4bcb"
+    },
+    "docs/evidence/RML2018A_LINK_QUALITY_DIAGNOSIS_2026-09-11.json": {
+      "bytes": 66163,
+      "sha256": "2ff091757b2c2a92a63fadf6973810a7c5ffb01b7f6b011300f3459859846c6e"
+    },
+    "docs/evidence/RML2018A_LINK_BACKGROUND_BURSTS_2026-09-11.png": {
+      "bytes": 160132,
+      "sha256": "fb883a82c2e448d7a6607832e9e657cc6888090fc452505832af1487292a7512"
+    }
+  }
+}
