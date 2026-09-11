@@ -1,0 +1,529 @@
+{
+  "schema": "rml-filter-regression-evidence-v1",
+  "purpose": "Bounded known-source phase/CFO/offset/scale and component diagnostics of filtered RF misclassification; retain negative outcomes and complete denominators.",
+  "roots": [
+    "/var/tmp/sdrharness-dev/rml-filter-regression-20260911",
+    "/var/tmp/sdrharness-dev/rml-filter-components-20260911"
+  ],
+  "base_head": "0d6857d37f93783df1b5eb24ea60581fed724e6b",
+  "parents": [
+    {
+      "path": "docs/evidence/RML2018A_GAIN_COMPARISON_2026-09-11.json",
+      "sha256": "253dffcfbf89988f7e8560107d2ea3ce8c0d9689216c52708a591d9b3433a1e2"
+    },
+    {
+      "path": "docs/evidence/RML2018A_FILTER_INFERENCE_2026-09-11.json",
+      "sha256": "8a1f9aec80f33738e06384f8ed64eda9e4227a37490b8680c74ba795b45c4824"
+    }
+  ],
+  "source_rows": 48,
+  "model_windows": 864,
+  "warmup_windows": 4,
+  "new_rf_captures": 0,
+  "new_tx": 0,
+  "recognizer_available": false,
+  "source_assisted_diagnostic": true,
+  "physical_sinr_measured": false,
+  "model_identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+  "name_status": "provisional",
+  "filter_contract": {
+    "schema_id": "b210_separated_lo_fixed_fir_v1",
+    "sample_rate_hz": 2100000,
+    "tx_lo_offset_hz": 250000,
+    "taps": 257,
+    "cutoff_hz": 175000,
+    "kaiser_beta": 8.0,
+    "raw_halo_samples": 128,
+    "coefficients_sha256": "d0e12014bedae088b71366497299adc3a1be0a45cf622e9cbb346d4ea0c8c8be",
+    "passband_max_amplitude_error": 6.72315640199983e-05,
+    "stopband_max_db": -86.48358432113966,
+    "source_mean_preserved": true,
+    "production_enabled": false
+  },
+  "parent_run_id": "7eea4b124318461cbd8736ec44e63d8c",
+  "parent_plan_sha256": "b6f7a5c757465a25351bc7dadc30fcc9eceaa84af9eab5cc38e71ce0d195defb",
+  "capture_associations": [
+    {
+      "batch": 4267,
+      "audit_path": "/var/tmp/sdrharness-dev/b210-rml2018a-tx80rx40-20260911/batch-0004267/audit.json",
+      "audit_sha256": "e436c2bcfb098fa6de5932718bba192703fc39bc0ab273f0372ee6bba9fa98f4",
+      "request_id": 5,
+      "session_generation": 1789114436448,
+      "iq_sha256": "b86e20a46c9379991e2991861c47a30ff4a37b506a54c7b5acc1200f2b9b628e",
+      "source_iq_sha256": "e5b9894a2ddb15839e71c6a34e6278060a81a7a41702895cc01e963a36eb9180"
+    },
+    {
+      "batch": 22016,
+      "audit_path": "/var/tmp/sdrharness-dev/b210-rml2018a-tx80rx40-20260911/batch-0022016/audit.json",
+      "audit_sha256": "3abb9d496a95ce21a8b9f5b40e668c72fb98ac76df3c279b7e6396bae3b8df0c",
+      "request_id": 5,
+      "session_generation": 1789114491172,
+      "iq_sha256": "9ebedc62d96bbd67b6fb061817db11295640c929fa0540604fd192aa1e695bda",
+      "source_iq_sha256": "651306fe240c3e445858672699756af388057f560481f3fa8b390029e2f2c1c0"
+    }
+  ],
+  "verification": {
+    "status": "verified",
+    "input_hashes_verified": 864,
+    "parent_files_verified": 60,
+    "baseline_max_logit_difference": 0.015625,
+    "results": [
+      {
+        "root": "/var/tmp/sdrharness-dev/rml-filter-regression-20260911",
+        "summary": {
+          "received_raw": {
+            "rows": 48,
+            "correct": 41
+          },
+          "received_filtered": {
+            "rows": 48,
+            "correct": 3
+          },
+          "filtered_raw_rms": {
+            "rows": 48,
+            "correct": 3
+          },
+          "source_scaled": {
+            "rows": 48,
+            "correct": 11
+          },
+          "source_original": {
+            "rows": 48,
+            "correct": 48
+          },
+          "filtered_phase_only": {
+            "rows": 48,
+            "correct": 5
+          },
+          "filtered_offset_only": {
+            "rows": 48,
+            "correct": 4
+          },
+          "filtered_phase_offset": {
+            "rows": 48,
+            "correct": 4
+          },
+          "filtered_cfo_only": {
+            "rows": 48,
+            "correct": 3
+          },
+          "filtered_phase_cfo": {
+            "rows": 48,
+            "correct": 5
+          }
+        },
+        "per_class": {
+          "0": {
+            "received_raw": {
+              "rows": 24,
+              "correct": 24
+            },
+            "received_filtered": {
+              "rows": 24,
+              "correct": 3
+            },
+            "filtered_raw_rms": {
+              "rows": 24,
+              "correct": 3
+            },
+            "source_scaled": {
+              "rows": 24,
+              "correct": 11
+            },
+            "source_original": {
+              "rows": 24,
+              "correct": 24
+            },
+            "filtered_phase_only": {
+              "rows": 24,
+              "correct": 5
+            },
+            "filtered_offset_only": {
+              "rows": 24,
+              "correct": 4
+            },
+            "filtered_phase_offset": {
+              "rows": 24,
+              "correct": 4
+            },
+            "filtered_cfo_only": {
+              "rows": 24,
+              "correct": 3
+            },
+            "filtered_phase_cfo": {
+              "rows": 24,
+              "correct": 5
+            }
+          },
+          "4": {
+            "received_raw": {
+              "rows": 24,
+              "correct": 17
+            },
+            "received_filtered": {
+              "rows": 24,
+              "correct": 0
+            },
+            "filtered_raw_rms": {
+              "rows": 24,
+              "correct": 0
+            },
+            "source_scaled": {
+              "rows": 24,
+              "correct": 0
+            },
+            "source_original": {
+              "rows": 24,
+              "correct": 24
+            },
+            "filtered_phase_only": {
+              "rows": 24,
+              "correct": 0
+            },
+            "filtered_offset_only": {
+              "rows": 24,
+              "correct": 0
+            },
+            "filtered_phase_offset": {
+              "rows": 24,
+              "correct": 0
+            },
+            "filtered_cfo_only": {
+              "rows": 24,
+              "correct": 0
+            },
+            "filtered_phase_cfo": {
+              "rows": 24,
+              "correct": 0
+            }
+          }
+        },
+        "model_windows": 480,
+        "warmup_windows": 2,
+        "gpu_resumed_same_pid": true,
+        "statistics": {
+          "4267": {
+            "phase_deg": {
+              "min": -170.84100979130417,
+              "median": 76.5052699529674,
+              "max": 170.6482324222647
+            },
+            "offset_over_filtered_rms": {
+              "min": 0.005528806778545336,
+              "median": 0.053036747839746184,
+              "max": 0.11624539690560344
+            },
+            "filtered_over_raw_rms": {
+              "min": 0.5169670861878497,
+              "median": 0.6968085817899243,
+              "max": 0.7434072139212804
+            },
+            "residual_cfo_hz": {
+              "min": -196.66002080703865,
+              "median": 51.443696379539915,
+              "max": 317.48950397797114
+            },
+            "cfo_phase_fit_rms_rad": {
+              "min": 0.03217717133651967,
+              "median": 0.0772915262679452,
+              "max": 1.004593496387574
+            }
+          },
+          "22016": {
+            "phase_deg": {
+              "min": -71.07887132895475,
+              "median": -39.740531212311026,
+              "max": -6.220497006780018
+            },
+            "offset_over_filtered_rms": {
+              "min": 0.008855719374475483,
+              "median": 0.03762830323400551,
+              "max": 0.08832515265216873
+            },
+            "filtered_over_raw_rms": {
+              "min": 0.14164852963612673,
+              "median": 0.7143180989776496,
+              "max": 0.7443835265276032
+            },
+            "residual_cfo_hz": {
+              "min": -93.8109133977572,
+              "median": 28.96973165949923,
+              "max": 82.36624521539485
+            },
+            "cfo_phase_fit_rms_rad": {
+              "min": 0.02368967294484906,
+              "median": 0.049409868525475784,
+              "max": 0.287168124844634
+            }
+          }
+        }
+      },
+      {
+        "root": "/var/tmp/sdrharness-dev/rml-filter-components-20260911",
+        "summary": {
+          "source_original": {
+            "rows": 48,
+            "correct": 48
+          },
+          "received_filtered": {
+            "rows": 48,
+            "correct": 3
+          },
+          "removed_only": {
+            "rows": 48,
+            "correct": 2
+          },
+          "source_with_removed": {
+            "rows": 48,
+            "correct": 44
+          },
+          "amplitude_error_only": {
+            "rows": 48,
+            "correct": 32
+          },
+          "phase_error_only": {
+            "rows": 48,
+            "correct": 26
+          },
+          "source_with_fitted_offset": {
+            "rows": 48,
+            "correct": 44
+          },
+          "affine_reference": {
+            "rows": 48,
+            "correct": 45
+          }
+        },
+        "per_class": {
+          "0": {
+            "source_original": {
+              "rows": 24,
+              "correct": 24
+            },
+            "received_filtered": {
+              "rows": 24,
+              "correct": 3
+            },
+            "removed_only": {
+              "rows": 24,
+              "correct": 2
+            },
+            "source_with_removed": {
+              "rows": 24,
+              "correct": 24
+            },
+            "amplitude_error_only": {
+              "rows": 24,
+              "correct": 23
+            },
+            "phase_error_only": {
+              "rows": 24,
+              "correct": 22
+            },
+            "source_with_fitted_offset": {
+              "rows": 24,
+              "correct": 21
+            },
+            "affine_reference": {
+              "rows": 24,
+              "correct": 22
+            }
+          },
+          "4": {
+            "source_original": {
+              "rows": 24,
+              "correct": 24
+            },
+            "received_filtered": {
+              "rows": 24,
+              "correct": 0
+            },
+            "removed_only": {
+              "rows": 24,
+              "correct": 0
+            },
+            "source_with_removed": {
+              "rows": 24,
+              "correct": 20
+            },
+            "amplitude_error_only": {
+              "rows": 24,
+              "correct": 9
+            },
+            "phase_error_only": {
+              "rows": 24,
+              "correct": 4
+            },
+            "source_with_fitted_offset": {
+              "rows": 24,
+              "correct": 23
+            },
+            "affine_reference": {
+              "rows": 24,
+              "correct": 23
+            }
+          }
+        },
+        "model_windows": 384,
+        "warmup_windows": 2,
+        "gpu_resumed_same_pid": true,
+        "statistics": {
+          "4267": {
+            "removed_power_over_raw": {
+              "min": 0.44573812588846534,
+              "median": 0.5118208095469077,
+              "max": 0.71667961431099
+            }
+          },
+          "22016": {
+            "removed_power_over_raw": {
+              "min": 0.444931594517992,
+              "median": 0.48898246439172677,
+              "max": 0.9795964162900481
+            }
+          }
+        }
+      }
+    ],
+    "new_rf_captures": 0,
+    "experiment_model_windows": 864,
+    "warmup_windows": 4,
+    "recognizer_available": false,
+    "interpretation": "All source-assisted variants are diagnostic oracle constructions; aggregate counts do not establish deployable correction or independent accuracy."
+  },
+  "cleanup": {
+    "removed_file_count": 6,
+    "removed_bytes": 7650,
+    "files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-filter-regression-20260911/scratch/gpu-gate/inference.lock",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-filter-components-20260911/scratch/gpu-gate/inference.lock",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-regression-check-20260911-IyYNEn/components.log",
+        "bytes": 3307,
+        "sha256": "06c0b0a544fb432532477c683f5903983a29dd18325b7e475be735d6be464e3c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-regression-check-20260911-IyYNEn/infer.log",
+        "bytes": 3440,
+        "sha256": "e3a5770fd71f1fea1aa8b6a9aa5f8a443f37e74bcadd1332bfa9456b9202f56b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-regression-check-20260911-IyYNEn/tests.log",
+        "bytes": 778,
+        "sha256": "218c2a35b3d6b618882ba2b4edc116b26b97596534ae137200095ca61202eb21"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-regression-check-20260911-IyYNEn/verification.log",
+        "bytes": 125,
+        "sha256": "e8f1af3248eb487570c862d4f1f06574ced5a942dfab4f47ba4db572d171b187"
+      }
+    ],
+    "directories": [
+      "/var/tmp/sdrharness-dev/rml-filter-regression-20260911/scratch/gpu-gate",
+      "/var/tmp/sdrharness-dev/rml-filter-regression-20260911/scratch",
+      "/var/tmp/sdrharness-dev/rml-filter-components-20260911/scratch/gpu-gate",
+      "/var/tmp/sdrharness-dev/rml-filter-components-20260911/scratch",
+      "/var/tmp/sdrharness-dev/rml-regression-check-20260911-IyYNEn"
+    ],
+    "absence_verified": true,
+    "rf_transients": 0,
+    "iq_or_tensor_copies": 0,
+    "note": "Only final leftovers counted; unittest temporary file traffic self-cleaned. All parent evidence unchanged."
+  },
+  "retained_file_count": 13,
+  "retained_bytes": 1010425,
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-regression-20260911/executed-runner.py",
+      "bytes": 17473,
+      "sha256": "9ba64f3c8a6aab4305b70673c3b5aae9bbb35b704764673df26c8e0de6e505cd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-regression-20260911/gpu-isolation.json",
+      "bytes": 295,
+      "sha256": "8b0a48b4c8498215412669ea37ad561906cf892627b8b426dd32097fba8c4425"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-regression-20260911/inference.json",
+      "bytes": 475249,
+      "sha256": "7c213ba1f1acae68155449ab7f92cee9db78b89b630d37bcdf06ed1e88673d48"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-regression-20260911/plan.json",
+      "bytes": 1174,
+      "sha256": "8591290de280d3a298bb555a93d1c62d8196d816305768bd2eda16cd564e6f91"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-regression-20260911/prepared.json",
+      "bytes": 53774,
+      "sha256": "231ae6f2da1b333a3f66eb6d7c72af52234f9540454fa30b70b176be885f24db"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-components-20260911/cleanup.json",
+      "bytes": 1757,
+      "sha256": "32773e97f82d33f56f47e49691ddea33ae6818bf1333ac4e557f617043dea1a4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-components-20260911/gpu-isolation.json",
+      "bytes": 295,
+      "sha256": "c7a8fdf3933008f554cd08c32d3374518c7feb85db8ace955df456f4bc40d9e7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-components-20260911/inference.json",
+      "bytes": 398427,
+      "sha256": "78360a053ae07f0bf283b7b63f8532845962b2f0151f43736be197493e295d01"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-components-20260911/plan.json",
+      "bytes": 1130,
+      "sha256": "fd0c25e039cff25822c84fd135aa5f77a88128f4607c73ef52d9b895bd6b57ae"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-components-20260911/prepared.json",
+      "bytes": 46635,
+      "sha256": "2b146dad484a512ac4e86ac87eb5487ea65a67cfb978697c7d2831d913e98b14"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-components-20260911/tests.log",
+      "bytes": 888,
+      "sha256": "c35d409d21bd2be4afc162300ac892d85495d6868976c021eef4d1a0cdde89da"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-components-20260911/verification.json",
+      "bytes": 8199,
+      "sha256": "d284aea7dc1e67e981f2d3886716591266aa37435015bde387fef09af4538243"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-components-20260911/verify-regression.py",
+      "bytes": 5129,
+      "sha256": "1502d3a9bee3dbebae498d3bda3fc221e11b6a78ff489d319d0941ad2ae7941d"
+    }
+  ],
+  "manual_delete": {
+    "preconditions": "Confirm both diagnostic owners/watchdogs stopped and Spark restored; verify exact resolved roots and hashes. Do not delete parent IQ/evidence.",
+    "commands": [
+      "rm -rf -- /var/tmp/sdrharness-dev/rml-filter-regression-20260911",
+      "rm -rf -- /var/tmp/sdrharness-dev/rml-filter-components-20260911"
+    ]
+  }
+}

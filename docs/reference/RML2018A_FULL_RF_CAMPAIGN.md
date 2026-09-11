@@ -117,6 +117,15 @@ PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 \
 滤波后源噪声分配改变，`filtered_rx_sinr_db=null`；原条件SINR只作为未滤波输入的父级记录。
 参见[滤波及识别对照](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11固定滤波与48条工程识别对照)。
 
+同一脚本的互斥`--diagnose-output`用于固定十组相位/CFO/偏置/尺度诊断，
+`--components-output`用于固定八组FIR互补成分及幅度/相位替换诊断；都必须指定新的派生根。
+两者使用已知源波形拟合或替换部分输入，**只能解释工程误判，不是未知信号可用的接收校正**。
+各自最多3批、720或576个实验窗口，加2warmup，650秒deadline；执行前保存固定变体/预算。
+尺度对照明确保留非单位RMS，其他输入沿用单窗复数RMS；不能把尺度对照当成新的生产预处理。
+CFO诊断固定8个128点仿射拟合，按源能量加权拟合相位斜率，超±5kHz记录无效并保持原输入，
+不搜索模型正确率。实际两轮48条诊断没有发现可直接修复回退的简单校正，
+结论及限制见[回退排查](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11滤波误判的有限归因诊断)。
+
 背景选频使用[链路诊断脚本](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-link-quality.py)的
 `survey`子命令：固定8个2.4GHz频点三轮比较、选定候选后与2455MHz交替确认，共最多30次接收，
 RX40、2.1MS/s、BW1.5MHz、每点65535复数，总IQ预算7,864,200字节，无TX/模型。

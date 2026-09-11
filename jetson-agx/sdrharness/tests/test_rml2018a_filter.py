@@ -17,6 +17,44 @@ c=f.c
 
 
 class FilterReplayTests(unittest.TestCase):
+    def test_component_swaps_preserve_clean_source_and_fir_complement(self):
+        rng=np.random.default_rng(4);x=rng.normal(size=1024)+1j*rng.normal(size=1024)
+        y=(2+1j)*x+(.3-.2j);removed=np.exp(2j*np.pi*.2*np.arange(1024))
+        inputs,d=f.component_variants(x,x,y+removed,y)
+        self.assertEqual(tuple(inputs),f.COMPONENT_VARIANTS)
+        np.testing.assert_allclose(inputs['removed_only'],c.normalize_window(removed),atol=1e-7)
+        for tag in ('amplitude_error_only','phase_error_only'):
+            np.testing.assert_allclose(inputs[tag],c.normalize_window(x),atol=1e-7)
+        np.testing.assert_allclose(inputs['affine_reference'],c.normalize_window(y),atol=1e-7)
+        self.assertTrue(d['source_assisted'])
+
+    def test_diagnostic_phase_offset_and_scale_are_separate(self):
+        rng=np.random.default_rng(7);x=rng.normal(size=1024)+1j*rng.normal(size=1024)
+        y=2*np.exp(.8j)*x+(.2-.1j);raw=3*y
+        inputs,d=f.diagnostic_variants(x,x,raw,y)
+        self.assertAlmostEqual(d['phase_deg'],np.degrees(.8),places=10)
+        self.assertAlmostEqual(d['offset_over_filtered_rms'],abs(.2-.1j)/np.sqrt(np.mean(abs(y)**2)),places=10)
+        np.testing.assert_allclose(inputs['filtered_phase_offset'],c.normalize_window(x),atol=1e-7)
+        for tag in ('filtered_raw_rms','source_scaled'):
+            self.assertAlmostEqual(float(np.sqrt(np.sum(inputs[tag]**2)/1024)),1/3,places=6)
+        self.assertAlmostEqual(float(np.sqrt(np.sum(inputs['received_filtered']**2)/1024)),1,places=6)
+        self.assertEqual(tuple(inputs),f.DIAGNOSTIC_VARIANTS)
+
+    def test_diagnostic_residual_cfo_sign_and_fixed_blocks(self):
+        rng=np.random.default_rng(9);x=rng.normal(size=1024)+1j*rng.normal(size=1024)
+        y=x*np.exp(1j*(.6+2*np.pi*300*np.arange(1024)/c.RATE))
+        inputs,d=f.diagnostic_variants(x,x,y,y)
+        self.assertTrue(d['cfo_fit_valid'])
+        self.assertAlmostEqual(d['residual_cfo_hz'],300,delta=5)
+        self.assertGreater(np.sum(inputs['filtered_phase_cfo']*c.normalize_window(x))/1024,.999)
+
+    def test_diagnostic_out_of_range_cfo_is_recorded_noop(self):
+        rng=np.random.default_rng(9);x=rng.normal(size=1024)+1j*rng.normal(size=1024)
+        y=x*np.exp(2j*np.pi*6000*np.arange(1024)/c.RATE)
+        inputs,d=f.diagnostic_variants(x,x,y,y)
+        self.assertFalse(d['cfo_fit_valid']);self.assertEqual(d['correction_applied_hz'],0)
+        np.testing.assert_array_equal(inputs['filtered_cfo_only'],inputs['received_filtered'])
+
     def fixture(self, root, frequency=30000):
         n=np.arange(24*1024).reshape(24,1024)
         z=np.exp(2j*np.pi*frequency*n/c.RATE)
