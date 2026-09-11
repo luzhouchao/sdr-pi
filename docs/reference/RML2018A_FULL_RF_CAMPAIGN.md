@@ -96,6 +96,27 @@ E包含新增干扰、接收噪声、未建模的信道/硬件失真及有限样
 
 ## 在AGX执行
 
+已封存实收的固定滤波对照使用[离线诊断脚本](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-campaign-filter.py)。
+默认只输出保真JSON，无射频/模型操作；`--batches`显式限定1–3个不重复的完整批次。
+指定`--infer-output`才在新派生根执行原始源、滤波源、原始实收、滤波实收四组工程推理：
+所有登记源行均须满足功率保留≥99%及失真≤1%，否则整组跳过模型，不选择有利行。
+保留原同步位置/CFO/相位及全部SINR invalid行，使用相同单窗复数RMS和冻结模型。
+最多288个实验窗口加2个warmup，650秒deadline，复用空闲Spark暂停/恢复与GPU租约；
+父campaign和原始IQ只读，结果及清理单独登记。
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 \
+  local-assets/amc-eval/runtime/venv/bin/python -B \
+  jetson-agx/sdrharness/scripts/diagnose-rml2018a-campaign-filter.py \
+  --root /var/tmp/sdrharness-dev/b210-rml2018a-tx80rx40-20260911 \
+  --batches 4267 22016
+```
+
+需要推理时另指定尚不存在的`/var/tmp/sdrharness-dev/rml-filter-<唯一标识>`派生根。
+2026-09-11这48条的固定175kHz FIR使实收识别从41/48降至3/48，**当前不接入campaign payload**。
+滤波后源噪声分配改变，`filtered_rx_sinr_db=null`；原条件SINR只作为未滤波输入的父级记录。
+参见[滤波及识别对照](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11固定滤波与48条工程识别对照)。
+
 背景选频使用[链路诊断脚本](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-link-quality.py)的
 `survey`子命令：固定8个2.4GHz频点三轮比较、选定候选后与2455MHz交替确认，共最多30次接收，
 RX40、2.1MS/s、BW1.5MHz、每点65535复数，总IQ预算7,864,200字节，无TX/模型。

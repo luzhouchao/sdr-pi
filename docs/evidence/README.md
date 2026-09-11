@@ -24,6 +24,7 @@
 - 2455MHz链路排查：[逐段统计](RML2018A_LINK_QUALITY_DIAGNOSIS_2026-09-11.json)、[背景突发图](RML2018A_LINK_BACKGROUND_BURSTS_2026-09-11.png)、[停发接收保留清单](RML2018A_LINK_QUALITY_EVIDENCE_2026-09-11.json)。
 - 2.4GHz八频点三轮比较及独立复测：[结果与保留清单](RML2018A_BAND_SURVEY_2026-09-11.json)、[频点对比图](RML2018A_BAND_SURVEY_2026-09-11.png)。
 - 2455MHz TX70/80、RX40有限对照：[结果、复核和保留清单](RML2018A_GAIN_COMPARISON_2026-09-11.json)。
+- TX80/RX40既有48条固定滤波及冻结模型对照：[识别回退、输入复核和保留清单](RML2018A_FILTER_INFERENCE_2026-09-11.json)。
 
 按试验查找请从[射频验证索引](../validation/README.md#近期射频排查2026-09-09至10)进入，
 再打开该记录中的计划、库存或图表链接。下面的完整目录只列文件，不加载附件内容。

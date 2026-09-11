@@ -1,0 +1,258 @@
+{
+  "schema": "rml-fixed-filter-inference-evidence-v1",
+  "purpose": "Preserve 48-row four-variant engineering comparison and filter regression with full denominators; no IQ/tensor copies.",
+  "root": "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911",
+  "base_head": "5fcc0932adadcde97dce3447ffe03832d8dc519a",
+  "parent_inventory": {
+    "path": "docs/evidence/RML2018A_GAIN_COMPARISON_2026-09-11.json",
+    "sha256": "253dffcfbf89988f7e8560107d2ea3ce8c0d9689216c52708a591d9b3433a1e2"
+  },
+  "parent_run_id": "7eea4b124318461cbd8736ec44e63d8c",
+  "parent_plan_sha256": "b6f7a5c757465a25351bc7dadc30fcc9eceaa84af9eab5cc38e71ce0d195defb",
+  "parent_capture_associations": [
+    {
+      "batch": 4267,
+      "audit_path": "/var/tmp/sdrharness-dev/b210-rml2018a-tx80rx40-20260911/batch-0004267/audit.json",
+      "audit_sha256": "e436c2bcfb098fa6de5932718bba192703fc39bc0ab273f0372ee6bba9fa98f4",
+      "iq_sha256": "b86e20a46c9379991e2991861c47a30ff4a37b506a54c7b5acc1200f2b9b628e",
+      "request_id": 5,
+      "session_generation": 1789114436448,
+      "source_iq_sha256": "e5b9894a2ddb15839e71c6a34e6278060a81a7a41702895cc01e963a36eb9180"
+    },
+    {
+      "batch": 22016,
+      "audit_path": "/var/tmp/sdrharness-dev/b210-rml2018a-tx80rx40-20260911/batch-0022016/audit.json",
+      "audit_sha256": "3abb9d496a95ce21a8b9f5b40e668c72fb98ac76df3c279b7e6396bae3b8df0c",
+      "iq_sha256": "9ebedc62d96bbd67b6fb061817db11295640c929fa0540604fd192aa1e695bda",
+      "request_id": 5,
+      "session_generation": 1789114491172,
+      "source_iq_sha256": "651306fe240c3e445858672699756af388057f560481f3fa8b390029e2f2c1c0"
+    }
+  ],
+  "model_identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+  "name_status": "provisional",
+  "filter_contract": {
+    "schema_id": "b210_separated_lo_fixed_fir_v1",
+    "sample_rate_hz": 2100000,
+    "tx_lo_offset_hz": 250000,
+    "taps": 257,
+    "cutoff_hz": 175000,
+    "kaiser_beta": 8.0,
+    "raw_halo_samples": 128,
+    "coefficients_sha256": "d0e12014bedae088b71366497299adc3a1be0a45cf622e9cbb346d4ea0c8c8be",
+    "passband_max_amplitude_error": 6.72315640199983e-05,
+    "stopband_max_db": -86.48358432113966,
+    "source_mean_preserved": true,
+    "production_enabled": false
+  },
+  "preprocess": "Historical valid FIR then original pilot CFO/phase correction; single1024 complex RMS, no DC removal or label fitting.",
+  "source_rows": 48,
+  "experiment_model_windows": 192,
+  "warmup_windows": 2,
+  "new_rf_captures": 0,
+  "new_tx": 0,
+  "recognizer_available": false,
+  "summary": {
+    "source_original": {
+      "rows": 48,
+      "correct": 48
+    },
+    "source_filtered": {
+      "rows": 48,
+      "correct": 48
+    },
+    "received_raw": {
+      "rows": 48,
+      "correct": 41
+    },
+    "received_filtered": {
+      "rows": 48,
+      "correct": 3
+    }
+  },
+  "per_class": {
+    "0": {
+      "source_original": {
+        "rows": 24,
+        "correct": 24,
+        "predicted_ids": {
+          "0": 24
+        }
+      },
+      "source_filtered": {
+        "rows": 24,
+        "correct": 24,
+        "predicted_ids": {
+          "0": 24
+        }
+      },
+      "received_raw": {
+        "rows": 24,
+        "correct": 24,
+        "predicted_ids": {
+          "0": 24
+        }
+      },
+      "received_filtered": {
+        "rows": 24,
+        "correct": 3,
+        "predicted_ids": {
+          "2": 21,
+          "0": 3
+        }
+      }
+    },
+    "4": {
+      "source_original": {
+        "rows": 24,
+        "correct": 24,
+        "predicted_ids": {
+          "4": 24
+        }
+      },
+      "source_filtered": {
+        "rows": 24,
+        "correct": 24,
+        "predicted_ids": {
+          "4": 24
+        }
+      },
+      "received_raw": {
+        "rows": 24,
+        "correct": 17,
+        "predicted_ids": {
+          "4": 17,
+          "7": 2,
+          "23": 1,
+          "3": 1,
+          "21": 1,
+          "2": 1,
+          "0": 1
+        }
+      },
+      "received_filtered": {
+        "rows": 24,
+        "correct": 0,
+        "predicted_ids": {
+          "7": 2,
+          "16": 13,
+          "23": 3,
+          "12": 1,
+          "15": 1,
+          "11": 1,
+          "2": 2,
+          "22": 1
+        }
+      }
+    }
+  },
+  "paired_changes": {
+    "raw_wrong_filtered_right": 0,
+    "raw_right_filtered_wrong": 38,
+    "both_correct": 3,
+    "both_wrong": 7
+  },
+  "filtered_rx_sinr_db": null,
+  "filtered_rx_sinr_reason": "filter changes source noise allocation; original Z cannot calibrate filtered SINR",
+  "cleanup": {
+    "removed_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911/scratch/gpu-gate/inference.lock",
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-filter-check-20260911-z8PSty/analysis-initial.json",
+        "bytes": 22565,
+        "sha256": "21c9daef7253c2090acccab6d2007679d27ec0f6b1b57ba771876ef1e95a7e26"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-filter-check-20260911-z8PSty/infer.log",
+        "bytes": 2970,
+        "sha256": "eeff5b588942412c41f19bc7bbd4bdd33eae9c892289a8dd32f8ea2d79e4f1e8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-filter-check-20260911-z8PSty/verification.log",
+        "bytes": 2266,
+        "sha256": "4b1d6e3e7327557e6b7267d297ed797af9362ae8c64ebce6b331c89436292e18"
+      }
+    ],
+    "removed_file_count": 4,
+    "removed_bytes": 27801,
+    "removed_directories": [
+      "/var/tmp/sdrharness-dev/rml-filter-check-20260911-z8PSty",
+      "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911/scratch",
+      "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911/scratch/gpu-gate"
+    ],
+    "absence_verified": true,
+    "nx_or_p201_files_created": 0,
+    "raw_iq_or_tensor_files_created": 0,
+    "note": "Test temporary files self-cleaned; their cumulative traffic is not counted. Parent gain evidence kept unchanged."
+  },
+  "retained_file_count": 9,
+  "retained_bytes": 282817,
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911/cleanup.json",
+      "bytes": 1302,
+      "sha256": "bbffb8d9c9dda2da7ea8db456729fa465f39b24daadd5d06c8b188ee208fe8f4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911/executed-runner.py",
+      "bytes": 12956,
+      "sha256": "230e24aa4bf746c2990bbfa5251acfc49e9e58f44ad6e369bb1bc8665dec1878"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911/gpu-isolation.json",
+      "bytes": 295,
+      "sha256": "2d7795c98a76731754667464683e8bdd8682fad2dd7d639c02d1c4f59987d88a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911/inference.json",
+      "bytes": 237758,
+      "sha256": "b3f52e0e47ebcd05c7e72a1d7282e312e055e88aad08d13911f403c5aceb16a0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911/plan.json",
+      "bytes": 731,
+      "sha256": "44d73162f64a1560b295e384f91ec6a26365ad0f5644ce809c83770685fb1e30"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911/prepared.json",
+      "bytes": 22565,
+      "sha256": "21c9daef7253c2090acccab6d2007679d27ec0f6b1b57ba771876ef1e95a7e26"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911/tests.log",
+      "bytes": 481,
+      "sha256": "4f52a2f35fb2a1a2414676b0a492f531876f2fd47c33a9462b1f9adf9fb1bb77"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911/verification.json",
+      "bytes": 2266,
+      "sha256": "4b1d6e3e7327557e6b7267d297ed797af9362ae8c64ebce6b331c89436292e18"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911/verify-replay.py",
+      "bytes": 4463,
+      "sha256": "a12a323371ab3f30eb25e14c3f57fe7e6a1517f30d9993f86ab816d49c5c49f4"
+    }
+  ],
+  "manual_delete": {
+    "preconditions": "Confirm no diagnostic or watchdog process; verify Spark restored, resolved root and listed hashes. Keep parent capture evidence unless separately deleting it.",
+    "command": "rm -rf -- /var/tmp/sdrharness-dev/rml-filter-tx80rx40-20260911"
+  }
+}
