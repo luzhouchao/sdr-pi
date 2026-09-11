@@ -38,7 +38,7 @@ def transmit(root):
     try:
         args = ['/usr/lib/uhd/examples/tx_samples_from_file', '--args', 'type=b200,serial=2508504',
                 '--file', str(fifo), '--type', 'float', '--spb', '1024', '--rate', '2100000',
-                '--freq', str(plan['center_hz']), '--gain', '70', '--ant', 'TX/RX', '--bw', '1500000',
+                '--freq', str(plan['center_hz']), '--gain', str(plan['tx_gain_db']), '--ant', 'TX/RX', '--bw', '1500000',
                 '--channel', '0', '--subdev', 'A:A', '--lo-offset', '250000']
         with (root/'tx-uhd.log').open('x') as log:
             child = subprocess.Popen(args, stdout=log, stderr=subprocess.STDOUT)

@@ -15,10 +15,13 @@ NX 不需要安装 h5py、PyTorch 或 Python UHD；复用已核对的 UHD 文件
 
 ## 帧、参数和预算
 
-2026-09-11用户报告已换回2.4GHz；当前固定 **2455 MHz**、2.1 MS/s、TX/RX BW 1.5 MHz、TX70/RX50、TX 峰值 0.2、
+2026-09-11用户报告已换回2.4GHz；当前固定 **2455 MHz**、2.1 MS/s、TX/RX BW 1.5 MHz、TX 峰值 0.2、
 TX LO offset +250 kHz；用户已确认换成2.4GHz天线（型号未报告），P201身份为 RX1/RX0/A_BALANCED。
 2455MHz沿用历史实验中心，不表示本轮已扫描确认空闲；已完成有限收发，质量失败及估计边界见实机验证。
-不支持在命令行任意改频率/增益，不无衰减同轴直连。
+新计划默认TX70/RX40；`plan`仅允许登记TX70或80dB、RX40或50dB，执行时读取该计划，
+不允许临时覆盖增益，不无衰减同轴直连。增益是设备设置值，不是发射功率dBm。
+本次有限70/40与80/40对照中，80/40两批均同步，但条件SINR仍低，不能据此认定全量参数合格；
+见[增益对照](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11发射增益与接收增益有限对照)。
 
 每批最多24个独立1024点样本，各自按复数峰值缩放，前面加入由 run/batch 派生的1024点
 QPSK同步标记，两端各256点零保护。完整帧26112点；重复321次，总发射8381952点，
@@ -110,7 +113,7 @@ export PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1
 RML_PY=/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python
 RML_RUNNER=/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py
 RML_ROOT=/var/tmp/sdrharness-dev/b210-rml2018a-2455-20260911
-"$RML_PY" -B "$RML_RUNNER" plan --root "$RML_ROOT"
+"$RML_PY" -B "$RML_RUNNER" plan --root "$RML_ROOT" --tx-gain-db 70 --rx-gain-db 40
 "$RML_PY" -B "$RML_RUNNER" run --root "$RML_ROOT" --start-batch 0 --max-batches 32 --deadline-seconds 1800
 ```
 
@@ -128,6 +131,9 @@ Spark忙会拒绝，已采集批次仍保留，可在空闲后续跑。此工程
 重复同一命令自动校验并跳过已完成采集/推理；断点单位为批次。若只采集或只推理，使用
 `acquire` 或 `infer`；`summary`只读既有批次并写汇总，不调用RF/模型。
 源码/依赖、profile或数据身份变化会拒绝复用旧计划，须创建新campaign，不能改写旧plan哈希。
+`--tx-gain-db`和`--rx-gain-db`只用于`plan`；传给`acquire/infer/run/summary`会拒绝。
+更换增益必须新建根和计划；每行采集质量与summary保存实际计划TX/RX增益，NX UHD回读及RX元数据
+按相同值校验。代码支持某个增益不等于可持续发射授权，实际执行仍须明确的批次/时长/字节预算。
 
 `--retry-failed`仅重试已证明恢复完成的失败批次：先检查NX空闲及两端瞬时目录不存在，
 再把旧批次整体移动到`attempts/`，新采集有新的request/session身份。旧IQ、日志和失败结果保留。

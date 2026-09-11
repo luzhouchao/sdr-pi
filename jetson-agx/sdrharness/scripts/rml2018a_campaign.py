@@ -79,10 +79,16 @@ def packet(iq, run_id, batch):
     return frame, scales
 
 
-def tx_plan(frame, run_id, batch, rows):
+def registered_tx_gain(value):
+    require(type(value) is int and value in (70,80), 'registered TX gain:70 or80 dB')
+    return value
+
+
+def tx_plan(frame, run_id, batch, rows, tx_gain_db=70):
+    tx_gain_db=registered_tx_gain(tx_gain_db)
     units = math.floor(RATE * TX_SECONDS / len(frame))
     return dict(schema=SCHEMA, run_id=run_id, batch=batch, rows=list(map(int, rows)),
-                center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW, tx_gain_db=70,
+                center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW, tx_gain_db=tx_gain_db,
                 tx_channel=0, tx_antenna='TX/RX', serial='2508504', lo_offset_hz=250000,
                 payload_bytes=frame.nbytes, payload_sha256=digest(frame.tobytes()),
                 packet_samples=len(frame), repeats=units, tx_samples=units * len(frame),
@@ -90,10 +96,11 @@ def tx_plan(frame, run_id, batch, rows):
 
 
 def validate_tx(plan, payload):
+    registered_tx_gain(plan.get('tx_gain_db'))
     require(isinstance(plan.get('run_id'), str) and 0 < len(plan['run_id']) <= 128 and
             type(plan.get('batch')) is int and 0 <= plan['batch'] < 106496, 'batch identity')
     for k, v in dict(schema=SCHEMA, center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW,
-                     tx_gain_db=70, tx_channel=0, tx_antenna='TX/RX', serial='2508504',
+                     tx_channel=0, tx_antenna='TX/RX', serial='2508504',
                      lo_offset_hz=250000, max_seconds=TX_SECONDS, complex_peak=.2).items():
         require(plan.get(k) == v, 'unregistered TX ' + k)
     rows = plan['rows']

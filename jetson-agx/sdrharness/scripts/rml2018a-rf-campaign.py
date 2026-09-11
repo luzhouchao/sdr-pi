@@ -24,7 +24,7 @@ import h5py
 import numpy as np
 from rml2018a_campaign import (REPO, SCHEMA, RATE, CENTER, BW, RX_SAMPLES, CFO_SEARCH_MAX_HZ, CFO_LIMIT_HZ,
     ROWS_PER_BATCH, batch_rows, budget, digest, file_hash, marker, normalize_window,
-    packet, receive_quality, require, save, sinr_contract, synchronize, tx_plan, validate_receive_quality)
+    packet, receive_quality, registered_tx_gain, require, save, sinr_contract, synchronize, tx_plan, validate_receive_quality)
 
 SCRIPTS = Path(__file__).resolve().parent
 DATASET = REPO/'local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5'
@@ -43,7 +43,14 @@ def document(path):
     return json.loads(Path(path).read_text())
 
 
-def create_plan(root):
+def registered_rx_gain(value):
+    require(type(value) is int and value in (40,50), 'registered RX gain:40 or50 dB')
+    return value
+
+
+def create_plan(root, rx_gain_db=40, tx_gain_db=70):
+    rx_gain_db=registered_rx_gain(rx_gain_db)
+    tx_gain_db=registered_tx_gain(tx_gain_db)
     require(not root.exists(), 'run root already exists; use its existing plan')
     require(root.resolve() == root and root.parent == Path('/var/tmp/sdrharness-dev') and
             root.name.startswith('b210-rml2018a-') and root.name.replace('-', '').isalnum(), 'run root')
@@ -71,8 +78,8 @@ def create_plan(root):
             'amc-mamba-worker.py', 'amc-rf-v1-runtime.py', 'gpu_lease.py',
             'validate-b210-multiclass.py', 'validate-p201-termination-background.py',
             'validate-b210-p201-link.py')},
-        rf=dict(center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW, tx_gain_db=70,
-                rx_gain_db=50, peak=.2, tx_lo_offset_hz=250000, settle_ms=500,
+        rf=dict(center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW, tx_gain_db=tx_gain_db,
+                rx_gain_db=rx_gain_db, peak=.2, tx_lo_offset_hz=250000, settle_ms=500,
                 point_deadline_ms=1000, rx_samples=RX_SAMPLES),
         framing='24 independent1024 rows with per-row peak normalization, batch-specific pilot and guards',
         synchronization=dict(cfo_search_max_hz=CFO_SEARCH_MAX_HZ,cfo_step_hz=500,
@@ -94,6 +101,8 @@ def load_plan(root):
     p = document(root/'run-plan.json')
     require(p['schema'] == SCHEMA and p['budget'] == budget(2555904), 'plan identity')
     require(p['rf']['center_hz'] == CENTER, 'RF center changed; new campaign required')
+    registered_rx_gain(p['rf']['rx_gain_db'])
+    registered_tx_gain(p['rf']['tx_gain_db'])
     for name, sha in p['software'].items():
         require(file_hash(SCRIPTS/name) == sha, 'software changed; new campaign required: '+name)
     require(file_hash(LABELS) == p['label_map_sha256'] and file_hash(PROFILE) == p['profile_sha256'],
@@ -119,6 +128,7 @@ def read_line(process, timeout):
 
 
 def native_check(root, plan):
+    gain=registered_rx_gain(plan['gain_db'])
     report = document(root/'report.json')
     require(report['sweep_id'] == plan['sweep_id'] and
             report['session_generation'] == plan['session_generation'] and len(report['points']) == 1,
@@ -143,7 +153,7 @@ def native_check(root, plan):
     require(metadata['global']['core:sample_rate'] == RATE and
             metadata['global']['core:datatype'] == 'ci16_le', 'metadata layout')
     require(metadata['captures'] == [{'core:sample_start':0, 'core:frequency':p['actual_center_hz'],
-            'sdrharness:point_index':0, 'sdrharness:rf_bandwidth_hz':BW, 'sdrharness:gain_db':50}], 'metadata RF')
+            'sdrharness:point_index':0, 'sdrharness:rf_bandwidth_hz':BW, 'sdrharness:gain_db':gain}], 'metadata RF')
     v = np.frombuffer(raw, dtype='<i2').reshape(-1, 2)
     return v[:,0].astype(float)+1j*v[:,1], dict(iq_path=str(data), iq_sha256=digest(raw),
         metadata_sha256=file_hash(meta), request_id=p['request_id'], sequence=p['sequence'],
@@ -162,6 +172,8 @@ def remote_cleanup(bg, remote):
 
 
 def acquire_batch(root, campaign, index, retry_failed=False):
+    rx_gain=registered_rx_gain(campaign['rf']['rx_gain_db'])
+    tx_gain=registered_tx_gain(campaign['rf']['tx_gain_db'])
     bg = module('campaign_bg', 'validate-p201-termination-background.py')
     link = module('campaign_link', 'validate-b210-p201-link.py')
     dest = root/f'batch-{index:07d}'
@@ -188,7 +200,7 @@ def acquire_batch(root, campaign, index, retry_failed=False):
     require(np.array_equal(labels, np.eye(24)[labels.argmax(axis=1)]), 'one-hot label')
     require(np.isfinite(snrs).all(), 'source SNR')
     frame, scales = packet(iq, campaign['run_id'], index)
-    txp = tx_plan(frame, campaign['run_id'], index, rows)
+    txp = tx_plan(frame, campaign['run_id'], index, rows, tx_gain)
     require(shutil.disk_usage(root).free > RX_SAMPLES*4 + frame.nbytes + 32*1024*1024, 'batch disk budget')
     password=Path('/home/jetson/.config/sdrharness/p201-root.password')
     require(password.is_file() and not password.is_symlink() and password.stat().st_mode & 0o777 == 0o600,
@@ -214,7 +226,7 @@ def acquire_batch(root, campaign, index, retry_failed=False):
     generation = time.time_ns() // 1000000
     rxp = dict(sweep_id=f'rml2018a-{index}-{generation}', session_generation=generation,
         frequencies=dict(kind='centers', centers_hz=[CENTER]), sample_rate_hz=RATE,
-        rf_bandwidth_hz=BW, gain_db=50, settle_ms=500, frame_samples=RX_SAMPLES,
+        rf_bandwidth_hz=BW, gain_db=rx_gain, settle_ms=500, frame_samples=RX_SAMPLES,
         aggregate_frames=1, point_timeout_ms=1000, detection_threshold_db=12.)
     remote = root.parent/f'{root.name}-b{index}'
     p201 = f'/tmp/sdr-agent-dev/agx-sweep-{generation}-0'
@@ -267,7 +279,7 @@ def acquire_batch(root, campaign, index, retry_failed=False):
                 and tx_result['child_stopped'], 'TX byte/stop receipt')
         log=(dest/'tx-uhd.log').read_text()
         for label,value in [('Actual TX Rate',2.1),('Actual TX Freq',CENTER/1e6),
-                            ('Actual TX Gain',70.),('Actual TX Bandwidth',1.5)]:
+                            ('Actual TX Gain',float(tx_gain)),('Actual TX Bandwidth',1.5)]:
             matches=re.findall(re.escape(label)+r': ([\d.+-]+)',log)
             require(len(matches)==1 and abs(float(matches[0])-value)<1e-6, 'UHD readback '+label)
         require('LO: locked' in log, 'TX LO unlocked')
@@ -280,7 +292,7 @@ def acquire_batch(root, campaign, index, retry_failed=False):
             audit['sync'] = sync; audit['status'] = 'synchronized'
         except ValueError as e:
             audit['status'] = 'sync_failed'; audit['sync_error'] = str(e)
-        audit['receive_quality'] = [dict(row=row, source_snr_db=int(snrs[k]),
+        audit['receive_quality'] = [dict(row=row, source_snr_db=int(snrs[k]),rx_gain_db=rx_gain,tx_gain_db=tx_gain,
             **receive_quality(audit['status'],iq[k,:,0]+1j*iq[k,:,1],
                               None if received is None else received[k],float(snrs[k])))
             for k,row in enumerate(rows)]
@@ -467,7 +479,9 @@ def summarize(root, campaign):
                 if row['rx_sinr_status']=='estimated':
                     group=by_sinr[str(2*math.floor(row['rx_sinr_db']/2))]
                     group['inferred']+=1;group['correct']+=int(p==t)
-    value=dict(schema=SCHEMA,total_source_rows=total,attempted_rows=attempted,received_inferred_rows=inferred,
+    value=dict(schema=SCHEMA,rx_gain_db=registered_rx_gain(campaign['rf']['rx_gain_db']),
+        tx_gain_db=registered_tx_gain(campaign['rf']['tx_gain_db']),
+        total_source_rows=total,attempted_rows=attempted,received_inferred_rows=inferred,
         source_inferred_rows=source_inferred,receive_pending_or_failed_rows=attempted-inferred,
         pending_inference_rows=attempted-source_inferred,not_yet_attempted_rows=total-attempted,completed_batches=batches,
         complete=source_inferred==total,all_rows_received_and_inferred=inferred==total,
@@ -493,8 +507,12 @@ def main():
     p.add_argument('--max-batches',type=int,default=1)
     p.add_argument('--deadline-seconds',type=int,default=600)
     p.add_argument('--retry-failed',action='store_true',help='archive restored failed attempts, then retry; never discard evidence')
+    p.add_argument('--rx-gain-db',type=int,choices=[40,50],help='plan only; default40; all execution uses the sealed plan')
+    p.add_argument('--tx-gain-db',type=int,choices=[70,80],help='plan only; default70; all execution uses the sealed plan')
     args=p.parse_args();root=args.root
-    if args.command=='plan':create_plan(root);return
+    if args.command=='plan':
+        create_plan(root,40 if args.rx_gain_db is None else args.rx_gain_db,70 if args.tx_gain_db is None else args.tx_gain_db);return
+    require(args.rx_gain_db is None and args.tx_gain_db is None,'RF gains are sealed in run-plan; create a new plan to change them')
     campaign=load_plan(root)
     require(0<=args.start_batch<campaign['budget']['batches'] and args.max_batches>0, 'batch range')
     stop=min(campaign['budget']['batches'],args.start_batch+args.max_batches)

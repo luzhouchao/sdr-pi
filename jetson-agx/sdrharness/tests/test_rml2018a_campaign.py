@@ -123,7 +123,7 @@ class CampaignTests(unittest.TestCase):
                 dict(row=k,source_snr_db=30,**c.receive_quality('sync_failed')) for k in range(24)]})
             c.save(batch/'capture-complete.json',dict(rows=list(range(24)),audit_sha256=c.file_hash(batch/'audit.json')))
             with patch('builtins.print'):
-                runner.summarize(root,{'budget':c.budget(25)})
+                runner.summarize(root,{'budget':c.budget(25),'rf':{'rx_gain_db':40,'tx_gain_db':70}})
             report=json.loads((root/'summary.json').read_text())
             self.assertEqual(report['attempted_rows'],24)
             self.assertEqual(report['pending_inference_rows'],24)
@@ -150,7 +150,7 @@ class CampaignTests(unittest.TestCase):
             c.save(batch/'capture-complete.json',dict(rows=[0,1],audit_sha256=seal))
             result=dict(schema=c.SCHEMA,batch=0,audit_sha256=seal,rows=entries)
             c.save(batch/'predictions.json',result)
-            with patch('builtins.print'):runner.summarize(root,{'budget':c.budget(2)})
+            with patch('builtins.print'):runner.summarize(root,{'budget':c.budget(2),'rf':{'rx_gain_db':40,'tx_gain_db':70}})
             report=json.loads((root/'summary.json').read_text())
             self.assertEqual(set(report['by_source_snr_db']),{'30','-20'})
             self.assertNotIn('by_snr',report)
@@ -164,10 +164,10 @@ class CampaignTests(unittest.TestCase):
                 changed=dict(entries[0]);changed[key]=value
                 c.save(batch/'predictions.json',{**result,'rows':[changed,entries[1]]})
                 with self.assertRaisesRegex(ValueError,'prediction quality differs from capture audit'):
-                    runner.summarize(root,{'budget':c.budget(2)})
+                    runner.summarize(root,{'budget':c.budget(2),'rf':{'rx_gain_db':40,'tx_gain_db':70}})
             c.save(batch/'predictions.json',{**result,'schema':'rml2018a-all-row-rf-v1'})
             with self.assertRaisesRegex(ValueError,'prediction schema changed'):
-                runner.summarize(root,{'budget':c.budget(2)})
+                runner.summarize(root,{'budget':c.budget(2),'rf':{'rx_gain_db':40,'tx_gain_db':70}})
 
     def test_archived_pilot_remains_byte_identical_across_record_schema_change(self):
         bits=np.unpackbits(np.frombuffer(hashlib.shake_256(
@@ -192,12 +192,12 @@ class CampaignTests(unittest.TestCase):
             c.save(batch/'capture-complete.json',dict(rows=list(range(24)),audit_sha256=c.file_hash(batch/'audit.json')))
             bg=MagicMock()
             with patch.object(runner,'module',return_value=bg),patch.object(runner,'native_check',return_value=(None,{'iq_sha256':'expected'})):
-                runner.acquire_batch(root,{'budget':c.budget(25)},0)
+                runner.acquire_batch(root,{'budget':c.budget(25),'rf':{'rx_gain_db':40,'tx_gain_db':70}},0)
                 bg.tx_preflight.assert_not_called()
                 bg.command.assert_not_called()
             with patch.object(runner,'module',return_value=bg),patch.object(runner,'native_check',return_value=(None,{'iq_sha256':'tampered'})):
                 with self.assertRaisesRegex(ValueError,'completed IQ changed'):
-                    runner.acquire_batch(root,{'budget':c.budget(25)},0)
+                    runner.acquire_batch(root,{'budget':c.budget(25),'rf':{'rx_gain_db':40,'tx_gain_db':70}},0)
 
     def test_normalization_keeps_constant_carrier_and_is_scale_invariant(self):
         z=np.ones(1024)*(.2+.4j)
@@ -207,16 +207,28 @@ class CampaignTests(unittest.TestCase):
         self.assertAlmostEqual(float(np.sqrt(np.mean(np.sum(a.astype(float)**2,axis=0)))),1,places=6)
         with self.assertRaises(ValueError):c.normalize_window(np.zeros(1024))
 
-    def fifo_case(self, go):
+    def test_unregistered_gains_rejected_before_hardware_or_dataset_access(self):
+        runner=load('campaign_gain_limits',SCRIPTS/'rml2018a-rf-campaign.py')
+        with patch.object(runner,'file_hash') as hashing,patch.object(runner,'document') as read:
+            for gain in (-1,39,41,True,40.):
+                with self.assertRaises(ValueError):runner.create_plan(Path('/unused'),gain)
+                with self.assertRaises(ValueError):runner.native_check(Path('/unused'),{'gain_db':gain})
+            hashing.assert_not_called();read.assert_not_called()
+        frame,_=c.packet(self.source(),'gain-test',0)
+        for gain in (69,71,81,90,True,80.):
+            with self.assertRaises(ValueError):c.tx_plan(frame,'gain-test',0,range(24),gain)
+
+    def fifo_case(self, go, gain=70):
         nx=load('fifo_nx',SCRIPTS/'rml2018a-nx-tx.py')
         frame,_=c.packet(self.source(2),'fifo-test',0)
-        plan=c.tx_plan(frame,'fifo-test',0,[0,1])
+        plan=c.tx_plan(frame,'fifo-test',0,[0,1],gain)
         launched=[];real_popen=subprocess.Popen;real_select=nx.select.select;real_read=os.read
         with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:
             root=Path(directory);(root/'packet.fc32').write_bytes(frame.tobytes())
             (root/'tx-plan.json').write_text(json.dumps(plan))
             def fake_uhd(args,**kwargs):
                 self.assertEqual(args[args.index('--freq')+1],'2455000000')
+                self.assertEqual(args[args.index('--gain')+1],str(gain))
                 self.assertNotIn('--repeat',args)
                 code=('import sys,hashlib,json; f=open(sys.argv[1],"rb"); h=hashlib.sha256(); n=0\n'
                       'while True:\n b=f.read(8192)\n if not b:break\n h.update(b);n+=len(b)\n'
@@ -243,6 +255,8 @@ class CampaignTests(unittest.TestCase):
             else:self.assertEqual(audit['bytes_written'],0)
 
     def test_finite_fifo_exact_bytes_and_child_exit(self):self.fifo_case(True)
+
+    def test_higher_registered_gain_reaches_uhd_with_same_finite_budget(self):self.fifo_case(True,80)
 
     def test_fifo_eof_before_go_cancels_without_payload(self):self.fifo_case(False)
 
