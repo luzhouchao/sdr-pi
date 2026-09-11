@@ -22,9 +22,9 @@ import uuid
 
 import h5py
 import numpy as np
-from rml2018a_campaign import (REPO, SCHEMA, RATE, CENTER, BW, RX_SAMPLES,
+from rml2018a_campaign import (REPO, SCHEMA, RATE, CENTER, BW, RX_SAMPLES, CFO_SEARCH_MAX_HZ, CFO_LIMIT_HZ,
     ROWS_PER_BATCH, batch_rows, budget, digest, file_hash, marker, normalize_window,
-    packet, receive_quality, require, save, synchronize, tx_plan)
+    packet, receive_quality, require, save, sinr_contract, synchronize, tx_plan, validate_receive_quality)
 
 SCRIPTS = Path(__file__).resolve().parent
 DATASET = REPO/'local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5'
@@ -75,10 +75,12 @@ def create_plan(root):
                 rx_gain_db=50, peak=.2, tx_lo_offset_hz=250000, settle_ms=500,
                 point_deadline_ms=1000, rx_samples=RX_SAMPLES),
         framing='24 independent1024 rows with per-row peak normalization, batch-specific pilot and guards',
+        synchronization=dict(cfo_search_max_hz=CFO_SEARCH_MAX_HZ,cfo_step_hz=500,
+            cfo_limit_hz=CFO_LIMIT_HZ,initial_marker_threshold=.55,final_marker_threshold=.65),
         quality_contract=dict(source_snr_db='original dataset Z; never relabeled as received SINR',
-            rx_sinr='total desired modulation power / (interference + noise); dB; unmeasured is null',
+            rx_sinr='conditional effective SINR including additional link distortion; not independently measured RF SINR',
             source_reference='X already contains source impairments; not a clean signal reference',
-            estimator=None, source_rx_correlation='waveform fidelity only, not SINR'),
+            estimator=sinr_contract(), source_rx_correlation='waveform fidelity only, not SINR'),
         preprocessing='pilot timing/CFO/phase correction then per-row complex RMS; no label-guided alignment',
         created_unix_ns=time.time_ns(), base_head=subprocess.check_output(['git','-C',str(REPO),
             'rev-parse','HEAD'], text=True).strip())
@@ -272,12 +274,16 @@ def acquire_batch(root, campaign, index, retry_failed=False):
         audit['uhd_tail_markers']=log.split('Done!')[-1].strip()
         raw, seal = native_check(dest,rxp)
         audit['seal'] = seal
+        received = None
         try:
-            _, sync = synchronize(raw,campaign['run_id'],index,len(rows))
+            received, sync = synchronize(raw,campaign['run_id'],index,len(rows))
             audit['sync'] = sync; audit['status'] = 'synchronized'
         except ValueError as e:
             audit['status'] = 'sync_failed'; audit['sync_error'] = str(e)
-        audit['receive_quality'] = receive_quality(audit['status'])
+        audit['receive_quality'] = [dict(row=row, source_snr_db=int(snrs[k]),
+            **receive_quality(audit['status'],iq[k,:,0]+1j*iq[k,:,1],
+                              None if received is None else received[k],float(snrs[k])))
+            for k,row in enumerate(rows)]
     except BaseException as e:
         audit['error'] = f'{type(e).__name__}: {e}'
         raise
@@ -349,7 +355,9 @@ def infer_batches(root, campaign, indices):
             dest=root/f'batch-{index:07d}'; done=document(dest/'capture-complete.json')
             require(file_hash(dest/'audit.json')==done['audit_sha256'], 'audit modified')
             source=document(dest/'source.json'); raw,seal=native_check(dest,document(dest/'rx-plan.json'))
-            require(seal==document(dest/'audit.json')['seal'], 'RX evidence changed')
+            audit=document(dest/'audit.json')
+            require(seal==audit['seal'], 'RX evidence changed')
+            require([q['row'] for q in audit['receive_quality']]==source['rows'], 'quality row membership')
             with h5py.File(DATASET,'r') as f:iq=f['X'][source['rows']]
             require(digest(iq.tobytes())==source['original_iq_sha256'], 'source row changed')
             received=None;sync=None
@@ -359,9 +367,11 @@ def infer_batches(root, campaign, indices):
             for k,row in enumerate(source['rows']):
                 require(time.monotonic()<end, 'GPU shard deadline')
                 z=iq[k,:,0].astype(float)+1j*iq[k,:,1]
-                entry=dict(row=row,true_id=source['class_ids'][k],source_snr_db=source['source_snr_db'][k],
-                    receive_status=done['status'],source_prediction=None,received_prediction=None,
-                    **receive_quality(done['status']))
+                quality=audit['receive_quality'][k]
+                require(quality['source_snr_db']==source['source_snr_db'][k], 'quality source Z')
+                validate_receive_quality(quality,source['source_snr_db'][k])
+                entry=dict(**quality,true_id=source['class_ids'][k],
+                    receive_status=done['status'],source_prediction=None,received_prediction=None)
                 for tag,data in [('source',z),('received',None if received is None else received[k])]:
                     if data is None:continue
                     tensor=normalize_window(data);logits,us=backend.classify_logits(tensor)
@@ -419,13 +429,25 @@ def infer_shard(root, campaign, indices):
 def summarize(root, campaign):
     total=campaign['budget']['rows']; attempted=0; inferred=0; correct=0; source_correct=0; source_inferred=0
     confusion=np.zeros((24,24),dtype=np.int64);by_source_snr={}; batches=0
-    sinr_unmeasured=0; sinr_reasons={}
+    sinr_counts=dict(estimated=0,invalid=0,not_measured=0);sinr_reasons={};by_sinr={}
     for index in range(campaign['budget']['batches']):
         completed=root/f'batch-{index:07d}'/'capture-complete.json'
         if completed.exists():
             done=document(completed)
             require(done['rows']==batch_rows(total,index), 'capture row membership')
             require(done['audit_sha256']==file_hash(completed.parent/'audit.json'), 'capture audit changed')
+            quality=document(completed.parent/'audit.json')['receive_quality']
+            require([q['row'] for q in quality]==done['rows'], 'quality row membership')
+            for q in quality:
+                validate_receive_quality(q,q['source_snr_db'])
+                status=q['rx_sinr_status'];sinr_counts[status]+=1
+                if status=='estimated':
+                    # Fixed 2 dB floor bins; includes failed inference in acquired count.
+                    key=str(2*math.floor(q['rx_sinr_db']/2))
+                    bucket=by_sinr.setdefault(key,dict(acquired=0,inferred=0,correct=0))
+                    bucket['acquired']+=1
+                else:
+                    reason=q['rx_sinr_reason'];sinr_reasons[reason]=sinr_reasons.get(reason,0)+1
             attempted+=len(done['rows'])
         p=root/f'batch-{index:07d}'/'predictions.json'
         if not p.exists():continue
@@ -434,18 +456,17 @@ def summarize(root, campaign):
         require(completed.exists() and result['audit_sha256']==done['audit_sha256'], 'prediction association')
         require([x['row'] for x in result['rows']]==batch_rows(total,index),'prediction row membership')
         batches+=1
-        for row in result['rows']:
+        for row,q in zip(result['rows'],quality):
             source_inferred+=1;source_correct+=int(row['source_prediction']['id']==row['true_id'])
-            # v2 has no validated SINR estimator; reject invented numeric values.
-            quality=receive_quality(row['receive_status'])
-            require(all(k in row and row[k]==v for k,v in quality.items()), 'unsupported SINR measurement')
-            sinr_unmeasured+=1
-            reason=row['rx_sinr_reason'];sinr_reasons[reason]=sinr_reasons.get(reason,0)+1
+            require(all(k in row and row[k]==v for k,v in q.items()), 'prediction quality differs from capture audit')
             bucket=by_source_snr.setdefault(str(row['source_snr_db']),dict(attempted=0,inferred=0,correct=0))
             bucket['attempted']+=1
             if row['received_prediction'] is not None:
                 inferred+=1;bucket['inferred']+=1;p=row['received_prediction']['id'];t=row['true_id']
                 confusion[t,p]+=1;correct+=int(p==t);bucket['correct']+=int(p==t)
+                if row['rx_sinr_status']=='estimated':
+                    group=by_sinr[str(2*math.floor(row['rx_sinr_db']/2))]
+                    group['inferred']+=1;group['correct']+=int(p==t)
     value=dict(schema=SCHEMA,total_source_rows=total,attempted_rows=attempted,received_inferred_rows=inferred,
         source_inferred_rows=source_inferred,receive_pending_or_failed_rows=attempted-inferred,
         pending_inference_rows=attempted-source_inferred,not_yet_attempted_rows=total-attempted,completed_batches=batches,
@@ -453,9 +474,10 @@ def summarize(root, campaign):
         source_accuracy=source_correct/source_inferred if source_inferred else None,
         received_correct=correct,source_correct=source_correct,confusion_matrix=confusion.tolist(),
         by_source_snr_db=by_source_snr,
-        rx_sinr=dict(status='not_measured',measured_rows=0,not_measured_rows=sinr_unmeasured,
-            pending_quality_rows=attempted-source_inferred,not_measured_reasons=sinr_reasons,
-            by_rx_sinr_db={},method=None),
+        rx_sinr=dict(status='conditional_estimates',measured_rows=0,**sinr_counts,
+            quality_rows=attempted,unavailable_reasons=sinr_reasons,
+            by_estimated_rx_sinr_db=by_sinr,bin_width_db=2,bin_semantics='[key, key+2)',
+            contract=sinr_contract()),
         received_accuracy=correct/inferred if inferred else None,
         end_to_end_success_fraction=correct/attempted if attempted else None,
         semantics='all-row engineering comparison, includes historical train/validation/test; not independent test accuracy',
@@ -491,7 +513,7 @@ def main():
                 if args.command in ('acquire','run'):
                     for index in shard:acquire_batch(root,campaign,index,args.retry_failed)
                 if args.command in ('infer','run'):infer_shard(root,campaign,shard)
-            if args.command in ('infer','run'):summarize(root,campaign)
+            if args.command in ('acquire','infer','run'):summarize(root,campaign)
         finally:
             signal.alarm(0)
 

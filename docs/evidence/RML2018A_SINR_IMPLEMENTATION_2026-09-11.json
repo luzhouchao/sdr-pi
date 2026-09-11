@@ -1,0 +1,541 @@
+{
+  "schema": "rml2018a-sinr-implementation-evidence-v1",
+  "base_head": "ab34c25120a94b76d5e1ef49b72db88a608ad135",
+  "purpose": "Conditional effective SINR implementation and carrier-scaled CFO validation, not independently calibrated RF SINR",
+  "tests_passed": 23,
+  "simulation": {
+    "simulation_trials": 240,
+    "mean_error_db": 0.0085439398201414,
+    "p95_absolute_error_db": 0.31012756138893843,
+    "maximum_absolute_error_db": 0.5788952216418558
+  },
+  "live_total_rx_iq_bytes": 1048560,
+  "live_total_tx_seconds_max": 16,
+  "model_inferences": 0,
+  "recognizer_available": false,
+  "fresh_quality_summary": {
+    "status": "conditional_estimates",
+    "measured_rows": 0,
+    "estimated": 4,
+    "invalid": 20,
+    "not_measured": 24,
+    "quality_rows": 48,
+    "unavailable_reasons": {
+      "gain_not_stable_across_halves": 16,
+      "reference_below_estimator_range": 3,
+      "residual_not_stationary_across_halves": 1,
+      "payload_not_synchronized": 24
+    },
+    "by_estimated_rx_sinr_db": {
+      "-8": {
+        "acquired": 2,
+        "inferred": 0,
+        "correct": 0
+      },
+      "-6": {
+        "acquired": 1,
+        "inferred": 0,
+        "correct": 0
+      },
+      "-10": {
+        "acquired": 1,
+        "inferred": 0,
+        "correct": 0
+      }
+    },
+    "bin_width_db": 2,
+    "bin_semantics": "[key, key+2)",
+    "contract": {
+      "method": "nominal-source-plus-crossfit-link-error-v1",
+      "target": "conditional_effective_sinr_including_link_distortion",
+      "assumptions": [
+        "Z describes nominal source signal/noise power ratio in X",
+        "single complex gain is adequate over each fixed 1024-sample window",
+        "additional interference/noise is uncorrelated with X",
+        "source signal and source noise undergo the same gain"
+      ],
+      "limitations": [
+        "not independently measured total RF SINR or per-realization source SNR",
+        "stable multipath/nonlinearity remains in link error; correlated interference can bias gain",
+        "no separation of Wi-Fi, receiver noise and hardware distortion"
+      ],
+      "folds": "two contiguous512 halves; train centered scalar gain on one, evaluate other, swap",
+      "maximum_gain_disagreement": 0.25,
+      "maximum_residual_power_ratio": 4.0,
+      "minimum_reference_residual_db": -10.0,
+      "minimum_centered_reference_fraction": 0.0001,
+      "digital_filter": "none",
+      "integration_bandwidth_hz": 2100000,
+      "integration_band": "entire sampled complex baseband [-Fs/2, Fs/2); after analog RX filter",
+      "analog_rf_bandwidth_hz": 1500000,
+      "confidence_interval": null
+    }
+  },
+  "fresh48_rows_recomputed_exactly": true,
+  "packages": [
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911",
+      "purpose": "Retain fixed finite captures, failure/derived lineage and restoration for SINR/CFO review",
+      "run_id": "70df98105e9547e4bfd657d61fa20609",
+      "source": {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+        "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+        "bytes": 21449148312,
+        "mtime_ns": 1627354882000000000
+      },
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+      "model_inferences": 0,
+      "preprocess": "pilot timing/CFO/phase correction then per-row complex RMS; no label-guided alignment",
+      "quality_contract": {
+        "source_snr_db": "original dataset Z; never relabeled as received SINR",
+        "rx_sinr": "conditional effective SINR including additional link distortion; not independently measured RF SINR",
+        "source_reference": "X already contains source impairments; not a clean signal reference",
+        "estimator": {
+          "method": "nominal-source-plus-crossfit-link-error-v1",
+          "target": "conditional_effective_sinr_including_link_distortion",
+          "assumptions": [
+            "Z describes nominal source signal/noise power ratio in X",
+            "single complex gain is adequate over each fixed 1024-sample window",
+            "additional interference/noise is uncorrelated with X",
+            "source signal and source noise undergo the same gain"
+          ],
+          "limitations": [
+            "not independently measured total RF SINR or per-realization source SNR",
+            "stable multipath/nonlinearity remains in link error; correlated interference can bias gain",
+            "no separation of Wi-Fi, receiver noise and hardware distortion"
+          ],
+          "folds": "two contiguous512 halves; train centered scalar gain on one, evaluate other, swap",
+          "maximum_gain_disagreement": 0.25,
+          "maximum_residual_power_ratio": 4.0,
+          "minimum_reference_residual_db": -10.0,
+          "minimum_centered_reference_fraction": 0.0001,
+          "digital_filter": "none",
+          "integration_bandwidth_hz": 2100000,
+          "integration_band": "entire sampled complex baseband [-Fs/2, Fs/2); after analog RX filter",
+          "analog_rf_bandwidth_hz": 1500000,
+          "confidence_interval": null
+        },
+        "source_rx_correlation": "waveform fidelity only, not SINR"
+      },
+      "file_count": 25,
+      "total_bytes": 653688,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0004267/audit.json",
+          "bytes": 20679,
+          "sha256": "74849f157715c8dbccaff71e059e8dc7c8c53b7ff53e6fb6d1b925d7ff6479a8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0004267/capture-complete.json",
+          "bytes": 420,
+          "sha256": "2e41257f198ed55ffe7360dfc2a41749694e3fe5dd488cfd29584376415a457d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0004267/report.json",
+          "bytes": 2271,
+          "sha256": "8590051bb5de2a16fb68581a3a222e96e2815daccd48d8a275d9c99bf95bb3ef"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0004267/rx/rml2018a-4267-1789107140899-1789107140899-1789107145082502283.sigmf-data",
+          "bytes": 262140,
+          "sha256": "bca5993e4492815c4e23221629079dd31eed6d829564b6fe59a804c508a96587"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0004267/rx/rml2018a-4267-1789107140899-1789107140899-1789107145082502283.sigmf-meta",
+          "bytes": 487,
+          "sha256": "98e5096be1732a8e576953d52ee7bdd810e5f98a0e7ba78bd94f1ed4e511b3b3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0004267/rx-plan.json",
+          "bytes": 386,
+          "sha256": "e45d56d9d9e181459624731d8d1094529d5ab6ed818210dafaa79438597f6174"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0004267/source.json",
+          "bytes": 1456,
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0004267/tx-plan.json",
+          "bytes": 828,
+          "sha256": "2b6915b036f2ba9d909dd46298fc92e0b6ccd7404423fc6d9f1d026f605badb9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0004267/tx-summary.json",
+          "bytes": 397,
+          "sha256": "cde9711382dc251874f8c2193096b0567054bfb9e1de53c3c174d3b11da5525c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0004267/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "98d02c95265ab5ce6f5d5c389c30280251766ad2c624d275bc927c6c1bbf9388"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0022016/audit.json",
+          "bytes": 20685,
+          "sha256": "141f096d332e65f29e53036f089b5ef7c4433b182f2644d811c97c8c793e2597"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0022016/capture-complete.json",
+          "bytes": 420,
+          "sha256": "e2341c83a88e4a5ddffa27e943f2abdc4feef9c402383874594dde8e308dd970"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0022016/report.json",
+          "bytes": 2273,
+          "sha256": "2a8968fd0cb821f3d86eeb32a1abc1b7b21e3fb80787a04cfab26dfe78ed69b8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0022016/rx/rml2018a-22016-1789107188619-1789107188619-1789107193000306256.sigmf-data",
+          "bytes": 262140,
+          "sha256": "aaeb5f4fab1f208b2ed627b09ac2cf21520b7e7d2f0d7948d603691c1b49308a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0022016/rx/rml2018a-22016-1789107188619-1789107188619-1789107193000306256.sigmf-meta",
+          "bytes": 487,
+          "sha256": "edd705169675114be6f4731b0a14e79dee617365bd349180621a14fd02c795d7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0022016/rx-plan.json",
+          "bytes": 387,
+          "sha256": "ed238320ac6a3fc33651a0834ec93c9303631ba000a638fb445c5ee8c3656fd9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0022016/source.json",
+          "bytes": 1455,
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0022016/tx-plan.json",
+          "bytes": 829,
+          "sha256": "9b94591c2ccc3600fbf74046f4fdd925a26c639a371e21fa50fcc8e236a50cd9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0022016/tx-summary.json",
+          "bytes": 398,
+          "sha256": "19b82aed9fc4743ab1cdd72939db306912d2c02b0c71653dc661bf168d82b698"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0022016/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "98d02c95265ab5ce6f5d5c389c30280251766ad2c624d275bc927c6c1bbf9388"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/run-plan.json",
+          "bytes": 4370,
+          "sha256": "cf6c0dec883c0a72c2370fabf7ccabb6b54aa0ef45eb43634c0beba1b9b71634"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/sinr-postflight.json",
+          "bytes": 1672,
+          "sha256": "b0ee5ae4aa549596620459f2b8208f67c678a06d7f119bb8169a40036a94f62e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/sinr-recheck-v1.json",
+          "bytes": 55216,
+          "sha256": "dd48ccda76ad2fe2ee80a1b2c8f5d47793c3a4c4b82be2fe7812f3ac26121d23"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/sinr-validation-plan.json",
+          "bytes": 3417,
+          "sha256": "9a157dfe00163a04910e52d9bfb37ab6d095da3c3153b5f2b4b0033c550be812"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/summary.json",
+          "bytes": 7801,
+          "sha256": "52696b93a7d92d7595fa5d66077d4ca46db96401cae8653573d6876664b10671"
+        }
+      ],
+      "capture_identities": [
+        {
+          "batch": 4267,
+          "status": "sync_failed",
+          "sync_error": "marker_not_found:0.510534",
+          "restored": true,
+          "request_id": 5,
+          "session_generation": 1789107140899,
+          "classes": [
+            0
+          ],
+          "uhd_tail_markers": "U",
+          "rx_quality_rows": 24,
+          "nx_removed_files": 7,
+          "nx_removed_bytes": 232182,
+          "agx_removed_packet_bytes": 208896
+        },
+        {
+          "batch": 22016,
+          "status": "sync_failed",
+          "sync_error": "marker_not_found:0.396311",
+          "restored": true,
+          "request_id": 5,
+          "session_generation": 1789107188619,
+          "classes": [
+            4
+          ],
+          "uhd_tail_markers": "U",
+          "rx_quality_rows": 24,
+          "nx_removed_files": 7,
+          "nx_removed_bytes": 232185,
+          "agx_removed_packet_bytes": 208896
+        }
+      ],
+      "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911",
+      "delete_precondition": "Confirm no campaign/NX/P201 owners, radio restored, root resolves exactly; delete only this registered evidence root."
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b",
+      "purpose": "Retain fixed finite captures, failure/derived lineage and restoration for SINR/CFO review",
+      "run_id": "0a0db475eb1b4d209b3e363f1f4f72ab",
+      "source": {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+        "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+        "bytes": 21449148312,
+        "mtime_ns": 1627354882000000000
+      },
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+      "model_inferences": 0,
+      "preprocess": "pilot timing/CFO/phase correction then per-row complex RMS; no label-guided alignment",
+      "quality_contract": {
+        "source_snr_db": "original dataset Z; never relabeled as received SINR",
+        "rx_sinr": "conditional effective SINR including additional link distortion; not independently measured RF SINR",
+        "source_reference": "X already contains source impairments; not a clean signal reference",
+        "estimator": {
+          "method": "nominal-source-plus-crossfit-link-error-v1",
+          "target": "conditional_effective_sinr_including_link_distortion",
+          "assumptions": [
+            "Z describes nominal source signal/noise power ratio in X",
+            "single complex gain is adequate over each fixed 1024-sample window",
+            "additional interference/noise is uncorrelated with X",
+            "source signal and source noise undergo the same gain"
+          ],
+          "limitations": [
+            "not independently measured total RF SINR or per-realization source SNR",
+            "stable multipath/nonlinearity remains in link error; correlated interference can bias gain",
+            "no separation of Wi-Fi, receiver noise and hardware distortion"
+          ],
+          "folds": "two contiguous512 halves; train centered scalar gain on one, evaluate other, swap",
+          "maximum_gain_disagreement": 0.25,
+          "maximum_residual_power_ratio": 4.0,
+          "minimum_reference_residual_db": -10.0,
+          "minimum_centered_reference_fraction": 0.0001,
+          "digital_filter": "none",
+          "integration_bandwidth_hz": 2100000,
+          "integration_band": "entire sampled complex baseband [-Fs/2, Fs/2); after analog RX filter",
+          "analog_rf_bandwidth_hz": 1500000,
+          "confidence_interval": null
+        },
+        "source_rx_correlation": "waveform fidelity only, not SINR"
+      },
+      "file_count": 24,
+      "total_bytes": 618334,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0004267/audit.json",
+          "bytes": 39934,
+          "sha256": "1d7f16e28231e0b9a2a1ec5d2563d15f33f68b0c7d532b56fa35bb6a987dae6d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0004267/capture-complete.json",
+          "bytes": 421,
+          "sha256": "2f2e4275fde688d38f853fc843cdd85267e7e14ac1cde98a5a8d593b2e844dc9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0004267/report.json",
+          "bytes": 2271,
+          "sha256": "9f4f99694515b2a935d910a93adbd8ad012bbeb3c12091a0c6cb0e5188d96262"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0004267/rx/rml2018a-4267-1789107604170-1789107604170-1789107608229161749.sigmf-data",
+          "bytes": 262140,
+          "sha256": "d9eeb197e8d7d0877ca9d78889898485403129117fcd2cef5adc98d376c5d11d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0004267/rx/rml2018a-4267-1789107604170-1789107604170-1789107608229161749.sigmf-meta",
+          "bytes": 487,
+          "sha256": "daa8b50e4328f6e315a22731c461f62e8eca3a38fefe3be400de63cb7798b6bc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0004267/rx-plan.json",
+          "bytes": 386,
+          "sha256": "ad634154d1ac212068b3d788d1f18511187be025dabcc24445269d451aa1db7e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0004267/source.json",
+          "bytes": 1456,
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0004267/tx-plan.json",
+          "bytes": 828,
+          "sha256": "4521077f8151e35ee7b8cfd16791b78391a96ee02d772cd03404d66c3a78631f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0004267/tx-summary.json",
+          "bytes": 397,
+          "sha256": "ac499b01b2d3caf68aa777c7df859b2c658124189c64f64b95f3e615d3a995bb"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0004267/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "994bdbffc04c685c3f9c0d9cd33a15f95738a8e53cb2ae049264066cd0ec7221"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0022016/audit.json",
+          "bytes": 20685,
+          "sha256": "31416018f03888ed76ced2e6f89f042226c9e5e74856f5628d7de6b1bd5ad8d9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0022016/capture-complete.json",
+          "bytes": 420,
+          "sha256": "2acca729864d8448c82879c30c2ea747bdcdf9821bfef60b3fa22d9e6ab3cb09"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0022016/report.json",
+          "bytes": 2276,
+          "sha256": "01badb238c886940073969db0638b4f2eef07a745cd2a6bf73076ef516940c1d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0022016/rx/rml2018a-22016-1789107658543-1789107658543-1789107675488044640.sigmf-data",
+          "bytes": 262140,
+          "sha256": "5b9cbe9db6c8c16152ef1123adec290b1c767e7f53c1a091082f6467ca8fe159"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0022016/rx/rml2018a-22016-1789107658543-1789107658543-1789107675488044640.sigmf-meta",
+          "bytes": 487,
+          "sha256": "3efb590487f23320d39fd3661e78e57d1fe1d8f65c23bf5e5ffc4a3a0cc39ebd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0022016/rx-plan.json",
+          "bytes": 387,
+          "sha256": "774add638f01b1be53d31a1e20ed4af86a2d92d870353e21bcd593dbf00bdaf6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0022016/source.json",
+          "bytes": 1455,
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0022016/tx-plan.json",
+          "bytes": 829,
+          "sha256": "b85f779d18a796220d5e05c6f46d052734bccf65ab66dd1d0166549ec7c16a9c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0022016/tx-summary.json",
+          "bytes": 398,
+          "sha256": "ce95ff2bb61f2784ca1d482d4b9a2f297afbd7c09dd9bbb2237f935c6168bb1d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0022016/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "994bdbffc04c685c3f9c0d9cd33a15f95738a8e53cb2ae049264066cd0ec7221"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/run-plan.json",
+          "bytes": 4554,
+          "sha256": "03c06219fa41618494d0d80cf6c87f69ad2cf703cc6dedd25a387dd40362d1bd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/sinr-postflight.json",
+          "bytes": 1326,
+          "sha256": "11243588acb2a7a1afb585232056607f43a5e35902d8d49220ad6ef7711d08cc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/sinr-validation-plan.json",
+          "bytes": 3769,
+          "sha256": "42e7fad945a038cbbee38f67a9c9b76e376fbef96db93da2f192abb9cb1bc7a0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/summary.json",
+          "bytes": 8214,
+          "sha256": "761fc88fc57fe760c77d4f49368b9b281654a85b79504b6dcd37c0c076091e4a"
+        }
+      ],
+      "capture_identities": [
+        {
+          "batch": 4267,
+          "status": "synchronized",
+          "restored": true,
+          "request_id": 5,
+          "session_generation": 1789107604170,
+          "nx_removed_files": 7,
+          "nx_removed_bytes": 232577,
+          "agx_removed_packet_bytes": 208896
+        },
+        {
+          "batch": 22016,
+          "status": "sync_failed",
+          "restored": true,
+          "request_id": 5,
+          "session_generation": 1789107658543,
+          "nx_removed_files": 7,
+          "nx_removed_bytes": 232580,
+          "agx_removed_packet_bytes": 208896
+        }
+      ],
+      "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b",
+      "delete_precondition": "Confirm no campaign/NX/P201 owners, radio restored, root resolves exactly; delete only this registered evidence root."
+    }
+  ],
+  "retained_files": 49,
+  "retained_bytes": 1272022,
+  "cleanup": {
+    "final_agx_items": [
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/scratch",
+        "files": 0,
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/owner.lock",
+        "files": 1,
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/scratch",
+        "files": 0,
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/owner.lock",
+        "files": 1,
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-impl-20260911-MYUGig",
+        "files": 9,
+        "bytes": 85517
+      }
+    ],
+    "final_agx_files": 11,
+    "final_agx_bytes": 85517,
+    "nx_files_removed": 28,
+    "nx_bytes_removed": 929524,
+    "agx_packet_files_removed": 4,
+    "agx_packet_bytes_removed": 835584,
+    "note": "Unit-test TemporaryDirectory children/FIFOs self-cleaned; their historical write/deletion bytes not included. Final AGX counts include logs/cache/locks only; no retained IQ deleted."
+  },
+  "older_evidence_unchanged": {
+    "files": 74,
+    "bytes": 1580090
+  },
+  "software": {
+    "jetson-agx/sdrharness/scripts/rml2018a_campaign.py": "82952a5b33c1bbd7452e0e869cdaff52571b899f77324b0548715097f58f67e7",
+    "jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py": "cd66968e945ab366483f8fcf828d3353d673772bbaaab575ad1f744578458436",
+    "jetson-agx/sdrharness/scripts/diagnose-rml2018a-campaign-sinr.py": "9a5f3c2515245840a2e1ffaaf5dea3bfc3e90eac7c81b2f7534b9ff99386c3dc",
+    "jetson-agx/sdrharness/tests/test_rml2018a_sinr.py": "d47199418453d2a1c3b60738a4caa9b4ba3a12abee26c544ae08c12e4ba58ebe",
+    "jetson-agx/sdrharness/tests/test_rml2018a_campaign.py": "95c8d1ec22b6620f9d95a2b392a716fa52f77bb031914ca3a8cc9e199c812dd9"
+  },
+  "weak_link_simulation": {
+    "trials": 200,
+    "source_snr_db": 30,
+    "additional_link_ratio_db": -9,
+    "estimated": 170,
+    "invalid": 30,
+    "mean_error_db": 0.0989807277120267,
+    "p95_absolute_error_db": 0.965003007570987,
+    "maximum_absolute_error_db": 1.2801895525033293
+  }
+}

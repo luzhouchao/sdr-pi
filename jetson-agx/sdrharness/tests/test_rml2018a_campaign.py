@@ -79,6 +79,17 @@ class CampaignTests(unittest.TestCase):
         with self.assertRaises(ValueError):c.synchronize(np.zeros(c.RX_SAMPLES),'run',1,24)
         with self.assertRaises(ValueError):c.synchronize(raw[:-1],'run',1,24)
 
+    def test_2455_cfo_allowance_scales_with_carrier_without_lowering_quality(self):
+        frame,_=c.packet(self.source(),'cfo2455',1)
+        n=np.arange(c.RX_SAMPLES)
+        for hz in (3370,-9100):
+            raw=np.tile(frame,3)[:c.RX_SAMPLES]*np.exp(2j*np.pi*hz*n/c.RATE)
+            _,report=c.synchronize(raw,'cfo2455',1,24)
+            self.assertGreater(report['marker_score'],.99)
+            self.assertAlmostEqual(report['estimated_cfo_hz'],hz,delta=2)
+        self.assertEqual(c.CFO_SEARCH_MAX_HZ,14500)
+        self.assertEqual(c.CFO_LIMIT_HZ,17000)
+
     def test_detector_rejects_out_of_band_tone_but_preserves_payload(self):
         frame,_=c.packet(self.source(),'tone',1)
         n=np.arange(c.RX_SAMPLES)
@@ -108,7 +119,8 @@ class CampaignTests(unittest.TestCase):
         runner=load('campaign_summary',SCRIPTS/'rml2018a-rf-campaign.py')
         with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:
             root=Path(directory);batch=root/'batch-0000000';batch.mkdir()
-            c.save(batch/'audit.json',{'status':'sync_failed'})
+            c.save(batch/'audit.json',{'status':'sync_failed','receive_quality':[
+                dict(row=k,source_snr_db=30,**c.receive_quality('sync_failed')) for k in range(24)]})
             c.save(batch/'capture-complete.json',dict(rows=list(range(24)),audit_sha256=c.file_hash(batch/'audit.json')))
             with patch('builtins.print'):
                 runner.summarize(root,{'budget':c.budget(25)})
@@ -117,7 +129,7 @@ class CampaignTests(unittest.TestCase):
             self.assertEqual(report['pending_inference_rows'],24)
             self.assertEqual(report['not_yet_attempted_rows'],1)
             self.assertIsNone(report['received_accuracy'])
-            self.assertEqual(report['rx_sinr']['pending_quality_rows'],24)
+            self.assertEqual(report['rx_sinr']['not_measured'],24)
             self.assertEqual(report['rx_sinr']['measured_rows'],0)
             self.assertFalse(report['complete'])
 
@@ -125,13 +137,17 @@ class CampaignTests(unittest.TestCase):
         runner=load('campaign_quality',SCRIPTS/'rml2018a-rf-campaign.py')
         with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:
             root=Path(directory);batch=root/'batch-0000000';batch.mkdir()
-            c.save(batch/'audit.json',{'status':'synchronized'})
-            seal=c.file_hash(batch/'audit.json')
-            c.save(batch/'capture-complete.json',dict(rows=[0,1],audit_sha256=seal))
             entries=[dict(row=k,true_id=0,source_snr_db=snr,receive_status=status,
                 source_prediction={'id':0},received_prediction=prediction,
                 **c.receive_quality(status)) for k,snr,status,prediction in (
                     (0,30,'synchronized',{'id':0}),(1,-20,'sync_failed',None))]
+            x=np.exp(2j*np.pi*np.arange(1024)/16)
+            entries[0].update(c.receive_quality('synchronized',x,2*x+.1,30))
+            quality=[{k:v for k,v in e.items() if k not in (
+                'true_id','source_prediction','received_prediction','receive_status')} for e in entries]
+            c.save(batch/'audit.json',{'status':'synchronized','receive_quality':quality})
+            seal=c.file_hash(batch/'audit.json')
+            c.save(batch/'capture-complete.json',dict(rows=[0,1],audit_sha256=seal))
             result=dict(schema=c.SCHEMA,batch=0,audit_sha256=seal,rows=entries)
             c.save(batch/'predictions.json',result)
             with patch('builtins.print'):runner.summarize(root,{'budget':c.budget(2)})
@@ -139,15 +155,15 @@ class CampaignTests(unittest.TestCase):
             self.assertEqual(set(report['by_source_snr_db']),{'30','-20'})
             self.assertNotIn('by_snr',report)
             self.assertEqual(report['rx_sinr']['measured_rows'],0)
-            self.assertEqual(report['rx_sinr']['not_measured_rows'],2)
-            self.assertEqual(report['rx_sinr']['by_rx_sinr_db'],{})
-            self.assertEqual(report['rx_sinr']['not_measured_reasons'],{
-                'no_clean_reference_or_validated_component_estimator':1,'payload_not_synchronized':1})
+            self.assertEqual(report['rx_sinr']['not_measured'],1)
+            self.assertEqual(report['rx_sinr']['estimated'],1)
+            self.assertEqual(sum(g['correct'] for g in report['rx_sinr']['by_estimated_rx_sinr_db'].values()),1)
+            self.assertEqual(report['rx_sinr']['unavailable_reasons'],{'payload_not_synchronized':1})
             self.assertEqual(report['end_to_end_success_fraction'],.5)
             for key,value in [('rx_sinr_db',30),('rx_sinr_db',0),('rx_sinr_status','measured')]:
                 changed=dict(entries[0]);changed[key]=value
                 c.save(batch/'predictions.json',{**result,'rows':[changed,entries[1]]})
-                with self.assertRaisesRegex(ValueError,'unsupported SINR measurement'):
+                with self.assertRaisesRegex(ValueError,'prediction quality differs from capture audit'):
                     runner.summarize(root,{'budget':c.budget(2)})
             c.save(batch/'predictions.json',{**result,'schema':'rml2018a-all-row-rf-v1'})
             with self.assertRaisesRegex(ValueError,'prediction schema changed'):

@@ -6,12 +6,17 @@ from pathlib import Path
 
 import numpy as np
 
-SCHEMA = 'rml2018a-all-row-rf-v2'
+SCHEMA = 'rml2018a-all-row-rf-v3'
+SINR_METHOD = 'nominal-source-plus-crossfit-link-error-v1'
 # Freeze pilot generation independently of record schema/frequency changes so
 # archived v1 frames remain reproducible for read-only diagnostics.
 PILOT_SCHEMA = 'rml2018a-all-row-rf-v1'
 RATE = 2100000
 CENTER = 2455000000
+# Preserve the original 433.920MHz fractional oscillator-error allowance when
+# changing carrier; the old absolute +/-2500Hz grid misses 2.4GHz captures.
+CFO_SEARCH_MAX_HZ = math.ceil(2500 * CENTER / 433920000 / 500) * 500
+CFO_LIMIT_HZ = math.ceil(3000 * CENTER / 433920000 / 500) * 500
 BW = 1500000
 RX_SAMPLES = 65535
 ROWS_PER_BATCH = 24
@@ -131,7 +136,7 @@ def synchronize(raw, run_id, batch, row_count):
     valid = len(z) - MARKER + 1
     denom = np.sqrt(np.maximum(energy[:valid] * np.vdot(ref, ref).real, 1e-30))
     best = (-1., 0, 0.)
-    for hz in range(-2500, 2501, 500):
+    for hz in range(-CFO_SEARCH_MAX_HZ, CFO_SEARCH_MAX_HZ+1, 500):
         corrected = z * np.exp(-2j*np.pi*hz*n/RATE)
         corr = correlate(corrected)[:valid]
         scores = abs(corr) / denom
@@ -145,7 +150,7 @@ def synchronize(raw, run_id, batch, row_count):
     # Ignore filter edge transients at each half when estimating residual CFO.
     residual = np.angle(np.vdot(pilot[64:448], pilot[576:960])) * RATE / (2*np.pi*512)
     hz += float(residual)
-    require(abs(hz) <= 3000, 'CFO outside registered search')
+    require(abs(hz) <= CFO_LIMIT_HZ, 'CFO outside registered search')
     y = z * np.exp(-2j*np.pi*hz*n/RATE)
     corr = correlate(y)[:valid]
     scores = abs(corr) / denom
@@ -166,6 +171,7 @@ def synchronize(raw, run_id, batch, row_count):
     return selected.reshape(row_count, 1024), dict(marker_score=score, marker_offset=at,
         payload_marker_offset=payload_marker, payload_marker_score=float(scores[payload_marker]),
         estimated_cfo_hz=hz, phase_rotation_rad=float(-np.angle(gain)),
+        cfo_search_max_hz=CFO_SEARCH_MAX_HZ, cfo_limit_hz=CFO_LIMIT_HZ,
         detector_filter=dict(kind='129-tap Hamming FIR', cutoff_hz=500000, payload_filtered=False),
         method='batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting')
 
@@ -178,20 +184,118 @@ def normalize_window(z):
     return np.ascontiguousarray(np.stack((z.real, z.imag)) / rms, dtype=np.float32)
 
 
-def receive_quality(receive_status):
-    """Do not infer total SINR from noisy dataset X, its Z label or coherence.
+def sinr_contract():
+    return dict(method=SINR_METHOD, target='conditional_effective_sinr_including_link_distortion',
+        assumptions=['Z describes nominal source signal/noise power ratio in X',
+            'single complex gain is adequate over each fixed 1024-sample window',
+            'additional interference/noise is uncorrelated with X',
+            'source signal and source noise undergo the same gain'],
+        limitations=['not independently measured total RF SINR or per-realization source SNR',
+            'stable multipath/nonlinearity remains in link error; correlated interference can bias gain',
+            'no separation of Wi-Fi, receiver noise and hardware distortion'],
+        folds='two contiguous512 halves; train centered scalar gain on one, evaluate other, swap',
+        maximum_gain_disagreement=.25, maximum_residual_power_ratio=4.,
+        minimum_reference_residual_db=-10., minimum_centered_reference_fraction=1e-4,
+        digital_filter='none', integration_bandwidth_hz=RATE,
+        integration_band='entire sampled complex baseband [-Fs/2, Fs/2); after analog RX filter',
+        analog_rf_bandwidth_hz=BW, confidence_interval=None)
 
-    X already includes source-generation impairments. RX-minus-X residuals
-    describe additional link error, not total signal/(interference+noise).
-    No calibrated component separation estimator is implemented here.
+
+def receive_quality(receive_status, reference=None, received=None, source_snr_db=None):
+    """Conditional effective SINR, never a direct measurement of clean power.
+
+    X is already noisy. Cross-fitted gain predicts the *whole* transmitted X;
+    held-out residual includes additional noise/interference/channel distortion.
+    Split predicted X power using nominal Z, then add the residual to its noise.
+    Centering is used only for gain fitting; DC remains in signal and residual.
+    No timing/filter/label search and no mutation of model inputs.
     """
     require(receive_status in ('synchronized', 'sync_failed'), 'receive quality status')
-    return dict(rx_sinr_db=None, rx_sinr_status='not_measured',
-        rx_sinr_reason=('no_clean_reference_or_validated_component_estimator'
-                        if receive_status == 'synchronized' else 'payload_not_synchronized'),
-        rx_sinr_method=None, rx_sinr_measurement_bandwidth_hz=None,
+    out = dict(rx_sinr_db=None, rx_sinr_status='not_measured', rx_sinr_reason='missing_reference_or_payload',
+        rx_sinr_method=SINR_METHOD, rx_sinr_measurement_bandwidth_hz=RATE,
+        rx_sinr_target='conditional_effective_sinr_including_link_distortion',
         rx_sinr_reference_plane='received_payload_before_rms',
-        rx_payload_filter='none', rx_sample_rate_hz=RATE, rx_rf_bandwidth_hz=BW)
+        rx_payload_filter='none', rx_sample_rate_hz=RATE, rx_rf_bandwidth_hz=BW,
+        rx_sinr_diagnostics=None)
+    if receive_status == 'sync_failed':
+        out['rx_sinr_reason'] = 'payload_not_synchronized'
+        return out
+    if reference is None or received is None or source_snr_db is None:
+        return out
+    x = np.asarray(reference, dtype=np.complex128)
+    y = np.asarray(received, dtype=np.complex128)
+    require(x.shape == y.shape == (1024,), 'SINR window shape')
+    require(np.isfinite(x).all() and np.isfinite(y).all() and
+            np.isfinite(source_snr_db) and -20 <= source_snr_db <= 30, 'SINR finite inputs/source Z')
+
+    def reject(reason):
+        out.update(rx_sinr_status='invalid', rx_sinr_reason=reason)
+        return out
+
+    # Work in relative units for numeric stability and gain invariance; retain
+    # the scale for interpretation. These are ADC-squared units, not watts/dBm.
+    xp = float(np.mean(abs(x)**2)); yp = float(np.mean(abs(y)**2))
+    if xp <= 0 or yp <= 0:
+        return reject('zero_reference_or_receive_power')
+    x = x / np.sqrt(xp); y = y / np.sqrt(yp)
+    halves = (slice(0,512), slice(512,1024))
+    gains = []; predicted = []; residual = []
+    for train, test in (halves, halves[::-1]):
+        xc = x[train] - x[train].mean(); yc = y[train] - y[train].mean()
+        energy = float(np.vdot(xc,xc).real)
+        if energy < 1e-4 * float(np.vdot(x[train],x[train]).real) or energy <= 1e-12:
+            return reject('reference_not_identifiable')
+        gain = np.vdot(xc,yc) / energy
+        prediction = gain*x[test]
+        gains.append(gain)
+        predicted.append(float(np.mean(abs(prediction)**2)))
+        residual.append(float(np.mean(abs(y[test]-prediction)**2)))
+    signal = float(np.mean(predicted)); error = float(np.mean(residual))
+    if signal <= 1e-12:
+        return reject('reference_not_detectable')
+    disagreement = float(abs(gains[0]-gains[1]) / max(np.sqrt(np.mean(abs(np.array(gains))**2)),1e-15))
+    ratio = float(max(residual) / max(min(residual),1e-12))
+    fraction = 1. / (1. + 10.**(float(source_snr_db)/10.))
+    nominal_noise = signal*fraction; desired = signal*(1.-fraction)
+    value = float(10*np.log10(desired/(nominal_noise+error)))
+    out['rx_sinr_diagnostics'] = dict(received_power_adc_squared=yp,
+        predicted_reference_power_relative=signal, link_error_power_relative=error,
+        nominal_source_noise_power_relative=nominal_noise, nominal_desired_power_relative=desired,
+        gain_disagreement=disagreement, residual_power_ratio=ratio,
+        fold_predicted_powers_relative=predicted, fold_error_powers_relative=residual,
+        reference_residual_db=float(10*np.log10(signal/error)) if error > 1e-12 else None,
+        source_snr_db=float(source_snr_db), source_noise_fraction=fraction)
+    if disagreement > .25:
+        return reject('gain_not_stable_across_halves')
+    if ratio > 4.:
+        return reject('residual_not_stationary_across_halves')
+    if signal < .1*error:
+        return reject('reference_below_estimator_range')
+    out.update(rx_sinr_db=value, rx_sinr_status='estimated', rx_sinr_reason=None)
+    return out
+
+
+def validate_receive_quality(value, source_snr_db):
+    """Verify recorded semantics/powers before aggregation; raw IQ seals remain upstream."""
+    base = receive_quality('synchronized')
+    for key in ('rx_sinr_method','rx_sinr_measurement_bandwidth_hz','rx_sinr_target',
+                'rx_sinr_reference_plane','rx_payload_filter','rx_sample_rate_hz','rx_rf_bandwidth_hz'):
+        require(value.get(key) == base[key], 'SINR contract identity')
+    status = value.get('rx_sinr_status')
+    require(status in ('estimated','invalid','not_measured'), 'SINR status')
+    if status != 'estimated':
+        require(value.get('rx_sinr_db') is None and isinstance(value.get('rx_sinr_reason'),str), 'invalid SINR value')
+        return
+    d = value['rx_sinr_diagnostics']; signal = d['predicted_reference_power_relative']; error = d['link_error_power_relative']
+    require(all(isinstance(v,(int,float)) and not isinstance(v,bool) and math.isfinite(v) for v in
+        (signal,error,value['rx_sinr_db'],source_snr_db)), 'nonfinite SINR powers')
+    require(signal > 1e-12 and error >= 0 and -20 <= source_snr_db <= 30 and
+            d['source_snr_db'] == source_snr_db and d['gain_disagreement'] <= .25 and
+            d['residual_power_ratio'] <= 4. and signal >= .1*error, 'SINR quality gate')
+    fraction = 1./(1.+10.**(source_snr_db/10.))
+    expected = 10*math.log10(signal*(1.-fraction)/(signal*fraction+error))
+    require(value['rx_sinr_reason'] is None and abs(value['rx_sinr_db']-expected) < 1e-9 and
+            value['rx_sinr_db'] <= source_snr_db+1e-9, 'SINR source/noise accounting')
 
 
 def batch_rows(total, batch):
@@ -206,6 +310,8 @@ def budget(total):
                 maximum_rx_iq_bytes=batches*RX_SAMPLES*4,
                 maximum_tx_seconds=batches*TX_SECONDS,
                 maximum_transient_packet_bytes=(GUARD*2+MARKER+ROWS_PER_BATCH*1024)*8,
-                metadata_and_predictions_reserve_bytes=batches*131072,
+                # Per-row cross-fit diagnostics occur in both sealed audit and
+                # predictions. Reserve for both; raw-IQ and TX budgets unchanged.
+                metadata_and_predictions_reserve_bytes=batches*262144,
                 estimated_wall_seconds_unvalidated=batches*10,
                 warning='wall estimate includes per-batch radio/SSH setup; replace with pilot measurement')
