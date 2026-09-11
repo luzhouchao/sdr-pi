@@ -1,0 +1,1923 @@
+{
+  "schema": "rml2018a-band-survey-evidence-v1",
+  "base_head": "ede587866c6211dc1d9c4bf945d33557a1ada2da",
+  "tests_passed": 3,
+  "maximum_points": 30,
+  "maximum_rx_bytes": 7864200,
+  "successful_points": 28,
+  "clipped_points": 2,
+  "actual_retained_iq_bytes": 7339920,
+  "tx_operations": 0,
+  "model_inferences": 0,
+  "recognizer_available": false,
+  "selection": {
+    "candidate_hz": 2440000000,
+    "ranking": [
+      {
+        "center_hz": 2440000000,
+        "worst_filtered_max": 65.24404640661216,
+        "worst_filtered_p95": 16.184285789433165,
+        "worst_raw_max": 129.65546291036102
+      },
+      {
+        "center_hz": 2405000000,
+        "worst_filtered_max": 68.31292358085165,
+        "worst_filtered_p95": 5.600982077045612,
+        "worst_raw_max": 155.45804297301572
+      },
+      {
+        "center_hz": 2435000000,
+        "worst_filtered_max": 81.8998527504122,
+        "worst_filtered_p95": 54.79014852714694,
+        "worst_raw_max": 561.7654092234587
+      },
+      {
+        "center_hz": 2455000000,
+        "worst_filtered_max": 98.59069103739355,
+        "worst_filtered_p95": 18.71195771504234,
+        "worst_raw_max": 212.50161764090174
+      },
+      {
+        "center_hz": 2465000000,
+        "worst_filtered_max": 99.53428896427303,
+        "worst_filtered_p95": 71.8220664654801,
+        "worst_raw_max": 235.10262054579485
+      },
+      {
+        "center_hz": 2425000000,
+        "worst_filtered_max": 213.97810920739101,
+        "worst_filtered_p95": 168.26722799024384,
+        "worst_raw_max": 381.5747899331139
+      }
+    ],
+    "excluded_clipped_or_failed": [
+      2415000000,
+      2478000000
+    ],
+    "rule": "three successful discovery captures; minimize worst175kHz-FIR maximum, then p95, then raw maximum; baseline2455 excluded as candidate"
+  },
+  "confirmation": {
+    "candidate_hz": 2440000000,
+    "baseline_hz": 2455000000,
+    "all_candidate_captures_valid": true,
+    "quiet_background_gate": false,
+    "criterion": "each of three175kHz-FIR confirmations p95<=5 and max<=8 ADC RMS at RX40; background only, not RX SINR/recognition",
+    "paired_filtered_peak_reduction_db": [
+      18.28954568925438,
+      -8.681728427961705,
+      -8.301094727900031
+    ],
+    "reselection": false
+  },
+  "postflight": {
+    "phases": [
+      {
+        "root": "/var/tmp/sdrharness-dev/rml-band-survey-20260911",
+        "counts": {
+          "captured": 22,
+          "clipped": 2
+        },
+        "metadata_stats_reproduced": true
+      },
+      {
+        "root": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm",
+        "counts": {
+          "captured": 6
+        },
+        "metadata_stats_reproduced": true
+      }
+    ],
+    "nx": {
+      "host": "wheeltec",
+      "user": "wheeltec",
+      "usb_serial": "2508504",
+      "matching_tx_processes": [],
+      "usb_holder_pids": [],
+      "evidence": "process and USB ownership checks; not an RF power measurement"
+    },
+    "health": {
+      "online": true,
+      "healthy": true,
+      "health_flags": 0,
+      "iio_visible": true,
+      "can_retune": true,
+      "can_capture_iq": true,
+      "rx_input": {
+        "identity_version": 1,
+        "verified": true,
+        "front_panel_port": "RX1",
+        "logical_channel": "RX0",
+        "phy_channel": "voltage0",
+        "scan_i_channel": "voltage0",
+        "scan_q_channel": "voltage1",
+        "rf_port_select": "A_BALANCED",
+        "source": "iio_channel_attr"
+      }
+    },
+    "tx_operations": 0,
+    "model_inferences": 0,
+    "exact_p201_paths_absent": true,
+    "original_radio_state_restored": true
+  },
+  "retained_files": 150,
+  "retained_bytes": 7509332,
+  "packages": [
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-band-survey-20260911",
+      "purpose": "Reproduce three-visit frequency ranking, clipped exclusions and independent fixed-candidate confirmation",
+      "file_count": 117,
+      "bytes": 5896778,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/audit.json",
+          "bytes": 58000,
+          "sha256": "70da97dc9cb4641b4937a6adc03a7614811c9ad947477a17e784d053bbfe9b88"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-0/link-background-1789111114834-1789111114834-1789111115111153935.sigmf-data",
+          "bytes": 262140,
+          "sha256": "10ce98be90c803d5f13b9096558fc2355e0daea120545981aa6a49589369c6e4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-0/link-background-1789111114834-1789111114834-1789111115111153935.sigmf-meta",
+          "bytes": 487,
+          "sha256": "4fc45269e9d23c425273dd1490254cff40d838222720d3c53290a49a2a029c5d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-0/plan.json",
+          "bytes": 388,
+          "sha256": "2fca4a7fb6588b54e5e774c40eca59be11454683285446b40216de071ff233ed"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-0/report.json",
+          "bytes": 2237,
+          "sha256": "8472fb81942b6915eea903437feac96398accfa926db66c3112dbe5054587fda"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-0/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-1/link-background-1789111114835-1789111114835-1789111119810048736.sigmf-data",
+          "bytes": 262140,
+          "sha256": "7d86743ff7a1130b50c4e9f48e2530c5a29e558f7800085f16204c2002c45744"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-1/link-background-1789111114835-1789111114835-1789111119810048736.sigmf-meta",
+          "bytes": 487,
+          "sha256": "9756beb552d0a8379611edd1c28f7d2fba1a620378e461d4217c9d1a284cfb96"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-1/plan.json",
+          "bytes": 388,
+          "sha256": "fbdfd896afe0b408d374a7cd6c7744e81173184679c43abda811801367e6af59"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-1/report.json",
+          "bytes": 2240,
+          "sha256": "56d3a1295cb4226e3cae4cd8052aac6e1af3b6dc2bc6032c42ca1cd606f278b6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-1/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-10/link-background-1789111114844-1789111114844-1789111161912024252.sigmf-data",
+          "bytes": 262140,
+          "sha256": "35731159118873c312017c4665661aff6f146d821b204dc266743c02f12da3ce"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-10/link-background-1789111114844-1789111114844-1789111161912024252.sigmf-meta",
+          "bytes": 487,
+          "sha256": "3c322de32c34397cbcf74906adf7a69d6b2ac6c440e59c4c6e45cf9f145dc82c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-10/plan.json",
+          "bytes": 388,
+          "sha256": "07c4707046c0ffff6d219c3a0aef1896a64e976df3e9d02875607b1d08fdaaf3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-10/report.json",
+          "bytes": 2241,
+          "sha256": "431ab1b22dc2b1d26186386d4d39ea371e17892ef30b0884d80ada3fcf007813"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-10/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-11/link-background-1789111114845-1789111114845-1789111166577886866.sigmf-data",
+          "bytes": 262140,
+          "sha256": "093b2b63041aafec09fb61a05fe55644e8c17c08f4ce64d4762d2e3e82ad0fa7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-11/link-background-1789111114845-1789111114845-1789111166577886866.sigmf-meta",
+          "bytes": 487,
+          "sha256": "727d3b53811e147786d2608d09abb581aaadc35782da2be0e5a45f1783616ffe"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-11/plan.json",
+          "bytes": 388,
+          "sha256": "4ff5cea323c2d74082efdb9bb76ff2dd5013696a043a8abc1d8a9e4f43b3a025"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-11/report.json",
+          "bytes": 2240,
+          "sha256": "e3e35b82dc30c13f03f47f1a9a4bac6cf5f6c189801a5a105cb8786ef2eb9edf"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-11/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-12/link-background-1789111114846-1789111114846-1789111171243656875.sigmf-data",
+          "bytes": 262140,
+          "sha256": "688c924a226bb91122a3f6f4a0cb35a92d6c4d0b44160d8813d44a4f4a3e52ff"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-12/link-background-1789111114846-1789111114846-1789111171243656875.sigmf-meta",
+          "bytes": 487,
+          "sha256": "c272a0523b12b54aa1615fde9d4627aaafd3325fc32e127b0337c1f4a05089ec"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-12/plan.json",
+          "bytes": 388,
+          "sha256": "1b82a6c4a0f678a5bb48509b804646393455814f4c3423c20b2653187646658f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-12/report.json",
+          "bytes": 2240,
+          "sha256": "4392a5ece752a7783cc3b045cbe226698da5d07e2709182c065cc20916b02a8b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-12/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-13/link-background-1789111114847-1789111114847-1789111175926575262.sigmf-data",
+          "bytes": 262140,
+          "sha256": "daf610b3f888dbda5447dd13d67fc8cf4b9c41e495818cf632e70fa4c5bbbe8e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-13/link-background-1789111114847-1789111114847-1789111175926575262.sigmf-meta",
+          "bytes": 487,
+          "sha256": "907b0d02d88f1b8edeec259eb4dd46c4603e2f7bb18c0da9f28b1fb0dfd4ebfa"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-13/plan.json",
+          "bytes": 388,
+          "sha256": "8ce30757e1a2756e22906e1ad8c7eb15a2ca3221d480c81092dd8520d9897760"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-13/report.json",
+          "bytes": 2245,
+          "sha256": "9acb69f2fb1b796e58bf1fe0dfe9d04f19e61d7ad77e513ef10c43a090c72313"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-13/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-14/plan.json",
+          "bytes": 388,
+          "sha256": "438bbb1b8721ae8fb3149e054b105ede5d1bb8e2a12bdc676b35604bebb2d48f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-14/stderr.log",
+          "bytes": 111,
+          "sha256": "fc17b9b2cae7aa2b0ab7a83444bc32dce15e890bb9df8688d85314f4b9c95f9e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-15/link-background-1789111114849-1789111114849-1789111185164540346.sigmf-data",
+          "bytes": 262140,
+          "sha256": "236b9f67fdec2f9621c977f77ce16daeeae6b004552a654c86473099c6aaf9a5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-15/link-background-1789111114849-1789111114849-1789111185164540346.sigmf-meta",
+          "bytes": 487,
+          "sha256": "d1e59c33df8203f32b482ac685db0c7394a7bfabd58b28625fec9a0d0282b053"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-15/plan.json",
+          "bytes": 388,
+          "sha256": "04267f1a4c9f2d42b85a926900f448b88e3209323eacad55de1a0ed5549d135b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-15/report.json",
+          "bytes": 2244,
+          "sha256": "ed8b470bb0a186580b6ac87f8742f32761a315da5430180be4b917bf982d1d42"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-15/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-16/link-background-1789111114850-1789111114850-1789111189845971975.sigmf-data",
+          "bytes": 262140,
+          "sha256": "313c23c738c8952824e057fa7380851636efdc73e6258f71cd11de1e4ee6600c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-16/link-background-1789111114850-1789111114850-1789111189845971975.sigmf-meta",
+          "bytes": 487,
+          "sha256": "af30f65667a508c5d17727b4fab4b88ecf70b3a5dc87c26d158b029d1ace315e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-16/plan.json",
+          "bytes": 388,
+          "sha256": "cf396e33d34d16b54207c205338658887b3554300ed17c5570c59ff99af32e06"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-16/report.json",
+          "bytes": 2243,
+          "sha256": "55c5ffb1953f3684b5a752ca4b521906f48b84552eaeef5632484bb7157203ee"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-16/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-17/link-background-1789111114851-1789111114851-1789111194546729607.sigmf-data",
+          "bytes": 262140,
+          "sha256": "a257f238d179ae95a7d081d9e9269c3ce519dd484d0189e7d7e914b7ea833192"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-17/link-background-1789111114851-1789111114851-1789111194546729607.sigmf-meta",
+          "bytes": 487,
+          "sha256": "e02334ffb96646629e87aaa99c594da1cb086c1e816ae169a832b7b3379ee9c6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-17/plan.json",
+          "bytes": 388,
+          "sha256": "ae34748af8f5a4f94ff62bf4b705dad0a2ce14fd572e985f08119e327c3209f6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-17/report.json",
+          "bytes": 2242,
+          "sha256": "cc7a88fa9a0720d6ec84f2e6bf2f08c87a85fa73c349a323d11861f7e514e2fc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-17/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-18/link-background-1789111114852-1789111114852-1789111199207671865.sigmf-data",
+          "bytes": 262140,
+          "sha256": "dcce1c1597596a4c84c6536f72ca4be607538a985c686c7a070ca278df3ebd54"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-18/link-background-1789111114852-1789111114852-1789111199207671865.sigmf-meta",
+          "bytes": 487,
+          "sha256": "0d12b641df968e48bb67af1f2285d508d6122c6996c74445ab3b1f1305c485d8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-18/plan.json",
+          "bytes": 388,
+          "sha256": "0bd76863bcd8c5b13b8849bfa81002662533023deccd15c3b76e0a1cee7d6306"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-18/report.json",
+          "bytes": 2243,
+          "sha256": "d4ba8873846f74b96db331cfb09032048702760fd8475bc832fd3b7f287ed500"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-18/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-19/link-background-1789111114853-1789111114853-1789111203907344292.sigmf-data",
+          "bytes": 262140,
+          "sha256": "8efd3dff67390b30aeb0e2ee4a98d1a4842552126512ccd6e6a95eeebf5a2e84"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-19/link-background-1789111114853-1789111114853-1789111203907344292.sigmf-meta",
+          "bytes": 487,
+          "sha256": "9f8d19de2197083538ee09a5043b71e33108475970a51420c2c7e91ca11a7702"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-19/plan.json",
+          "bytes": 388,
+          "sha256": "d0831ac59fc6e10714804cff5455e7861b9767b1b5b7da152e6bd90047030418"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-19/report.json",
+          "bytes": 2240,
+          "sha256": "6710083eb89b5caacff02123a579a98d78f9037a92f1488b62562f13b650b37e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-19/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-2/link-background-1789111114836-1789111114836-1789111124493636249.sigmf-data",
+          "bytes": 262140,
+          "sha256": "6a8cc4ccf2d8aebfa1d1cc119d0bc426a019554ffd68e04efbf85c15962a0331"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-2/link-background-1789111114836-1789111114836-1789111124493636249.sigmf-meta",
+          "bytes": 487,
+          "sha256": "d641d226ad3479bca491880d94025e8211574d299a09b90f951e9131b0042d99"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-2/plan.json",
+          "bytes": 388,
+          "sha256": "127cce7899b494941913a142d512e0b470d281a711baf345766d781c4b0750a5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-2/report.json",
+          "bytes": 2242,
+          "sha256": "492dc7594c41fc75f006b0b2cda6277c5973bc19f0f389593eae7bfc4b65503b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-2/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-20/link-background-1789111114854-1789111114854-1789111208599404566.sigmf-data",
+          "bytes": 262140,
+          "sha256": "99c2fae49f26577b214886bcf1b498382461a51a8535e1345c8336e6f8a31917"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-20/link-background-1789111114854-1789111114854-1789111208599404566.sigmf-meta",
+          "bytes": 487,
+          "sha256": "bc3904c38a01aeea20ceb8baf355f527aaab2f6cff2669f032384bd182f4162f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-20/plan.json",
+          "bytes": 388,
+          "sha256": "9e0bcd962d7adb11eb2f2b92fda55e3e2bc08879e6b3eb5066dca05a632def87"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-20/report.json",
+          "bytes": 2242,
+          "sha256": "73cf6bd808014fca37ecb764a62200043940920359b874fe7cb98bac084d56c8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-20/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-21/link-background-1789111114855-1789111114855-1789111213268396487.sigmf-data",
+          "bytes": 262140,
+          "sha256": "89c51f5fa760289cfb0f934d39144e8a911ac38e7ce42311132a764bdf1a03e2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-21/link-background-1789111114855-1789111114855-1789111213268396487.sigmf-meta",
+          "bytes": 487,
+          "sha256": "6efe569582ded2b9b109739d71ea38d126d4de989f7eb464205189900865dcc6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-21/plan.json",
+          "bytes": 388,
+          "sha256": "26e61af6a29b224663d3be8f2e18fee5669c19b4bf29939cd7918666ce226809"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-21/report.json",
+          "bytes": 2246,
+          "sha256": "be5c718607fcb67cdc86d44872b60844e0f5e821ec0a5c377287df94a1f28b70"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-21/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-22/link-background-1789111114856-1789111114856-1789111217952798378.sigmf-data",
+          "bytes": 262140,
+          "sha256": "4fb1f5d12fc53a71431d3be5de0e9d28f795b4763c4b63c7a9f24c6b47e614a3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-22/link-background-1789111114856-1789111114856-1789111217952798378.sigmf-meta",
+          "bytes": 487,
+          "sha256": "0ec6667ecb127603239c4b994c4ef8187a4bf8af607db299051fca28d8083cf2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-22/plan.json",
+          "bytes": 388,
+          "sha256": "b230efe8556e124e37a72006b8c2b7f13933e20ccdf8b5731efa259c9a7bc909"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-22/report.json",
+          "bytes": 2240,
+          "sha256": "6e7b5919646544d8a4e2efd1ba947a742d30e36ba9f3874a91ab91fcd368a1b7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-22/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-23/link-background-1789111114857-1789111114857-1789111222627918371.sigmf-data",
+          "bytes": 262140,
+          "sha256": "f37b2864534272f87821febd9b8d77873331f36b73c8c2dd6209d3f671d11ec3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-23/link-background-1789111114857-1789111114857-1789111222627918371.sigmf-meta",
+          "bytes": 487,
+          "sha256": "309602e0299858e39e21bc1442b5fdeb7c71d7b292dfb92a1176e9ac0fbdb955"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-23/plan.json",
+          "bytes": 388,
+          "sha256": "225bc6d6c11a0323711cac9ed316966a9774e16b8f0c4d94435b2da9b265a2f4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-23/report.json",
+          "bytes": 2242,
+          "sha256": "b2915969278520199f92bd3f75a18b1956726723de54097d5bc382848b0408b8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-23/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-3/link-background-1789111114837-1789111114837-1789111129190481215.sigmf-data",
+          "bytes": 262140,
+          "sha256": "33ce8031a26d4bacdc178fb06fb8ce750ed62572f2794f9dd4f5033d83d1f064"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-3/link-background-1789111114837-1789111114837-1789111129190481215.sigmf-meta",
+          "bytes": 487,
+          "sha256": "a45d314af8da973bd2db96e05a827cf4d3f6c4f12e6a0e5dd4a8bb393d762b59"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-3/plan.json",
+          "bytes": 388,
+          "sha256": "f76d71006ad890b0c6bf576d7d6539aa1c08d3eb6e32f6181f372b0ce3aa86a7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-3/report.json",
+          "bytes": 2243,
+          "sha256": "0168ca13ebdfa735d713e456c77489497d001ec35093911b9f50c75a2b05f343"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-3/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-4/link-background-1789111114838-1789111114838-1789111133903829002.sigmf-data",
+          "bytes": 262140,
+          "sha256": "307fb52812aeed21dd32d68a157f30752ab4db4986cb9cf17189bf2da83367dd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-4/link-background-1789111114838-1789111114838-1789111133903829002.sigmf-meta",
+          "bytes": 487,
+          "sha256": "a28e8e0d1d75750c42a40d11d7768d3e2f577030f7af81817dffd73613167326"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-4/plan.json",
+          "bytes": 388,
+          "sha256": "a485473cd2c4f43320e6ca697eac0c128e55d4d938f23b13c5b5f654849e2214"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-4/report.json",
+          "bytes": 2239,
+          "sha256": "0ca1e8ecc9513082cfa92bf127659ee4426f057ee82f6c32fa88cbbf1790267e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-4/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-5/link-background-1789111114839-1789111114839-1789111138592702199.sigmf-data",
+          "bytes": 262140,
+          "sha256": "282ed005aa409ca86a7cfa35816d8185b640a09c41b8a7ba3abed0f134ccf65d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-5/link-background-1789111114839-1789111114839-1789111138592702199.sigmf-meta",
+          "bytes": 487,
+          "sha256": "e72f0b816b39b538b84ffdf33ac817c5913176810012247af4676cd7286ff426"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-5/plan.json",
+          "bytes": 388,
+          "sha256": "fe853546ce30c6fab7258e736e34b8eedc531a7e4c1225ae32d8557d2878fa7d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-5/report.json",
+          "bytes": 2241,
+          "sha256": "0b98d4b1c2e9fef6802ff0971bb4d6a13a835d32480374bb74117096f15f9edb"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-5/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-6/link-background-1789111114840-1789111114840-1789111143277316215.sigmf-data",
+          "bytes": 262140,
+          "sha256": "b72640e26a8829b4739d48d0170167d848eb142ad786df89478c2a057a96e83c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-6/link-background-1789111114840-1789111114840-1789111143277316215.sigmf-meta",
+          "bytes": 487,
+          "sha256": "0bb32cc2c9599fdc6b2760917794e63bba5f8fe6220c99df1386bbd64729d85f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-6/plan.json",
+          "bytes": 388,
+          "sha256": "19f9d3c83a8bef70418987d586e8c927f34b1ce208abe3e2001c6b68bf579afe"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-6/report.json",
+          "bytes": 2243,
+          "sha256": "704021316005807ef6ea7641757afc421346ec71e69a062d704288d558ea83e3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-6/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-7/link-background-1789111114841-1789111114841-1789111147967904293.sigmf-data",
+          "bytes": 262140,
+          "sha256": "33e358c4946fa86c73a0351e72fdca119bef1da8849cca0ced29ec94e71662cf"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-7/link-background-1789111114841-1789111114841-1789111147967904293.sigmf-meta",
+          "bytes": 487,
+          "sha256": "c8dc94964405a2cbac0df2accbe7e46584fb886f6ae697c4f66ae23b621371ce"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-7/plan.json",
+          "bytes": 388,
+          "sha256": "f27c6894f2857409552a7cf7c40ab7def61ea5096ee92e0a992bff199660483b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-7/report.json",
+          "bytes": 2243,
+          "sha256": "0e2cc78f143c8091736e33bc6dbbd1a1884729a5219a0a3a29fa9e92ebffa527"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-7/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-8/plan.json",
+          "bytes": 388,
+          "sha256": "c916bfe26efb692fb826f97ff465765df6d569990d4317aeadc433ab65182519"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-8/stderr.log",
+          "bytes": 111,
+          "sha256": "fc17b9b2cae7aa2b0ab7a83444bc32dce15e890bb9df8688d85314f4b9c95f9e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-9/link-background-1789111114843-1789111114843-1789111157229225979.sigmf-data",
+          "bytes": 262140,
+          "sha256": "e75bd32f7cc6c43dfefdf5df5c7776d3483d208cd5ea6eb7a1e5750de7882dfa"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-9/link-background-1789111114843-1789111114843-1789111157229225979.sigmf-meta",
+          "bytes": 487,
+          "sha256": "d616905d0b18736361d29d0c82300f8bfef71f41d4883f063a16c420d97658c0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-9/plan.json",
+          "bytes": 388,
+          "sha256": "23017d4eba0c4d19e7f410303526784a2fcc9748615ab08039c433286d3f8dfc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-9/report.json",
+          "bytes": 2239,
+          "sha256": "114d707233906dc770e847b3cb89e330f703b124075976d13d789cf5759acfcb"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-9/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/selection.json",
+          "bytes": 1348,
+          "sha256": "b4a94de4b208c4098151a73abb8b8a408da3f0afd7544863d3797f31f842aa70"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/survey-contract.json",
+          "bytes": 787,
+          "sha256": "fc0f35699bfcdf450415279d9c933af9dcc0e06447610ce2a7071f53da653179"
+        }
+      ],
+      "plans": [
+        {
+          "sweep_id": "link-background-1789111114834",
+          "session_generation": 1789111114834,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2405000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114835",
+          "session_generation": 1789111114835,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2415000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114836",
+          "session_generation": 1789111114836,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2425000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114837",
+          "session_generation": 1789111114837,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2435000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114838",
+          "session_generation": 1789111114838,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114839",
+          "session_generation": 1789111114839,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114840",
+          "session_generation": 1789111114840,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2465000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114841",
+          "session_generation": 1789111114841,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2478000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114842",
+          "session_generation": 1789111114842,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2478000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114843",
+          "session_generation": 1789111114843,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2465000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114844",
+          "session_generation": 1789111114844,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114845",
+          "session_generation": 1789111114845,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114846",
+          "session_generation": 1789111114846,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2435000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114847",
+          "session_generation": 1789111114847,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2425000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114848",
+          "session_generation": 1789111114848,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2415000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114849",
+          "session_generation": 1789111114849,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2405000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114850",
+          "session_generation": 1789111114850,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2405000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114851",
+          "session_generation": 1789111114851,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2415000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114852",
+          "session_generation": 1789111114852,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2425000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114853",
+          "session_generation": 1789111114853,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2435000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114854",
+          "session_generation": 1789111114854,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114855",
+          "session_generation": 1789111114855,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114856",
+          "session_generation": 1789111114856,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2465000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111114857",
+          "session_generation": 1789111114857,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2478000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        }
+      ],
+      "requests": [
+        {
+          "point": 0,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-0/link-background-1789111114834-1789111114834-1789111115111153935.sigmf-data",
+            "iq_sha256": "10ce98be90c803d5f13b9096558fc2355e0daea120545981aa6a49589369c6e4",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-0/link-background-1789111114834-1789111114834-1789111115111153935.sigmf-data": "10ce98be90c803d5f13b9096558fc2355e0daea120545981aa6a49589369c6e4",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-0/link-background-1789111114834-1789111114834-1789111115111153935.sigmf-meta": "4fc45269e9d23c425273dd1490254cff40d838222720d3c53290a49a2a029c5d",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-0/report.json": "8472fb81942b6915eea903437feac96398accfa926db66c3112dbe5054587fda",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-0/plan.json": "2fca4a7fb6588b54e5e774c40eca59be11454683285446b40216de071ff233ed"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114834
+          }
+        },
+        {
+          "point": 1,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-1/link-background-1789111114835-1789111114835-1789111119810048736.sigmf-data",
+            "iq_sha256": "7d86743ff7a1130b50c4e9f48e2530c5a29e558f7800085f16204c2002c45744",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-1/link-background-1789111114835-1789111114835-1789111119810048736.sigmf-data": "7d86743ff7a1130b50c4e9f48e2530c5a29e558f7800085f16204c2002c45744",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-1/link-background-1789111114835-1789111114835-1789111119810048736.sigmf-meta": "9756beb552d0a8379611edd1c28f7d2fba1a620378e461d4217c9d1a284cfb96",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-1/report.json": "56d3a1295cb4226e3cae4cd8052aac6e1af3b6dc2bc6032c42ca1cd606f278b6",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-1/plan.json": "fbdfd896afe0b408d374a7cd6c7744e81173184679c43abda811801367e6af59"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114835
+          }
+        },
+        {
+          "point": 2,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-2/link-background-1789111114836-1789111114836-1789111124493636249.sigmf-data",
+            "iq_sha256": "6a8cc4ccf2d8aebfa1d1cc119d0bc426a019554ffd68e04efbf85c15962a0331",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-2/link-background-1789111114836-1789111114836-1789111124493636249.sigmf-data": "6a8cc4ccf2d8aebfa1d1cc119d0bc426a019554ffd68e04efbf85c15962a0331",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-2/link-background-1789111114836-1789111114836-1789111124493636249.sigmf-meta": "d641d226ad3479bca491880d94025e8211574d299a09b90f951e9131b0042d99",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-2/report.json": "492dc7594c41fc75f006b0b2cda6277c5973bc19f0f389593eae7bfc4b65503b",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-2/plan.json": "127cce7899b494941913a142d512e0b470d281a711baf345766d781c4b0750a5"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114836
+          }
+        },
+        {
+          "point": 3,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-3/link-background-1789111114837-1789111114837-1789111129190481215.sigmf-data",
+            "iq_sha256": "33ce8031a26d4bacdc178fb06fb8ce750ed62572f2794f9dd4f5033d83d1f064",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-3/link-background-1789111114837-1789111114837-1789111129190481215.sigmf-data": "33ce8031a26d4bacdc178fb06fb8ce750ed62572f2794f9dd4f5033d83d1f064",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-3/link-background-1789111114837-1789111114837-1789111129190481215.sigmf-meta": "a45d314af8da973bd2db96e05a827cf4d3f6c4f12e6a0e5dd4a8bb393d762b59",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-3/report.json": "0168ca13ebdfa735d713e456c77489497d001ec35093911b9f50c75a2b05f343",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-3/plan.json": "f76d71006ad890b0c6bf576d7d6539aa1c08d3eb6e32f6181f372b0ce3aa86a7"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114837
+          }
+        },
+        {
+          "point": 4,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-4/link-background-1789111114838-1789111114838-1789111133903829002.sigmf-data",
+            "iq_sha256": "307fb52812aeed21dd32d68a157f30752ab4db4986cb9cf17189bf2da83367dd",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-4/link-background-1789111114838-1789111114838-1789111133903829002.sigmf-data": "307fb52812aeed21dd32d68a157f30752ab4db4986cb9cf17189bf2da83367dd",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-4/link-background-1789111114838-1789111114838-1789111133903829002.sigmf-meta": "a28e8e0d1d75750c42a40d11d7768d3e2f577030f7af81817dffd73613167326",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-4/report.json": "0ca1e8ecc9513082cfa92bf127659ee4426f057ee82f6c32fa88cbbf1790267e",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-4/plan.json": "a485473cd2c4f43320e6ca697eac0c128e55d4d938f23b13c5b5f654849e2214"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114838
+          }
+        },
+        {
+          "point": 5,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-5/link-background-1789111114839-1789111114839-1789111138592702199.sigmf-data",
+            "iq_sha256": "282ed005aa409ca86a7cfa35816d8185b640a09c41b8a7ba3abed0f134ccf65d",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-5/link-background-1789111114839-1789111114839-1789111138592702199.sigmf-data": "282ed005aa409ca86a7cfa35816d8185b640a09c41b8a7ba3abed0f134ccf65d",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-5/link-background-1789111114839-1789111114839-1789111138592702199.sigmf-meta": "e72f0b816b39b538b84ffdf33ac817c5913176810012247af4676cd7286ff426",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-5/report.json": "0b98d4b1c2e9fef6802ff0971bb4d6a13a835d32480374bb74117096f15f9edb",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-5/plan.json": "fe853546ce30c6fab7258e736e34b8eedc531a7e4c1225ae32d8557d2878fa7d"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114839
+          }
+        },
+        {
+          "point": 6,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-6/link-background-1789111114840-1789111114840-1789111143277316215.sigmf-data",
+            "iq_sha256": "b72640e26a8829b4739d48d0170167d848eb142ad786df89478c2a057a96e83c",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-6/link-background-1789111114840-1789111114840-1789111143277316215.sigmf-data": "b72640e26a8829b4739d48d0170167d848eb142ad786df89478c2a057a96e83c",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-6/link-background-1789111114840-1789111114840-1789111143277316215.sigmf-meta": "0bb32cc2c9599fdc6b2760917794e63bba5f8fe6220c99df1386bbd64729d85f",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-6/report.json": "704021316005807ef6ea7641757afc421346ec71e69a062d704288d558ea83e3",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-6/plan.json": "19f9d3c83a8bef70418987d586e8c927f34b1ce208abe3e2001c6b68bf579afe"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114840
+          }
+        },
+        {
+          "point": 7,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-7/link-background-1789111114841-1789111114841-1789111147967904293.sigmf-data",
+            "iq_sha256": "33e358c4946fa86c73a0351e72fdca119bef1da8849cca0ced29ec94e71662cf",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-7/link-background-1789111114841-1789111114841-1789111147967904293.sigmf-data": "33e358c4946fa86c73a0351e72fdca119bef1da8849cca0ced29ec94e71662cf",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-7/link-background-1789111114841-1789111114841-1789111147967904293.sigmf-meta": "c8dc94964405a2cbac0df2accbe7e46584fb886f6ae697c4f66ae23b621371ce",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-7/report.json": "0e2cc78f143c8091736e33bc6dbbd1a1884729a5219a0a3a29fa9e92ebffa527",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-7/plan.json": "f27c6894f2857409552a7cf7c40ab7def61ea5096ee92e0a992bff199660483b"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114841
+          }
+        },
+        {
+          "point": 8,
+          "status": "clipped",
+          "seal": null
+        },
+        {
+          "point": 9,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-9/link-background-1789111114843-1789111114843-1789111157229225979.sigmf-data",
+            "iq_sha256": "e75bd32f7cc6c43dfefdf5df5c7776d3483d208cd5ea6eb7a1e5750de7882dfa",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-9/link-background-1789111114843-1789111114843-1789111157229225979.sigmf-data": "e75bd32f7cc6c43dfefdf5df5c7776d3483d208cd5ea6eb7a1e5750de7882dfa",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-9/link-background-1789111114843-1789111114843-1789111157229225979.sigmf-meta": "d616905d0b18736361d29d0c82300f8bfef71f41d4883f063a16c420d97658c0",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-9/report.json": "114d707233906dc770e847b3cb89e330f703b124075976d13d789cf5759acfcb",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-9/plan.json": "23017d4eba0c4d19e7f410303526784a2fcc9748615ab08039c433286d3f8dfc"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114843
+          }
+        },
+        {
+          "point": 10,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-10/link-background-1789111114844-1789111114844-1789111161912024252.sigmf-data",
+            "iq_sha256": "35731159118873c312017c4665661aff6f146d821b204dc266743c02f12da3ce",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-10/link-background-1789111114844-1789111114844-1789111161912024252.sigmf-data": "35731159118873c312017c4665661aff6f146d821b204dc266743c02f12da3ce",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-10/link-background-1789111114844-1789111114844-1789111161912024252.sigmf-meta": "3c322de32c34397cbcf74906adf7a69d6b2ac6c440e59c4c6e45cf9f145dc82c",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-10/report.json": "431ab1b22dc2b1d26186386d4d39ea371e17892ef30b0884d80ada3fcf007813",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-10/plan.json": "07c4707046c0ffff6d219c3a0aef1896a64e976df3e9d02875607b1d08fdaaf3"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114844
+          }
+        },
+        {
+          "point": 11,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-11/link-background-1789111114845-1789111114845-1789111166577886866.sigmf-data",
+            "iq_sha256": "093b2b63041aafec09fb61a05fe55644e8c17c08f4ce64d4762d2e3e82ad0fa7",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-11/link-background-1789111114845-1789111114845-1789111166577886866.sigmf-data": "093b2b63041aafec09fb61a05fe55644e8c17c08f4ce64d4762d2e3e82ad0fa7",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-11/link-background-1789111114845-1789111114845-1789111166577886866.sigmf-meta": "727d3b53811e147786d2608d09abb581aaadc35782da2be0e5a45f1783616ffe",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-11/report.json": "e3e35b82dc30c13f03f47f1a9a4bac6cf5f6c189801a5a105cb8786ef2eb9edf",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-11/plan.json": "4ff5cea323c2d74082efdb9bb76ff2dd5013696a043a8abc1d8a9e4f43b3a025"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114845
+          }
+        },
+        {
+          "point": 12,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-12/link-background-1789111114846-1789111114846-1789111171243656875.sigmf-data",
+            "iq_sha256": "688c924a226bb91122a3f6f4a0cb35a92d6c4d0b44160d8813d44a4f4a3e52ff",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-12/link-background-1789111114846-1789111114846-1789111171243656875.sigmf-data": "688c924a226bb91122a3f6f4a0cb35a92d6c4d0b44160d8813d44a4f4a3e52ff",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-12/link-background-1789111114846-1789111114846-1789111171243656875.sigmf-meta": "c272a0523b12b54aa1615fde9d4627aaafd3325fc32e127b0337c1f4a05089ec",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-12/report.json": "4392a5ece752a7783cc3b045cbe226698da5d07e2709182c065cc20916b02a8b",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-12/plan.json": "1b82a6c4a0f678a5bb48509b804646393455814f4c3423c20b2653187646658f"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114846
+          }
+        },
+        {
+          "point": 13,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-13/link-background-1789111114847-1789111114847-1789111175926575262.sigmf-data",
+            "iq_sha256": "daf610b3f888dbda5447dd13d67fc8cf4b9c41e495818cf632e70fa4c5bbbe8e",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-13/link-background-1789111114847-1789111114847-1789111175926575262.sigmf-data": "daf610b3f888dbda5447dd13d67fc8cf4b9c41e495818cf632e70fa4c5bbbe8e",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-13/link-background-1789111114847-1789111114847-1789111175926575262.sigmf-meta": "907b0d02d88f1b8edeec259eb4dd46c4603e2f7bb18c0da9f28b1fb0dfd4ebfa",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-13/report.json": "9acb69f2fb1b796e58bf1fe0dfe9d04f19e61d7ad77e513ef10c43a090c72313",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-13/plan.json": "8ce30757e1a2756e22906e1ad8c7eb15a2ca3221d480c81092dd8520d9897760"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114847
+          }
+        },
+        {
+          "point": 14,
+          "status": "clipped",
+          "seal": null
+        },
+        {
+          "point": 15,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-15/link-background-1789111114849-1789111114849-1789111185164540346.sigmf-data",
+            "iq_sha256": "236b9f67fdec2f9621c977f77ce16daeeae6b004552a654c86473099c6aaf9a5",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-15/link-background-1789111114849-1789111114849-1789111185164540346.sigmf-data": "236b9f67fdec2f9621c977f77ce16daeeae6b004552a654c86473099c6aaf9a5",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-15/link-background-1789111114849-1789111114849-1789111185164540346.sigmf-meta": "d1e59c33df8203f32b482ac685db0c7394a7bfabd58b28625fec9a0d0282b053",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-15/report.json": "ed8b470bb0a186580b6ac87f8742f32761a315da5430180be4b917bf982d1d42",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-15/plan.json": "04267f1a4c9f2d42b85a926900f448b88e3209323eacad55de1a0ed5549d135b"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114849
+          }
+        },
+        {
+          "point": 16,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-16/link-background-1789111114850-1789111114850-1789111189845971975.sigmf-data",
+            "iq_sha256": "313c23c738c8952824e057fa7380851636efdc73e6258f71cd11de1e4ee6600c",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-16/link-background-1789111114850-1789111114850-1789111189845971975.sigmf-data": "313c23c738c8952824e057fa7380851636efdc73e6258f71cd11de1e4ee6600c",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-16/link-background-1789111114850-1789111114850-1789111189845971975.sigmf-meta": "af30f65667a508c5d17727b4fab4b88ecf70b3a5dc87c26d158b029d1ace315e",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-16/report.json": "55c5ffb1953f3684b5a752ca4b521906f48b84552eaeef5632484bb7157203ee",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-16/plan.json": "cf396e33d34d16b54207c205338658887b3554300ed17c5570c59ff99af32e06"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114850
+          }
+        },
+        {
+          "point": 17,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-17/link-background-1789111114851-1789111114851-1789111194546729607.sigmf-data",
+            "iq_sha256": "a257f238d179ae95a7d081d9e9269c3ce519dd484d0189e7d7e914b7ea833192",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-17/link-background-1789111114851-1789111114851-1789111194546729607.sigmf-data": "a257f238d179ae95a7d081d9e9269c3ce519dd484d0189e7d7e914b7ea833192",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-17/link-background-1789111114851-1789111114851-1789111194546729607.sigmf-meta": "e02334ffb96646629e87aaa99c594da1cb086c1e816ae169a832b7b3379ee9c6",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-17/report.json": "cc7a88fa9a0720d6ec84f2e6bf2f08c87a85fa73c349a323d11861f7e514e2fc",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-17/plan.json": "ae34748af8f5a4f94ff62bf4b705dad0a2ce14fd572e985f08119e327c3209f6"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114851
+          }
+        },
+        {
+          "point": 18,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-18/link-background-1789111114852-1789111114852-1789111199207671865.sigmf-data",
+            "iq_sha256": "dcce1c1597596a4c84c6536f72ca4be607538a985c686c7a070ca278df3ebd54",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-18/link-background-1789111114852-1789111114852-1789111199207671865.sigmf-data": "dcce1c1597596a4c84c6536f72ca4be607538a985c686c7a070ca278df3ebd54",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-18/link-background-1789111114852-1789111114852-1789111199207671865.sigmf-meta": "0d12b641df968e48bb67af1f2285d508d6122c6996c74445ab3b1f1305c485d8",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-18/report.json": "d4ba8873846f74b96db331cfb09032048702760fd8475bc832fd3b7f287ed500",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-18/plan.json": "0bd76863bcd8c5b13b8849bfa81002662533023deccd15c3b76e0a1cee7d6306"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114852
+          }
+        },
+        {
+          "point": 19,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-19/link-background-1789111114853-1789111114853-1789111203907344292.sigmf-data",
+            "iq_sha256": "8efd3dff67390b30aeb0e2ee4a98d1a4842552126512ccd6e6a95eeebf5a2e84",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-19/link-background-1789111114853-1789111114853-1789111203907344292.sigmf-data": "8efd3dff67390b30aeb0e2ee4a98d1a4842552126512ccd6e6a95eeebf5a2e84",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-19/link-background-1789111114853-1789111114853-1789111203907344292.sigmf-meta": "9f8d19de2197083538ee09a5043b71e33108475970a51420c2c7e91ca11a7702",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-19/report.json": "6710083eb89b5caacff02123a579a98d78f9037a92f1488b62562f13b650b37e",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-19/plan.json": "d0831ac59fc6e10714804cff5455e7861b9767b1b5b7da152e6bd90047030418"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114853
+          }
+        },
+        {
+          "point": 20,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-20/link-background-1789111114854-1789111114854-1789111208599404566.sigmf-data",
+            "iq_sha256": "99c2fae49f26577b214886bcf1b498382461a51a8535e1345c8336e6f8a31917",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-20/link-background-1789111114854-1789111114854-1789111208599404566.sigmf-data": "99c2fae49f26577b214886bcf1b498382461a51a8535e1345c8336e6f8a31917",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-20/link-background-1789111114854-1789111114854-1789111208599404566.sigmf-meta": "bc3904c38a01aeea20ceb8baf355f527aaab2f6cff2669f032384bd182f4162f",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-20/report.json": "73cf6bd808014fca37ecb764a62200043940920359b874fe7cb98bac084d56c8",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-20/plan.json": "9e0bcd962d7adb11eb2f2b92fda55e3e2bc08879e6b3eb5066dca05a632def87"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114854
+          }
+        },
+        {
+          "point": 21,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-21/link-background-1789111114855-1789111114855-1789111213268396487.sigmf-data",
+            "iq_sha256": "89c51f5fa760289cfb0f934d39144e8a911ac38e7ce42311132a764bdf1a03e2",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-21/link-background-1789111114855-1789111114855-1789111213268396487.sigmf-data": "89c51f5fa760289cfb0f934d39144e8a911ac38e7ce42311132a764bdf1a03e2",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-21/link-background-1789111114855-1789111114855-1789111213268396487.sigmf-meta": "6efe569582ded2b9b109739d71ea38d126d4de989f7eb464205189900865dcc6",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-21/report.json": "be5c718607fcb67cdc86d44872b60844e0f5e821ec0a5c377287df94a1f28b70",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-21/plan.json": "26e61af6a29b224663d3be8f2e18fee5669c19b4bf29939cd7918666ce226809"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114855
+          }
+        },
+        {
+          "point": 22,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-22/link-background-1789111114856-1789111114856-1789111217952798378.sigmf-data",
+            "iq_sha256": "4fb1f5d12fc53a71431d3be5de0e9d28f795b4763c4b63c7a9f24c6b47e614a3",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-22/link-background-1789111114856-1789111114856-1789111217952798378.sigmf-data": "4fb1f5d12fc53a71431d3be5de0e9d28f795b4763c4b63c7a9f24c6b47e614a3",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-22/link-background-1789111114856-1789111114856-1789111217952798378.sigmf-meta": "0ec6667ecb127603239c4b994c4ef8187a4bf8af607db299051fca28d8083cf2",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-22/report.json": "6e7b5919646544d8a4e2efd1ba947a742d30e36ba9f3874a91ab91fcd368a1b7",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-22/plan.json": "b230efe8556e124e37a72006b8c2b7f13933e20ccdf8b5731efa259c9a7bc909"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114856
+          }
+        },
+        {
+          "point": 23,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-23/link-background-1789111114857-1789111114857-1789111222627918371.sigmf-data",
+            "iq_sha256": "f37b2864534272f87821febd9b8d77873331f36b73c8c2dd6209d3f671d11ec3",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-23/link-background-1789111114857-1789111114857-1789111222627918371.sigmf-data": "f37b2864534272f87821febd9b8d77873331f36b73c8c2dd6209d3f671d11ec3",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-23/link-background-1789111114857-1789111114857-1789111222627918371.sigmf-meta": "309602e0299858e39e21bc1442b5fdeb7c71d7b292dfb92a1176e9ac0fbdb955",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-23/report.json": "b2915969278520199f92bd3f75a18b1956726723de54097d5bc382848b0408b8",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911/point-23/plan.json": "225bc6d6c11a0323711cac9ed316966a9774e16b8f0c4d94435b2da9b265a2f4"
+            },
+            "request_id": 5,
+            "session_generation": 1789111114857
+          }
+        }
+      ],
+      "preprocess": "RX40,2.1MS/s,1.5MHz RF BW; raw and257-tap175kHz Kaiser FIR 128-sample RMS summaries",
+      "model_inferences": 0,
+      "tx_operations": 0,
+      "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/rml-band-survey-20260911",
+      "delete_precondition": "Verify exact resolved root and all owners stopped; remove only this registered survey package."
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm",
+      "purpose": "Reproduce three-visit frequency ranking, clipped exclusions and independent fixed-candidate confirmation",
+      "file_count": 33,
+      "bytes": 1612554,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/audit.json",
+          "bytes": 19294,
+          "sha256": "1f78aac82d78a522abd95ccbdc96970f97c59063a7a2a212b1b3c74cfb3934fa"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/confirmation.json",
+          "bytes": 408,
+          "sha256": "ed162c79dea79cfe2e75031def1e98f2a32fe8c0463b1d82d6a89c56fa6b1598"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-0/link-background-1789111235871-1789111235871-1789111236144220813.sigmf-data",
+          "bytes": 262140,
+          "sha256": "1618bcdb93093c81b753bc66c1a2c0174871a49ebe102329369a440e45fdcbae"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-0/link-background-1789111235871-1789111235871-1789111236144220813.sigmf-meta",
+          "bytes": 487,
+          "sha256": "a0a9243d36d7315787170c52678e93214c378a9e641eab88227b4176cad95113"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-0/plan.json",
+          "bytes": 388,
+          "sha256": "f3d277865dc299486434c80e9d7910cd42b3383939a47c2ad8674d1e840e4e53"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-0/report.json",
+          "bytes": 2260,
+          "sha256": "15f1fca34e35cc1371f0e21c331a74fe64f8e751281ce40698de1ef2031119e8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-0/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-1/link-background-1789111235872-1789111235872-1789111240855453986.sigmf-data",
+          "bytes": 262140,
+          "sha256": "cdb21cef7a7658475b4d995d19d41acddd1e202220045394a7854fe6c85795cf"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-1/link-background-1789111235872-1789111235872-1789111240855453986.sigmf-meta",
+          "bytes": 487,
+          "sha256": "2225d549a0a8429ed661c6dc7aa1802066a7cd55bf5f7518fe8af0a4a12b4249"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-1/plan.json",
+          "bytes": 388,
+          "sha256": "b97ddac404ed982d66ba098ee8485592e25da3790106367b45b549ad516a0669"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-1/report.json",
+          "bytes": 2257,
+          "sha256": "adb41af755ddf9b6c23e537f5d13b04eaf5c2421756d1f8aad5834150233c02a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-1/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-2/link-background-1789111235873-1789111235873-1789111245522848351.sigmf-data",
+          "bytes": 262140,
+          "sha256": "5306ca2758743473672b22a2eb19d8d2adc599e10c6c4389cbdaef838a06ab69"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-2/link-background-1789111235873-1789111235873-1789111245522848351.sigmf-meta",
+          "bytes": 487,
+          "sha256": "6c5efe428531d808990a5e53c3a4a1aa134cb888378b976290426e7d89fe66dd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-2/plan.json",
+          "bytes": 388,
+          "sha256": "5908393c757c20d53ed17085ebae9e950f79c178a74645b7c98cae5b5e170dd2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-2/report.json",
+          "bytes": 2257,
+          "sha256": "6512c7d6b712d0693ed8b01f740be1f6548fec4a5dac4fd32f6f18d815a80b0a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-2/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-3/link-background-1789111235874-1789111235874-1789111250238824615.sigmf-data",
+          "bytes": 262140,
+          "sha256": "3f78f6e5f648076801123247bb054618248da697a5d1426abe2a977381f951a6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-3/link-background-1789111235874-1789111235874-1789111250238824615.sigmf-meta",
+          "bytes": 487,
+          "sha256": "47fda2cdacd9b13a511a05dab10ed4d5a9a876644f82bca391f170308bd5c804"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-3/plan.json",
+          "bytes": 388,
+          "sha256": "7750a8535ffa8382d3392c3665a7125452167ff568b07a0532e0c7ed2c9993a6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-3/report.json",
+          "bytes": 2257,
+          "sha256": "35f94bf2f5c28dd5c1b649e39ed7a962c52f61bc587e95cc07f27579dc44343e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-3/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-4/link-background-1789111235875-1789111235875-1789111254907900753.sigmf-data",
+          "bytes": 262140,
+          "sha256": "89a2e0bd0f93d7ed3f794c10b5a08fb7f613c3eb5ff35062b963084207b266dd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-4/link-background-1789111235875-1789111235875-1789111254907900753.sigmf-meta",
+          "bytes": 487,
+          "sha256": "7d49477c5630d7cd2467f743499e7f928576c356a8b0cdf4e0053a09e09fcca1"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-4/plan.json",
+          "bytes": 388,
+          "sha256": "44b44f2cf83e609b3b9f90e6b1a7ffeb101f62781e6f1c6d83d5fba60a14d325"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-4/report.json",
+          "bytes": 2254,
+          "sha256": "1fb1a0e92f5182f6b98679d05492e31092b5626fdb7c30115c92a22db9c8d2bf"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-4/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-5/link-background-1789111235876-1789111235876-1789111259576307805.sigmf-data",
+          "bytes": 262140,
+          "sha256": "6d122eddb584729a91cd7680ad3bbd36b2319e4cb91ffda11192e7e30ec85666"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-5/link-background-1789111235876-1789111235876-1789111259576307805.sigmf-meta",
+          "bytes": 487,
+          "sha256": "96801525fbf869acbac2be8224d28268d7adef434500d217a67c0f9b637ea4c4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-5/plan.json",
+          "bytes": 388,
+          "sha256": "7d029ce9977900eb440f34ec1ce25e7c7c58029538764565af7b79ce82edeb24"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-5/report.json",
+          "bytes": 2254,
+          "sha256": "f6d7e73566b6be3dc306fc6a2a305e96c3636f44070873aba503b7932e0de9ee"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-5/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/postflight.json",
+          "bytes": 1223,
+          "sha256": "b9add73985b960d5cd7b256f0c07abde137cd017488442b401c870b212426bc4"
+        }
+      ],
+      "plans": [
+        {
+          "sweep_id": "link-background-1789111235871",
+          "session_generation": 1789111235871,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111235872",
+          "session_generation": 1789111235872,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111235873",
+          "session_generation": 1789111235873,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111235874",
+          "session_generation": 1789111235874,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111235875",
+          "session_generation": 1789111235875,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        {
+          "sweep_id": "link-background-1789111235876",
+          "session_generation": 1789111235876,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2440000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 40,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        }
+      ],
+      "requests": [
+        {
+          "point": 0,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-0/link-background-1789111235871-1789111235871-1789111236144220813.sigmf-data",
+            "iq_sha256": "1618bcdb93093c81b753bc66c1a2c0174871a49ebe102329369a440e45fdcbae",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-0/link-background-1789111235871-1789111235871-1789111236144220813.sigmf-data": "1618bcdb93093c81b753bc66c1a2c0174871a49ebe102329369a440e45fdcbae",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-0/link-background-1789111235871-1789111235871-1789111236144220813.sigmf-meta": "a0a9243d36d7315787170c52678e93214c378a9e641eab88227b4176cad95113",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-0/report.json": "15f1fca34e35cc1371f0e21c331a74fe64f8e751281ce40698de1ef2031119e8",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-0/plan.json": "f3d277865dc299486434c80e9d7910cd42b3383939a47c2ad8674d1e840e4e53"
+            },
+            "request_id": 5,
+            "session_generation": 1789111235871
+          }
+        },
+        {
+          "point": 1,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-1/link-background-1789111235872-1789111235872-1789111240855453986.sigmf-data",
+            "iq_sha256": "cdb21cef7a7658475b4d995d19d41acddd1e202220045394a7854fe6c85795cf",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-1/link-background-1789111235872-1789111235872-1789111240855453986.sigmf-data": "cdb21cef7a7658475b4d995d19d41acddd1e202220045394a7854fe6c85795cf",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-1/link-background-1789111235872-1789111235872-1789111240855453986.sigmf-meta": "2225d549a0a8429ed661c6dc7aa1802066a7cd55bf5f7518fe8af0a4a12b4249",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-1/report.json": "adb41af755ddf9b6c23e537f5d13b04eaf5c2421756d1f8aad5834150233c02a",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-1/plan.json": "b97ddac404ed982d66ba098ee8485592e25da3790106367b45b549ad516a0669"
+            },
+            "request_id": 5,
+            "session_generation": 1789111235872
+          }
+        },
+        {
+          "point": 2,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-2/link-background-1789111235873-1789111235873-1789111245522848351.sigmf-data",
+            "iq_sha256": "5306ca2758743473672b22a2eb19d8d2adc599e10c6c4389cbdaef838a06ab69",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-2/link-background-1789111235873-1789111235873-1789111245522848351.sigmf-data": "5306ca2758743473672b22a2eb19d8d2adc599e10c6c4389cbdaef838a06ab69",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-2/link-background-1789111235873-1789111235873-1789111245522848351.sigmf-meta": "6c5efe428531d808990a5e53c3a4a1aa134cb888378b976290426e7d89fe66dd",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-2/report.json": "6512c7d6b712d0693ed8b01f740be1f6548fec4a5dac4fd32f6f18d815a80b0a",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-2/plan.json": "5908393c757c20d53ed17085ebae9e950f79c178a74645b7c98cae5b5e170dd2"
+            },
+            "request_id": 5,
+            "session_generation": 1789111235873
+          }
+        },
+        {
+          "point": 3,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-3/link-background-1789111235874-1789111235874-1789111250238824615.sigmf-data",
+            "iq_sha256": "3f78f6e5f648076801123247bb054618248da697a5d1426abe2a977381f951a6",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-3/link-background-1789111235874-1789111235874-1789111250238824615.sigmf-data": "3f78f6e5f648076801123247bb054618248da697a5d1426abe2a977381f951a6",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-3/link-background-1789111235874-1789111235874-1789111250238824615.sigmf-meta": "47fda2cdacd9b13a511a05dab10ed4d5a9a876644f82bca391f170308bd5c804",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-3/report.json": "35f94bf2f5c28dd5c1b649e39ed7a962c52f61bc587e95cc07f27579dc44343e",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-3/plan.json": "7750a8535ffa8382d3392c3665a7125452167ff568b07a0532e0c7ed2c9993a6"
+            },
+            "request_id": 5,
+            "session_generation": 1789111235874
+          }
+        },
+        {
+          "point": 4,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-4/link-background-1789111235875-1789111235875-1789111254907900753.sigmf-data",
+            "iq_sha256": "89a2e0bd0f93d7ed3f794c10b5a08fb7f613c3eb5ff35062b963084207b266dd",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-4/link-background-1789111235875-1789111235875-1789111254907900753.sigmf-data": "89a2e0bd0f93d7ed3f794c10b5a08fb7f613c3eb5ff35062b963084207b266dd",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-4/link-background-1789111235875-1789111235875-1789111254907900753.sigmf-meta": "7d49477c5630d7cd2467f743499e7f928576c356a8b0cdf4e0053a09e09fcca1",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-4/report.json": "1fb1a0e92f5182f6b98679d05492e31092b5626fdb7c30115c92a22db9c8d2bf",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-4/plan.json": "44b44f2cf83e609b3b9f90e6b1a7ffeb101f62781e6f1c6d83d5fba60a14d325"
+            },
+            "request_id": 5,
+            "session_generation": 1789111235875
+          }
+        },
+        {
+          "point": 5,
+          "status": "captured",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-5/link-background-1789111235876-1789111235876-1789111259576307805.sigmf-data",
+            "iq_sha256": "6d122eddb584729a91cd7680ad3bbd36b2319e4cb91ffda11192e7e30ec85666",
+            "native_hashes": {
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-5/link-background-1789111235876-1789111235876-1789111259576307805.sigmf-data": "6d122eddb584729a91cd7680ad3bbd36b2319e4cb91ffda11192e7e30ec85666",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-5/link-background-1789111235876-1789111235876-1789111259576307805.sigmf-meta": "96801525fbf869acbac2be8224d28268d7adef434500d217a67c0f9b637ea4c4",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-5/report.json": "f6d7e73566b6be3dc306fc6a2a305e96c3636f44070873aba503b7932e0de9ee",
+              "/var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm/point-5/plan.json": "7d029ce9977900eb440f34ec1ce25e7c7c58029538764565af7b79ce82edeb24"
+            },
+            "request_id": 5,
+            "session_generation": 1789111235876
+          }
+        }
+      ],
+      "preprocess": "RX40,2.1MS/s,1.5MHz RF BW; raw and257-tap175kHz Kaiser FIR 128-sample RMS summaries",
+      "model_inferences": 0,
+      "tx_operations": 0,
+      "manual_delete_command": "rm -rf -- /var/tmp/sdrharness-dev/rml-band-survey-20260911-confirm",
+      "delete_precondition": "Verify exact resolved root and all owners stopped; remove only this registered survey package."
+    }
+  ],
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/rml-band-survey-dev-20260911-EgjlKM",
+    "files": 2,
+    "bytes": 141432
+  },
+  "interpretation": "No replacement passed the fixed narrowband quiet-background confirmation; eight sampled windows only, not all2.4GHz or long-term occupancy; no TX/recognition admission.",
+  "software": {
+    "jetson-agx/sdrharness/scripts/diagnose-rml2018a-link-quality.py": "a877b4a9469b2739e49e213d56a8699525acb3e094ca31a36ff6d92a3af911de",
+    "jetson-agx/sdrharness/scripts/diagnose-b210-background.py": "e4b1bdfb8476eacf9bea97b908b830b72976a0e1a8bd13aef00c53d188f863a1",
+    "jetson-agx/sdrharness/tests/test_rml_band_survey.py": "422a2e6b064aa32baf59a956060cab686bafdab1c9e19f5e12a5308d58c79959"
+  },
+  "plot": {
+    "path": "docs/evidence/RML2018A_BAND_SURVEY_2026-09-11.png",
+    "sha256": "cf82f6f62f94cefb7d77c3b4d4e5975ba869925579bc7dd2a339f16e2e0d7ffe"
+  }
+}

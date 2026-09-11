@@ -22,6 +22,7 @@
 - [RadioML2018A当前IQ与历史175kHz滤波方法的离线对照](RML2018A_HISTORICAL_FILTER_COMPARISON_2026-09-10.json)
 - [RadioML2018A条件有效SINR、2455MHz CFO修正及实收保留清单](RML2018A_SINR_IMPLEMENTATION_2026-09-11.json)
 - 2455MHz链路排查：[逐段统计](RML2018A_LINK_QUALITY_DIAGNOSIS_2026-09-11.json)、[背景突发图](RML2018A_LINK_BACKGROUND_BURSTS_2026-09-11.png)、[停发接收保留清单](RML2018A_LINK_QUALITY_EVIDENCE_2026-09-11.json)。
+- 2.4GHz八频点三轮比较及独立复测：[结果与保留清单](RML2018A_BAND_SURVEY_2026-09-11.json)、[频点对比图](RML2018A_BAND_SURVEY_2026-09-11.png)。
 
 按试验查找请从[射频验证索引](../validation/README.md#近期射频排查2026-09-09至10)进入，
 再打开该记录中的计划、库存或图表链接。下面的完整目录只列文件，不加载附件内容。
