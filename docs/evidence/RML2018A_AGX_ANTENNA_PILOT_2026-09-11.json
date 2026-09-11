@@ -1,0 +1,285 @@
+{
+  "schema": "rml2018a-agx-antenna-pilot-evidence-v1",
+  "created_unix_ns": 1789137772846587948,
+  "purpose": "First actual AGX USB B210 antenna TX/P201 RX plus frozen-model engineering comparison; retain two IQ files to review quality and three misclassifications",
+  "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911",
+  "run_id": "0c15d3c1fa874ae4803c1928eacb24c4",
+  "source": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "bytes": 21449148312,
+    "mtime_ns": 1627354882000000000
+  },
+  "model_profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "software": {
+    "rml2018a-rf-campaign.py": "6c21acb85afd85ec13430c2e2b8385a43e76be930fd4a8a304bf4dabc7bf59ba",
+    "rml2018a_campaign.py": "883a971268aad0f2a8391b38bb13e3971e9dc74208727d2ec3f8844a78c337cf",
+    "rml2018a-nx-tx.py": "f489fda80dd48923e77ef191b8cf981e1b96e6d8c59d70140e7fb00672b0f28c",
+    "amc-mamba-worker.py": "750eef925be33ab925798f49907c0a35a2cf1c5cd9f00672ee64fcda9d0872b5",
+    "amc-rf-v1-runtime.py": "a920c4260ce02f824cc1bfad596242330b69dbfdf3008c45be6142d8aa077e82",
+    "gpu_lease.py": "cbc8038a375f1c44cf4c16d68c94d19ae146b8b9b496a340603be62340c1e1c7",
+    "validate-b210-multiclass.py": "2bd5a801b25aa3a5a5e8d48d8d930207b9f34fa6b7c037292edf3108e0a657f8",
+    "validate-p201-termination-background.py": "007fce5064507803b6d75f178e7f3619f14aaec089ce9083900e40601b27975b",
+    "validate-b210-p201-link.py": "9454da8cdc70aadff2aba96a23c4c0a5284c15d53854b996c55ee24778955686"
+  },
+  "preprocess": "RF-v1 frozen epoch10 FP16 autocast with FP32 weights; single1024 RMS; pilot correction and unfiltered payload; not production admission",
+  "captures": [
+    {
+      "batch": 4267,
+      "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/rx/rml2018a-4267-1789137516901-1789137516901-1789137520188559517.sigmf-data",
+      "iq_sha256": "2386482002e17f00c059e0155533423fb6bd663c7aca1b8144dbc2a766fc8893",
+      "metadata_sha256": "30d2a33f76cac98b0c3d17d5d33bdf0eb6ed426c1363d8547b3b5235fd355688",
+      "request_id": 5,
+      "sequence": 1508,
+      "session_generation": 1789137516901
+    },
+    {
+      "batch": 22016,
+      "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/rx/rml2018a-22016-1789137527861-1789137527861-1789137531121394691.sigmf-data",
+      "iq_sha256": "9af4047c0f80966a2e869bcddc618ae0bf00afa75464807bd29c269ac87a1468",
+      "metadata_sha256": "a2d6acdefca0417f9f2189204b774faf2f55a55d218c4695b08647eecbe6a5d8",
+      "request_id": 5,
+      "sequence": 1509,
+      "session_generation": 1789137527861
+    }
+  ],
+  "results": [
+    {
+      "batch": 4267,
+      "class_id": 0,
+      "name": "OOK",
+      "rows": 24,
+      "source_correct": 24,
+      "received_correct": 24,
+      "sinr_min_db": 0.13161966622032553,
+      "sinr_median_db": 1.124757458025198,
+      "sinr_max_db": 1.7213697414532156,
+      "correlation_median": 0.7538442043948939,
+      "uhd_tail_markers": "S",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/rx/rml2018a-4267-1789137516901-1789137516901-1789137520188559517.sigmf-data",
+        "iq_sha256": "2386482002e17f00c059e0155533423fb6bd663c7aca1b8144dbc2a766fc8893",
+        "metadata_sha256": "30d2a33f76cac98b0c3d17d5d33bdf0eb6ed426c1363d8547b3b5235fd355688",
+        "request_id": 5,
+        "sequence": 1508,
+        "session_generation": 1789137516901
+      },
+      "restored": true
+    },
+    {
+      "batch": 22016,
+      "class_id": 4,
+      "name": "QPSK",
+      "rows": 24,
+      "source_correct": 24,
+      "received_correct": 21,
+      "sinr_min_db": -6.756232668052321,
+      "sinr_median_db": 0.3778538504964003,
+      "sinr_max_db": 2.0942428818295524,
+      "correlation_median": 0.7233005731773138,
+      "uhd_tail_markers": "U",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/rx/rml2018a-22016-1789137527861-1789137527861-1789137531121394691.sigmf-data",
+        "iq_sha256": "9af4047c0f80966a2e869bcddc618ae0bf00afa75464807bd29c269ac87a1468",
+        "metadata_sha256": "a2d6acdefca0417f9f2189204b774faf2f55a55d218c4695b08647eecbe6a5d8",
+        "request_id": 5,
+        "sequence": 1509,
+        "session_generation": 1789137527861
+      },
+      "restored": true
+    }
+  ],
+  "source_correct": 48,
+  "received_correct": 45,
+  "total_rows": 48,
+  "condition": "User confirmed antennas; 2455MHz TX80/RX40; same source rows as previous NX diagnostic, new capture/session, not independent locked test",
+  "limitations": [
+    "Only OOK/QPSK48 rows; not all-class/full-dataset accuracy",
+    "All48 SINR values are conditional estimates, not independently measured physical SINR",
+    "UHD trailing S/U markers remain; full FIFO bytes do not establish continuous RF timestamps",
+    "No controlled cable test or active cancellation injection in this unit"
+  ],
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/acquire.log",
+      "bytes": 5876,
+      "sha256": "36021c3b67f490685bcb3916deb2309ae37bc00a30d5ec3c5a9479a15967ec81"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/audit.json",
+      "bytes": 40716,
+      "sha256": "3530346c59e825208aa86ef5290ec66fc5e3672d15c0402ebd476ec5aad70eb1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/capture-complete.json",
+      "bytes": 421,
+      "sha256": "c8005b411fd5104b98c2e9b902cfa67d7eb38fe32cec0fd07c9022e9688f1414"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/predictions.json",
+      "bytes": 75466,
+      "sha256": "a5088d093851d41f8f7415f793e27483d2267eaf4bfa42c495c38aa8b1a679c3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/report.json",
+      "bytes": 2275,
+      "sha256": "d087154590960fa62f48630ae3d42c3ddaf505c69f8dbf1b0e834bc34f3a83b5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/rx/rml2018a-4267-1789137516901-1789137516901-1789137520188559517.sigmf-data",
+      "bytes": 262140,
+      "sha256": "2386482002e17f00c059e0155533423fb6bd663c7aca1b8144dbc2a766fc8893"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/rx/rml2018a-4267-1789137516901-1789137516901-1789137520188559517.sigmf-meta",
+      "bytes": 487,
+      "sha256": "30d2a33f76cac98b0c3d17d5d33bdf0eb6ed426c1363d8547b3b5235fd355688"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/rx-plan.json",
+      "bytes": 386,
+      "sha256": "5adf03cee95e002b75fcd4b1a0e80535d87ee8567f37a93439d0755b35307220"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/source.json",
+      "bytes": 1456,
+      "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/tx-plan.json",
+      "bytes": 828,
+      "sha256": "1a4014c4152f16c2c10cef0bc88d7dbeb95ddeb74be46ceb353cd40c96953fe0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/tx-summary.json",
+      "bytes": 396,
+      "sha256": "acfdabf507f23eb04c8e07a71ae5f8723cec4984659d6725dcb1ae1754108b6d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "099dc1e7ec4c0a31dbccb51c43763dcfd32c97d1f2506db3230982f097261fab"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/audit.json",
+      "bytes": 40755,
+      "sha256": "f8ccfe22924dd10004888342766aed8e22788f2f3ba80e2b61ef3564c56d3eab"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/capture-complete.json",
+      "bytes": 421,
+      "sha256": "77517412bc8dcdb18ecf6b9478f845363e1e11461b88eaf0a21b135191b7f87e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/predictions.json",
+      "bytes": 75804,
+      "sha256": "c2e4bde0edd5c000b88cfc75288197bdeb6d334dbc2efad82e2d73c883ae308f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/report.json",
+      "bytes": 2277,
+      "sha256": "c69e8d615c3060a91d1dafb3cddc49ce964a2db83a1cfb13f6f9aeddf3bd14c9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/rx/rml2018a-22016-1789137527861-1789137527861-1789137531121394691.sigmf-data",
+      "bytes": 262140,
+      "sha256": "9af4047c0f80966a2e869bcddc618ae0bf00afa75464807bd29c269ac87a1468"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/rx/rml2018a-22016-1789137527861-1789137527861-1789137531121394691.sigmf-meta",
+      "bytes": 487,
+      "sha256": "a2d6acdefca0417f9f2189204b774faf2f55a55d218c4695b08647eecbe6a5d8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/rx-plan.json",
+      "bytes": 387,
+      "sha256": "4e237044564bd6924e961da56c30993a417559ce278ea5eb2e36801d478b09c2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/source.json",
+      "bytes": 1455,
+      "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/tx-plan.json",
+      "bytes": 829,
+      "sha256": "b55aec551af7accea8fb6e09e5cd624407cf8e418dc744c602961f9ec2d891e7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/tx-summary.json",
+      "bytes": 397,
+      "sha256": "ef1be043d0adf0527ec128d7641a825b0af303f609aa0f331f8dd7f97cc3f89d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/cleanup.json",
+      "bytes": 103579,
+      "sha256": "5aace85222871d4d952aaedd1bfdf5c43ffa1f86ea6bd42fbbd61d31093d045d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/gpu-isolation-1789137661489917172.json",
+      "bytes": 295,
+      "sha256": "b2fa797ac70f9840e8654eae60a188c50145ee4b427c85a60149bcf61eb1b446"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/infer.log",
+      "bytes": 5332,
+      "sha256": "e4131b2154320f895ed7617eecd941ce5a9cf33d0e9be77e240642ca2111eb48"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/pilot-plan.json",
+      "bytes": 4970,
+      "sha256": "94184d761fecaf3b5103042d2059ffe0337f0a5bd528026394c201f4c6ba40e2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/postflight.json",
+      "bytes": 1369,
+      "sha256": "f7adefe4d40dac0510ac44d88f6c1a74dc8a7346b235634b95604d4e9e5f9581"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/run-plan.json",
+      "bytes": 4990,
+      "sha256": "cc6f4a61065258311f4cfce81f4db7f762113dfcc6af2aa32d39bf75dd258405"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/summary.json",
+      "bytes": 8438,
+      "sha256": "a6c9cc21a2a667d3dc9d84335d19f4fbc70faf78e5ecec570e72cd196f3e0003"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/verification.json",
+      "bytes": 11735,
+      "sha256": "d699d29e768d295f02e17fe01bd4a5d9f53a4b2513d76a9324f8a724c6aa7f0c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/verify.py",
+      "bytes": 3222,
+      "sha256": "71ceba048bf3aef9a9e54792797f95cbaa8740827b01c02d8efb3efa65b8c3b8"
+    }
+  ],
+  "file_count": 32,
+  "total_bytes": 922403,
+  "iq_files": 2,
+  "iq_bytes": 524280,
+  "cleanup": {
+    "removed_file_count": 353,
+    "removed_bytes": 20143234,
+    "removed_directory_count": 54,
+    "absent": [
+      "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/scratch",
+      "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/owner.lock"
+    ],
+    "agx_tx_staging_removed_files": 14,
+    "agx_tx_staging_removed_bytes": 466067,
+    "agx_source_packet_removed_files": 2,
+    "agx_source_packet_removed_bytes": 417792,
+    "p201_transients_verified_absent": true,
+    "nx_operations": 0
+  },
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911",
+  "production_recognizer_available": false
+}

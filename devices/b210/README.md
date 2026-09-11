@@ -18,6 +18,8 @@ local-assets/amc-eval/runtime/venv/bin/python -B devices/b210/programs/campaign.
 `--tx-host nx`保留旧主机路径，默认值不等于已验证射频参数。源码/运行时改变必须新campaign。
 AGX后端本机暂存/启动/回收外部B210，不再SSH到NX；P201仍是唯一生产受控接收设备。
 迁移验证未发射，低增益有线收发尚须确认实际连接与有限计划；不要直接沿用空口80/40。
+迁移后的[首次天线48条实测](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11agx本机b210天线收发48条)
+已完成显式80/40的有限发射/接收/识别；它不改变新plan默认值或完成有线、全库验收。
 
 本板只能加载`ee03a9e3…fcf9b`的A7-100T镜像，不能加载A7-200T或普通B210镜像。
 这些是B210 USB运行时镜像，不是P201 FPGA聚合或BOOT文件；不写EEPROM/flash。
