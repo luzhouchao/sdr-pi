@@ -1,0 +1,640 @@
+{
+  "schema": "b210-cable-lo-reference-evidence-v1",
+  "base_head": "3fa610b431c28e0588f74860d94a824b1302affc",
+  "purpose": "Identify the LO-following residual using a synthetic clean tone; retain minimal raw RX and reproducible analysis",
+  "root": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912",
+  "source": "Generated periodic complex tone, 1024 samples, FFT bin48=98437.5Hz; no dataset access",
+  "parent_inventory": {
+    "path": "docs/evidence/RML2018A_CABLE20_2026-09-12.json",
+    "sha256": "8a57e1c8964a86885d35bdcd5eb4dd5afcf3cfce7f95d566c1209497ab8286db",
+    "relationship": "Prior 20dB residual motivated this independent tone diagnostic"
+  },
+  "model": null,
+  "profile": null,
+  "preprocess": null,
+  "software": {
+    "validate-b210-cable-lo.py": "a966d2a6d972f9056fae3f30452b7fc2307efa76725b2414a8eabddde849bffb",
+    "rml2018a_campaign.py": "89da56ca7253bbab9ffcda3a2c197fd8c41e309c360c8d7fc19ba855f55107b5",
+    "rml2018a-nx-tx.py": "d33c28d442e923173964d9a3511401a62f8ad2ae312439be8a16167cae54b52f",
+    "rml2018a-rf-campaign.py": "c1876b205dfaf983cc3a189f0b6a20a9cd49b22c1f13e6b1cfbdaa9a029cdf55",
+    "validate-p201-termination-background.py": "007fce5064507803b6d75f178e7f3619f14aaec089ce9083900e40601b27975b",
+    "validate-b210-p201-link.py": "9454da8cdc70aadff2aba96a23c4c0a5284c15d53854b996c55ee24778955686"
+  },
+  "tx_runtime": {
+    "host": "agx",
+    "transport_sha256": "f4f453b6e7d4f76e4ed8c02ae8373489106106093814f1ecf2c5bba84fb42620",
+    "device_helper_sha256": "8b092061886b633b2615a9fcc73ab662caf9360893863a0c35bb9a646e705bbc",
+    "runtime": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t",
+    "manifest_sha256": "fae1fb324ec69546c40a691e0d9b913aadfefad51b19934a06b6c34d7b97eccf"
+  },
+  "maximum_rx_bytes": 1572840,
+  "maximum_tx_seconds": 16,
+  "actual_tx_samples": 33599488,
+  "captures": [
+    {
+      "tag": "before",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/before/rx/cablelo-before-1789191770418-1789191770418-1789191791667487866.sigmf-data",
+        "iq_sha256": "cb725dbeb427511624cd9871abec8c59d3e8b707664fc291f1c4e500c99f71d2",
+        "metadata_sha256": "4e75b603969bee90983ba5846d56b18fd9f441fcf03e0ff4b65b782ac76b9036",
+        "request_id": 5,
+        "sequence": 1525,
+        "session_generation": 1789191770418
+      },
+      "component_peak_counts": 12.0,
+      "component_rms_counts": 5.191981510687834
+    },
+    {
+      "tag": "positive",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive/rx/cablelo-positive-1789191770419-1789191770419-1789191800334797692.sigmf-data",
+        "iq_sha256": "0f5679842f37c6d313b728e4c5b0ba5699e48780324e6602cc592e7daca77aa0",
+        "metadata_sha256": "598e55bd9bdcb936ea3201450575c6b56abc5fc7898aa17e728629ebd84b7d1e",
+        "request_id": 5,
+        "sequence": 1526,
+        "session_generation": 1789191770419
+      },
+      "component_peak_counts": 37.0,
+      "component_rms_counts": 16.40071520453495,
+      "uhd_tail_markers": "U"
+    },
+    {
+      "tag": "negative",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/negative/rx/cablelo-negative-1789191770420-1789191770420-1789191809308230058.sigmf-data",
+        "iq_sha256": "a207de058512fd24be6cdd18a9290c166846ed706c94e343ecb72cecb26bdf7e",
+        "metadata_sha256": "9322aab08cf49c9096992a4e1ae4fe1f11a45ee119cfe6b2484e26177469235c",
+        "request_id": 5,
+        "sequence": 1527,
+        "session_generation": 1789191770420
+      },
+      "component_peak_counts": 38.0,
+      "component_rms_counts": 17.44587024620118,
+      "uhd_tail_markers": "U"
+    },
+    {
+      "tag": "half-amplitude",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/half-amplitude/rx/cablelo-half-amplitude-1789191770421-1789191770421-1789191818260815290.sigmf-data",
+        "iq_sha256": "a9ff7be50a96cf138e1a596c74ba4d2fbad94a8bc263fd06d669227781105a45",
+        "metadata_sha256": "9c214095505fd1df4d974ded261c2002e500f6c8fc8dc81cfe947b16b0dc6875",
+        "request_id": 5,
+        "sequence": 1528,
+        "session_generation": 1789191770421
+      },
+      "component_peak_counts": 30.0,
+      "component_rms_counts": 13.658911580650088,
+      "uhd_tail_markers": "S"
+    },
+    {
+      "tag": "positive-repeat",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive-repeat/rx/cablelo-positive-repeat-1789191770422-1789191770422-1789191827211992295.sigmf-data",
+        "iq_sha256": "4854cf5a7fb13567995326a5c2cdad9902c429f508a16e044c2e001accd69270",
+        "metadata_sha256": "4d6ceb35ac3f4a908f36d886ac22b084532d1580db0440187e01682497361009",
+        "request_id": 5,
+        "sequence": 1529,
+        "session_generation": 1789191770422
+      },
+      "component_peak_counts": 38.0,
+      "component_rms_counts": 17.403932875359583,
+      "uhd_tail_markers": "U"
+    },
+    {
+      "tag": "after",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/after/rx/cablelo-after-1789191770423-1789191770423-1789191833051334969.sigmf-data",
+        "iq_sha256": "aa7ed26a11ad7697585fe1eb4bb03e4347e2bcb2a1f6577af21591948bf1a7cb",
+        "metadata_sha256": "e119155845455dd9a904c0e7edbbf3f1c3cc231b74eae2c248bc1188e4bb10a7",
+        "request_id": 5,
+        "sequence": 1530,
+        "session_generation": 1789191770423
+      },
+      "component_peak_counts": 8.0,
+      "component_rms_counts": 2.123895734067231
+    }
+  ],
+  "results": {
+    "schema": "b210-cable-lo-attribution-v1",
+    "plan_sha256": "6803bb9bc5b4fa7249c5049306d89a12248212da7015020cf9f35c21ea803f7c",
+    "cases": {
+      "positive": {
+        "tone_hz": 102198.3750802658,
+        "cfo_hz": 3760.8750802658033,
+        "lo_candidate_hz": 253760.76547329465,
+        "lo_minus_expected_hz": -0.10960697114933282,
+        "heldout_tone_power_counts2": 310.45905208687935,
+        "heldout_lo_power_counts2": 224.32198527489157,
+        "tone_to_lo_db": 1.4113248727723826,
+        "stopped_lo_contrast_db": {
+          "before": 6.393711558066539,
+          "after": 15.486129019684476
+        },
+        "tone_only_error_counts2": 227.3224104752415,
+        "tone_and_lo_error_counts2": 2.961217523001168,
+        "prefix_samples": 32768,
+        "heldout_samples": 32767,
+        "band_half_width_hz": 1000,
+        "applied_to_model_or_production": false
+      },
+      "negative": {
+        "tone_hz": 102203.84976053474,
+        "cfo_hz": 3766.3497605347366,
+        "lo_candidate_hz": -246234.89510128854,
+        "lo_minus_expected_hz": -1.2448618232738227,
+        "heldout_tone_power_counts2": 317.18587341852935,
+        "heldout_lo_power_counts2": 289.21498438265075,
+        "tone_to_lo_db": 0.4009304656707466,
+        "stopped_lo_contrast_db": {
+          "before": 53.00955102752495,
+          "after": 53.004844721451256
+        },
+        "tone_only_error_counts2": 310.09348373715204,
+        "tone_and_lo_error_counts2": 36.7211543010563,
+        "prefix_samples": 32768,
+        "heldout_samples": 32767,
+        "band_half_width_hz": 1000,
+        "applied_to_model_or_production": false
+      },
+      "half-amplitude": {
+        "tone_hz": 102216.28232573619,
+        "cfo_hz": 3778.782325736189,
+        "lo_candidate_hz": 253778.419998346,
+        "lo_minus_expected_hz": -0.3623273901757784,
+        "heldout_tone_power_counts2": 82.23681563334647,
+        "heldout_lo_power_counts2": 288.326743567077,
+        "tone_to_lo_db": -5.4481864170551475,
+        "stopped_lo_contrast_db": {
+          "before": 7.48384583462644,
+          "after": 16.57627884320123
+        },
+        "tone_only_error_counts2": 291.3472012287733,
+        "tone_and_lo_error_counts2": 5.1806156261290335,
+        "prefix_samples": 32768,
+        "heldout_samples": 32767,
+        "band_half_width_hz": 1000,
+        "applied_to_model_or_production": false
+      },
+      "positive-repeat": {
+        "tone_hz": 102228.37125822548,
+        "cfo_hz": 3790.871258225481,
+        "lo_candidate_hz": 253790.48655208744,
+        "lo_minus_expected_hz": -0.38470613802201115,
+        "heldout_tone_power_counts2": 323.4573717453963,
+        "heldout_lo_power_counts2": 279.6537261934781,
+        "tone_to_lo_db": 0.631964429865195,
+        "stopped_lo_contrast_db": {
+          "before": 7.351202668705753,
+          "after": 16.443635677280547
+        },
+        "tone_only_error_counts2": 319.8627433511848,
+        "tone_and_lo_error_counts2": 69.02608211365384,
+        "prefix_samples": 32768,
+        "heldout_samples": 32767,
+        "band_half_width_hz": 1000,
+        "applied_to_model_or_production": false
+      }
+    },
+    "changes_from_positive": {
+      "negative": {
+        "tone_power_change_db": 0.09309509665307457,
+        "lo_power_change_db": 1.1034895037547108
+      },
+      "half-amplitude": {
+        "tone_power_change_db": -5.769380418714838,
+        "lo_power_change_db": 1.090130871112693
+      },
+      "positive-repeat": {
+        "tone_power_change_db": 0.17812726228481904,
+        "lo_power_change_db": 0.9574877051920072
+      }
+    },
+    "observed_lo_shift_hz": -499995.6605745832,
+    "expected_lo_shift_hz": -500000,
+    "model_windows": 0,
+    "production_changes": 0,
+    "limitation": "Tone-source attribution; RF tune register calibration, modulation fidelity and physical SINR not established"
+  },
+  "background": {
+    "before": {
+      "peak_bin_hz": 253727.83593249304,
+      "peak_band_power_counts2": 51.463599059139085,
+      "total_power_counts2": 53.80025639449549
+    },
+    "after": {
+      "peak_bin_hz": 253791.92480239263,
+      "peak_band_power_counts2": 6.342449860603754,
+      "total_power_counts2": 9.200027724229008
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "tests": {
+      "diagnostic": 4,
+      "related_regression": 44,
+      "simulated_sinr_trials": 240
+    },
+    "qualifications": [
+      "Successful capture/cleanup paths tested on target; helper active-stop regression passed, no new live cancel run",
+      "UHD U/S tail markers remain; RF timestamp continuity not established",
+      "Stopped means no transmitted sample stream; residual RF energy is not assumed zero"
+    ],
+    "plot_environment": "First plot attempt lacked matplotlib in model venv; used existing system Python instead, no install or RF retry"
+  },
+  "postflight": {
+    "status": "completed",
+    "model_windows": 0,
+    "dataset_rows": 0,
+    "radio_restored": true,
+    "after": {
+      "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "daemon_pid": [
+        "5909"
+      ],
+      "daemon_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+      "controller_sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+      "health": {
+        "online": true,
+        "healthy": true,
+        "health_flags": 0,
+        "iio_visible": true,
+        "can_retune": true,
+        "can_capture_iq": true,
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        }
+      },
+      "b210": {
+        "host": "agx",
+        "serial": "2508504",
+        "usb_speed_mbps": 5000.0,
+        "usb_node": "/dev/bus/usb/002/004",
+        "usb_holder_pids": []
+      }
+    },
+    "temporary_paths_absent": true
+  },
+  "cleanup": {
+    "development_removed_files": 4,
+    "development_removed_bytes": 146318,
+    "development_removed_directories": 3,
+    "development_paths": [
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-cablelo-dev-20260912/regression.log",
+        "bytes": 11055
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-cablelo-dev-20260912/plan.log",
+        "bytes": 7636
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-cablelo-dev-20260912/verify.log",
+        "bytes": 4195
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-cablelo-dev-20260912/scratch/matplotlib/fontlist-v330.json",
+        "bytes": 123432
+      }
+    ],
+    "development_root": "/var/tmp/sdrharness-dev/b210-cablelo-dev-20260912",
+    "development_root_absent": true,
+    "source_removed_files": 4,
+    "source_removed_bytes": 32768,
+    "staging_removed_files": 28,
+    "staging_removed_bytes": 138008,
+    "previous_evidence_and_dataset_untouched": true,
+    "total_removed_files": 37,
+    "total_removed_bytes": 323412,
+    "superseded_utility_removed_files": 1,
+    "superseded_utility_removed_bytes": 6318,
+    "superseded_utility_path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/verify-and-plot.py",
+    "superseded_utility_sha256": "3f51c505b2e12bd0b4f88d59e050f759e43adebe6f12ad9cae31927a52c5c737"
+  },
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/acquire.log",
+      "bytes": 445,
+      "sha256": "a2adfc54cb5d1fcda6f4244e42198eb3653ca72a1bdd68c4210a958a933be560"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/after/audit.json",
+      "bytes": 2918,
+      "sha256": "8595148597da1caaf03b39b9e1de5c286f0a8f3fff413652a07889d81c408ec9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/after/report.json",
+      "bytes": 2250,
+      "sha256": "f61444e17154a5d0af408e63aeaa3dd2eb79ac75d8d38fc10dff4924bf6d60fc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/after/rx/cablelo-after-1789191770423-1789191770423-1789191833051334969.sigmf-data",
+      "bytes": 262140,
+      "sha256": "aa7ed26a11ad7697585fe1eb4bb03e4347e2bcb2a1f6577af21591948bf1a7cb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/after/rx/cablelo-after-1789191770423-1789191770423-1789191833051334969.sigmf-meta",
+      "bytes": 487,
+      "sha256": "e119155845455dd9a904c0e7edbbf3f1c3cc231b74eae2c248bc1188e4bb10a7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/after/rx-plan.json",
+      "bytes": 386,
+      "sha256": "702f4a93e4e46c444f4114e2fb0ee452c45d35c592d9445e94481ffd496c49e7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/after/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/analysis.json",
+      "bytes": 3673,
+      "sha256": "81115e6140009d54db0874facd706bbda260b07da2f6697f7062552e7a6d62a2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/before/audit.json",
+      "bytes": 2923,
+      "sha256": "578123afbe0d704ab9fd73704197708ad6e2ce45a2a9709497cba1b0d4198b8b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/before/report.json",
+      "bytes": 2256,
+      "sha256": "b68c8115bdabf287f55086b34449fd41952f7ed81cac077494763c4336d72c35"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/before/rx/cablelo-before-1789191770418-1789191770418-1789191791667487866.sigmf-data",
+      "bytes": 262140,
+      "sha256": "cb725dbeb427511624cd9871abec8c59d3e8b707664fc291f1c4e500c99f71d2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/before/rx/cablelo-before-1789191770418-1789191770418-1789191791667487866.sigmf-meta",
+      "bytes": 487,
+      "sha256": "4e75b603969bee90983ba5846d56b18fd9f441fcf03e0ff4b65b782ac76b9036"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/before/rx-plan.json",
+      "bytes": 387,
+      "sha256": "27643dd75c491cf3bb46f193e63417fd751ffd66dd509cd4af0f87a43e40abc2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/before/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/cleanup.json",
+      "bytes": 1263,
+      "sha256": "8f5df7a913733e6734ed52ff47b8dcfafe31291f1b10f68df569aa9b52b9372f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/half-amplitude/audit.json",
+      "bytes": 5488,
+      "sha256": "9317e66c2a66c1d8d5cf765ab8849fb7b51bdc40e61a98c7c1105184af1bf04c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/half-amplitude/report.json",
+      "bytes": 2295,
+      "sha256": "d1dedfd350f8e0a2f90a5e443d2f97c8373d09fdd1d3871ab163e7d660240c53"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/half-amplitude/rx/cablelo-half-amplitude-1789191770421-1789191770421-1789191818260815290.sigmf-data",
+      "bytes": 262140,
+      "sha256": "a9ff7be50a96cf138e1a596c74ba4d2fbad94a8bc263fd06d669227781105a45"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/half-amplitude/rx/cablelo-half-amplitude-1789191770421-1789191770421-1789191818260815290.sigmf-meta",
+      "bytes": 487,
+      "sha256": "9c214095505fd1df4d974ded261c2002e500f6c8fc8dc81cfe947b16b0dc6875"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/half-amplitude/rx-plan.json",
+      "bytes": 395,
+      "sha256": "2b241e46a27cb3f864f3ed405004554176f38fd50a7c7d60a3ce9a38604dc3f5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/half-amplitude/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/half-amplitude/tx-plan.json",
+      "bytes": 593,
+      "sha256": "3aa9c5d945ef964850113bd2ef080c334e88964dcf94d978e426d37e4d73b978"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/half-amplitude/tx-summary.json",
+      "bytes": 931,
+      "sha256": "7c7f34c5c256ed97929acf5394b1e1718272bdbd6baf4f24e1356cf466492042"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/half-amplitude/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "994bdbffc04c685c3f9c0d9cd33a15f95738a8e53cb2ae049264066cd0ec7221"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/negative/audit.json",
+      "bytes": 5458,
+      "sha256": "119d71eaa92670e23d0c11429a4bcbcd76f3552098fbe8887cf3cbeb90ec71f1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/negative/report.json",
+      "bytes": 2267,
+      "sha256": "5fae36d0010ab4c6ddc2bf5c9a143108108e70e914d6c5a1ed72795a8d7481cd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/negative/rx/cablelo-negative-1789191770420-1789191770420-1789191809308230058.sigmf-data",
+      "bytes": 262140,
+      "sha256": "a207de058512fd24be6cdd18a9290c166846ed706c94e343ecb72cecb26bdf7e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/negative/rx/cablelo-negative-1789191770420-1789191770420-1789191809308230058.sigmf-meta",
+      "bytes": 487,
+      "sha256": "9322aab08cf49c9096992a4e1ae4fe1f11a45ee119cfe6b2484e26177469235c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/negative/rx-plan.json",
+      "bytes": 389,
+      "sha256": "fc4bb4927c760219582989c4ee34bbab82dd1d6256a00a830866c77512ed67a4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/negative/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/negative/tx-plan.json",
+      "bytes": 593,
+      "sha256": "47013b659ae1bbc354595def5e34d24c00d91f487e7b46add9a40dcab665d55b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/negative/tx-summary.json",
+      "bytes": 932,
+      "sha256": "de00c26d1e2e34d4e99030d09e99b48032976f66e774e91b895bc7ee1e94dde6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/negative/tx-uhd.log",
+      "bytes": 1538,
+      "sha256": "4836e7e94393ab7e581b2a5c6d9136f40d080d09ea4fd1fe861b0a0b27dd3144"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/plan.json",
+      "bytes": 9586,
+      "sha256": "6803bb9bc5b4fa7249c5049306d89a12248212da7015020cf9f35c21ea803f7c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/plot.py",
+      "bytes": 2498,
+      "sha256": "8f65674db7abe1ecb4f14f9e57819bfa11d9d12ede8ed2f62375291d3ee19e14"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive/audit.json",
+      "bytes": 5456,
+      "sha256": "d0835404dd54f796a72dc746932dc57b0ecc2227e10ac0e1c19ad8ac0776edc4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive/report.json",
+      "bytes": 2264,
+      "sha256": "0ac7ddc979bf612a455a718a0dc55971b926f2d2fd79e054615108b560a1073d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive/rx/cablelo-positive-1789191770419-1789191770419-1789191800334797692.sigmf-data",
+      "bytes": 262140,
+      "sha256": "0f5679842f37c6d313b728e4c5b0ba5699e48780324e6602cc592e7daca77aa0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive/rx/cablelo-positive-1789191770419-1789191770419-1789191800334797692.sigmf-meta",
+      "bytes": 487,
+      "sha256": "598e55bd9bdcb936ea3201450575c6b56abc5fc7898aa17e728629ebd84b7d1e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive/rx-plan.json",
+      "bytes": 389,
+      "sha256": "91fae38012d5a11aec18cd67cbb1451eccfb6cdaaee51b16a79970726f975729"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive/tx-plan.json",
+      "bytes": 592,
+      "sha256": "254b609f1638d6f6f5fe0dd598192029681f953b1ba2971273db787a5561fc0b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive/tx-summary.json",
+      "bytes": 931,
+      "sha256": "cc72e494ad84dee15cd7f155a651cb5e27eeef23615ca935b30777c402644cfe"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "98d02c95265ab5ce6f5d5c389c30280251766ad2c624d275bc927c6c1bbf9388"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive-repeat/audit.json",
+      "bytes": 5492,
+      "sha256": "0d80a1ebc8097d6a0defe09e8b1fea43d59480061a173e50704ed5051d578e67"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive-repeat/report.json",
+      "bytes": 2298,
+      "sha256": "c91167b9e7812106a63eddb1bda9f028cba09a6f10c5160eebf4a23d1902174a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive-repeat/rx/cablelo-positive-repeat-1789191770422-1789191770422-1789191827211992295.sigmf-data",
+      "bytes": 262140,
+      "sha256": "4854cf5a7fb13567995326a5c2cdad9902c429f508a16e044c2e001accd69270"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive-repeat/rx/cablelo-positive-repeat-1789191770422-1789191770422-1789191827211992295.sigmf-meta",
+      "bytes": 487,
+      "sha256": "4d6ceb35ac3f4a908f36d886ac22b084532d1580db0440187e01682497361009"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive-repeat/rx-plan.json",
+      "bytes": 396,
+      "sha256": "0eb32c37c6548eb26c50c62f964d8adcfc1b4385a58086c7333ffd971c873548"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive-repeat/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive-repeat/tx-plan.json",
+      "bytes": 592,
+      "sha256": "d947ec489a73cc0eb9c7ccb784d0eb5263a6ad91c63a17c7575a2f650abf6142"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive-repeat/tx-summary.json",
+      "bytes": 931,
+      "sha256": "baefb3c58e6fe29263e2aecf9cc96329412f996803e92eeb9a59393da4d5ad60"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/positive-repeat/tx-uhd.log",
+      "bytes": 1537,
+      "sha256": "98d02c95265ab5ce6f5d5c389c30280251766ad2c624d275bc927c6c1bbf9388"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/postflight.json",
+      "bytes": 2366,
+      "sha256": "73b49cfc8810540d6f260d7e29f6bf547ef437af909bbf55ded0e0b21df7fcf5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/preflight.json",
+      "bytes": 2157,
+      "sha256": "580e11494d803d90b1044fc1fdce83467dbf34256ddc7b93a0b26bac7ba2794d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/regression-tests.log",
+      "bytes": 11055,
+      "sha256": "901be1f9e8be9cee1b1ff07cf0d21db8fbad692f92ed5a4427713fb14d8d375c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/spectrum.png",
+      "bytes": 274674,
+      "sha256": "444d852b84f58678dd8941143ae093a333d68a2b9fb1b32abb61e42546940a54"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/started.json",
+      "bytes": 129,
+      "sha256": "8c2cf0788bead59c93d792cc15bf8c5f4c0dbb712a0488d9a1c95e491e2cacb3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/verification.json",
+      "bytes": 4885,
+      "sha256": "8ad7ace9325275b296121e509303721c7e912dc2b2590518eef8d0ce0e23461f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912/verify.py",
+      "bytes": 4477,
+      "sha256": "91dbb2d50ac7ed4d72c5989d1ecf362995317e00ac72a984d19139b338f8e08b"
+    }
+  ],
+  "file_count": 60,
+  "total_bytes": 1948921,
+  "iq_files": 6,
+  "iq_bytes": 1572840,
+  "manual_delete": "rm -r -- '/var/tmp/sdrharness-dev/b210-cablelo-reference-20260912'",
+  "model_windows": 0,
+  "dataset_rows": 0,
+  "production_changes": 0,
+  "recognizer_available": false,
+  "conclusion": "Strong evidence for a TX LO-related leakage/spur: approximately500kHz motion when LO offset changes sign; digital tone amplitude reduction does not reduce this component",
+  "unresolved": [
+    "Exact analog/digital mechanism and calibration state",
+    "Suppression without damaging modulated signals",
+    "Physical SINR calibration",
+    "Residual RF energy after sample stream stops",
+    "UHD RF timestamp continuity"
+  ]
+}

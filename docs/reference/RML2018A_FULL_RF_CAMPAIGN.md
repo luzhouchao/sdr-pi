@@ -58,6 +58,25 @@ Z仅为原始数据集的标称SNR，不是当前空口接收SNR/SINR。
 初始代码的10秒/批估计尚未验证，实际耗时以验证记录为准，不能用空口样本时长代替SSH、
 设备初始化、恢复与推理耗时。全量属于多日运行，此工具尚无全库长期稳定性验收。
 
+## 独立有线LO参考诊断
+
+[validate-b210-cable-lo.py](../../jetson-agx/sdrharness/scripts/validate-b210-cable-lo.py)
+提供`plan/acquire/analyze --root /var/tmp/sdrharness-dev/b210-cablelo-<唯一标识>`，使用AGX模型venv的Python运行。
+它复用既有B210有限TX helper、AGX USB运行时和P201 Controller，不读取数据集或运行模型。
+新根先生成计划，核对当前接法、软件和预算后才能`acquire`；`started.json`阻止同根重复发射，失败须保留记录。
+
+独立schema为`b210-cable-lo-reference-v1`：固定2455MHz、2.1MS/s、BW1.5MHz、TX70/RX40、
+98437.5Hz复数单音（1024点第48个FFT频点），按顺序执行`(+250kHz,0.1)`、`(-250kHz,0.1)`、
+`(+250kHz,0.05)`、`(+250kHz,0.1)`，每组不超过4秒；加前后两次停数据流控制，
+共6次65535点ci16接收，最大1,572,840字节。单点settle500ms、deadline1000ms、Controller外层15秒、
+整体360秒，每组分量峰值须≤512计数并完整恢复才继续；源与计划须完全符合注册模板。
+普通RadioML计划仍固定+250kHz、峰值0.2；不能借此schema给普通campaign任意覆盖LO/增益/幅度。
+
+诊断前32768点估计单音及LO候选频率，后32767点统计±1kHz固定频带和拟合残差；
+这是单音来源诊断，不能把拟合后误差当成已修复的调制波形SINR。停止路径沿用有界helper和Controller取消，
+逐组核对P201双路状态/临时路径恢复与B210 USB空闲；USB空闲仅说明数据流/持有者状态，不证明RF能量为零。
+实际结果、频谱及清理通过[实验记录](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12干净单音与lo跟随分量)按需读取。
+
 ## 源SNR与条件有效SINR估计（v3）
 
 `rml2018a-all-row-rf-v3`保留原始Z为`source_snr_db`。原始X本身已有噪声/信道损伤；

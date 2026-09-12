@@ -24,6 +24,9 @@ GUARD = 256
 MARKER = 1024
 TX_SECONDS = 4
 REPO = Path(__file__).resolve().parents[3]
+LO_REFERENCE_SCHEMA = 'b210-cable-lo-reference-v1'
+# Independent synthetic-source diagnostic, never an all-row campaign override.
+LO_REFERENCE_CASES = ((250000, .1), (-250000, .1), (250000, .05), (250000, .1))
 
 
 def require(condition, message):
@@ -96,6 +99,10 @@ def tx_plan(frame, run_id, batch, rows, tx_gain_db=70):
 
 
 def validate_tx(plan, payload):
+    if plan.get('schema') == LO_REFERENCE_SCHEMA:
+        expected, waveform = lo_reference(plan.get('run_id'), plan.get('batch'))
+        require(plan == expected and payload == waveform.tobytes(), 'unregistered LO reference plan/payload')
+        return
     registered_tx_gain(plan.get('tx_gain_db'))
     require(isinstance(plan.get('run_id'), str) and 0 < len(plan['run_id']) <= 128 and
             type(plan.get('batch')) is int and 0 <= plan['batch'] < 106496, 'batch identity')
@@ -117,6 +124,24 @@ def validate_tx(plan, payload):
     require(np.isfinite(z).all() and abs(z).max() <= .200001, 'TX finite peak')
     require(np.allclose(z[GUARD:GUARD+MARKER], marker(plan['run_id'], plan['batch']),
                         rtol=0, atol=1e-7), 'TX marker identity')
+
+
+def lo_reference(run_id, index):
+    """Exactly four bounded tone cases; no dataset labels or source-SNR fiction."""
+    require(isinstance(run_id, str) and len(run_id) == 32 and
+            all(ch in '0123456789abcdef' for ch in run_id), 'LO reference run identity')
+    require(type(index) is int and 0 <= index < len(LO_REFERENCE_CASES), 'LO reference case')
+    offset, amplitude = LO_REFERENCE_CASES[index]
+    waveform = (amplitude * np.exp(2j*np.pi*48*np.arange(1024)/1024)).astype('<c8')
+    repeats = RATE*TX_SECONDS//len(waveform)
+    plan = dict(schema=LO_REFERENCE_SCHEMA, run_id=run_id, batch=index,
+        source='synthetic_periodic_complex_tone', tone_hz=48*RATE/1024,
+        center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW, tx_gain_db=70,
+        tx_channel=0, tx_antenna='TX/RX', serial='2508504', lo_offset_hz=offset,
+        payload_bytes=waveform.nbytes, payload_sha256=digest(waveform.tobytes()),
+        packet_samples=len(waveform), repeats=repeats, tx_samples=repeats*len(waveform),
+        max_seconds=TX_SECONDS, complex_peak=amplitude)
+    return plan, waveform
 
 
 def synchronize(raw, run_id, batch, row_count):

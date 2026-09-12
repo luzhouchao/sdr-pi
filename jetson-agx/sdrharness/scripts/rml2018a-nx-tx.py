@@ -41,7 +41,8 @@ def transmit(root):
         args = [executable, '--args', 'type=b200,serial=2508504',
                 '--file', str(fifo), '--type', 'float', '--spb', '1024', '--rate', '2100000',
                 '--freq', str(plan['center_hz']), '--gain', str(plan['tx_gain_db']), '--ant', 'TX/RX', '--bw', '1500000',
-                '--channel', '0', '--subdev', 'A:A', '--lo-offset', '250000']
+                '--channel', '0', '--subdev', 'A:A', '--lo-offset', str(plan['lo_offset_hz'])]
+        audit['command'] = args
         with (root/'tx-uhd.log').open('x') as log:
             child = subprocess.Popen(args, stdout=log, stderr=subprocess.STDOUT)
         audit['child_pid'] = child.pid
