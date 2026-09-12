@@ -33,6 +33,7 @@
 - [固定500kHz滤波与时序对照](RML2018A_FIXED_WIDEBAND_2026-09-12.json)：复用四批QAM，96条源保真、288新输入/识别及残差诊断；组合SINR约22dB，保留各类识别变化与清理清单，无新增IQ。
 - [RX40/RX50配对实机与识别](RML2018A_RX_GAIN_PAIR_2026-09-12.json)：96新源行×两档/8份IQ，五种接收处理质量（含原始）及源对照、1152模型输入、逐条增益配对、恢复和清理；LO后识别80→90/96。
 - [其余16类RX50高源SNR有限覆盖](RML2018A_REMAINING16_2026-09-12.json)：16份IQ/384条Z30，源/原始/LO三组1152模型输入，13批校正及3批保护区拒绝、局部导频诊断、恢复与精确清理；与旧RX40八类不合并准确率。
+- [其余16类保护区离线定位](RML2018A_REMAINING_GUARD_DIAGNOSTIC_2026-09-12.json)：三失败批/BPSK对照的24半段统计、12区域频谱及16批TX尾标记；拒绝结果不变，无新IQ、RF或模型，含父血缘和删除清单。
 
 - [RadioML2018A全量脚本先导保留清单](RML2018A_FULL_RF_CAMPAIGN_EVIDENCE_2026-09-10.json)
 - [RadioML2018A当前IQ与历史175kHz滤波方法的离线对照](RML2018A_HISTORICAL_FILTER_COMPARISON_2026-09-10.json)

@@ -44,6 +44,33 @@ class GuardDiagnosticTests(unittest.TestCase):
         self.assertFalse(diagnostic.compatible({'status': 'skipped'}, {'status': 'applied'}))
         self.assertFalse(diagnostic.compatible({'db': 5.98}, {'db': 10.}))
 
+    def test_frozen_lo_split_preserves_other_tones_and_power(self):
+        start = 1673; n = np.arange(start, start+192); frequency = 253000.
+        lo = 3*np.exp(2j*np.pi*frequency*n/diagnostic.c.RATE)
+        other = 5*np.exp(2j*np.pi*(frequency+7*diagnostic.c.RATE/192)*n/diagnostic.c.RATE)
+        result = diagnostic.tone_parts(lo+other, start, frequency)
+        self.assertAlmostEqual(result['coherent_at_frozen_lo_counts2'], 9., places=10)
+        self.assertAlmostEqual(result['noncoherent_counts2'], 25., places=10)
+        self.assertAlmostEqual(result['total_counts2'], 34., places=10)
+
+    def test_neighborhood_covers_all_guards_with_calibrated_bins(self):
+        z = np.ones(diagnostic.c.RX_SAMPLES, complex)
+        before = z.copy()
+        result = diagnostic.neighborhoods(z, [[8070,8454],[34182,34566],[60294,60678]])
+        self.assertEqual(len(result), 3)
+        for item in result:
+            windows = item['windows']
+            self.assertEqual(len(windows), 28)
+            for w in windows:
+                self.assertEqual(w['stop']-w['start'], 192)
+                self.assertAlmostEqual(sum(w['spectrum_bin_power_counts2']), 1.)
+        np.testing.assert_array_equal(z, before)
+
+    def test_tone_split_refuses_invalid_inputs(self):
+        for z, start, frequency in ((np.zeros(191),0,1), (np.zeros(192),-1,1),
+                                    (np.zeros(192),0,float('nan'))):
+            with self.assertRaises(ValueError): diagnostic.tone_parts(z,start,frequency)
+
 
 if __name__ == '__main__':
     unittest.main()

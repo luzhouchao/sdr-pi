@@ -1,0 +1,739 @@
+{
+  "schema": "rml2018a-remaining-guard-diagnostic-evidence-v1",
+  "base_head": "01668bb265ca79b4db2d0017f2cfea3221d77f43",
+  "purpose": "Localize three rejected guard batches against BPSK without admitting correction or repeating RF/model",
+  "parent_inventory": "/home/jetson/sdrharness/docs/evidence/RML2018A_REMAINING16_2026-09-12.json",
+  "parent_inventory_sha256": "a24b0bf080e272bce0aadb20f50f9f20e7f45a6dedc7a13329d9ff8da9f2e1f7",
+  "source": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "bytes": 21449148312,
+    "mtime_ns": 1627354882000000000
+  },
+  "run_id": "06c19db239064398ac749ba4373fd9b7",
+  "model_identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "source_capture_associations": [
+    {
+      "batch": 17664,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0017664/rx/rml2018a-17664-1789215688564-1789215688564-1789215691834088887.sigmf-data",
+        "iq_sha256": "db5c7267fffa915bd0709792930dcc307f84fbc451d3434b85cd48bafd310d37",
+        "metadata_sha256": "c595263052b9a88c6697363cf85398ed0b4afe236b651c47ad15f440e569b371",
+        "request_id": 5,
+        "sequence": 1563,
+        "session_generation": 1789215688564
+      },
+      "source_rows": [
+        423936,
+        423937,
+        423938,
+        423939,
+        423940,
+        423941,
+        423942,
+        423943,
+        423944,
+        423945,
+        423946,
+        423947,
+        423948,
+        423949,
+        423950,
+        423951,
+        423952,
+        423953,
+        423954,
+        423955,
+        423956,
+        423957,
+        423958,
+        423959
+      ]
+    },
+    {
+      "batch": 35414,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0035414/rx/rml2018a-35414-1789215710519-1789215710519-1789215713795179686.sigmf-data",
+        "iq_sha256": "a9dacff0e3dad95190ee6e4eeab58bcb54d1398f6ef12ef5bf586312db103e30",
+        "metadata_sha256": "e9d7d557d8ee023f7cb52ffaf77b7abb090de54d71e52978b9139bc4cc2cfef4",
+        "request_id": 5,
+        "sequence": 1565,
+        "session_generation": 1789215710519
+      },
+      "source_rows": [
+        849936,
+        849937,
+        849938,
+        849939,
+        849940,
+        849941,
+        849942,
+        849943,
+        849944,
+        849945,
+        849946,
+        849947,
+        849948,
+        849949,
+        849950,
+        849951,
+        849952,
+        849953,
+        849954,
+        849955,
+        849956,
+        849957,
+        849958,
+        849959
+      ]
+    },
+    {
+      "batch": 62038,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0062038/rx/rml2018a-62038-1789215765381-1789215765381-1789215768637144969.sigmf-data",
+        "iq_sha256": "a3b53ed500509c8b68cb48e1f5f20c19485b0c794a044ecef1df80d9a77e421c",
+        "metadata_sha256": "46767af4b4c7af61d492ba4c69e917b4d45b54a537cb018535612b5ec060bcf2",
+        "request_id": 5,
+        "sequence": 1570,
+        "session_generation": 1789215765381
+      },
+      "source_rows": [
+        1488912,
+        1488913,
+        1488914,
+        1488915,
+        1488916,
+        1488917,
+        1488918,
+        1488919,
+        1488920,
+        1488921,
+        1488922,
+        1488923,
+        1488924,
+        1488925,
+        1488926,
+        1488927,
+        1488928,
+        1488929,
+        1488930,
+        1488931,
+        1488932,
+        1488933,
+        1488934,
+        1488935
+      ]
+    },
+    {
+      "batch": 97536,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0097536/rx/rml2018a-97536-1789215820080-1789215820080-1789215823353674760.sigmf-data",
+        "iq_sha256": "2d87aa67200ebd33d26ca04b906dfa4b598835b76892e039e744ee7b45c1cd28",
+        "metadata_sha256": "c3fd4c3784ed9d59918754b0a842da6f70f2631a936a8840e7cbdc285b820aa1",
+        "request_id": 5,
+        "sequence": 1575,
+        "session_generation": 1789215820080
+      },
+      "source_rows": [
+        2340864,
+        2340865,
+        2340866,
+        2340867,
+        2340868,
+        2340869,
+        2340870,
+        2340871,
+        2340872,
+        2340873,
+        2340874,
+        2340875,
+        2340876,
+        2340877,
+        2340878,
+        2340879,
+        2340880,
+        2340881,
+        2340882,
+        2340883,
+        2340884,
+        2340885,
+        2340886,
+        2340887
+      ]
+    }
+  ],
+  "software": {
+    "diagnose-rml2018a-guard-anomaly.py": "069bb4122205cfe2af585b95f63fa47e570c60398ac71570cd73e15d2ffc2877",
+    "rml2018a_campaign.py": "b061b3ba7dd94237ab91b7782b8f3a00c7eca9eb6188bc6bad1d4b847458e5a9",
+    "rml2018a-rf-campaign.py": "07755bf754fb7227122c100dbbed4f51c5df7097d3683064a994c54dfa7a3b9e",
+    "rml2018a_lo_cancellation.py": "6adc011afd8ba8ba5971b07a8715beaeaa8d5f58c1c251a6e15c3015da37d020",
+    "rml2018a_pilot_timing.py": "5d7545215022c99fe8c3641ebf966856165af80a405c536de2ceab708f57ce76",
+    "rml2018a_guard_tone.py": "f6805c8c12cd4fbb0e207bb63d34f8d2fa5d8e696a2f12850d498bebc7feeae0"
+  },
+  "summary": {
+    "schema": "remaining-guard-localization-summary-v1",
+    "cases": [
+      {
+        "batch": 17664,
+        "class_name": "BPSK",
+        "halves": [
+          {
+            "guard": 1,
+            "kind": "training",
+            "start": 8070,
+            "stop": 8262,
+            "time_ms": 3.842857142857143,
+            "power_counts2": 7.78309856471565,
+            "bands_counts2": [
+              0.7744141213568556,
+              2.8534416279262245,
+              1.1317553292381373,
+              1.5746087355483023
+            ],
+            "lo_fraction": 0.20960548197599038,
+            "strongest_tone_fraction": 0.20802601017102237,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 1,
+            "kind": "heldout",
+            "start": 8262,
+            "stop": 8454,
+            "time_ms": 3.934285714285714,
+            "power_counts2": 8.389219184038621,
+            "bands_counts2": [
+              0.7388944394847454,
+              4.445308001294557,
+              2.028005889572025,
+              1.350398107810313
+            ],
+            "lo_fraction": 0.2774173462740286,
+            "strongest_tone_fraction": 0.27671300215954237,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 2,
+            "kind": "training",
+            "start": 34182,
+            "stop": 34374,
+            "time_ms": 16.277142857142856,
+            "power_counts2": 13.276442156538907,
+            "bands_counts2": [
+              1.802350199906172,
+              8.707626576626225,
+              2.4531640370861663,
+              1.4887753673088393
+            ],
+            "lo_fraction": 0.49049998437971615,
+            "strongest_tone_fraction": 0.4920370390702326,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 2,
+            "kind": "heldout",
+            "start": 34374,
+            "stop": 34566,
+            "time_ms": 16.36857142857143,
+            "power_counts2": 14.242921895006257,
+            "bands_counts2": [
+              2.5188681001993967,
+              9.30922634491971,
+              1.6737307897885705,
+              1.7367237173177197
+            ],
+            "lo_fraction": 0.5378016638601039,
+            "strongest_tone_fraction": 0.5362461546092391,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 3,
+            "kind": "training",
+            "start": 60294,
+            "stop": 60486,
+            "time_ms": 28.71142857142857,
+            "power_counts2": 8.649057561279898,
+            "bands_counts2": [
+              2.1566460641680165,
+              3.6448496348894723,
+              1.4000542385282833,
+              1.526744188380937
+            ],
+            "lo_fraction": 0.18828848001564555,
+            "strongest_tone_fraction": 0.18886679491476435,
+            "position": "after_selected_payload"
+          },
+          {
+            "guard": 3,
+            "kind": "heldout",
+            "start": 60486,
+            "stop": 60678,
+            "time_ms": 28.802857142857142,
+            "power_counts2": 9.688906921446275,
+            "bands_counts2": [
+              2.1780374373302664,
+              3.336646998345707,
+              2.15916753681616,
+              1.3524349563884268
+            ],
+            "lo_fraction": 0.20826708723555545,
+            "strongest_tone_fraction": 0.2074343349713821,
+            "position": "after_selected_payload"
+          }
+        ],
+        "minimum_power_counts2": 7.78309856471565,
+        "maximum_power_counts2": 14.242921895006257,
+        "maximum_to_minimum_db": 2.624465623571612
+      },
+      {
+        "batch": 35414,
+        "class_name": "32PSK",
+        "halves": [
+          {
+            "guard": 1,
+            "kind": "training",
+            "start": 1481,
+            "stop": 1673,
+            "time_ms": 0.7052380952380952,
+            "power_counts2": 2256.028645708882,
+            "bands_counts2": [
+              458.7526368794754,
+              897.4428724160888,
+              850.9200439900959,
+              4.78742111569723
+            ],
+            "lo_fraction": 0.0005350092207563502,
+            "strongest_tone_fraction": 0.0598708201627948,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 1,
+            "kind": "heldout",
+            "start": 1673,
+            "stop": 1865,
+            "time_ms": 0.7966666666666666,
+            "power_counts2": 2262.2889101632313,
+            "bands_counts2": [
+              612.990879814153,
+              1116.5030262760781,
+              515.1961040357795,
+              4.603034892342626
+            ],
+            "lo_fraction": 0.019112398857310465,
+            "strongest_tone_fraction": 0.08278235935628549,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 2,
+            "kind": "training",
+            "start": 27593,
+            "stop": 27785,
+            "time_ms": 13.13952380952381,
+            "power_counts2": 1060.6268294479066,
+            "bands_counts2": [
+              122.86257238352154,
+              538.0113130881193,
+              376.48555697027905,
+              2.9586891163235647
+            ],
+            "lo_fraction": 0.005064199676317978,
+            "strongest_tone_fraction": 0.015427264686689568,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 2,
+            "kind": "heldout",
+            "start": 27785,
+            "stop": 27977,
+            "time_ms": 13.230952380952381,
+            "power_counts2": 1073.752666192965,
+            "bands_counts2": [
+              276.471564253185,
+              466.99023469045954,
+              337.10022117722826,
+              1.7832900962232812
+            ],
+            "lo_fraction": 0.007046995329019016,
+            "strongest_tone_fraction": 0.03191915546046825,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 3,
+            "kind": "training",
+            "start": 53705,
+            "stop": 53897,
+            "time_ms": 25.573809523809523,
+            "power_counts2": 15.680021608176418,
+            "bands_counts2": [
+              5.88538040466691,
+              3.5277225942243864,
+              2.9085950957584568,
+              2.3175210096001915
+            ],
+            "lo_fraction": 0.09482606981633993,
+            "strongest_tone_fraction": 0.343790671516741,
+            "position": "after_selected_payload"
+          },
+          {
+            "guard": 3,
+            "kind": "heldout",
+            "start": 53897,
+            "stop": 54089,
+            "time_ms": 25.665238095238095,
+            "power_counts2": 16.21734912738283,
+            "bands_counts2": [
+              4.59632979407698,
+              5.9654861779345465,
+              3.5617679955682684,
+              3.8980480758236378
+            ],
+            "lo_fraction": 0.1761599381252222,
+            "strongest_tone_fraction": 0.2111339974671666,
+            "position": "after_selected_payload"
+          }
+        ],
+        "minimum_power_counts2": 15.680021608176418,
+        "maximum_power_counts2": 2262.2889101632313,
+        "maximum_to_minimum_db": 21.592014097457394
+      },
+      {
+        "batch": 62038,
+        "class_name": "32QAM",
+        "halves": [
+          {
+            "guard": 1,
+            "kind": "training",
+            "start": 1656,
+            "stop": 1848,
+            "time_ms": 0.7885714285714286,
+            "power_counts2": 623.6674773841564,
+            "bands_counts2": [
+              428.9911601507901,
+              177.34314254419274,
+              17.8465803717022,
+              2.031192920081903
+            ],
+            "lo_fraction": 0.0001531446244086431,
+            "strongest_tone_fraction": 0.05136257376993053,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 1,
+            "kind": "heldout",
+            "start": 1848,
+            "stop": 2040,
+            "time_ms": 0.88,
+            "power_counts2": 580.2461024544391,
+            "bands_counts2": [
+              108.38166166784985,
+              193.32444181358977,
+              258.0754451377513,
+              2.220060856557966
+            ],
+            "lo_fraction": 0.009977345833619446,
+            "strongest_tone_fraction": 0.07684719196778048,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 2,
+            "kind": "training",
+            "start": 27768,
+            "stop": 27960,
+            "time_ms": 13.222857142857142,
+            "power_counts2": 6.245909235284425,
+            "bands_counts2": [
+              0.857465530334606,
+              1.9564171360956462,
+              2.1698123004069547,
+              1.4931619868395396
+            ],
+            "lo_fraction": 0.05192841016131487,
+            "strongest_tone_fraction": 0.05772164144187284,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 2,
+            "kind": "heldout",
+            "start": 27960,
+            "stop": 28152,
+            "time_ms": 13.314285714285715,
+            "power_counts2": 6.880784921316672,
+            "bands_counts2": [
+              0.6442684182640136,
+              2.1145086188899183,
+              1.6534371144998807,
+              2.2915787917139916
+            ],
+            "lo_fraction": 0.057934637113722126,
+            "strongest_tone_fraction": 0.04194688778960821,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 3,
+            "kind": "training",
+            "start": 53880,
+            "stop": 54072,
+            "time_ms": 25.65714285714286,
+            "power_counts2": 6.137633073014403,
+            "bands_counts2": [
+              1.741653133721656,
+              1.2124508323782062,
+              1.51121629094341,
+              2.2066947236093735
+            ],
+            "lo_fraction": 0.014396898427783345,
+            "strongest_tone_fraction": 0.09517163700702438,
+            "position": "after_selected_payload"
+          },
+          {
+            "guard": 3,
+            "kind": "heldout",
+            "start": 54072,
+            "stop": 54264,
+            "time_ms": 25.748571428571427,
+            "power_counts2": 6.042678041898725,
+            "bands_counts2": [
+              0.5812199964533232,
+              1.6214078606699676,
+              1.5617801449025217,
+              1.2232694595889746
+            ],
+            "lo_fraction": 0.011657266655034186,
+            "strongest_tone_fraction": 0.022929058044392932,
+            "position": "after_selected_payload"
+          }
+        ],
+        "minimum_power_counts2": 6.042678041898725,
+        "maximum_power_counts2": 623.6674773841564,
+        "maximum_to_minimum_db": 20.137236419766307
+      },
+      {
+        "batch": 97536,
+        "class_name": "FM",
+        "halves": [
+          {
+            "guard": 1,
+            "kind": "training",
+            "start": 2530,
+            "stop": 2722,
+            "time_ms": 1.2047619047619047,
+            "power_counts2": 16.44587861832054,
+            "bands_counts2": [
+              1.6132524226358413,
+              6.4673592175678465,
+              4.353237705685371,
+              4.189290327983878
+            ],
+            "lo_fraction": 0.19051928298501594,
+            "strongest_tone_fraction": 0.17841088975388114,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 1,
+            "kind": "heldout",
+            "start": 2722,
+            "stop": 2914,
+            "time_ms": 1.2961904761904761,
+            "power_counts2": 16.060453865327567,
+            "bands_counts2": [
+              1.6215548626941807,
+              4.799414695015028,
+              3.961643937166088,
+              3.9728546590991534
+            ],
+            "lo_fraction": 0.19672977547214254,
+            "strongest_tone_fraction": 0.19635090007318975,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 2,
+            "kind": "training",
+            "start": 28642,
+            "stop": 28834,
+            "time_ms": 13.639047619047618,
+            "power_counts2": 12.976873172046858,
+            "bands_counts2": [
+              1.1051699879293755,
+              6.641848267326485,
+              2.236152827082145,
+              1.8832158146917328
+            ],
+            "lo_fraction": 0.44522026023942896,
+            "strongest_tone_fraction": 0.44506625803666183,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 2,
+            "kind": "heldout",
+            "start": 28834,
+            "stop": 29026,
+            "time_ms": 13.73047619047619,
+            "power_counts2": 12.373923065134662,
+            "bands_counts2": [
+              1.7097830766249142,
+              6.137262766809129,
+              1.740503594069042,
+              1.9355508506000547
+            ],
+            "lo_fraction": 0.4191536780918174,
+            "strongest_tone_fraction": 0.4220041062627536,
+            "position": "before_selected_payload"
+          },
+          {
+            "guard": 3,
+            "kind": "training",
+            "start": 54754,
+            "stop": 54946,
+            "time_ms": 26.073333333333334,
+            "power_counts2": 3591.8739064618035,
+            "bands_counts2": [
+              673.2225630887864,
+              1618.2890351641795,
+              1337.7920745883648,
+              4.8250538746884315
+            ],
+            "lo_fraction": 0.0028927477682160673,
+            "strongest_tone_fraction": 0.036417210339561905,
+            "position": "after_selected_payload"
+          },
+          {
+            "guard": 3,
+            "kind": "heldout",
+            "start": 54946,
+            "stop": 55138,
+            "time_ms": 26.164761904761903,
+            "power_counts2": 3665.512861327407,
+            "bands_counts2": [
+              819.0207399630622,
+              1856.3601681216678,
+              932.0046292225962,
+              4.059484950908803
+            ],
+            "lo_fraction": 0.003116953281049274,
+            "strongest_tone_fraction": 0.04908324101926214,
+            "position": "after_selected_payload"
+          }
+        ],
+        "minimum_power_counts2": 12.373923065134662,
+        "maximum_power_counts2": 3665.512861327407,
+        "maximum_to_minimum_db": 24.716273362042212
+      }
+    ],
+    "tx_tails": {
+      "U": {
+        "total": 12,
+        "applied": 11,
+        "skipped": 1
+      },
+      "S": {
+        "total": 4,
+        "applied": 2,
+        "skipped": 2
+      }
+    },
+    "source_iq_reads": 0,
+    "rf_operations": 0,
+    "model_windows": 0,
+    "accepted_dsp_changes": 0,
+    "limitation": "Descriptive posthoc candidate residual; no physical attribution or accepted SINR improvement"
+  },
+  "verification": {
+    "parent_files": 182,
+    "diagnostic_replayed": true,
+    "tests_passed": 7,
+    "plot_visually_checked": true
+  },
+  "cleanup_summary": {
+    "status": "verified",
+    "removed_files": 1,
+    "removed_bytes": 123432,
+    "removed_directories": 2,
+    "absent_paths": [
+      "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/scratch"
+    ],
+    "parent_files_verified": 182,
+    "rf_operations": 0,
+    "model_windows": 0,
+    "new_iq_copies": 0,
+    "feature_processes_absent": true
+  },
+  "rf_operations": 0,
+  "source_iq_reads": 0,
+  "model_windows": 0,
+  "production_deployment": false,
+  "recognizer_available": false,
+  "retained_root": "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912",
+  "retained_files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/analysis.json",
+      "bytes": 2457168,
+      "sha256": "84e36665c6dc5db73cdeaf911d5a7dc83120b6d466feb08c93132c69fbc05062"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/analyze.log",
+      "bytes": 55,
+      "sha256": "361f29b6651ce6e4096743fea64e183eb1af8b5116e439ec918d2dc7301d5e6d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/cleanup.json",
+      "bytes": 776,
+      "sha256": "03878a1788117ee01ee2da0ef747ab88ce7ac6568887fcde22b8d30119179c77"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/finalize.py",
+      "bytes": 4095,
+      "sha256": "a920a0d4da93959d185d3981e61073f48cc2ffc97d65d8cd16e7f155eb4f535e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/guard-residual.png",
+      "bytes": 617347,
+      "sha256": "f89bc62235255b0fe1718f83d90a2306da7cd047320f3c5e915164f26465dd22"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/plan.json",
+      "bytes": 1334,
+      "sha256": "757d00ac15bdbf1c8a0e799bc85e661a6d892e4cb9ea62be0bcc0f15ca192e84"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/run.py",
+      "bytes": 947,
+      "sha256": "e2a16ca2d0baf26af743ee3d381cc76f78f78b38ac3eff17d2c0231096fb3cc2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/summarize.py",
+      "bytes": 1824,
+      "sha256": "349f674284a61cb2269a0f671842b0a4718b04f80e5ee3143550e1d169c8888e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/summary.json",
+      "bytes": 14089,
+      "sha256": "f7d5e147c0c791f927db46506ad1e7079e10522bee1fa1a14f03d3bdd20766b3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/tests.log",
+      "bytes": 843,
+      "sha256": "0811a5afe84504878c216559a850419b030275ed7f245165fed80d95f7bdad24"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/verify.log",
+      "bytes": 106,
+      "sha256": "bd702a61c4896303ff7cadbe24c112d05fde4adfb1f3cdb3e33d1d7322c82b61"
+    }
+  ],
+  "retained_file_count": 11,
+  "retained_bytes": 3098584,
+  "manual_delete_command": "rm -- '/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/analysis.json' '/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/analyze.log' '/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/cleanup.json' '/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/finalize.py' '/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/guard-residual.png' '/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/plan.json' '/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/run.py' '/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/summarize.py' '/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/summary.json' '/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/tests.log' '/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912/verify.log' && rmdir -- '/var/tmp/sdrharness-dev/rml-guard-anomaly-remaining-20260912'"
+}

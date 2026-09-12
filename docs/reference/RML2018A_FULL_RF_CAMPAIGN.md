@@ -241,6 +241,12 @@ TX60、峰值0.632455532、AGX，允许RX40或RX50；旧增益/八类/保护间�
 前八类RX40与本profile的RX50不得合并成同条件24类准确率；
 实际结果及三批保护区拒绝见[验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12其余16类rx50高源snr有限覆盖)。
 
+离线保护区诊断复用`diagnose-rml2018a-guard-anomaly.py --prepared <prepared.json> --inventory <父清单> --output /var/tmp/sdrharness-dev/rml-guard-anomaly-<唯一标识>`。
+剩余16类父schema只分析17664/35414/62038/97536，并核对16批TX日志；旧八类入口仍受原批次限制。
+保留原同步和校正决定，固定LO候选残差仅作描述，不输出校正IQ或新增SINR/模型预测。
+192点Hann/64点hop的保护区/导频邻域谱不能把导频、载荷能量解释成背景；
+局部LO相干分解也不等于接收修复。`--plot-only`从保存的统计生成图，无源数据/硬件访问。
+
 ## 固定500kHz宽带滤波对照
 
 固定宽带滤波实验入口为`compare-rml2018a-wideband.py prepare/infer/verify --output
