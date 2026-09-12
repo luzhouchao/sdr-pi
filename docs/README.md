@@ -26,6 +26,7 @@
 
 - [AGX设备工作区：B210 USB / P201网口 / 共享数据集](../devices/README.md)
 - [RadioML2018A全量RF脚本操作](reference/RML2018A_FULL_RF_CAMPAIGN.md)
+- [当前RF配置与复现、同轴/空口论文适用范围](reference/RML2018A_RF_REPRODUCTION.md)
 - [Agent、控制与部署记录](validation/README.md#agent控制与部署)
 - [识别软件交付记录](validation/README.md#识别软件交付)
 - [架构、接口与运维](reference/README.md)

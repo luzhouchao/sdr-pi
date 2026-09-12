@@ -1,6 +1,6 @@
 # P201：AGX网口接收设备
 
-[设备总入口](../README.md)
+[设备总入口](../README.md) · [当前实验配置与复现](../../docs/reference/RML2018A_RF_REPRODUCTION.md)
 
 - `python3 -B devices/p201/p201.py health`：既有唯一Controller的严格只读健康检查。
 - `programs/daemon-source/`：现有Linux/IIO有界RX服务源码链接。

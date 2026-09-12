@@ -1,0 +1,1176 @@
+{
+  "schema": "rml2018a-rf-reproduction-snapshot-v1",
+  "as_of_date": "2026-09-12",
+  "code_revision": "403119426d5c0873527d39633956439fde59caf1",
+  "branch": "codex/sdr-improvements",
+  "purpose": "Versioned reproduction configuration and evidence navigation; not an execution plan or production deployment",
+  "hardware": {
+    "connection": "AGX USB B210 RF A TX/RX ->20dB50ohm attenuator+15cm SMA ->P201 RX1",
+    "transmitter": {
+      "model": "B210",
+      "serial": "2508504",
+      "host": "AGX USB3",
+      "port": "RF A TX/RX",
+      "channel": 0,
+      "subdev": "A:A",
+      "uhd_antenna": "TX/RX",
+      "master_clock_rate_hz_from_recorded_log": 33600000,
+      "runtime_manifest": {
+        "path": "/home/jetson/sdrharness/devices/b210/runtime-manifest.json",
+        "bytes": 1703,
+        "sha256": "fae1fb324ec69546c40a691e0d9b913aadfefad51b19934a06b6c34d7b97eccf"
+      },
+      "runtime_files": [
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/bin/tx_samples_from_file",
+          "bytes": 141600,
+          "sha256": "fe3aebc556c16a5065d63d4e6ef8f02ef277ac01dcf250a35dec58b84eceb5cf"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/bin/uhd_config_info",
+          "bytes": 76048,
+          "sha256": "f492aa09a23bee53bb739ced7f432a9fc37ad8fd34045027e3eb447e25af2be5"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/bin/uhd_find_devices",
+          "bytes": 92432,
+          "sha256": "7303a0de4a0fe39d0c19cbf5c1cf83b6e17ecf1b81d6add6b5be8574b3ff43f1"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/bin/uhd_usrp_probe",
+          "bytes": 149792,
+          "sha256": "5dc55a472f9408ae09a890ac39ca625d3fbe1f4ded087ccb46c9a6a4a9be70e1"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/images/usrp_b200_fw.hex",
+          "bytes": 514346,
+          "sha256": "cc8e4bc968d91d1a67c63871ce5b2c1613c49676fe363bf2f6e336059899ae5c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/images/usrp_b210_fpga.bin",
+          "bytes": 2898992,
+          "sha256": "ee03a9e38c83a1f6f327e7b560522c2a96629e7de574196092c1b830d05fcf9b"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/nx-reference/SKILL.md",
+          "bytes": 1716,
+          "sha256": "74c3f60d82d0a92b7676925e782d99e550ea20208148bd2ce4a67c351b9461b4"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t/nx-reference/activate_b210.sh",
+          "bytes": 3518,
+          "sha256": "d2daefa09e6e6c0c2aa763595393b624129ecbf5eae6a3b937438c47e5b1bdca"
+        }
+      ],
+      "system_libuhd": {
+        "path": "/usr/lib/aarch64-linux-gnu/libuhd.so.4.1.0",
+        "bytes": 9326720,
+        "sha256": "357273c6059cc81d02585a79635e82d8a5bf1db46c07288e9fad0c7746ad9dc1"
+      }
+    },
+    "receiver": {
+      "model": "P201",
+      "host": "192.168.1.10",
+      "port": 43110,
+      "front_panel": "RX1",
+      "logical_channel": "RX0",
+      "rf_port": "A_BALANCED",
+      "gain_mode": "manual",
+      "controller_locally_hash_verified": {
+        "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent",
+        "bytes": 2544408,
+        "sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f"
+      },
+      "last_recorded_daemon_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+      "live_ssh_read_this_unit": false
+    },
+    "attenuator": {
+      "nominal_db": 20,
+      "impedance_ohm": 50,
+      "rated_watts": 2,
+      "label_frequency_range": "DC-8GHz",
+      "basis": "user-reported labeling; no insertion-loss calibration"
+    },
+    "cable": {
+      "length_cm": 15,
+      "type": "SMA coax",
+      "measured_insertion_loss_db": null
+    },
+    "external_clock_and_reference": "not documented/verified in this unit; do not infer shared clock"
+  },
+  "experimental_rf": {
+    "center_hz": 2455000000,
+    "rate_sps": 2100000,
+    "bandwidth_hz": 1500000,
+    "tx_gain_db": 60,
+    "rx_gain_db": 50,
+    "peak": 0.632455532033676,
+    "tx_lo_offset_hz": 250000,
+    "settle_ms": 500,
+    "point_deadline_ms": 1000,
+    "rx_samples": 65535
+  },
+  "framing": {
+    "rows": 24,
+    "complex_samples_per_row": 1024,
+    "guard_each_end": 256,
+    "marker_samples": 1024,
+    "frame_complex_samples": 26112,
+    "repeats": 321,
+    "tx_complex_samples_per_batch": 8381952,
+    "tx_max_seconds_per_batch": 4,
+    "native_rx_complex_samples": 65535,
+    "native_rx_bytes_per_batch": 262140,
+    "tx_dtype": "fc32_le",
+    "rx_dtype": "ci16_le interleaved I/Q",
+    "row_peak_normalization": true,
+    "marker_seed": "derived from run_id and batch via pinned packet implementation"
+  },
+  "synchronization": {
+    "cfo_search_max_hz": 14500,
+    "cfo_step_hz": 500,
+    "cfo_limit_hz": 17000,
+    "initial_marker_threshold": 0.55,
+    "final_marker_threshold": 0.65
+  },
+  "active_experimental_variants": [
+    "source",
+    "raw",
+    "guard"
+  ],
+  "lo_contract": {
+    "method": "pilot-anchored-guard-lo-cancellation-v1",
+    "rate_sps": 2100000,
+    "lo_offset_hz": 250000,
+    "guard_edge_exclusion_samples": 64,
+    "training_samples_per_guard": 192,
+    "validation_samples_per_guard": 192,
+    "minimum_complete_guards": 2,
+    "frequency_prior": "nominal TX LO offset + original known-marker CFO",
+    "frequency_search_halfwidth_hz": 30,
+    "coarse_step_hz": 1,
+    "minimum_guard_holdout_suppression_db": 10,
+    "maximum_guard_amplitude_spread": 0.25,
+    "maximum_guard_phase_spread_rad": 0.25,
+    "maximum_corrected_pilot_residual_cfo_hz": 25,
+    "source_payload_used_for_fit": false,
+    "labels_used_for_fit": false,
+    "payload_frequency_projection": false,
+    "refit_on_validation": false,
+    "failure_action": "return unchanged original IQ with explicit reason",
+    "limitations": [
+      "requires correct repeated-frame timing and pilot CFO prior within30Hz of LO relation",
+      "requires stable additive tone over buffered capture; guards may miss payload-only drift",
+      "postprocessing quality is not a change to raw physical RF SINR",
+      "not independently validated across24 classes or low source SNR"
+    ]
+  },
+  "guard_contract": {
+    "method": "guard-tone-block-margin-v1",
+    "frequency_fit": "unchanged v1 training guards and pilot prior",
+    "validation": "every training and heldout guard half; eight contiguous24-sample block phasors",
+    "maximum_relative_tone_error_margin": 0.31622776601683794,
+    "block_standard_error_multiplier": 4,
+    "minimum_complete_guards": 2,
+    "minimum_tone_margin_db": 10,
+    "unchanged_v1_total_residual_gate_db": 10,
+    "v1_results_preserved": true,
+    "maximum_amplitude_spread": 0.25,
+    "maximum_phase_spread_rad": 0.25,
+    "maximum_pilot_residual_cfo_hz": 25,
+    "minimum_pilot_half_coherence": 0.95,
+    "source_payload_used": false,
+    "discarded_guards": 0,
+    "validation_refit": false,
+    "failure_action": "unchanged raw IQ with explicit reason",
+    "limitations": [
+      "new empirical tone-error criterion, not equivalent to v1 total-power suppression",
+      "block standard error is not a calibrated confidence bound under arbitrary correlated interference",
+      "guard-only validation cannot detect payload-only LO changes",
+      "does not remove broadband noise, source noise, or payload distortion"
+    ]
+  },
+  "extra_timing_and_payload_filter": "not enabled in remaining-high-snr pilot; comparison-only evidence linked",
+  "model": {
+    "identity": {
+      "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+      "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+      "compute": "cuda_fp16_autocast",
+      "resident_weight_precision": "fp32",
+      "input_precision": "fp32",
+      "logit_return_precision": "fp32",
+      "sample_rate_hz": 2100000,
+      "window_count": 4,
+      "samples_per_window": 1024,
+      "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+    },
+    "checkpoint": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/checkpoints/rml2018a/rf-v1-ft-batched-seed44/epoch-010.pt",
+      "bytes": 1726724,
+      "sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054"
+    },
+    "configurations": [
+      {
+        "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json",
+        "bytes": 1828,
+        "sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab"
+      },
+      {
+        "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1-fp16.candidate.json",
+        "bytes": 4387,
+        "sha256": "35ff99719ab845f33dc7ca2d0e7b666e4f40721ca64a6dd615a671ec6c084f40"
+      },
+      {
+        "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1-ft-batched-seed44.candidate.json",
+        "bytes": 5983,
+        "sha256": "a937fc5eba72cc9cb596eb8d86d87917110a2fedf130436b399ceb513779eeb4"
+      },
+      {
+        "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/config/amc/rml2018a-labels.server-v1.json",
+        "bytes": 3349,
+        "sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/config/amc/rf-preprocess-v1.json",
+        "bytes": 5826,
+        "sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f"
+      }
+    ],
+    "actual_campaign_call": "classify_logits on each independently complex-RMS-normalized [2,1024] float32 window; argmax24; no four-window aggregation in this engineering comparison",
+    "profile_metadata_caveat": "identity window_count=4 describes the separate RF-v1 profile; actual campaign uses single windows",
+    "train_or_finetune_this_unit": false,
+    "recognizer_available": false,
+    "name_status": "provisional"
+  },
+  "source": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "bytes": 21449148312,
+    "mtime_ns": 1627354882000000000,
+    "hash_verification": "SHA copied from sealed RF run; size rechecked now; no HDF5 X/Y/Z reads or full dataset rehash this documentation unit"
+  },
+  "source_exports": [
+    {
+      "batch": 8790,
+      "class_id": 1,
+      "class_name": "4ASK",
+      "rows": [
+        210960,
+        210961,
+        210962,
+        210963,
+        210964,
+        210965,
+        210966,
+        210967,
+        210968,
+        210969,
+        210970,
+        210971,
+        210972,
+        210973,
+        210974,
+        210975,
+        210976,
+        210977,
+        210978,
+        210979,
+        210980,
+        210981,
+        210982,
+        210983
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "86d14691a0e4156ee222ec54aeacda28b5fab0903b39267a694aecd3203ff143",
+      "packet_sha256": "865e4abe43988a8154c46830f90bca2d45dc16798346603435a266576b5d9386",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 7.350420447500649e-16
+    },
+    {
+      "batch": 13227,
+      "class_id": 2,
+      "class_name": "8ASK",
+      "rows": [
+        317448,
+        317449,
+        317450,
+        317451,
+        317452,
+        317453,
+        317454,
+        317455,
+        317456,
+        317457,
+        317458,
+        317459,
+        317460,
+        317461,
+        317462,
+        317463,
+        317464,
+        317465,
+        317466,
+        317467,
+        317468,
+        317469,
+        317470,
+        317471
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "3cdf836eefd9a78b177f2452a8c35356e3ac19f55ea0acc6ac2dd13c6ee5cf0f",
+      "packet_sha256": "b93c0b104f83ccf524ddaf592fe332a366727fa4823a5bba573bd4414298867e",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 7.104975772041756e-16
+    },
+    {
+      "batch": 17664,
+      "class_id": 3,
+      "class_name": "BPSK",
+      "rows": [
+        423936,
+        423937,
+        423938,
+        423939,
+        423940,
+        423941,
+        423942,
+        423943,
+        423944,
+        423945,
+        423946,
+        423947,
+        423948,
+        423949,
+        423950,
+        423951,
+        423952,
+        423953,
+        423954,
+        423955,
+        423956,
+        423957,
+        423958,
+        423959
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "e8f08d32390deef8ac4448506fa312659829b8bc8a3b2958bb6933e6a06b8cf4",
+      "packet_sha256": "9eabba8bec999eb11e3a3de2f5b02a4949fef8f29bba24c0b6fba4c220a012a6",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 7.112401834651902e-16
+    },
+    {
+      "batch": 30976,
+      "class_id": 6,
+      "class_name": "16PSK",
+      "rows": [
+        743424,
+        743425,
+        743426,
+        743427,
+        743428,
+        743429,
+        743430,
+        743431,
+        743432,
+        743433,
+        743434,
+        743435,
+        743436,
+        743437,
+        743438,
+        743439,
+        743440,
+        743441,
+        743442,
+        743443,
+        743444,
+        743445,
+        743446,
+        743447
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "3d8db99d05363f433679af175ee48d2061a7a07c96ddb9ffe1374f9e1156cc9c",
+      "packet_sha256": "6233410ecb8f7fd2ea29aacd520ea72838b70c0be12ab88cf835395376fb2743",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.498411368456935e-16
+    },
+    {
+      "batch": 35414,
+      "class_id": 7,
+      "class_name": "32PSK",
+      "rows": [
+        849936,
+        849937,
+        849938,
+        849939,
+        849940,
+        849941,
+        849942,
+        849943,
+        849944,
+        849945,
+        849946,
+        849947,
+        849948,
+        849949,
+        849950,
+        849951,
+        849952,
+        849953,
+        849954,
+        849955,
+        849956,
+        849957,
+        849958,
+        849959
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "a527ed61769fbf03b26a7761e57ce67ab1b80d1351a96a033ce1dfe2c24fd356",
+      "packet_sha256": "32cf850e9a424be22292443636905ee336dd47d9760fe796fccd0140f3207425",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.558662356157434e-16
+    },
+    {
+      "batch": 39851,
+      "class_id": 8,
+      "class_name": "16APSK",
+      "rows": [
+        956424,
+        956425,
+        956426,
+        956427,
+        956428,
+        956429,
+        956430,
+        956431,
+        956432,
+        956433,
+        956434,
+        956435,
+        956436,
+        956437,
+        956438,
+        956439,
+        956440,
+        956441,
+        956442,
+        956443,
+        956444,
+        956445,
+        956446,
+        956447
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "1f5a15e9be3372d262e82b734a09b421c5f53129a4b26897027f13aa65685327",
+      "packet_sha256": "f8b75fd0675d71b02cc92fff09c27e6d214711a0bfc64b154cdbb691e652ff72",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.394925382908965e-16
+    },
+    {
+      "batch": 44288,
+      "class_id": 9,
+      "class_name": "32APSK",
+      "rows": [
+        1062912,
+        1062913,
+        1062914,
+        1062915,
+        1062916,
+        1062917,
+        1062918,
+        1062919,
+        1062920,
+        1062921,
+        1062922,
+        1062923,
+        1062924,
+        1062925,
+        1062926,
+        1062927,
+        1062928,
+        1062929,
+        1062930,
+        1062931,
+        1062932,
+        1062933,
+        1062934,
+        1062935
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "bede2f3df8fdcf912cb621eabf09b63cb81b6070814e3a568bdfc2cc476b8297",
+      "packet_sha256": "a2975beb7557167bf7e508e25fe0c4498954d82f4c8c4231b9429cec8100fc73",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.473054933819004e-16
+    },
+    {
+      "batch": 48726,
+      "class_id": 10,
+      "class_name": "64APSK",
+      "rows": [
+        1169424,
+        1169425,
+        1169426,
+        1169427,
+        1169428,
+        1169429,
+        1169430,
+        1169431,
+        1169432,
+        1169433,
+        1169434,
+        1169435,
+        1169436,
+        1169437,
+        1169438,
+        1169439,
+        1169440,
+        1169441,
+        1169442,
+        1169443,
+        1169444,
+        1169445,
+        1169446,
+        1169447
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "04bad4974beb047521976e883b0996b6b41597b820d7977390860955445cc414",
+      "packet_sha256": "30e1c8e9c8d5485ce420437b1c5d2ed8ff6e38547270cdb664a7beffa70bc8ee",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.996492444347768e-16
+    },
+    {
+      "batch": 53163,
+      "class_id": 11,
+      "class_name": "128APSK",
+      "rows": [
+        1275912,
+        1275913,
+        1275914,
+        1275915,
+        1275916,
+        1275917,
+        1275918,
+        1275919,
+        1275920,
+        1275921,
+        1275922,
+        1275923,
+        1275924,
+        1275925,
+        1275926,
+        1275927,
+        1275928,
+        1275929,
+        1275930,
+        1275931,
+        1275932,
+        1275933,
+        1275934,
+        1275935
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "7840196ba6a9782a52f9c5bc2ee01c5ee87e4e0b74cd56107011a818df7c143c",
+      "packet_sha256": "837853e1eedb47bb043b92dd375750759d3ab2ec50b92d96e195317282e41253",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.568443905467569e-16
+    },
+    {
+      "batch": 62038,
+      "class_id": 13,
+      "class_name": "32QAM",
+      "rows": [
+        1488912,
+        1488913,
+        1488914,
+        1488915,
+        1488916,
+        1488917,
+        1488918,
+        1488919,
+        1488920,
+        1488921,
+        1488922,
+        1488923,
+        1488924,
+        1488925,
+        1488926,
+        1488927,
+        1488928,
+        1488929,
+        1488930,
+        1488931,
+        1488932,
+        1488933,
+        1488934,
+        1488935
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "7d571cf21afee603e508cacf7fdc9a396e5917479c64d1164bfbf3711bf27049",
+      "packet_sha256": "723606c44f84c754320d9eb1a74abe69ff0c3533322dfa4324b9034df0714eea",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.522550493644472e-16
+    },
+    {
+      "batch": 70912,
+      "class_id": 15,
+      "class_name": "128QAM",
+      "rows": [
+        1701888,
+        1701889,
+        1701890,
+        1701891,
+        1701892,
+        1701893,
+        1701894,
+        1701895,
+        1701896,
+        1701897,
+        1701898,
+        1701899,
+        1701900,
+        1701901,
+        1701902,
+        1701903,
+        1701904,
+        1701905,
+        1701906,
+        1701907,
+        1701908,
+        1701909,
+        1701910,
+        1701911
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "84cdb06a6b2d688e796ee58a80988439884277b7b670744eb238e1fcdf13823c",
+      "packet_sha256": "799294c4118ee57b7b80951727bf5b53c024a682a86a88b4f0774801046ba8e1",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.821832390743884e-16
+    },
+    {
+      "batch": 79787,
+      "class_id": 17,
+      "class_name": "AM-SSB-WC",
+      "rows": [
+        1914888,
+        1914889,
+        1914890,
+        1914891,
+        1914892,
+        1914893,
+        1914894,
+        1914895,
+        1914896,
+        1914897,
+        1914898,
+        1914899,
+        1914900,
+        1914901,
+        1914902,
+        1914903,
+        1914904,
+        1914905,
+        1914906,
+        1914907,
+        1914908,
+        1914909,
+        1914910,
+        1914911
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "70caea654a00e09634a747bd31993313a86ca2838f0d6cf4c274e41f336afbbf",
+      "packet_sha256": "5edb47050deb11c13fa9d149c0e74ff08762c1c4784828e599a5b1e4079ed4aa",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 1.0073525709900818e-15
+    },
+    {
+      "batch": 84224,
+      "class_id": 18,
+      "class_name": "AM-SSB-SC",
+      "rows": [
+        2021376,
+        2021377,
+        2021378,
+        2021379,
+        2021380,
+        2021381,
+        2021382,
+        2021383,
+        2021384,
+        2021385,
+        2021386,
+        2021387,
+        2021388,
+        2021389,
+        2021390,
+        2021391,
+        2021392,
+        2021393,
+        2021394,
+        2021395,
+        2021396,
+        2021397,
+        2021398,
+        2021399
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "4ba763b24869c65d1d6490703cd30a8add94eed261e3b13afdb45691e443b12e",
+      "packet_sha256": "6f45b9b48d052939908a79120198504a4e1c39fc9e38479e25806899045d409b",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 9.994778919396656e-16
+    },
+    {
+      "batch": 88662,
+      "class_id": 19,
+      "class_name": "AM-DSB-WC",
+      "rows": [
+        2127888,
+        2127889,
+        2127890,
+        2127891,
+        2127892,
+        2127893,
+        2127894,
+        2127895,
+        2127896,
+        2127897,
+        2127898,
+        2127899,
+        2127900,
+        2127901,
+        2127902,
+        2127903,
+        2127904,
+        2127905,
+        2127906,
+        2127907,
+        2127908,
+        2127909,
+        2127910,
+        2127911
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "5c65f7b4af7054102ce7628ade684fdfa37f961ccca4e446ca26d0ce9fac3396",
+      "packet_sha256": "afe85db394f3bce128896dd8121a6aec45afafe841bf9a1a02b5887bc2912aba",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 8.238291833040933e-16
+    },
+    {
+      "batch": 97536,
+      "class_id": 21,
+      "class_name": "FM",
+      "rows": [
+        2340864,
+        2340865,
+        2340866,
+        2340867,
+        2340868,
+        2340869,
+        2340870,
+        2340871,
+        2340872,
+        2340873,
+        2340874,
+        2340875,
+        2340876,
+        2340877,
+        2340878,
+        2340879,
+        2340880,
+        2340881,
+        2340882,
+        2340883,
+        2340884,
+        2340885,
+        2340886,
+        2340887
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "43de313f3e98927e7cbc7e74ba36541fc362d622545809cb0eb8cf2f880bfd7f",
+      "packet_sha256": "34e1c60351fc3adb90fabac986a91fc42a8bca2e72cc0e9d6e0b601a5e6b3ded",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 8.175158191220058e-16
+    },
+    {
+      "batch": 106411,
+      "class_id": 23,
+      "class_name": "OQPSK",
+      "rows": [
+        2553864,
+        2553865,
+        2553866,
+        2553867,
+        2553868,
+        2553869,
+        2553870,
+        2553871,
+        2553872,
+        2553873,
+        2553874,
+        2553875,
+        2553876,
+        2553877,
+        2553878,
+        2553879,
+        2553880,
+        2553881,
+        2553882,
+        2553883,
+        2553884,
+        2553885,
+        2553886,
+        2553887
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "55f8f3326799de12548964be9c54e3239416da895e594211a23534dacd6ff24d",
+      "packet_sha256": "910c346ae93308a4eeda4a134e669595c4710250c52b29cdf162ac8608fcc01e",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 7.002866663081725e-16
+    }
+  ],
+  "campaign": {
+    "schema": "rml2018a-all-row-rf-v3",
+    "run_id": "06c19db239064398ac749ba4373fd9b7",
+    "source": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+      "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+      "bytes": 21449148312,
+      "mtime_ns": 1627354882000000000
+    },
+    "budget": {
+      "rows": 2555904,
+      "batches": 106496,
+      "rows_per_batch": 24,
+      "maximum_rx_iq_bytes": 27916861440,
+      "maximum_tx_seconds": 425984,
+      "maximum_transient_packet_bytes": 208896,
+      "metadata_and_predictions_reserve_bytes": 27917287424,
+      "estimated_wall_seconds_unvalidated": 1064960,
+      "warning": "wall estimate includes per-batch radio/SSH setup; replace with pilot measurement"
+    },
+    "scope": "Only registered Z30 batches[8790, 13227, 17664, 30976, 35414, 39851, 44288, 48726, 53163, 62038, 70912, 79787, 84224, 88662, 97536, 106411]; full budget describes dataset indexing, not permitted execution",
+    "tx_host": "agx",
+    "tx_host_identity": {
+      "host": "agx",
+      "transport_sha256": "f4f453b6e7d4f76e4ed8c02ae8373489106106093814f1ecf2c5bba84fb42620",
+      "device_helper_sha256": "8b092061886b633b2615a9fcc73ab662caf9360893863a0c35bb9a646e705bbc",
+      "runtime": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t",
+      "manifest_sha256": "fae1fb324ec69546c40a691e0d9b913aadfefad51b19934a06b6c34d7b97eccf"
+    },
+    "tx_level_profile": "remaining-high-snr-pilot",
+    "semantics": "Finite cable gain-pair engineering pilot, not a full campaign or independent admission",
+    "train": false,
+    "recognizer_available": false,
+    "name_status": "provisional",
+    "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "software": {
+      "rml2018a-rf-campaign.py": "07755bf754fb7227122c100dbbed4f51c5df7097d3683064a994c54dfa7a3b9e",
+      "rml2018a_campaign.py": "b061b3ba7dd94237ab91b7782b8f3a00c7eca9eb6188bc6bad1d4b847458e5a9",
+      "rml2018a-nx-tx.py": "d33c28d442e923173964d9a3511401a62f8ad2ae312439be8a16167cae54b52f",
+      "amc-mamba-worker.py": "750eef925be33ab925798f49907c0a35a2cf1c5cd9f00672ee64fcda9d0872b5",
+      "amc-rf-v1-runtime.py": "a920c4260ce02f824cc1bfad596242330b69dbfdf3008c45be6142d8aa077e82",
+      "gpu_lease.py": "cbc8038a375f1c44cf4c16d68c94d19ae146b8b9b496a340603be62340c1e1c7",
+      "validate-b210-multiclass.py": "2bd5a801b25aa3a5a5e8d48d8d930207b9f34fa6b7c037292edf3108e0a657f8",
+      "validate-p201-termination-background.py": "007fce5064507803b6d75f178e7f3619f14aaec089ce9083900e40601b27975b",
+      "validate-b210-p201-link.py": "9454da8cdc70aadff2aba96a23c4c0a5284c15d53854b996c55ee24778955686"
+    },
+    "rf": {
+      "center_hz": 2455000000,
+      "rate_sps": 2100000,
+      "bandwidth_hz": 1500000,
+      "tx_gain_db": 60,
+      "rx_gain_db": 50,
+      "peak": 0.632455532033676,
+      "tx_lo_offset_hz": 250000,
+      "settle_ms": 500,
+      "point_deadline_ms": 1000,
+      "rx_samples": 65535
+    },
+    "framing": "24 independent1024 rows with per-row peak normalization, batch-specific pilot and guards",
+    "synchronization": {
+      "cfo_search_max_hz": 14500,
+      "cfo_step_hz": 500,
+      "cfo_limit_hz": 17000,
+      "initial_marker_threshold": 0.55,
+      "final_marker_threshold": 0.65
+    },
+    "quality_contract": {
+      "source_snr_db": "original dataset Z; never relabeled as received SINR",
+      "rx_sinr": "conditional effective SINR including additional link distortion; not independently measured RF SINR",
+      "source_reference": "X already contains source impairments; not a clean signal reference",
+      "estimator": {
+        "method": "nominal-source-plus-crossfit-link-error-v1",
+        "target": "conditional_effective_sinr_including_link_distortion",
+        "assumptions": [
+          "Z describes nominal source signal/noise power ratio in X",
+          "single complex gain is adequate over each fixed 1024-sample window",
+          "additional interference/noise is uncorrelated with X",
+          "source signal and source noise undergo the same gain"
+        ],
+        "limitations": [
+          "not independently measured total RF SINR or per-realization source SNR",
+          "stable multipath/nonlinearity remains in link error; correlated interference can bias gain",
+          "no separation of Wi-Fi, receiver noise and hardware distortion"
+        ],
+        "folds": "two contiguous512 halves; train centered scalar gain on one, evaluate other, swap",
+        "maximum_gain_disagreement": 0.25,
+        "maximum_residual_power_ratio": 4.0,
+        "minimum_reference_residual_db": -10.0,
+        "minimum_centered_reference_fraction": 0.0001,
+        "digital_filter": "none",
+        "integration_bandwidth_hz": 2100000,
+        "integration_band": "entire sampled complex baseband [-Fs/2, Fs/2); after analog RX filter",
+        "analog_rf_bandwidth_hz": 1500000,
+        "confidence_interval": null
+      },
+      "source_rx_correlation": "waveform fidelity only, not SINR"
+    },
+    "preprocessing": "pilot timing/CFO/phase correction then per-row complex RMS; no label-guided alignment",
+    "created_unix_ns": 1789215572173995283,
+    "base_head": "19804bef2dc8b5f34060bfddd4cd7d2413832064",
+    "execution_limits": {
+      "allowed_batch_indices": [
+        8790,
+        13227,
+        17664,
+        30976,
+        35414,
+        39851,
+        44288,
+        48726,
+        53163,
+        62038,
+        70912,
+        79787,
+        84224,
+        88662,
+        97536,
+        106411
+      ],
+      "maximum_tx_seconds": 64,
+      "maximum_rx_iq_bytes": 4194240,
+      "maximum_source_rows": 384
+    }
+  },
+  "registered_limits": {
+    "maximum_tx_seconds": 64,
+    "maximum_tx_samples": 134111232,
+    "maximum_rx_iq_bytes": 4194240,
+    "maximum_model_windows": 1152,
+    "maximum_warmups": 2,
+    "per_batch_deadline_seconds": 120,
+    "total_acquire_deadline_seconds": 1000,
+    "infer_external_deadline_seconds": 680,
+    "maximum_component_peak_counts": 512,
+    "reserve_bytes": 134217728
+  },
+  "comparison_deadlines": {
+    "process_alarm_seconds": 650,
+    "inference_loop_seconds_after_model_load": 580,
+    "outer_timeout_seconds": 680
+  },
+  "reproduction_artifacts": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/run-plan.json",
+      "bytes": 5559,
+      "sha256": "93486f26b03057c35dc4fc56efc834b85cab146cb38e03ea55aefb91c96128ef"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-remaining-20260912/pilot-plan.json",
+      "bytes": 20319,
+      "sha256": "e7627fdcdc786b9eb904bbcd9383e99251c51e796d5800b93cbe2067cb1cf2d9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-remaining-20260912/preregister.py",
+      "bytes": 4258,
+      "sha256": "ab5827e21f1f6078533f80f62289d1648ef16df8927ecb7ee6dcb363df023d89"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-remaining-20260912/acquire.py",
+      "bytes": 2118,
+      "sha256": "0412659baa26eb3af03e06b3339cec20811a856d60c6804f2a04bf89efeabf07"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-remaining-20260912/postflight.py",
+      "bytes": 1946,
+      "sha256": "1104ff821ddd8d1631f5911495f3492b3b7580fb668303bc6c7f5166f1e9da6b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-remaining-20260912/prepared.json",
+      "bytes": 1640855,
+      "sha256": "e0631194742d3c5db5b4b271e18eadf29dbcb8f35030e282d09b7fa80ec73c0f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-remaining-20260912/inference.json",
+      "bytes": 978406,
+      "sha256": "542fcfd1513b383a36f5b457c5d2aea02d18880a4508503094e95a626f39572f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-remaining-20260912/summary.json",
+      "bytes": 24279,
+      "sha256": "e5bc1416b446f4d6b01f7b3962f39b5c6be586b4cdd6e2ae529524e4ba0cce66"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-remaining-20260912/postflight.json",
+      "bytes": 13491,
+      "sha256": "d9bf3ac61d871cc2565f9281d4951fc66a6d3ec880530c500255a64c953c74e8"
+    }
+  ],
+  "software": {
+    "rml2018a-rf-campaign.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py",
+      "bytes": 38000,
+      "sha256": "07755bf754fb7227122c100dbbed4f51c5df7097d3683064a994c54dfa7a3b9e"
+    },
+    "rml2018a_campaign.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_campaign.py",
+      "bytes": 21824,
+      "sha256": "b061b3ba7dd94237ab91b7782b8f3a00c7eca9eb6188bc6bad1d4b847458e5a9"
+    },
+    "rml2018a-nx-tx.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-nx-tx.py",
+      "bytes": 5001,
+      "sha256": "d33c28d442e923173964d9a3511401a62f8ad2ae312439be8a16167cae54b52f"
+    },
+    "amc-mamba-worker.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc-mamba-worker.py",
+      "bytes": 41756,
+      "sha256": "750eef925be33ab925798f49907c0a35a2cf1c5cd9f00672ee64fcda9d0872b5"
+    },
+    "amc-rf-v1-runtime.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc-rf-v1-runtime.py",
+      "bytes": 2232,
+      "sha256": "a920c4260ce02f824cc1bfad596242330b69dbfdf3008c45be6142d8aa077e82"
+    },
+    "gpu_lease.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/gpu_lease.py",
+      "bytes": 3678,
+      "sha256": "cbc8038a375f1c44cf4c16d68c94d19ae146b8b9b496a340603be62340c1e1c7"
+    },
+    "validate-b210-multiclass.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-b210-multiclass.py",
+      "bytes": 24711,
+      "sha256": "2bd5a801b25aa3a5a5e8d48d8d930207b9f34fa6b7c037292edf3108e0a657f8"
+    },
+    "validate-p201-termination-background.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-p201-termination-background.py",
+      "bytes": 17483,
+      "sha256": "007fce5064507803b6d75f178e7f3619f14aaec089ce9083900e40601b27975b"
+    },
+    "validate-b210-p201-link.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-b210-p201-link.py",
+      "bytes": 18034,
+      "sha256": "9454da8cdc70aadff2aba96a23c4c0a5284c15d53854b996c55ee24778955686"
+    },
+    "compare-rml2018a-pilot-timing.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/compare-rml2018a-pilot-timing.py",
+      "bytes": 17999,
+      "sha256": "109030349d0f01067ebe0ab4e164066b930b7905ee80552f3f596557c8ea6dc2"
+    },
+    "rml2018a_pilot_timing.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_pilot_timing.py",
+      "bytes": 5608,
+      "sha256": "5d7545215022c99fe8c3641ebf966856165af80a405c536de2ceab708f57ce76"
+    },
+    "rml2018a_lo_cancellation.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_lo_cancellation.py",
+      "bytes": 7158,
+      "sha256": "6adc011afd8ba8ba5971b07a8715beaeaa8d5f58c1c251a6e15c3015da37d020"
+    },
+    "rml2018a_guard_tone.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_guard_tone.py",
+      "bytes": 5053,
+      "sha256": "f6805c8c12cd4fbb0e207bb63d34f8d2fa5d8e696a2f12850d498bebc7feeae0"
+    },
+    "compare-rml2018a-wideband.py": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/compare-rml2018a-wideband.py",
+      "bytes": 10389,
+      "sha256": "11cac6442d5afa12a4cacfd103a54388505dc1b77f496cc6709af6834f1bd91b"
+    }
+  },
+  "optimization_evidence": [
+    {
+      "path": "/home/jetson/sdrharness/docs/evidence/RML2018A_MODULATED_GAIN_PAIR_2026-09-12.json",
+      "bytes": 37970,
+      "sha256": "94ed844e12ffd08a301d8302065ccdf3fa6b844ae6bd6428dac36abdb4c6fb6b"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/evidence/RML2018A_GUARD_LO_CANCELLATION_2026-09-12.json",
+      "bytes": 15220,
+      "sha256": "494aef0471e98f40a4b8a8120fc62d72614b0c354cc3b97dd800f2d83932a474"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/evidence/RML2018A_EIGHT_CLASS_TIMING_2026-09-12.json",
+      "bytes": 74780,
+      "sha256": "2b9e63dd205655f96a7323955cb850b5b66488dd196403945245c5fd5d06c921"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/evidence/RML2018A_QAM_GUARD_REPAIR_2026-09-12.json",
+      "bytes": 46653,
+      "sha256": "91e7ba5d7737a1d6fbb4b29955ae0af3b82fc7d1c7871a8a410a319c0decd8b7"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/evidence/RML2018A_FIXED_WIDEBAND_2026-09-12.json",
+      "bytes": 14547,
+      "sha256": "91da9bd27eac5ef8d92345c504b6aaec12413d371bfaea1298062fff27cf3870"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/evidence/RML2018A_RX_GAIN_PAIR_2026-09-12.json",
+      "bytes": 199497,
+      "sha256": "0d9e9d799547d0d2231e74ade683a692426f3858041a51fb6b4fea3354e96960"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/evidence/RML2018A_REMAINING16_2026-09-12.json",
+      "bytes": 143404,
+      "sha256": "a24b0bf080e272bce0aadb20f50f9f20e7f45a6dedc7a13329d9ff8da9f2e1f7"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/evidence/RML2018A_REMAINING_GUARD_DIAGNOSTIC_2026-09-12.json",
+      "bytes": 24980,
+      "sha256": "b1589a93912409d0f9c3edecf40ce9c2b6fe621c9e1bc86a051b3ed72a742c4a"
+    }
+  ],
+  "runtime_environment": {
+    "observed": "read-only package metadata at snapshot creation; no CUDA/model initialization",
+    "python_executable": "/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python",
+    "python_version": "3.10.12 (main, Jul 15 2026, 23:40:17) [GCC 11.4.0]",
+    "platform": "Linux-5.15.148-tegra-aarch64-with-glibc2.35",
+    "packages": {
+      "torch": "2.8.0",
+      "numpy": "1.26.4",
+      "h5py": "3.14.0",
+      "mamba-ssm": "2.3.1",
+      "causal-conv1d": "1.6.1",
+      "triton": "3.4.0",
+      "transformers": "5.3.0"
+    }
+  },
+  "restore_baseline": {
+    "basis": "last completed RF unit postflight, not live hardware measurement in this documentation unit",
+    "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "source": {
+      "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-remaining-20260912/postflight.json",
+      "bytes": 13491,
+      "sha256": "d9bf3ac61d871cc2565f9281d4951fc66a6d3ec880530c500255a64c953c74e8"
+    }
+  },
+  "measurement_limits": [
+    "source Z remains dataset nominal SNR; received SINR is source-assisted conditional effective estimate including added link distortion",
+    "known marker and silent guards required by current experimental correction; not blind unknown-transmitter reception",
+    "same source frame repeats are not independent test examples",
+    "RF timing/continuity and three broadband disturbances not resolved",
+    "calibrated TX dBm, RX power, attenuator loss, device noise figure and external interference identity not measured",
+    "RF settings and DSP differ across historical cohorts; do not pool into uniform24-class accuracy",
+    "source windows may be historical train/val/test members; engineering benchmark is not independent locked test"
+  ],
+  "operations_this_unit": {
+    "new_rf": 0,
+    "model_windows": 0,
+    "hardware_writes": 0,
+    "production_changes": 0,
+    "temporary_files_created": 0,
+    "new_raw_iq_copies": 0
+  }
+}

@@ -1,6 +1,6 @@
-# RadioML2018A 全量空口工程对照
+# RadioML2018A 全量RF工程对照
 
-[文档入口](../README.md) · [实机验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md)
+[文档入口](../README.md) · [实机验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md) · [当前配置与论文范围](RML2018A_RF_REPRODUCTION.md)
 
 入口为 [AGX runner](../../jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py)，
 它按原 HDF5 行号读取全部 **2,555,904** 条 X/Y/Z，按计划在AGX USB（当前默认）或NX上调用

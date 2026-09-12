@@ -8,6 +8,7 @@
 | --- | --- |
 | AGX双SDR目录、独立运行时与共享RadioML2018A | [设备工作区](../../devices/README.md) |
 | RadioML2018A全部原始样本的B210发射/AGX工程识别 | [全量脚本操作](RML2018A_FULL_RF_CAMPAIGN.md) |
+| 当前RF配置、优化适用条件、复现及论文表述 | [复现与论文范围](RML2018A_RF_REPRODUCTION.md) |
 | Agent / Controller / Planner 分工 | [运行架构](SDR_AGENT_RUNTIME_DESIGN.md) |
 | 有界 RX、AGX 聚合和结果 | [采集处理架构](SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md) |
 | 识别接口、模型输入和准入 | [本地 Recognizer](LOCAL_RECOGNIZER_INTERFACE.md) |

@@ -1,6 +1,6 @@
 # B210：AGX USB设备
 
-[设备总入口](../README.md)
+[设备总入口](../README.md) · [当前实验配置与复现](../../docs/reference/RML2018A_RF_REPRODUCTION.md)
 
 - `b210.py status`：校验专用运行时并查看USB状态，无发射/接收流。
 - `b210.py probe --output /var/tmp/sdrharness-dev/b210-agx-<唯一标识>`：有界加载FX3与A7-100T运行时镜像、检查serial2508504、USB3及两次寄存器回环，无RF流。

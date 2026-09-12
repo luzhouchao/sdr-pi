@@ -34,6 +34,7 @@
 - [RX40/RX50配对实机与识别](RML2018A_RX_GAIN_PAIR_2026-09-12.json)：96新源行×两档/8份IQ，五种接收处理质量（含原始）及源对照、1152模型输入、逐条增益配对、恢复和清理；LO后识别80→90/96。
 - [其余16类RX50高源SNR有限覆盖](RML2018A_REMAINING16_2026-09-12.json)：16份IQ/384条Z30，源/原始/LO三组1152模型输入，13批校正及3批保护区拒绝、局部导频诊断、恢复与精确清理；与旧RX40八类不合并准确率。
 - [其余16类保护区离线定位](RML2018A_REMAINING_GUARD_DIAGNOSTIC_2026-09-12.json)：三失败批/BPSK对照的24半段统计、12区域频谱及16批TX尾标记；拒绝结果不变，无新IQ、RF或模型，含父血缘和删除清单。
+- [当前RF配置复现快照](RML2018A_RF_REPRODUCTION_SNAPSHOT_2026-09-12.json)：4031194代码下的接线、有限参数、帧/处理合同、源行、模型/运行时身份及优化证据链接；只读配置核验，无新RF或IQ副本。
 
 - [RadioML2018A全量脚本先导保留清单](RML2018A_FULL_RF_CAMPAIGN_EVIDENCE_2026-09-10.json)
 - [RadioML2018A当前IQ与历史175kHz滤波方法的离线对照](RML2018A_HISTORICAL_FILTER_COMPARISON_2026-09-10.json)
