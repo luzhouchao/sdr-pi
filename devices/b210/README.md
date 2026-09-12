@@ -17,8 +17,9 @@ local-assets/amc-eval/runtime/venv/bin/python -B devices/b210/programs/campaign.
 新campaign默认`--tx-host agx`、TX0/RX20；创建计划时才可指定host或增益，执行使用固定计划。
 `--tx-host nx`保留旧主机路径，默认值不等于已验证射频参数。源码/运行时改变必须新campaign。
 AGX后端本机暂存/启动/回收外部B210，不再SSH到NX；P201仍是唯一生产受控接收设备。
-用户2026-09-12已确认RF A TX/RX经30dB衰减器及同轴接P201 RX1；
+用户2026-09-12最新确认RF A TX/RX经20dB衰减器及同轴接P201 RX1；
 [有线收发与停止验证](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12同轴衰减接收幅度与主动停止)已完成，波形质量仍待改善。
+[20dB匹配增益对照](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-1220db衰减与匹配增益对照)另有记录，不据小批准确率确定最佳衰减或增益。
 增益只能在新有限计划中登记，改变衰减前先停发。
 迁移后的[首次天线48条实测](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11agx本机b210天线收发48条)
 已完成显式80/40的有限发射/接收/识别；它不改变新plan默认值或完成有线、全库验收。
