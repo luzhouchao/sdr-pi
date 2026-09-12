@@ -23,6 +23,26 @@ def load(name, path):
 
 
 class CampaignTests(unittest.TestCase):
+    def test_multiclass_pilot_has_disjoint_finite_tx_schema(self):
+        iq=self.source()
+        self.assertFalse(set(c.RML_TIMING_BATCHES)&set(c.RML_GAIN_PAIR_BATCHES))
+        for index in c.RML_TIMING_BATCHES:
+            frame,_=c.packet(iq,'multiclass',index,level_profile='timing-multiclass-pilot')
+            plan=c.tx_plan(frame,'multiclass',index,c.batch_rows(2555904,index),60,level_profile='timing-multiclass-pilot')
+            c.validate_tx(plan,frame.tobytes())
+            self.assertEqual(plan['schema'],c.RML_TIMING_SCHEMA)
+            for change in ({'schema':c.RML_GAIN_PAIR_SCHEMA},{'tx_gain_db':70},{'rows':[0]}, {'batch':4267}):
+                with self.assertRaises(ValueError):c.validate_tx({**plan,**change},frame.tobytes())
+        runner=load('timing_multiclass_scope',SCRIPTS/'rml2018a-rf-campaign.py')
+        limits=runner.level_limits('timing-multiclass-pilot')
+        self.assertEqual(limits['maximum_tx_seconds'],32)
+        self.assertEqual(limits['maximum_rx_iq_bytes'],2097120)
+        plan=dict(tx_host='agx',tx_level_profile='timing-multiclass-pilot',
+            rf=dict(tx_gain_db=60,rx_gain_db=40,peak=c.packet_peak('timing-multiclass-pilot')),execution_limits=limits)
+        runner.campaign_level(plan,c.RML_TIMING_BATCHES)
+        with self.assertRaises(ValueError):runner.campaign_level(plan,[4267])
+        with self.assertRaises(ValueError):runner.campaign_level({**plan,'execution_limits':runner.level_limits()},c.RML_TIMING_BATCHES)
+
     def test_gain_pair_scales_payload_and_pilot_without_changing_waveform(self):
         iq=self.source();index=4267
         a,sa=c.packet(iq,'matched',index)

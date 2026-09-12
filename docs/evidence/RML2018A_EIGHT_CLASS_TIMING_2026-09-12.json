@@ -1,0 +1,1654 @@
+{
+  "schema": "rml2018a-eight-class-timing-evidence-v1",
+  "base_head": "05bfac04fbde62010f2b611b50da0179593d259c",
+  "purpose": "New eight-class wired RF comparison of raw, guard-LO and pilot-timing processing; retain every failure",
+  "source": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "bytes": 21449148312,
+    "mtime_ns": 1627354882000000000
+  },
+  "run_id": "4b2bc6df2187496194ac72d3422b5b99",
+  "run_plan_sha256": "5d6a95aa9f71dd2fe185b7caa44d9e252bfaa387c46b52ebfd2f8469e9b28a2d",
+  "rf": {
+    "center_hz": 2455000000,
+    "rate_sps": 2100000,
+    "bandwidth_hz": 1500000,
+    "tx_gain_db": 60,
+    "rx_gain_db": 40,
+    "peak": 0.632455532033676,
+    "tx_lo_offset_hz": 250000,
+    "settle_ms": 500,
+    "point_deadline_ms": 1000,
+    "rx_samples": 65535
+  },
+  "connection": "AGX USB B210 RF A TX/RX ->20dB50ohm attenuator+15cm SMA ->P201 RX1",
+  "source_exports": [
+    {
+      "batch": 4283,
+      "class_id": 0,
+      "class_name": "OOK",
+      "rows": [
+        102792,
+        102793,
+        102794,
+        102795,
+        102796,
+        102797,
+        102798,
+        102799,
+        102800,
+        102801,
+        102802,
+        102803,
+        102804,
+        102805,
+        102806,
+        102807,
+        102808,
+        102809,
+        102810,
+        102811,
+        102812,
+        102813,
+        102814,
+        102815
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "bd74c238d1bb2facce92ef86acf861fd6b342ace5288422c22653b60720a6fd2",
+      "packet_sha256": "58caac331ac5e83ab9586d73e38ea9548b451aea310a60d6d95a0338421460ad",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 7.798022666660648e-16
+    },
+    {
+      "batch": 22032,
+      "class_id": 4,
+      "class_name": "QPSK",
+      "rows": [
+        528768,
+        528769,
+        528770,
+        528771,
+        528772,
+        528773,
+        528774,
+        528775,
+        528776,
+        528777,
+        528778,
+        528779,
+        528780,
+        528781,
+        528782,
+        528783,
+        528784,
+        528785,
+        528786,
+        528787,
+        528788,
+        528789,
+        528790,
+        528791
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "049098e65b3389f6ce4de042eb438177fe9e7a9a00766c12ff3d4f921a1e5bde",
+      "packet_sha256": "e836d2f725b0c9aec837f3e896d9745c3669bddb289d06f328346c1c48872817",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.694355491006489e-16
+    },
+    {
+      "batch": 26470,
+      "class_id": 5,
+      "class_name": "8PSK",
+      "rows": [
+        635280,
+        635281,
+        635282,
+        635283,
+        635284,
+        635285,
+        635286,
+        635287,
+        635288,
+        635289,
+        635290,
+        635291,
+        635292,
+        635293,
+        635294,
+        635295,
+        635296,
+        635297,
+        635298,
+        635299,
+        635300,
+        635301,
+        635302,
+        635303
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "8b44103bbb3bb457c5792dc30ced6407389c39b920bfa41e9f587ab651983f9b",
+      "packet_sha256": "1511f70324b0f7d3a3f4e21d5aebef7429bafae5d59d636cc46a2af4f9a51fa6",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.732519934367243e-16
+    },
+    {
+      "batch": 57531,
+      "class_id": 12,
+      "class_name": "16QAM",
+      "rows": [
+        1380744,
+        1380745,
+        1380746,
+        1380747,
+        1380748,
+        1380749,
+        1380750,
+        1380751,
+        1380752,
+        1380753,
+        1380754,
+        1380755,
+        1380756,
+        1380757,
+        1380758,
+        1380759,
+        1380760,
+        1380761,
+        1380762,
+        1380763,
+        1380764,
+        1380765,
+        1380766,
+        1380767
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "a6ff9e0b55bf7fc42203a2c9fa152eeac95d367a166e9eb71af0a57e74d9cccb",
+      "packet_sha256": "f4f170b6f2e5c0f31690b4341f5713957fae8fca72979b7d7f0b5cab1439157d",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.87326830006276e-16
+    },
+    {
+      "batch": 66406,
+      "class_id": 14,
+      "class_name": "64QAM",
+      "rows": [
+        1593744,
+        1593745,
+        1593746,
+        1593747,
+        1593748,
+        1593749,
+        1593750,
+        1593751,
+        1593752,
+        1593753,
+        1593754,
+        1593755,
+        1593756,
+        1593757,
+        1593758,
+        1593759,
+        1593760,
+        1593761,
+        1593762,
+        1593763,
+        1593764,
+        1593765,
+        1593766,
+        1593767
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "99b6889e00fd0871944c45d93379ce882181fb4c7ce7776cbed34ced48ed69d4",
+      "packet_sha256": "7d6f1ac93d3ef9f68409b3a92cde29a2a4dc41a8e7549a649883685e8006d8d2",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.5796115422440925e-16
+    },
+    {
+      "batch": 75280,
+      "class_id": 16,
+      "class_name": "256QAM",
+      "rows": [
+        1806720,
+        1806721,
+        1806722,
+        1806723,
+        1806724,
+        1806725,
+        1806726,
+        1806727,
+        1806728,
+        1806729,
+        1806730,
+        1806731,
+        1806732,
+        1806733,
+        1806734,
+        1806735,
+        1806736,
+        1806737,
+        1806738,
+        1806739,
+        1806740,
+        1806741,
+        1806742,
+        1806743
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "55bb55256b0c8c39a595912364a42cdc899f3494d7d1f8ce1c7d7fa7df671e5d",
+      "packet_sha256": "22193ba6c733ded5f84460dde45357487663fd9522ac92678612037271fb3284",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.58013397874206e-16
+    },
+    {
+      "batch": 93030,
+      "class_id": 20,
+      "class_name": "AM-DSB-SC",
+      "rows": [
+        2232720,
+        2232721,
+        2232722,
+        2232723,
+        2232724,
+        2232725,
+        2232726,
+        2232727,
+        2232728,
+        2232729,
+        2232730,
+        2232731,
+        2232732,
+        2232733,
+        2232734,
+        2232735,
+        2232736,
+        2232737,
+        2232738,
+        2232739,
+        2232740,
+        2232741,
+        2232742,
+        2232743
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "f3963e686cbcd60adb110f6d1a4315c1b166b3a5bf605f8825ae14f1e98d407e",
+      "packet_sha256": "57166283e841ead2ddb423b5c4ccd89c4c249e15d728a7fb76a0a5b906c00851",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 7.754063183286981e-16
+    },
+    {
+      "batch": 101904,
+      "class_id": 22,
+      "class_name": "GMSK",
+      "rows": [
+        2445696,
+        2445697,
+        2445698,
+        2445699,
+        2445700,
+        2445701,
+        2445702,
+        2445703,
+        2445704,
+        2445705,
+        2445706,
+        2445707,
+        2445708,
+        2445709,
+        2445710,
+        2445711,
+        2445712,
+        2445713,
+        2445714,
+        2445715,
+        2445716,
+        2445717,
+        2445718,
+        2445719
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "48ad855c71e447ad51dc90e7cee3548495636188201fa153849c55eeb0fb88b6",
+      "packet_sha256": "b9ed9fd0249e1683b37dd72eadc1b8972858e627bb43df2e7660a2f5b2119add",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 7.136644081865115e-16
+    }
+  ],
+  "model_identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+  "software": {
+    "rml2018a-rf-campaign.py": "949c87891a9e47e51e1565d7645b4a232246681aed77d5e47731e08496fd92b2",
+    "rml2018a_campaign.py": "8e8480f12c0df91438fc9452540e4b2be14f031e98e9c40b78f4412abf67f71d",
+    "rml2018a-nx-tx.py": "d33c28d442e923173964d9a3511401a62f8ad2ae312439be8a16167cae54b52f",
+    "amc-mamba-worker.py": "750eef925be33ab925798f49907c0a35a2cf1c5cd9f00672ee64fcda9d0872b5",
+    "amc-rf-v1-runtime.py": "a920c4260ce02f824cc1bfad596242330b69dbfdf3008c45be6142d8aa077e82",
+    "gpu_lease.py": "cbc8038a375f1c44cf4c16d68c94d19ae146b8b9b496a340603be62340c1e1c7",
+    "validate-b210-multiclass.py": "2bd5a801b25aa3a5a5e8d48d8d930207b9f34fa6b7c037292edf3108e0a657f8",
+    "validate-p201-termination-background.py": "007fce5064507803b6d75f178e7f3619f14aaec089ce9083900e40601b27975b",
+    "validate-b210-p201-link.py": "9454da8cdc70aadff2aba96a23c4c0a5284c15d53854b996c55ee24778955686",
+    "compare-rml2018a-pilot-timing.py": "fcb72e5a6141201bc8d7a6b428b41cccd5f677d5d0b87af4843d3600f98bc9d5",
+    "rml2018a_pilot_timing.py": "5d7545215022c99fe8c3641ebf966856165af80a405c536de2ceab708f57ce76",
+    "rml2018a_lo_cancellation.py": "6adc011afd8ba8ba5971b07a8715beaeaa8d5f58c1c251a6e15c3015da37d020"
+  },
+  "timing_contract": {
+    "method": "known-pilot-fractional-timing-v1",
+    "source_payload_used": false,
+    "labels_used": false,
+    "fit": "first pilot half[64:448], centered reference+bandlimited derivative",
+    "validation": "second half[576:960], never refit",
+    "minimum_pilots": 2,
+    "maximum_abs_delay_samples": 0.6,
+    "maximum_abs_drift_ppm": 10,
+    "maximum_fit_rms_samples": 0.04,
+    "maximum_validation_error_samples": 0.08,
+    "maximum_pilot_residual_fraction": 0.03,
+    "maximum_quadrature_derivative_ratio": 0.08,
+    "interpolation": "129-tap Kaiser8 windowed sinc; normalized DC; symmetric64-sample halo",
+    "interpolation_noise_gain": "finite interpolator not exactly allpass; whitenoise/occupied-band tests required",
+    "failure_action": "unchanged LO-cancelled payload with reason",
+    "sinr": "separate post-timing conditional estimate, not calibrated physical RF SINR"
+  },
+  "lo_contract": {
+    "method": "pilot-anchored-guard-lo-cancellation-v1",
+    "rate_sps": 2100000,
+    "lo_offset_hz": 250000,
+    "guard_edge_exclusion_samples": 64,
+    "training_samples_per_guard": 192,
+    "validation_samples_per_guard": 192,
+    "minimum_complete_guards": 2,
+    "frequency_prior": "nominal TX LO offset + original known-marker CFO",
+    "frequency_search_halfwidth_hz": 30,
+    "coarse_step_hz": 1,
+    "minimum_guard_holdout_suppression_db": 10,
+    "maximum_guard_amplitude_spread": 0.25,
+    "maximum_guard_phase_spread_rad": 0.25,
+    "maximum_corrected_pilot_residual_cfo_hz": 25,
+    "source_payload_used_for_fit": false,
+    "labels_used_for_fit": false,
+    "payload_frequency_projection": false,
+    "refit_on_validation": false,
+    "failure_action": "return unchanged original IQ with explicit reason",
+    "limitations": [
+      "requires correct repeated-frame timing and pilot CFO prior within30Hz of LO relation",
+      "requires stable additive tone over buffered capture; guards may miss payload-only drift",
+      "postprocessing quality is not a change to raw physical RF SINR",
+      "not independently validated across24 classes or low source SNR"
+    ]
+  },
+  "source_capture_associations": [
+    {
+      "batch": 4283,
+      "class_id": 0,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/rx/rml2018a-4283-1789202627074-1789202627074-1789202630361316139.sigmf-data",
+        "iq_sha256": "e835451131d114fc3619fb21f97e2e643ef73b20025d8208a5f6031a8fd75a2b",
+        "metadata_sha256": "3eeaaff9fbbf7da7da7b31b47d6abd77cd31f82b6bd8bbc08a85bd7ff7b6d52c",
+        "request_id": 5,
+        "sequence": 1541,
+        "session_generation": 1789202627074
+      },
+      "audit_sha256": "b63cd047ea4c1a304d33a6c6683a89a5a33a42767163e3df3d677c142a8166b2"
+    },
+    {
+      "batch": 22032,
+      "class_id": 4,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/rx/rml2018a-22032-1789202638045-1789202638045-1789202641315359166.sigmf-data",
+        "iq_sha256": "999c8d002c637a78676e8d7f2f0090e8581bc1784de73d627b2b7fce8033fff4",
+        "metadata_sha256": "ea764882bb22e25c4361a1247037c9167137f98a82ee40c03f4a305ec11791b3",
+        "request_id": 5,
+        "sequence": 1542,
+        "session_generation": 1789202638045
+      },
+      "audit_sha256": "d448ea6ad571abdd2459404d58511b5031ea05225288037911ab60ac66771f9d"
+    },
+    {
+      "batch": 26470,
+      "class_id": 5,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/rx/rml2018a-26470-1789202649011-1789202649011-1789202652264847875.sigmf-data",
+        "iq_sha256": "3238b27d6451fa7fb93bc34a6f3b779d3924584546918ca36bba1bc247fe2a1f",
+        "metadata_sha256": "2ab21bef360e4c4e593988483b6231f6c5497c0a5cc0632b8852237a86e5e444",
+        "request_id": 5,
+        "sequence": 1543,
+        "session_generation": 1789202649011
+      },
+      "audit_sha256": "e9951dd49c2fdd2e7a814a751a83838a26b9330a806799ee010e8d7cd326e440"
+    },
+    {
+      "batch": 57531,
+      "class_id": 12,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/rx/rml2018a-57531-1789202659957-1789202659957-1789202663226673743.sigmf-data",
+        "iq_sha256": "4816d7d92a16816a3c3c5d57057072b1d50a504a89229b1b66eaf0e50b6e16e0",
+        "metadata_sha256": "1a610903f10858f83374dfeac952dd3df903c3c4e5c655da6984a19198e8b0ed",
+        "request_id": 5,
+        "sequence": 1544,
+        "session_generation": 1789202659957
+      },
+      "audit_sha256": "973c9d7fb4c1054a030ad9b5bb10e2415b269e850d75bf008d6ff559586277fa"
+    },
+    {
+      "batch": 66406,
+      "class_id": 14,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/rx/rml2018a-66406-1789202670921-1789202670921-1789202674197345622.sigmf-data",
+        "iq_sha256": "fddcc12228a595413f3c021e454987ddf46709c0d06d90c6eb67e16af3343d8e",
+        "metadata_sha256": "aa249e5b65067d29bae4bec4a057a9de2271ab791d637244c1861ac26926160a",
+        "request_id": 5,
+        "sequence": 1545,
+        "session_generation": 1789202670921
+      },
+      "audit_sha256": "8efa79345ae38f94fc2d340dc4ac3e42550dfac5464389e8ef951a4178acd73f"
+    },
+    {
+      "batch": 75280,
+      "class_id": 16,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/rx/rml2018a-75280-1789202681873-1789202681873-1789202685151702953.sigmf-data",
+        "iq_sha256": "ae6817a51309a5cd745056610ddea690bf65d11b12c0e237736dd699c859e94d",
+        "metadata_sha256": "32164c242ffd11895e7a843b069b9f5f00418dc74f5911810b9e6169b8d11a8c",
+        "request_id": 5,
+        "sequence": 1546,
+        "session_generation": 1789202681873
+      },
+      "audit_sha256": "bb4ec936fceeb356494f54c0150bffa8bfcfbafdb6c68cda94cc4eb31e5dd915"
+    },
+    {
+      "batch": 93030,
+      "class_id": 20,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/rx/rml2018a-93030-1789202692868-1789202692868-1789202696115431843.sigmf-data",
+        "iq_sha256": "7ac5d272d3e1523d660ee412271c49f5b81b3976aa0b042d9b7aa1d317cf588f",
+        "metadata_sha256": "af412fda5b1d47b9cde4f618ae17f687eeaab54be182b47fe11b3167fd28b839",
+        "request_id": 5,
+        "sequence": 1547,
+        "session_generation": 1789202692868
+      },
+      "audit_sha256": "9483616ad5225ec1e48b5489b3c675ec0dce635cf4e4c9639f5405d4e37a3bc2"
+    },
+    {
+      "batch": 101904,
+      "class_id": 22,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/rx/rml2018a-101904-1789202703824-1789202703824-1789202707085072240.sigmf-data",
+        "iq_sha256": "cf98b0f075ca0135b2261a2a2621c2b02f63cca0e4d25ac1665779dcc6cafbf6",
+        "metadata_sha256": "8de1a35db9a29f9b01529f3304ea51835acd97f5d13ef20f68395391d698a965",
+        "request_id": 5,
+        "sequence": 1548,
+        "session_generation": 1789202703824
+      },
+      "audit_sha256": "6a3d497a3811e09208eecfcce4c9e88d332b3bb561478cb57b0e9b33f9e65e4e"
+    }
+  ],
+  "summary": {
+    "results": [
+      {
+        "batch": 4283,
+        "class_id": 0,
+        "name": "OOK",
+        "quality": {
+          "raw": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 8.332372409341996,
+            "min_db": 6.866140104433383,
+            "max_db": 9.18405921517612,
+            "at_least20db": 0
+          },
+          "lo": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 20.248261711830153,
+            "min_db": 19.11847353834688,
+            "max_db": 20.962324749234604,
+            "at_least20db": 14
+          },
+          "timing": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 20.375479742274123,
+            "min_db": 19.306407182929505,
+            "max_db": 21.135231202731525,
+            "at_least20db": 19
+          }
+        },
+        "correct": {
+          "source": 24,
+          "raw": 24,
+          "lo": 24,
+          "timing": 24
+        },
+        "timing_changed_predictions": 0,
+        "timing_corrected": 0,
+        "timing_regressed": 0,
+        "timing_sinr_improved_rows": 24,
+        "timing_sinr_worse_rows": 0,
+        "timing_paired_estimated_rows": 24,
+        "lo_status": "applied",
+        "lo_reason": null,
+        "timing_status": "applied",
+        "timing_reason": null
+      },
+      {
+        "batch": 22032,
+        "class_id": 4,
+        "name": "QPSK",
+        "quality": {
+          "raw": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 8.81844712480601,
+            "min_db": 8.137034021080202,
+            "max_db": 9.52231466123987,
+            "at_least20db": 0
+          },
+          "lo": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 18.05460297045991,
+            "min_db": 17.516178034280856,
+            "max_db": 18.536216429070073,
+            "at_least20db": 0
+          },
+          "timing": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 21.60894203135711,
+            "min_db": 20.153316402738884,
+            "max_db": 22.103912834566216,
+            "at_least20db": 24
+          }
+        },
+        "correct": {
+          "source": 24,
+          "raw": 24,
+          "lo": 24,
+          "timing": 24
+        },
+        "timing_changed_predictions": 0,
+        "timing_corrected": 0,
+        "timing_regressed": 0,
+        "timing_sinr_improved_rows": 24,
+        "timing_sinr_worse_rows": 0,
+        "timing_paired_estimated_rows": 24,
+        "lo_status": "applied",
+        "lo_reason": null,
+        "timing_status": "applied",
+        "timing_reason": null
+      },
+      {
+        "batch": 26470,
+        "class_id": 5,
+        "name": "8PSK",
+        "quality": {
+          "raw": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 9.013847652402841,
+            "min_db": 8.37202037020083,
+            "max_db": 10.057445852155942,
+            "at_least20db": 0
+          },
+          "lo": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 21.143074003600447,
+            "min_db": 19.70560600330686,
+            "max_db": 21.873460231374807,
+            "at_least20db": 23
+          },
+          "timing": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 21.67431085742109,
+            "min_db": 20.200493337736923,
+            "max_db": 22.472601486526646,
+            "at_least20db": 24
+          }
+        },
+        "correct": {
+          "source": 24,
+          "raw": 24,
+          "lo": 24,
+          "timing": 24
+        },
+        "timing_changed_predictions": 0,
+        "timing_corrected": 0,
+        "timing_regressed": 0,
+        "timing_sinr_improved_rows": 24,
+        "timing_sinr_worse_rows": 0,
+        "timing_paired_estimated_rows": 24,
+        "lo_status": "applied",
+        "lo_reason": null,
+        "timing_status": "applied",
+        "timing_reason": null
+      },
+      {
+        "batch": 57531,
+        "class_id": 12,
+        "name": "16QAM",
+        "quality": {
+          "raw": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 8.025445087490251,
+            "min_db": 6.631032562417175,
+            "max_db": 8.938229635920072,
+            "at_least20db": 0
+          },
+          "lo": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 18.966236537286402,
+            "min_db": 18.258575302093035,
+            "max_db": 19.911269607193354,
+            "at_least20db": 0
+          },
+          "timing": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 19.67812586732491,
+            "min_db": 18.822351240446018,
+            "max_db": 20.85722243036729,
+            "at_least20db": 7
+          }
+        },
+        "correct": {
+          "source": 24,
+          "raw": 24,
+          "lo": 24,
+          "timing": 24
+        },
+        "timing_changed_predictions": 0,
+        "timing_corrected": 0,
+        "timing_regressed": 0,
+        "timing_sinr_improved_rows": 24,
+        "timing_sinr_worse_rows": 0,
+        "timing_paired_estimated_rows": 24,
+        "lo_status": "applied",
+        "lo_reason": null,
+        "timing_status": "applied",
+        "timing_reason": null
+      },
+      {
+        "batch": 66406,
+        "class_id": 14,
+        "name": "64QAM",
+        "quality": {
+          "raw": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 7.626160493142763,
+            "min_db": 6.870560967767454,
+            "max_db": 9.021634387247692,
+            "at_least20db": 0
+          },
+          "lo": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 7.626160493142763,
+            "min_db": 6.870560967767454,
+            "max_db": 9.021634387247692,
+            "at_least20db": 0
+          },
+          "timing": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 7.626160493142763,
+            "min_db": 6.870560967767454,
+            "max_db": 9.021634387247692,
+            "at_least20db": 0
+          }
+        },
+        "correct": {
+          "source": 24,
+          "raw": 5,
+          "lo": 5,
+          "timing": 5
+        },
+        "timing_changed_predictions": 0,
+        "timing_corrected": 0,
+        "timing_regressed": 0,
+        "timing_sinr_improved_rows": 0,
+        "timing_sinr_worse_rows": 0,
+        "timing_paired_estimated_rows": 24,
+        "lo_status": "skipped",
+        "lo_reason": "guard_holdout_not_predictable",
+        "timing_status": "skipped",
+        "timing_reason": "LO_not_validated"
+      },
+      {
+        "batch": 75280,
+        "class_id": 16,
+        "name": "256QAM",
+        "quality": {
+          "raw": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 7.511882842234641,
+            "min_db": 6.56120337242691,
+            "max_db": 8.335096511260057,
+            "at_least20db": 0
+          },
+          "lo": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 17.131614440695294,
+            "min_db": 16.332165601385455,
+            "max_db": 17.669513475025237,
+            "at_least20db": 0
+          },
+          "timing": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 19.881785695164155,
+            "min_db": 18.202064381604572,
+            "max_db": 20.73573767074963,
+            "at_least20db": 9
+          }
+        },
+        "correct": {
+          "source": 21,
+          "raw": 2,
+          "lo": 22,
+          "timing": 22
+        },
+        "timing_changed_predictions": 2,
+        "timing_corrected": 1,
+        "timing_regressed": 1,
+        "timing_sinr_improved_rows": 24,
+        "timing_sinr_worse_rows": 0,
+        "timing_paired_estimated_rows": 24,
+        "lo_status": "applied",
+        "lo_reason": null,
+        "timing_status": "applied",
+        "timing_reason": null
+      },
+      {
+        "batch": 93030,
+        "class_id": 20,
+        "name": "AM-DSB-SC",
+        "quality": {
+          "raw": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 8.931549089511858,
+            "min_db": 7.12068012240363,
+            "max_db": 9.592208677259375,
+            "at_least20db": 0
+          },
+          "lo": {
+            "total_rows": 24,
+            "estimated_rows": 23,
+            "invalid_or_unmeasured_rows": 1,
+            "median_db": 19.775304533403315,
+            "min_db": 11.072020285648188,
+            "max_db": 20.420602147437883,
+            "at_least20db": 6
+          },
+          "timing": {
+            "total_rows": 24,
+            "estimated_rows": 22,
+            "invalid_or_unmeasured_rows": 2,
+            "median_db": 21.440819115447567,
+            "min_db": 11.21128972175692,
+            "max_db": 22.26884440648434,
+            "at_least20db": 21
+          }
+        },
+        "correct": {
+          "source": 14,
+          "raw": 6,
+          "lo": 15,
+          "timing": 15
+        },
+        "timing_changed_predictions": 0,
+        "timing_corrected": 0,
+        "timing_regressed": 0,
+        "timing_sinr_improved_rows": 22,
+        "timing_sinr_worse_rows": 0,
+        "timing_paired_estimated_rows": 22,
+        "lo_status": "applied",
+        "lo_reason": null,
+        "timing_status": "applied",
+        "timing_reason": null
+      },
+      {
+        "batch": 101904,
+        "class_id": 22,
+        "name": "GMSK",
+        "quality": {
+          "raw": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 11.473962420813955,
+            "min_db": 11.201450939099743,
+            "max_db": 11.607351830008954,
+            "at_least20db": 0
+          },
+          "lo": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 19.639799431909786,
+            "min_db": 18.32408351470017,
+            "max_db": 20.535781562982912,
+            "at_least20db": 5
+          },
+          "timing": {
+            "total_rows": 24,
+            "estimated_rows": 24,
+            "invalid_or_unmeasured_rows": 0,
+            "median_db": 21.706441045922585,
+            "min_db": 19.926455317746715,
+            "max_db": 22.750050699298576,
+            "at_least20db": 22
+          }
+        },
+        "correct": {
+          "source": 24,
+          "raw": 24,
+          "lo": 24,
+          "timing": 24
+        },
+        "timing_changed_predictions": 0,
+        "timing_corrected": 0,
+        "timing_regressed": 0,
+        "timing_sinr_improved_rows": 24,
+        "timing_sinr_worse_rows": 0,
+        "timing_paired_estimated_rows": 24,
+        "lo_status": "applied",
+        "lo_reason": null,
+        "timing_status": "applied",
+        "timing_reason": null
+      }
+    ],
+    "summary": {
+      "source": {
+        "total": 192,
+        "predicted": 192,
+        "correct": 179
+      },
+      "raw": {
+        "total": 192,
+        "predicted": 192,
+        "correct": 133
+      },
+      "lo": {
+        "total": 192,
+        "predicted": 192,
+        "correct": 162
+      },
+      "timing": {
+        "total": 192,
+        "predicted": 192,
+        "correct": 162
+      }
+    },
+    "model_windows": 768,
+    "warmups": 2
+  },
+  "verified_inputs": {
+    "status": "verified",
+    "source_rows": 192,
+    "native_captures": 8,
+    "model_input_hashes": 768,
+    "model_reexecuted": false
+  },
+  "postflight": {
+    "status": "passed",
+    "after": {
+      "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "daemon_pid": [
+        "5909"
+      ],
+      "daemon_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+      "controller_sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+      "health": {
+        "online": true,
+        "healthy": true,
+        "health_flags": 0,
+        "iio_visible": true,
+        "can_retune": true,
+        "can_capture_iq": true,
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        }
+      },
+      "b210": {
+        "host": "agx",
+        "serial": "2508504",
+        "usb_speed_mbps": 5000.0,
+        "usb_node": "/dev/bus/usb/002/004",
+        "usb_holder_pids": []
+      }
+    },
+    "paths": [
+      {
+        "batch": 4283,
+        "agx": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912-b4283",
+        "p201": "/tmp/sdr-agent-dev/agx-sweep-1789202627074-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/rx/rml2018a-4283-1789202627074-1789202627074-1789202630361316139.sigmf-data",
+          "iq_sha256": "e835451131d114fc3619fb21f97e2e643ef73b20025d8208a5f6031a8fd75a2b",
+          "metadata_sha256": "3eeaaff9fbbf7da7da7b31b47d6abd77cd31f82b6bd8bbc08a85bd7ff7b6d52c",
+          "request_id": 5,
+          "sequence": 1541,
+          "session_generation": 1789202627074
+        }
+      },
+      {
+        "batch": 22032,
+        "agx": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912-b22032",
+        "p201": "/tmp/sdr-agent-dev/agx-sweep-1789202638045-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/rx/rml2018a-22032-1789202638045-1789202638045-1789202641315359166.sigmf-data",
+          "iq_sha256": "999c8d002c637a78676e8d7f2f0090e8581bc1784de73d627b2b7fce8033fff4",
+          "metadata_sha256": "ea764882bb22e25c4361a1247037c9167137f98a82ee40c03f4a305ec11791b3",
+          "request_id": 5,
+          "sequence": 1542,
+          "session_generation": 1789202638045
+        }
+      },
+      {
+        "batch": 26470,
+        "agx": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912-b26470",
+        "p201": "/tmp/sdr-agent-dev/agx-sweep-1789202649011-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/rx/rml2018a-26470-1789202649011-1789202649011-1789202652264847875.sigmf-data",
+          "iq_sha256": "3238b27d6451fa7fb93bc34a6f3b779d3924584546918ca36bba1bc247fe2a1f",
+          "metadata_sha256": "2ab21bef360e4c4e593988483b6231f6c5497c0a5cc0632b8852237a86e5e444",
+          "request_id": 5,
+          "sequence": 1543,
+          "session_generation": 1789202649011
+        }
+      },
+      {
+        "batch": 57531,
+        "agx": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912-b57531",
+        "p201": "/tmp/sdr-agent-dev/agx-sweep-1789202659957-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/rx/rml2018a-57531-1789202659957-1789202659957-1789202663226673743.sigmf-data",
+          "iq_sha256": "4816d7d92a16816a3c3c5d57057072b1d50a504a89229b1b66eaf0e50b6e16e0",
+          "metadata_sha256": "1a610903f10858f83374dfeac952dd3df903c3c4e5c655da6984a19198e8b0ed",
+          "request_id": 5,
+          "sequence": 1544,
+          "session_generation": 1789202659957
+        }
+      },
+      {
+        "batch": 66406,
+        "agx": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912-b66406",
+        "p201": "/tmp/sdr-agent-dev/agx-sweep-1789202670921-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/rx/rml2018a-66406-1789202670921-1789202670921-1789202674197345622.sigmf-data",
+          "iq_sha256": "fddcc12228a595413f3c021e454987ddf46709c0d06d90c6eb67e16af3343d8e",
+          "metadata_sha256": "aa249e5b65067d29bae4bec4a057a9de2271ab791d637244c1861ac26926160a",
+          "request_id": 5,
+          "sequence": 1545,
+          "session_generation": 1789202670921
+        }
+      },
+      {
+        "batch": 75280,
+        "agx": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912-b75280",
+        "p201": "/tmp/sdr-agent-dev/agx-sweep-1789202681873-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/rx/rml2018a-75280-1789202681873-1789202681873-1789202685151702953.sigmf-data",
+          "iq_sha256": "ae6817a51309a5cd745056610ddea690bf65d11b12c0e237736dd699c859e94d",
+          "metadata_sha256": "32164c242ffd11895e7a843b069b9f5f00418dc74f5911810b9e6169b8d11a8c",
+          "request_id": 5,
+          "sequence": 1546,
+          "session_generation": 1789202681873
+        }
+      },
+      {
+        "batch": 93030,
+        "agx": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912-b93030",
+        "p201": "/tmp/sdr-agent-dev/agx-sweep-1789202692868-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/rx/rml2018a-93030-1789202692868-1789202692868-1789202696115431843.sigmf-data",
+          "iq_sha256": "7ac5d272d3e1523d660ee412271c49f5b81b3976aa0b042d9b7aa1d317cf588f",
+          "metadata_sha256": "af412fda5b1d47b9cde4f618ae17f687eeaab54be182b47fe11b3167fd28b839",
+          "request_id": 5,
+          "sequence": 1547,
+          "session_generation": 1789202692868
+        }
+      },
+      {
+        "batch": 101904,
+        "agx": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912-b101904",
+        "p201": "/tmp/sdr-agent-dev/agx-sweep-1789202703824-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/rx/rml2018a-101904-1789202703824-1789202703824-1789202707085072240.sigmf-data",
+          "iq_sha256": "cf98b0f075ca0135b2261a2a2621c2b02f63cca0e4d25ac1665779dcc6cafbf6",
+          "metadata_sha256": "8de1a35db9a29f9b01529f3304ea51835acd97f5d13ef20f68395391d698a965",
+          "request_id": 5,
+          "sequence": 1548,
+          "session_generation": 1789202703824
+        }
+      }
+    ],
+    "rx_bytes": 2097120,
+    "max_tx_seconds": 32,
+    "nx_operations": 0,
+    "production_changes": 0,
+    "gpu": {
+      "pid": 1321,
+      "start_ticks": "1515",
+      "idle_slots": 1,
+      "resumed": true,
+      "mechanism": "SIGSTOP idle installed Spark; feature-private Mamba lease",
+      "started_ns": 1789202925871270788,
+      "pause_confirmed": true,
+      "finished_ns": 1789203014045619930,
+      "restore_watchdog_stopped": true
+    },
+    "model_windows": 768,
+    "warmups": 2
+  },
+  "maximum_tx_seconds": 32,
+  "tx_samples": 67055616,
+  "rx_iq_bytes": 2097120,
+  "model_windows": 768,
+  "warmups": 2,
+  "recognizer_available": false,
+  "production_deployment": false,
+  "rf_timestamp_continuity_verified": false,
+  "nx_operations": 0,
+  "cleanup_summary": {
+    "status": "verified",
+    "explicit_removed_files": 362,
+    "explicit_removed_bytes": 20287776,
+    "removed_directories": 56,
+    "absent_paths": [
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/scratch",
+      "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/scratch",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/owner.lock",
+      "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/owner.lock",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/timing-tests.log",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/create-plan.log",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/preregister.log",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/radio-postflight.log",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/radio-postflight.json",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/prepare.log",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/postflight.log"
+    ],
+    "total_removed_files": 426,
+    "total_removed_bytes": 23862472,
+    "prior_evidence_untouched": true,
+    "new_iq_copies": 0
+  },
+  "retained_roots": [
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912",
+      "purpose": "Eight native captures and original RF/source/restore receipts, source packets removed",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/audit.json",
+          "bytes": 41345,
+          "sha256": "b63cd047ea4c1a304d33a6c6683a89a5a33a42767163e3df3d677c142a8166b2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/capture-complete.json",
+          "bytes": 421,
+          "sha256": "929e50a3c49569556b14404d6faea1564fd4eeefc58d3f164c3ccbeed5649ef5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/report.json",
+          "bytes": 2266,
+          "sha256": "cb8bfdae0e88d360730b29c8cb27620eb8eb2466b7f363f14a6948dd344214ca"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/rx/rml2018a-4283-1789202627074-1789202627074-1789202630361316139.sigmf-data",
+          "bytes": 262140,
+          "sha256": "e835451131d114fc3619fb21f97e2e643ef73b20025d8208a5f6031a8fd75a2b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/rx/rml2018a-4283-1789202627074-1789202627074-1789202630361316139.sigmf-meta",
+          "bytes": 487,
+          "sha256": "3eeaaff9fbbf7da7da7b31b47d6abd77cd31f82b6bd8bbc08a85bd7ff7b6d52c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/rx-plan.json",
+          "bytes": 386,
+          "sha256": "bbc8fff74e8971ddc6b93796097b4ca8468a641ae4c069d5ec3385aabda15a47"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/source.json",
+          "bytes": 1456,
+          "sha256": "8ed9e0444f817cb84706a4a9a03ed540e7f6ab2ab8b9947d62b4a135d311cc24"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/tx-plan.json",
+          "bytes": 855,
+          "sha256": "4175725441e57218b11eaf7a7b150db0a56f2e9091fcac8f42da9b3620fc6ae4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/tx-summary.json",
+          "bytes": 935,
+          "sha256": "0542a2f98d027909639a8e9bd851339ef3c4a0e500a1d4e7e0f75d9d42f5f1c0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "3fcdd23d959f643e06b971973076d8a4cb568a699d75f2e69bbfdfdde59f5035"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/audit.json",
+          "bytes": 41346,
+          "sha256": "d448ea6ad571abdd2459404d58511b5031ea05225288037911ab60ac66771f9d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/capture-complete.json",
+          "bytes": 421,
+          "sha256": "190571bf0177a001d5fc15c28143ff7914a231a87e4e198a04708485d9a5b111"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/report.json",
+          "bytes": 2269,
+          "sha256": "c784d02d794911c58af6e5f64650f44ac7a7f84fdedcf0a89bdbb8cefaa1a2ae"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/rx/rml2018a-22032-1789202638045-1789202638045-1789202641315359166.sigmf-data",
+          "bytes": 262140,
+          "sha256": "999c8d002c637a78676e8d7f2f0090e8581bc1784de73d627b2b7fce8033fff4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/rx/rml2018a-22032-1789202638045-1789202638045-1789202641315359166.sigmf-meta",
+          "bytes": 487,
+          "sha256": "ea764882bb22e25c4361a1247037c9167137f98a82ee40c03f4a305ec11791b3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/rx-plan.json",
+          "bytes": 387,
+          "sha256": "238250ccff90fa64dbf6c8f07c3da03f5c2b06969c8f7b4ba846be6fbb635c09"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/source.json",
+          "bytes": 1447,
+          "sha256": "787cbc5ed41dcda8b4a649ff8084ce9fed8ddf0a46ef24a0c8f343e741f2f696"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/tx-plan.json",
+          "bytes": 856,
+          "sha256": "4228875cf62c5116f7efbe2e10a7fab1534638e28011e1f111e9a7b9b5af1910"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/tx-summary.json",
+          "bytes": 937,
+          "sha256": "e1db15f844156fc7fa481afa49b96b5c8592b3216b20485dc00d4adc7cf385b7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "3fcdd23d959f643e06b971973076d8a4cb568a699d75f2e69bbfdfdde59f5035"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/audit.json",
+          "bytes": 41354,
+          "sha256": "e9951dd49c2fdd2e7a814a751a83838a26b9330a806799ee010e8d7cd326e440"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/capture-complete.json",
+          "bytes": 421,
+          "sha256": "3c171833d9a7600d525937d01e0a34e41396d77a6bc17ad87bbea920b2ea1ce5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/report.json",
+          "bytes": 2268,
+          "sha256": "57f4565c1ef5be5b60541474468042c51a11ee26e338be7878e2e9e634bbe5d1"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/rx/rml2018a-26470-1789202649011-1789202649011-1789202652264847875.sigmf-data",
+          "bytes": 262140,
+          "sha256": "3238b27d6451fa7fb93bc34a6f3b779d3924584546918ca36bba1bc247fe2a1f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/rx/rml2018a-26470-1789202649011-1789202649011-1789202652264847875.sigmf-meta",
+          "bytes": 487,
+          "sha256": "2ab21bef360e4c4e593988483b6231f6c5497c0a5cc0632b8852237a86e5e444"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/rx-plan.json",
+          "bytes": 387,
+          "sha256": "4401883e5f26ddc9347285c79904c47e6517285c691915511917b9af994a8172"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/source.json",
+          "bytes": 1448,
+          "sha256": "b4f137dfd4c00895041516cdbe3215030ebdbaaa1a3718bbf0e358119b7c6c20"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/tx-plan.json",
+          "bytes": 856,
+          "sha256": "9a919f3724c795a2d876708c553f19118db50b03cf022dc144d01808283c17d5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/tx-summary.json",
+          "bytes": 937,
+          "sha256": "3d0f43772263ab3bd826d30b7bf8441751f55737057eed4ff71b8111d395dd65"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "00116cb088ee98cbb582cb09a1d25278c23160d2328e0230ccc89553b18ba2a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/audit.json",
+          "bytes": 41387,
+          "sha256": "973c9d7fb4c1054a030ad9b5bb10e2415b269e850d75bf008d6ff559586277fa"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/capture-complete.json",
+          "bytes": 445,
+          "sha256": "add9ea8da00367feae5cc6af8be86d8d9f987ff70f73217006ac0273f7adcf97"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/report.json",
+          "bytes": 2270,
+          "sha256": "80182dc87d54e22063c5ab148473fa11c21463627e91ccf9c19b4d0ca423bd69"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/rx/rml2018a-57531-1789202659957-1789202659957-1789202663226673743.sigmf-data",
+          "bytes": 262140,
+          "sha256": "4816d7d92a16816a3c3c5d57057072b1d50a504a89229b1b66eaf0e50b6e16e0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/rx/rml2018a-57531-1789202659957-1789202659957-1789202663226673743.sigmf-meta",
+          "bytes": 487,
+          "sha256": "1a610903f10858f83374dfeac952dd3df903c3c4e5c655da6984a19198e8b0ed"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/rx-plan.json",
+          "bytes": 387,
+          "sha256": "c66720ce0caae176b2314b724a59d439dbf040be69d657f5c2ac962bf2d970e8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/source.json",
+          "bytes": 1496,
+          "sha256": "ca757ffe4d9f0d7f1fd0da15524c3e5cac118c4256723b1c101268556e870694"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/tx-plan.json",
+          "bytes": 880,
+          "sha256": "9d9f4a3c61bcd913b23857fd7bdc5fdf7ecf671bd8e2fc5e89d4d737774bd0d8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/tx-summary.json",
+          "bytes": 937,
+          "sha256": "6aa4e54ad416e778f6d55851da65120833e394ef31bb657f62ba445a8347d611"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "00116cb088ee98cbb582cb09a1d25278c23160d2328e0230ccc89553b18ba2a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/audit.json",
+          "bytes": 41385,
+          "sha256": "8efa79345ae38f94fc2d340dc4ac3e42550dfac5464389e8ef951a4178acd73f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/capture-complete.json",
+          "bytes": 445,
+          "sha256": "b4e29df7d14d96ec8e6a8382767592e88c069e4c7fb1bc2d0d576279372ee454"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/report.json",
+          "bytes": 2266,
+          "sha256": "85a3fa6b0f4f7cf3601826882488cc850399b1b78ed4914fb02be518bf0ad034"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/rx/rml2018a-66406-1789202670921-1789202670921-1789202674197345622.sigmf-data",
+          "bytes": 262140,
+          "sha256": "fddcc12228a595413f3c021e454987ddf46709c0d06d90c6eb67e16af3343d8e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/rx/rml2018a-66406-1789202670921-1789202670921-1789202674197345622.sigmf-meta",
+          "bytes": 487,
+          "sha256": "aa249e5b65067d29bae4bec4a057a9de2271ab791d637244c1861ac26926160a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/rx-plan.json",
+          "bytes": 387,
+          "sha256": "43926b6af25158758e0e2a50a680feca3c7941fd2c659624156c5262a16e22a9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/source.json",
+          "bytes": 1500,
+          "sha256": "cf101e9aa1f674044cfde21f69d7c4b74f514eda6f487fc3796181a010640efa"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/tx-plan.json",
+          "bytes": 880,
+          "sha256": "bd70ed6c0d2766c4b71024b251d11cae3a8f437d2b7aa7755862783c42a8e2e4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/tx-summary.json",
+          "bytes": 937,
+          "sha256": "6e1f183ae18c645db5a86dfc8af982cfb36453ddba629b7a82d9c657b5562a78"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "3fcdd23d959f643e06b971973076d8a4cb568a699d75f2e69bbfdfdde59f5035"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/audit.json",
+          "bytes": 41407,
+          "sha256": "bb4ec936fceeb356494f54c0150bffa8bfcfbafdb6c68cda94cc4eb31e5dd915"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/capture-complete.json",
+          "bytes": 445,
+          "sha256": "73bbbe2bc1d6c918d817eba5aa8c25fc2fb66a9ab21651c2986e610c8ceadacf"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/report.json",
+          "bytes": 2270,
+          "sha256": "ad7cf52bffcb50c9885f11966a923430feb7de5d486142026d62a15acc353d1b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/rx/rml2018a-75280-1789202681873-1789202681873-1789202685151702953.sigmf-data",
+          "bytes": 262140,
+          "sha256": "ae6817a51309a5cd745056610ddea690bf65d11b12c0e237736dd699c859e94d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/rx/rml2018a-75280-1789202681873-1789202681873-1789202685151702953.sigmf-meta",
+          "bytes": 487,
+          "sha256": "32164c242ffd11895e7a843b069b9f5f00418dc74f5911810b9e6169b8d11a8c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/rx-plan.json",
+          "bytes": 387,
+          "sha256": "544e60e203d9db130c729e195f8d0e3d793ac26a0ab5f5553a654adf7340bf45"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/source.json",
+          "bytes": 1499,
+          "sha256": "e38f4d559703575e143d831852c70a5c739e559495e6ea263e4f9cdc2f7a59b7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/tx-plan.json",
+          "bytes": 880,
+          "sha256": "98b0a9cdbe21032d0092986e58bcbb1b37930086cd66854dc3d7237b02c76541"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/tx-summary.json",
+          "bytes": 937,
+          "sha256": "027963e1dd62b866d9530c3b88e5ff7de6385a6bbb9e5e5c4ee320943fef812e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "00116cb088ee98cbb582cb09a1d25278c23160d2328e0230ccc89553b18ba2a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/audit.json",
+          "bytes": 41396,
+          "sha256": "9483616ad5225ec1e48b5489b3c675ec0dce635cf4e4c9639f5405d4e37a3bc2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/capture-complete.json",
+          "bytes": 445,
+          "sha256": "1e4e9b5f6724a7b58868c54da99f712b579dc3b44b9e94688fece8e341175bf6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/report.json",
+          "bytes": 2272,
+          "sha256": "dda3a20d32c31fd3e54aeca3bfa4f98dfaf4b33d9b67e348868127863ae210d5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/rx/rml2018a-93030-1789202692868-1789202692868-1789202696115431843.sigmf-data",
+          "bytes": 262140,
+          "sha256": "7ac5d272d3e1523d660ee412271c49f5b81b3976aa0b042d9b7aa1d317cf588f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/rx/rml2018a-93030-1789202692868-1789202692868-1789202696115431843.sigmf-meta",
+          "bytes": 487,
+          "sha256": "af412fda5b1d47b9cde4f618ae17f687eeaab54be182b47fe11b3167fd28b839"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/rx-plan.json",
+          "bytes": 387,
+          "sha256": "9e0bb7f613fcedf2fd41e4a97117ce3bda6a9ea48d69cf8bd327cc5b4bd28f26"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/source.json",
+          "bytes": 1499,
+          "sha256": "f77b0b8c7d6bfb8dd288ea7c4eaf152425466c2bf464838f03bc4b4057089142"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/tx-plan.json",
+          "bytes": 880,
+          "sha256": "55f64a61468ec1f9c399e9a11d6ce505ba75e6e9c98758c0b0521af61182fec5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/tx-summary.json",
+          "bytes": 937,
+          "sha256": "5cec66906eb256f2271bff3ee3f244e45b4ffadbd6908185bf7e09b8a7b74bf4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "00116cb088ee98cbb582cb09a1d25278c23160d2328e0230ccc89553b18ba2a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/audit.json",
+          "bytes": 41469,
+          "sha256": "6a3d497a3811e09208eecfcce4c9e88d332b3bb561478cb57b0e9b33f9e65e4e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/capture-complete.json",
+          "bytes": 445,
+          "sha256": "d64edfa49f83c9f0f59aff687fd2e911ce1355da8672b8eda3bbb4a28679a267"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/report.json",
+          "bytes": 2269,
+          "sha256": "7b8c1db49b65aa6a6a210cab117436263019a5a97b755ae353c01b02a5916797"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/rx/rml2018a-101904-1789202703824-1789202703824-1789202707085072240.sigmf-data",
+          "bytes": 262140,
+          "sha256": "cf98b0f075ca0135b2261a2a2621c2b02f63cca0e4d25ac1665779dcc6cafbf6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/rx/rml2018a-101904-1789202703824-1789202703824-1789202707085072240.sigmf-meta",
+          "bytes": 487,
+          "sha256": "8de1a35db9a29f9b01529f3304ea51835acd97f5d13ef20f68395391d698a965"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/rx-plan.json",
+          "bytes": 388,
+          "sha256": "6323415d0b86b3abe5ad2d7fab94ff05aeebfd4c83951920a7ab606db93111d9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/source.json",
+          "bytes": 1481,
+          "sha256": "315ca3372eeae8967ea6f9d608e0a10f5c6af080636813c3942df9d5fc4fa52b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/tx-plan.json",
+          "bytes": 881,
+          "sha256": "68b1035ef16cfc8a224a63ea1a833a2b5a1fb038a4a6d30b4faa906f82ab78be"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/tx-summary.json",
+          "bytes": 939,
+          "sha256": "59cae40a212167eca3cac317fe4e886b8bb217f4f17ecf9cb230343a8c6ec4c3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "00116cb088ee98cbb582cb09a1d25278c23160d2328e0230ccc89553b18ba2a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/run-plan.json",
+          "bytes": 5398,
+          "sha256": "5d6a95aa9f71dd2fe185b7caa44d9e252bfaa387c46b52ebfd2f8469e9b28a2d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/summary.json",
+          "bytes": 8510,
+          "sha256": "8d5a34a016e33863e8eed34091c5a19a7c27f61fceefed9a1c1fa76e88732fd7"
+        }
+      ],
+      "file_count": 82,
+      "bytes": 2509333,
+      "manual_delete_command": "rm -- '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/audit.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/capture-complete.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/report.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/rx/rml2018a-4283-1789202627074-1789202627074-1789202630361316139.sigmf-data' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/rx/rml2018a-4283-1789202627074-1789202627074-1789202630361316139.sigmf-meta' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/rx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/source.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/tx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/tx-summary.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/tx-uhd.log' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/audit.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/capture-complete.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/report.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/rx/rml2018a-22032-1789202638045-1789202638045-1789202641315359166.sigmf-data' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/rx/rml2018a-22032-1789202638045-1789202638045-1789202641315359166.sigmf-meta' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/rx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/source.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/tx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/tx-summary.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/tx-uhd.log' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/audit.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/capture-complete.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/report.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/rx/rml2018a-26470-1789202649011-1789202649011-1789202652264847875.sigmf-data' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/rx/rml2018a-26470-1789202649011-1789202649011-1789202652264847875.sigmf-meta' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/rx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/source.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/tx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/tx-summary.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/tx-uhd.log' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/audit.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/capture-complete.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/report.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/rx/rml2018a-57531-1789202659957-1789202659957-1789202663226673743.sigmf-data' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/rx/rml2018a-57531-1789202659957-1789202659957-1789202663226673743.sigmf-meta' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/rx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/source.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/tx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/tx-summary.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/tx-uhd.log' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/audit.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/capture-complete.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/report.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/rx/rml2018a-66406-1789202670921-1789202670921-1789202674197345622.sigmf-data' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/rx/rml2018a-66406-1789202670921-1789202670921-1789202674197345622.sigmf-meta' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/rx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/source.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/tx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/tx-summary.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/tx-uhd.log' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/audit.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/capture-complete.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/report.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/rx/rml2018a-75280-1789202681873-1789202681873-1789202685151702953.sigmf-data' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/rx/rml2018a-75280-1789202681873-1789202681873-1789202685151702953.sigmf-meta' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/rx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/source.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/tx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/tx-summary.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/tx-uhd.log' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/audit.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/capture-complete.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/report.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/rx/rml2018a-93030-1789202692868-1789202692868-1789202696115431843.sigmf-data' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/rx/rml2018a-93030-1789202692868-1789202692868-1789202696115431843.sigmf-meta' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/rx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/source.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/tx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/tx-summary.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/tx-uhd.log' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/audit.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/capture-complete.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/report.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/rx/rml2018a-101904-1789202703824-1789202703824-1789202707085072240.sigmf-data' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/rx/rml2018a-101904-1789202703824-1789202703824-1789202707085072240.sigmf-meta' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/rx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/source.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/tx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/tx-summary.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/tx-uhd.log' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/run-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/summary.json' && rmdir -- '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/rx' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/rx' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/rx' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/rx' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/rx' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/rx' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/rx' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/rx' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283' '/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912'"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912",
+      "purpose": "Registered timing algorithm, four-way engineering predictions, rejection evidence, graph, tests and cleanup",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/acquire.log",
+          "bytes": 12041,
+          "sha256": "9585e65b73409d5eac77973edfa33cea79a81a8c796f7774f4189558736d0a4f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/acquire.py",
+          "bytes": 2099,
+          "sha256": "112c75a5354ad40b00bfb0b0173f3afa45eefcb350985127eff174ef5040084f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/all-tests.log",
+          "bytes": 13383,
+          "sha256": "39930a352cbbcc6c06f29aefd6bdf04fbcf8056ccbfcb07a55fe3427595b329a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/capture-assessments.json",
+          "bytes": 4763,
+          "sha256": "c106aaabf24a81d3b0a92bd3cccb753101a71f8e17a0a1666caf0010e5a7e0cc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/cleanup.json",
+          "bytes": 121098,
+          "sha256": "23e08b3fbdbf6573c9b688515bc74d3f50d7982f83b3b661ba02417ca2ec657d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/eight-class-comparison.png",
+          "bytes": 122116,
+          "sha256": "24f5695673e19192f4e3ad68dbcb68b1aea5b1c1de76dc58ae720391a04cc477"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/finalize.py",
+          "bytes": 6142,
+          "sha256": "0cf0b0da1e0747401e67c83e5b85388fc5f002717177b9813aa850e059821302"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/gpu-isolation.json",
+          "bytes": 295,
+          "sha256": "3ef140731f245aec9fca77f82b620db5f8821513c4859e8c4335c81c85a89791"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/infer.log",
+          "bytes": 1660,
+          "sha256": "065313e677d5274dac2873fbfc1f5ed72d2dec577f56ae65790b27446f18b977"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/inference.json",
+          "bytes": 645981,
+          "sha256": "c5b2af14378205aa48d9ff3957e261a625b6b8738c973fcf0aa7dfbc8eba77c2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/pilot-plan.json",
+          "bytes": 12467,
+          "sha256": "e3b8c6f283c6a8975480c0fef4c2aab5cdf789a206a50ac93ef16b045876c6af"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/plot.py",
+          "bytes": 2020,
+          "sha256": "b2c214ce10e8300642d72dfb6b6eca722b14dae6987725af2756e8d7de8e079a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/postflight.json",
+          "bytes": 8082,
+          "sha256": "c38807cb826fa059eb48f0bdcf7e9a8120c7cf0e23a3fd6286df4dd7292071d9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/postflight.py",
+          "bytes": 1936,
+          "sha256": "1fe61c9e9144d51e089e4725706aa4f0a733e3868929d32f94967f7e572a26b6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/prepared.json",
+          "bytes": 1145548,
+          "sha256": "20386557e75a934dbbe85c22c1e8834ad14913ab42aa4d4bda54ee01b2df4f22"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/preregister.py",
+          "bytes": 3964,
+          "sha256": "eb37deb89c413679e02d1c2293675810e4a4c14a6223661ae09b6b07ddcf0c6d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/summary.json",
+          "bytes": 11566,
+          "sha256": "c317298f642d9ff85a4510fabb76b68833897f564ba9072d3be63f78feae4088"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/verify.json",
+          "bytes": 119,
+          "sha256": "e6ee8fba82679ea54a403c1484e30cdea8a6478bf09f7ba2bd8d579c8eb3b3d0"
+        }
+      ],
+      "file_count": 18,
+      "bytes": 2115280,
+      "manual_delete_command": "rm -- '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/acquire.log' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/acquire.py' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/all-tests.log' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/capture-assessments.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/cleanup.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/eight-class-comparison.png' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/finalize.py' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/gpu-isolation.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/infer.log' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/inference.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/pilot-plan.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/plot.py' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/postflight.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/postflight.py' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/prepared.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/preregister.py' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/summary.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912/verify.json' && rmdir -- '/var/tmp/sdrharness-dev/rml-timing-multiclass-20260912'"
+    }
+  ],
+  "retained_file_count": 100,
+  "retained_bytes": 4624613
+}

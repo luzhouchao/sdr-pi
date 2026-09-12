@@ -101,6 +101,33 @@ TX包使用独立`rml2018a-gain-pair-pilot-v1`，只允许批次4267/22016的精
 [两类实机配对结果](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12radioml调制波形的幅度增益配对)
 不能自动推广为24类、低源SNR或全量参数准入。
 
+## 八类新采集与导频时序校正
+
+八类新采集的有限profile为`--tx-level-profile timing-multiclass-pilot`，固定AGX TX60/RX40、
+峰值0.632455532和2455MHz，使用独立`rml2018a-timing-multiclass-pilot-v1`发包schema。
+只接纳批次`4283 22032 26470 57531 66406 75280 93030 101904`，依次对应
+OOK/QPSK/8PSK/16QAM/64QAM/256QAM/AM-DSB-SC/GMSK，各24行Z30，
+上限8批/192行/32秒TX/2,097,120字节RX。它不扩写旧两批profile，也不改变普通全库峰值。
+采集仍使用原campaign的有界Controller/有限TX/取消/恢复路径，原始audit和SINR保持。
+
+八类对照入口为[compare-rml2018a-pilot-timing.py](../../jetson-agx/sdrharness/scripts/compare-rml2018a-pilot-timing.py)：
+`prepare/infer/verify --root <八类campaign> --output /var/tmp/sdrharness-dev/rml-timing-multiclass-<唯一标识>`。
+它从已完成的新采集生成source/raw/lo/timing四组工程输入，最多768个实验模型窗口及2个warmup，
+明确保留每类24行、未同步、SINR无效、LO/时序拒绝及识别失败。拒绝校正时该变体使用上一阶段原样输入，
+未同步时三组实收均没有预测，源预测仍保留。模型保持冻结epoch10 FP16 autocast/FP32权重，
+不按识别结果挑选校正参数。源X只在接收DSP完成后用于质量/识别对照，不进入相消或时序拟合。
+
+[导频时序模块](../../jetson-agx/sdrharness/scripts/rml2018a_pilot_timing.py)使用每个已知导频
+前半段[64:448]拟合延迟及随采样时间的漂移，后半段[576:960]独立验证，不重新拟合；
+至少2个导频，延迟≤0.6点、漂移≤10ppm、拟合RMS≤0.04点、验证误差≤0.08点，
+导频残差比例≤0.03且正交导数比≤0.08，否则保留LO相消输出和跳过原因。
+通过后采用129抽头Kaiser8窗sinc插值，保留真实64点邻域，不在行边界补零或循环拼接。
+该有限插值并非严格全通；独立过采样仿真、占用带内保真及白噪声功率变化测试约束其影响。
+时序后的条件估计参考面为`received_payload_after_guard_lo_and_pilot_timing_before_rms`，
+记录插值器与`rx_timing_correction`，不写回原始/LO阶段SINR，也不称为物理SINR校准。
+
+上述对照脚本是实验入口，未安装到生产接收/识别流程；普通campaign的默认预处理保持。
+
 ## 保护间隔辅助LO相消（离线实验）
 
 [相消模块](../../jetson-agx/sdrharness/scripts/rml2018a_lo_cancellation.py)与

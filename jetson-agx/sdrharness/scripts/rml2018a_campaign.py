@@ -31,11 +31,26 @@ LO_GAIN_PAIR_SCHEMA = 'b210-cable-lo-gain-pair-v1'
 LO_GAIN_PAIR_CASES = ((70, .1), (60, .1*math.sqrt(10.)), (70, .1), (60, .1*math.sqrt(10.)))
 RML_GAIN_PAIR_SCHEMA = 'rml2018a-gain-pair-pilot-v1'
 RML_GAIN_PAIR_BATCHES = (4267, 22016)
+RML_TIMING_SCHEMA = 'rml2018a-timing-multiclass-pilot-v1'
+# New, disjoint Z30 rows: OOK/QPSK/8PSK/16QAM/64QAM/256QAM/AM-DSB-SC/GMSK.
+RML_TIMING_BATCHES = (4283, 22032, 26470, 57531, 66406, 75280, 93030, 101904)
+RML_TIMING_CLASSES = (0, 4, 5, 12, 14, 16, 20, 22)
 
 
 def packet_peak(level_profile):
-    require(level_profile in ('standard', 'gain-pair-pilot'), 'registered TX level profile')
+    require(level_profile in ('standard', 'gain-pair-pilot', 'timing-multiclass-pilot'), 'registered TX level profile')
     return .2 if level_profile == 'standard' else .2*math.sqrt(10.)
+
+
+def level_batches(profile):
+    packet_peak(profile)
+    return RML_TIMING_BATCHES if profile=='timing-multiclass-pilot' else RML_GAIN_PAIR_BATCHES
+
+
+def level_schema(profile):
+    packet_peak(profile)
+    return {'standard':SCHEMA,'gain-pair-pilot':RML_GAIN_PAIR_SCHEMA,
+            'timing-multiclass-pilot':RML_TIMING_SCHEMA}[profile]
 
 
 def require(condition, message):
@@ -79,7 +94,7 @@ def marker(run_id, batch):
 def packet(iq, run_id, batch, *, level_profile='standard'):
     peak = packet_peak(level_profile)
     if level_profile != 'standard':
-        require(type(batch) is int and batch in RML_GAIN_PAIR_BATCHES, 'registered gain-pair batch')
+        require(type(batch) is int and batch in level_batches(level_profile), 'registered finite pilot batch')
     iq = np.asarray(iq)
     require(iq.ndim == 3 and iq.shape[1:] == (1024, 2) and
             0 < len(iq) <= ROWS_PER_BATCH and np.isfinite(iq).all(), 'bad source rows')
@@ -104,10 +119,10 @@ def tx_plan(frame, run_id, batch, rows, tx_gain_db=70, *, level_profile='standar
     rows=list(map(int, rows))
     peak=packet_peak(level_profile)
     if level_profile != 'standard':
-        require(type(batch) is int and batch in RML_GAIN_PAIR_BATCHES and tx_gain_db==60 and
+        require(type(batch) is int and batch in level_batches(level_profile) and tx_gain_db==60 and
                 rows==batch_rows(2555904,batch), 'registered gain-pair source/gain')
     units = math.floor(RATE * TX_SECONDS / len(frame))
-    return dict(schema=SCHEMA if level_profile=='standard' else RML_GAIN_PAIR_SCHEMA,
+    return dict(schema=level_schema(level_profile),
                 run_id=run_id, batch=batch, rows=rows,
                 center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW, tx_gain_db=tx_gain_db,
                 tx_channel=0, tx_antenna='TX/RX', serial='2508504', lo_offset_hz=250000,
@@ -122,14 +137,16 @@ def validate_tx(plan, payload):
         require(plan == expected and payload == waveform.tobytes(), 'unregistered LO reference plan/payload')
         return
     registered_tx_gain(plan.get('tx_gain_db'))
-    paired = plan.get('schema') == RML_GAIN_PAIR_SCHEMA
-    peak = packet_peak('gain-pair-pilot' if paired else 'standard')
+    profiles={SCHEMA:'standard',RML_GAIN_PAIR_SCHEMA:'gain-pair-pilot',RML_TIMING_SCHEMA:'timing-multiclass-pilot'}
+    require(plan.get('schema') in profiles, 'registered TX schema')
+    profile=profiles[plan['schema']];paired=profile!='standard'
+    peak = packet_peak(profile)
     require(isinstance(plan.get('run_id'), str) and 0 < len(plan['run_id']) <= 128 and
             type(plan.get('batch')) is int and 0 <= plan['batch'] < 106496, 'batch identity')
     if paired:
-        require(plan['batch'] in RML_GAIN_PAIR_BATCHES and plan['tx_gain_db']==60 and
+        require(plan['batch'] in level_batches(profile) and plan['tx_gain_db']==60 and
                 plan.get('rows')==batch_rows(2555904,plan['batch']), 'registered gain-pair source/gain')
-    for k, v in dict(schema=RML_GAIN_PAIR_SCHEMA if paired else SCHEMA, center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW,
+    for k, v in dict(schema=level_schema(profile), center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW,
                      tx_channel=0, tx_antenna='TX/RX', serial='2508504',
                      lo_offset_hz=250000, max_seconds=TX_SECONDS, complex_peak=peak).items():
         require(plan.get(k) == v, 'unregistered TX ' + k)

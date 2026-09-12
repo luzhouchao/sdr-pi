@@ -27,7 +27,8 @@ import h5py
 import numpy as np
 from rml2018a_campaign import (REPO, SCHEMA, RATE, CENTER, BW, RX_SAMPLES, CFO_SEARCH_MAX_HZ, CFO_LIMIT_HZ,
     ROWS_PER_BATCH, batch_rows, budget, digest, file_hash, marker, normalize_window,
-    packet, packet_peak, RML_GAIN_PAIR_BATCHES, receive_quality, registered_tx_gain, require, save, sinr_contract, synchronize, tx_plan, validate_receive_quality)
+    packet, packet_peak, level_batches, RML_GAIN_PAIR_BATCHES, RML_TIMING_BATCHES, RML_TIMING_CLASSES,
+    receive_quality, registered_tx_gain, require, save, sinr_contract, synchronize, tx_plan, validate_receive_quality)
 
 DATASET = REPO/'local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5'
 LABELS = REPO/'jetson-agx/sdrharness/config/amc/rml2018a-labels.server-v1.json'
@@ -62,9 +63,10 @@ def campaign_software():
         'validate-b210-multiclass.py','validate-p201-termination-background.py','validate-b210-p201-link.py')}
 
 
-def level_limits():
-    return dict(allowed_batch_indices=list(RML_GAIN_PAIR_BATCHES), maximum_tx_seconds=8,
-        maximum_rx_iq_bytes=2*RX_SAMPLES*4, maximum_source_rows=48)
+def level_limits(profile='gain-pair-pilot'):
+    batches=level_batches(profile)
+    return dict(allowed_batch_indices=list(batches), maximum_tx_seconds=len(batches)*4,
+        maximum_rx_iq_bytes=len(batches)*RX_SAMPLES*4, maximum_source_rows=len(batches)*24)
 
 
 def campaign_level(campaign, indices=()):
@@ -73,8 +75,8 @@ def campaign_level(campaign, indices=()):
     if profile != 'standard':
         require(campaign['tx_host']=='agx' and campaign['rf']['tx_gain_db']==60 and
             campaign['rf']['rx_gain_db']==40 and campaign['rf']['peak']==peak and
-            campaign.get('execution_limits')==level_limits(), 'registered gain-pair campaign')
-        require(all(type(i) is int and i in RML_GAIN_PAIR_BATCHES for i in indices), 'gain-pair pilot batch selection')
+            campaign.get('execution_limits')==level_limits(profile), 'registered finite pilot campaign')
+        require(all(type(i) is int and i in level_batches(profile) for i in indices), 'finite pilot batch selection')
     return profile
 
 
@@ -123,8 +125,8 @@ def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profi
         created_unix_ns=time.time_ns(), base_head=subprocess.check_output(['git','-C',str(REPO),
             'rev-parse','HEAD'], text=True).strip())
     if tx_level_profile != 'standard':
-        plan['execution_limits']=level_limits()
-        plan['scope']='Only registered OOK/QPSK Z30 batches4267/22016; full budget describes dataset indexing, not permitted execution'
+        plan['execution_limits']=level_limits(tx_level_profile)
+        plan['scope']='Only registered Z30 batches'+str(list(level_batches(tx_level_profile)))+'; full budget describes dataset indexing, not permitted execution'
         plan['semantics']='Finite cable gain-pair engineering pilot, not a full campaign or independent admission'
         campaign_level(plan)
     save(root/'run-plan.json', plan)
@@ -258,6 +260,8 @@ def acquire_batch(root, campaign, index, retry_failed=False):
     frame, scales = packet(iq, campaign['run_id'], index,level_profile=level)
     txp = tx_plan(frame, campaign['run_id'], index, rows, tx_gain,level_profile=level)
     if level != 'standard':require(np.all(snrs==30), 'registered gain-pair source Z30')
+    if level=='timing-multiclass-pilot':
+        require(np.all(labels.argmax(axis=1)==RML_TIMING_CLASSES[RML_TIMING_BATCHES.index(index)]), 'registered multiclass source identity')
     require(shutil.disk_usage(root).free > RX_SAMPLES*4 + frame.nbytes + 32*1024*1024, 'batch disk budget')
     password=Path('/home/jetson/.config/sdrharness/p201-root.password')
     require(password.is_file() and not password.is_symlink() and password.stat().st_mode & 0o777 == 0o600,
@@ -578,7 +582,7 @@ def main():
     p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],help='plan only; default20; all execution uses the sealed plan')
     p.add_argument('--tx-gain-db',type=int,choices=[0,20,40,60,70,80],help='plan only; default0; all execution uses the sealed plan')
     p.add_argument('--tx-host',choices=['agx','nx'],help='plan only; default agx; P201 remains network RX')
-    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot'],help='plan only; paired pilot restricts execution to batches4267/22016 at AGX TX60/RX40')
+    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot'],help='plan only; finite pilots restrict batch IDs at AGX TX60/RX40')
     args=p.parse_args();root=args.root
     if args.command=='plan':
         require(args.batch_indices is None,'batch selection is execution-only; preregister pilot separately')
