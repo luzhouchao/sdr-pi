@@ -1,0 +1,871 @@
+{
+  "schema": "rml2018a-modulated-gain-pair-evidence-v1",
+  "base_head": "6b63746d32fac9a2e250a0686d4e166fddb935a2",
+  "purpose": "Validate the fixed digital amplitude/hardware gain pair on the same48 OOK/QPSK Z30 source rows; retain minimal IQ, frozen predictions and restoration proofs",
+  "source": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "bytes": 21449148312,
+    "mtime_ns": 1627354882000000000
+  },
+  "parent_inventory": {
+    "path": "docs/evidence/B210_CABLE_LO_GAIN_PAIR_2026-09-12.json",
+    "sha256": "63b3b62df6ab2ff793a45e45ada11bc7f3808dfe30271a6485ddc0dc509a6d77",
+    "relationship": "Pure-tone mitigation motivates this independent modulated pilot; old IQ is not reused"
+  },
+  "software": {
+    "rml2018a-rf-campaign.py": "bbaf0cb33e7979ceb3ad97de27c2f0a61f6e2c4d99665b587369eb24e98f2aa8",
+    "rml2018a_campaign.py": "5cbad107f952c8f1f9ba43d3e2790464841b6b4525877a3b7f0cc514cd54b493",
+    "rml2018a-nx-tx.py": "d33c28d442e923173964d9a3511401a62f8ad2ae312439be8a16167cae54b52f",
+    "amc-mamba-worker.py": "750eef925be33ab925798f49907c0a35a2cf1c5cd9f00672ee64fcda9d0872b5",
+    "amc-rf-v1-runtime.py": "a920c4260ce02f824cc1bfad596242330b69dbfdf3008c45be6142d8aa077e82",
+    "gpu_lease.py": "cbc8038a375f1c44cf4c16d68c94d19ae146b8b9b496a340603be62340c1e1c7",
+    "validate-b210-multiclass.py": "2bd5a801b25aa3a5a5e8d48d8d930207b9f34fa6b7c037292edf3108e0a657f8",
+    "validate-p201-termination-background.py": "007fce5064507803b6d75f178e7f3619f14aaec089ce9083900e40601b27975b",
+    "validate-b210-p201-link.py": "9454da8cdc70aadff2aba96a23c4c0a5284c15d53854b996c55ee24778955686"
+  },
+  "tx_runtime": {
+    "host": "agx",
+    "transport_sha256": "f4f453b6e7d4f76e4ed8c02ae8373489106106093814f1ecf2c5bba84fb42620",
+    "device_helper_sha256": "8b092061886b633b2615a9fcc73ab662caf9360893863a0c35bb9a646e705bbc",
+    "runtime": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t",
+    "manifest_sha256": "fae1fb324ec69546c40a691e0d9b913aadfefad51b19934a06b6c34d7b97eccf"
+  },
+  "model_identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "runtime_profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+  "preprocessing": "pilot timing/CFO/phase correction then per-row complex RMS; no label-guided alignment",
+  "source_rows": [
+    {
+      "batch": 4267,
+      "rows": [
+        102408,
+        102409,
+        102410,
+        102411,
+        102412,
+        102413,
+        102414,
+        102415,
+        102416,
+        102417,
+        102418,
+        102419,
+        102420,
+        102421,
+        102422,
+        102423,
+        102424,
+        102425,
+        102426,
+        102427,
+        102428,
+        102429,
+        102430,
+        102431
+      ],
+      "class_id": 0,
+      "source_snr_db": 30,
+      "source_iq_sha256": "e5b9894a2ddb15839e71c6a34e6278060a81a7a41702895cc01e963a36eb9180",
+      "exports": {
+        "a": {
+          "packet_sha256": "d586c83c4e74e17285201272d3465f28930f75801b030ee462455f722e5b0b5e",
+          "packet_bytes": 208896,
+          "peak": 0.20000001788139343,
+          "maximum_source_reconstruction_error": 7.863377591501181e-16
+        },
+        "b": {
+          "packet_sha256": "f984860203a05396f4f1149d39a7e1d77129b71e6395bee5596acb8d66737f69",
+          "packet_bytes": 208896,
+          "peak": 0.632455587387085,
+          "maximum_source_reconstruction_error": 7.3101824592064605e-16
+        }
+      }
+    },
+    {
+      "batch": 22016,
+      "rows": [
+        528384,
+        528385,
+        528386,
+        528387,
+        528388,
+        528389,
+        528390,
+        528391,
+        528392,
+        528393,
+        528394,
+        528395,
+        528396,
+        528397,
+        528398,
+        528399,
+        528400,
+        528401,
+        528402,
+        528403,
+        528404,
+        528405,
+        528406,
+        528407
+      ],
+      "class_id": 4,
+      "source_snr_db": 30,
+      "source_iq_sha256": "651306fe240c3e445858672699756af388057f560481f3fa8b390029e2f2c1c0",
+      "exports": {
+        "a": {
+          "packet_sha256": "bd135e81207ca4123650ae1705191f6c153430f71d8363aa8f916b57114f15d5",
+          "packet_bytes": 208896,
+          "peak": 0.20000001788139343,
+          "maximum_source_reconstruction_error": 6.96109964029656e-16
+        },
+        "b": {
+          "packet_sha256": "bd4114e7e3d6276cbe9f03b7c8d18765390a0c1850c85eb68fdcc62adf453486",
+          "packet_bytes": 208896,
+          "peak": 0.632455587387085,
+          "maximum_source_reconstruction_error": 6.388634361787327e-16
+        }
+      }
+    }
+  ],
+  "unique_source_rows": 48,
+  "transmitted_rows_with_repeats": 96,
+  "maximum_tx_seconds": 16,
+  "rx_iq_bytes": 1048560,
+  "model_experiment_windows": 192,
+  "model_warmups": 4,
+  "verified_model_input_hashes": 192,
+  "results": [
+    {
+      "stage": "a",
+      "batch": 4267,
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912",
+      "status": "synchronized",
+      "source_rows": 24,
+      "quality_counts": {
+        "estimated": 24
+      },
+      "sinr_min_db": -0.1415983619303345,
+      "sinr_max_db": 1.356432080605113,
+      "sinr_median_db": 0.7735239317370034,
+      "correlation_median": 0.7390861243775904,
+      "reference_power_median_counts2": 335.3105670332893,
+      "plus250k_power_median_counts2": 271.426075831277,
+      "plus250k_fraction_median": 0.9805780301743856,
+      "component_peak_counts": 60.0,
+      "component_rms_counts": 18.140645642813816,
+      "uhd_tail_markers": "U",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/rx/rml2018a-4267-1789195705470-1789195705470-1789195708730358189.sigmf-data",
+        "iq_sha256": "327baec1ee40754194047aede2a56efebf2b12880a577567b0f0bc4f1287c239",
+        "metadata_sha256": "9dea8314829c76246a1e8946c02b71a816996c4d1e647b66e2664a95c4aa4cfe",
+        "request_id": 5,
+        "sequence": 1537,
+        "session_generation": 1789195705470
+      },
+      "source_correct": 24,
+      "received_correct": 24
+    },
+    {
+      "stage": "a",
+      "batch": 22016,
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912",
+      "status": "synchronized",
+      "source_rows": 24,
+      "quality_counts": {
+        "estimated": 24
+      },
+      "sinr_min_db": 1.552939145441905,
+      "sinr_max_db": 2.8771699919149087,
+      "sinr_median_db": 2.077045656060398,
+      "correlation_median": 0.7864373050946122,
+      "reference_power_median_counts2": 475.39424238051384,
+      "plus250k_power_median_counts2": 289.2293244600336,
+      "plus250k_fraction_median": 0.9825350844666869,
+      "component_peak_counts": 58.0,
+      "component_rms_counts": 19.930346015607043,
+      "uhd_tail_markers": "U",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/rx/rml2018a-22016-1789195891757-1789195891757-1789195895011537767.sigmf-data",
+        "iq_sha256": "71d3973cf76457b9dcf61086361d4053d45452cecafb1be3e3133b27c3745c7c",
+        "metadata_sha256": "2b1979d49f796c492683f8c6781346cad21e654c3240d97859c1c551018f296f",
+        "request_id": 5,
+        "sequence": 1539,
+        "session_generation": 1789195891757
+      },
+      "source_correct": 24,
+      "received_correct": 22
+    },
+    {
+      "stage": "b",
+      "batch": 4267,
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912",
+      "status": "synchronized",
+      "source_rows": 24,
+      "quality_counts": {
+        "estimated": 24
+      },
+      "sinr_min_db": 6.9088035532290455,
+      "sinr_max_db": 8.398777775091084,
+      "sinr_median_db": 7.8966226541756654,
+      "correlation_median": 0.9278008808188744,
+      "reference_power_median_counts2": 370.49763198437154,
+      "plus250k_power_median_counts2": 56.50345101034722,
+      "plus250k_fraction_median": 0.9483131826970801,
+      "component_peak_counts": 55.0,
+      "component_rms_counts": 15.284066395689788,
+      "uhd_tail_markers": "U",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/rx/rml2018a-4267-1789195777763-1789195777763-1789195781039237298.sigmf-data",
+        "iq_sha256": "6403879ecfe97c76a61c615c09f2399e5bb611dfe167b554459d5e945b34d32d",
+        "metadata_sha256": "bf827ae324c39fd3c9eac81f284c18c7a704ee6dd60473cccb7cdcfe24a4e181",
+        "request_id": 5,
+        "sequence": 1538,
+        "session_generation": 1789195777763
+      },
+      "source_correct": 24,
+      "received_correct": 24
+    },
+    {
+      "stage": "b",
+      "batch": 22016,
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912",
+      "status": "synchronized",
+      "source_rows": 24,
+      "quality_counts": {
+        "estimated": 24
+      },
+      "sinr_min_db": 8.806391803854252,
+      "sinr_max_db": 10.015548930156328,
+      "sinr_median_db": 9.260090027289383,
+      "correlation_median": 0.9463727435107638,
+      "reference_power_median_counts2": 486.1781385407923,
+      "plus250k_power_median_counts2": 51.72105430405868,
+      "plus250k_fraction_median": 0.911073689562812,
+      "component_peak_counts": 54.0,
+      "component_rms_counts": 16.815544113772283,
+      "uhd_tail_markers": "U",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/rx/rml2018a-22016-1789195959951-1789195959951-1789195963166561449.sigmf-data",
+        "iq_sha256": "e45ba44809140ce1dd153a1f04e710fa9ceac05bced103c67ba4dd86bad85310",
+        "metadata_sha256": "f74c2761af00d94ef06b58409e52d01ed310cd0430997573e653a17e9f40fc2d",
+        "request_id": 5,
+        "sequence": 1540,
+        "session_generation": 1789195959951
+      },
+      "source_correct": 24,
+      "received_correct": 24
+    }
+  ],
+  "comparisons": [
+    {
+      "batch": 4267,
+      "reference_power_change_db": 0.4333819648104417,
+      "plus250k_suppression_db": 6.815765942418245,
+      "sinr_median_improvement_db": 7.123098722438662,
+      "paired_mitigation_targets_met": true
+    },
+    {
+      "batch": 22016,
+      "reference_power_change_db": 0.09741508910695634,
+      "plus250k_suppression_db": 7.475749540770316,
+      "sinr_median_improvement_db": 7.183044371228985,
+      "paired_mitigation_targets_met": true
+    }
+  ],
+  "postflight": {
+    "status": "passed",
+    "after": {
+      "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "daemon_pid": [
+        "5909"
+      ],
+      "daemon_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+      "controller_sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+      "health": {
+        "online": true,
+        "healthy": true,
+        "health_flags": 0,
+        "iio_visible": true,
+        "can_retune": true,
+        "can_capture_iq": true,
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        }
+      },
+      "b210": {
+        "host": "agx",
+        "serial": "2508504",
+        "usb_speed_mbps": 5000.0,
+        "usb_node": "/dev/bus/usb/002/004",
+        "usb_holder_pids": []
+      }
+    },
+    "transients": [
+      {
+        "stage": "a",
+        "batch": 4267,
+        "agx_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912-b4267",
+        "p201_path": "/tmp/sdr-agent-dev/agx-sweep-1789195705470-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/rx/rml2018a-4267-1789195705470-1789195705470-1789195708730358189.sigmf-data",
+          "iq_sha256": "327baec1ee40754194047aede2a56efebf2b12880a577567b0f0bc4f1287c239",
+          "metadata_sha256": "9dea8314829c76246a1e8946c02b71a816996c4d1e647b66e2664a95c4aa4cfe",
+          "request_id": 5,
+          "sequence": 1537,
+          "session_generation": 1789195705470
+        }
+      },
+      {
+        "stage": "a",
+        "batch": 22016,
+        "agx_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912-b22016",
+        "p201_path": "/tmp/sdr-agent-dev/agx-sweep-1789195891757-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/rx/rml2018a-22016-1789195891757-1789195891757-1789195895011537767.sigmf-data",
+          "iq_sha256": "71d3973cf76457b9dcf61086361d4053d45452cecafb1be3e3133b27c3745c7c",
+          "metadata_sha256": "2b1979d49f796c492683f8c6781346cad21e654c3240d97859c1c551018f296f",
+          "request_id": 5,
+          "sequence": 1539,
+          "session_generation": 1789195891757
+        }
+      },
+      {
+        "stage": "b",
+        "batch": 4267,
+        "agx_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912-b4267",
+        "p201_path": "/tmp/sdr-agent-dev/agx-sweep-1789195777763-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/rx/rml2018a-4267-1789195777763-1789195777763-1789195781039237298.sigmf-data",
+          "iq_sha256": "6403879ecfe97c76a61c615c09f2399e5bb611dfe167b554459d5e945b34d32d",
+          "metadata_sha256": "bf827ae324c39fd3c9eac81f284c18c7a704ee6dd60473cccb7cdcfe24a4e181",
+          "request_id": 5,
+          "sequence": 1538,
+          "session_generation": 1789195777763
+        }
+      },
+      {
+        "stage": "b",
+        "batch": 22016,
+        "agx_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912-b22016",
+        "p201_path": "/tmp/sdr-agent-dev/agx-sweep-1789195959951-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/rx/rml2018a-22016-1789195959951-1789195959951-1789195963166561449.sigmf-data",
+          "iq_sha256": "e45ba44809140ce1dd153a1f04e710fa9ceac05bced103c67ba4dd86bad85310",
+          "metadata_sha256": "f74c2761af00d94ef06b58409e52d01ed310cd0430997573e653a17e9f40fc2d",
+          "request_id": 5,
+          "sequence": 1540,
+          "session_generation": 1789195959951
+        }
+      }
+    ],
+    "gpu": [
+      {
+        "stage": "a",
+        "pid": 1321,
+        "start_ticks": "1515",
+        "state": "S",
+        "resumed": true,
+        "watchdog_stopped": true,
+        "lease_released": true
+      },
+      {
+        "stage": "b",
+        "pid": 1321,
+        "start_ticks": "1515",
+        "state": "S",
+        "resumed": true,
+        "watchdog_stopped": true,
+        "lease_released": true
+      }
+    ],
+    "model_experiment_windows": 192,
+    "model_warmups": 4,
+    "normal_tx_batches": 4,
+    "maximum_tx_seconds": 16,
+    "rx_iq_bytes": 1048560,
+    "nx_operations": 0,
+    "production_changes": 0
+  },
+  "cleanup": {
+    "removed": [
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/owner.lock",
+        "files": 1,
+        "bytes": 0,
+        "directories": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/scratch",
+        "files": 352,
+        "bytes": 20144438,
+        "directories": 54
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/owner.lock",
+        "files": 1,
+        "bytes": 0,
+        "directories": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/scratch",
+        "files": 352,
+        "bytes": 20144438,
+        "directories": 54
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/quality-comparison.json",
+        "files": 1,
+        "bytes": 191402,
+        "directories": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-gain-pair-dev-20260912",
+        "files": 7,
+        "bytes": 156210,
+        "directories": 3
+      }
+    ],
+    "development_removed_files": 714,
+    "development_removed_bytes": 40636488,
+    "development_removed_directories": 111,
+    "source_removed_files": 4,
+    "source_removed_bytes": 835584,
+    "staging_removed_files": 28,
+    "staging_removed_bytes": 948666,
+    "old_evidence_and_shared_dataset_untouched": true,
+    "total_removed_files": 746,
+    "total_removed_bytes": 42420738
+  },
+  "packages": [
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/acquire-22016.log",
+          "bytes": 4864,
+          "sha256": "1f832167496078abcc7834da449ccb840fd3091ec893a857b23babaffcd179c5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/acquire-4267.log",
+          "bytes": 4808,
+          "sha256": "8b9a367f6e3bf6802e587e95b4d7d698ea12e8cac590b6951d6206c63da79530"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/audit.json",
+          "bytes": 41348,
+          "sha256": "7db320b5a027b09a91f549311083e788c096cce5a89e754742a3e7aff1beed6b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/capture-complete.json",
+          "bytes": 421,
+          "sha256": "cc94d543859e35fbddd32a2695bad110253bf021e6d7d0a3ca6ff92ff128fae9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/predictions.json",
+          "bytes": 75513,
+          "sha256": "56e241d5e2168af841d2b386afce18c245e73f286e13e9be6a2698dfc2b03493"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/report.json",
+          "bytes": 2281,
+          "sha256": "300db989fc727029be3aad8ab3a6fdbaf50b0be9c5f083df9fc1a954fb9a5dd4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/rx/rml2018a-4267-1789195705470-1789195705470-1789195708730358189.sigmf-data",
+          "bytes": 262140,
+          "sha256": "327baec1ee40754194047aede2a56efebf2b12880a577567b0f0bc4f1287c239"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/rx/rml2018a-4267-1789195705470-1789195705470-1789195708730358189.sigmf-meta",
+          "bytes": 487,
+          "sha256": "9dea8314829c76246a1e8946c02b71a816996c4d1e647b66e2664a95c4aa4cfe"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/rx-plan.json",
+          "bytes": 386,
+          "sha256": "c5ba160db09a132fd84f6cb098de979c4c4399e9d7c4f7e0d5004e92109c9fd3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/source.json",
+          "bytes": 1456,
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/tx-plan.json",
+          "bytes": 828,
+          "sha256": "31b70ba0595be7b449694626d8ec11a4ea238bc3d1c27253c174b5ccbd3e100a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/tx-summary.json",
+          "bytes": 943,
+          "sha256": "5ac89a5174bf1da23f833d2b15da20eb0e7ef835fc961acd32881093d1bb09f8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "98d02c95265ab5ce6f5d5c389c30280251766ad2c624d275bc927c6c1bbf9388"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/audit.json",
+          "bytes": 41348,
+          "sha256": "3005e1f8952985652c15eda296ed0eb96c23fd9f10b4406d2ff5c83308c326e1"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/capture-complete.json",
+          "bytes": 421,
+          "sha256": "4e634fa5e853e959ac45a8d0f9c2f5d1e814471726b32097a25d84e75966647a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/predictions.json",
+          "bytes": 75784,
+          "sha256": "e4294a23eab6596d60816c996269067dfd8a82c34f115106b8ab537c6652f88e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/report.json",
+          "bytes": 2280,
+          "sha256": "56c0d6f276853df9addd473a147b859b9324e7e60ef3455e7bcd62d15a4daa6f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/rx/rml2018a-22016-1789195891757-1789195891757-1789195895011537767.sigmf-data",
+          "bytes": 262140,
+          "sha256": "71d3973cf76457b9dcf61086361d4053d45452cecafb1be3e3133b27c3745c7c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/rx/rml2018a-22016-1789195891757-1789195891757-1789195895011537767.sigmf-meta",
+          "bytes": 487,
+          "sha256": "2b1979d49f796c492683f8c6781346cad21e654c3240d97859c1c551018f296f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/rx-plan.json",
+          "bytes": 387,
+          "sha256": "7157898e44f988a0296f6f485c388ded538dcbea5dd98ad00733ebca4bf03d0f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/source.json",
+          "bytes": 1455,
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/tx-plan.json",
+          "bytes": 829,
+          "sha256": "d63ea2b87d81fc0e6987e2ffc7ef8ba444db08b5f51c12011f6136704356cb3d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/tx-summary.json",
+          "bytes": 945,
+          "sha256": "cfe6babd0abea2302e8884ac5d896cb18c3e27321675fe95eafad22bd9342a5b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "98d02c95265ab5ce6f5d5c389c30280251766ad2c624d275bc927c6c1bbf9388"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/gpu-isolation-1789196134394991736.json",
+          "bytes": 295,
+          "sha256": "a268ccf799cf10ea3383ea308284a522684d2d681795f2b4563d0e1c07d40eec"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/infer.log",
+          "bytes": 5203,
+          "sha256": "680c457340a9295754661b1b920a15e37202ee4aaa40d30f9662504293a70c8d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/run-plan.json",
+          "bytes": 5024,
+          "sha256": "9f28bac8c26808ea0b40894d716cfb2b6b716283db42270d6266fbdaf13d5445"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/summary.json",
+          "bytes": 8195,
+          "sha256": "e00c1149953ec40fd7a44ed51f798d8f151e5bb947152cda5803244cd11d25b3"
+        }
+      ],
+      "file_count": 28,
+      "total_bytes": 803342,
+      "manual_delete": "rm -r -- '/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912'"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/acquire-22016.log",
+          "bytes": 5133,
+          "sha256": "b37a9eac28e00a3f1828a6d51fd8449bf36d774be0341d6565e771071a769b2e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/acquire-4267.log",
+          "bytes": 5077,
+          "sha256": "ee75afb4d837ac95eb9edcce7fe8926ee72b8a4f51bf24829f1818118d1ada28"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/audit.json",
+          "bytes": 41334,
+          "sha256": "596922c7748f926fcc948bc8b48de45180ef69ee4e81eb58e3734c3637284493"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/capture-complete.json",
+          "bytes": 421,
+          "sha256": "5aa57f22744e90cb94c8703536a167062284581f949f5254443293a47c6a7d05"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/predictions.json",
+          "bytes": 75497,
+          "sha256": "9a8c208b1b5883e21200dcb1506b42792c17d185768c9c5bc4f1f775b9aa886b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/report.json",
+          "bytes": 2279,
+          "sha256": "0470f4395d190b83c88dc2fdf8b2e9a22c5b1961e7ad33dfbcd083010e855314"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/rx/rml2018a-4267-1789195777763-1789195777763-1789195781039237298.sigmf-data",
+          "bytes": 262140,
+          "sha256": "6403879ecfe97c76a61c615c09f2399e5bb611dfe167b554459d5e945b34d32d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/rx/rml2018a-4267-1789195777763-1789195777763-1789195781039237298.sigmf-meta",
+          "bytes": 487,
+          "sha256": "bf827ae324c39fd3c9eac81f284c18c7a704ee6dd60473cccb7cdcfe24a4e181"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/rx-plan.json",
+          "bytes": 386,
+          "sha256": "84728de6038d258a762d08fe666c407bd0acfb7105c1062bbfa3241a4e02245d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/source.json",
+          "bytes": 1452,
+          "sha256": "ebe2065d03149baffe2b60d312497045273327cdf87abe47a27ad131be862d9d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/tx-plan.json",
+          "bytes": 847,
+          "sha256": "3238178df0c28e9a41c6bfd8e637aa07489aba4c82c9cc76b1332645d53fa2ca"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/tx-summary.json",
+          "bytes": 943,
+          "sha256": "bd60baf058b39f99b65e0906159aaeeacf5fa5d61fa44df4075769c598e3cc5f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "00116cb088ee98cbb582cb09a1d25278c23160d2328e0230ccc89553b18ba2a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/audit.json",
+          "bytes": 41372,
+          "sha256": "f302b518431923b74c2eaab8a0b7e3c33557320aebaafae9b5541773bc757b9b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/capture-complete.json",
+          "bytes": 421,
+          "sha256": "6a9fe73febb23794203ccbbe7afbb65dd8bda43ec1311e86cedc40970c0dd07a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/predictions.json",
+          "bytes": 76005,
+          "sha256": "7058eeef7dc944b5fa6670b3a618beef752d29619267d30adf02f8d398ea2147"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/report.json",
+          "bytes": 2282,
+          "sha256": "2fbb0e924ab04a403f026a93d2b1c50858cf030e806cc19fbace390af467f51f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/rx/rml2018a-22016-1789195959951-1789195959951-1789195963166561449.sigmf-data",
+          "bytes": 262140,
+          "sha256": "e45ba44809140ce1dd153a1f04e710fa9ceac05bced103c67ba4dd86bad85310"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/rx/rml2018a-22016-1789195959951-1789195959951-1789195963166561449.sigmf-meta",
+          "bytes": 487,
+          "sha256": "f74c2761af00d94ef06b58409e52d01ed310cd0430997573e653a17e9f40fc2d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/rx-plan.json",
+          "bytes": 387,
+          "sha256": "53b7c6b5220805f9b2be648e8fb867274c150d7f6ac4d8464de00b0935264e1c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/source.json",
+          "bytes": 1449,
+          "sha256": "8fc1fbd8e4320b8cba17b4362d9379d7c3f96f3c3ef9497652ecaf15a8f86c0a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/tx-plan.json",
+          "bytes": 848,
+          "sha256": "8adb3d00b545ed37c42a5d7a5e6741a14fba1f11a7681c7e3f897d5a58921090"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/tx-summary.json",
+          "bytes": 945,
+          "sha256": "de6ab00c7f706fb417f9b8ad57720efe6c29e37f1cf571f1f4bf2cc04ef3079d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "00116cb088ee98cbb582cb09a1d25278c23160d2328e0230ccc89553b18ba2a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/gpu-isolation-1789196283909383559.json",
+          "bytes": 295,
+          "sha256": "3721da7220539a9b797ec44ab3cced5fd9148629646fd995960d7778962da155"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/infer.log",
+          "bytes": 5442,
+          "sha256": "c81e93e82fd3a2de21973d6abcf0afe62f0e66e0cf373baf8b1a96287ecf727b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/run-plan.json",
+          "bytes": 5271,
+          "sha256": "6ced8db9a57070ad74da9fc10c5a992b45f606f1c34518eb6bb4cc6a7dc9e62f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/summary.json",
+          "bytes": 8476,
+          "sha256": "d7d9e9ba3d8b0278f0726395a86b45a2dbb32106ae7369b4cf266dfca27e3f3c"
+        }
+      ],
+      "file_count": 28,
+      "total_bytes": 804890,
+      "manual_delete": "rm -r -- '/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912'"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/assess.py",
+          "bytes": 1563,
+          "sha256": "5291536372a2b35b677952485b9c367cd1a86cc6bf5fbfa625604df3de455d2a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/assessment-a-22016.json",
+          "bytes": 780,
+          "sha256": "da0b320b06f316255b1bc19934ed852bb91232c842a6bf8f586e7e74bce5cdef"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/assessment-a-4267.json",
+          "bytes": 780,
+          "sha256": "e9fca88db1d2c33f4a1a31bdb46302932fbe0a341647a4733c7bacbfd589f8a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/assessment-b-22016.json",
+          "bytes": 780,
+          "sha256": "ce2001ebdc6cb5fd1f0fbe06288c01c45575eda4c5cdac12e057191ec91d5e33"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/assessment-b-4267.json",
+          "bytes": 779,
+          "sha256": "e2ef0efafe393814556ccc84acc8000c3160309db99fb5fd6b6dcd69b1a8dfcd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/campaign-tests.log",
+          "bytes": 11409,
+          "sha256": "f17abe9d5a51e25ef177ea4a5aa447058e3254a2accffb7ab823b1b4226fc3fb"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/cleanup.json",
+          "bytes": 1374,
+          "sha256": "134c08949eff3b48f38e7fc7b551eaf91fdbda1a7cfd3b5df9c2ba89a35df554"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/compare.py",
+          "bytes": 8753,
+          "sha256": "d057a8710176ea5435d9d0b78e01d7dfd77e70b712be4dad8ef35fd01c205e33"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/comparison.json",
+          "bytes": 195184,
+          "sha256": "f18c358419cae622f1e397ce21959b7152e7063028db0ce75c959663c1c35427"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/lo-tests.log",
+          "bytes": 712,
+          "sha256": "e248ddd2a9ae90b7da4dd104ea254db61006953a27d335c22b0b7ceee8b651a0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/pilot-plan.json",
+          "bytes": 7716,
+          "sha256": "0262b68c932c32ebe0078699ce176513ce2df5563e4a153de7c37481b903c1fa"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/plot.py",
+          "bytes": 1801,
+          "sha256": "1822bc3413a4112e9ed011b59eae5429fcb74c031c2bc97b1882d0e90d17db24"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/postflight.json",
+          "bytes": 5703,
+          "sha256": "098200e8836ed4231c6b929e253f54add02c014bcac38775f392dd4035b3f0e0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/postflight.py",
+          "bytes": 2347,
+          "sha256": "fe9996cba753c90c4310d66b3538cc1d4cd19e844ce439c3ef2159eaf39e46ec"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/preregister.py",
+          "bytes": 4337,
+          "sha256": "fe25879ebfad3199f7bff5f2183c90d7ed2a70a640894a168b5da5341b74f535"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912/sinr-comparison.png",
+          "bytes": 118453,
+          "sha256": "4ec8973d8681a17211905a272f0fb15e2a82b7ca851dd6e743ccb8c7cde2e046"
+        }
+      ],
+      "file_count": 16,
+      "total_bytes": 362471,
+      "manual_delete": "rm -r -- '/var/tmp/sdrharness-dev/rml-modulated-gain-pair-20260912'"
+    }
+  ],
+  "file_count": 72,
+  "total_bytes": 1970703,
+  "iq_files": 4,
+  "tests": {
+    "campaign_and_consumers": 47,
+    "lo_contract": 6,
+    "sinr_simulations": 240
+  },
+  "production_changes": 0,
+  "nx_operations": 0,
+  "recognizer_available": false,
+  "limits": [
+    "Only two modulation classes and48 unique high-source-SNR rows, repeated for comparison",
+    "48/48 paired engineering predictions are not independent accuracy or full dataset completion",
+    "Conditional SINR includes link distortion and is not calibrated physical SINR",
+    "Most paired rows remain below the existing10dB margin target",
+    "UHD U tail markers on all4 batches; RF timestamp continuity remains unverified",
+    "Ordinary campaign peak remains0.2; elevated profile only accepts batches4267/22016 at AGX TX60/RX40"
+  ]
+}

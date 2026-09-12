@@ -23,6 +23,48 @@ def load(name, path):
 
 
 class CampaignTests(unittest.TestCase):
+    def test_gain_pair_scales_payload_and_pilot_without_changing_waveform(self):
+        iq=self.source();index=4267
+        a,sa=c.packet(iq,'matched',index)
+        b,sb=c.packet(iq,'matched',index,level_profile='gain-pair-pilot')
+        np.testing.assert_allclose(b/np.sqrt(10),a,atol=4e-8)
+        np.testing.assert_allclose(sb/np.sqrt(10),sa,rtol=1e-14)
+        # Same nominal received amplitude, unknown phase/CFO and packet offset.
+        n=np.arange(c.RX_SAMPLES)
+        raw=np.tile(b,4)[173:173+c.RX_SAMPLES]*1000/np.sqrt(10)*np.exp(1j*(.7+2*np.pi*3700*n/c.RATE))
+        received,sync=c.synchronize(raw,'matched',index,24)
+        expected=a[c.GUARD+c.MARKER:-c.GUARD].reshape(24,1024)*1000
+        self.assertGreater(sync['marker_score'],.99)
+        self.assertLess(np.mean(abs(received-expected)**2)/np.mean(abs(expected)**2),1e-4)
+
+    def test_gain_pair_payload_rejects_wrong_gain_rows_peak_and_standard_schema(self):
+        index=4267;iq=self.source();frame,_=c.packet(iq,'paired',index,level_profile='gain-pair-pilot')
+        plan=c.tx_plan(frame,'paired',index,c.batch_rows(2555904,index),60,level_profile='gain-pair-pilot')
+        c.validate_tx(plan,frame.tobytes())
+        for key,value in (('tx_gain_db',70),('rows',list(range(24))),('batch',0),
+            ('complex_peak',.8),('schema',c.SCHEMA),('lo_offset_hz',0)):
+            with self.assertRaises(ValueError):c.validate_tx({**plan,key:value},frame.tobytes())
+        with self.assertRaises(ValueError):c.packet(iq,'paired',0,level_profile='gain-pair-pilot')
+        helper=load('gain_pair_tx_reject',SCRIPTS/'rml2018a-nx-tx.py')
+        with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:
+            root=Path(directory);(root/'packet.fc32').write_bytes(frame.tobytes())
+            (root/'tx-plan.json').write_text(json.dumps({**plan,'tx_gain_db':70}))
+            with patch.object(helper.subprocess,'Popen') as spawn:
+                with self.assertRaises(ValueError):helper.transmit(root)
+                spawn.assert_not_called()
+
+    def test_gain_pair_campaign_cannot_expand_to_full_data_or_change_connection(self):
+        runner=load('gain_pair_scope',SCRIPTS/'rml2018a-rf-campaign.py')
+        plan=dict(tx_level_profile='gain-pair-pilot',tx_host='agx',
+            rf=dict(tx_gain_db=60,rx_gain_db=40,peak=c.packet_peak('gain-pair-pilot')),
+            execution_limits=runner.level_limits())
+        self.assertEqual(runner.campaign_level(plan,[4267,22016]),'gain-pair-pilot')
+        for indices in ([0],[4267,22017],[True]):
+            with self.assertRaises(ValueError):runner.campaign_level(plan,indices)
+        for changed in ({**plan,'tx_host':'nx'},{**plan,'execution_limits':{}},
+            {**plan,'rf':{**plan['rf'],'tx_gain_db':70}}):
+            with self.assertRaises(ValueError):runner.campaign_level(changed,[4267])
+
     def test_explicit_pilot_selection_preserves_order_and_rejects_ambiguous_budget(self):
         runner=load('campaign_selection',SCRIPTS/'rml2018a-rf-campaign.py')
         self.assertEqual(runner.selected_batches(106496,0,1,[22016,4267]),[22016,4267])

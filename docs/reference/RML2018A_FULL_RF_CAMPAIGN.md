@@ -85,6 +85,22 @@ LO固定+250kHz，其余RX/采样/带宽/时长/字节/恢复门与上述入口�
 此配对只扩展严格模板允许的单音，普通RadioML发射峰值仍为0.2；
 [单音实测已通过](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12数字幅度与硬件增益配对)，未据此提高全库波形幅度。
 
+## 有限RadioML幅度增益配对
+
+campaign的`plan`支持`--tx-level-profile standard`（默认，峰值0.2）以及严格受限的
+`--tx-level-profile gain-pair-pilot --tx-host agx --tx-gain-db 60 --rx-gain-db 40`。
+后者峰值为0.2×√10=0.632455532033676，payload与导频一起缩放；原同步、SINR、RMS和模型处理不变。
+TX包使用独立`rml2018a-gain-pair-pilot-v1`，只允许批次4267/22016的精确24行成员，源Z须为30；
+端口、中心、LO偏移、rate/BW、4秒/批预算及原生质量检查保持。错误增益/行号/峰值/普通schema拒绝发送。
+
+配对计划固定`execution_limits`为两批、48条、8秒TX和524,280字节RX；
+原`budget`仍描述全库索引空间，以支持非连续原始行号，不是允许执行全库。
+`acquire/infer/run`显式使用`--batch-indices 4267 22016`或其中一批，范围外选择拒绝；
+`summary`保留全库未完成状态并单列有限执行范围。执行时不能覆盖增益或`--tx-level-profile`。
+源码或参数变化须新根/新计划，原始失败及结果不覆盖；标准profile仍按原峰值执行。
+[两类实机配对结果](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12radioml调制波形的幅度增益配对)
+不能自动推广为24类、低源SNR或全量参数准入。
+
 ## 源SNR与条件有效SINR估计（v3）
 
 `rml2018a-all-row-rf-v3`保留原始Z为`source_snr_db`。原始X本身已有噪声/信道损伤；

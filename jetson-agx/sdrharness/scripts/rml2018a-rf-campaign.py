@@ -27,7 +27,7 @@ import h5py
 import numpy as np
 from rml2018a_campaign import (REPO, SCHEMA, RATE, CENTER, BW, RX_SAMPLES, CFO_SEARCH_MAX_HZ, CFO_LIMIT_HZ,
     ROWS_PER_BATCH, batch_rows, budget, digest, file_hash, marker, normalize_window,
-    packet, receive_quality, registered_tx_gain, require, save, sinr_contract, synchronize, tx_plan, validate_receive_quality)
+    packet, packet_peak, RML_GAIN_PAIR_BATCHES, receive_quality, registered_tx_gain, require, save, sinr_contract, synchronize, tx_plan, validate_receive_quality)
 
 DATASET = REPO/'local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5'
 LABELS = REPO/'jetson-agx/sdrharness/config/amc/rml2018a-labels.server-v1.json'
@@ -62,9 +62,28 @@ def campaign_software():
         'validate-b210-multiclass.py','validate-p201-termination-background.py','validate-b210-p201-link.py')}
 
 
-def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx'):
+def level_limits():
+    return dict(allowed_batch_indices=list(RML_GAIN_PAIR_BATCHES), maximum_tx_seconds=8,
+        maximum_rx_iq_bytes=2*RX_SAMPLES*4, maximum_source_rows=48)
+
+
+def campaign_level(campaign, indices=()):
+    profile=campaign.get('tx_level_profile','standard')
+    peak=packet_peak(profile)
+    if profile != 'standard':
+        require(campaign['tx_host']=='agx' and campaign['rf']['tx_gain_db']==60 and
+            campaign['rf']['rx_gain_db']==40 and campaign['rf']['peak']==peak and
+            campaign.get('execution_limits')==level_limits(), 'registered gain-pair campaign')
+        require(all(type(i) is int and i in RML_GAIN_PAIR_BATCHES for i in indices), 'gain-pair pilot batch selection')
+    return profile
+
+
+def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profile='standard'):
     rx_gain_db=registered_rx_gain(rx_gain_db)
     tx_gain_db=registered_tx_gain(tx_gain_db)
+    peak=packet_peak(tx_level_profile)
+    if tx_level_profile != 'standard':
+        require((rx_gain_db,tx_gain_db,tx_host)==(40,60,'agx'), 'gain-pair pilot requires AGX TX60/RX40')
     host_identity=transport_module().identity(tx_host)
     require(not root.exists(), 'run root already exists; use its existing plan')
     require(root.resolve() == root and root.parent == Path('/var/tmp/sdrharness-dev') and
@@ -85,13 +104,13 @@ def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx'):
     plan = dict(schema=SCHEMA, run_id=uuid.uuid4().hex, source=dict(path=str(DATASET), sha256=sha,
         bytes=DATASET.stat().st_size, mtime_ns=DATASET.stat().st_mtime_ns), budget=b,
         scope='all original X/Y/Z rows, including historical train/validation/test membership',
-        tx_host=tx_host,tx_host_identity=host_identity,
+        tx_host=tx_host,tx_host_identity=host_identity,tx_level_profile=tx_level_profile,
         semantics='all-row over-air engineering comparison, not independent locked-test admission',
         train=False, recognizer_available=False, name_status='provisional',
         label_map_sha256=file_hash(LABELS), profile_sha256=file_hash(PROFILE),
         software=campaign_software(),
         rf=dict(center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW, tx_gain_db=tx_gain_db,
-                rx_gain_db=rx_gain_db, peak=.2, tx_lo_offset_hz=250000, settle_ms=500,
+                rx_gain_db=rx_gain_db, peak=peak, tx_lo_offset_hz=250000, settle_ms=500,
                 point_deadline_ms=1000, rx_samples=RX_SAMPLES),
         framing='24 independent1024 rows with per-row peak normalization, batch-specific pilot and guards',
         synchronization=dict(cfo_search_max_hz=CFO_SEARCH_MAX_HZ,cfo_step_hz=500,
@@ -103,6 +122,11 @@ def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx'):
         preprocessing='pilot timing/CFO/phase correction then per-row complex RMS; no label-guided alignment',
         created_unix_ns=time.time_ns(), base_head=subprocess.check_output(['git','-C',str(REPO),
             'rev-parse','HEAD'], text=True).strip())
+    if tx_level_profile != 'standard':
+        plan['execution_limits']=level_limits()
+        plan['scope']='Only registered OOK/QPSK Z30 batches4267/22016; full budget describes dataset indexing, not permitted execution'
+        plan['semantics']='Finite cable gain-pair engineering pilot, not a full campaign or independent admission'
+        campaign_level(plan)
     save(root/'run-plan.json', plan)
     print(json.dumps(plan, indent=2), flush=True)
 
@@ -115,6 +139,8 @@ def load_plan(root):
     require(p['rf']['center_hz'] == CENTER, 'RF center changed; new campaign required')
     registered_rx_gain(p['rf']['rx_gain_db'])
     registered_tx_gain(p['rf']['tx_gain_db'])
+    profile=campaign_level(p)
+    require(p['rf']['peak']==packet_peak(profile), 'TX peak changed; new plan required')
     require(p['tx_host_identity']==transport_module().identity(p['tx_host']), 'TX host/runtime changed; new campaign required')
     for name, sha in p['software'].items():
         require(file_hash(SCRIPTS/name) == sha, 'software changed; new campaign required: '+name)
@@ -200,6 +226,7 @@ def stop_tx(transport, tx, owner, remote):
 
 
 def acquire_batch(root, campaign, index, retry_failed=False):
+    level=campaign_level(campaign,[index])
     rx_gain=registered_rx_gain(campaign['rf']['rx_gain_db'])
     tx_gain=registered_tx_gain(campaign['rf']['tx_gain_db'])
     bg = module('campaign_bg', 'validate-p201-termination-background.py')
@@ -228,8 +255,9 @@ def acquire_batch(root, campaign, index, retry_failed=False):
         iq = h5['X'][rows]; labels = h5['Y'][rows]; snrs = h5['Z'][rows].ravel()
     require(np.array_equal(labels, np.eye(24)[labels.argmax(axis=1)]), 'one-hot label')
     require(np.isfinite(snrs).all(), 'source SNR')
-    frame, scales = packet(iq, campaign['run_id'], index)
-    txp = tx_plan(frame, campaign['run_id'], index, rows, tx_gain)
+    frame, scales = packet(iq, campaign['run_id'], index,level_profile=level)
+    txp = tx_plan(frame, campaign['run_id'], index, rows, tx_gain,level_profile=level)
+    if level != 'standard':require(np.all(snrs==30), 'registered gain-pair source Z30')
     require(shutil.disk_usage(root).free > RX_SAMPLES*4 + frame.nbytes + 32*1024*1024, 'batch disk budget')
     password=Path('/home/jetson/.config/sdrharness/p201-root.password')
     require(password.is_file() and not password.is_symlink() and password.stat().st_mode & 0o777 == 0o600,
@@ -370,6 +398,7 @@ def document_health(bg):
 
 
 def infer_batches(root, campaign, indices):
+    campaign_level(campaign,indices)
     require(len(indices)<=32, 'bounded GPU shard: at most32 batches')
     pending=[i for i in indices if not (root/f'batch-{i:07d}'/'predictions.json').exists()]
     if not pending:
@@ -521,6 +550,9 @@ def summarize(root, campaign):
         end_to_end_success_fraction=correct/attempted if attempted else None,
         semantics='all-row engineering comparison, includes historical train/validation/test; not independent test accuracy',
         recognizer_available=False)
+    if campaign_level(campaign) != 'standard':
+        value['execution_limits']=campaign['execution_limits']
+        value['scope']=campaign['scope']
     save(root/'summary.json',value);print(json.dumps(value),flush=True)
 
 
@@ -546,13 +578,15 @@ def main():
     p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],help='plan only; default20; all execution uses the sealed plan')
     p.add_argument('--tx-gain-db',type=int,choices=[0,20,40,60,70,80],help='plan only; default0; all execution uses the sealed plan')
     p.add_argument('--tx-host',choices=['agx','nx'],help='plan only; default agx; P201 remains network RX')
+    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot'],help='plan only; paired pilot restricts execution to batches4267/22016 at AGX TX60/RX40')
     args=p.parse_args();root=args.root
     if args.command=='plan':
         require(args.batch_indices is None,'batch selection is execution-only; preregister pilot separately')
-        create_plan(root,20 if args.rx_gain_db is None else args.rx_gain_db,0 if args.tx_gain_db is None else args.tx_gain_db,args.tx_host or 'agx');return
-    require(args.rx_gain_db is None and args.tx_gain_db is None and args.tx_host is None,'RF gains are sealed in run-plan; create a new plan to change them')
+        create_plan(root,20 if args.rx_gain_db is None else args.rx_gain_db,0 if args.tx_gain_db is None else args.tx_gain_db,args.tx_host or 'agx',args.tx_level_profile or 'standard');return
+    require(args.rx_gain_db is None and args.tx_gain_db is None and args.tx_host is None and args.tx_level_profile is None,'RF gains/level are sealed in run-plan; create a new plan to change them')
     campaign=load_plan(root)
     indices=selected_batches(campaign['budget']['batches'],args.start_batch,args.max_batches,args.batch_indices)
+    campaign_level(campaign,indices if args.command!='summary' else ())
     require(60<=args.deadline_seconds<=30*86400,'finite deadline')
     scratch=root/'scratch';scratch.mkdir(mode=0o700,exist_ok=True)
     os.environ.update(TMPDIR=str(scratch),XDG_CACHE_HOME=str(scratch),TRITON_CACHE_DIR=str(scratch/'triton'),

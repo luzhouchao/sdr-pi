@@ -29,6 +29,13 @@ LO_REFERENCE_SCHEMA = 'b210-cable-lo-reference-v1'
 LO_REFERENCE_CASES = ((250000, .1), (-250000, .1), (250000, .05), (250000, .1))
 LO_GAIN_PAIR_SCHEMA = 'b210-cable-lo-gain-pair-v1'
 LO_GAIN_PAIR_CASES = ((70, .1), (60, .1*math.sqrt(10.)), (70, .1), (60, .1*math.sqrt(10.)))
+RML_GAIN_PAIR_SCHEMA = 'rml2018a-gain-pair-pilot-v1'
+RML_GAIN_PAIR_BATCHES = (4267, 22016)
+
+
+def packet_peak(level_profile):
+    require(level_profile in ('standard', 'gain-pair-pilot'), 'registered TX level profile')
+    return .2 if level_profile == 'standard' else .2*math.sqrt(10.)
 
 
 def require(condition, message):
@@ -69,18 +76,21 @@ def marker(run_id, batch):
     return np.tile(np.repeat(chips, 4), 2) * .2
 
 
-def packet(iq, run_id, batch):
+def packet(iq, run_id, batch, *, level_profile='standard'):
+    peak = packet_peak(level_profile)
+    if level_profile != 'standard':
+        require(type(batch) is int and batch in RML_GAIN_PAIR_BATCHES, 'registered gain-pair batch')
     iq = np.asarray(iq)
     require(iq.ndim == 3 and iq.shape[1:] == (1024, 2) and
             0 < len(iq) <= ROWS_PER_BATCH and np.isfinite(iq).all(), 'bad source rows')
     z = iq[..., 0].astype(float) + 1j * iq[..., 1].astype(float)
     peaks = abs(z).max(axis=1)
     require((peaks > 0).all(), 'zero source row')
-    scales = .2 / peaks
+    scales = peak / peaks
     z *= scales[:, None]
-    frame = np.concatenate((np.zeros(GUARD), marker(run_id, batch),
+    frame = np.concatenate((np.zeros(GUARD), marker(run_id, batch)*(peak/.2),
                             z.ravel(), np.zeros(GUARD))).astype('<c8')
-    require(len(frame) * 2 <= RX_SAMPLES and abs(frame).max() <= .200001, 'packet bound')
+    require(len(frame) * 2 <= RX_SAMPLES and abs(frame).max() <= peak+1e-6, 'packet bound')
     return frame, scales
 
 
@@ -89,15 +99,21 @@ def registered_tx_gain(value):
     return value
 
 
-def tx_plan(frame, run_id, batch, rows, tx_gain_db=70):
+def tx_plan(frame, run_id, batch, rows, tx_gain_db=70, *, level_profile='standard'):
     tx_gain_db=registered_tx_gain(tx_gain_db)
+    rows=list(map(int, rows))
+    peak=packet_peak(level_profile)
+    if level_profile != 'standard':
+        require(type(batch) is int and batch in RML_GAIN_PAIR_BATCHES and tx_gain_db==60 and
+                rows==batch_rows(2555904,batch), 'registered gain-pair source/gain')
     units = math.floor(RATE * TX_SECONDS / len(frame))
-    return dict(schema=SCHEMA, run_id=run_id, batch=batch, rows=list(map(int, rows)),
+    return dict(schema=SCHEMA if level_profile=='standard' else RML_GAIN_PAIR_SCHEMA,
+                run_id=run_id, batch=batch, rows=rows,
                 center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW, tx_gain_db=tx_gain_db,
                 tx_channel=0, tx_antenna='TX/RX', serial='2508504', lo_offset_hz=250000,
                 payload_bytes=frame.nbytes, payload_sha256=digest(frame.tobytes()),
                 packet_samples=len(frame), repeats=units, tx_samples=units * len(frame),
-                max_seconds=TX_SECONDS, complex_peak=.2)
+                max_seconds=TX_SECONDS, complex_peak=peak)
 
 
 def validate_tx(plan, payload):
@@ -106,11 +122,16 @@ def validate_tx(plan, payload):
         require(plan == expected and payload == waveform.tobytes(), 'unregistered LO reference plan/payload')
         return
     registered_tx_gain(plan.get('tx_gain_db'))
+    paired = plan.get('schema') == RML_GAIN_PAIR_SCHEMA
+    peak = packet_peak('gain-pair-pilot' if paired else 'standard')
     require(isinstance(plan.get('run_id'), str) and 0 < len(plan['run_id']) <= 128 and
             type(plan.get('batch')) is int and 0 <= plan['batch'] < 106496, 'batch identity')
-    for k, v in dict(schema=SCHEMA, center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW,
+    if paired:
+        require(plan['batch'] in RML_GAIN_PAIR_BATCHES and plan['tx_gain_db']==60 and
+                plan.get('rows')==batch_rows(2555904,plan['batch']), 'registered gain-pair source/gain')
+    for k, v in dict(schema=RML_GAIN_PAIR_SCHEMA if paired else SCHEMA, center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW,
                      tx_channel=0, tx_antenna='TX/RX', serial='2508504',
-                     lo_offset_hz=250000, max_seconds=TX_SECONDS, complex_peak=.2).items():
+                     lo_offset_hz=250000, max_seconds=TX_SECONDS, complex_peak=peak).items():
         require(plan.get(k) == v, 'unregistered TX ' + k)
     rows = plan['rows']
     require(isinstance(rows, list) and 0 < len(rows) <= ROWS_PER_BATCH and
@@ -123,8 +144,8 @@ def validate_tx(plan, payload):
             plan['tx_samples'] == n * plan['repeats'], 'TX sample budget')
     require(digest(payload) == plan['payload_sha256'], 'TX payload hash')
     z = np.frombuffer(payload, dtype='<c8')
-    require(np.isfinite(z).all() and abs(z).max() <= .200001, 'TX finite peak')
-    require(np.allclose(z[GUARD:GUARD+MARKER], marker(plan['run_id'], plan['batch']),
+    require(np.isfinite(z).all() and abs(z).max() <= peak+1e-6, 'TX finite peak')
+    require(np.allclose(z[GUARD:GUARD+MARKER], marker(plan['run_id'], plan['batch'])*(peak/.2),
                         rtol=0, atol=1e-7), 'TX marker identity')
 
 
