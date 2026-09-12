@@ -1,0 +1,335 @@
+{
+  "schema": "rml2018a-guard-lo-cancellation-evidence-v1",
+  "base_head": "afb7cdc67ceb74bc3a2b9b9724899c989e02fa89",
+  "parent_inventory": "docs/evidence/RML2018A_MODULATED_GAIN_PAIR_2026-09-12.json",
+  "parent_root": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912",
+  "parent_plan_sha256": "6ced8db9a57070ad74da9fc10c5a992b45f606f1c34518eb6bb4cc6a7dc9e62f",
+  "parent_run_id": "271f431773b94e1bba4c3c7aa9e1ae42",
+  "purpose": "Retained real cable IQ digitally corrected using guards; proof of large improvement without raw-IQ/SINR overwrite or model-guided filter selection",
+  "semantics": "Post-hoc retained-IQ engineering DSP. Fixed original synchronization; raw IQ/quality unchanged. Post-cancel quality is conditional, not calibrated physical RF SINR or independent admission.",
+  "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+  "model_identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "preprocessing": {
+    "method": "pilot-anchored-guard-lo-cancellation-v1",
+    "rate_sps": 2100000,
+    "lo_offset_hz": 250000,
+    "guard_edge_exclusion_samples": 64,
+    "training_samples_per_guard": 192,
+    "validation_samples_per_guard": 192,
+    "minimum_complete_guards": 2,
+    "frequency_prior": "nominal TX LO offset + original known-marker CFO",
+    "frequency_search_halfwidth_hz": 30,
+    "coarse_step_hz": 1,
+    "minimum_guard_holdout_suppression_db": 10,
+    "maximum_guard_amplitude_spread": 0.25,
+    "maximum_guard_phase_spread_rad": 0.25,
+    "maximum_corrected_pilot_residual_cfo_hz": 25,
+    "source_payload_used_for_fit": false,
+    "labels_used_for_fit": false,
+    "payload_frequency_projection": false,
+    "refit_on_validation": false,
+    "failure_action": "return unchanged original IQ with explicit reason",
+    "limitations": [
+      "requires correct repeated-frame timing and pilot CFO prior within30Hz of LO relation",
+      "requires stable additive tone over buffered capture; guards may miss payload-only drift",
+      "postprocessing quality is not a change to raw physical RF SINR",
+      "not independently validated across24 classes or low source SNR"
+    ]
+  },
+  "software": {
+    "diagnose-rml2018a-lo-cancellation.py": "612817c6201f1ce904d4d9e6a25a3c47f4671c6af6b34637302f94c85900734b",
+    "rml2018a_lo_cancellation.py": "6adc011afd8ba8ba5971b07a8715beaeaa8d5f58c1c251a6e15c3015da37d020",
+    "rml2018a_campaign.py": "5cbad107f952c8f1f9ba43d3e2790464841b6b4525877a3b7f0cc514cd54b493"
+  },
+  "source_capture_associations": [
+    {
+      "batch": 4267,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/rx/rml2018a-4267-1789195777763-1789195777763-1789195781039237298.sigmf-data",
+        "iq_sha256": "6403879ecfe97c76a61c615c09f2399e5bb611dfe167b554459d5e945b34d32d",
+        "metadata_sha256": "bf827ae324c39fd3c9eac81f284c18c7a704ee6dd60473cccb7cdcfe24a4e181",
+        "request_id": 5,
+        "sequence": 1538,
+        "session_generation": 1789195777763
+      },
+      "parent_audit_sha256": "596922c7748f926fcc948bc8b48de45180ef69ee4e81eb58e3734c3637284493",
+      "parent_source_sha256": "ebe2065d03149baffe2b60d312497045273327cdf87abe47a27ad131be862d9d",
+      "parent_predictions_sha256": "9a8c208b1b5883e21200dcb1506b42792c17d185768c9c5bc4f1f775b9aa886b",
+      "rows": [
+        102408,
+        102409,
+        102410,
+        102411,
+        102412,
+        102413,
+        102414,
+        102415,
+        102416,
+        102417,
+        102418,
+        102419,
+        102420,
+        102421,
+        102422,
+        102423,
+        102424,
+        102425,
+        102426,
+        102427,
+        102428,
+        102429,
+        102430,
+        102431
+      ],
+      "source_snr_db": 30,
+      "summary": {
+        "rows": 24,
+        "raw_estimated_rows": 24,
+        "post_cancel_estimated_rows": 24,
+        "raw_sinr_median_db": 7.8966226541756654,
+        "post_cancel_sinr_median_db": 19.747468385140646,
+        "post_cancel_sinr_min_db": 19.059567554388263,
+        "post_cancel_sinr_max_db": 20.804396259480033,
+        "post_cancel_at_least_15db": 24,
+        "post_cancel_at_least_20db": 9,
+        "raw_correlation_median": 0.9278008808188744,
+        "post_cancel_correlation_median": 0.9952866922424174
+      }
+    },
+    {
+      "batch": 22016,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/rx/rml2018a-22016-1789195959951-1789195959951-1789195963166561449.sigmf-data",
+        "iq_sha256": "e45ba44809140ce1dd153a1f04e710fa9ceac05bced103c67ba4dd86bad85310",
+        "metadata_sha256": "f74c2761af00d94ef06b58409e52d01ed310cd0430997573e653a17e9f40fc2d",
+        "request_id": 5,
+        "sequence": 1540,
+        "session_generation": 1789195959951
+      },
+      "parent_audit_sha256": "f302b518431923b74c2eaab8a0b7e3c33557320aebaafae9b5541773bc757b9b",
+      "parent_source_sha256": "8fc1fbd8e4320b8cba17b4362d9379d7c3f96f3c3ef9497652ecaf15a8f86c0a",
+      "parent_predictions_sha256": "7058eeef7dc944b5fa6670b3a618beef752d29619267d30adf02f8d398ea2147",
+      "rows": [
+        528384,
+        528385,
+        528386,
+        528387,
+        528388,
+        528389,
+        528390,
+        528391,
+        528392,
+        528393,
+        528394,
+        528395,
+        528396,
+        528397,
+        528398,
+        528399,
+        528400,
+        528401,
+        528402,
+        528403,
+        528404,
+        528405,
+        528406,
+        528407
+      ],
+      "source_snr_db": 30,
+      "summary": {
+        "rows": 24,
+        "raw_estimated_rows": 24,
+        "post_cancel_estimated_rows": 24,
+        "raw_sinr_median_db": 9.260090027289383,
+        "post_cancel_sinr_median_db": 19.364181425612138,
+        "post_cancel_sinr_min_db": 18.294148310223573,
+        "post_cancel_sinr_max_db": 19.94723549515474,
+        "post_cancel_at_least_15db": 24,
+        "post_cancel_at_least_20db": 0,
+        "raw_correlation_median": 0.9463727435107638,
+        "post_cancel_correlation_median": 0.9949863084734699
+      }
+    }
+  ],
+  "new_rf_operations": 0,
+  "new_iq_copies": 0,
+  "new_model_windows": 48,
+  "warmup_windows": 2,
+  "verified_parent_model_input_hashes": 96,
+  "verified_new_model_input_hashes": 48,
+  "recognizer_available": false,
+  "independent_accuracy": false,
+  "restoration": {
+    "spark_pid": 1321,
+    "spark_start_ticks": "1515",
+    "spark_resumed": true,
+    "restore_watchdog_stopped": true,
+    "gpu_lock_free": true,
+    "active_diagnostic_python_pids": [],
+    "new_rf_operations": 0,
+    "agx_p201_tx_staging_created": 0,
+    "checked_ns": 1789199431002468179
+  },
+  "cleanup_summary": {
+    "status": "verified",
+    "removed_files": 357,
+    "removed_bytes": 20480138,
+    "removed_directories": 56,
+    "absent_paths": [
+      "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/scratch",
+      "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/scratch",
+      "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/analyze.log",
+      "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/analyze-validated.log",
+      "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/prepared.json",
+      "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/postflight-initial.json"
+    ],
+    "old_rf_evidence_untouched": true,
+    "new_iq_copies": 0
+  },
+  "retained_roots": [
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912",
+      "purpose": "Retain rejected wide-search diagnostic and validation failures",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/cancellation-tests-final.log",
+          "bytes": 929,
+          "sha256": "0b7632d67a394d90cf792cc6739175c1af3996a357790e6f87b76d2d4319860a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/cancellation-tests.log",
+          "bytes": 1489,
+          "sha256": "1bb6706c338a3f82193fb6baf6df720441116e2f94501084b52b4af18e586ff2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/infer.log",
+          "bytes": 737,
+          "sha256": "c784b9011c61a31ccab798abd0d72b46ffbad55f361ebe871ac53103dfa134e8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/inference-plan.json",
+          "bytes": 588,
+          "sha256": "14f75db847b225ae2beff34cda0554182e96deda27c33949c1501ec8268a7542"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/preregister-v2.json",
+          "bytes": 395,
+          "sha256": "3a730216a72ded8c8b996a48e4ee880f54282657da0fabbb17a95adeb6552fa9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/preregister.json",
+          "bytes": 824,
+          "sha256": "e3856fac8c5f38ad02333f8fc1cfa17b50a984c18bb1adf66e6d7c0cc0da89d2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/probe-v2.jsonl",
+          "bytes": 5630,
+          "sha256": "310a730bd41921c1d45a7f8a8a1613325ae11157169dc489b3b44ab8cae7e64d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/probe-v2.py",
+          "bytes": 2168,
+          "sha256": "1eaecf89369d513bc1c67742f831965c9e14d6373e644df9a6a0d892ace33b48"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/probe.jsonl",
+          "bytes": 5624,
+          "sha256": "540a1f36146703a442cbea9d976d623fd5c586bc8c5f43fe4c262d55477c2856"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/probe.py",
+          "bytes": 2147,
+          "sha256": "7a401e5b489af5f5722b3a3b7ffce4293d16e6666bf693467be222d6155314fc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/regression-tests.log",
+          "bytes": 12216,
+          "sha256": "f756d0e63ee3f3d8dc558c85ef846b5cfff773aeca198e00986726cc7ed29c2b"
+        }
+      ],
+      "file_count": 11,
+      "bytes": 32747,
+      "manual_delete_command": "rm -- '/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/cancellation-tests-final.log' '/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/cancellation-tests.log' '/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/infer.log' '/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/inference-plan.json' '/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/preregister-v2.json' '/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/preregister.json' '/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/probe-v2.jsonl' '/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/probe-v2.py' '/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/probe.jsonl' '/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/probe.py' '/var/tmp/sdrharness-dev/rml-lo-cancel-20260912/regression-tests.log' && rmdir -- '/var/tmp/sdrharness-dev/rml-lo-cancel-20260912'"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912",
+      "purpose": "Replayable guard cancellation quality, frozen model comparison, plot and cleanup",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/cleanup.json",
+          "bytes": 110912,
+          "sha256": "26fd9ba2fe87418d703889b54ffe079f5b422a54b30bc21941ddf0ca3d34111c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/finalize.py",
+          "bytes": 4970,
+          "sha256": "c2d45ad0523485b60c1ef2f2bd9a33bb567309546137c9a6918ad1b9e81f7313"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/gpu-isolation.json",
+          "bytes": 295,
+          "sha256": "a698254c43922994b13a253812e5a1d0c7e5fbfbc5047745a8134114a79c3fa1"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/infer.log",
+          "bytes": 1873,
+          "sha256": "88900e208277db4018fc60b019b466b2dd10b4e36847c22b3995f1d2d864a441"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/inference.json",
+          "bytes": 37013,
+          "sha256": "3f3b90a81b2ea5ded5ff7c1b1821cd045fd9104274dba79266c97c976edd7736"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/plan.json",
+          "bytes": 537,
+          "sha256": "7e497f88ab1cf2f8ea4ba7eaa48b2c2179bdd0cb00bc8b95e54a65c9c71f27cd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/plot.py",
+          "bytes": 1815,
+          "sha256": "f2fcfc90d5dce1aeee830c8b1ac8f442a00bbe67b0a256579c6fe18f186a2782"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/postflight.json",
+          "bytes": 279,
+          "sha256": "cd3b3a058197fa106d0fe1f33d458c25646e0b6ac059c643af52dcf9cf0fcf81"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/prepared.json",
+          "bytes": 202290,
+          "sha256": "49d44783b040e88512c111aaf84570eaf252640c8c3b23028c0826d4048bed65"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/sinr-lo-cancellation.png",
+          "bytes": 139025,
+          "sha256": "0275246159b397389022c6bfa633cc8c5d2398a7c928b4f7a5ac3ac0772f05a0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/verify.json",
+          "bytes": 168,
+          "sha256": "3e7c9735f74325c80e8520c60790faf40056b99a13b07a03552d8ec14707c5a0"
+        }
+      ],
+      "file_count": 11,
+      "bytes": 499177,
+      "manual_delete_command": "rm -- '/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/cleanup.json' '/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/finalize.py' '/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/gpu-isolation.json' '/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/infer.log' '/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/inference.json' '/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/plan.json' '/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/plot.py' '/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/postflight.json' '/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/prepared.json' '/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/sinr-lo-cancellation.png' '/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912/verify.json' && rmdir -- '/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912'"
+    }
+  ],
+  "retained_file_count": 22,
+  "retained_bytes": 531924
+}

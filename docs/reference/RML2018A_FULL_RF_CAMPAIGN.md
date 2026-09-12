@@ -101,6 +101,34 @@ TX包使用独立`rml2018a-gain-pair-pilot-v1`，只允许批次4267/22016的精
 [两类实机配对结果](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12radioml调制波形的幅度增益配对)
 不能自动推广为24类、低源SNR或全量参数准入。
 
+## 保护间隔辅助LO相消（离线实验）
+
+[相消模块](../../jetson-agx/sdrharness/scripts/rml2018a_lo_cancellation.py)与
+[有界回放入口](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-lo-cancellation.py)
+独立于现有campaign接收默认值。入口提供`analyze/infer/verify --root <原配对计划>
+--output /var/tmp/sdrharness-dev/rml-lo-cancel-<唯一标识>`，用既有模型venv的Python运行；
+`infer`须先有通过质量检查的`prepared.json`，只接纳原配对两批4267/22016，
+最多48个新模型窗口及2个warmup，复用并复核原始源/实收96个模型输入，不重复原预测。
+此入口不调用RF、修改采集计划或安装生产处理；新源/软件用新的派生根，已完成推理拒绝重跑。
+
+方法`pilot-anchored-guard-lo-cancellation-v1`保持原导频同步/CFO/相位：
+将相邻重复帧的两个256点静默保护区合并，剔除首尾各64点；每区前192点拟合恒定复数单音，
+后192点只验证，不重新拟合。至少两个完整保护区，频率先验为250kHz加原导频CFO，
+搜索±30Hz/步长1Hz后局部细化。稀疏保护区约80.42Hz的频率歧义要求这个导频先验可信；
+宽频搜索虽可拟合保护区，却会在payload内减错相位，不能使用。
+
+留出区抑制须≥10dB、幅度跨度≤25%、相位差≤0.25rad；相消后的已知重复导频
+两半相关度须≥0.95、剩余CFO须≤25Hz，频率在搜索边界或任一条件不满足则原样返回，保存原因。
+相消器只接收IQ与导频坐标，不接收源X/Z、类别或模型预测；源X仅在事后评估保真与条件SINR。
+它减去一个预测的加性泄漏波形，不对payload开陷波/低通，也不拟合删除payload的同频有效信号。
+保护区无法保证发现只发生于payload内部的漂移，本方法尚需新采集和24类/低源SNR验证。
+
+`raw_quality`保留原估计；`post_cancel_quality`沿用相同两半窗误差功率公式及原Z，
+但参考面显式改为`received_payload_after_guard_lo_cancellation_before_rms`，并记录
+`rx_interference_cancellation`及完整相消/拒绝诊断。后处理值不写回原始`rx_sinr_db`记录，
+也不称为硬件原始SINR改善或物理校准。原生IQ不复制，派生张量仅保留哈希。
+验证、已知失败与图表见[实验记录](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12保护间隔辅助lo相消)。
+
 ## 源SNR与条件有效SINR估计（v3）
 
 `rml2018a-all-row-rf-v3`保留原始Z为`source_snr_db`。原始X本身已有噪声/信道损伤；
