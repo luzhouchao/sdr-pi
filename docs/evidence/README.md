@@ -28,6 +28,7 @@
 - [保护间隔辅助LO相消](RML2018A_GUARD_LO_CANCELLATION_2026-09-12.json)：既有两批IQ的后处理对照、频率歧义失败、144输入哈希、冻结识别及最小派生清单；无新RF或IQ副本。
 - [相消后剩余误差与导频时序诊断](RML2018A_LINK_RESIDUAL_2026-09-12.json)：48行正向留出归因、导频/源辅助延迟、失败及清理清单；无新增RF、模型或接收校正。
 - [导频时序校正与八类新采集](RML2018A_EIGHT_CLASS_TIMING_2026-09-12.json)：192新源行、8份IQ、三种接收处理及768输入/预测复核，含64QAM校正拒绝、恢复与清理清单。
+- [八类保护间隔异常离线定位](RML2018A_GUARD_ANOMALY_2026-09-12.json)：复用上述8份IQ，定位64QAM末间隔的宽频带残差升高与OOK短暂异常；保留图表/数值复核及清理清单，不采用被拒绝校正。
 
 - [RadioML2018A全量脚本先导保留清单](RML2018A_FULL_RF_CAMPAIGN_EVIDENCE_2026-09-10.json)
 - [RadioML2018A当前IQ与历史175kHz滤波方法的离线对照](RML2018A_HISTORICAL_FILTER_COMPARISON_2026-09-10.json)

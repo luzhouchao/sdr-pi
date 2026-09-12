@@ -179,6 +179,18 @@ RX DC旋转−CFO，不能把三者都当作常量偏置或简单`conj(X)`。
 静默区残差仍含预测误差/杂散，不当作校准热噪声。±175kHz只作为固定频谱统计掩码，未施加滤波。
 已知分量测试、失败和48行结果见[验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12相消后剩余误差与导频时序诊断)。
 
+## 已封存八类保护间隔诊断
+
+`diagnose-rml2018a-guard-anomaly.py --prepared <八类prepared.json> --inventory <父证据清单.json>
+--output /var/tmp/sdrharness-dev/rml-guard-anomaly-<唯一标识>`使用既有模型venv的Python。
+脚本只读父清单哈希保护的8批记录，复核原生seal/同步/LO结果；不读取源X、不执行RF或模型。
+输出192点保护半段、64点局部残差功率、Hann频带积分及导频候选拟合。
+拒绝批次的候选LO残差仅作事后诊断，不能充作通过的接收处理、SINR或识别输入；门限不变。
+`--plot-only --output <同一输出根>`可用已安装Matplotlib的系统Python绘制保存的统计，
+不需要向模型venv安装绘图库。两种调用均使用`-B`并将缓存/TMPDIR设到本单元开发scratch。
+局部频谱峰的正弦投影只描述候选峰，不是穷尽多音归因或物理干扰识别。
+方法及结果见[验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12八类保护间隔异常的离线定位)。
+
 ## 源SNR与条件有效SINR估计（v3）
 
 `rml2018a-all-row-rf-v3`保留原始Z为`source_snr_db`。原始X本身已有噪声/信道损伤；

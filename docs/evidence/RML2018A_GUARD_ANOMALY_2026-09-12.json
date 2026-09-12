@@ -1,0 +1,444 @@
+{
+  "schema": "rml2018a-guard-anomaly-evidence-v1",
+  "base_head": "e361dbbfcb32b9b7d830fec305ff97f307d1df81",
+  "purpose": "Posthoc localization of the eight-class 64QAM guard rejection; no replacement SINR, predictions or acceptance",
+  "parent_inventory": "docs/evidence/RML2018A_EIGHT_CLASS_TIMING_2026-09-12.json",
+  "parent_inventory_sha256": "2b9e63dd205655f96a7323955cb850b5b66488dd196403945245c5fd5d06c921",
+  "run_id": "4b2bc6df2187496194ac72d3422b5b99",
+  "associations": [
+    {
+      "batch": 4283,
+      "class_name": "OOK",
+      "source_rows": [
+        102792,
+        102793,
+        102794,
+        102795,
+        102796,
+        102797,
+        102798,
+        102799,
+        102800,
+        102801,
+        102802,
+        102803,
+        102804,
+        102805,
+        102806,
+        102807,
+        102808,
+        102809,
+        102810,
+        102811,
+        102812,
+        102813,
+        102814,
+        102815
+      ],
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/rx/rml2018a-4283-1789202627074-1789202627074-1789202630361316139.sigmf-data",
+        "iq_sha256": "e835451131d114fc3619fb21f97e2e643ef73b20025d8208a5f6031a8fd75a2b",
+        "metadata_sha256": "3eeaaff9fbbf7da7da7b31b47d6abd77cd31f82b6bd8bbc08a85bd7ff7b6d52c",
+        "request_id": 5,
+        "sequence": 1541,
+        "session_generation": 1789202627074
+      },
+      "selected_payload_interval": [
+        6739,
+        31315
+      ],
+      "original_lo_status": "applied",
+      "original_lo_reason": null
+    },
+    {
+      "batch": 22032,
+      "class_name": "QPSK",
+      "source_rows": [
+        528768,
+        528769,
+        528770,
+        528771,
+        528772,
+        528773,
+        528774,
+        528775,
+        528776,
+        528777,
+        528778,
+        528779,
+        528780,
+        528781,
+        528782,
+        528783,
+        528784,
+        528785,
+        528786,
+        528787,
+        528788,
+        528789,
+        528790,
+        528791
+      ],
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/rx/rml2018a-22032-1789202638045-1789202638045-1789202641315359166.sigmf-data",
+        "iq_sha256": "999c8d002c637a78676e8d7f2f0090e8581bc1784de73d627b2b7fce8033fff4",
+        "metadata_sha256": "ea764882bb22e25c4361a1247037c9167137f98a82ee40c03f4a305ec11791b3",
+        "request_id": 5,
+        "sequence": 1542,
+        "session_generation": 1789202638045
+      },
+      "selected_payload_interval": [
+        21293,
+        45869
+      ],
+      "original_lo_status": "applied",
+      "original_lo_reason": null
+    },
+    {
+      "batch": 26470,
+      "class_name": "8PSK",
+      "source_rows": [
+        635280,
+        635281,
+        635282,
+        635283,
+        635284,
+        635285,
+        635286,
+        635287,
+        635288,
+        635289,
+        635290,
+        635291,
+        635292,
+        635293,
+        635294,
+        635295,
+        635296,
+        635297,
+        635298,
+        635299,
+        635300,
+        635301,
+        635302,
+        635303
+      ],
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/rx/rml2018a-26470-1789202649011-1789202649011-1789202652264847875.sigmf-data",
+        "iq_sha256": "3238b27d6451fa7fb93bc34a6f3b779d3924584546918ca36bba1bc247fe2a1f",
+        "metadata_sha256": "2ab21bef360e4c4e593988483b6231f6c5497c0a5cc0632b8852237a86e5e444",
+        "request_id": 5,
+        "sequence": 1543,
+        "session_generation": 1789202649011
+      },
+      "selected_payload_interval": [
+        6138,
+        30714
+      ],
+      "original_lo_status": "applied",
+      "original_lo_reason": null
+    },
+    {
+      "batch": 57531,
+      "class_name": "16QAM",
+      "source_rows": [
+        1380744,
+        1380745,
+        1380746,
+        1380747,
+        1380748,
+        1380749,
+        1380750,
+        1380751,
+        1380752,
+        1380753,
+        1380754,
+        1380755,
+        1380756,
+        1380757,
+        1380758,
+        1380759,
+        1380760,
+        1380761,
+        1380762,
+        1380763,
+        1380764,
+        1380765,
+        1380766,
+        1380767
+      ],
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/rx/rml2018a-57531-1789202659957-1789202659957-1789202663226673743.sigmf-data",
+        "iq_sha256": "4816d7d92a16816a3c3c5d57057072b1d50a504a89229b1b66eaf0e50b6e16e0",
+        "metadata_sha256": "1a610903f10858f83374dfeac952dd3df903c3c4e5c655da6984a19198e8b0ed",
+        "request_id": 5,
+        "sequence": 1544,
+        "session_generation": 1789202659957
+      },
+      "selected_payload_interval": [
+        20607,
+        45183
+      ],
+      "original_lo_status": "applied",
+      "original_lo_reason": null
+    },
+    {
+      "batch": 66406,
+      "class_name": "64QAM",
+      "source_rows": [
+        1593744,
+        1593745,
+        1593746,
+        1593747,
+        1593748,
+        1593749,
+        1593750,
+        1593751,
+        1593752,
+        1593753,
+        1593754,
+        1593755,
+        1593756,
+        1593757,
+        1593758,
+        1593759,
+        1593760,
+        1593761,
+        1593762,
+        1593763,
+        1593764,
+        1593765,
+        1593766,
+        1593767
+      ],
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/rx/rml2018a-66406-1789202670921-1789202670921-1789202674197345622.sigmf-data",
+        "iq_sha256": "fddcc12228a595413f3c021e454987ddf46709c0d06d90c6eb67e16af3343d8e",
+        "metadata_sha256": "aa249e5b65067d29bae4bec4a057a9de2271ab791d637244c1861ac26926160a",
+        "request_id": 5,
+        "sequence": 1545,
+        "session_generation": 1789202670921
+      },
+      "selected_payload_interval": [
+        1325,
+        25901
+      ],
+      "original_lo_status": "skipped",
+      "original_lo_reason": "guard_holdout_not_predictable"
+    },
+    {
+      "batch": 75280,
+      "class_name": "256QAM",
+      "source_rows": [
+        1806720,
+        1806721,
+        1806722,
+        1806723,
+        1806724,
+        1806725,
+        1806726,
+        1806727,
+        1806728,
+        1806729,
+        1806730,
+        1806731,
+        1806732,
+        1806733,
+        1806734,
+        1806735,
+        1806736,
+        1806737,
+        1806738,
+        1806739,
+        1806740,
+        1806741,
+        1806742,
+        1806743
+      ],
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/rx/rml2018a-75280-1789202681873-1789202681873-1789202685151702953.sigmf-data",
+        "iq_sha256": "ae6817a51309a5cd745056610ddea690bf65d11b12c0e237736dd699c859e94d",
+        "metadata_sha256": "32164c242ffd11895e7a843b069b9f5f00418dc74f5911810b9e6169b8d11a8c",
+        "request_id": 5,
+        "sequence": 1546,
+        "session_generation": 1789202681873
+      },
+      "selected_payload_interval": [
+        15616,
+        40192
+      ],
+      "original_lo_status": "applied",
+      "original_lo_reason": null
+    },
+    {
+      "batch": 93030,
+      "class_name": "AM-DSB-SC",
+      "source_rows": [
+        2232720,
+        2232721,
+        2232722,
+        2232723,
+        2232724,
+        2232725,
+        2232726,
+        2232727,
+        2232728,
+        2232729,
+        2232730,
+        2232731,
+        2232732,
+        2232733,
+        2232734,
+        2232735,
+        2232736,
+        2232737,
+        2232738,
+        2232739,
+        2232740,
+        2232741,
+        2232742,
+        2232743
+      ],
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/rx/rml2018a-93030-1789202692868-1789202692868-1789202696115431843.sigmf-data",
+        "iq_sha256": "7ac5d272d3e1523d660ee412271c49f5b81b3976aa0b042d9b7aa1d317cf588f",
+        "metadata_sha256": "af412fda5b1d47b9cde4f618ae17f687eeaab54be182b47fe11b3167fd28b839",
+        "request_id": 5,
+        "sequence": 1547,
+        "session_generation": 1789202692868
+      },
+      "selected_payload_interval": [
+        15421,
+        39997
+      ],
+      "original_lo_status": "applied",
+      "original_lo_reason": null
+    },
+    {
+      "batch": 101904,
+      "class_name": "GMSK",
+      "source_rows": [
+        2445696,
+        2445697,
+        2445698,
+        2445699,
+        2445700,
+        2445701,
+        2445702,
+        2445703,
+        2445704,
+        2445705,
+        2445706,
+        2445707,
+        2445708,
+        2445709,
+        2445710,
+        2445711,
+        2445712,
+        2445713,
+        2445714,
+        2445715,
+        2445716,
+        2445717,
+        2445718,
+        2445719
+      ],
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/rx/rml2018a-101904-1789202703824-1789202703824-1789202707085072240.sigmf-data",
+        "iq_sha256": "cf98b0f075ca0135b2261a2a2621c2b02f63cca0e4d25ac1665779dcc6cafbf6",
+        "metadata_sha256": "8de1a35db9a29f9b01529f3304ea51835acd97f5d13ef20f68395391d698a965",
+        "request_id": 5,
+        "sequence": 1548,
+        "session_generation": 1789202703824
+      },
+      "selected_payload_interval": [
+        36761,
+        61337
+      ],
+      "original_lo_status": "applied",
+      "original_lo_reason": null
+    }
+  ],
+  "software": {
+    "diagnose-rml2018a-guard-anomaly.py": "840b6f9707580210bdeecdefbfc489c923acad37345982b49ed7e558ed55546e",
+    "rml2018a_campaign.py": "8e8480f12c0df91438fc9452540e4b2be14f031e98e9c40b78f4412abf67f71d",
+    "rml2018a-rf-campaign.py": "949c87891a9e47e51e1565d7645b4a232246681aed77d5e47731e08496fd92b2",
+    "rml2018a_lo_cancellation.py": "6adc011afd8ba8ba5971b07a8715beaeaa8d5f58c1c251a6e15c3015da37d020",
+    "rml2018a_pilot_timing.py": "5d7545215022c99fe8c3641ebf966856165af80a405c536de2ceab708f57ce76"
+  },
+  "rf_operations": 0,
+  "model_windows": 0,
+  "source_iq_reads": 0,
+  "production_deployment": false,
+  "recognizer_available": false,
+  "threshold_changes": false,
+  "validation": {
+    "tests_passed": 4,
+    "parent_files_verified": 66,
+    "native_captures_replayed": 8,
+    "full_numeric_replay": true
+  },
+  "cleanup": {
+    "schema": "rml-guard-anomaly-cleanup-v1",
+    "deleted_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-20260912-scratch/mpl/fontlist-v330.json",
+        "bytes": 123432,
+        "sha256": "cab4c1bae484ce562c8a954690cba6c05d67c807f1add35ba9b8b3254cf65dbc"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-20260912-scratch/partial-analysis.json",
+        "bytes": 73373,
+        "sha256": "46edcb2cf7af3f2c1a104c7636931db74f996dc97ae72d0eb58c993ab8ac933f"
+      }
+    ],
+    "deleted_file_count": 2,
+    "deleted_bytes": 196805,
+    "deleted_directories": 4,
+    "empty_attempt_roots_removed": 2,
+    "scratch_absent": true,
+    "new_rf": 0,
+    "new_model_windows": 0,
+    "hardware_processes_started": 0,
+    "iq_copies": 0,
+    "previous_evidence_modified": false
+  },
+  "retained_root": "/var/tmp/sdrharness-dev/rml-guard-anomaly-20260912",
+  "retained_files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-20260912/analysis.json",
+      "bytes": 73373,
+      "sha256": "a9bf4965bb9e6292040f8cb84537be859d5d7670661e8bd5b15128ea63d2d99a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-20260912/cleanup.json",
+      "bytes": 783,
+      "sha256": "72d6a562487353453b2e6de5dc4db429d955c95584bf2216ca2f9d2145b2681c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-20260912/guard-residual.png",
+      "bytes": 190465,
+      "sha256": "8439c2eed4f6c245203e259aa261fcb7035d9eee8e5357f1c4d49504fb433f9e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-20260912/tests.log",
+      "bytes": 520,
+      "sha256": "916378a6c6a5b417734f4f936bb585d9a46c3afb914d1f25fccdcd3e31d556d9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-guard-anomaly-20260912/verification.json",
+      "bytes": 177,
+      "sha256": "014ed55943c149602857f6791a9b1105b5f01c0b0b6891fc57c86bbc2876cae1"
+    }
+  ],
+  "retained_file_count": 5,
+  "retained_bytes": 265318,
+  "manual_delete_command": "rm -- /var/tmp/sdrharness-dev/rml-guard-anomaly-20260912/analysis.json /var/tmp/sdrharness-dev/rml-guard-anomaly-20260912/cleanup.json /var/tmp/sdrharness-dev/rml-guard-anomaly-20260912/guard-residual.png /var/tmp/sdrharness-dev/rml-guard-anomaly-20260912/tests.log /var/tmp/sdrharness-dev/rml-guard-anomaly-20260912/verification.json && rmdir -- /var/tmp/sdrharness-dev/rml-guard-anomaly-20260912",
+  "limitations": [
+    "posthoc descriptive statistics, no new acceptance threshold",
+    "candidate residual of rejected LO is never admitted as received SINR or model input",
+    "pilot fits cannot establish sample continuity between pilots",
+    "untimestamped UHD tail markers cannot localize events in native RX samples",
+    "broad residual does not identify Wi-Fi, receiver noise, or transport as physical source"
+  ]
+}
