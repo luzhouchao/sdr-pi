@@ -1,0 +1,406 @@
+{
+  "schema": "rml2018a-fixed-wideband-evidence-v1",
+  "base_head": "85aefdbd997540b957e5dc4f8358ac18a1eca058",
+  "purpose": "Single fixed 500kHz filter with frozen timing; QAM waveform fidelity, posthoc SINR and engineering recognition comparison",
+  "parent_inventory": "docs/evidence/RML2018A_QAM_GUARD_REPAIR_2026-09-12.json",
+  "parent_inventory_sha256": "91e7ba5d7737a1d6fbb4b29955ae0af3b82fc7d1c7871a8a410a319c0decd8b7",
+  "run_id": "8f4efe251df94abfa0138f434fe14c67",
+  "source": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "bytes": 21449148312,
+    "mtime_ns": 1627354882000000000
+  },
+  "source_capture_associations": [
+    {
+      "batch": 66422,
+      "class_id": 14,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/rx/rml2018a-66422-1789206454909-1789206454909-1789206458156156480.sigmf-data",
+        "iq_sha256": "fad60a0e5125cf1801cbe8b9a070423ef4b03e1768c31b525edc9b849b014c1f",
+        "metadata_sha256": "f2448b4bd35e331e5df94faa2e6272ce7ca916205ac779dfcecf3c655c824f3c",
+        "request_id": 5,
+        "sequence": 1549,
+        "session_generation": 1789206454909
+      },
+      "audit_sha256": "f13aa0e6b0d92379225647163c97f8350e2ae44d9eb0117f4391883c799e1a73"
+    },
+    {
+      "batch": 75296,
+      "class_id": 16,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/rx/rml2018a-75296-1789206465826-1789206465826-1789206469096627004.sigmf-data",
+        "iq_sha256": "c72c7e8502d51800fa8babbd741550049dfe9f965bdb51cc22816f79b8fbe062",
+        "metadata_sha256": "96eefa37e6a5b95f428f4ebd0dc50fe13fcc904da5c75fd05367ac135cd12659",
+        "request_id": 5,
+        "sequence": 1550,
+        "session_generation": 1789206465826
+      },
+      "audit_sha256": "0076e78999d30bb0ce36f3d4de10a1aa17209ee052981a05827e86e0fce12080"
+    },
+    {
+      "batch": 66423,
+      "class_id": 14,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/rx/rml2018a-66423-1789206476764-1789206476764-1789206480024345310.sigmf-data",
+        "iq_sha256": "93672f854899155cec0222b533307d21c47df8c93f5efa21a7709de3e337ded3",
+        "metadata_sha256": "c6e2aea8909eb3a3f547682d9db73309cc749df8ee0dcab84e260ffa2396ba43",
+        "request_id": 5,
+        "sequence": 1551,
+        "session_generation": 1789206476764
+      },
+      "audit_sha256": "f32be10ccad1bb06b8f97bca14c3e7d6cd2a32434fe73e1add15f673f95d2bdd"
+    },
+    {
+      "batch": 75297,
+      "class_id": 16,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/rx/rml2018a-75297-1789206487717-1789206487717-1789206490954400588.sigmf-data",
+        "iq_sha256": "9a1e49d7bb0e1d2873ea60c77614564b1c07ff8bd1bd80a0e7ee56e07d716b1d",
+        "metadata_sha256": "a031893df708acad3f5050b10e7295e877afa9526176b57211c645d40dd13dc7",
+        "request_id": 5,
+        "sequence": 1552,
+        "session_generation": 1789206487717
+      },
+      "audit_sha256": "72468f7bba1bdd68b5175384e571e08552388c302823053e7b7bdee2663b0a0c"
+    }
+  ],
+  "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+  "model_identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "software": {
+    "comparison_sha256": "11cac6442d5afa12a4cacfd103a54388505dc1b77f496cc6709af6834f1bd91b",
+    "filter_sha256": "a3d11ae15786c9670fae0d21df26f2c72932949e5674a255074d522f1f65f535"
+  },
+  "plan": {
+    "schema": "rml-wideband-fixed-plan-v1",
+    "base_head": "85aefdbd997540b957e5dc4f8358ac18a1eca058",
+    "registered_ns": 1789212197520213358,
+    "parent": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912",
+    "batches": [
+      66422,
+      75296,
+      66423,
+      75297
+    ],
+    "source_rows": 96,
+    "rf_operations": 0,
+    "maximum_model_windows": 288,
+    "maximum_warmups": 2,
+    "maximum_inference_seconds": 650,
+    "maximum_result_bytes": 8388608,
+    "free_bytes": 809240227840,
+    "filter": {
+      "cutoff_hz": 500000,
+      "taps": 129,
+      "window": "Kaiser8",
+      "normalization": "unit DC",
+      "operation": "whole buffered capture before existing frozen fractional timing; no row padding"
+    },
+    "fidelity": {
+      "maximum_source_relative_error": 0.003,
+      "minimum_source_power_ratio": 0.995,
+      "maximum_source_power_ratio": 1.005,
+      "all96_required": true
+    },
+    "variants": [
+      "source_wide",
+      "wide",
+      "wide_timing"
+    ],
+    "decision": "One fixed candidate. Report every source/RX regression, no parameter retries or per-row selection. Source-assisted diagnostics never become model input. Source classification must not lose baseline-correct rows to support adoption.",
+    "recognizer_available": false
+  },
+  "summary": {
+    "schema": "rml-wideband-summary-v1",
+    "source_rows": 96,
+    "groups": [
+      {
+        "class_id": 14,
+        "total": 48,
+        "correct": {
+          "source_wide": 46,
+          "wide": 38,
+          "wide_timing": 40
+        },
+        "quality": {
+          "wide": {
+            "median_db": 19.062358676027603,
+            "min_db": 16.160649735833896,
+            "max_db": 19.805283441200444
+          },
+          "wide_timing": {
+            "median_db": 22.408388180216924,
+            "min_db": 17.428167807488077,
+            "max_db": 24.002810260355393
+          }
+        },
+        "changes": {
+          "source->source_wide": {
+            "regressed": [],
+            "corrected": []
+          },
+          "guard->wide": {
+            "regressed": [
+              1594134,
+              1594167,
+              1594175
+            ],
+            "corrected": []
+          },
+          "guard->wide_timing": {
+            "regressed": [
+              1594148,
+              1594167
+            ],
+            "corrected": [
+              1594142
+            ]
+          },
+          "timing->wide_timing": {
+            "regressed": [],
+            "corrected": []
+          }
+        }
+      },
+      {
+        "class_id": 16,
+        "total": 48,
+        "correct": {
+          "source_wide": 46,
+          "wide": 46,
+          "wide_timing": 46
+        },
+        "quality": {
+          "wide": {
+            "median_db": 21.83101161886313,
+            "min_db": 20.487312097158398,
+            "max_db": 22.7330562395853
+          },
+          "wide_timing": {
+            "median_db": 22.031971870989114,
+            "min_db": 20.46657697638684,
+            "max_db": 23.173537882846375
+          }
+        },
+        "changes": {
+          "source->source_wide": {
+            "regressed": [],
+            "corrected": []
+          },
+          "guard->wide": {
+            "regressed": [],
+            "corrected": [
+              1807134
+            ]
+          },
+          "guard->wide_timing": {
+            "regressed": [],
+            "corrected": [
+              1807134
+            ]
+          },
+          "timing->wide_timing": {
+            "regressed": [],
+            "corrected": [
+              1807121,
+              1807134
+            ]
+          }
+        }
+      }
+    ],
+    "old_totals": {
+      "source": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 92
+      },
+      "raw": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 11
+      },
+      "lo": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 86
+      },
+      "guard": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 86
+      },
+      "timing": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 84
+      }
+    },
+    "new_totals": {
+      "source_wide": 92,
+      "wide": 84,
+      "wide_timing": 86
+    },
+    "source_fidelity_max_error": 0.0008905576865524397,
+    "source_fidelity_power_min": 0.9989913565418584,
+    "source_fidelity_power_max": 1.000199455127369,
+    "old_source_correct_regressions": 0,
+    "fixed_candidate": true,
+    "model_tuning": false,
+    "new_rf": 0,
+    "independent_accuracy": false
+  },
+  "verification": {
+    "status": "verified",
+    "source_rows": 96,
+    "model_input_hashes": 288,
+    "model_reexecuted": false
+  },
+  "postflight": {
+    "status": "passed",
+    "gpu": {
+      "pid": 1321,
+      "start_ticks": "1515",
+      "idle_slots": 1,
+      "resumed": true,
+      "mechanism": "SIGSTOP idle installed Spark; feature-private Mamba lease",
+      "started_ns": 1789212304064643561,
+      "pause_confirmed": true,
+      "finished_ns": 1789212375649151864,
+      "restore_watchdog_stopped": true
+    },
+    "model_identity": {
+      "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+      "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+      "compute": "cuda_fp16_autocast",
+      "resident_weight_precision": "fp32",
+      "input_precision": "fp32",
+      "logit_return_precision": "fp32",
+      "sample_rate_hz": 2100000,
+      "window_count": 4,
+      "samples_per_window": 1024,
+      "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+    },
+    "lease": {
+      "acquired": 1,
+      "released": 1,
+      "wait_us": 44,
+      "held_us": 71697682,
+      "cancelled": 0,
+      "expired": 0
+    },
+    "new_rf": 0,
+    "model_windows": 288,
+    "warmups": 2,
+    "locks_idle": true,
+    "production_deployment": false
+  },
+  "tests_passed": 3,
+  "new_rf": 0,
+  "model_windows": 288,
+  "warmups": 2,
+  "recognizer_available": false,
+  "production_deployment": false,
+  "cleanup_summary": {
+    "status": "verified",
+    "removed_file_count": 353,
+    "removed_bytes": 20139321,
+    "removed_directory_count": 54,
+    "new_iq_copies": 0,
+    "new_rf": 0,
+    "old_evidence_modified": false,
+    "scratch_and_lock_absent": true
+  },
+  "retained_root": "/var/tmp/sdrharness-dev/rml-wideband-20260912",
+  "retained_files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/cleanup.json",
+      "bytes": 105051,
+      "sha256": "567838be01157f876ae627f43e69c8741e51ecfa1314ad04ed9c511aeb48251b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/diagnose.py",
+      "bytes": 2507,
+      "sha256": "d3212eea3b5a939f1f1c9e0bba07dad1aabdd10c31b52a1c7c611be14f65bf14"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/diagnosis-verify.log",
+      "bytes": 27,
+      "sha256": "6e863cb9004b20933a1e6af72fc12aa2714bfd6858bc0d7f027e282f95ecbfd1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/diagnosis.json",
+      "bytes": 119169,
+      "sha256": "126029a26af118770339e9f68fc520f776cd548557d6d71e4aa0bd7413cd189c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/gpu-isolation.json",
+      "bytes": 295,
+      "sha256": "af450a81ef35cafa24246ce585be934619154bc53761e3ae71840dfecb18f363"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/infer.log",
+      "bytes": 1199,
+      "sha256": "17ef847beb34a5a3bec5c27f7e19703113a7e7db33d5d7369e3e106b581f681f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/inference.json",
+      "bytes": 246401,
+      "sha256": "2385bd9093bde0d45da79dd6e8400222894f9b968f94f90e83aa6a26fb1f8cfb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/plan.json",
+      "bytes": 1224,
+      "sha256": "fec3d0ea77e84cd866dda96561d29018e8345b7b0f030f05fbd530a33a9def48"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/postflight.json",
+      "bytes": 1263,
+      "sha256": "ba02018f7bab4f43a94e287c7de4a9cf207bb5be68a5825e532ab1041905dc57"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/prepare.log",
+      "bytes": 33,
+      "sha256": "995d5b02d158e77eb43cf2061660be78d6d94ca9739af0d4a77d55800914160d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/prepared.json",
+      "bytes": 374302,
+      "sha256": "01fbc4dc9731f4ba561234da58689536694f178b690f713b0e570ff14ede5f28"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/summary.json",
+      "bytes": 2956,
+      "sha256": "e3527b22d3920096df6d358d14850f3b17cd32c9e4fed92aa249fbda98fdb29e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/tests.log",
+      "bytes": 361,
+      "sha256": "57e7464e488e420c204ffa34e081f2b8f897c72bb49811383adf6c2c4050fec5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-wideband-20260912/verify.json",
+      "bytes": 96,
+      "sha256": "0e720797a6e0d082ca890494c97f369e26fcd79a0a2417f509dc1089a8ac7706"
+    }
+  ],
+  "retained_file_count": 14,
+  "retained_bytes": 854884,
+  "manual_delete_command": "rm -- /var/tmp/sdrharness-dev/rml-wideband-20260912/cleanup.json /var/tmp/sdrharness-dev/rml-wideband-20260912/diagnose.py /var/tmp/sdrharness-dev/rml-wideband-20260912/diagnosis-verify.log /var/tmp/sdrharness-dev/rml-wideband-20260912/diagnosis.json /var/tmp/sdrharness-dev/rml-wideband-20260912/gpu-isolation.json /var/tmp/sdrharness-dev/rml-wideband-20260912/infer.log /var/tmp/sdrharness-dev/rml-wideband-20260912/inference.json /var/tmp/sdrharness-dev/rml-wideband-20260912/plan.json /var/tmp/sdrharness-dev/rml-wideband-20260912/postflight.json /var/tmp/sdrharness-dev/rml-wideband-20260912/prepare.log /var/tmp/sdrharness-dev/rml-wideband-20260912/prepared.json /var/tmp/sdrharness-dev/rml-wideband-20260912/summary.json /var/tmp/sdrharness-dev/rml-wideband-20260912/tests.log /var/tmp/sdrharness-dev/rml-wideband-20260912/verify.json && rmdir -- /var/tmp/sdrharness-dev/rml-wideband-20260912"
+}

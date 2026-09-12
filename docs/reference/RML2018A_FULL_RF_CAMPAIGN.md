@@ -213,6 +213,19 @@ source/raw/旧LO/新guard/新guard后timing五组，最多480模型窗口加2次
 本次时序使识别86/96→84/96，继续保留为对照，不作为识别默认。
 实机与已知失败事后回放见[验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12保护间隔lo修复及四批qam验证)。
 
+## 固定500kHz宽带滤波对照
+
+固定宽带滤波实验入口为`compare-rml2018a-wideband.py prepare/infer/verify --output
+/var/tmp/sdrharness-dev/rml-wideband-<唯一标识>`，使用既有模型venv和该根下预登记的`plan.json`。
+仅接受已封存四批QAM父比较，按父证据清单核对文件及原prepare，截止500kHz的129抽头Kaiser8低通
+在整个已旋转的原生缓冲上计算，再提取载荷；组合变体复用已冻结的导频时序，不重新估计。
+源保真使用真实相邻源行、TX尺度和帧保护间隔，要求96条均满足相对误差≤0.003、功率比0.995–1.005，
+否则不执行模型。源滤波/source_wide、实收滤波/wide、实收滤波加时序/wide_timing共288窗口+2warmup，
+650秒内部上限；外部命令使用680秒timeout，缓存/TMPDIR放本单元scratch。
+原始含噪X/Z仍是条件SINR参考，各处理平面和数字滤波单列，未修改普通campaign。
+此固定候选只作事后工程比较，源保真与总识别数保持不代表每类/每行无退化；新样本确认后才能考虑采用。
+结果见[验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12固定500khz滤波与时序对照)。
+
 ## 源SNR与条件有效SINR估计（v3）
 
 `rml2018a-all-row-rf-v3`保留原始Z为`source_snr_db`。原始X本身已有噪声/信道损伤；
