@@ -1,0 +1,631 @@
+{
+  "schema": "rml2018a-post-lo-link-residual-evidence-v1",
+  "base_head": "26f5ab89967cae7dd21086fd698355cf873b3c1f",
+  "purpose": "Identify residual timing, images, linear/nonlinear channel effects without changing raw/processed receive quality or model inputs",
+  "parent_inventory": "docs/evidence/RML2018A_GUARD_LO_CANCELLATION_2026-09-12.json",
+  "parent": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912",
+  "parent_run_id": "271f431773b94e1bba4c3c7aa9e1ae42",
+  "parent_plan_sha256": "6ced8db9a57070ad74da9fc10c5a992b45f606f1c34518eb6bb4cc6a7dc9e62f",
+  "cancellation_parent": "/var/tmp/sdrharness-dev/rml-lo-cancel-validated-20260912",
+  "cancellation_report_sha256": "49d44783b040e88512c111aaf84570eaf252640c8c3b23028c0826d4048bed65",
+  "source_profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+  "model_identity": "No model execution; unchanged frozen identity inherited from parent inventory",
+  "contract": {
+    "method": "post-guard-lo-forward-error-crossfit-v1",
+    "source_assisted": true,
+    "receiver_correction": false,
+    "model_inference": false,
+    "rx_sinr_db": null,
+    "target": "held-out forward-model residual power; not corrected receiver SINR",
+    "variants": [
+      "scalar",
+      "timing",
+      "time_gain",
+      "rx_image",
+      "tx_image",
+      "rx_dc",
+      "cubic",
+      "fir5",
+      "combined"
+    ],
+    "folds": "train first512, evaluate last512; reverse; keep both",
+    "centered_fit": true,
+    "evaluation_includes_source_dc": true,
+    "least_squares_rcond": 1e-06,
+    "maximum_normalized_condition": 1000000.0,
+    "meaningful_error_reduction_db": 3,
+    "timing": "x + ideal bandlimited dx/dn; real negative derivative/gain ratio estimates small delay",
+    "time_gain": "complex linear time*x; includes amplitude slope and linearized CFO",
+    "rx_image": "conjugate x rotated by -2*original CFO after carrier correction",
+    "tx_image": "conjugate x rotated by +500kHz, reflection about TX LO+250kHz",
+    "rx_dc": "native receiver DC rotated by -original CFO",
+    "cubic": "x*abs(x)^2",
+    "fir5": "source shifts -2,-1,0,+1,+2, fixed length",
+    "combined": "x + derivative + time_gain + RX/TX mirrors + RX DC + cubic",
+    "timing_trend": "first12 row estimates predict last12; report all24 diagnostic estimates separately",
+    "pilot": "known marker only, matched500kHz129-tap FIR and derivative; no payload X",
+    "caveats": [
+      "source-assisted fits are not deployable compensation or independent accuracy",
+      "timing, channel group delay and frequency response can be confounded",
+      "guard residual includes prediction error/spurs and is not calibrated thermal noise",
+      "two classes, one cable setting, original source Z30 only"
+    ]
+  },
+  "software": {
+    "diagnose-rml2018a-link-residual.py": "c61ec95fd13eb8e4a58610e1f6a94f9beaf97d827be98521bd0b25b9850aef1e",
+    "rml2018a_link_diagnostics.py": "6778caee8ccb9eecd3b1594355533c9de55c83a626a0f58777fdfff81ba7657e",
+    "rml2018a_lo_cancellation.py": "6adc011afd8ba8ba5971b07a8715beaeaa8d5f58c1c251a6e15c3015da37d020",
+    "rml2018a_campaign.py": "5cbad107f952c8f1f9ba43d3e2790464841b6b4525877a3b7f0cc514cd54b493"
+  },
+  "source_capture_associations": [
+    {
+      "batch": 4267,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/rx/rml2018a-4267-1789195777763-1789195777763-1789195781039237298.sigmf-data",
+        "iq_sha256": "6403879ecfe97c76a61c615c09f2399e5bb611dfe167b554459d5e945b34d32d",
+        "metadata_sha256": "bf827ae324c39fd3c9eac81f284c18c7a704ee6dd60473cccb7cdcfe24a4e181",
+        "request_id": 5,
+        "sequence": 1538,
+        "session_generation": 1789195777763
+      },
+      "source_iq_sha256": "e5b9894a2ddb15839e71c6a34e6278060a81a7a41702895cc01e963a36eb9180",
+      "rows": [
+        102408,
+        102409,
+        102410,
+        102411,
+        102412,
+        102413,
+        102414,
+        102415,
+        102416,
+        102417,
+        102418,
+        102419,
+        102420,
+        102421,
+        102422,
+        102423,
+        102424,
+        102425,
+        102426,
+        102427,
+        102428,
+        102429,
+        102430,
+        102431
+      ],
+      "source_snr_db": 30,
+      "summaries": {
+        "scalar": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 0.0,
+          "error_reduction_min_db": 0.0,
+          "error_reduction_max_db": 0.0,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 0,
+          "error_power_median_counts2": 3.45763861523562
+        },
+        "timing": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 0.13070782690360977,
+          "error_reduction_min_db": 0.030499635261860475,
+          "error_reduction_max_db": 0.32784178135961967,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 0,
+          "error_power_median_counts2": 3.352358474812835
+        },
+        "time_gain": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": -0.6413746172493412,
+          "error_reduction_min_db": -2.1615010406678548,
+          "error_reduction_max_db": 0.0045153550817511635,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 23,
+          "error_power_median_counts2": 4.191064368518314
+        },
+        "rx_image": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 0.3116511083811872,
+          "error_reduction_min_db": 0.1772343912659191,
+          "error_reduction_max_db": 0.4481729878849918,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 0,
+          "error_power_median_counts2": 3.2051272697328614
+        },
+        "tx_image": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 0.10148514051100521,
+          "error_reduction_min_db": 0.056448202416797336,
+          "error_reduction_max_db": 0.1668856497418536,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 0,
+          "error_power_median_counts2": 3.3494667046257396
+        },
+        "rx_dc": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 0.08131711818870753,
+          "error_reduction_min_db": -0.21192496384683018,
+          "error_reduction_max_db": 0.3071629490139894,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 5,
+          "error_power_median_counts2": 3.3623685671888413
+        },
+        "cubic": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": -0.006111852353385364,
+          "error_reduction_min_db": -0.061165566337038485,
+          "error_reduction_max_db": 0.06195555190755686,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 15,
+          "error_power_median_counts2": 3.472474441647018
+        },
+        "fir5": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": -0.21447936059946773,
+          "error_reduction_min_db": -2.536581373969737,
+          "error_reduction_max_db": 0.18105000663447432,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 19,
+          "error_power_median_counts2": 3.7984766648658317
+        },
+        "combined": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 0.5194052499244208,
+          "error_reduction_min_db": 0.07864575231095745,
+          "error_reduction_max_db": 1.0803747298528394,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 0,
+          "error_power_median_counts2": 3.0345384628717538
+        }
+      },
+      "timing_trend": {
+        "status": "estimated",
+        "median_delay_samples": 0.1234669642698758,
+        "all_rows_delay_slope_ppm": -1.8148353213557413,
+        "all_rows_delay_intercept_samples": 0.14764055716529956,
+        "all_rows_delay_trend_rms_samples": 0.017429957230143716,
+        "first12_slope_ppm": -2.3591743129438907,
+        "first12_intercept_samples": 0.14926700908778825,
+        "last12_prediction_rms_samples": 0.020601664099725643,
+        "all_rows_residual_cfo_hz": -1.6415158808654151,
+        "all_rows_phase_trend_rms_rad": 0.013264594978465301,
+        "physical_clock_attribution": "consistent timing drift; clock error and channel/timing fit bias not independently separated"
+      },
+      "pilot_timing": {
+        "status": "estimated",
+        "pilots": [
+          {
+            "marker_offset": 4323,
+            "status": "estimated",
+            "delay_samples": 0.19499724020246922,
+            "quadrature_derivative_ratio": 0.02246608714136441,
+            "condition": 1.8446279913025174,
+            "residual_fraction": 0.0028980268361707075
+          },
+          {
+            "marker_offset": 30435,
+            "status": "estimated",
+            "delay_samples": 0.15879791436397866,
+            "quadrature_derivative_ratio": 0.017514734746207867,
+            "condition": 1.8446279913025174,
+            "residual_fraction": 0.002088799613461321
+          },
+          {
+            "marker_offset": 56547,
+            "status": "estimated",
+            "delay_samples": 0.11614797653719684,
+            "quadrature_derivative_ratio": 0.019887108648173942,
+            "condition": 1.8446279913025174,
+            "residual_fraction": 0.002766535274419204
+          }
+        ],
+        "source_payload_used": false,
+        "delay_slope_ppm": -1.509828118590542,
+        "predicted_payload_delays_samples": [
+          0.15510164637444482,
+          0.1535555823810081,
+          0.15200951838757137,
+          0.15046345439413467,
+          0.14891739040069796,
+          0.14737132640726125,
+          0.14582526241382454,
+          0.1442791984203878,
+          0.1427331344269511,
+          0.1411870704335144,
+          0.13964100644007765,
+          0.13809494244664094,
+          0.13654887845320424,
+          0.13500281445976753,
+          0.13345675046633082,
+          0.1319106864728941,
+          0.13036462247945738,
+          0.12881855848602067,
+          0.12727249449258393,
+          0.12572643049914722,
+          0.12418036650571052,
+          0.12263430251227381,
+          0.12108823851883709,
+          0.11954217452540038
+        ],
+        "receiver_correction": false,
+        "versus_source_diagnostic_rms_samples": 0.02126088834981386,
+        "versus_source_diagnostic_median_bias_samples": 0.01390189779600351
+      }
+    },
+    {
+      "batch": 22016,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/rx/rml2018a-22016-1789195959951-1789195959951-1789195963166561449.sigmf-data",
+        "iq_sha256": "e45ba44809140ce1dd153a1f04e710fa9ceac05bced103c67ba4dd86bad85310",
+        "metadata_sha256": "f74c2761af00d94ef06b58409e52d01ed310cd0430997573e653a17e9f40fc2d",
+        "request_id": 5,
+        "sequence": 1540,
+        "session_generation": 1789195959951
+      },
+      "source_iq_sha256": "651306fe240c3e445858672699756af388057f560481f3fa8b390029e2f2c1c0",
+      "rows": [
+        528384,
+        528385,
+        528386,
+        528387,
+        528388,
+        528389,
+        528390,
+        528391,
+        528392,
+        528393,
+        528394,
+        528395,
+        528396,
+        528397,
+        528398,
+        528399,
+        528400,
+        528401,
+        528402,
+        528403,
+        528404,
+        528405,
+        528406,
+        528407
+      ],
+      "source_snr_db": 30,
+      "summaries": {
+        "scalar": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 0.0,
+          "error_reduction_min_db": 0.0,
+          "error_reduction_max_db": 0.0,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 0,
+          "error_power_median_counts2": 5.199043546960827
+        },
+        "timing": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 2.3120252296385244,
+          "error_reduction_min_db": 1.5620349342499276,
+          "error_reduction_max_db": 2.845817082072737,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 0,
+          "error_power_median_counts2": 3.046368661724564
+        },
+        "time_gain": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": -0.10514541428442199,
+          "error_reduction_min_db": -1.1545731916603466,
+          "error_reduction_max_db": 0.21757998991548258,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 17,
+          "error_power_median_counts2": 5.470263143032038
+        },
+        "rx_image": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 0.12604422106210444,
+          "error_reduction_min_db": 0.0028943853796372814,
+          "error_reduction_max_db": 0.23529374450432464,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 0,
+          "error_power_median_counts2": 5.055491747658033
+        },
+        "tx_image": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 0.06544158083873616,
+          "error_reduction_min_db": 0.04313804360855682,
+          "error_reduction_max_db": 0.10114872778909574,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 0,
+          "error_power_median_counts2": 5.107968112951596
+        },
+        "rx_dc": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 0.03832228814662009,
+          "error_reduction_min_db": -0.10367232291162937,
+          "error_reduction_max_db": 0.29602419709921063,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 5,
+          "error_power_median_counts2": 5.03402787533498
+        },
+        "cubic": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": -0.00681166698759452,
+          "error_reduction_min_db": -0.06258516591726127,
+          "error_reduction_max_db": 0.05574655051791998,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 18,
+          "error_power_median_counts2": 5.2017995091044105
+        },
+        "fir5": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 2.2726053908783372,
+          "error_reduction_min_db": 1.1862178264829353,
+          "error_reduction_max_db": 2.780937984352372,
+          "at_least3db_rows": 0,
+          "worse_than_scalar_rows": 0,
+          "error_power_median_counts2": 3.1318666495211738
+        },
+        "combined": {
+          "total_rows": 24,
+          "estimated_rows": 24,
+          "invalid_rows": 0,
+          "error_reduction_median_db": 2.959949583849931,
+          "error_reduction_min_db": 2.1764205906985543,
+          "error_reduction_max_db": 3.6574366167380084,
+          "at_least3db_rows": 11,
+          "worse_than_scalar_rows": 0,
+          "error_power_median_counts2": 2.6932609164245473
+        }
+      },
+      "timing_trend": {
+        "status": "estimated",
+        "median_delay_samples": 0.32850865656815936,
+        "all_rows_delay_slope_ppm": -1.9670033012772046,
+        "all_rows_delay_intercept_samples": 0.35314969186812173,
+        "all_rows_delay_trend_rms_samples": 0.010466398697089024,
+        "first12_slope_ppm": -2.9966721251689457,
+        "first12_intercept_samples": 0.35902563379231534,
+        "last12_prediction_rms_samples": 0.018953264872696062,
+        "all_rows_residual_cfo_hz": 13.03534115194469,
+        "all_rows_phase_trend_rms_rad": 0.027053842107171017,
+        "physical_clock_attribution": "consistent timing drift; clock error and channel/timing fit bias not independently separated"
+      },
+      "pilot_timing": {
+        "status": "estimated",
+        "pilots": [
+          {
+            "marker_offset": 23535,
+            "status": "estimated",
+            "delay_samples": 0.36224571058466637,
+            "quadrature_derivative_ratio": 0.013670001819272663,
+            "condition": 1.8884751689130161,
+            "residual_fraction": 0.0028941435519473317
+          },
+          {
+            "marker_offset": 49647,
+            "status": "estimated",
+            "delay_samples": 0.3259771903986164,
+            "quadrature_derivative_ratio": 0.014696282886085809,
+            "condition": 1.8884751689130161,
+            "residual_fraction": 0.0024410194840021743
+          }
+        ],
+        "source_payload_used": false,
+        "delay_slope_ppm": -1.3889598723211565,
+        "predicted_payload_delays_samples": [
+          0.36082341567540954,
+          0.35940112076615266,
+          0.35797882585689583,
+          0.35655653094763895,
+          0.35513423603838207,
+          0.35371194112912524,
+          0.35228964621986836,
+          0.3508673513106115,
+          0.3494450564013546,
+          0.34802276149209777,
+          0.3466004665828409,
+          0.345178171673584,
+          0.3437558767643272,
+          0.3423335818550703,
+          0.3409112869458134,
+          0.3394889920365566,
+          0.3380666971272997,
+          0.3366444022180428,
+          0.335222107308786,
+          0.3337998123995291,
+          0.3323775174902722,
+          0.3309552225810154,
+          0.3295329276717585,
+          0.32811063276250163
+        ],
+        "receiver_correction": false,
+        "versus_source_diagnostic_rms_samples": 0.019135763629627725,
+        "versus_source_diagnostic_median_bias_samples": 0.014282665864783994
+      }
+    }
+  ],
+  "source_assisted": true,
+  "receiver_correction": false,
+  "recognizer_available": false,
+  "new_rf_captures": 0,
+  "new_model_windows": 0,
+  "new_iq_copies": 0,
+  "verification": {
+    "status": "verified",
+    "source_rows": 48,
+    "native_iq_seals": 2,
+    "post_lo_input_hashes": 48,
+    "forward_models": 432,
+    "folds": 864,
+    "new_rf_captures": 0,
+    "new_model_windows": 0,
+    "receiver_correction": false
+  },
+  "postflight": {
+    "active_diagnostic_pids": [],
+    "new_rf_captures": 0,
+    "new_model_windows": 0,
+    "gpu_lease_requested": false,
+    "agx_p201_tx_staging_created": 0,
+    "receiver_correction": false,
+    "checked_ns": 1789201083502542342
+  },
+  "cleanup_summary": {
+    "status": "verified",
+    "removed_files": 3,
+    "removed_bytes": 544571,
+    "removed_directories": 2,
+    "absent_paths": [
+      "/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/scratch",
+      "/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/probe.json",
+      "/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/analyze-verified.log"
+    ],
+    "prior_evidence_untouched": true,
+    "new_iq_copies": 0
+  },
+  "retained_roots": [
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912",
+      "purpose": "Preregistered discovery scripts, summaries, six tests and failed initial baseline check",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/analyze.log",
+          "bytes": 755,
+          "sha256": "3e0703be3820571ffb2d9dc78d7c1d4254b52529a472d8bf2a1dfdc96d1db607"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/diagnostic-tests.log",
+          "bytes": 748,
+          "sha256": "bda31825bed751207da6d63f1b2afab1120cb43b1e9d6f3b1cfced7abb7128a2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/pilot-probe.log",
+          "bytes": 489,
+          "sha256": "304d535dadf5e6bfc51932ba2375f43212baa2d2ab7970123bff3cca303df3ee"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/pilot-probe.py",
+          "bytes": 1414,
+          "sha256": "078941147e3dbc83617803fa39ee67e0ba44633bd70dd86089f926230643302c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/preregister.json",
+          "bytes": 1168,
+          "sha256": "2ea200adb81815debb3ad30f06752a06c37930373c1ff18578960dd56709aea5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/probe.log",
+          "bytes": 2204,
+          "sha256": "020f8f1c099e7ef20a7c4693e24f807eed94b0d1a32fc5551277ab8bfafad985"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/probe.py",
+          "bytes": 2930,
+          "sha256": "860fca440c8cebfb43433483dc7e3ac583e31b60ea0705129c0936e5a9ce63a8"
+        }
+      ],
+      "file_count": 7,
+      "bytes": 9708,
+      "manual_delete_command": "rm -- '/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/analyze.log' '/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/diagnostic-tests.log' '/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/pilot-probe.log' '/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/pilot-probe.py' '/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/preregister.json' '/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/probe.log' '/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912/probe.py' && rmdir -- '/var/tmp/sdrharness-dev/rml-residual-diagnosis-20260912'"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-link-residual-20260912",
+      "purpose": "Original finite plan from rejected source-reference precision mismatch",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-residual-20260912/plan.json",
+          "bytes": 2205,
+          "sha256": "e7381ebca47585b0100a7316bfd9945f74dd529a9796ee7c68ac393539cb14b1"
+        }
+      ],
+      "file_count": 1,
+      "bytes": 2205,
+      "manual_delete_command": "rm -- '/var/tmp/sdrharness-dev/rml-link-residual-20260912/plan.json' && rmdir -- '/var/tmp/sdrharness-dev/rml-link-residual-20260912'"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912",
+      "purpose": "Final fixed forward-model diagnosis, pilot comparison, exact replay, plot and cleanup",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/cleanup.json",
+          "bytes": 1253,
+          "sha256": "2ff457242631da2b370d6bf824f7472795e53db1402ed8a13b723c253c5134ea"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/finalize.py",
+          "bytes": 4546,
+          "sha256": "87737dcc13d336b98d55c126dba6883186b6135636fd3822dbc8817d14c4398b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/plan.json",
+          "bytes": 2205,
+          "sha256": "596b294bfe4b0908756b9511ff02bee16f71c24fdf243ed48a48118033d63160"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/plot.py",
+          "bytes": 1999,
+          "sha256": "a9c460ea0c6ac4fa6bf115a006e63434c930ec2b33f828a3c98eec01093632f2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/postflight.json",
+          "bytes": 222,
+          "sha256": "7eb73a435c92857ac10c65e2f84afb4896674c9604988ee942ab29bdbc405839"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/residual-diagnosis.png",
+          "bytes": 176852,
+          "sha256": "4169354653f09ec8711eb4e8d77760880d741929583f996d888cb332d292f961"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/result.json",
+          "bytes": 744891,
+          "sha256": "c7138b1f1cbb0b22d12f523d17926cbd0f24d26d58ff460bcd69e7f5fcfa6b88"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/verify.json",
+          "bytes": 205,
+          "sha256": "9ea368036000d7667aa20460091ad464de18ecd1ce26509a62ebf313cf54388a"
+        }
+      ],
+      "file_count": 8,
+      "bytes": 932173,
+      "manual_delete_command": "rm -- '/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/cleanup.json' '/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/finalize.py' '/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/plan.json' '/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/plot.py' '/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/postflight.json' '/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/residual-diagnosis.png' '/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/result.json' '/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912/verify.json' && rmdir -- '/var/tmp/sdrharness-dev/rml-link-residual-verified-20260912'"
+    }
+  ],
+  "retained_file_count": 16,
+  "retained_bytes": 944086
+}

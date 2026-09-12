@@ -26,6 +26,7 @@
 - [20dB单音数字幅度/硬件增益配对](B210_CABLE_LO_GAIN_PAIR_2026-09-12.json)：两次A/B对照、预登记判据、恢复与清理，含频谱图及全部源/命令核验。
 - [RadioML两类调制波形幅度/增益配对](RML2018A_MODULATED_GAIN_PAIR_2026-09-12.json)：四批采集、192模型输入哈希、SINR/LO残差与工程识别对照，含恢复、图表及保留清单。
 - [保护间隔辅助LO相消](RML2018A_GUARD_LO_CANCELLATION_2026-09-12.json)：既有两批IQ的后处理对照、频率歧义失败、144输入哈希、冻结识别及最小派生清单；无新RF或IQ副本。
+- [相消后剩余误差与导频时序诊断](RML2018A_LINK_RESIDUAL_2026-09-12.json)：48行正向留出归因、导频/源辅助延迟、失败及清理清单；无新增RF、模型或接收校正。
 
 - [RadioML2018A全量脚本先导保留清单](RML2018A_FULL_RF_CAMPAIGN_EVIDENCE_2026-09-10.json)
 - [RadioML2018A当前IQ与历史175kHz滤波方法的离线对照](RML2018A_HISTORICAL_FILTER_COMPARISON_2026-09-10.json)

@@ -129,6 +129,29 @@ TX包使用独立`rml2018a-gain-pair-pilot-v1`，只允许批次4267/22016的精
 也不称为硬件原始SINR改善或物理校准。原生IQ不复制，派生张量仅保留哈希。
 验证、已知失败与图表见[实验记录](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12保护间隔辅助lo相消)。
 
+## 相消后的剩余误差归因（离线实验）
+
+[诊断模块](../../jetson-agx/sdrharness/scripts/rml2018a_link_diagnostics.py)与
+[只读入口](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-link-residual.py)提供
+`analyze/verify --parent <原配对计划> --cancellation <已封存相消结果>
+--output /var/tmp/sdrharness-dev/rml-link-residual-<唯一标识>`，使用既有模型venv的Python。
+只接纳原两批48行Z30，先校验父库存、IQ、同步、相消输出及原质量；180秒、结果16MiB上限，
+无RF、模型推理、接收参数修改或IQ副本，源/原软件改变时拒绝。
+
+`post-guard-lo-forward-error-crossfit-v1`固定9个正向拟合模型：标量、时序导数、
+线性复数时间增益、RX/TX镜像、RX DC、三次非线性、5抽头信道及组合。
+每行前512点训练/后512点评价并交换；训练中心化，评价保留完整源DC。
+RX镜像在原CFO校正后额外旋转−2CFO，TX镜像反射于+250kHz LO故位于+500kHz，
+RX DC旋转−CFO，不能把三者都当作常量偏置或简单`conj(X)`。
+列归一化后以`rcond=1e-6`解最小二乘，秩不足/条件数>10⁶保留invalid与两个fold，不删除行。
+源参考保持原X的统一缩放，fc32发包仍单独核验哈希，不能用其精度变换改写基线误差。
+
+输出是`error_reduction_db`及实际ADC计数平方残差，**不是新rx_sinr_db或接收端修复结果**。
+各变体不相加为总解释量，模型改善不能唯一确定物理原因。源辅助延迟趋势以首12行预测后12行，
+全24行估计另存；仅已知导频的时间估计独立执行，与payload辅助结果事后比较，未实施重采样。
+静默区残差仍含预测误差/杂散，不当作校准热噪声。±175kHz只作为固定频谱统计掩码，未施加滤波。
+已知分量测试、失败和48行结果见[验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12相消后剩余误差与导频时序诊断)。
+
 ## 源SNR与条件有效SINR估计（v3）
 
 `rml2018a-all-row-rf-v3`保留原始Z为`source_snr_db`。原始X本身已有噪声/信道损伤；
