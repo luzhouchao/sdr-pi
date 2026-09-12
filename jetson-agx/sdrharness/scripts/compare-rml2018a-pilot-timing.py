@@ -25,15 +25,20 @@ def runner():
 
 def software():
     return {name:c.file_hash(Path(__file__).with_name(name)) for name in
-        ('compare-rml2018a-pilot-timing.py','rml2018a_pilot_timing.py','rml2018a_lo_cancellation.py','rml2018a_guard_tone.py')}
+        ('compare-rml2018a-pilot-timing.py','rml2018a_pilot_timing.py','rml2018a_lo_cancellation.py','rml2018a_guard_tone.py','compare-rml2018a-wideband.py')}
 
 
 def prepare(root):
     m=runner();p=m.load_plan(root)
-    c.require(p['tx_level_profile'] in ('timing-multiclass-pilot','qam-guard-pilot'),'registered comparison parent')
-    qam=p['tx_level_profile']=='qam-guard-pilot'
+    c.require(p['tx_level_profile'] in ('timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot'),'registered comparison parent')
+    rxgain=p['tx_level_profile']=='qam-rx-gain-pilot'
+    qam=p['tx_level_profile'] in ('qam-guard-pilot','qam-rx-gain-pilot')
     batches,classes=(c.RML_GUARD_BATCHES,c.RML_GUARD_CLASSES) if qam else (c.RML_TIMING_BATCHES,c.RML_TIMING_CLASSES)
     tags=('source','raw','lo','guard','timing') if qam else TAGS
+    if rxgain:
+        batches,classes=c.RML_RXGAIN_BATCHES,c.RML_RXGAIN_CLASSES
+        tags=(*tags,'wide_timing')
+        wide=m.module('rxgain_wide','compare-rml2018a-wideband.py');fir=wide.taps()
     total=len(batches)*24
     results=[];tensors={}
     for batch,class_id in zip(batches,classes):
@@ -48,7 +53,8 @@ def prepare(root):
             c.require(a['status']=='sync_failed' and str(e)==a['sync_error'],'sync failure replay')
             received=None;sync=None
         else:c.require(a['status']=='synchronized' and sync==a['sync'],'original synchronization')
-        cancelled=adjusted=guarded=None
+        cancelled=adjusted=guarded=wide_timing=None
+        wide_info=dict(status='skipped',reason='not_synchronized')
         guard_info=dict(status='skipped',reason='not_synchronized')
         lo_info=dict(status='skipped',reason='not_synchronized');timing_info=dict(status='skipped',reason='not_synchronized')
         if received is not None:
@@ -62,6 +68,18 @@ def prepare(root):
             if timing_lo_info['status']=='applied':adjusted,timing_info=timing.correct(timing_raw,sync,p['run_id'],batch)
             else:
                 adjusted=(guarded if qam else cancelled).copy();timing_info=dict(status='skipped',reason='LO_not_validated')
+            if rxgain:
+                wide_timing=adjusted.copy()
+                if guard_info['status']=='applied' and timing_info['status']=='applied':
+                    n=np.arange(len(raw));rotated=timing_raw*np.exp(-2j*np.pi*sync['estimated_cfo_hz']*n/c.RATE+1j*sync['phase_rotation_rad'])
+                    target=sync['payload_marker_offset']+1024+np.arange(24576);slope=timing_info['drift_ppm']/1e6
+                    coords=target+(timing_info['offset_samples']+slope*target)/(1-slope)
+                    nearest=np.floor(coords+.5).astype(int)
+                    if np.all(nearest>=128) and np.all(nearest+128<len(raw)):
+                        wide_timing=timing.sample(np.convolve(rotated,fir,mode='same'),coords).reshape(24,1024)
+                        wide_info=dict(status='applied',reason=None,filter_sha256=c.digest(fir.astype('<f8').tobytes()))
+                    else:wide_info=dict(status='skipped',reason='missing_combined_filter_halo')
+                else:wide_info=dict(status='skipped',reason='guard_or_timing_not_validated')
         # Source X/Z and true classes are accessed only after receiver DSP.
         with h5py.File(m.DATASET,'r') as h:
             iq=h['X'][s['rows']];labels=h['Y'][s['rows']].argmax(axis=1);zs=h['Z'][s['rows']].ravel()
@@ -76,6 +94,15 @@ def prepare(root):
             tx['payload_sha256']==txp['payload_sha256'] and tx['uhd_log_sha256']==c.file_hash(d/'tx-uhd.log'),'TX receipt')
         source=iq[:,:,0]+1j*iq[:,:,1];parts=dict(source=source,raw=received,lo=cancelled,timing=adjusted)
         if qam: parts=dict(source=source,raw=received,lo=cancelled,guard=guarded,timing=adjusted)
+        if rxgain:
+            source_filtered=np.convolve(np.tile(frame,3),fir,mode='same')
+            offset=len(frame)+c.GUARD+c.MARKER
+            control=source_filtered[offset:offset+24576].reshape(24,1024)/scales[:,None]
+            errors=np.mean(abs(control-source)**2,axis=1)/np.mean(abs(source)**2,axis=1)
+            ratios=np.mean(abs(control)**2,axis=1)/np.mean(abs(source)**2,axis=1)
+            c.require(np.all(errors<=.003) and np.all((ratios>=.995)&(ratios<=1.005)),'fixed wideband source fidelity')
+            wide_info.update(source_relative_error_max=float(max(errors)),source_power_ratio_min=float(min(ratios)),source_power_ratio_max=float(max(ratios)))
+            parts['wide_timing']=wide_timing
         tensors[batch]=parts;rows=[]
         for k,row in enumerate(s['rows']):
             q=c.receive_quality(a['status'],source[k],None if received is None else received[k],30.)
@@ -91,6 +118,13 @@ def prepare(root):
                 if qam: qualities['guard']={**q,'rx_sinr_reference_plane':guard.PLANE}
             if qam:
                 qualities['timing']['rx_sinr_reference_plane']='received_payload_after_guard_tone_block_margin_and_pilot_timing_before_rms'
+            if rxgain:
+                wq=c.receive_quality(a['status'],source[k],None if wide_timing is None else wide_timing[k],30.)
+                c.validate_receive_quality(wq,30.)
+                wq.update(rx_sinr_reference_plane='received_payload_after_guard_wide_timing_before_rms',
+                    rx_payload_filter='129-tap Kaiser8 500kHz low-pass plus frozen timing' if wide_info['status']=='applied' else 'none_skipped',
+                    rx_wideband_correction=wide_info)
+                qualities['wide_timing']=wq
             rows.append(dict(row=row,true_id=class_id,source_snr_db=30.,quality=qualities,
                 inputs={tag:None if values is None else c.digest(c.normalize_window(values[k]).tobytes()) for tag,values in parts.items()},
                 correlations={tag:None if values is None else float(abs(np.vdot(source[k],values[k]))/
@@ -106,6 +140,7 @@ def prepare(root):
             lo_cancellation=lo_info,timing_correction=timing_info,quality_summary=summary,
             uhd_tail_markers=a['uhd_tail_markers'],rows=rows))
         if qam: results[-1]['guard_correction']=guard_info
+        if rxgain:results[-1]['wideband_correction']=wide_info
     report=dict(schema='rml2018a-eight-class-pilot-timing-comparison-v1',parent=str(root),
         parent_plan_sha256=c.file_hash(root/'run-plan.json'),run_id=p['run_id'],software=software(),
         timing_contract=timing.contract(),lo_contract=lo.contract(),results=results,
@@ -115,6 +150,9 @@ def prepare(root):
     if qam:
         report.update(schema='rml2018a-qam-guard-comparison-v1',guard_contract=guard.contract(),tags=list(tags),
             semantics='Same96 new QAM engineering rows in five variants; v1 failures retained; empirical guard-tone margin and pilot timing are separate post-DSP planes; not independent accuracy.')
+    if rxgain:
+        report.update(schema='rml2018a-qam-rx-gain-comparison-v1',rx_gain_db=p['rf']['rx_gain_db'],
+            semantics='96 unique matched QAM sources per RX gain; six variants; fixed DSP and all failures retained; not independent accuracy.')
     return report,tensors
 
 

@@ -31,6 +31,7 @@
 - [八类保护间隔异常离线定位](RML2018A_GUARD_ANOMALY_2026-09-12.json)：复用上述8份IQ，定位64QAM末间隔的宽频带残差升高与OOK短暂异常；保留图表/数值复核及清理清单，不采用被拒绝校正。
 - [保护间隔LO修复与四批QAM验证](RML2018A_QAM_GUARD_REPAIR_2026-09-12.json)：独立块相量准则、96条新实收/480输入对照、旧失败批事后回放及恢复/清理；保留时序识别净回退。
 - [固定500kHz滤波与时序对照](RML2018A_FIXED_WIDEBAND_2026-09-12.json)：复用四批QAM，96条源保真、288新输入/识别及残差诊断；组合SINR约22dB，保留各类识别变化与清理清单，无新增IQ。
+- [RX40/RX50配对实机与识别](RML2018A_RX_GAIN_PAIR_2026-09-12.json)：96新源行×两档/8份IQ，五种接收处理质量（含原始）及源对照、1152模型输入、逐条增益配对、恢复和清理；LO后识别80→90/96。
 
 - [RadioML2018A全量脚本先导保留清单](RML2018A_FULL_RF_CAMPAIGN_EVIDENCE_2026-09-10.json)
 - [RadioML2018A当前IQ与历史175kHz滤波方法的离线对照](RML2018A_HISTORICAL_FILTER_COMPARISON_2026-09-10.json)

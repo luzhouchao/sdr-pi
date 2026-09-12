@@ -213,6 +213,18 @@ source/raw/旧LO/新guard/新guard后timing五组，最多480模型窗口加2次
 本次时序使识别86/96→84/96，继续保留为对照，不作为识别默认。
 实机与已知失败事后回放见[验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12保护间隔lo修复及四批qam验证)。
 
+## QAM接收增益配对
+
+RX增益配对使用单独的`qam-rx-gain-pilot`，只允许66440/75314/66441/75315（64/256QAM交替），
+TX60、峰值0.632455532、AGX，允许RX40或RX50；其他有限profile仍只允许RX40。
+每档各建新campaign，96行/16秒TX/1,048,560接收字节；配对总计8采集、192接收行（96唯一源行）、32秒TX和2,097,120字节。
+匹配源X和尺度，但两档run ID/导频不同，独立执行原同步，不称逐射频样本完全一致。
+比较脚本复用`compare-rml2018a-pilot-timing.py`入口，为此profile增加固定`wide_timing`第六组，
+每档576窗口+2warmup，配对1152+4，两档GPU顺序执行；普通campaign未接入这些实验处理。
+组合使用原冻结500kHz系数和原时序坐标，源保真门不变，并验证组合滤波需要的真实128点两侧空间；
+前级校正或空间不足时保留上一处理结果和跳过原因，不使用补零冒充有效输出。
+后续实验参考及每档识别边界见[配对验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12rx40rx50配对实机与识别对照)。
+
 ## 固定500kHz宽带滤波对照
 
 固定宽带滤波实验入口为`compare-rml2018a-wideband.py prepare/infer/verify --output

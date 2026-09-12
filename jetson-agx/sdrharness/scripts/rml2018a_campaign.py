@@ -38,15 +38,19 @@ RML_TIMING_CLASSES = (0, 4, 5, 12, 14, 16, 20, 22)
 RML_GUARD_SCHEMA = 'rml2018a-qam-guard-pilot-v1'
 RML_GUARD_BATCHES = (66422, 75296, 66423, 75297)
 RML_GUARD_CLASSES = (14, 16, 14, 16)
+RML_RXGAIN_SCHEMA = 'rml2018a-qam-rx-gain-pilot-v1'
+RML_RXGAIN_BATCHES = (66440, 75314, 66441, 75315)
+RML_RXGAIN_CLASSES = (14, 16, 14, 16)
 
 
 def packet_peak(level_profile):
-    require(level_profile in ('standard', 'gain-pair-pilot', 'timing-multiclass-pilot', 'qam-guard-pilot'), 'registered TX level profile')
+    require(level_profile in ('standard', 'gain-pair-pilot', 'timing-multiclass-pilot', 'qam-guard-pilot', 'qam-rx-gain-pilot'), 'registered TX level profile')
     return .2 if level_profile == 'standard' else .2*math.sqrt(10.)
 
 
 def level_batches(profile):
     packet_peak(profile)
+    if profile == 'qam-rx-gain-pilot': return RML_RXGAIN_BATCHES
     if profile == 'qam-guard-pilot': return RML_GUARD_BATCHES
     return RML_TIMING_BATCHES if profile=='timing-multiclass-pilot' else RML_GAIN_PAIR_BATCHES
 
@@ -54,7 +58,13 @@ def level_batches(profile):
 def level_schema(profile):
     packet_peak(profile)
     return {'standard':SCHEMA,'gain-pair-pilot':RML_GAIN_PAIR_SCHEMA,
-            'timing-multiclass-pilot':RML_TIMING_SCHEMA, 'qam-guard-pilot':RML_GUARD_SCHEMA}[profile]
+            'timing-multiclass-pilot':RML_TIMING_SCHEMA, 'qam-guard-pilot':RML_GUARD_SCHEMA,
+            'qam-rx-gain-pilot':RML_RXGAIN_SCHEMA}[profile]
+
+
+def pilot_rx_gains(profile):
+    packet_peak(profile)
+    return (40,50) if profile=='qam-rx-gain-pilot' else (40,)
 
 
 def require(condition, message):
@@ -141,7 +151,7 @@ def validate_tx(plan, payload):
         require(plan == expected and payload == waveform.tobytes(), 'unregistered LO reference plan/payload')
         return
     registered_tx_gain(plan.get('tx_gain_db'))
-    profiles={SCHEMA:'standard',RML_GAIN_PAIR_SCHEMA:'gain-pair-pilot',RML_TIMING_SCHEMA:'timing-multiclass-pilot',RML_GUARD_SCHEMA:'qam-guard-pilot'}
+    profiles={SCHEMA:'standard',RML_GAIN_PAIR_SCHEMA:'gain-pair-pilot',RML_TIMING_SCHEMA:'timing-multiclass-pilot',RML_GUARD_SCHEMA:'qam-guard-pilot',RML_RXGAIN_SCHEMA:'qam-rx-gain-pilot'}
     require(plan.get('schema') in profiles, 'registered TX schema')
     profile=profiles[plan['schema']];paired=profile!='standard'
     peak = packet_peak(profile)

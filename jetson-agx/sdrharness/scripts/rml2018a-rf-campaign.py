@@ -29,6 +29,7 @@ from rml2018a_campaign import (REPO, SCHEMA, RATE, CENTER, BW, RX_SAMPLES, CFO_S
     ROWS_PER_BATCH, batch_rows, budget, digest, file_hash, marker, normalize_window,
     packet, packet_peak, level_batches, RML_GAIN_PAIR_BATCHES, RML_TIMING_BATCHES, RML_TIMING_CLASSES,
     RML_GUARD_BATCHES, RML_GUARD_CLASSES,
+    RML_RXGAIN_BATCHES, RML_RXGAIN_CLASSES, pilot_rx_gains,
     receive_quality, registered_tx_gain, require, save, sinr_contract, synchronize, tx_plan, validate_receive_quality)
 
 DATASET = REPO/'local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5'
@@ -75,7 +76,7 @@ def campaign_level(campaign, indices=()):
     peak=packet_peak(profile)
     if profile != 'standard':
         require(campaign['tx_host']=='agx' and campaign['rf']['tx_gain_db']==60 and
-            campaign['rf']['rx_gain_db']==40 and campaign['rf']['peak']==peak and
+            campaign['rf']['rx_gain_db'] in pilot_rx_gains(profile) and campaign['rf']['peak']==peak and
             campaign.get('execution_limits')==level_limits(profile), 'registered finite pilot campaign')
         require(all(type(i) is int and i in level_batches(profile) for i in indices), 'finite pilot batch selection')
     return profile
@@ -86,7 +87,7 @@ def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profi
     tx_gain_db=registered_tx_gain(tx_gain_db)
     peak=packet_peak(tx_level_profile)
     if tx_level_profile != 'standard':
-        require((rx_gain_db,tx_gain_db,tx_host)==(40,60,'agx'), 'gain-pair pilot requires AGX TX60/RX40')
+        require(rx_gain_db in pilot_rx_gains(tx_level_profile) and tx_gain_db==60 and tx_host=='agx', 'registered pilot RX gain and AGX TX60 required')
     host_identity=transport_module().identity(tx_host)
     require(not root.exists(), 'run root already exists; use its existing plan')
     require(root.resolve() == root and root.parent == Path('/var/tmp/sdrharness-dev') and
@@ -265,6 +266,8 @@ def acquire_batch(root, campaign, index, retry_failed=False):
         require(np.all(labels.argmax(axis=1)==RML_TIMING_CLASSES[RML_TIMING_BATCHES.index(index)]), 'registered multiclass source identity')
     if level=='qam-guard-pilot':
         require(np.all(labels.argmax(axis=1)==RML_GUARD_CLASSES[RML_GUARD_BATCHES.index(index)]), 'registered QAM source identity')
+    if level=='qam-rx-gain-pilot':
+        require(np.all(labels.argmax(axis=1)==RML_RXGAIN_CLASSES[RML_RXGAIN_BATCHES.index(index)]), 'registered RX-gain QAM identity')
     require(shutil.disk_usage(root).free > RX_SAMPLES*4 + frame.nbytes + 32*1024*1024, 'batch disk budget')
     password=Path('/home/jetson/.config/sdrharness/p201-root.password')
     require(password.is_file() and not password.is_symlink() and password.stat().st_mode & 0o777 == 0o600,
@@ -585,7 +588,7 @@ def main():
     p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],help='plan only; default20; all execution uses the sealed plan')
     p.add_argument('--tx-gain-db',type=int,choices=[0,20,40,60,70,80],help='plan only; default0; all execution uses the sealed plan')
     p.add_argument('--tx-host',choices=['agx','nx'],help='plan only; default agx; P201 remains network RX')
-    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot','qam-guard-pilot'],help='plan only; finite pilots restrict batch IDs at AGX TX60/RX40')
+    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot'],help='plan only; finite pilots restrict batch IDs and AGX gains; RX50 only in RX-gain pilot')
     args=p.parse_args();root=args.root
     if args.command=='plan':
         require(args.batch_indices is None,'batch selection is execution-only; preregister pilot separately')
