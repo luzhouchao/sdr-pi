@@ -30,6 +30,7 @@ from rml2018a_campaign import (REPO, SCHEMA, RATE, CENTER, BW, RX_SAMPLES, CFO_S
     packet, packet_peak, level_batches, RML_GAIN_PAIR_BATCHES, RML_TIMING_BATCHES, RML_TIMING_CLASSES,
     RML_GUARD_BATCHES, RML_GUARD_CLASSES,
     RML_RXGAIN_BATCHES, RML_RXGAIN_CLASSES, pilot_rx_gains,
+    RML_REMAINING_BATCHES, RML_REMAINING_CLASSES,
     receive_quality, registered_tx_gain, require, save, sinr_contract, synchronize, tx_plan, validate_receive_quality)
 
 DATASET = REPO/'local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5'
@@ -268,6 +269,8 @@ def acquire_batch(root, campaign, index, retry_failed=False):
         require(np.all(labels.argmax(axis=1)==RML_GUARD_CLASSES[RML_GUARD_BATCHES.index(index)]), 'registered QAM source identity')
     if level=='qam-rx-gain-pilot':
         require(np.all(labels.argmax(axis=1)==RML_RXGAIN_CLASSES[RML_RXGAIN_BATCHES.index(index)]), 'registered RX-gain QAM identity')
+    if level=='remaining-high-snr-pilot':
+        require(np.all(labels.argmax(axis=1)==RML_REMAINING_CLASSES[RML_REMAINING_BATCHES.index(index)]), 'registered remaining class identity')
     require(shutil.disk_usage(root).free > RX_SAMPLES*4 + frame.nbytes + 32*1024*1024, 'batch disk budget')
     password=Path('/home/jetson/.config/sdrharness/p201-root.password')
     require(password.is_file() and not password.is_symlink() and password.stat().st_mode & 0o777 == 0o600,
@@ -588,7 +591,7 @@ def main():
     p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],help='plan only; default20; all execution uses the sealed plan')
     p.add_argument('--tx-gain-db',type=int,choices=[0,20,40,60,70,80],help='plan only; default0; all execution uses the sealed plan')
     p.add_argument('--tx-host',choices=['agx','nx'],help='plan only; default agx; P201 remains network RX')
-    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot'],help='plan only; finite pilots restrict batch IDs and AGX gains; RX50 only in RX-gain pilot')
+    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot','remaining-high-snr-pilot'],help='plan only; finite profiles restrict batch IDs and AGX gains; remaining-high-snr uses TX60/RX50')
     args=p.parse_args();root=args.root
     if args.command=='plan':
         require(args.batch_indices is None,'batch selection is execution-only; preregister pilot separately')

@@ -216,7 +216,7 @@ source/raw/旧LO/新guard/新guard后timing五组，最多480模型窗口加2次
 ## QAM接收增益配对
 
 RX增益配对使用单独的`qam-rx-gain-pilot`，只允许66440/75314/66441/75315（64/256QAM交替），
-TX60、峰值0.632455532、AGX，允许RX40或RX50；其他有限profile仍只允许RX40。
+TX60、峰值0.632455532、AGX，允许RX40或RX50；旧增益/八类/保护间隔profile仍只允许RX40。
 每档各建新campaign，96行/16秒TX/1,048,560接收字节；配对总计8采集、192接收行（96唯一源行）、32秒TX和2,097,120字节。
 匹配源X和尺度，但两档run ID/导频不同，独立执行原同步，不称逐射频样本完全一致。
 比较脚本复用`compare-rml2018a-pilot-timing.py`入口，为此profile增加固定`wide_timing`第六组，
@@ -224,6 +224,22 @@ TX60、峰值0.632455532、AGX，允许RX40或RX50；其他有限profile仍只�
 组合使用原冻结500kHz系数和原时序坐标，源保真门不变，并验证组合滤波需要的真实128点两侧空间；
 前级校正或空间不足时保留上一处理结果和跳过原因，不使用补零冒充有效输出。
 后续实验参考及每档识别边界见[配对验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12rx40rx50配对实机与识别对照)。
+
+## 其余16类高源SNR有限profile
+
+`--tx-level-profile remaining-high-snr-pilot --tx-host agx --tx-gain-db 60 --rx-gain-db 50`
+限定2455MHz、峰值0.632455532、源Z30；发包schema为`rml2018a-remaining-high-snr-pilot-v1`。
+仅允许batch8790/13227/17664/30976/35414/39851/44288/48726/53163/62038/70912/79787/84224/88662/97536/106411，
+对应原始类ID1/2/3/6/7/8/9/10/11/13/15/17/18/19/21/23，发射前核对标签、Z和精确源行成员。
+每类24行，总384行/64秒TX/4,194,240接收字节；拒绝其他主机、增益和批次。
+
+复用`compare-rml2018a-pilot-timing.py`的prepare/infer/verify，输出独立
+`rml2018a-remaining-high-snr-comparison-v1`，仅`source/raw/guard`三组，最多1152窗口+2warmup。
+保留旧LO及保护间隔相消的审计，模型只执行这三组；不执行时序或宽带滤波。
+校正被拒绝时保留原始载荷、明确原因与识别分母，SINR无效不等于未收到。
+该profile是有限工程入口，不改变普通campaign峰值、预处理或生产能力。
+前八类RX40与本profile的RX50不得合并成同条件24类准确率；
+实际结果及三批保护区拒绝见[验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12其余16类rx50高源snr有限覆盖)。
 
 ## 固定500kHz宽带滤波对照
 

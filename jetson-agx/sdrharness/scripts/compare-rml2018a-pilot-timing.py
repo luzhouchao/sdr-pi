@@ -30,15 +30,19 @@ def software():
 
 def prepare(root):
     m=runner();p=m.load_plan(root)
-    c.require(p['tx_level_profile'] in ('timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot'),'registered comparison parent')
+    c.require(p['tx_level_profile'] in ('timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot','remaining-high-snr-pilot'),'registered comparison parent')
+    remaining=p['tx_level_profile']=='remaining-high-snr-pilot'
     rxgain=p['tx_level_profile']=='qam-rx-gain-pilot'
-    qam=p['tx_level_profile'] in ('qam-guard-pilot','qam-rx-gain-pilot')
+    qam=p['tx_level_profile'] in ('qam-guard-pilot','qam-rx-gain-pilot','remaining-high-snr-pilot')
     batches,classes=(c.RML_GUARD_BATCHES,c.RML_GUARD_CLASSES) if qam else (c.RML_TIMING_BATCHES,c.RML_TIMING_CLASSES)
     tags=('source','raw','lo','guard','timing') if qam else TAGS
     if rxgain:
         batches,classes=c.RML_RXGAIN_BATCHES,c.RML_RXGAIN_CLASSES
         tags=(*tags,'wide_timing')
         wide=m.module('rxgain_wide','compare-rml2018a-wideband.py');fir=wide.taps()
+    if remaining:
+        batches,classes=c.RML_REMAINING_BATCHES,c.RML_REMAINING_CLASSES
+        tags=('source','raw','guard')
     total=len(batches)*24
     results=[];tensors={}
     for batch,class_id in zip(batches,classes):
@@ -65,7 +69,8 @@ def prepare(root):
                 timing_raw,guard_info=guard.cancel(raw,sync)
                 guarded=lo.payload(timing_raw,sync)
                 timing_lo_info=guard_info
-            if timing_lo_info['status']=='applied':adjusted,timing_info=timing.correct(timing_raw,sync,p['run_id'],batch)
+            if remaining:timing_info=dict(status='skipped',reason='not_requested')
+            elif timing_lo_info['status']=='applied':adjusted,timing_info=timing.correct(timing_raw,sync,p['run_id'],batch)
             else:
                 adjusted=(guarded if qam else cancelled).copy();timing_info=dict(status='skipped',reason='LO_not_validated')
             if rxgain:
@@ -94,6 +99,7 @@ def prepare(root):
             tx['payload_sha256']==txp['payload_sha256'] and tx['uhd_log_sha256']==c.file_hash(d/'tx-uhd.log'),'TX receipt')
         source=iq[:,:,0]+1j*iq[:,:,1];parts=dict(source=source,raw=received,lo=cancelled,timing=adjusted)
         if qam: parts=dict(source=source,raw=received,lo=cancelled,guard=guarded,timing=adjusted)
+        if remaining:parts=dict(source=source,raw=received,guard=guarded)
         if rxgain:
             source_filtered=np.convolve(np.tile(frame,3),fir,mode='same')
             offset=len(frame)+c.GUARD+c.MARKER
@@ -109,14 +115,16 @@ def prepare(root):
             c.require(all(a['receive_quality'][k][key]==value for key,value in q.items()),'raw quality replay')
             qualities={'raw':q}
             if received is not None:
-                qualities['lo']=lo.quality(source[k],cancelled[k],30.,lo_info)
-                qualities['timing']=timing.quality(source[k],adjusted[k],30.,timing_info)
+                if not remaining:
+                    qualities['lo']=lo.quality(source[k],cancelled[k],30.,lo_info)
+                    qualities['timing']=timing.quality(source[k],adjusted[k],30.,timing_info)
                 if qam: qualities['guard']=guard.quality(source[k],guarded[k],30.,guard_info)
             else:
-                qualities['lo']={**q,'rx_sinr_reference_plane':lo.PLANE}
-                qualities['timing']={**q,'rx_sinr_reference_plane':timing.PLANE}
+                if not remaining:
+                    qualities['lo']={**q,'rx_sinr_reference_plane':lo.PLANE}
+                    qualities['timing']={**q,'rx_sinr_reference_plane':timing.PLANE}
                 if qam: qualities['guard']={**q,'rx_sinr_reference_plane':guard.PLANE}
-            if qam:
+            if qam and not remaining:
                 qualities['timing']['rx_sinr_reference_plane']='received_payload_after_guard_tone_block_margin_and_pilot_timing_before_rms'
             if rxgain:
                 wq=c.receive_quality(a['status'],source[k],None if wide_timing is None else wide_timing[k],30.)
@@ -153,6 +161,9 @@ def prepare(root):
     if rxgain:
         report.update(schema='rml2018a-qam-rx-gain-comparison-v1',rx_gain_db=p['rf']['rx_gain_db'],
             semantics='96 unique matched QAM sources per RX gain; six variants; fixed DSP and all failures retained; not independent accuracy.')
+    if remaining:
+        report.update(schema='rml2018a-remaining-high-snr-comparison-v1',rx_gain_db=p['rf']['rx_gain_db'],
+            semantics='384 new source rows from remaining16 classes at Z30; source/raw/guard only; all failures retained; not a uniform24-class or independent accuracy benchmark.')
     return report,tensors
 
 
