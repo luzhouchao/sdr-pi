@@ -272,6 +272,12 @@ class CampaignTests(unittest.TestCase):
 
     def test_agx_low_gain_and_pinned_binary_override(self):self.fifo_case(True,0,'/fake/agx/tx_samples_from_file')
 
+    def test_cable_gain_steps_keep_finite_feed_and_go_gate(self):
+        for gain in (20,40,60):
+            with self.subTest(gain=gain):
+                self.fifo_case(True,gain,'/fake/agx/tx_samples_from_file')
+                self.fifo_case(False,gain,'/fake/agx/tx_samples_from_file')
+
     def test_unverified_uhd_binary_rejected_before_process(self):
         nx=load('unverified_nx',SCRIPTS/'rml2018a-nx-tx.py')
         frame,_=c.packet(self.source(2),'binary-test',0);plan=c.tx_plan(frame,'binary-test',0,[0,1],0)

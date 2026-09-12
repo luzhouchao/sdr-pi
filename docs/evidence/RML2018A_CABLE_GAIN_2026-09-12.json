@@ -1,0 +1,1637 @@
+{
+  "schema": "rml2018a-cable-gain-evidence-v1",
+  "finalized_unix_ns": 1789188685995646675,
+  "base_head": "4268fdee4bd659eeee96d535bfe7369a6051692a",
+  "purpose": "Controlled50dB and30dB cable gain/quality/recognition comparisons plus failed and corrected active cancellation; preserve IQ for low-amplitude and+250kHz residual review",
+  "source": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "bytes": 21449148312,
+    "mtime_ns": 1627354882000000000
+  },
+  "source_unique_full_capture_rows": 48,
+  "full_capture_attempted_rows_with_diagnostic_repeats": 240,
+  "full_tx_attempts": 10,
+  "cancel_attempts": 2,
+  "maximum_tx_seconds_across_executed_attempts": 48,
+  "model_experiment_windows": 192,
+  "model_warmup_windows": 4,
+  "connection_now": "AGX B210 USB3 serial2508504 RF A TX/RX ->30dB50ohm2WDC-8GHz attenuator and15cmSMA ->P201RX1",
+  "operator_confirmations": [
+    "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/connector-confirmation.json",
+    "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/connection-confirmed.json"
+  ],
+  "model_identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "preprocessing": "pilot timing/CFO/phase correction then per-row complex RMS; no label-guided alignment",
+  "quality_method": {
+    "method": "nominal-source-plus-crossfit-link-error-v1",
+    "target": "conditional_effective_sinr_including_link_distortion",
+    "assumptions": [
+      "Z describes nominal source signal/noise power ratio in X",
+      "single complex gain is adequate over each fixed 1024-sample window",
+      "additional interference/noise is uncorrelated with X",
+      "source signal and source noise undergo the same gain"
+    ],
+    "limitations": [
+      "not independently measured total RF SINR or per-realization source SNR",
+      "stable multipath/nonlinearity remains in link error; correlated interference can bias gain",
+      "no separation of Wi-Fi, receiver noise and hardware distortion"
+    ],
+    "folds": "two contiguous512 halves; train centered scalar gain on one, evaluate other, swap",
+    "maximum_gain_disagreement": 0.25,
+    "maximum_residual_power_ratio": 4.0,
+    "minimum_reference_residual_db": -10.0,
+    "minimum_centered_reference_fraction": 0.0001,
+    "digital_filter": "none",
+    "integration_bandwidth_hz": 2100000,
+    "integration_band": "entire sampled complex baseband [-Fs/2, Fs/2); after analog RX filter",
+    "analog_rf_bandwidth_hz": 1500000,
+    "confidence_interval": null
+  },
+  "results": [
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912",
+      "gain_db": 0,
+      "rx_gain_db": 20,
+      "batch": 4267,
+      "status": "sync_failed",
+      "sync_error": "marker_not_found:0.198914",
+      "sync": null,
+      "component_rms_counts": 1.0829275727723455,
+      "component_peak_counts": 5.0,
+      "clipped_samples": 0,
+      "estimated_rows": 0,
+      "sinr_min_db": null,
+      "sinr_median_db": null,
+      "sinr_max_db": null,
+      "eligible": false,
+      "restored": true,
+      "uhd_tail_markers": "S",
+      "verified_iq": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/batch-0004267/rx/rml2018a-4267-1789185979404-1789185979404-1789185982692628340.sigmf-data",
+        "iq_sha256": "c49ad05e7c17b19a9e5bde2ed7a5637ff6ea1b924cd6bcec1072bb7c229b5325",
+        "metadata_sha256": "26d11ae5bf43087c2810407053241126132328fd8def8d81c7825a510121d780",
+        "request_id": 5,
+        "sequence": 1510,
+        "session_generation": 1789185979404
+      },
+      "model_operations": 0,
+      "rf_operations": 0
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912",
+      "gain_db": 20,
+      "rx_gain_db": 20,
+      "batch": 4267,
+      "status": "sync_failed",
+      "sync_error": "marker_not_found:0.204959",
+      "sync": null,
+      "component_rms_counts": 1.0698073089766298,
+      "component_peak_counts": 5.0,
+      "clipped_samples": 0,
+      "estimated_rows": 0,
+      "sinr_min_db": null,
+      "sinr_median_db": null,
+      "sinr_max_db": null,
+      "eligible": false,
+      "restored": true,
+      "uhd_tail_markers": "U",
+      "verified_iq": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/batch-0004267/rx/rml2018a-4267-1789186236587-1789186236587-1789186239922153574.sigmf-data",
+        "iq_sha256": "fa294b77345b3593207b1d93bb92632ca3c0a8706abb0099b2a07667f4c1727b",
+        "metadata_sha256": "ba163754846e06b196caf65bfaa5f1a4d4b5da4721fb856d5158c54d1aa957aa",
+        "request_id": 5,
+        "sequence": 1511,
+        "session_generation": 1789186236587
+      },
+      "model_operations": 0,
+      "rf_operations": 0
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912",
+      "gain_db": 40,
+      "rx_gain_db": 20,
+      "batch": 4267,
+      "status": "sync_failed",
+      "sync_error": "marker_not_found:0.173418",
+      "sync": null,
+      "component_rms_counts": 1.0586955154339415,
+      "component_peak_counts": 5.0,
+      "clipped_samples": 0,
+      "estimated_rows": 0,
+      "sinr_min_db": null,
+      "sinr_median_db": null,
+      "sinr_max_db": null,
+      "eligible": false,
+      "restored": true,
+      "uhd_tail_markers": "S",
+      "verified_iq": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/batch-0004267/rx/rml2018a-4267-1789186364894-1789186364894-1789186368170437030.sigmf-data",
+        "iq_sha256": "c2c60e8786ff4128ff00c14b5060d1076ed322022b7dec2dcec1a509557f8874",
+        "metadata_sha256": "d66eaaf148eb7cb26f83aaea085a11b0a95807217c52bcf10548941c2bc1134e",
+        "request_id": 5,
+        "sequence": 1512,
+        "session_generation": 1789186364894
+      },
+      "model_operations": 0,
+      "rf_operations": 0
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912",
+      "gain_db": 60,
+      "rx_gain_db": 20,
+      "batch": 4267,
+      "status": "sync_failed",
+      "sync_error": "marker_not_found:0.221333",
+      "sync": null,
+      "component_rms_counts": 1.0822510160625958,
+      "component_peak_counts": 5.0,
+      "clipped_samples": 0,
+      "estimated_rows": 0,
+      "sinr_min_db": null,
+      "sinr_median_db": null,
+      "sinr_max_db": null,
+      "eligible": false,
+      "restored": true,
+      "uhd_tail_markers": "S",
+      "verified_iq": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/batch-0004267/rx/rml2018a-4267-1789186466146-1789186466146-1789186469520466906.sigmf-data",
+        "iq_sha256": "829f26d892b43be694029ac9a7c4cb5482fc730f9e258ff9474d29f1b1810dc5",
+        "metadata_sha256": "8d607afcab74153bebd0fcffd2c9c61c2676f8d3b7d6a0c4d5971422dead961c",
+        "request_id": 5,
+        "sequence": 1513,
+        "session_generation": 1789186466146
+      },
+      "model_operations": 0,
+      "rf_operations": 0
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912",
+      "gain_db": 70,
+      "rx_gain_db": 40,
+      "batch": 4267,
+      "status": "synchronized",
+      "sync_error": null,
+      "sync": {
+        "marker_score": 0.885995062052343,
+        "marker_offset": 31736,
+        "payload_marker_offset": 31736,
+        "payload_marker_score": 0.885995062052343,
+        "estimated_cfo_hz": 3699.5784537213963,
+        "phase_rotation_rad": -3.046219583069438,
+        "cfo_search_max_hz": 14500,
+        "cfo_limit_hz": 17000,
+        "detector_filter": {
+          "kind": "129-tap Hamming FIR",
+          "cutoff_hz": 500000,
+          "payload_filtered": false
+        },
+        "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+      },
+      "component_rms_counts": 6.055068868860013,
+      "component_peak_counts": 21.0,
+      "clipped_samples": 0,
+      "estimated_rows": 24,
+      "sinr_min_db": -0.7947545690982182,
+      "sinr_median_db": 0.04497056161557468,
+      "sinr_max_db": 0.8537140387758348,
+      "eligible": false,
+      "restored": true,
+      "uhd_tail_markers": "U",
+      "verified_iq": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/batch-0004267/rx/rml2018a-4267-1789187321461-1789187321461-1789187324717036890.sigmf-data",
+        "iq_sha256": "57b25b510e923ce2cff53861f366ce188ef4f8b3c801d7118d7c8b9735a8298c",
+        "metadata_sha256": "809f51fb744853b239b4d22b440cc98244d8e06045befb7cfcd0cfd1c44f44e8",
+        "request_id": 5,
+        "sequence": 1518,
+        "session_generation": 1789187321461
+      },
+      "model_operations": 0,
+      "rf_operations": 0,
+      "attenuation_db": 30
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912",
+      "gain_db": 80,
+      "rx_gain_db": 20,
+      "batch": 4267,
+      "status": "sync_failed",
+      "sync_error": "marker_not_found:0.370950",
+      "sync": null,
+      "component_rms_counts": 1.1002194999376398,
+      "component_peak_counts": 5.0,
+      "clipped_samples": 0,
+      "estimated_rows": 0,
+      "sinr_min_db": null,
+      "sinr_median_db": null,
+      "sinr_max_db": null,
+      "eligible": false,
+      "restored": true,
+      "uhd_tail_markers": "S",
+      "verified_iq": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/batch-0004267/rx/rml2018a-4267-1789186790647-1789186790647-1789186793918795175.sigmf-data",
+        "iq_sha256": "fb2e1adf62b89ac623316c46d478577fd3adac71ef8e8ab74a27dca860c7b197",
+        "metadata_sha256": "0eef7aa00caa208740e6b7bb53a587338b35f14ca4a3768a0c6cc3d6eb7c1a2a",
+        "request_id": 5,
+        "sequence": 1514,
+        "session_generation": 1789186790647
+      },
+      "model_operations": 0,
+      "rf_operations": 0
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912",
+      "gain_db": 80,
+      "rx_gain_db": 40,
+      "batch": 22016,
+      "status": "synchronized",
+      "sync_error": null,
+      "sync": {
+        "marker_score": 0.9139608910728524,
+        "marker_offset": 30280,
+        "payload_marker_offset": 30280,
+        "payload_marker_score": 0.9139608910728524,
+        "estimated_cfo_hz": 3700.878773379192,
+        "phase_rotation_rad": 1.7638927687851864,
+        "cfo_search_max_hz": 14500,
+        "cfo_limit_hz": 17000,
+        "detector_filter": {
+          "kind": "129-tap Hamming FIR",
+          "cutoff_hz": 500000,
+          "payload_filtered": false
+        },
+        "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+      },
+      "component_rms_counts": 17.66559404002765,
+      "component_peak_counts": 55.0,
+      "clipped_samples": 0,
+      "estimated_rows": 24,
+      "sinr_min_db": 1.8769735851695875,
+      "sinr_median_db": 2.336098903486979,
+      "sinr_max_db": 3.0729420372077487,
+      "eligible": false,
+      "restored": true,
+      "uhd_tail_markers": "U",
+      "verified_iq": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/rx/rml2018a-22016-1789187703072-1789187703072-1789187706373095381.sigmf-data",
+        "iq_sha256": "48740474cd748477b824948ab8d8f048db6acd8f6f15e02881e8fa9425063c95",
+        "metadata_sha256": "615c951394e78393ecd14a57683b2730a176d2479c5ef99e1d568517cd29d75a",
+        "request_id": 5,
+        "sequence": 1520,
+        "session_generation": 1789187703072
+      },
+      "model_operations": 0,
+      "rf_operations": 0,
+      "attenuation_db": 30
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912",
+      "gain_db": 80,
+      "rx_gain_db": 40,
+      "batch": 4267,
+      "status": "synchronized",
+      "sync_error": null,
+      "sync": {
+        "marker_score": 0.9047851777623604,
+        "marker_offset": 25042,
+        "payload_marker_offset": 25042,
+        "payload_marker_score": 0.9047851777623604,
+        "estimated_cfo_hz": 3741.531846892646,
+        "phase_rotation_rad": 2.432264420562286,
+        "cfo_search_max_hz": 14500,
+        "cfo_limit_hz": 17000,
+        "detector_filter": {
+          "kind": "129-tap Hamming FIR",
+          "cutoff_hz": 500000,
+          "payload_filtered": false
+        },
+        "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+      },
+      "component_rms_counts": 16.672847179360232,
+      "component_peak_counts": 56.0,
+      "clipped_samples": 0,
+      "estimated_rows": 24,
+      "sinr_min_db": 0.10040115078531264,
+      "sinr_median_db": 1.0563907682361178,
+      "sinr_max_db": 1.6426951538285504,
+      "eligible": false,
+      "restored": true,
+      "uhd_tail_markers": "U",
+      "verified_iq": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/rx/rml2018a-4267-1789187533502-1789187533502-1789187536756827893.sigmf-data",
+        "iq_sha256": "c6fac30ed6e2ed56ac575e842a6a92acbfb1fe05abefdd216512dd115666bf94",
+        "metadata_sha256": "4e7033873b9b51097d773d2411873009431d3e50a2049668d3c8076a53748f29",
+        "request_id": 5,
+        "sequence": 1519,
+        "session_generation": 1789187533502
+      },
+      "model_operations": 0,
+      "rf_operations": 0,
+      "attenuation_db": 30
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912",
+      "gain_db": 80,
+      "rx_gain_db": 40,
+      "batch": 22016,
+      "status": "synchronized",
+      "sync_error": null,
+      "sync": {
+        "marker_score": 0.8670026926631195,
+        "marker_offset": 38249,
+        "payload_marker_offset": 38249,
+        "payload_marker_score": 0.8670026926631195,
+        "estimated_cfo_hz": 3576.45894216385,
+        "phase_rotation_rad": -0.11679086614206514,
+        "cfo_search_max_hz": 14500,
+        "cfo_limit_hz": 17000,
+        "detector_filter": {
+          "kind": "129-tap Hamming FIR",
+          "cutoff_hz": 500000,
+          "payload_filtered": false
+        },
+        "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+      },
+      "component_rms_counts": 2.0033179923719233,
+      "component_peak_counts": 8.0,
+      "clipped_samples": 0,
+      "estimated_rows": 24,
+      "sinr_min_db": -1.953355201357481,
+      "sinr_median_db": -1.1913139277382325,
+      "sinr_max_db": -0.2937660696612124,
+      "eligible": false,
+      "restored": true,
+      "uhd_tail_markers": "S",
+      "verified_iq": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/rx/rml2018a-22016-1789187107422-1789187107422-1789187110664191211.sigmf-data",
+        "iq_sha256": "eee79d6a7fcce7f16418c346bdd8c817d9e180f7861bfafd1ee56fad5bbd04c2",
+        "metadata_sha256": "5fe0513c5be8c63a96e4c774f7c1e303bdcc54dfbe9effe6863500abfd590a97",
+        "request_id": 5,
+        "sequence": 1517,
+        "session_generation": 1789187107422
+      },
+      "model_operations": 0,
+      "rf_operations": 0
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912",
+      "gain_db": 80,
+      "rx_gain_db": 40,
+      "batch": 4267,
+      "status": "synchronized",
+      "sync_error": null,
+      "sync": {
+        "marker_score": 0.8499012006470954,
+        "marker_offset": 59624,
+        "payload_marker_offset": 33512,
+        "payload_marker_score": 0.8335895743301024,
+        "estimated_cfo_hz": 3559.849368101458,
+        "phase_rotation_rad": 0.2973004219244775,
+        "cfo_search_max_hz": 14500,
+        "cfo_limit_hz": 17000,
+        "detector_filter": {
+          "kind": "129-tap Hamming FIR",
+          "cutoff_hz": 500000,
+          "payload_filtered": false
+        },
+        "method": "batch-specific pilot timing/CFO/common phase; unfiltered payload; no DC subtraction or label fitting"
+      },
+      "component_rms_counts": 1.9623001312598158,
+      "component_peak_counts": 9.0,
+      "clipped_samples": 0,
+      "estimated_rows": 24,
+      "sinr_min_db": -3.7596155260258213,
+      "sinr_median_db": -2.2678150955348233,
+      "sinr_max_db": -1.3800967780378846,
+      "eligible": false,
+      "restored": true,
+      "uhd_tail_markers": "U",
+      "verified_iq": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/rx/rml2018a-4267-1789187008155-1789187008155-1789187011444610351.sigmf-data",
+        "iq_sha256": "a1398393e32c1eb25b609237fbcfce591e67ad88377732b3db43533d14246ded",
+        "metadata_sha256": "9e29d5cc7f22a2e4488070308300a9dfc78d38a9553b8cb2be177ab508368c95",
+        "request_id": 5,
+        "sequence": 1516,
+        "session_generation": 1789187008155
+      },
+      "model_operations": 0,
+      "rf_operations": 0
+    }
+  ],
+  "recognition": {
+    "50": {
+      "source_correct": 48,
+      "received_correct": 43,
+      "rows": 48,
+      "verified_model_input_hashes": 96,
+      "batches": [
+        {
+          "batch": 4267,
+          "class_id": 0,
+          "name": "OOK",
+          "rows": 24,
+          "source_correct": 24,
+          "received_correct": 23,
+          "sinr_min_db": -3.7596155260258213,
+          "sinr_median_db": -2.2678150955348233,
+          "sinr_max_db": -1.3800967780378846,
+          "correlation_median": 0.6082472907591782,
+          "uhd_tail_markers": "U",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/rx/rml2018a-4267-1789187008155-1789187008155-1789187011444610351.sigmf-data",
+            "iq_sha256": "a1398393e32c1eb25b609237fbcfce591e67ad88377732b3db43533d14246ded",
+            "metadata_sha256": "9e29d5cc7f22a2e4488070308300a9dfc78d38a9553b8cb2be177ab508368c95",
+            "request_id": 5,
+            "sequence": 1516,
+            "session_generation": 1789187008155
+          },
+          "restored": true
+        },
+        {
+          "batch": 22016,
+          "class_id": 4,
+          "name": "QPSK",
+          "rows": 24,
+          "source_correct": 24,
+          "received_correct": 20,
+          "sinr_min_db": -1.953355201357481,
+          "sinr_median_db": -1.1913139277382325,
+          "sinr_max_db": -0.2937660696612124,
+          "correlation_median": 0.6577925324556995,
+          "uhd_tail_markers": "S",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/rx/rml2018a-22016-1789187107422-1789187107422-1789187110664191211.sigmf-data",
+            "iq_sha256": "eee79d6a7fcce7f16418c346bdd8c817d9e180f7861bfafd1ee56fad5bbd04c2",
+            "metadata_sha256": "5fe0513c5be8c63a96e4c774f7c1e303bdcc54dfbe9effe6863500abfd590a97",
+            "request_id": 5,
+            "sequence": 1517,
+            "session_generation": 1789187107422
+          },
+          "restored": true
+        }
+      ]
+    },
+    "30": {
+      "source_correct": 48,
+      "received_correct": 45,
+      "rows": 48,
+      "verified_model_input_hashes": 96,
+      "batches": [
+        {
+          "batch": 4267,
+          "class_id": 0,
+          "name": "OOK",
+          "rows": 24,
+          "source_correct": 24,
+          "received_correct": 24,
+          "sinr_min_db": 0.10040115078531264,
+          "sinr_median_db": 1.0563907682361178,
+          "sinr_max_db": 1.6426951538285504,
+          "correlation_median": 0.7502951266631654,
+          "uhd_tail_markers": "U",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/rx/rml2018a-4267-1789187533502-1789187533502-1789187536756827893.sigmf-data",
+            "iq_sha256": "c6fac30ed6e2ed56ac575e842a6a92acbfb1fe05abefdd216512dd115666bf94",
+            "metadata_sha256": "4e7033873b9b51097d773d2411873009431d3e50a2049668d3c8076a53748f29",
+            "request_id": 5,
+            "sequence": 1519,
+            "session_generation": 1789187533502
+          },
+          "restored": true
+        },
+        {
+          "batch": 22016,
+          "class_id": 4,
+          "name": "QPSK",
+          "rows": 24,
+          "source_correct": 24,
+          "received_correct": 21,
+          "sinr_min_db": 1.8769735851695875,
+          "sinr_median_db": 2.336098903486979,
+          "sinr_max_db": 3.0729420372077487,
+          "correlation_median": 0.7956391665463913,
+          "uhd_tail_markers": "U",
+          "seal": {
+            "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/rx/rml2018a-22016-1789187703072-1789187703072-1789187706373095381.sigmf-data",
+            "iq_sha256": "48740474cd748477b824948ab8d8f048db6acd8f6f15e02881e8fa9425063c95",
+            "metadata_sha256": "615c951394e78393ecd14a57683b2730a176d2479c5ef99e1d568517cd29d75a",
+            "request_id": 5,
+            "sequence": 1520,
+            "session_generation": 1789187703072
+          },
+          "restored": true
+        }
+      ]
+    }
+  },
+  "tests": {
+    "passed": 47,
+    "simulations": 240
+  },
+  "active_cancel_original": "RF restored and USB idle but stale packet.fifo caused cleanup failure; original audit unchanged; separately recovered",
+  "active_cancel_recheck": "passed after graceful helper wait, bounded signal-protected teardown and typed unused FIFO cleanup",
+  "quality_passed": false,
+  "limitations": [
+    "Conditional effective SINR includes added distortion; not independently measured physical SINR",
+    "30dB median residual+250kHz band fraction about98%; consistent with TX LO offset but hardware cause not independently confirmed",
+    "Only48 unique source rows across two classes, repeated engineering comparisons; not independent/full dataset accuracy",
+    "UHD trailing S/U retained; no RF timestamp continuity evidence"
+  ],
+  "packages": [
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912",
+      "file_count": 16,
+      "total_bytes": 364823,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/acquire-4267.log",
+          "bytes": 4727,
+          "sha256": "5f32f588213f8e23ed4f115dff2952c7e8abbbf4f854fa684d287a07e0cd9319"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/batch-0004267/audit.json",
+          "bytes": 21754,
+          "sha256": "c96e172f0af39aa855d96440578fdfead1103ffac6dd0783ed94c6af796a3a8b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/batch-0004267/capture-complete.json",
+          "bytes": 420,
+          "sha256": "0f5df832381a5c33a5bf147cc3e3fd9126969b2afd7cb12cec8d6ccb526913bf"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/batch-0004267/report.json",
+          "bytes": 2269,
+          "sha256": "d1b29c2b786a8664adf2b9fbfc895047e8abaa52a974eb8e1681f681d1607db4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/batch-0004267/rx/rml2018a-4267-1789185979404-1789185979404-1789185982692628340.sigmf-data",
+          "bytes": 262140,
+          "sha256": "c49ad05e7c17b19a9e5bde2ed7a5637ff6ea1b924cd6bcec1072bb7c229b5325"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/batch-0004267/rx/rml2018a-4267-1789185979404-1789185979404-1789185982692628340.sigmf-meta",
+          "bytes": 487,
+          "sha256": "26d11ae5bf43087c2810407053241126132328fd8def8d81c7825a510121d780"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/batch-0004267/rx-plan.json",
+          "bytes": 386,
+          "sha256": "a9a2f9be30ec395d30ddda00626c96b2c1a95671664705e6299f42457cf60ca2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/batch-0004267/source.json",
+          "bytes": 1456,
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/batch-0004267/tx-plan.json",
+          "bytes": 827,
+          "sha256": "bfa78a1ab1a49d7f6c1d654e90057cfc82ad365ac7b3806d36b33519030d2acf"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/batch-0004267/tx-summary.json",
+          "bytes": 396,
+          "sha256": "5dc2e4dd78f3a00e4de0bc28b09b33dde613ecd1b7bf7834cb07394a6ea336ae"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/batch-0004267/tx-uhd.log",
+          "bytes": 1535,
+          "sha256": "0e5fa7c03bae3c8fb1d3c6ed33a9c114c411dc2b74a213d11d03ba387fe3f93e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/pilot-plan.json",
+          "bytes": 5123,
+          "sha256": "c4a5520c866aed91917205c662714773fc7d97adfbeb3313b6c651747caadc9a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/run-plan.json",
+          "bytes": 4989,
+          "sha256": "849de9e85a5093054b39e1252ec47a74f2a15bceb7f73bab9de73348e68207ff"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/software/rml2018a-rf-campaign.py",
+          "bytes": 33876,
+          "sha256": "6c21acb85afd85ec13430c2e2b8385a43e76be930fd4a8a304bf4dabc7bf59ba"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/software/rml2018a_campaign.py",
+          "bytes": 16598,
+          "sha256": "883a971268aad0f2a8391b38bb13e3971e9dc74208727d2ec3f8844a78c337cf"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/summary.json",
+          "bytes": 7840,
+          "sha256": "7fb936593607af512970440606470a3d85e0ebce57a632f6e86ed08e456e71e0"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912",
+      "file_count": 13,
+      "total_bytes": 309283,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/acquire-4267.log",
+          "bytes": 4733,
+          "sha256": "3c7a46fc277911c83c95ec711e2b02950365f6bf0a77885226def04d760aa399"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/batch-0004267/audit.json",
+          "bytes": 21789,
+          "sha256": "6a6ffe1e4f62a985c66397f2be30d78a2d908e6d9a588b8e1a6cba52b87ea13e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/batch-0004267/capture-complete.json",
+          "bytes": 420,
+          "sha256": "4c142d565de013778be93cddf7a2db25d89dce38c0609721b5d2f9e15931dd75"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/batch-0004267/report.json",
+          "bytes": 2280,
+          "sha256": "f0726c659ca49a5a7ddff02c1e1f076edf4b635b34b4fee697fb8042982792df"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/batch-0004267/rx/rml2018a-4267-1789186236587-1789186236587-1789186239922153574.sigmf-data",
+          "bytes": 262140,
+          "sha256": "fa294b77345b3593207b1d93bb92632ca3c0a8706abb0099b2a07667f4c1727b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/batch-0004267/rx/rml2018a-4267-1789186236587-1789186236587-1789186239922153574.sigmf-meta",
+          "bytes": 487,
+          "sha256": "ba163754846e06b196caf65bfaa5f1a4d4b5da4721fb856d5158c54d1aa957aa"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/batch-0004267/rx-plan.json",
+          "bytes": 386,
+          "sha256": "9660bd94d1954fc1fbb1250cced14f623a6dc60ab31c24ff6eb4cf2e1ee145e3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/batch-0004267/source.json",
+          "bytes": 1456,
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/batch-0004267/tx-plan.json",
+          "bytes": 828,
+          "sha256": "9650979374c47fec639ed83fe66e9c4b24ad825b74f311855c777cb5e1993de5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/batch-0004267/tx-summary.json",
+          "bytes": 396,
+          "sha256": "5c833122d0f6fd6e88d75dab8a15489014fd7aea94bf1f4411c0a6ced73ce0ae"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/batch-0004267/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "ad62838364493d7517a8cc0687d93d6c56a2ea12d9a9a924a95c4c8f5b29e5a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/run-plan.json",
+          "bytes": 4990,
+          "sha256": "de6ad120f2828275cbad9ed31639bca1271ef2577ebbdc37438691f856046798"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/summary.json",
+          "bytes": 7841,
+          "sha256": "fc5b390e94f46ed3b7bb7825178b183c484a27c944c5aa1cf9ee1b398406b749"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912",
+      "file_count": 13,
+      "total_bytes": 309282,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/acquire-4267.log",
+          "bytes": 4734,
+          "sha256": "2ee853404d4da91552f5321bf7aca9c58b0e09029642e683475e575847e57ab9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/batch-0004267/audit.json",
+          "bytes": 21790,
+          "sha256": "3b97765df91ee1a47225487416bcdec90c4bb10ddac82f2a087e39ca4ce4fbcc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/batch-0004267/capture-complete.json",
+          "bytes": 420,
+          "sha256": "265ec8ba96ec161e08653e3af81a90a7bdf6db28e1ba50eed697e4fb22b57172"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/batch-0004267/report.json",
+          "bytes": 2277,
+          "sha256": "4726cd53e4d4eae07e4ae9288b385c827d9af3ea2e490b23e23cf466eedd9946"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/batch-0004267/rx/rml2018a-4267-1789186364894-1789186364894-1789186368170437030.sigmf-data",
+          "bytes": 262140,
+          "sha256": "c2c60e8786ff4128ff00c14b5060d1076ed322022b7dec2dcec1a509557f8874"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/batch-0004267/rx/rml2018a-4267-1789186364894-1789186364894-1789186368170437030.sigmf-meta",
+          "bytes": 487,
+          "sha256": "d66eaaf148eb7cb26f83aaea085a11b0a95807217c52bcf10548941c2bc1134e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/batch-0004267/rx-plan.json",
+          "bytes": 386,
+          "sha256": "f3abc8f6ff3360c0d0e8a6a4e9d79b3b9db90f31b0a931e9c6434da7e82a1de3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/batch-0004267/source.json",
+          "bytes": 1456,
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/batch-0004267/tx-plan.json",
+          "bytes": 828,
+          "sha256": "286626f0f34e24609d00984247ce3eefcde040c5a93b10527452bbaf1b75bb9e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/batch-0004267/tx-summary.json",
+          "bytes": 396,
+          "sha256": "4520be7a44c97fce67aa3631bbd206033bfc4297217786efbf187505d0d3fcd4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/batch-0004267/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "dd1ac31347d7275f9ad1b932ee860457cf440cfc5cec0c104c98eb052bddf0fd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/run-plan.json",
+          "bytes": 4990,
+          "sha256": "a58e31b738a3e70c670040f27393b553a8b58872a915f26d2b7f8a68e9804e03"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/summary.json",
+          "bytes": 7841,
+          "sha256": "201f2c4bc1495dc808608cefcaef016f17c25f0e4cf546ec9ddc60d70d2dee1d"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912",
+      "file_count": 13,
+      "total_bytes": 309284,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/acquire-4267.log",
+          "bytes": 4734,
+          "sha256": "1a8d0604383aa3245b22c22ebaaab5a636130c2d066be53f5d35078ea012117c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/batch-0004267/audit.json",
+          "bytes": 21790,
+          "sha256": "247c7b75e59c211a4650b906584864c9f74a22203458cf9ec7bb8ab29c93007b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/batch-0004267/capture-complete.json",
+          "bytes": 420,
+          "sha256": "0a8b5184580f28fa084fd16167f8a65c8d14eb04e895b23eec4cc3374b4702c9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/batch-0004267/report.json",
+          "bytes": 2279,
+          "sha256": "6e8e517595d6f1eae27f13e7c581a2c0befbf4c2787a6ec3881654fd15517b99"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/batch-0004267/rx/rml2018a-4267-1789186466146-1789186466146-1789186469520466906.sigmf-data",
+          "bytes": 262140,
+          "sha256": "829f26d892b43be694029ac9a7c4cb5482fc730f9e258ff9474d29f1b1810dc5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/batch-0004267/rx/rml2018a-4267-1789186466146-1789186466146-1789186469520466906.sigmf-meta",
+          "bytes": 487,
+          "sha256": "8d607afcab74153bebd0fcffd2c9c61c2676f8d3b7d6a0c4d5971422dead961c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/batch-0004267/rx-plan.json",
+          "bytes": 386,
+          "sha256": "379fd38d73d13d138b394470389f3dee6cecd0944946f8e624b686a6580604cc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/batch-0004267/source.json",
+          "bytes": 1456,
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/batch-0004267/tx-plan.json",
+          "bytes": 828,
+          "sha256": "5f18397ff8db5f734378cb651691cc53b3aedd82622ab74fa5e4408593cd5986"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/batch-0004267/tx-summary.json",
+          "bytes": 396,
+          "sha256": "252f9637d5e94002c9f6656598427da857e30319fae0a1a1260c8e26eef0a107"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/batch-0004267/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "3fcdd23d959f643e06b971973076d8a4cb568a699d75f2e69bbfdfdde59f5035"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/run-plan.json",
+          "bytes": 4990,
+          "sha256": "84692567bc0168150487a990e2297d59c9d6c09d37361972902d1cea46d2a9ee"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/summary.json",
+          "bytes": 7841,
+          "sha256": "fbe2ca78774eb14d33e735cc3a7f0f9e7c953bdb0ffd2c153bf874d15e840ed7"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912",
+      "file_count": 13,
+      "total_bytes": 309282,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/acquire-4267.log",
+          "bytes": 4734,
+          "sha256": "982cb0e26e720d104a3a017c2244fc23a96d4576816d3f5b1fe06e36c27439fe"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/batch-0004267/audit.json",
+          "bytes": 21790,
+          "sha256": "5609785ea48cea137603753f2602746cc7910a813de27c47c897e4744de7a0e4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/batch-0004267/capture-complete.json",
+          "bytes": 420,
+          "sha256": "1f75e1b77ca394a29218b491c985d36a5093321cfe2d5a5de0f9ce6c9c65a97c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/batch-0004267/report.json",
+          "bytes": 2277,
+          "sha256": "b83965c76dcbedb0aebf7cd9e52e6e249813b5c3878b1b86c84ef01394a34793"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/batch-0004267/rx/rml2018a-4267-1789186790647-1789186790647-1789186793918795175.sigmf-data",
+          "bytes": 262140,
+          "sha256": "fb2e1adf62b89ac623316c46d478577fd3adac71ef8e8ab74a27dca860c7b197"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/batch-0004267/rx/rml2018a-4267-1789186790647-1789186790647-1789186793918795175.sigmf-meta",
+          "bytes": 487,
+          "sha256": "0eef7aa00caa208740e6b7bb53a587338b35f14ca4a3768a0c6cc3d6eb7c1a2a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/batch-0004267/rx-plan.json",
+          "bytes": 386,
+          "sha256": "39ee34adc57747f88ec4335ce4f1520f9360201b2f7927a19e3629d1a6974ff9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/batch-0004267/source.json",
+          "bytes": 1456,
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/batch-0004267/tx-plan.json",
+          "bytes": 828,
+          "sha256": "3a128d78a63a00a094250f9c27891e45b6bb467d1bc25def2c17d806cea1d62d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/batch-0004267/tx-summary.json",
+          "bytes": 396,
+          "sha256": "11cd0470cc602d964024df752dfbe4f9f8dbf94ad7ed064387f34b2841f03cd7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/batch-0004267/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "099dc1e7ec4c0a31dbccb51c43763dcfd32c97d1f2506db3230982f097261fab"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/run-plan.json",
+          "bytes": 4990,
+          "sha256": "8f625054c61ff85f473f1d569e8404565c4b60dfa600dce659b5d3a824030421"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/summary.json",
+          "bytes": 7841,
+          "sha256": "aba84af13e139ed0795b49e8a26a1294f7261ab7e1e243d85d1ab0cf3c84d34f"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912",
+      "file_count": 28,
+      "total_bytes": 800986,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/acquire-22016.log",
+          "bytes": 4817,
+          "sha256": "c59ecaf529e8de3eebc320c490190fcc10660604e4aa4251a018d4c37c9653d4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/acquire-4267.log",
+          "bytes": 4812,
+          "sha256": "a6d903e1990fc6a4437f7d36ee0888da5d0bbc773a57aa192a49bbb754e989ac"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/audit.json",
+          "bytes": 40710,
+          "sha256": "b486d66eef0c3d6a785e3aa4d5e05a27724d65b55212c37e663af6e8ec7f6797"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/capture-complete.json",
+          "bytes": 421,
+          "sha256": "9dc64e25a7aac3313094c1c0bc8a6240c073680a7bc212d5dddce11936499066"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/predictions.json",
+          "bytes": 75611,
+          "sha256": "c3cb4898f20f447ad0c5b14a2760dec76755f0dbbe8db39506e78bb5f1994500"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/report.json",
+          "bytes": 2285,
+          "sha256": "15336ce06fd1b4966eb7add95da407857cfad7ec61f2929a38e850b430e51690"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/rx/rml2018a-4267-1789187008155-1789187008155-1789187011444610351.sigmf-data",
+          "bytes": 262140,
+          "sha256": "a1398393e32c1eb25b609237fbcfce591e67ad88377732b3db43533d14246ded"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/rx/rml2018a-4267-1789187008155-1789187008155-1789187011444610351.sigmf-meta",
+          "bytes": 487,
+          "sha256": "9e29d5cc7f22a2e4488070308300a9dfc78d38a9553b8cb2be177ab508368c95"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/rx-plan.json",
+          "bytes": 386,
+          "sha256": "2b5aff54767d6e22b063c010df7c5cd100699a0509b0a78305bfdca9f248f1e8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/source.json",
+          "bytes": 1456,
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/tx-plan.json",
+          "bytes": 828,
+          "sha256": "beab848dbceba11a365a1b7d5603f6dc9947f50624fe0f28c5c2f902408928e9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/tx-summary.json",
+          "bytes": 396,
+          "sha256": "1547b792b241c943cbeb119f9e9e7e0839d78ac7aec0897c865ef4f8b6a7869e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/audit.json",
+          "bytes": 40726,
+          "sha256": "ea5d289d7655617c8239bf87720a56b96868601644317ac04778d248502835a5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/capture-complete.json",
+          "bytes": 421,
+          "sha256": "5fe6e6916b6f9887cd50701d072d87c18be399be1e026b1f810bd8098964d252"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/predictions.json",
+          "bytes": 75889,
+          "sha256": "415598914da6f6a7561d281026e028ac85f1e0be0a0d975b176ebe7cc6ea3d3d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/report.json",
+          "bytes": 2287,
+          "sha256": "7bd41c99dcba8c715ea44614d8f941aff5b97ecd463c5987519bc161b17929d7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/rx/rml2018a-22016-1789187107422-1789187107422-1789187110664191211.sigmf-data",
+          "bytes": 262140,
+          "sha256": "eee79d6a7fcce7f16418c346bdd8c817d9e180f7861bfafd1ee56fad5bbd04c2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/rx/rml2018a-22016-1789187107422-1789187107422-1789187110664191211.sigmf-meta",
+          "bytes": 487,
+          "sha256": "5fe0513c5be8c63a96e4c774f7c1e303bdcc54dfbe9effe6863500abfd590a97"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/rx-plan.json",
+          "bytes": 387,
+          "sha256": "e1fa15f861d9c7018f46c99bc8cb457ab9845b87a93d507d5d0d75fd2d056163"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/source.json",
+          "bytes": 1455,
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/tx-plan.json",
+          "bytes": 829,
+          "sha256": "b432589a2493f3e912b228072a009214222df0b0639ae402c712b2ffeb0b5ae9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/tx-summary.json",
+          "bytes": 397,
+          "sha256": "b4172fd596165c8e3d3e57a59afc5a38aea77f427c47b8a45c9308c1f637e9c2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "099dc1e7ec4c0a31dbccb51c43763dcfd32c97d1f2506db3230982f097261fab"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/gpu-isolation-1789187255958456126.json",
+          "bytes": 295,
+          "sha256": "b92725649f12b13ae4019c628753e7f45ea30b8357364d0396010f9a9cfa4175"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/infer.log",
+          "bytes": 5153,
+          "sha256": "1338be94560e9f9e67e66ed76278a745aa6cd43723aab73d3b6122dd89e08202"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/run-plan.json",
+          "bytes": 4990,
+          "sha256": "ed8ff8822064aa6ac9881ea125f0f71e6c89cf5907196af26413d5fb6cb59e0b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/summary.json",
+          "bytes": 8107,
+          "sha256": "a2f13db2da09345ae3f6943a798faaf24cf0118ecae3e6ef0b95770a602a2635"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912",
+      "file_count": 14,
+      "total_bytes": 329478,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/acquire-4267.log",
+          "bytes": 4814,
+          "sha256": "05c9e7dd9e6dbc03447a4056496154725cea056c66e6d05b3fd3ec8f2cadb69d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/batch-0004267/audit.json",
+          "bytes": 40746,
+          "sha256": "210ccd9708fe1cd3e23d2ebc058079451fefa86941d01dbfe7a6b735291402b5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/batch-0004267/capture-complete.json",
+          "bytes": 421,
+          "sha256": "75c7a4798e67ef9b2596e4b047ea29cffc3edac81e7d2d15f6dacda5f8790c0c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/batch-0004267/report.json",
+          "bytes": 2292,
+          "sha256": "a63946690582f206114f92995bb0d89bdd6ea7079c59e1cf45fa1a2b553fd495"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/batch-0004267/rx/rml2018a-4267-1789187321461-1789187321461-1789187324717036890.sigmf-data",
+          "bytes": 262140,
+          "sha256": "57b25b510e923ce2cff53861f366ce188ef4f8b3c801d7118d7c8b9735a8298c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/batch-0004267/rx/rml2018a-4267-1789187321461-1789187321461-1789187324717036890.sigmf-meta",
+          "bytes": 487,
+          "sha256": "809f51fb744853b239b4d22b440cc98244d8e06045befb7cfcd0cfd1c44f44e8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/batch-0004267/rx-plan.json",
+          "bytes": 386,
+          "sha256": "8994072425be546aa8e14e3561c26ec96bed1b17d801b6f89b42722beae44153"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/batch-0004267/source.json",
+          "bytes": 1456,
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/batch-0004267/tx-plan.json",
+          "bytes": 828,
+          "sha256": "6a437289b724743d9d15224b07a4227d9ca428dec478133f843b9c017ecad750"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/batch-0004267/tx-summary.json",
+          "bytes": 396,
+          "sha256": "f21b6b81d7971fda316566d90b85117f65102a7972426bbf2f4e7bcf56771e3a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/batch-0004267/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "98d02c95265ab5ce6f5d5c389c30280251766ad2c624d275bc927c6c1bbf9388"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/connection-confirmed.json",
+          "bytes": 1001,
+          "sha256": "0ea7e377eb1bfa53a7dcf97f78a988841034bd77b781719f8068de51d4e61485"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/run-plan.json",
+          "bytes": 4990,
+          "sha256": "2adbeeb7ca608edffbe0b82194f10e7f8080add4eeaf3ce7d20ca294661f3fc8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/summary.json",
+          "bytes": 7984,
+          "sha256": "c64a94a18811b8a86ab50de0d18876d3645c38958ffd1325a5a3789a4edf263a"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912",
+      "file_count": 35,
+      "total_bytes": 812029,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/acquire-22016.log",
+          "bytes": 4817,
+          "sha256": "1ea14e3e9fba315f597ff0ee8dfbe4571fd36bce9af27974178ea947f4286499"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/acquire-4267.log",
+          "bytes": 4761,
+          "sha256": "782b0d1c6947a870c50f764a1ae205dd8396560851e7cfacf603dfc6b4caaad7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/audit.json",
+          "bytes": 40721,
+          "sha256": "a3a35470c4e1045c56455b776bdac5719f1bd5065cdd07748664f8210b025014"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/capture-complete.json",
+          "bytes": 421,
+          "sha256": "f9d9b590c4acc2c6e6e59a08d4d670403c6bbc3a026d20a4247f71091392e307"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/predictions.json",
+          "bytes": 75589,
+          "sha256": "f6af77c6de5aee712a0fa48e18f3e26a44a7e3dac17815b02a9456be9d3138b5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/report.json",
+          "bytes": 2293,
+          "sha256": "39c734fdd671c9b6656967501862a2b33c60bcf18b6da956975832c09a250a40"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/rx/rml2018a-4267-1789187533502-1789187533502-1789187536756827893.sigmf-data",
+          "bytes": 262140,
+          "sha256": "c6fac30ed6e2ed56ac575e842a6a92acbfb1fe05abefdd216512dd115666bf94"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/rx/rml2018a-4267-1789187533502-1789187533502-1789187536756827893.sigmf-meta",
+          "bytes": 487,
+          "sha256": "4e7033873b9b51097d773d2411873009431d3e50a2049668d3c8076a53748f29"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/rx-plan.json",
+          "bytes": 386,
+          "sha256": "6e2c53bdd8d6616d351eba56055adea271e1e136a4dfbc37d3ed271a09d25890"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/source.json",
+          "bytes": 1456,
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/tx-plan.json",
+          "bytes": 828,
+          "sha256": "6388a2ba605919be774482355d1591153b19d55a32a02d6d8949a6ec131785b4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/tx-summary.json",
+          "bytes": 396,
+          "sha256": "2dff0170e7d8e1104c1cbf8ef7684bb7159338a3d19c38429f811efaa2500298"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004268/audit.json",
+          "bytes": 4432,
+          "sha256": "d91efacf6183bb9eb3ea1c605bd43c29a5e515a8b03e9a0ae0da04026cd87b5b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004268/rx/rml2018a-4268-1789187753296-1789187753296-1789187756576576343.sigmf-data",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004268/rx-plan.json",
+          "bytes": 386,
+          "sha256": "7e189b2629e85fc061618dd65809696030c794c8ac0250611d1483f5313a5972"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004268/source.json",
+          "bytes": 1456,
+          "sha256": "ba9692dd909f1cba5573b82b0b6b56b6e8276f298db7ddbae1779d65a10b3ae6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004268/tx-plan.json",
+          "bytes": 828,
+          "sha256": "570b57f43791897d62d25504fc535799e5241ea7c6cbf89e60a0b2d30a0eac4e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004268/tx-uhd.log",
+          "bytes": 1528,
+          "sha256": "694d68de8ec73bb8665f7bf8f39882e5f204a4ae60baee56ee3313a019c2beca"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/audit.json",
+          "bytes": 40716,
+          "sha256": "e28cdb08d477ef7d71ee2f4025ccab14abdf0738caa1c67e790667db9a9abc1d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/capture-complete.json",
+          "bytes": 421,
+          "sha256": "089021c118ad19429b4baf347f7d20c4441351024da458bdeda386b1adffc0eb"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/predictions.json",
+          "bytes": 75744,
+          "sha256": "4e857230070c9139bbd01dcaf708790046dc6f16c46aaa24aedfeb6822b809b0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/report.json",
+          "bytes": 2296,
+          "sha256": "958d1d9fb0a6ef3427c28d22fcdc15084b17f6766adb5a6e9968ccf93b27b3b8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/rx/rml2018a-22016-1789187703072-1789187703072-1789187706373095381.sigmf-data",
+          "bytes": 262140,
+          "sha256": "48740474cd748477b824948ab8d8f048db6acd8f6f15e02881e8fa9425063c95"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/rx/rml2018a-22016-1789187703072-1789187703072-1789187706373095381.sigmf-meta",
+          "bytes": 487,
+          "sha256": "615c951394e78393ecd14a57683b2730a176d2479c5ef99e1d568517cd29d75a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/rx-plan.json",
+          "bytes": 387,
+          "sha256": "02317b3a8d9a6569042748dfc55ec8a9443d9a9e3aa8c66b3bb640fe34eb9b4b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/source.json",
+          "bytes": 1455,
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/tx-plan.json",
+          "bytes": 829,
+          "sha256": "7952b6c10548343df9c39c5094c17673e9eccdebd29f5fb070b6f59acfe23b3d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/tx-summary.json",
+          "bytes": 397,
+          "sha256": "d2278b439ea60c5af28fa8445e4df63c0bcbe79923f78d87463b1717521ce60d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "bbee13896ab1ab14cca3fc8c39450c42bcb0ab60354725fa049d6a02879b4c7c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/cancel-4268.log",
+          "bytes": 2665,
+          "sha256": "f374fa7369c26d8c72ac061de4f5d988d3457fd192acdb627f58d050848fb748"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/gpu-isolation-1789188072755099322.json",
+          "bytes": 295,
+          "sha256": "f3390b58e91ff822a9abc6ad8554c942684cb4857e9f132117e4f8fa2e5c537f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/infer.log",
+          "bytes": 5127,
+          "sha256": "b37e4abc15bd16daa83890326eab8109235405822605c2d0979f84e0cc9599ea"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/run-plan.json",
+          "bytes": 4990,
+          "sha256": "850d45f08e26c17a2ba4c42e46d1de841cfd181b131964246a8cd9706558ef83"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/summary.json",
+          "bytes": 8081,
+          "sha256": "dded730d5357872138603ed1bcc0e24088771416371666d9f60f1f7f2227b984"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912",
+      "file_count": 9,
+      "total_bytes": 17189,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912/batch-0004268/audit.json",
+          "bytes": 5735,
+          "sha256": "6bab288adaa017c132af20ed5e8af1a32fe29ad9577db498b287bd5d005440d7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912/batch-0004268/rx/rml2018a-4268-1789188409171-1789188409171-1789188412420242756.sigmf-data",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912/batch-0004268/rx-plan.json",
+          "bytes": 386,
+          "sha256": "55508a64f22e2e2527a41370ddf6c0c64776d4020fe7a87ef33bcf1aecb17c36"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912/batch-0004268/source.json",
+          "bytes": 1456,
+          "sha256": "ba9692dd909f1cba5573b82b0b6b56b6e8276f298db7ddbae1779d65a10b3ae6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912/batch-0004268/tx-plan.json",
+          "bytes": 828,
+          "sha256": "cd1db876b7cb6dac9ab87bba158b685f70979f12df829b799c88d98c99c3e6ae"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912/batch-0004268/tx-summary.json",
+          "bytes": 435,
+          "sha256": "0608f7cd06c0541b3dc320f8fb141ce86fbfed41b56d1b6f45909743081b6b19"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912/batch-0004268/tx-uhd.log",
+          "bytes": 1528,
+          "sha256": "694d68de8ec73bb8665f7bf8f39882e5f204a4ae60baee56ee3313a019c2beca"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912/cancel-4268.log",
+          "bytes": 1831,
+          "sha256": "d680a3582cff5710dcfde4118bfeaf7a9ca7f6c10f91d817d639dcbcc1854bde"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912/run-plan.json",
+          "bytes": 4990,
+          "sha256": "fb0195b33ce7568cae5cf6dc7aea52b82e4130bf3b4b4c84f9b10803dda71d96"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912",
+      "file_count": 41,
+      "total_bytes": 662567,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/assess.py",
+          "bytes": 3345,
+          "sha256": "b0ae246804518f493cecbaf1569efb178a50c1f9efcf072de88908f9a98ef940"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/assessment-tx0-b4267.json",
+          "bytes": 974,
+          "sha256": "dd122ce37a3ea2f8a93171cf2617c494650ee36d8e963b55c623d86b1f53d415"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/assessment-tx20-b4267.json",
+          "bytes": 985,
+          "sha256": "7499e3e2096110886bd6c2f70f53e517c12f3a5c8f824ef973ce7886a8f4c8c8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/assessment-tx40-b4267.json",
+          "bytes": 985,
+          "sha256": "7260e93bcec41465c4823ab5f2a2f9283256f8e451dcf3b685b4370b5048844f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/assessment-tx60-b4267.json",
+          "bytes": 985,
+          "sha256": "f5c390d862a90de300471a5c1740ba15b9c927441d7b3c04aae38efd370c5d40"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/assessment-tx70rx40-a30-b4267.json",
+          "bytes": 1589,
+          "sha256": "d9fb6fc4dc54aab6917df70b4e947e36395b1d635c49dc09201c91fb01eeb81c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/assessment-tx80-b4267.json",
+          "bytes": 985,
+          "sha256": "ff5a961e2ff777726cc2dd8a0a83205908a4d4dc8f202c0e21958d173a6e2b52"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/assessment-tx80rx40-a30-b22016.json",
+          "bytes": 1589,
+          "sha256": "5411dd4f233dd570e21ec91ca47e84d552b856d2d07b917cecce0459ac5ea432"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/assessment-tx80rx40-a30-b4267.json",
+          "bytes": 1589,
+          "sha256": "679780802690ae458a26d17197b4b70ead91945cbe374ef0f192ded2a939649e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/assessment-tx80rx40-b22016.json",
+          "bytes": 1565,
+          "sha256": "27b5ef8054aa4e6cdb387cf78e69415d8ec8265ea0b8f701902d9d38f085fefc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/assessment-tx80rx40-b4267.json",
+          "bytes": 1563,
+          "sha256": "963b2fa7e17ef1eb1299af3aa16425b04ff226566a9bca47f69264334e66f764"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/cable30-plan.json",
+          "bytes": 1936,
+          "sha256": "3ab0675a13189ec361e30227557602a890f0630cf75ca9c2ba6dea61680d8c2d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/cancel-check.json",
+          "bytes": 388,
+          "sha256": "6295c55530db344b1d3599fc38692e439aa589e51dd9a4de2f648bf3e7229863"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/cancel-check.log",
+          "bytes": 225,
+          "sha256": "e92597e463279fde8f57412afad288184ae3c4d7b776995d757caf073f172915"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/cancel-check.py",
+          "bytes": 2910,
+          "sha256": "1265f1ac45f3bf0f74d9488a126db8fc65594b31effd0724e41ec8868f952b74"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/cancel-recheck-plan.json",
+          "bytes": 857,
+          "sha256": "f85c87d01ea8f9922905ccb1ff29a8808db1000aa941e7fedb0889abaa20b8d5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/cancel-recheck.json",
+          "bytes": 607,
+          "sha256": "fed249f066e3d562f92d33540618cdc03265c0aa5afcd7813aba7d9dd8520e01"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/cancel-recheck.py",
+          "bytes": 2911,
+          "sha256": "0bd5ffdcb58befef18fc2b3f486c4555531dfff48addc0b4cd26c970e3578f34"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/cancel-recovery.json",
+          "bytes": 1222,
+          "sha256": "794e44f9025b9c82e1a4fb3e5969b1a33ea06c7378baffcc777661d13902c4e9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/cleanup-final.json",
+          "bytes": 214908,
+          "sha256": "cf997f5d4452c7799614db6d8f000bb700c172600e362b20c58df26af506da14"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/cleanup.json",
+          "bytes": 2077,
+          "sha256": "3b730bfd329e892f0f363e43012411d37615ac39e626e2910d8e0eb870ed11a2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/connector-confirmation.json",
+          "bytes": 290,
+          "sha256": "787315c57564a3b1eeacbe5d7466f3ece918ada80f8439d08a777e297eec1e6d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/inference-30db-verification.json",
+          "bytes": 11356,
+          "sha256": "6f4e5f0a7149bbb9be7088add4c5dabe8afe1d88ad791b6842b7505ec387033b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/inference-50db-verification.json",
+          "bytes": 11383,
+          "sha256": "c906a94120e4c9e066cc2ec9cb9dae273694d9ef7a44cacec6cee032f1cce4d2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/postflight-final.json",
+          "bytes": 15458,
+          "sha256": "bb2b32bbe5475162743e5df93a5766b3d5b3af02604b68053fdb56619b2dd9bf"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/postflight.json",
+          "bytes": 2077,
+          "sha256": "01f9ea611f5cfdee9fe51ea48287675f781b506bba8896e23f1751ead3e44ba6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/rx40-background/audit.json",
+          "bytes": 4220,
+          "sha256": "cee576e4ab8ae6e1355be3c5e0ec85916bb60bdc4f1d17b5d08190281584b249"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/rx40-background/report.json",
+          "bytes": 2262,
+          "sha256": "03bbe7e241a78d67ff6e2b7c89db64daae7a65a45c265d12d2a8abe31674f62c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/rx40-background/rx/cable-background-1789186910846-1789186910846-1789186910876650421.sigmf-data",
+          "bytes": 262140,
+          "sha256": "0d6b6f8ce5ae0139dd441fb7ff2adec944e0e8a35f06c4afd18afbbab701a516"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/rx40-background/rx/cable-background-1789186910846-1789186910846-1789186910876650421.sigmf-meta",
+          "bytes": 487,
+          "sha256": "b440ceb29325605c84659c5e5e261f9672ff021bd4727fa614281eea117c5e18"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/rx40-background/rx-plan.json",
+          "bytes": 389,
+          "sha256": "9d38f9925cb592b5ae521a50e5f01cc7bb35c4810ba3b59d94a1b242461a83ef"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/rx40-background.py",
+          "bytes": 2825,
+          "sha256": "96a2ae710b02b643ce8ee105f15d763bb12027b18f006c5e0e5e5f15d196aea2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/rx40-plan.json",
+          "bytes": 1722,
+          "sha256": "a3ce4f09b5df03f6c45833a90ae08ce8a22d94cc3c03c4eb9aaa04c1e5d95563"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/software-before-stop-fix/rml2018a-nx-tx.py",
+          "bytes": 4702,
+          "sha256": "f489fda80dd48923e77ef191b8cf981e1b96e6d8c59d70140e7fb00672b0f28c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/software-before-stop-fix/rml2018a-rf-campaign.py",
+          "bytes": 33885,
+          "sha256": "2fdce6f4cdcad1df03b406addfddd3eddbcebcbb6204db17c70585c59ba9a94e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/spectral-diagnostic.json",
+          "bytes": 38939,
+          "sha256": "1539d6d5f53121744ad14c507217facc510dbeaf78c201f97f821ee00161d945"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/spectral-diagnostic.py",
+          "bytes": 2526,
+          "sha256": "7649b50710dfd5e3a4fb7e3fe99bdcf4297125ac51b7fab962158517504a5ecb"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/step-plan.json",
+          "bytes": 2510,
+          "sha256": "857a6534f80a176e445392102760058eb1c4971fc6fd9083b860792ae8324795"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/tests-stop-fix.log",
+          "bytes": 9069,
+          "sha256": "2268de3c657ae46df8d365b5854b26b4313c58af3d9a9074b38e035fabe3bbc7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/tests.log",
+          "bytes": 8759,
+          "sha256": "482e7dfba237ff24fd01d8f91fd6bbafdc7dc8c609ea576c69a8748b70370b9e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/verify-predictions.py",
+          "bytes": 3373,
+          "sha256": "75f269c8216677cda408243dea59f9df401c0eb80c88d9fc3da8b49704caa3e4"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml-cable-gain-20260912"
+    }
+  ],
+  "file_count": 195,
+  "total_bytes": 4224203,
+  "iq_file_count": 13,
+  "iq_bytes": 2883540,
+  "cleanup": {
+    "earlier_cleanup": "/var/tmp/sdrharness-dev/rml-cable-gain-20260912/cleanup.json",
+    "additional_removed_file_count": 717,
+    "additional_removed_bytes": 40319271,
+    "additional_removed_directory_count": 111,
+    "development_removed_file_count": 724,
+    "development_removed_bytes": 40334376,
+    "development_removed_directory_count": 115,
+    "source_packets_removed_files": 12,
+    "source_packets_removed_bytes": 2506752,
+    "cancel_recheck_packet_removed": {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912/batch-0004268/packet.fc32",
+      "bytes": 208896,
+      "sha256": "4104258981319f02b6e78b7b3fbe5c6bb52e3a5ef2932bfe25d6d0f45de3ad57"
+    },
+    "tx_staging_removed_items": 84,
+    "tx_staging_removed_fifo_count": 1,
+    "tx_staging_removed_bytes": 2796460,
+    "all_feature_scratch_and_owner_locks_absent": true,
+    "nx_operations": 0
+  },
+  "production_recognizer_available": false
+}

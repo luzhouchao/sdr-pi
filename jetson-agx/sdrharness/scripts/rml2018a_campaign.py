@@ -80,7 +80,7 @@ def packet(iq, run_id, batch):
 
 
 def registered_tx_gain(value):
-    require(type(value) is int and value in (0,70,80), 'registered TX gain:0,70 or80 dB')
+    require(type(value) is int and value in (0,20,40,60,70,80), 'registered TX gain:0,20,40,60,70 or80 dB')
     return value
 
 

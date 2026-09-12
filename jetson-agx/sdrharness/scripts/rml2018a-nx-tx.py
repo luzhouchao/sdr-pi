@@ -79,6 +79,9 @@ def transmit(root):
         raise
     finally:
         signal.alarm(0)
+        # timeout may forward a stop to both the helper and its process group.
+        # Finish this bounded teardown even if another stop arrives.
+        for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGALRM):signal.signal(sig, signal.SIG_IGN)
         if fd is not None:
             os.close(fd)
         if child is not None and child.poll() is None:

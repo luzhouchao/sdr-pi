@@ -176,12 +176,27 @@ def native_check(root, plan):
 def remote_cleanup(transport, remote):
     allowed = ['rml2018a_campaign.py','rml2018a-nx-tx.py','packet.fc32','tx-plan.json',
                'tx-started.json','tx-summary.json','tx-uhd.log']
-    code = ('import json;from pathlib import Path; p=Path('+repr(str(remote))+'); '
-            'rows=list(p.iterdir()); assert all(x.is_file() and not x.is_symlink() and '
-            'x.name in '+repr(allowed)+' for x in rows); '
-            'print(json.dumps([dict(name=x.name,bytes=x.stat().st_size) for x in rows])); '
+    code = ('import json,stat,subprocess;from pathlib import Path; p=Path('+repr(str(remote))+'); '
+            'rows=list(p.iterdir()); fifos=[x for x in rows if stat.S_ISFIFO(x.lstat().st_mode)]; '
+            'assert all(not x.is_symlink() and ((x.is_file() and x.name in '+repr(allowed)+') or '
+            '(x in fifos and x.name=="packet.fifo")) for x in rows); '
+            'assert all(subprocess.run(["fuser",str(x)],capture_output=True,timeout=5).returncode==1 for x in fifos); '
+            'print(json.dumps([dict(name=x.name,bytes=x.stat().st_size,kind="fifo" if x in fifos else "file") for x in rows])); '
             '[x.unlink() for x in rows];p.rmdir();assert not p.exists()')
     return json.loads(transport.run('python3 -c '+shlex.quote(code)))
+
+
+def stop_tx(transport, tx, owner, remote):
+    if tx is None or tx.poll() is not None:return
+    if owner is not None:
+        transport.run(f'if test -d /proc/{owner}; then test "$(readlink /proc/{owner}/cwd)" = "{remote}" && kill -INT {owner}; fi')
+    else:tx.terminate()
+    # Allow the helper to close its FIFO, stop UHD and save its receipt before escalation.
+    try:tx.communicate(timeout=8)
+    except subprocess.TimeoutExpired:
+        tx.terminate()
+        try:tx.communicate(timeout=3)
+        except subprocess.TimeoutExpired:tx.kill();tx.communicate(timeout=3)
 
 
 def acquire_batch(root, campaign, index, retry_failed=False):
@@ -312,9 +327,8 @@ def acquire_batch(root, campaign, index, retry_failed=False):
         audit['error'] = f'{type(e).__name__}: {e}'
         raise
     finally:
-        if owner is not None and tx is not None and tx.poll() is None:
-            transport.run(f'if test -d /proc/{owner}; then test "$(readlink /proc/{owner}/cwd)" = "{remote}" && kill -INT {owner}; fi')
-        for process in (rx, tx):
+        stop_tx(transport,tx,owner,remote)
+        for process in (rx,):
             if process is not None and process.poll() is None:
                 process.terminate()
                 try: process.communicate(timeout=8)
@@ -530,7 +544,7 @@ def main():
     p.add_argument('--deadline-seconds',type=int,default=600)
     p.add_argument('--retry-failed',action='store_true',help='archive restored failed attempts, then retry; never discard evidence')
     p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],help='plan only; default20; all execution uses the sealed plan')
-    p.add_argument('--tx-gain-db',type=int,choices=[0,70,80],help='plan only; default0; all execution uses the sealed plan')
+    p.add_argument('--tx-gain-db',type=int,choices=[0,20,40,60,70,80],help='plan only; default0; all execution uses the sealed plan')
     p.add_argument('--tx-host',choices=['agx','nx'],help='plan only; default agx; P201 remains network RX')
     args=p.parse_args();root=args.root
     if args.command=='plan':

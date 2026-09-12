@@ -1,5 +1,7 @@
 import importlib.util
 import os
+import shlex
+import sys
 from pathlib import Path
 import tempfile
 import unittest
@@ -11,6 +13,60 @@ t=importlib.util.module_from_spec(spec);spec.loader.exec_module(t)
 
 
 class TransportTests(unittest.TestCase):
+    def runner(self):
+        sys.path.insert(0,str(REPO/'jetson-agx/sdrharness/scripts'))
+        spec=importlib.util.spec_from_file_location('cleanup_campaign',REPO/'devices/b210/programs/campaign.py')
+        runner=importlib.util.module_from_spec(spec);spec.loader.exec_module(runner);return runner
+
+    def test_stop_allows_real_helper_to_finish_fifo_cleanup(self):
+        runner=self.runner()
+        with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory,\
+             patch.object(t,'identity',return_value={'host':'agx'}),\
+             patch.object(t.device,'environment',return_value=os.environ.copy()):
+            root=Path(directory);tx=t.Transport('agx',None)
+            code="""import os,signal,sys,time
+from pathlib import Path
+fifo=Path('packet.fifo');os.mkfifo(fifo)
+def stop(sig,frame):
+    time.sleep(.15);fifo.unlink();sys.exit(0)
+signal.signal(signal.SIGINT,stop)
+print('ready',flush=True)
+while True:time.sleep(1)
+"""
+            child=tx.spawn('cd '+shlex.quote(directory)+' && exec '+shlex.quote(sys.executable)+' -B -c '+shlex.quote(code))
+            try:
+                self.assertEqual(child.stdout.readline(),b'ready\n')
+                runner.stop_tx(tx,child,child.pid,root)
+                self.assertEqual(child.returncode,0);self.assertFalse((root/'packet.fifo').exists())
+            finally:
+                if child.poll() is None:child.kill();child.communicate(timeout=5)
+
+    def test_stale_fifo_cleanup_refuses_an_open_fifo_then_cleans_idle(self):
+        runner=self.runner()
+        with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory,\
+             patch.object(t,'identity',return_value={'host':'agx'}),\
+             patch.object(t.device,'environment',return_value=os.environ.copy()):
+            root=Path(directory);fifo=root/'packet.fifo';os.mkfifo(fifo)
+            (root/'tx-plan.json').write_text('{}');tx=t.Transport('agx',None)
+            fd=os.open(fifo,os.O_RDWR|os.O_NONBLOCK)
+            try:
+                with self.assertRaises(ValueError):runner.remote_cleanup(tx,root)
+                self.assertTrue(fifo.exists());self.assertTrue((root/'tx-plan.json').exists())
+            finally:os.close(fd)
+            removed=runner.remote_cleanup(tx,root)
+            self.assertEqual({r['name'] for r in removed},{'packet.fifo','tx-plan.json'})
+            self.assertFalse(root.exists())
+
+    def test_cleanup_still_rejects_foreign_fifo_and_symlink(self):
+        runner=self.runner()
+        with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory,\
+             patch.object(t,'identity',return_value={'host':'agx'}),\
+             patch.object(t.device,'environment',return_value=os.environ.copy()):
+            root=Path(directory);foreign=root/'foreign.fifo';os.mkfifo(foreign);tx=t.Transport('agx',None)
+            with self.assertRaises(ValueError):runner.remote_cleanup(tx,root)
+            foreign.unlink();(root/'packet.fifo').symlink_to('/dev/null')
+            with self.assertRaises(ValueError):runner.remote_cleanup(tx,root)
+
     def test_agx_copy_and_command_do_not_use_nx(self):
         bg=MagicMock()
         with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:

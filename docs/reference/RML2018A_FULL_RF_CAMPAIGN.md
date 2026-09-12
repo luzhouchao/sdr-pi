@@ -20,8 +20,12 @@
 TX LO offset +250 kHz；用户已确认换成2.4GHz天线（型号未报告），P201身份为 RX1/RX0/A_BALANCED。
 2455MHz沿用历史实验中心，不表示本轮已扫描确认空闲；已完成有限收发，质量失败及估计边界见实机验证。
 新计划默认AGX主机、TX0/RX20，作为后续低增益有线验证的起点，尚非收发通过配置。
-`plan`允许登记TX0/70/80dB、RX20/40/50dB，执行时读取该计划，
+`plan`允许登记TX0/20/40/60/70/80dB、RX20/40/50dB，执行时读取该计划，
 不允许临时覆盖增益，不无衰减同轴直连。增益是设备设置值，不是发射功率dBm。
+2026-09-12用户先确认B210 RF A TX/RX经30dB＋20dB串联衰减器及15cm SMA线接P201 RX1，
+随后在停发后取下20dB，当前只保留30dB；[实际质量及停止验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12同轴衰减接收幅度与主动停止)按需读取。
+中间TX20/40/60档用于有界逐档检查；每档新计划，上一档完整恢复后才执行，默认仍为TX0/RX20。
+不能直接拿天线80/40的计划用于同轴连接，也不能把条件SINR当成校准的物理SINR。
 本次有限70/40与80/40对照中，80/40两批均同步，但条件SINR仍低，不能据此认定全量参数合格；
 见[增益对照](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11发射增益与接收增益有限对照)。
 
@@ -177,20 +181,22 @@ NX模式只在显式登记`--tx-host nx`时使用；不能将旧NX计划改成AG
 更换增益必须新建根和计划；每行采集质量与summary保存实际计划TX/RX增益，所选TX主机的UHD回读及RX元数据
 按相同值校验。代码支持某个增益不等于可持续发射授权，实际执行仍须明确的批次/时长/字节预算。
 
-`--retry-failed`仅重试已证明恢复完成的失败批次：先检查NX空闲及两端瞬时目录不存在，
+`--retry-failed`仅重试已证明恢复完成的失败批次：先检查所选TX主机空闲及两端瞬时目录不存在，
 再把旧批次整体移动到`attempts/`，新采集有新的request/session身份。旧IQ、日志和失败结果保留。
 恢复未证实、audit缺失或原始数据被修改时拒绝自动重试，先核查现场。
 成功完成批次不重发；若中断前已有完整采集但尚无prediction，下次仅补推理。
 
 前台直接Ctrl-C；后台仅向已确认的runner PID发送`kill -INT <PID>`。runner对当前generation
-走专用cancel，停止已标识NX owner，核对两路RX、LO/采样率/带宽/端口/mask/buffer恢复。
-NX另有55秒alarm/58秒外层timeout及有限字节上限；不要用`kill -9`代替正常停止。
+走专用cancel，停止已标识TX owner，核对两路RX、LO/采样率/带宽/端口/mask/buffer恢复。
+先给owner发INT并等待8秒完成helper清理，超时才分级终止；helper的有界finally防止重复停止信号打断。
+无进程持有后，只额外接纳名为packet.fifo的真实FIFO，并用fuser检查无持有者再清理；未知文件、符号链接继续拒绝。
+TX另有55秒alarm/58秒外层timeout及有限字节上限；不要用`kill -9`代替正常停止。
 
 ## 结果和保留
 
 每批保存 source行号/真实ID/原始SNR/缩放、有限TX/RX计划、原生SigMF、UHD readback及
 停止/恢复audit、源与实收24维logits/数字ID/输入哈希/时延/相关度。原始源IQ不额外长期复制。
-run-plan保存源文件、软件和模型/profile/标签身份；TX包在成功后删除，NX与P201只留瞬时副本。
+run-plan保存源文件、软件和模型/profile/标签身份；TX包在成功后删除，TX主机与P201的本单元暂存仅作瞬时副本。
 
 汇总分别列出已采集、待推理、未尝试、实收预测、混淆矩阵、按源SNR分组统计及接收SINR测量状态。
 `received_accuracy`只针对已有实收预测；`end_to_end_success_fraction`以已采集行为分母，
@@ -198,7 +204,7 @@ run-plan保存源文件、软件和模型/profile/标签身份；TX包在成功�
 只有`all_rows_received_and_inferred=true`才表示全库每行都获得实收预测。
 失败重试历史不重复进入最新汇总。
 
-原始IQ/权重/运行制品不入Git。要删除一个campaign，先确认runner/NX/P201均已停止并恢复，
+原始IQ/权重/运行制品不入Git。要删除一个campaign，先确认runner、所选TX主机及P201均已停止并恢复，
 核对run-plan与根目录真实路径，再按对应保留清单逐个删除该根；不清空公共开发根，
 不删除既有数据集和其他实验。验收保留包的精确路径、哈希、大小和人工删除方法见
 [库存](../evidence/RML2018A_FULL_RF_CAMPAIGN_EVIDENCE_2026-09-10.json)。
