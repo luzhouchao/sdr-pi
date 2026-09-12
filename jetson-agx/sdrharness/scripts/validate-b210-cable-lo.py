@@ -25,6 +25,18 @@ spec = importlib.util.spec_from_file_location('lo_campaign', SCRIPTS/'rml2018a-r
 campaign = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(campaign)
 TAGS = ('before', 'positive', 'negative', 'half-amplitude', 'positive-repeat', 'after')
+GAIN_PAIR_TAGS = ('before', 'baseline1', 'paired1', 'baseline2', 'paired2', 'after')
+EXPERIMENTS = {'lo-offset': c.LO_REFERENCE_SCHEMA, 'gain-pair': c.LO_GAIN_PAIR_SCHEMA}
+
+
+def gain_pair_criteria():
+    return dict(maximum_abs_tone_change_db=1., minimum_lo_suppression_db=6.,
+        both_pairs_required=True, meaning='Engineering tone mitigation only; no model or modulation-fidelity admission')
+
+
+def tags_for(schema):
+    c.require(schema in EXPERIMENTS.values(), 'registered LO experiment')
+    return TAGS if schema == c.LO_REFERENCE_SCHEMA else GAIN_PAIR_TAGS
 
 
 def software():
@@ -40,24 +52,26 @@ def check_root(root):
         root.name.replace('-', '').isalnum(), 'diagnostic root')
 
 
-def create_plan(root):
+def create_plan(root, experiment='lo-offset'):
     check_root(root)
+    c.require(experiment in EXPERIMENTS, 'registered LO experiment')
+    schema = EXPERIMENTS[experiment]
     c.require(not root.exists(), 'new diagnostic root required')
     available = shutil.disk_usage(root.parent).free
     c.require(available > 64*1024*1024, 'diagnostic disk reserve')
     generation = time.time_ns()//1000000
     run_id = uuid.uuid4().hex
     points = []
-    for index, tag in enumerate(TAGS):
+    for index, tag in enumerate(tags_for(schema)):
         gen = generation + index
         rx = dict(sweep_id=f'cablelo-{tag}-{gen}', session_generation=gen,
             frequencies=dict(kind='centers', centers_hz=[c.CENTER]), sample_rate_hz=c.RATE,
             rf_bandwidth_hz=c.BW, gain_db=40, settle_ms=500, frame_samples=c.RX_SAMPLES,
             aggregate_frames=1, point_timeout_ms=1000, detection_threshold_db=12.)
-        points.append(dict(tag=tag, rx=rx, tx=None if index in (0,5) else c.lo_reference(run_id,index-1)[0],
+        points.append(dict(tag=tag, rx=rx, tx=None if index in (0,5) else c.lo_reference(run_id,index-1,schema=schema)[0],
             result_path=str(root/tag), agx_staging=str(root.parent/f'{root.name}-tx{index}'),
             p201_staging=f'/tmp/sdr-agent-dev/agx-sweep-{gen}-0'))
-    plan = dict(schema=c.LO_REFERENCE_SCHEMA, run_id=run_id, software=software(),
+    plan = dict(schema=schema, run_id=run_id, software=software(),
         tx_identity=campaign.transport_module().identity('agx'),
         connection='User confirmed B210 RF A TX/RX ->20dB50ohm attenuator +15cm SMA ->P201 RX1',
         points=points, maximum_tx_seconds=16, maximum_tx_samples=sum(p['tx']['tx_samples'] for p in points if p['tx']),
@@ -67,6 +81,8 @@ def create_plan(root):
         analysis='Prefix Hann peak searches; held-out fixed bands and tone+LO fit; stopped bracketing controls',
         stop='SIGINT/SIGTERM runner; dedicated Controller generation cancel; identified helper INT and finite feed',
         model_windows=0, dataset_rows=0, recognizer_available=False)
+    if schema == c.LO_GAIN_PAIR_SCHEMA:
+        plan['pair_criteria'] = gain_pair_criteria()
     root.mkdir(mode=0o700)
     c.save(root/'plan.json', plan)
     print(json.dumps(plan), flush=True)
@@ -110,7 +126,7 @@ def capture(root, point, bg, transport, baseline):
     tx=None; rx=None; owner=None; staged=False
     try:
         if txp is not None:
-            expected, waveform=c.lo_reference(txp['run_id'],txp['batch'])
+            expected, waveform=c.lo_reference(txp['run_id'],txp['batch'],schema=txp['schema'])
             c.require(txp==expected, 'registered tone case')
             c.save(dest/'tx-plan.json',txp); (dest/'packet.fc32').write_bytes(waveform.tobytes())
             transport.run(f'test ! -e {remote} && mkdir -m 700 {remote}'); staged=True
@@ -152,7 +168,7 @@ def capture(root, point, bg, transport, baseline):
             c.require(receipt['status']=='fed_complete' and receipt['bytes_written']==txp['tx_samples']*8
                 and receipt['child_stopped'], 'TX completion')
             log=(dest/'tx-uhd.log').read_text()
-            for label,wanted in [('Actual TX Rate',2.1),('Actual TX Freq',2455.),('Actual TX Gain',70.),
+            for label,wanted in [('Actual TX Rate',2.1),('Actual TX Freq',2455.),('Actual TX Gain',float(txp['tx_gain_db'])),
                 ('Actual TX Bandwidth',1.5),('Setting TX LO Offset',txp['lo_offset_hz']/1e6)]:
                 values=re.findall(re.escape(label)+r': ([\d.+-]+)',log)
                 c.require(len(values)==1 and abs(float(values[0])-wanted)<1e-6, 'UHD readback '+label)
@@ -196,13 +212,15 @@ def capture(root, point, bg, transport, baseline):
 def acquire(root):
     check_root(root)
     plan=campaign.document(root/'plan.json')
-    c.require(plan['schema']==c.LO_REFERENCE_SCHEMA and plan['software']==software() and
+    c.require(plan['schema'] in EXPERIMENTS.values() and plan['software']==software() and
         plan['tx_identity']==campaign.transport_module().identity('agx'), 'sealed software/runtime')
-    c.require([p['tag'] for p in plan['points']]==list(TAGS), 'fixed point order')
+    c.require([p['tag'] for p in plan['points']]==list(tags_for(plan['schema'])), 'fixed point order')
+    if plan['schema'] == c.LO_GAIN_PAIR_SCHEMA:
+        c.require(plan.get('pair_criteria') == gain_pair_criteria(), 'registered pair criteria')
     for index,point in enumerate(plan['points']):
         c.require(Path(point['result_path'])==root/point['tag'] and
             Path(point['agx_staging'])==root.parent/f'{root.name}-tx{index}', 'point paths')
-        c.require(point['tx']==(None if index in (0,5) else c.lo_reference(plan['run_id'],index-1)[0]), 'TX plan')
+        c.require(point['tx']==(None if index in (0,5) else c.lo_reference(plan['run_id'],index-1,schema=plan['schema'])[0]), 'TX plan')
         rx=point['rx']
         expected=dict(sweep_id=f'cablelo-{point["tag"]}-{rx["session_generation"]}',session_generation=rx['session_generation'],
             frequencies=dict(kind='centers',centers_hz=[c.CENTER]),sample_rate_hz=c.RATE,rf_bandwidth_hz=c.BW,
@@ -285,6 +303,13 @@ def analyze(root):
     controls={tag:raws[tag] for tag in ('before','after')}
     cases={point['tag']:line_metrics(raws[point['tag']],controls,point['tx'])
         for point in plan['points'] if point['tx']}
+    if plan['schema'] == c.LO_GAIN_PAIR_SCHEMA:
+        result=dict(schema='b210-cable-lo-gain-pair-audit-v1',plan_sha256=c.file_hash(root/'plan.json'),
+            cases=cases,comparison=gain_pair_comparison(cases),model_windows=0,production_changes=0,
+            limitation='Paired clean tones only; not modulated payload fidelity, physical SINR or RF timestamp validation')
+        c.save(root/'analysis.json',result)
+        print(json.dumps(result),flush=True)
+        return result
     first=cases['positive'];negative=cases['negative'];half=cases['half-amplitude'];repeat=cases['positive-repeat']
     pairs={}
     for tag,value in (('negative',negative),('half-amplitude',half),('positive-repeat',repeat)):
@@ -299,11 +324,29 @@ def analyze(root):
     return result
 
 
+def gain_pair_comparison(cases):
+    limits=gain_pair_criteria()
+    pairs=[]
+    for index in (1,2):
+        a=cases[f'baseline{index}'];b=cases[f'paired{index}']
+        signal=float(10*np.log10(b['heldout_tone_power_counts2']/a['heldout_tone_power_counts2']))
+        suppression=float(10*np.log10(a['heldout_lo_power_counts2']/b['heldout_lo_power_counts2']))
+        pairs.append(dict(pair=index,tone_change_db=signal,lo_suppression_db=suppression,
+            tone_to_lo_improvement_db=b['tone_to_lo_db']-a['tone_to_lo_db'],
+            passed=bool(abs(signal)<=limits['maximum_abs_tone_change_db'] and suppression>=limits['minimum_lo_suppression_db'])))
+    return dict(pairs=pairs,both_pairs_passed=all(p['passed'] for p in pairs),
+        maximum_abs_tone_change_db=limits['maximum_abs_tone_change_db'],minimum_lo_suppression_db=limits['minimum_lo_suppression_db'])
+
+
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command',choices=['plan','acquire','analyze'])
     parser.add_argument('--root',type=Path,required=True)
+    parser.add_argument('--experiment',choices=list(EXPERIMENTS),help='Plan creation only; acquisition uses the sealed plan')
     args=parser.parse_args()
     def stop(sig,frame):raise RuntimeError(f'diagnostic stop signal {sig}')
     for sig in (signal.SIGINT,signal.SIGTERM,signal.SIGALRM):signal.signal(sig,stop)
-    {'plan':create_plan,'acquire':acquire,'analyze':analyze}[args.command](args.root)
+    if args.command=='plan':create_plan(args.root,args.experiment or 'lo-offset')
+    else:
+        if args.experiment is not None:parser.error('--experiment is only accepted for plan creation')
+        {'acquire':acquire,'analyze':analyze}[args.command](args.root)

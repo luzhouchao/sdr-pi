@@ -23,6 +23,7 @@
 - [同轴50/30dB对照与停止恢复](RML2018A_CABLE_GAIN_2026-09-12.json)：增益、全部失败、识别、固定频带残差及清理清单。
 - [20dB衰减与匹配增益对照](RML2018A_CABLE20_2026-09-12.json)：四批收发/识别、历史父记录、固定频带功率及清理清单。
 - [20dB干净单音与LO跟随分量](B210_CABLE_LO_REFERENCE_2026-09-12.json)：正负LO偏移、数字幅度及停数据流控制，含频谱图和最小复核证据。
+- [20dB单音数字幅度/硬件增益配对](B210_CABLE_LO_GAIN_PAIR_2026-09-12.json)：两次A/B对照、预登记判据、恢复与清理，含频谱图及全部源/命令核验。
 
 - [RadioML2018A全量脚本先导保留清单](RML2018A_FULL_RF_CAMPAIGN_EVIDENCE_2026-09-10.json)
 - [RadioML2018A当前IQ与历史175kHz滤波方法的离线对照](RML2018A_HISTORICAL_FILTER_COMPARISON_2026-09-10.json)

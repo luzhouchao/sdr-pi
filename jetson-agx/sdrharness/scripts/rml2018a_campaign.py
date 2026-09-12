@@ -27,6 +27,8 @@ REPO = Path(__file__).resolve().parents[3]
 LO_REFERENCE_SCHEMA = 'b210-cable-lo-reference-v1'
 # Independent synthetic-source diagnostic, never an all-row campaign override.
 LO_REFERENCE_CASES = ((250000, .1), (-250000, .1), (250000, .05), (250000, .1))
+LO_GAIN_PAIR_SCHEMA = 'b210-cable-lo-gain-pair-v1'
+LO_GAIN_PAIR_CASES = ((70, .1), (60, .1*math.sqrt(10.)), (70, .1), (60, .1*math.sqrt(10.)))
 
 
 def require(condition, message):
@@ -99,8 +101,8 @@ def tx_plan(frame, run_id, batch, rows, tx_gain_db=70):
 
 
 def validate_tx(plan, payload):
-    if plan.get('schema') == LO_REFERENCE_SCHEMA:
-        expected, waveform = lo_reference(plan.get('run_id'), plan.get('batch'))
+    if plan.get('schema') in (LO_REFERENCE_SCHEMA, LO_GAIN_PAIR_SCHEMA):
+        expected, waveform = lo_reference(plan.get('run_id'), plan.get('batch'), schema=plan['schema'])
         require(plan == expected and payload == waveform.tobytes(), 'unregistered LO reference plan/payload')
         return
     registered_tx_gain(plan.get('tx_gain_db'))
@@ -126,17 +128,23 @@ def validate_tx(plan, payload):
                         rtol=0, atol=1e-7), 'TX marker identity')
 
 
-def lo_reference(run_id, index):
+def lo_reference(run_id, index, *, schema=LO_REFERENCE_SCHEMA):
     """Exactly four bounded tone cases; no dataset labels or source-SNR fiction."""
     require(isinstance(run_id, str) and len(run_id) == 32 and
             all(ch in '0123456789abcdef' for ch in run_id), 'LO reference run identity')
     require(type(index) is int and 0 <= index < len(LO_REFERENCE_CASES), 'LO reference case')
-    offset, amplitude = LO_REFERENCE_CASES[index]
+    require(schema in (LO_REFERENCE_SCHEMA, LO_GAIN_PAIR_SCHEMA), 'registered LO experiment')
+    if schema == LO_REFERENCE_SCHEMA:
+        offset, amplitude = LO_REFERENCE_CASES[index]
+        gain = 70
+    else:
+        gain, amplitude = LO_GAIN_PAIR_CASES[index]
+        offset = 250000
     waveform = (amplitude * np.exp(2j*np.pi*48*np.arange(1024)/1024)).astype('<c8')
     repeats = RATE*TX_SECONDS//len(waveform)
-    plan = dict(schema=LO_REFERENCE_SCHEMA, run_id=run_id, batch=index,
+    plan = dict(schema=schema, run_id=run_id, batch=index,
         source='synthetic_periodic_complex_tone', tone_hz=48*RATE/1024,
-        center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW, tx_gain_db=70,
+        center_hz=CENTER, rate_sps=RATE, bandwidth_hz=BW, tx_gain_db=gain,
         tx_channel=0, tx_antenna='TX/RX', serial='2508504', lo_offset_hz=offset,
         payload_bytes=waveform.nbytes, payload_sha256=digest(waveform.tobytes()),
         packet_samples=len(waveform), repeats=repeats, tx_samples=repeats*len(waveform),

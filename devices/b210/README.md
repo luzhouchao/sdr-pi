@@ -22,6 +22,8 @@ AGX后端本机暂存/启动/回收外部B210，不再SSH到NX；P201仍是唯�
 [20dB匹配增益对照](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-1220db衰减与匹配增益对照)另有记录，不据小批准确率确定最佳衰减或增益。
 [干净单音LO对照](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12干净单音与lo跟随分量)已定位LO跟随强分量；
 独立入口及固定预算见[说明](../../docs/reference/RML2018A_FULL_RF_CAMPAIGN.md#独立有线lo参考诊断)。未改变数据集发射参数或启用校准/滤波。
+该入口的`plan --experiment gain-pair`已完成[两次单音幅度/增益配对](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12数字幅度与硬件增益配对)，
+LO分量下降约7.3dB且有效信号相近；调制波形仍待验证。
 增益只能在新有限计划中登记，改变衰减前先停发。
 迁移后的[首次天线48条实测](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11agx本机b210天线收发48条)
 已完成显式80/40的有限发射/接收/识别；它不改变新plan默认值或完成有线、全库验收。

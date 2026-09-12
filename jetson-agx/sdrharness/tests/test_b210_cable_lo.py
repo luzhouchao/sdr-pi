@@ -21,6 +21,40 @@ def load(name,filename):
 
 
 class CableLoTests(unittest.TestCase):
+    def test_gain_pair_compensates_nominal_level_without_unregistered_overrides(self):
+        nominal=[]
+        for index in range(4):
+            plan,z=c.lo_reference('d'*32,index,schema=c.LO_GAIN_PAIR_SCHEMA)
+            c.validate_tx(plan,z.tobytes())
+            nominal.append(float(np.mean(abs(z.astype(complex))**2))*10**(plan['tx_gain_db']/10))
+            self.assertEqual(plan['lo_offset_hz'],250000)
+            self.assertEqual(plan['tx_gain_db'],70 if index%2==0 else 60)
+            self.assertEqual(plan['tx_samples'],8399872)
+            self.assertLessEqual(abs(z).max(),.316228)
+            for key,value in (('tx_gain_db',80),('complex_peak',.4),('lo_offset_hz',-250000),
+                ('schema','unregistered'),('batch',4)):
+                with self.assertRaises(ValueError):c.validate_tx({**plan,key:value},z.tobytes())
+            if index%2:
+                with self.assertRaises(ValueError):
+                    c.validate_tx({**plan,'schema':c.LO_REFERENCE_SCHEMA},z.tobytes())
+        np.testing.assert_allclose(nominal,nominal[0],rtol=1e-7)
+
+    def test_pair_assessment_requires_repeatability_and_matched_signal_level(self):
+        diagnostic=load('gain_pair_metrics','validate-b210-cable-lo.py')
+        def metrics(tone,line):
+            return dict(heldout_tone_power_counts2=tone,heldout_lo_power_counts2=line,tone_to_lo_db=10*np.log10(tone/line))
+        cases=dict(baseline1=metrics(100,100),paired1=metrics(100,10),baseline2=metrics(105,95),paired2=metrics(105,9.5))
+        result=diagnostic.gain_pair_comparison(cases)
+        self.assertTrue(result['both_pairs_passed'])
+        for row in result['pairs']:
+            self.assertAlmostEqual(row['tone_change_db'],0)
+            self.assertAlmostEqual(row['lo_suppression_db'],10)
+        for bad in (metrics(200,10),metrics(100,40)):
+            changed={**cases,'paired2':bad}
+            result=diagnostic.gain_pair_comparison(changed)
+            self.assertTrue(result['pairs'][0]['passed'])
+            self.assertFalse(result['both_pairs_passed'])
+
     def test_only_registered_sources_and_budgets_are_accepted(self):
         for index in range(4):
             plan,z=c.lo_reference('a'*32,index)
@@ -46,15 +80,16 @@ class CableLoTests(unittest.TestCase):
 
     def test_invalid_diagnostic_never_opens_uhd_or_creates_fifo(self):
         helper=load('lo_tx_helper','rml2018a-nx-tx.py')
-        plan,z=c.lo_reference('b'*32,1);plan['tx_gain_db']=80
-        with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:
-            root=Path(directory);(root/'packet.fc32').write_bytes(z.tobytes())
-            (root/'tx-plan.json').write_text(json.dumps(plan))
-            with patch.object(helper.subprocess,'Popen') as spawn:
-                with self.assertRaises(ValueError):helper.transmit(root)
-                spawn.assert_not_called()
-            self.assertFalse((root/'packet.fifo').exists())
-            self.assertFalse((root/'tx-started.json').exists())
+        for schema in (c.LO_REFERENCE_SCHEMA,c.LO_GAIN_PAIR_SCHEMA):
+            plan,z=c.lo_reference('b'*32,1,schema=schema);plan['tx_gain_db']=80
+            with tempfile.TemporaryDirectory(dir=os.environ['TMPDIR']) as directory:
+                root=Path(directory);(root/'packet.fc32').write_bytes(z.tobytes())
+                (root/'tx-plan.json').write_text(json.dumps(plan))
+                with patch.object(helper.subprocess,'Popen') as spawn:
+                    with self.assertRaises(ValueError):helper.transmit(root)
+                    spawn.assert_not_called()
+                self.assertFalse((root/'packet.fifo').exists())
+                self.assertFalse((root/'tx-started.json').exists())
 
     def test_peak_tracking_separates_lo_from_tone_and_source_amplitude(self):
         diagnostic=load('lo_metrics','validate-b210-cable-lo.py')
