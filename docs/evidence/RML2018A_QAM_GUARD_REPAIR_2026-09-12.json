@@ -1,0 +1,1002 @@
+{
+  "schema": "rml2018a-qam-guard-evidence-v1",
+  "base_head": "3ca3c678941cea6bb3e7c52e642695bd2717984f",
+  "purpose": "New four-batch alternating QAM RF comparison and posthoc previous-failure replay; empirical guard-tone repair, all v1 failures retained",
+  "source": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "bytes": 21449148312,
+    "mtime_ns": 1627354882000000000
+  },
+  "run_id": "8f4efe251df94abfa0138f434fe14c67",
+  "run_plan_sha256": "b21c60c833d88fcf4fba1ec4e0b60279c494adeb8e4c8b69884a9a1519044f3d",
+  "rf": {
+    "center_hz": 2455000000,
+    "rate_sps": 2100000,
+    "bandwidth_hz": 1500000,
+    "tx_gain_db": 60,
+    "rx_gain_db": 40,
+    "peak": 0.632455532033676,
+    "tx_lo_offset_hz": 250000,
+    "settle_ms": 500,
+    "point_deadline_ms": 1000,
+    "rx_samples": 65535
+  },
+  "connection": "AGX USB B210 RF A TX/RX ->20dB50ohm attenuator+15cm SMA ->P201 RX1",
+  "source_exports": [
+    {
+      "batch": 66422,
+      "class_id": 14,
+      "class_name": "64QAM",
+      "rows": [
+        1594128,
+        1594129,
+        1594130,
+        1594131,
+        1594132,
+        1594133,
+        1594134,
+        1594135,
+        1594136,
+        1594137,
+        1594138,
+        1594139,
+        1594140,
+        1594141,
+        1594142,
+        1594143,
+        1594144,
+        1594145,
+        1594146,
+        1594147,
+        1594148,
+        1594149,
+        1594150,
+        1594151
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "bb0f0214fd5bf06cd0b5989198840ae6a0563e1779deb5a08f8e86311bd87efb",
+      "packet_sha256": "38953ac85e17845839abc4e6593e443f1f739c99132c4ecd84f197fa1bb244dc",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.853951695158614e-16
+    },
+    {
+      "batch": 75296,
+      "class_id": 16,
+      "class_name": "256QAM",
+      "rows": [
+        1807104,
+        1807105,
+        1807106,
+        1807107,
+        1807108,
+        1807109,
+        1807110,
+        1807111,
+        1807112,
+        1807113,
+        1807114,
+        1807115,
+        1807116,
+        1807117,
+        1807118,
+        1807119,
+        1807120,
+        1807121,
+        1807122,
+        1807123,
+        1807124,
+        1807125,
+        1807126,
+        1807127
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "161a2d9e7772590a870f2c328e2ad92df5b4648c55e6933531b6e802bf84dd01",
+      "packet_sha256": "3661565be95eb875f6684e08183240486dd7f37bfe46fc931503570eac4f65e5",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.8844360684628e-16
+    },
+    {
+      "batch": 66423,
+      "class_id": 14,
+      "class_name": "64QAM",
+      "rows": [
+        1594152,
+        1594153,
+        1594154,
+        1594155,
+        1594156,
+        1594157,
+        1594158,
+        1594159,
+        1594160,
+        1594161,
+        1594162,
+        1594163,
+        1594164,
+        1594165,
+        1594166,
+        1594167,
+        1594168,
+        1594169,
+        1594170,
+        1594171,
+        1594172,
+        1594173,
+        1594174,
+        1594175
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "6f10e691921a60b132bc8050552034280e109051508162d54cd30aab06b6567d",
+      "packet_sha256": "638acfb60419046d37d7a30c01ad5c940d43d6891c40a994f3087418d125f84a",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.885048752430509e-16
+    },
+    {
+      "batch": 75297,
+      "class_id": 16,
+      "class_name": "256QAM",
+      "rows": [
+        1807128,
+        1807129,
+        1807130,
+        1807131,
+        1807132,
+        1807133,
+        1807134,
+        1807135,
+        1807136,
+        1807137,
+        1807138,
+        1807139,
+        1807140,
+        1807141,
+        1807142,
+        1807143,
+        1807144,
+        1807145,
+        1807146,
+        1807147,
+        1807148,
+        1807149,
+        1807150,
+        1807151
+      ],
+      "source_snr_db": 30,
+      "source_iq_sha256": "f32779e1801c85546e2df21f43bd383382d80a34c24f65d07f060eeb669738bf",
+      "packet_sha256": "69d979dfc3f2b3c845da7ef77a90f98c12a59483d9eef4c97d54979a4d624eff",
+      "packet_bytes": 208896,
+      "source_reconstruction_error": 6.755613794690676e-16
+    }
+  ],
+  "model_identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+  "software": {
+    "rml2018a-rf-campaign.py": "4fa105a896fec1ae38f9843632a69245c9954d3dc76af8c96e3104f6d6c817df",
+    "rml2018a_campaign.py": "b567f817ed4ed4c1b21026410d02fba50e7e1dcd9b64f88cd3866313d6778d4b",
+    "rml2018a-nx-tx.py": "d33c28d442e923173964d9a3511401a62f8ad2ae312439be8a16167cae54b52f",
+    "amc-mamba-worker.py": "750eef925be33ab925798f49907c0a35a2cf1c5cd9f00672ee64fcda9d0872b5",
+    "amc-rf-v1-runtime.py": "a920c4260ce02f824cc1bfad596242330b69dbfdf3008c45be6142d8aa077e82",
+    "gpu_lease.py": "cbc8038a375f1c44cf4c16d68c94d19ae146b8b9b496a340603be62340c1e1c7",
+    "validate-b210-multiclass.py": "2bd5a801b25aa3a5a5e8d48d8d930207b9f34fa6b7c037292edf3108e0a657f8",
+    "validate-p201-termination-background.py": "007fce5064507803b6d75f178e7f3619f14aaec089ce9083900e40601b27975b",
+    "validate-b210-p201-link.py": "9454da8cdc70aadff2aba96a23c4c0a5284c15d53854b996c55ee24778955686",
+    "compare-rml2018a-pilot-timing.py": "27a1dce284ec71624be088ce0f519b4abe834638ef5e31072c45e22d4b51b625",
+    "rml2018a_pilot_timing.py": "5d7545215022c99fe8c3641ebf966856165af80a405c536de2ceab708f57ce76",
+    "rml2018a_lo_cancellation.py": "6adc011afd8ba8ba5971b07a8715beaeaa8d5f58c1c251a6e15c3015da37d020",
+    "rml2018a_guard_tone.py": "f6805c8c12cd4fbb0e207bb63d34f8d2fa5d8e696a2f12850d498bebc7feeae0"
+  },
+  "timing_contract": {
+    "method": "known-pilot-fractional-timing-v1",
+    "source_payload_used": false,
+    "labels_used": false,
+    "fit": "first pilot half[64:448], centered reference+bandlimited derivative",
+    "validation": "second half[576:960], never refit",
+    "minimum_pilots": 2,
+    "maximum_abs_delay_samples": 0.6,
+    "maximum_abs_drift_ppm": 10,
+    "maximum_fit_rms_samples": 0.04,
+    "maximum_validation_error_samples": 0.08,
+    "maximum_pilot_residual_fraction": 0.03,
+    "maximum_quadrature_derivative_ratio": 0.08,
+    "interpolation": "129-tap Kaiser8 windowed sinc; normalized DC; symmetric64-sample halo",
+    "interpolation_noise_gain": "finite interpolator not exactly allpass; whitenoise/occupied-band tests required",
+    "failure_action": "unchanged LO-cancelled payload with reason",
+    "sinr": "separate post-timing conditional estimate, not calibrated physical RF SINR"
+  },
+  "lo_contract": {
+    "method": "pilot-anchored-guard-lo-cancellation-v1",
+    "rate_sps": 2100000,
+    "lo_offset_hz": 250000,
+    "guard_edge_exclusion_samples": 64,
+    "training_samples_per_guard": 192,
+    "validation_samples_per_guard": 192,
+    "minimum_complete_guards": 2,
+    "frequency_prior": "nominal TX LO offset + original known-marker CFO",
+    "frequency_search_halfwidth_hz": 30,
+    "coarse_step_hz": 1,
+    "minimum_guard_holdout_suppression_db": 10,
+    "maximum_guard_amplitude_spread": 0.25,
+    "maximum_guard_phase_spread_rad": 0.25,
+    "maximum_corrected_pilot_residual_cfo_hz": 25,
+    "source_payload_used_for_fit": false,
+    "labels_used_for_fit": false,
+    "payload_frequency_projection": false,
+    "refit_on_validation": false,
+    "failure_action": "return unchanged original IQ with explicit reason",
+    "limitations": [
+      "requires correct repeated-frame timing and pilot CFO prior within30Hz of LO relation",
+      "requires stable additive tone over buffered capture; guards may miss payload-only drift",
+      "postprocessing quality is not a change to raw physical RF SINR",
+      "not independently validated across24 classes or low source SNR"
+    ]
+  },
+  "guard_contract": {
+    "method": "guard-tone-block-margin-v1",
+    "frequency_fit": "unchanged v1 training guards and pilot prior",
+    "validation": "every training and heldout guard half; eight contiguous24-sample block phasors",
+    "maximum_relative_tone_error_margin": 0.31622776601683794,
+    "block_standard_error_multiplier": 4,
+    "minimum_complete_guards": 2,
+    "minimum_tone_margin_db": 10,
+    "unchanged_v1_total_residual_gate_db": 10,
+    "v1_results_preserved": true,
+    "maximum_amplitude_spread": 0.25,
+    "maximum_phase_spread_rad": 0.25,
+    "maximum_pilot_residual_cfo_hz": 25,
+    "minimum_pilot_half_coherence": 0.95,
+    "source_payload_used": false,
+    "discarded_guards": 0,
+    "validation_refit": false,
+    "failure_action": "unchanged raw IQ with explicit reason",
+    "limitations": [
+      "new empirical tone-error criterion, not equivalent to v1 total-power suppression",
+      "block standard error is not a calibrated confidence bound under arbitrary correlated interference",
+      "guard-only validation cannot detect payload-only LO changes",
+      "does not remove broadband noise, source noise, or payload distortion"
+    ]
+  },
+  "previous_failure": {
+    "raw": {
+      "estimated": 24,
+      "invalid": 0,
+      "median_db": 7.626160493142763,
+      "minimum_db": 6.870560967767454,
+      "maximum_db": 9.021634387247692
+    },
+    "v1": {
+      "estimated": 24,
+      "invalid": 0,
+      "median_db": 7.626160493142763,
+      "minimum_db": 6.870560967767454,
+      "maximum_db": 9.021634387247692
+    },
+    "guard": {
+      "estimated": 24,
+      "invalid": 0,
+      "median_db": 17.60273509567171,
+      "minimum_db": 16.82015807556243,
+      "maximum_db": 18.271290645689092
+    },
+    "timing": {
+      "estimated": 24,
+      "invalid": 0,
+      "median_db": 20.247582567855314,
+      "minimum_db": 19.8303749538741,
+      "maximum_db": 21.29043568721725
+    }
+  },
+  "previous_failure_parent": "docs/evidence/RML2018A_EIGHT_CLASS_TIMING_2026-09-12.json",
+  "source_capture_associations": [
+    {
+      "batch": 66422,
+      "class_id": 14,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/rx/rml2018a-66422-1789206454909-1789206454909-1789206458156156480.sigmf-data",
+        "iq_sha256": "fad60a0e5125cf1801cbe8b9a070423ef4b03e1768c31b525edc9b849b014c1f",
+        "metadata_sha256": "f2448b4bd35e331e5df94faa2e6272ce7ca916205ac779dfcecf3c655c824f3c",
+        "request_id": 5,
+        "sequence": 1549,
+        "session_generation": 1789206454909
+      },
+      "audit_sha256": "f13aa0e6b0d92379225647163c97f8350e2ae44d9eb0117f4391883c799e1a73"
+    },
+    {
+      "batch": 75296,
+      "class_id": 16,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/rx/rml2018a-75296-1789206465826-1789206465826-1789206469096627004.sigmf-data",
+        "iq_sha256": "c72c7e8502d51800fa8babbd741550049dfe9f965bdb51cc22816f79b8fbe062",
+        "metadata_sha256": "96eefa37e6a5b95f428f4ebd0dc50fe13fcc904da5c75fd05367ac135cd12659",
+        "request_id": 5,
+        "sequence": 1550,
+        "session_generation": 1789206465826
+      },
+      "audit_sha256": "0076e78999d30bb0ce36f3d4de10a1aa17209ee052981a05827e86e0fce12080"
+    },
+    {
+      "batch": 66423,
+      "class_id": 14,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/rx/rml2018a-66423-1789206476764-1789206476764-1789206480024345310.sigmf-data",
+        "iq_sha256": "93672f854899155cec0222b533307d21c47df8c93f5efa21a7709de3e337ded3",
+        "metadata_sha256": "c6e2aea8909eb3a3f547682d9db73309cc749df8ee0dcab84e260ffa2396ba43",
+        "request_id": 5,
+        "sequence": 1551,
+        "session_generation": 1789206476764
+      },
+      "audit_sha256": "f32be10ccad1bb06b8f97bca14c3e7d6cd2a32434fe73e1add15f673f95d2bdd"
+    },
+    {
+      "batch": 75297,
+      "class_id": 16,
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/rx/rml2018a-75297-1789206487717-1789206487717-1789206490954400588.sigmf-data",
+        "iq_sha256": "9a1e49d7bb0e1d2873ea60c77614564b1c07ff8bd1bd80a0e7ee56e07d716b1d",
+        "metadata_sha256": "a031893df708acad3f5050b10e7295e877afa9526176b57211c645d40dd13dc7",
+        "request_id": 5,
+        "sequence": 1552,
+        "session_generation": 1789206487717
+      },
+      "audit_sha256": "72468f7bba1bdd68b5175384e571e08552388c302823053e7b7bdee2663b0a0c"
+    }
+  ],
+  "summary": {
+    "schema": "qam-guard-summary-v1",
+    "new_rf_source_rows": 96,
+    "groups": [
+      {
+        "class_id": 14,
+        "class_name": "64QAM",
+        "total_rows": 48,
+        "quality": {
+          "raw": {
+            "estimated": 48,
+            "median_db": 7.437742973186693,
+            "min_db": 5.347568830168132,
+            "max_db": 8.420520854643518,
+            "at_least20db": 0
+          },
+          "lo": {
+            "estimated": 48,
+            "median_db": 17.68131750343425,
+            "min_db": 12.230580710938508,
+            "max_db": 18.462302257902913,
+            "at_least20db": 0
+          },
+          "guard": {
+            "estimated": 48,
+            "median_db": 17.68131750343425,
+            "min_db": 12.230580710938508,
+            "max_db": 18.462302257902913,
+            "at_least20db": 0
+          },
+          "timing": {
+            "estimated": 48,
+            "median_db": 20.314063019366955,
+            "min_db": 12.785128269672327,
+            "max_db": 21.663735916772563,
+            "at_least20db": 28
+          }
+        },
+        "correct": {
+          "source": 46,
+          "raw": 9,
+          "lo": 41,
+          "guard": 41,
+          "timing": 40
+        },
+        "timing_corrected_rows": [
+          1594142
+        ],
+        "timing_regressed_rows": [
+          1594148,
+          1594167
+        ]
+      },
+      {
+        "class_id": 16,
+        "class_name": "256QAM",
+        "total_rows": 48,
+        "quality": {
+          "raw": {
+            "estimated": 48,
+            "median_db": 7.689133832063286,
+            "min_db": 6.755793344853638,
+            "max_db": 8.764977846398606,
+            "at_least20db": 0
+          },
+          "lo": {
+            "estimated": 48,
+            "median_db": 19.83300183913103,
+            "min_db": 18.891750999206685,
+            "max_db": 20.581341925913314,
+            "at_least20db": 17
+          },
+          "guard": {
+            "estimated": 48,
+            "median_db": 19.83300183913103,
+            "min_db": 18.891750999206685,
+            "max_db": 20.581341925913314,
+            "at_least20db": 17
+          },
+          "timing": {
+            "estimated": 48,
+            "median_db": 20.02536072744777,
+            "min_db": 18.934806116397926,
+            "max_db": 21.01455851007405,
+            "at_least20db": 26
+          }
+        },
+        "correct": {
+          "source": 46,
+          "raw": 2,
+          "lo": 45,
+          "guard": 45,
+          "timing": 44
+        },
+        "timing_corrected_rows": [],
+        "timing_regressed_rows": [
+          1807121
+        ]
+      }
+    ],
+    "totals": {
+      "source": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 92
+      },
+      "raw": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 11
+      },
+      "lo": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 86
+      },
+      "guard": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 86
+      },
+      "timing": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 84
+      }
+    },
+    "previous_failure": {
+      "raw": {
+        "estimated": 24,
+        "invalid": 0,
+        "median_db": 7.626160493142763,
+        "minimum_db": 6.870560967767454,
+        "maximum_db": 9.021634387247692
+      },
+      "v1": {
+        "estimated": 24,
+        "invalid": 0,
+        "median_db": 7.626160493142763,
+        "minimum_db": 6.870560967767454,
+        "maximum_db": 9.021634387247692
+      },
+      "guard": {
+        "estimated": 24,
+        "invalid": 0,
+        "median_db": 17.60273509567171,
+        "minimum_db": 16.82015807556243,
+        "maximum_db": 18.271290645689092
+      },
+      "timing": {
+        "estimated": 24,
+        "invalid": 0,
+        "median_db": 20.247582567855314,
+        "minimum_db": 19.8303749538741,
+        "maximum_db": 21.29043568721725
+      }
+    },
+    "new_four_captures_reproduced_original_rejection": false,
+    "guard_and_v1_identical_on_new_captures": true,
+    "recognizer_available": false
+  },
+  "verified_inputs": {
+    "status": "verified",
+    "source_rows": 96,
+    "native_captures": 4,
+    "model_input_hashes": 480,
+    "model_reexecuted": false
+  },
+  "postflight": {
+    "status": "passed",
+    "after": {
+      "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "daemon_pid": [
+        "5909"
+      ],
+      "daemon_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+      "controller_sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+      "health": {
+        "online": true,
+        "healthy": true,
+        "health_flags": 0,
+        "iio_visible": true,
+        "can_retune": true,
+        "can_capture_iq": true,
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        }
+      },
+      "b210": {
+        "host": "agx",
+        "serial": "2508504",
+        "usb_speed_mbps": 5000.0,
+        "usb_node": "/dev/bus/usb/002/004",
+        "usb_holder_pids": []
+      }
+    },
+    "paths": [
+      {
+        "batch": 66422,
+        "agx": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912-b66422",
+        "p201": "/tmp/sdr-agent-dev/agx-sweep-1789206454909-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/rx/rml2018a-66422-1789206454909-1789206454909-1789206458156156480.sigmf-data",
+          "iq_sha256": "fad60a0e5125cf1801cbe8b9a070423ef4b03e1768c31b525edc9b849b014c1f",
+          "metadata_sha256": "f2448b4bd35e331e5df94faa2e6272ce7ca916205ac779dfcecf3c655c824f3c",
+          "request_id": 5,
+          "sequence": 1549,
+          "session_generation": 1789206454909
+        }
+      },
+      {
+        "batch": 75296,
+        "agx": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912-b75296",
+        "p201": "/tmp/sdr-agent-dev/agx-sweep-1789206465826-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/rx/rml2018a-75296-1789206465826-1789206465826-1789206469096627004.sigmf-data",
+          "iq_sha256": "c72c7e8502d51800fa8babbd741550049dfe9f965bdb51cc22816f79b8fbe062",
+          "metadata_sha256": "96eefa37e6a5b95f428f4ebd0dc50fe13fcc904da5c75fd05367ac135cd12659",
+          "request_id": 5,
+          "sequence": 1550,
+          "session_generation": 1789206465826
+        }
+      },
+      {
+        "batch": 66423,
+        "agx": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912-b66423",
+        "p201": "/tmp/sdr-agent-dev/agx-sweep-1789206476764-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/rx/rml2018a-66423-1789206476764-1789206476764-1789206480024345310.sigmf-data",
+          "iq_sha256": "93672f854899155cec0222b533307d21c47df8c93f5efa21a7709de3e337ded3",
+          "metadata_sha256": "c6e2aea8909eb3a3f547682d9db73309cc749df8ee0dcab84e260ffa2396ba43",
+          "request_id": 5,
+          "sequence": 1551,
+          "session_generation": 1789206476764
+        }
+      },
+      {
+        "batch": 75297,
+        "agx": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912-b75297",
+        "p201": "/tmp/sdr-agent-dev/agx-sweep-1789206487717-0",
+        "absent": true,
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/rx/rml2018a-75297-1789206487717-1789206487717-1789206490954400588.sigmf-data",
+          "iq_sha256": "9a1e49d7bb0e1d2873ea60c77614564b1c07ff8bd1bd80a0e7ee56e07d716b1d",
+          "metadata_sha256": "a031893df708acad3f5050b10e7295e877afa9526176b57211c645d40dd13dc7",
+          "request_id": 5,
+          "sequence": 1552,
+          "session_generation": 1789206487717
+        }
+      }
+    ],
+    "rx_bytes": 1048560,
+    "max_tx_seconds": 16,
+    "nx_operations": 0,
+    "production_changes": 0,
+    "gpu": {
+      "pid": 1321,
+      "start_ticks": "1515",
+      "idle_slots": 1,
+      "resumed": true,
+      "mechanism": "SIGSTOP idle installed Spark; feature-private Mamba lease",
+      "started_ns": 1789206569363022426,
+      "pause_confirmed": true,
+      "finished_ns": 1789206646591990508,
+      "restore_watchdog_stopped": true
+    },
+    "model_windows": 480,
+    "warmups": 2
+  },
+  "maximum_tx_seconds": 16,
+  "tx_samples": 33527808,
+  "rx_iq_bytes": 1048560,
+  "model_windows": 480,
+  "warmups": 2,
+  "recognizer_available": false,
+  "production_deployment": false,
+  "rf_timestamp_continuity_verified": false,
+  "nx_operations": 0,
+  "cleanup_summary": {
+    "status": "verified",
+    "explicit_removed_files": 361,
+    "explicit_removed_bytes": 20160287,
+    "removed_directories": 55,
+    "absent_paths": [
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/scratch",
+      "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/scratch",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/owner.lock",
+      "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/owner.lock",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/create-plan.log",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/preflight.log",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/radio-postflight.log",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/radio-postflight.json",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/prepare.log",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/postflight.log",
+      "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/previous-failure.log"
+    ],
+    "total_removed_files": 393,
+    "total_removed_bytes": 21948791,
+    "prior_evidence_untouched": true,
+    "new_iq_copies": 0
+  },
+  "retained_roots": [
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912",
+      "purpose": "Four native captures and original RF/source/restore receipts, source packets removed",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/audit.json",
+          "bytes": 41396,
+          "sha256": "f13aa0e6b0d92379225647163c97f8350e2ae44d9eb0117f4391883c799e1a73"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/capture-complete.json",
+          "bytes": 445,
+          "sha256": "bbbf7e4f8b9da27fcd7d8919f54ffc81245bae29457f0fdcb89cbe1b00c1ea5d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/report.json",
+          "bytes": 2271,
+          "sha256": "634cb6f16f64aec70e6a0863810e081b79e178350762c0a69baea1252744d448"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/rx/rml2018a-66422-1789206454909-1789206454909-1789206458156156480.sigmf-data",
+          "bytes": 262140,
+          "sha256": "fad60a0e5125cf1801cbe8b9a070423ef4b03e1768c31b525edc9b849b014c1f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/rx/rml2018a-66422-1789206454909-1789206454909-1789206458156156480.sigmf-meta",
+          "bytes": 487,
+          "sha256": "f2448b4bd35e331e5df94faa2e6272ce7ca916205ac779dfcecf3c655c824f3c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/rx-plan.json",
+          "bytes": 387,
+          "sha256": "6edf5b9186ab852fd623ce3eb14bb95439d54bc67b9781899fcbc2b9a1bfbcc3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/source.json",
+          "bytes": 1490,
+          "sha256": "b2ec50f8d457f28bc317eb619d08b51e7dcf96ba2c230f7d44117b5c89aa2e22"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/tx-plan.json",
+          "bytes": 872,
+          "sha256": "f7f2920fff9e882cffd4917b3c4769ea5dd8b4dcaf59143166022c1abc681afd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/tx-summary.json",
+          "bytes": 938,
+          "sha256": "854edd9a242c42a16c6a3eb78f2865bc4aee4f6066d44a12add3853e1c2376e6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "00116cb088ee98cbb582cb09a1d25278c23160d2328e0230ccc89553b18ba2a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/audit.json",
+          "bytes": 41381,
+          "sha256": "f32be10ccad1bb06b8f97bca14c3e7d6cd2a32434fe73e1add15f673f95d2bdd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/capture-complete.json",
+          "bytes": 445,
+          "sha256": "3363494a0b67fefe4de31e2e799bac231d94798cec0794c9232f8b1c72402818"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/report.json",
+          "bytes": 2270,
+          "sha256": "1186c5b7b46b9aa1724960521c5bded652404eb7a071383c55a9741ce2a7f460"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/rx/rml2018a-66423-1789206476764-1789206476764-1789206480024345310.sigmf-data",
+          "bytes": 262140,
+          "sha256": "93672f854899155cec0222b533307d21c47df8c93f5efa21a7709de3e337ded3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/rx/rml2018a-66423-1789206476764-1789206476764-1789206480024345310.sigmf-meta",
+          "bytes": 487,
+          "sha256": "c6e2aea8909eb3a3f547682d9db73309cc749df8ee0dcab84e260ffa2396ba43"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/rx-plan.json",
+          "bytes": 387,
+          "sha256": "7c722a27ca7a5668f06e256d61fef67cff2f8ac809db9abcaacf207f6ae8e850"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/source.json",
+          "bytes": 1489,
+          "sha256": "684148543cb6d5b0a0547677eee4f9568dd4758e19b529d7f713f8eef317aec2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/tx-plan.json",
+          "bytes": 872,
+          "sha256": "52cc968b34a00d247dfb9b02260575d91bfb946e04664549d25c0f63f56ea99b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/tx-summary.json",
+          "bytes": 938,
+          "sha256": "d09a9e4dc21efb8b1170ddc9dec83112efe2ccdedc0a81baade91b5596e520e2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "3fcdd23d959f643e06b971973076d8a4cb568a699d75f2e69bbfdfdde59f5035"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/audit.json",
+          "bytes": 41394,
+          "sha256": "0076e78999d30bb0ce36f3d4de10a1aa17209ee052981a05827e86e0fce12080"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/capture-complete.json",
+          "bytes": 445,
+          "sha256": "3dab5fdc22787feeca956da1135e5214326d89fe17759ebd072779d33ce4bd81"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/report.json",
+          "bytes": 2268,
+          "sha256": "6abd86aec4d71d10262aaab971d28125d4e06b1900a3e04087fb8d5f89187ef4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/rx/rml2018a-75296-1789206465826-1789206465826-1789206469096627004.sigmf-data",
+          "bytes": 262140,
+          "sha256": "c72c7e8502d51800fa8babbd741550049dfe9f965bdb51cc22816f79b8fbe062"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/rx/rml2018a-75296-1789206465826-1789206465826-1789206469096627004.sigmf-meta",
+          "bytes": 487,
+          "sha256": "96eefa37e6a5b95f428f4ebd0dc50fe13fcc904da5c75fd05367ac135cd12659"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/rx-plan.json",
+          "bytes": 387,
+          "sha256": "52d553476f363726a8747225384cb65c633f11fceda44dbe58df4c728a436244"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/source.json",
+          "bytes": 1495,
+          "sha256": "04ed9c174143568b1d2379445bf403648ebef01fcd1d49df3aaedc1a01e422e8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/tx-plan.json",
+          "bytes": 872,
+          "sha256": "4d6bebbca83e1eb6aee55bc37854989db3456a1158520f41a65ee470f013797a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/tx-summary.json",
+          "bytes": 938,
+          "sha256": "6e3f6989e279d996dfb4fdf45bc068c1f85b547a739755ca31ac4c73c915aa2f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "00116cb088ee98cbb582cb09a1d25278c23160d2328e0230ccc89553b18ba2a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/audit.json",
+          "bytes": 41395,
+          "sha256": "72468f7bba1bdd68b5175384e571e08552388c302823053e7b7bdee2663b0a0c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/capture-complete.json",
+          "bytes": 445,
+          "sha256": "d95fd785ed7c3a61b85e4a15d0cc5c3cec4486057bca6a69a5e952951bb1ad16"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/report.json",
+          "bytes": 2273,
+          "sha256": "fea2b5a5aec2ec6dce3bdeeaa61b7b82bac1d76f9137d125c4b5ef25400c6ff1"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/rx/rml2018a-75297-1789206487717-1789206487717-1789206490954400588.sigmf-data",
+          "bytes": 262140,
+          "sha256": "9a1e49d7bb0e1d2873ea60c77614564b1c07ff8bd1bd80a0e7ee56e07d716b1d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/rx/rml2018a-75297-1789206487717-1789206487717-1789206490954400588.sigmf-meta",
+          "bytes": 487,
+          "sha256": "a031893df708acad3f5050b10e7295e877afa9526176b57211c645d40dd13dc7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/rx-plan.json",
+          "bytes": 387,
+          "sha256": "9cc3b418d07965fc53b11f632f3f8536775fb0aa5ff569deb9d2254ce1afacfd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/source.json",
+          "bytes": 1493,
+          "sha256": "0f6de0287f90d8bed7ba0cc410b427a2a3445c215d6c0b3bfd657637b1f99b48"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/tx-plan.json",
+          "bytes": 872,
+          "sha256": "21dc397d3554f34a8f9d69d15c2762c3122118d28406c9aca1ee4a13184a713c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/tx-summary.json",
+          "bytes": 938,
+          "sha256": "820fa5d383a0db58bff9e192e344b6b619f7a3f549252b49ef7052ebd2a3d879"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "3fcdd23d959f643e06b971973076d8a4cb568a699d75f2e69bbfdfdde59f5035"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/run-plan.json",
+          "bytes": 5309,
+          "sha256": "b21c60c833d88fcf4fba1ec4e0b60279c494adeb8e4c8b69884a9a1519044f3d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/summary.json",
+          "bytes": 8421,
+          "sha256": "f4e2edfdf04efa298033c87bc46ade29e3c44c429b6cc3b7a485e9094632cc92"
+        }
+      ],
+      "file_count": 42,
+      "bytes": 1261569,
+      "manual_delete_command": "rm -- '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/audit.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/capture-complete.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/report.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/rx/rml2018a-66422-1789206454909-1789206454909-1789206458156156480.sigmf-data' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/rx/rml2018a-66422-1789206454909-1789206454909-1789206458156156480.sigmf-meta' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/rx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/source.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/tx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/tx-summary.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/tx-uhd.log' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/audit.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/capture-complete.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/report.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/rx/rml2018a-66423-1789206476764-1789206476764-1789206480024345310.sigmf-data' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/rx/rml2018a-66423-1789206476764-1789206476764-1789206480024345310.sigmf-meta' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/rx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/source.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/tx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/tx-summary.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/tx-uhd.log' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/audit.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/capture-complete.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/report.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/rx/rml2018a-75296-1789206465826-1789206465826-1789206469096627004.sigmf-data' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/rx/rml2018a-75296-1789206465826-1789206465826-1789206469096627004.sigmf-meta' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/rx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/source.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/tx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/tx-summary.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/tx-uhd.log' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/audit.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/capture-complete.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/report.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/rx/rml2018a-75297-1789206487717-1789206487717-1789206490954400588.sigmf-data' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/rx/rml2018a-75297-1789206487717-1789206487717-1789206490954400588.sigmf-meta' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/rx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/source.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/tx-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/tx-summary.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/tx-uhd.log' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/run-plan.json' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/summary.json' && rmdir -- '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/rx' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/rx' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/rx' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/rx' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423' '/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912'"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912",
+      "purpose": "Registered guard-tone method, five-way engineering predictions, rejection evidence, graph, tests and cleanup",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/acquire.log",
+          "bytes": 8173,
+          "sha256": "4e375a9f2db90d63cd8a21bd4d448e7a61e8980dc6125b6eca271f90c00bec06"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/acquire.py",
+          "bytes": 2100,
+          "sha256": "47aa887e5faa089ad74a022e6356c03ad1e008a23f934764315335a259f1434f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/capture-assessments.json",
+          "bytes": 2411,
+          "sha256": "e620589f960616f4e3001fb0626fc5c2a9151222b6e90f427213ddc94af3d162"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/cleanup.json",
+          "bytes": 117812,
+          "sha256": "ff8294fb6773a8036496409f67cb3ee7e98340e1e93f25cceaff1c26982922b4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/finalize.py",
+          "bytes": 6357,
+          "sha256": "49e2426a9d221f02ec9d8c07b81f6742bcd1ce37cb35fe93757f1619ff62c62c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/gpu-isolation.json",
+          "bytes": 295,
+          "sha256": "06df2148a006986588f7b3494f8c10c9a8d0e85b615062eb2710ca37b064be4a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/infer.log",
+          "bytes": 1504,
+          "sha256": "e337906f707e1031dea8855b86d1d5a7590faf600a4193bd78466c722cc2ee23"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/inference.json",
+          "bytes": 401013,
+          "sha256": "2cc2c6720f01e38b121d5201e95ae6cafd89d0c5e5f31469544670666cab136b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/pilot-plan.json",
+          "bytes": 10552,
+          "sha256": "1d3bcb4b103b18a923ff3937d82ba831f61f19950ebcf065f401ad3c517bea1f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/postflight.json",
+          "bytes": 5418,
+          "sha256": "5398e1939250867e64bd655232e2201c2005e3e9c16f50dd72d9477152e975b4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/postflight.py",
+          "bytes": 1940,
+          "sha256": "1162d83ae5a364fef0eb8d6bbdf7c04cc1360398b6b095d5aab3706513653a79"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/prepared.json",
+          "bytes": 780980,
+          "sha256": "85cd75eb2a79d26cf5b63c8667748f9176868cea000a787e4a99bc14aa0114ee"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/preregister.py",
+          "bytes": 4230,
+          "sha256": "6db0503e2142991580f75f0dc1e29d4bac13badf8877f22565472e2050f67bb0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/previous-failure-plan.json",
+          "bytes": 382,
+          "sha256": "63e4b43e4bd10694ef9bcd94899cde0b3db151302fc51f240ecb8e281e3e6473"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/previous-failure-verify.log",
+          "bytes": 41,
+          "sha256": "30529967e2300f55b5ba0ffb9a9deb1bd6b044a4ceecb262833d190dcf4d5461"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/previous-failure.json",
+          "bytes": 160637,
+          "sha256": "f2cd4157a358f1f544fa89759186a292bce0496ebb3ee3f7ba072a1d0b303de2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/replay-previous-failure.py",
+          "bytes": 3621,
+          "sha256": "3f0d16cca0e25d9a53bae973e1e29e20fc012a3f5e665784a9a360e12a950912"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/summary.json",
+          "bytes": 3767,
+          "sha256": "d3884c6d55cdf29bad7e5fd2eea8035eb34e42e77fe453f3c4f3451b667a9bb1"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/tests.log",
+          "bytes": 14289,
+          "sha256": "14c5d1df4bf6e25cf24d122914429af66dac479a465e332eeb01b46e24d5351f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/verify.json",
+          "bytes": 118,
+          "sha256": "81ec405964cf220d5966477e444e99514b1e32b597c2888c2adf3b43117784f3"
+        }
+      ],
+      "file_count": 20,
+      "bytes": 1525640,
+      "manual_delete_command": "rm -- '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/acquire.log' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/acquire.py' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/capture-assessments.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/cleanup.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/finalize.py' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/gpu-isolation.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/infer.log' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/inference.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/pilot-plan.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/postflight.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/postflight.py' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/prepared.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/preregister.py' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/previous-failure-plan.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/previous-failure-verify.log' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/previous-failure.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/replay-previous-failure.py' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/summary.json' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/tests.log' '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912/verify.json' && rmdir -- '/var/tmp/sdrharness-dev/rml-timing-multiclass-qam-20260912'"
+    }
+  ],
+  "retained_file_count": 62,
+  "retained_bytes": 2787209
+}

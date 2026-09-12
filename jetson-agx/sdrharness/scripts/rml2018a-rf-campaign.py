@@ -28,6 +28,7 @@ import numpy as np
 from rml2018a_campaign import (REPO, SCHEMA, RATE, CENTER, BW, RX_SAMPLES, CFO_SEARCH_MAX_HZ, CFO_LIMIT_HZ,
     ROWS_PER_BATCH, batch_rows, budget, digest, file_hash, marker, normalize_window,
     packet, packet_peak, level_batches, RML_GAIN_PAIR_BATCHES, RML_TIMING_BATCHES, RML_TIMING_CLASSES,
+    RML_GUARD_BATCHES, RML_GUARD_CLASSES,
     receive_quality, registered_tx_gain, require, save, sinr_contract, synchronize, tx_plan, validate_receive_quality)
 
 DATASET = REPO/'local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5'
@@ -262,6 +263,8 @@ def acquire_batch(root, campaign, index, retry_failed=False):
     if level != 'standard':require(np.all(snrs==30), 'registered gain-pair source Z30')
     if level=='timing-multiclass-pilot':
         require(np.all(labels.argmax(axis=1)==RML_TIMING_CLASSES[RML_TIMING_BATCHES.index(index)]), 'registered multiclass source identity')
+    if level=='qam-guard-pilot':
+        require(np.all(labels.argmax(axis=1)==RML_GUARD_CLASSES[RML_GUARD_BATCHES.index(index)]), 'registered QAM source identity')
     require(shutil.disk_usage(root).free > RX_SAMPLES*4 + frame.nbytes + 32*1024*1024, 'batch disk budget')
     password=Path('/home/jetson/.config/sdrharness/p201-root.password')
     require(password.is_file() and not password.is_symlink() and password.stat().st_mode & 0o777 == 0o600,
@@ -582,7 +585,7 @@ def main():
     p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],help='plan only; default20; all execution uses the sealed plan')
     p.add_argument('--tx-gain-db',type=int,choices=[0,20,40,60,70,80],help='plan only; default0; all execution uses the sealed plan')
     p.add_argument('--tx-host',choices=['agx','nx'],help='plan only; default agx; P201 remains network RX')
-    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot'],help='plan only; finite pilots restrict batch IDs at AGX TX60/RX40')
+    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot','qam-guard-pilot'],help='plan only; finite pilots restrict batch IDs at AGX TX60/RX40')
     args=p.parse_args();root=args.root
     if args.command=='plan':
         require(args.batch_indices is None,'batch selection is execution-only; preregister pilot separately')

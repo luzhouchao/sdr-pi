@@ -13,6 +13,7 @@ import numpy as np
 import rml2018a_campaign as c
 import rml2018a_lo_cancellation as lo
 import rml2018a_pilot_timing as timing
+import rml2018a_guard_tone as guard
 
 TAGS=('source','raw','lo','timing')
 
@@ -24,14 +25,18 @@ def runner():
 
 def software():
     return {name:c.file_hash(Path(__file__).with_name(name)) for name in
-        ('compare-rml2018a-pilot-timing.py','rml2018a_pilot_timing.py','rml2018a_lo_cancellation.py')}
+        ('compare-rml2018a-pilot-timing.py','rml2018a_pilot_timing.py','rml2018a_lo_cancellation.py','rml2018a_guard_tone.py')}
 
 
 def prepare(root):
     m=runner();p=m.load_plan(root)
-    c.require(p['tx_level_profile']=='timing-multiclass-pilot','registered eight-class parent')
+    c.require(p['tx_level_profile'] in ('timing-multiclass-pilot','qam-guard-pilot'),'registered comparison parent')
+    qam=p['tx_level_profile']=='qam-guard-pilot'
+    batches,classes=(c.RML_GUARD_BATCHES,c.RML_GUARD_CLASSES) if qam else (c.RML_TIMING_BATCHES,c.RML_TIMING_CLASSES)
+    tags=('source','raw','lo','guard','timing') if qam else TAGS
+    total=len(batches)*24
     results=[];tensors={}
-    for batch,class_id in zip(c.RML_TIMING_BATCHES,c.RML_TIMING_CLASSES):
+    for batch,class_id in zip(batches,classes):
         d=root/f'batch-{batch:07d}';a=m.document(d/'audit.json');done=m.document(d/'capture-complete.json');s=m.document(d/'source.json')
         c.require(a['restored'] and c.file_hash(d/'audit.json')==done['audit_sha256'] and a['status']==done['status'],'restored audit')
         c.require(s['rows']==done['rows']==c.batch_rows(2555904,batch),'source association')
@@ -43,14 +48,20 @@ def prepare(root):
             c.require(a['status']=='sync_failed' and str(e)==a['sync_error'],'sync failure replay')
             received=None;sync=None
         else:c.require(a['status']=='synchronized' and sync==a['sync'],'original synchronization')
-        cancelled=adjusted=None
+        cancelled=adjusted=guarded=None
+        guard_info=dict(status='skipped',reason='not_synchronized')
         lo_info=dict(status='skipped',reason='not_synchronized');timing_info=dict(status='skipped',reason='not_synchronized')
         if received is not None:
             raw_lo,lo_info=lo.cancel(raw,sync)
             cancelled=lo.payload(raw_lo,sync)
-            if lo_info['status']=='applied':adjusted,timing_info=timing.correct(raw_lo,sync,p['run_id'],batch)
+            timing_raw,timing_lo_info=raw_lo,lo_info
+            if qam:
+                timing_raw,guard_info=guard.cancel(raw,sync)
+                guarded=lo.payload(timing_raw,sync)
+                timing_lo_info=guard_info
+            if timing_lo_info['status']=='applied':adjusted,timing_info=timing.correct(timing_raw,sync,p['run_id'],batch)
             else:
-                adjusted=cancelled.copy();timing_info=dict(status='skipped',reason='LO_not_validated')
+                adjusted=(guarded if qam else cancelled).copy();timing_info=dict(status='skipped',reason='LO_not_validated')
         # Source X/Z and true classes are accessed only after receiver DSP.
         with h5py.File(m.DATASET,'r') as h:
             iq=h['X'][s['rows']];labels=h['Y'][s['rows']].argmax(axis=1);zs=h['Z'][s['rows']].ravel()
@@ -64,6 +75,7 @@ def prepare(root):
         c.require(tx['status']=='fed_complete' and tx['bytes_written']==txp['tx_samples']*8 and tx['child_stopped'] and
             tx['payload_sha256']==txp['payload_sha256'] and tx['uhd_log_sha256']==c.file_hash(d/'tx-uhd.log'),'TX receipt')
         source=iq[:,:,0]+1j*iq[:,:,1];parts=dict(source=source,raw=received,lo=cancelled,timing=adjusted)
+        if qam: parts=dict(source=source,raw=received,lo=cancelled,guard=guarded,timing=adjusted)
         tensors[batch]=parts;rows=[]
         for k,row in enumerate(s['rows']):
             q=c.receive_quality(a['status'],source[k],None if received is None else received[k],30.)
@@ -72,15 +84,19 @@ def prepare(root):
             if received is not None:
                 qualities['lo']=lo.quality(source[k],cancelled[k],30.,lo_info)
                 qualities['timing']=timing.quality(source[k],adjusted[k],30.,timing_info)
+                if qam: qualities['guard']=guard.quality(source[k],guarded[k],30.,guard_info)
             else:
                 qualities['lo']={**q,'rx_sinr_reference_plane':lo.PLANE}
                 qualities['timing']={**q,'rx_sinr_reference_plane':timing.PLANE}
+                if qam: qualities['guard']={**q,'rx_sinr_reference_plane':guard.PLANE}
+            if qam:
+                qualities['timing']['rx_sinr_reference_plane']='received_payload_after_guard_tone_block_margin_and_pilot_timing_before_rms'
             rows.append(dict(row=row,true_id=class_id,source_snr_db=30.,quality=qualities,
                 inputs={tag:None if values is None else c.digest(c.normalize_window(values[k]).tobytes()) for tag,values in parts.items()},
                 correlations={tag:None if values is None else float(abs(np.vdot(source[k],values[k]))/
                     max(np.linalg.norm(source[k])*np.linalg.norm(values[k]),1e-30)) for tag,values in parts.items() if tag!='source'}))
         summary={}
-        for tag in ('raw','lo','timing'):
+        for tag in tags[1:]:
             valid=[v['quality'][tag]['rx_sinr_db'] for v in rows if v['quality'][tag]['rx_sinr_status']=='estimated']
             summary[tag]=dict(total_rows=24,estimated_rows=len(valid),invalid_or_unmeasured_rows=24-len(valid),
                 median_db=float(np.median(valid)) if valid else None,min_db=min(valid) if valid else None,
@@ -89,17 +105,22 @@ def prepare(root):
             seal=seal,parent_audit_sha256=done['audit_sha256'],status=a['status'],sync=sync,component_peak_counts=peak,
             lo_cancellation=lo_info,timing_correction=timing_info,quality_summary=summary,
             uhd_tail_markers=a['uhd_tail_markers'],rows=rows))
+        if qam: results[-1]['guard_correction']=guard_info
     report=dict(schema='rml2018a-eight-class-pilot-timing-comparison-v1',parent=str(root),
         parent_plan_sha256=c.file_hash(root/'run-plan.json'),run_id=p['run_id'],software=software(),
         timing_contract=timing.contract(),lo_contract=lo.contract(),results=results,
-        source_rows=192,maximum_model_windows=768,maximum_warmups=2,
+        source_rows=total,maximum_model_windows=total*len(tags),maximum_warmups=2,
         profile_sha256=p['profile_sha256'],label_map_sha256=p['label_map_sha256'],recognizer_available=False,
         semantics='Same192 engineering rows in four variants; no model-guided parameter choice or independent accuracy. Raw and post-DSP conditional SINR kept separate.')
+    if qam:
+        report.update(schema='rml2018a-qam-guard-comparison-v1',guard_contract=guard.contract(),tags=list(tags),
+            semantics='Same96 new QAM engineering rows in five variants; v1 failures retained; empirical guard-tone margin and pilot timing are separate post-DSP planes; not independent accuracy.')
     return report,tensors
 
 
 def infer(root,output):
     m=runner();report,tensors=prepare(root)
+    tags=report.get('tags',TAGS);total=report['source_rows'];maximum=report['maximum_model_windows']
     c.require(report==m.document(output/'prepared.json'),'prepared source/software changed')
     c.require(not (output/'inference.json').exists(),'inference already recorded')
     scratch=output/'scratch';scratch.mkdir(mode=0o700,exist_ok=True)
@@ -109,7 +130,7 @@ def infer(root,output):
     from gpu_lease import GpuLease
     lease=GpuLease(scratch/'gpu-gate','mamba');token=None
     receipt=dict(status='failed',prepared_sha256=c.file_hash(output/'prepared.json'),rows=[],model_windows=0,warmup_windows=0,
-        maximum_model_windows=768,recognizer_available=False,name_status='provisional',profile_sha256=report['profile_sha256'],
+        maximum_model_windows=maximum,recognizer_available=False,name_status='provisional',profile_sha256=report['profile_sha256'],
         label_map_sha256=report['label_map_sha256'],semantics=report['semantics'])
     try:
         token=asyncio.run(lease.acquire(time.monotonic()+10,request='eight-class-pilot-timing'))
@@ -124,7 +145,7 @@ def infer(root,output):
                     entry=dict(batch=batch,row=row['row'],true_id=row['true_id'],predictions={})
                     for tag,values in parts.items():
                         if values is None:entry['predictions'][tag]=None;continue
-                        c.require(time.monotonic()<end and receipt['model_windows']<768,'inference budget')
+                        c.require(time.monotonic()<end and receipt['model_windows']<maximum,'inference budget')
                         tensor=c.normalize_window(values[k]);sha=c.digest(tensor.tobytes())
                         c.require(sha==row['inputs'][tag],'actual model input')
                         logits,us=backend.classify_logits(tensor)
@@ -134,8 +155,8 @@ def infer(root,output):
                     receipt['rows'].append(entry)
                 print(json.dumps(dict(event='inferred',batch=batch,rows=24)),flush=True)
             del backend
-        receipt.update(status='completed',summary={tag:dict(total=192,predicted=sum(v['predictions'][tag] is not None for v in receipt['rows']),
-            correct=sum(v['predictions'][tag] is not None and v['predictions'][tag]['id']==v['true_id'] for v in receipt['rows'])) for tag in TAGS})
+        receipt.update(status='completed',summary={tag:dict(total=total,predicted=sum(v['predictions'][tag] is not None for v in receipt['rows']),
+            correct=sum(v['predictions'][tag] is not None and v['predictions'][tag]['id']==v['true_id'] for v in receipt['rows'])) for tag in tags})
     except BaseException as e:receipt['error']=f'{type(e).__name__}: {e}';raise
     finally:
         if token is not None:lease.release(token)
@@ -161,21 +182,22 @@ def main():
             result=infer(a.root,a.output);print(json.dumps(result['summary']))
     else:
         report,_=prepare(a.root);m=runner();c.require(report==m.document(a.output/'prepared.json'),'deterministic report replay')
+        tags=report.get('tags',TAGS);total=report['source_rows']
         receipt=m.document(a.output/'inference.json');c.require(receipt['status']=='completed' and
-            receipt['prepared_sha256']==c.file_hash(a.output/'prepared.json') and len(receipt['rows'])==192,'inference receipt')
+            receipt['prepared_sha256']==c.file_hash(a.output/'prepared.json') and len(receipt['rows'])==total,'inference receipt')
         count=0;expected=[(b['batch'],r) for b in report['results'] for r in b['rows']]
         for (batch,row),pred in zip(expected,receipt['rows']):
             c.require((batch,row['row'],row['true_id'])==(pred['batch'],pred['row'],pred['true_id']),'prediction association')
-            for tag in TAGS:
+            for tag in tags:
                 q=pred['predictions'][tag]
                 if row['inputs'][tag] is None:c.require(q is None,'missing input');continue
                 c.require(q['input_sha256']==row['inputs'][tag] and len(q['logits'])==24 and
                     np.isfinite(q['logits']).all() and int(np.argmax(q['logits']))==q['id'],'prediction/input replay');count+=1
         c.require(count==receipt['model_windows'],'window count')
-        for tag in TAGS:
-            c.require(receipt['summary'][tag]==dict(total=192,predicted=sum(v['predictions'][tag] is not None for v in receipt['rows']),
+        for tag in tags:
+            c.require(receipt['summary'][tag]==dict(total=total,predicted=sum(v['predictions'][tag] is not None for v in receipt['rows']),
                 correct=sum(v['predictions'][tag] is not None and v['predictions'][tag]['id']==v['true_id'] for v in receipt['rows'])),'summary count')
-        print(json.dumps(dict(status='verified',source_rows=192,native_captures=8,model_input_hashes=count,model_reexecuted=False)))
+        print(json.dumps(dict(status='verified',source_rows=total,native_captures=len(report['results']),model_input_hashes=count,model_reexecuted=False)))
 
 
 if __name__=='__main__':main()
