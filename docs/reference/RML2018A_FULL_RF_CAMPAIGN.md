@@ -77,6 +77,26 @@ CUDA各搜索批次的胜出位置留在设备端，搜索末尾一次传回，�
 GPU是原生CUDA/cuFFT；C++负责B210，C负责P201，Rust负责Controller，
 无需为了语言名称改写所有Python。后续根据实际CPU热点/复制/积压计时选择是否下沉Rust或C++。
 
+### 多帧GPU保护区拟合（2026-09-13）
+
+有限先导可显式使用`plan --guard-backend cuda-batch`，plan冻结后run不再接受临时切换。
+这会把64个导频帧（对应1024条payload）的训练保护区一起送入CUDA，批量执行61点粗搜索和
+50轮细搜索；固定搜索范围/步骤保持。GPU上下文及频率网格跨块复用，所有候选在设备端比较，
+每批一次返回频率。首次大范围导频搜索也使用CUDA `gather`，避免CUDA标量索引
+隐式同步时持有Python GIL、阻塞接收/写盘线程；计算完成后的等待仍保留CUDA正常同步语义。只传训练保护区，源X/Y/Z不参与拟合；源数据只在后续SINR工程估计中使用。
+[实现](../../jetson-agx/sdrharness/scripts/rml2018a_guard_gpu.py)支持1–128帧的有界批次，
+流水线采用64帧以匹配1024条处理/写盘块，导频跟踪仍按时序在CPU进行。
+
+每个频率结果绑定训练IQ SHA、采样位置SHA和频偏先验；复用到其他保护区或先验会拒绝。
+CPU继续执行原始留出保护区/幅相稳定/独立导频检查，没有把GPU成功返回当质量通过。
+选择cuda-batch时，处理身份包含后端，v1诊断包含`frequency_fit_backend`，旧实验和默认CPU结果不改写。
+普通旧调用与默认pilot CLI保持cpu；后续用户要求的多帧GPU先导必须在新计划中显式选择cuda-batch。
+
+CUDA与NumPy的归约/超越函数存在浮点差异，校正后输入不保证逐字节相同。
+固定验证要求：状态/拒绝原因精确一致、归一化最大绝对差≤1e-4、payload相对RMS差≤1e-5、
+条件SINR差≤0.001dB、频率差≤0.001Hz；这些是后端一致性界限，不是放宽RF验收门。
+实测和完整流水线边界见[多帧GPU验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13多帧gpu并行保护区拟合)。
+
 ### 每个SNR档的文件格式与质量字段
 
 [SnrStore](../../jetson-agx/sdrharness/scripts/rml2018a_campaign_store.py)是campaign存储模块，

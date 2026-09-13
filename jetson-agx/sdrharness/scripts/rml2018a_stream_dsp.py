@@ -26,8 +26,13 @@ def packet(source, run_id):
 
 
 class Decoder:
-    def __init__(self, run_id, source, gpu):
+    def __init__(self, run_id, source, gpu, guard_backend='cpu'):
         c.require(source.shape == (2048,1024), 'finite stream decoder scope')
+        c.require(guard_backend in ('cpu','cuda-batch'),'stream guard backend')
+        self.guard_batch=None
+        if guard_backend=='cuda-batch':
+            from rml2018a_guard_gpu import GuardBatch
+            self.guard_batch=GuardBatch(gpu.torch)
         self.run_id=run_id; self.source=source; self.gpu=gpu; self.samples=np.empty(0,np.complex128)
         self.frame=0; self.marker=None; self.hz=None; self.parts=[]; self.records=[]
         t=np.arange(129)-64
@@ -62,10 +67,14 @@ class Decoder:
                 # all59 hypotheses, instead of two scalar synchronizations/batch.
                 flat=scores.argmax().reshape(1)
                 score=scores.reshape(-1).gather(0,flat)[0]
+                # CUDA scalar indexing can call item() inside Python's GIL.
+                # gather keeps the index on CUDA so RX/writer threads can run.
+                frequency=hz.gather(0,t.div(flat,valid,rounding_mode='floor'))[0]
                 candidates.append(t.stack((score,(flat[0]%valid).double(),
-                    hz[flat[0]//valid])))
+                    frequency)))
             winners=t.stack(candidates)
-            best=winners[winners[:,0].argmax()].cpu().numpy()
+            winner=winners[:,0].argmax().reshape(1,1).expand(1,3)
+            best=winners.gather(0,winner).cpu().numpy()[0]
         c.require(best[0]>=.55,'stream first marker not found')
         self.marker=int(best[1]);self.hz=float(best[2])
 
@@ -107,16 +116,33 @@ class Decoder:
             origin=at-256;c.require(origin>=0,'complete leading guard')
             raw=self.samples[origin:origin+65535]
             sync=dict(marker_offset=256,payload_marker_offset=256,estimated_cfo_hz=hz)
-            corrected,info=guard.cancel(raw,sync,16,pilot_only=True)
+            if self.guard_batch is None:
+                corrected,info=guard.cancel(raw,sync,16,pilot_only=True)
+            else:
+                corrected=info=None
             positions=np.arange(at+1024,at+1024+16*1024)
             rotation=np.exp(-2j*np.pi*hz*positions/c.RATE+1j*phase)
             received=self.samples[positions]*rotation
-            guarded=corrected[1280:1280+16*1024]*rotation
-            self.parts.append((received.reshape(16,1024),guarded.reshape(16,1024),positions[::1024]))
+            guarded=None if corrected is None else (corrected[1280:1280+16*1024]*rotation).reshape(16,1024)
+            self.parts.append((received.reshape(16,1024),guarded,positions[::1024],origin))
             self.records.append(dict(frame=self.frame,marker_offset=at,cfo_hz=hz,phase_rotation_rad=phase,
                 marker_score=score,guard=info,started_ns=started,finished_ns=time.time_ns()))
             self.marker=at;self.hz=hz;self.frame+=1
             if self.frame%64==0:
+                if self.guard_batch is not None:
+                    # Track pilots sequentially, then fit64 independent training
+                    # guard sets together. CPU validation gates remain per frame.
+                    raws=[self.samples[p[3]:p[3]+65535] for p in self.parts]
+                    syncs=[dict(marker_offset=256,payload_marker_offset=256,estimated_cfo_hz=r['cfo_hz']) for r in self.records]
+                    fits=self.guard_batch.fit(raws,syncs,16)
+                    for k,(raw,sync,fit) in enumerate(zip(raws,syncs,fits)):
+                        corrected,info=guard.cancel(raw,sync,16,pilot_only=True,frequency_fit=fit)
+                        r=self.records[k];received,_,starts,origin=self.parts[k]
+                        positions=np.arange(starts[0],starts[0]+16*1024)
+                        rotation=np.exp(-2j*np.pi*r['cfo_hz']*positions/c.RATE+1j*r['phase_rotation_rad'])
+                        guarded=(corrected[1280:1280+16*1024]*rotation).reshape(16,1024)
+                        self.parts[k]=(received,guarded,starts,origin)
+                        r['guard']=info;r['finished_ns']=time.time_ns()
                 block=self.frame//64-1;reference=self.source[block*1024:(block+1)*1024]
                 received=np.concatenate([p[0] for p in self.parts]);guarded=np.concatenate([p[1] for p in self.parts])
                 starts=np.concatenate([p[2] for p in self.parts]).astype('<i8')

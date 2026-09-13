@@ -1,0 +1,561 @@
+{
+  "schema": "rml2018a-many-frame-gpu-evidence-v1",
+  "date": "2026-09-13",
+  "base_commit": "1d0ee1661e213ec31f4f091dcb459ef6862957f0",
+  "parent_evidence": "RML2018A_CONTINUOUS_RAM_2026-09-13.json",
+  "source_dataset": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "copied": false
+  },
+  "groups": [
+    {
+      "root": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913",
+      "purpose": "GPU16/64/128-frame and complete decoder ABBA; numerical gates, real CUDA tests, GIL scheduling proof and failure replay",
+      "file_count": 26,
+      "total_bytes": 43527,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/check-gil.py",
+          "bytes": 1588,
+          "sha256": "9ff3f30ecf93ef85e4bcd2ad12d7bc131c52de7f7014cf78c445e8ba6171827e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/cleanup.json",
+          "bytes": 548,
+          "sha256": "f62e22247a587c830819c36336985b254eef1dd8e73455c17429b1e270579e3d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/decoder-plan.json",
+          "bytes": 1267,
+          "sha256": "6df84d833f0c01f5d4d424e59ad6b9ed9712d42ec44f04b19bdd014898b23c39"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/decoder-validation.json",
+          "bytes": 1404,
+          "sha256": "54e2bc11921cf67c4287dce2cf11449cd32a2dbb9a5a8f8abd2195833aec7c36"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/decoder-validation.log",
+          "bytes": 1759,
+          "sha256": "6cbecf704f52a238dfb34747a4d846eaf9189f8270cd4d07268415cc2ec76057"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/failure-marker-diagnostic.json",
+          "bytes": 238,
+          "sha256": "9dfbc28720024165c5f52881d331c741e331f62271e080d4a783b76c87c97b30"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/failure-replay.json",
+          "bytes": 593,
+          "sha256": "0a4b1f6f18cfc641f9b85d70a535d9b6ebad6220833eb7329c347789198d1e6d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/failure-replay.log",
+          "bytes": 806,
+          "sha256": "8152cf219c8fe3e4a3cec49b3c1fdfedaba646250977194a52616ae10459772b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/final-state.json",
+          "bytes": 345,
+          "sha256": "a9f6dd9056ad7d7a08ff773cea175515a0851ec6e2e83fbfe5a22c41ab553052"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/gil-after.json",
+          "bytes": 247,
+          "sha256": "7b608b471c6743846f4fdb071184f25fbed2cb2395ff70376ffea641419b3aa9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/gil-after.log",
+          "bytes": 576,
+          "sha256": "f266e1a46bcbc40f4989264673829fd5f871251fad6f39ae9f74a3ac8269532d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/gil-before.json",
+          "bytes": 252,
+          "sha256": "ea6b48d4ffb5056dda954bc3fc0aa2857495515af04ecf6d63b43e180ce4979a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/gil-before.log",
+          "bytes": 581,
+          "sha256": "26b1e0a99df2061c29ebc4e8fa0208ef8c5d204ea97ecd79becb6ee42d1c8b71"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/live-plan.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/live-run.log",
+          "bytes": 898,
+          "sha256": "3f8a7b6e75725a36c2656538ab75a58b87f04a3d3cfa48040f9dcef45a7f6c6a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/live-v2-plan.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/live-v2-run.log",
+          "bytes": 346,
+          "sha256": "3dee0c2647c7409b8edb4fb8626ebb0660a0aaaa049bdfc0f87775eaa9c9e3fd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/live-v2-verification.json",
+          "bytes": 668,
+          "sha256": "5969058303920bf0299675da9001da5add267ce72d2c863ce6a4d6e66375f667"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/plan.json",
+          "bytes": 1379,
+          "sha256": "e2d0010f182d5e8cacf0d76de3790f7ae318f1691e40158ca725640168943039"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/python-final.log",
+          "bytes": 7301,
+          "sha256": "7e945effdfd069191f9375aa4b6c491028c4f4ea3e8b7416f61fbdc14bc32b12"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/python-tests.log",
+          "bytes": 7300,
+          "sha256": "fda6c2bb6ec83aa71900a5daf96b1478a5313b5d5ac16b9727e83c8a601ba252"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/replay-failure.py",
+          "bytes": 1614,
+          "sha256": "87ccfe16e3ec622a99352ed369156416f57a0d333ef00fdcd3aaebf0fb978663"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/validate-decoder.py",
+          "bytes": 4059,
+          "sha256": "bbc8a8e8bec75456f6199af4c3b3f7c3ed4a7dca39685bae700e81d9042508c1"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/validate-guard-batch.py",
+          "bytes": 4699,
+          "sha256": "c16cb0a0ea738521051480105941d0cea1c9129967cf725fe8d2dcc51a3f4357"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/validation.json",
+          "bytes": 3335,
+          "sha256": "43408e3a8214aee5fb5b8e8a7009509869c8fc6125e228bd60e333a066287f0a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/validation.log",
+          "bytes": 1724,
+          "sha256": "06afc6f9ea39a771a338818b4a7bd9965738388978db6a7c873486825bc41d65"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913",
+      "deletion_note": "Manual removal of complete evidence/corpus group only; not automatic temporary cleanup",
+      "lineage": {
+        "model_windows": 0
+      }
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913",
+      "purpose": "Failed first GPU pilot: raw IQ including partial buffer, first complete block plus failure rows, transmitted waveform and exact acquisition source snapshots",
+      "file_count": 27,
+      "total_bytes": 101395832,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/acquisition-software/rml2018a-continuous-pilot.py",
+          "bytes": 24823,
+          "sha256": "8bd37b1767646b6c7046f52adb198825f4ae95cbd6c0945e64e3b1cebd087f59"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/acquisition-software/rml2018a_buffer_pool.py",
+          "bytes": 3331,
+          "sha256": "570b392645cf05824da249be80850056477c1f249db24dd3e3fabc8cb9e3a3bf"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/acquisition-software/rml2018a_campaign.py",
+          "bytes": 23955,
+          "sha256": "6dedffd4d3c89bcaabd6c4bb68f8088cf9f2b06a376598f912e3c08ff776ced4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/acquisition-software/rml2018a_campaign_gpu.py",
+          "bytes": 6671,
+          "sha256": "34d213a0d956a6d727fd2174c4f957edf09f451c0bb4765943d223c4252d9522"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/acquisition-software/rml2018a_campaign_store.py",
+          "bytes": 16702,
+          "sha256": "b79cf176d2a1ad793e7de7351964b73b6a7033e47587206718f9eac4ca00d84e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/acquisition-software/rml2018a_guard_gpu.py",
+          "bytes": 3286,
+          "sha256": "5ed65c8f431d4cd115ff0c5d44dba00c8377b88fd3460e2cbd977c7615382509"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/acquisition-software/rml2018a_guard_tone.py",
+          "bytes": 5435,
+          "sha256": "60b61f01f3d1bad5bc46db8e30dffb0d0f7e830e3fd756e7ca3e521b425b759a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/acquisition-software/rml2018a_lo_cancellation.py",
+          "bytes": 8632,
+          "sha256": "4fdb2d12d3d99b60c3d4714e4dc757f620ee5aaa3c76dec94d445d21a5fa60b0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/acquisition-software/rml2018a_stream_dsp.py",
+          "bytes": 9872,
+          "sha256": "1af4ed7d96682840676f8e079d3ac8e55ac8e18fcc95652acb4bfdebddccb589"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/acquisition-software/rml2018a_stream_frames.py",
+          "bytes": 994,
+          "sha256": "9f1d0b0552543422cfbb24693216c7a40318a8a9523b88e22a1487d24b3e36ab"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/execution.json",
+          "bytes": 2935,
+          "sha256": "5fc2de57b9f01d2dd1a08779555001418fe99534013867089d69a5b43b3f1c3f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/frames-000.json",
+          "bytes": 432268,
+          "sha256": "2b5c6feac2c6076dac0f2394222dd42bb632d754dddf5e680df021418a1b027e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/pending-raw-000.ci16",
+          "bytes": 2883584,
+          "sha256": "1335b24e9c12f0dd3a8297cf49769f1c8e06667bec8bfd7ba3256e1eb28a1357"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/plan.json",
+          "bytes": 28637,
+          "sha256": "da265cf6dff97047535265bc87318c47c4a1825aebf8bd18fe4afc37a8dbd3d6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/rx-events.jsonl",
+          "bytes": 351459,
+          "sha256": "407ee43958d5a41b962e23a8a42ebdea165b16507c230aa24380f31b323ff76b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/rx-plan.json",
+          "bytes": 248,
+          "sha256": "eb7c326bb5eebe99f588ff8e6c0279402cbe2c64b2434d313b506f9794a01175"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/snr-plus30/configuration.json",
+          "bytes": 2157,
+          "sha256": "452f51c380363d554c31adb24cc5a28f5e505a2d4dd5fc446ff05f8ffd25e398"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/snr-plus30/index.json",
+          "bytes": 7083,
+          "sha256": "7027dac2e46ae8df51774a899ad066d8f39b25c2405b6a6c4fad28e232a6553a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/snr-plus30/processed.h5",
+          "bytes": 53697224,
+          "sha256": "ff3f76cab959bdd835525809cf22454173fac4d0e087add81f680d958b23fb93"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/snr-plus30/raw.sigmf-data",
+          "bytes": 25165824,
+          "sha256": "93124f467027dad9667c678294ac553c4f12de1e038b924cbb00393b2c408d03"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/snr-plus30/raw.sigmf-meta",
+          "bytes": 6794,
+          "sha256": "332d970f3bf6115d3aaad03efd128e5a636dbe7a7f9b67ac2829e37bebda6b65"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/snr-plus30/writer.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/started.json",
+          "bytes": 155,
+          "sha256": "7e3dac5374333aaba86ff2f31f4094ff65680dc1777209d43bbe5282f1fd7662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/tx-events.jsonl",
+          "bytes": 362841,
+          "sha256": "6b2dae5e43cd4a68ef39d337dc030000e32307e97ba0a8e2a0f08ca546d6dadf"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/tx.fc32",
+          "bytes": 18350080,
+          "sha256": "0a47764f6ba35dfd07c154ea62a1ca467f6273efef0de03f4929976b563c2c7a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/tx.log",
+          "bytes": 842,
+          "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913",
+      "deletion_note": "Manual removal of complete evidence/corpus group only; not automatic temporary cleanup",
+      "lineage": {
+        "run_id": "6f37aa29bced42a583ca26b71d987f3d",
+        "generation": 1789311625473,
+        "source_snr_db": 30,
+        "source_sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+        "guard_backend": "cuda-batch",
+        "rf": {
+          "center_hz": 2455000000,
+          "rate_sps": 2100000,
+          "bandwidth_hz": 1500000,
+          "tx_gain_db": 60,
+          "rx_gain_db": 50,
+          "tx_lo_offset_hz": 250000,
+          "peak": 0.632455532033676,
+          "settle_ms": 500,
+          "rx_input": "RX1/RX0/A_BALANCED"
+        },
+        "model_windows": 0,
+        "source_row_count": 2048,
+        "source_rows_range": [
+          102400,
+          104447
+        ],
+        "membership_authority": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/plan.json"
+      },
+      "processing_identity": {
+        "bandwidth_hz": 1500000,
+        "center_hz": 2455000000,
+        "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+        "max_raw_samples": 12582912,
+        "parent_plan_sha256": "da265cf6dff97047535265bc87318c47c4a1825aebf8bd18fe4afc37a8dbd3d6",
+        "preprocess_id": "continuous16-pilot-track-guard-gpu-v1-experimental/cuda-batch",
+        "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+        "rx_gain_db": 50,
+        "sample_rate_hz": 2100000,
+        "session_id": "6f37aa29bced42a583ca26b71d987f3d",
+        "software": {
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-continuous-pilot.py": "8bd37b1767646b6c7046f52adb198825f4ae95cbd6c0945e64e3b1cebd087f59",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_buffer_pool.py": "570b392645cf05824da249be80850056477c1f249db24dd3e3fabc8cb9e3a3bf",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_campaign.py": "6dedffd4d3c89bcaabd6c4bb68f8088cf9f2b06a376598f912e3c08ff776ced4",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_campaign_gpu.py": "34d213a0d956a6d727fd2174c4f957edf09f451c0bb4765943d223c4252d9522",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_campaign_store.py": "b79cf176d2a1ad793e7de7351964b73b6a7033e47587206718f9eac4ca00d84e",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_guard_gpu.py": "5ed65c8f431d4cd115ff0c5d44dba00c8377b88fd3460e2cbd977c7615382509",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_guard_tone.py": "60b61f01f3d1bad5bc46db8e30dffb0d0f7e830e3fd756e7ca3e521b425b759a",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_lo_cancellation.py": "4fdb2d12d3d99b60c3d4714e4dc757f620ee5aaa3c76dec94d445d21a5fa60b0",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_stream_dsp.py": "1af4ed7d96682840676f8e079d3ac8e55ac8e18fcc95652acb4bfdebddccb589",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_stream_frames.py": "9f1d0b0552543422cfbb24693216c7a40318a8a9523b88e22a1487d24b3e36ab"
+        },
+        "source_sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+        "source_snr_db": 30,
+        "tx_gain_db": 60
+      }
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913",
+      "purpose": "Successful corrected GPU pilot: all2048 rows, raw SigMF/HDF5, TX waveform, background and RAM release/lifecycle evidence",
+      "file_count": 22,
+      "total_bytes": 130484431,
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/background-after/audit.json",
+          "bytes": 471,
+          "sha256": "0772ab0fc549e03f98da4a6bed4ee3294186c51be821105a3ee9db7846496ef8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/background-after/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/background-after/plan.json",
+          "bytes": 255,
+          "sha256": "243c97df89095489f3781e65bfcf4b671e47d0dcc09bd36db39457fbffa4e6a3"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/background-after/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "c38f303501a9740dd2f904cd3501820ace9df7b1d932a5111a5697aedcf5bf12"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/background-after/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/execution.json",
+          "bytes": 9428,
+          "sha256": "e12f34f1381819518fdb1869fba1d78d5c47b82961e681f8f3df82d09098ce50"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/frames-000.json",
+          "bytes": 432356,
+          "sha256": "57a030747bb393e3c1488df4867d042955dcecbe8cb2b6aa20dadf760c0d0b1f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/frames-001.json",
+          "bytes": 431477,
+          "sha256": "fa904b13c8ef62ec4c7ad1b2690643fba6753fec90c8483369f0db713701df91"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/plan.json",
+          "bytes": 28637,
+          "sha256": "c272c0627dc5fc93d60bcee2d67f89c8fc4dbcd7097adc6e64ebc225e1236bbc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/rx-events.jsonl",
+          "bytes": 632539,
+          "sha256": "df8e96881361d4d78d1eb48e3bda14ff161d52ee471542966237adb4f17dfe39"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/rx-plan.json",
+          "bytes": 251,
+          "sha256": "64b49e7bd26be801c74b212983dbed48703896be98deafb303bc089a30335ca1"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/snr-plus30/configuration.json",
+          "bytes": 2157,
+          "sha256": "bf3eb72b0c36fabb89ee87ff6ac88cfe5fe3278df4ed8c3545a1bc6bc212add6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/snr-plus30/index.json",
+          "bytes": 13773,
+          "sha256": "03aa48f112d376a180cc89cde6d66a56e01a7ea4c45ebca4849a6cda794de205"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/snr-plus30/processed.h5",
+          "bytes": 55679688,
+          "sha256": "ca8d54b138618056b3359a3b5a04a6228dc36ca7d3d0ab4d8853537af66fdb7a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/snr-plus30/raw.sigmf-data",
+          "bytes": 50331648,
+          "sha256": "9ffd978cd79d3e36e255b2a243957eacd287aac9c3095981a09ea68503aabf8a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/snr-plus30/raw.sigmf-meta",
+          "bytes": 13202,
+          "sha256": "762fa8f25e539c4442694ec0d6d2d2d03a35e21054fa3f2d2fe6c8fbbe3f8e82"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/snr-plus30/writer.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/started.json",
+          "bytes": 155,
+          "sha256": "b3c5b1f015962fbf3dd0028dda0258c995a5f5b9e10d47e1e690ecc12751c380"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/tx-events.jsonl",
+          "bytes": 362840,
+          "sha256": "59d83d774ad17f6c1bed63e769bb85e487ad06cc6b07771da3e756fb1b3b1603"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/tx.fc32",
+          "bytes": 18350080,
+          "sha256": "c3173b75272bbc949692083d04b975e15db843a2a94047b52d39072cd0156e2d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/tx.log",
+          "bytes": 842,
+          "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+        }
+      ],
+      "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913",
+      "deletion_note": "Manual removal of complete evidence/corpus group only; not automatic temporary cleanup",
+      "lineage": {
+        "run_id": "389c9febcde24fd3a91565e91aba4c08",
+        "generation": 1789312173529,
+        "source_snr_db": 30,
+        "source_sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+        "guard_backend": "cuda-batch",
+        "rf": {
+          "center_hz": 2455000000,
+          "rate_sps": 2100000,
+          "bandwidth_hz": 1500000,
+          "tx_gain_db": 60,
+          "rx_gain_db": 50,
+          "tx_lo_offset_hz": 250000,
+          "peak": 0.632455532033676,
+          "settle_ms": 500,
+          "rx_input": "RX1/RX0/A_BALANCED"
+        },
+        "model_windows": 0,
+        "source_row_count": 2048,
+        "source_rows_range": [
+          102400,
+          104447
+        ],
+        "membership_authority": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/plan.json"
+      },
+      "processing_identity": {
+        "bandwidth_hz": 1500000,
+        "center_hz": 2455000000,
+        "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+        "max_raw_samples": 12582912,
+        "parent_plan_sha256": "c272c0627dc5fc93d60bcee2d67f89c8fc4dbcd7097adc6e64ebc225e1236bbc",
+        "preprocess_id": "continuous16-pilot-track-guard-gpu-v1-experimental/cuda-batch",
+        "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+        "rx_gain_db": 50,
+        "sample_rate_hz": 2100000,
+        "session_id": "389c9febcde24fd3a91565e91aba4c08",
+        "software": {
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-continuous-pilot.py": "8bd37b1767646b6c7046f52adb198825f4ae95cbd6c0945e64e3b1cebd087f59",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_buffer_pool.py": "570b392645cf05824da249be80850056477c1f249db24dd3e3fabc8cb9e3a3bf",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_campaign.py": "6dedffd4d3c89bcaabd6c4bb68f8088cf9f2b06a376598f912e3c08ff776ced4",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_campaign_gpu.py": "34d213a0d956a6d727fd2174c4f957edf09f451c0bb4765943d223c4252d9522",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_campaign_store.py": "b79cf176d2a1ad793e7de7351964b73b6a7033e47587206718f9eac4ca00d84e",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_guard_gpu.py": "5ed65c8f431d4cd115ff0c5d44dba00c8377b88fd3460e2cbd977c7615382509",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_guard_tone.py": "60b61f01f3d1bad5bc46db8e30dffb0d0f7e830e3fd756e7ca3e521b425b759a",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_lo_cancellation.py": "4fdb2d12d3d99b60c3d4714e4dc757f620ee5aaa3c76dec94d445d21a5fa60b0",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_stream_dsp.py": "b0d1259df040caad0722d6120d152f4d5828a041cc457a6618cd62605dab0db1",
+          "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_stream_frames.py": "9f1d0b0552543422cfbb24693216c7a40318a8a9523b88e22a1487d24b3e36ab"
+        },
+        "source_sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+        "source_snr_db": 30,
+        "tx_gain_db": 60
+      }
+    }
+  ],
+  "total_files": 75,
+  "total_bytes": 231923790,
+  "cleanup": {
+    "removed": [
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-guard-gpu-20260913/scratch",
+        "files": 4,
+        "bytes": 0
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-20260913/scratch",
+        "files": 4,
+        "bytes": 114592
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-stream-live-batchgpu-v2-20260913/scratch",
+        "files": 4,
+        "bytes": 114592
+      }
+    ],
+    "files": 12,
+    "bytes": 229184,
+    "raw_iq_deleted": 0,
+    "processed_results_deleted": 0,
+    "p201_new_staging": 0
+  },
+  "no_model_or_training": true,
+  "recognizer_available": false,
+  "production_controller_or_p201_binary_changed": false,
+  "limitations": [
+    "Only2048 source-Z30/class0 rows per pilot, not full SNR or dataset",
+    "Same source membership repeats in different captures; not independent accuracy",
+    "CPU and CUDA corrected inputs differ within fixed numeric bounds, not byte-identical",
+    "First RF failure retained; GIL risk measured but missing physical ADC timestamps prevents proving all loss causality",
+    "Steady full-SNR backlog/cancel/recovery not yet validated"
+  ]
+}

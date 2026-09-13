@@ -54,7 +54,8 @@ def source():
     return x[:,:,0]+1j*x[:,:,1]
 
 
-def create(root, backend):
+def create(root, backend, guard_backend='cpu'):
+    c.require(guard_backend in ('cpu','cuda-batch'),'finite guard backend')
     c.require(root.resolve()==root and root.parent==Path('/var/tmp/sdrharness-dev') and not root.exists(),'fresh pilot root')
     c.require(c.file_hash(DATA)==DATA_SHA,'source SHA')
     root.mkdir(mode=0o700); run_id=uuid.uuid4().hex
@@ -62,7 +63,7 @@ def create(root, backend):
     with (root/'tx.fc32').open('xb') as f:f.write(waveform.tobytes());f.flush();os.fsync(f.fileno())
     software={str(SCRIPTS/n):c.file_hash(SCRIPTS/n) for n in (Path(__file__).name,'rml2018a_campaign.py',
         'rml2018a_campaign_gpu.py','rml2018a_campaign_store.py','rml2018a_stream_dsp.py','rml2018a_stream_frames.py',
-        'rml2018a_guard_tone.py','rml2018a_lo_cancellation.py','rml2018a_buffer_pool.py')}
+        'rml2018a_guard_tone.py','rml2018a_lo_cancellation.py','rml2018a_buffer_pool.py','rml2018a_guard_gpu.py')}
     p=dict(schema='rml2018a-continuous-pilot-v1',run_id=run_id,generation=time.time_ns()//1000000,
         controller=str(backend/'cargo/debug/sdr-agent'),tx_binary=str(backend/'tx-events'),
         controller_sha256=c.file_hash(backend/'cargo/debug/sdr-agent'),tx_binary_sha256=c.file_hash(backend/'tx-events'),
@@ -72,8 +73,8 @@ def create(root, backend):
         tx_samples=len(waveform),maximum_tx_seconds=len(waveform)/c.RATE,tx_bytes=waveform.nbytes,tx_sha256=c.file_hash(root/'tx.fc32'),
         rx_samples=RX_SAMPLES,maximum_rx_bytes=RX_SAMPLES*4,maximum_raw_after_background_bytes=CHUNK*4,
         maximum_pending_buffers=16,maximum_pool_bytes=16*CHUNK*4,gpu_input='RAM only; no disk reload',
-        maximum_pending_processed_blocks=2,maximum_rows=2048,model_windows=0,
-        gpu_warmup='one synthetic1048576-sample pilot search plus1024 source normalization/quality windows; no radio/model',
+        maximum_pending_processed_blocks=2,maximum_rows=2048,model_windows=0,guard_backend=guard_backend,
+        gpu_warmup='one synthetic1048576-sample pilot search plus1024 source normalization/quality windows; cuda-batch also warms64 synthetic guard fits; no radio/model',
         deadline_seconds=180,reserve_bytes=512*1024**2,maximum_gpu_allocated_bytes=4*1024**3,free_bytes=shutil.disk_usage(root).free,
         rf=dict(center_hz=c.CENTER,rate_sps=c.RATE,bandwidth_hz=c.BW,tx_gain_db=60,rx_gain_db=50,
                 tx_lo_offset_hz=250000,peak=.2*np.sqrt(10),settle_ms=500,rx_input='RX1/RX0/A_BALANCED'),
@@ -132,7 +133,8 @@ def run(root):
     p=json.loads((root/'plan.json').read_text())
     c.require(not (root/'started.json').exists() and not (root/'STOP').exists(),'new pilot attempt/no STOP')
     c.require(p['schema']=='rml2018a-continuous-pilot-v1' and p['rx_samples']==RX_SAMPLES and
-              p['maximum_rx_bytes']==RX_SAMPLES*4 and p['maximum_rows']==2048 and p['model_windows']==0,
+              p['maximum_rx_bytes']==RX_SAMPLES*4 and p['maximum_rows']==2048 and p['model_windows']==0 and
+              p.get('guard_backend') in ('cpu','cuda-batch'),
               'finite stream pilot')
     for name,sha in p['software'].items():c.require(c.file_hash(name)==sha,'pilot software changed')
     c.require(c.file_hash(p['controller'])==p['controller_sha256'] and c.file_hash(p['tx_binary'])==p['tx_binary_sha256'] and
@@ -158,7 +160,7 @@ def run(root):
     failed_raw=[];buf=bytearray();received=0
     gpu_ready=threading.Event();gpu_done=threading.Event();disk_done=threading.Event();corpus=root/'snr-plus30';corpus.mkdir(mode=0o700)
     config=dict(session_id=p['run_id'],source_snr_db=30,max_raw_samples=RX_SAMPLES,source_sha256=DATA_SHA,
-        preprocess_id='continuous16-pilot-track-guard-gpu-v1-experimental',
+        preprocess_id='continuous16-pilot-track-guard-gpu-v1-experimental/'+p['guard_backend'],
         profile_sha256=c.file_hash(ROOT/'jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json'),
         label_map_sha256=c.file_hash(ROOT/'jetson-agx/sdrharness/config/amc/rml2018a-labels.server-v1.json'),
         sample_rate_hz=c.RATE,center_hz=c.CENTER,bandwidth_hz=c.BW,rx_gain_db=50,tx_gain_db=60,
@@ -174,10 +176,14 @@ def run(root):
             gpu.normalize(values[:1024]);gpu.quality(values[:1024],values[:1024],np.full(1024,30.))
             warmup=dsp.Decoder(p['run_id'],values,gpu);warmup.samples=np.zeros(CHUNK,np.complex128)
             warmup.samples[256:1280]=c.marker(p['run_id'],0);warmup.find_first();del warmup
+            if p['guard_backend']=='cuda-batch':
+                from rml2018a_guard_gpu import GuardBatch
+                synthetic=np.exp(2j*np.pi*250000*np.arange(65535)/c.RATE)
+                GuardBatch(gpu.torch).fit([synthetic]*64,[dict(payload_marker_offset=256,estimated_cfo_hz=0.)]*64)
             audit['gpu_warmup_seconds']=(time.time_ns()-warmup_started)/1e9
             c.require(gpu.torch.cuda.max_memory_allocated()<=p['maximum_gpu_allocated_bytes'],'GPU warmup allocation budget')
             gpu.torch.cuda.reset_peak_memory_stats()
-            decoder=dsp.Decoder(p['run_id'],values,gpu)
+            decoder=dsp.Decoder(p['run_id'],values,gpu,guard_backend=p['guard_backend'])
             gpu.torch.cuda.synchronize();audit['gpu_ready_ns']=time.time_ns();gpu_ready.set()
             while not stop.is_set():
                 try:item=gpu_queue.get(timeout=.1)
@@ -351,6 +357,7 @@ def run(root):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('command',choices=['plan','run'])
     parser.add_argument('--root',type=Path,required=True);parser.add_argument('--backend',type=Path)
+    parser.add_argument('--guard-backend',choices=['cpu','cuda-batch'],default='cpu')
     args=parser.parse_args()
-    if args.command=='plan':create(args.root,args.backend)
+    if args.command=='plan':create(args.root,args.backend,args.guard_backend)
     else:run(args.root)

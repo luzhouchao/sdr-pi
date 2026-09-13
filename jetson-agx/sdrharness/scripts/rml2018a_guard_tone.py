@@ -28,9 +28,9 @@ def contract():
             'does not remove broadband noise, source noise, or payload distortion'])
 
 
-def cancel(raw, sync, row_count=24, *, pilot_only=False):
+def cancel(raw, sync, row_count=24, *, pilot_only=False, frequency_fit=None):
     z = np.asarray(raw, dtype=np.complex128)
-    prior_corrected, old = v1.cancel(z, sync, row_count, pilot_only=pilot_only)
+    prior_corrected, old = v1.cancel(z, sync, row_count, pilot_only=pilot_only,frequency_fit=frequency_fit)
     info = dict(method=METHOD, status='skipped', reason=None, contract=contract(),
                 v1=old, halves=[], corrected_samples_sha256=None)
 

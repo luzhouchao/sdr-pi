@@ -46,7 +46,7 @@ def filtered_pilot(z, fir, at, hz):
     return np.convolve(segment,fir,mode='valid')*np.exp(-2j*np.pi*hz*np.arange(at,at+c.MARKER)/c.RATE)
 
 
-def cancel(raw, sync, row_count=24, *, pilot_only=False):
+def cancel(raw, sync, row_count=24, *, pilot_only=False, frequency_fit=None):
     """Fit first half of guard interiors; validate later halves; subtract one tone.
 
     No source samples, modulation IDs, source Z, or model outputs are accepted.
@@ -82,18 +82,27 @@ def cancel(raw, sync, row_count=24, *, pilot_only=False):
         return np.mean(z[train][None,:]*np.exp(
             -2j*np.pi*np.asarray(frequencies)[:,None]*train[None,:]/c.RATE),axis=1)
 
-    best = int(np.argmax(abs(projects(frequencies))))
-    if best in (0, len(frequencies)-1):
-        return skip('frequency_at_prior_boundary')
-    lo, hi = frequencies[best]-1, frequencies[best]+1
-    for _ in range(50):
-        left, right = lo+(hi-lo)/3, hi-(hi-lo)/3
-        left_value,right_value=projects((left,right))
-        if abs(left_value) > abs(right_value):
-            hi = right
-        else:
-            lo = left
-    frequency = float((lo+hi)/2); amplitude = project(frequency)
+    if frequency_fit is None:
+        best = int(np.argmax(abs(projects(frequencies))))
+        if best in (0, len(frequencies)-1):
+            return skip('frequency_at_prior_boundary')
+        lo, hi = frequencies[best]-1, frequencies[best]+1
+        for _ in range(50):
+            left, right = lo+(hi-lo)/3, hi-(hi-lo)/3
+            left_value,right_value=projects((left,right))
+            if abs(left_value) > abs(right_value):
+                hi = right
+            else:
+                lo = left
+        frequency = float((lo+hi)/2)
+    else:
+        # Experimental batch proposal is bound to these exact training guards.
+        # All heldout/pilot acceptance checks below still run on the CPU.
+        frequency = frequency_fit.verify(z[train],train,center)
+        info['frequency_fit_backend'] = frequency_fit.backend
+        if frequency is None:return skip('frequency_at_prior_boundary')
+        c.require(np.isfinite(frequency) and center-30 < frequency < center+30,'guard frequency prior')
+    amplitude = project(frequency)
     indices = np.arange(len(z))
     prediction = amplitude*np.exp(2j*np.pi*frequency*indices/c.RATE)
     corrected = z-prediction
