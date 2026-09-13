@@ -37,6 +37,7 @@
 - [当前RF配置复现快照](RML2018A_RF_REPRODUCTION_SNAPSHOT_2026-09-12.json)：4031194代码下的接线、有限参数、帧/处理合同、源行、模型/运行时身份及优化证据链接；只读配置核验，无新RF或IQ副本。
 - [B210带时间发送与停流/全零控制](B210_EVENT_CONTROLS_2026-09-13.json)：有限事件入口/二进制、主动取消、6份原生IQ、4次带设备时间ACK、约16ms非LO尖峰线索及构建/恢复/精确删除清单；无RadioML读取或模型。
 - [P201独立50Ω负载对照](P201_INDEPENDENT_LOAD_2026-09-13.json)：6份新RX与旧4份同轴控制的固定频带/分块比较、原生身份、数值复核与清理；无TX/模型，仍需同轴返测。
+- [20dB同轴接回停发返测](P201_COAX_RETURN_2026-09-13.json)：6份新RX与原同轴/独立负载的顺序比较；旧约16ms大尖峰模式未恢复，保留全部较弱突发、父血缘和删除清单，无TX/模型。
 
 - [RadioML2018A全量脚本先导保留清单](RML2018A_FULL_RF_CAMPAIGN_EVIDENCE_2026-09-10.json)
 - [RadioML2018A当前IQ与历史175kHz滤波方法的离线对照](RML2018A_HISTORICAL_FILTER_COMPARISON_2026-09-10.json)
