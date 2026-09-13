@@ -749,6 +749,19 @@ static void test_stream_protocol(void) {
   }
 }
 
+static void test_independent_stream_limits(void) {
+  sdrd_config_t config; sdrd_session_t session; char response[8192], error[256];
+  sdrd_config_defaults(&config); sdrd_session_init(&session);
+  assert(config.max_stream_bytes == 67108864u && config.max_capture_bytes == 67108864u);
+  config.max_stream_bytes = 1073741824u;
+  assert(sdrd_config_validate(&config, error, sizeof(error)) == 0);
+  assert(sdrd_handle_request(&config, &session, NULL, "SDRD/1 STREAM_LIMITS 1", response, sizeof(response)) == 0);
+  assert(strstr(response, "\"max_stream_bytes\":1073741824") != NULL);
+  assert(config.max_capture_bytes == 67108864u);
+  config.max_stream_bytes++;
+  assert(sdrd_config_validate(&config, error, sizeof(error)) != 0);
+}
+
 int main(void) {
   char root[256];
   const char *temporary = getenv("TMPDIR");
@@ -756,6 +769,7 @@ int main(void) {
   assert(mkdtemp(root) != NULL);
   test_seeded_protocol_mutations();
   test_stream_protocol();
+  test_independent_stream_limits();
   test_shadow_config_and_protocol(root);
   test_iio_control_limits();
   test_controlled_allowlist_and_restore();

@@ -65,6 +65,7 @@ typedef struct sdrd_config {
   uint32_t min_rf_bandwidth_hz;
   uint32_t max_rf_bandwidth_hz;
   uint64_t max_capture_bytes;
+  uint64_t max_stream_bytes; /* Independent finite streaming budget; legacy IQ unchanged. */
 } sdrd_config_t;
 
 typedef struct sdrd_rx_input_identity {

@@ -26,8 +26,12 @@ def packet(source, run_id):
 
 
 class Decoder:
-    def __init__(self, run_id, source, gpu, guard_backend='cpu'):
-        c.require(source.shape == (2048,1024), 'finite stream decoder scope')
+    def __init__(self, run_id, source, gpu, guard_backend='cpu', *, source_loader=None, total_blocks=2):
+        c.require(type(total_blocks) is int and total_blocks in (2,96,192),'finite stream block count')
+        c.require((source_loader is None and source.shape==(2048,1024) and total_blocks==2) or
+                  (source is None and callable(source_loader)),'finite stream decoder source')
+        self.source_loader=source_loader;self.total_frames=total_blocks*64
+        self.sample_base=0;self.peak_samples=0
         c.require(guard_backend in ('cpu','cuda-batch'),'stream guard backend')
         self.guard_batch=None
         if guard_backend=='cuda-batch':
@@ -101,15 +105,16 @@ class Decoder:
 
     def feed(self, iq):
         """Called while RX continues; returns zero or more full1024-row results."""
-        if self.frame==128:return []
+        if self.frame==self.total_frames:return []
         z=iq[:,0].astype(np.float64)+1j*iq[:,1].astype(np.float64)
         self.samples=np.concatenate((self.samples,z))
+        self.peak_samples=max(self.peak_samples,len(self.samples))
         c.require(len(self.samples)<=16*1024**2,'decoder finite RAM limit')
         if self.marker is None:
             if len(self.samples)<1048576:return []
             self.find_first()
         outputs=[]
-        while self.frame<128:
+        while self.frame<self.total_frames:
             predicted=self.marker if self.frame==0 else self.marker+FRAME_SAMPLES
             if predicted+65535+128>len(self.samples):break
             started=time.time_ns();at,hz,phase,score=self.track(predicted)
@@ -124,8 +129,9 @@ class Decoder:
             rotation=np.exp(-2j*np.pi*hz*positions/c.RATE+1j*phase)
             received=self.samples[positions]*rotation
             guarded=None if corrected is None else (corrected[1280:1280+16*1024]*rotation).reshape(16,1024)
-            self.parts.append((received.reshape(16,1024),guarded,positions[::1024],origin))
-            self.records.append(dict(frame=self.frame,marker_offset=at,cfo_hz=hz,phase_rotation_rad=phase,
+            self.parts.append((received.reshape(16,1024),guarded,positions[::1024]+self.sample_base,origin))
+            global_phase=phase if self.sample_base==0 else phase+2*np.pi*hz*self.sample_base/c.RATE
+            self.records.append(dict(frame=self.frame,marker_offset=at+self.sample_base,cfo_hz=hz,phase_rotation_rad=global_phase,
                 marker_score=score,guard=info,started_ns=started,finished_ns=time.time_ns()))
             self.marker=at;self.hz=hz;self.frame+=1
             if self.frame%64==0:
@@ -143,12 +149,15 @@ class Decoder:
                         guarded=(corrected[1280:1280+16*1024]*rotation).reshape(16,1024)
                         self.parts[k]=(received,guarded,starts,origin)
                         r['guard']=info;r['finished_ns']=time.time_ns()
-                block=self.frame//64-1;reference=self.source[block*1024:(block+1)*1024]
+                block=self.frame//64-1
+                if self.source_loader is None:reference,snr=self.source[block*1024:(block+1)*1024],30
+                else:reference,snr=self.source_loader(block)
+                c.require(reference.shape==(1024,1024) and snr in range(-20,31,2),'source block shape/Z')
                 received=np.concatenate([p[0] for p in self.parts]);guarded=np.concatenate([p[1] for p in self.parts])
                 starts=np.concatenate([p[2] for p in self.parts]).astype('<i8')
                 inputs={tag:self.gpu.normalize(value) for tag,value in dict(source=reference,raw=received,guard=guarded).items()}
-                raw_q=self.gpu.quality(reference,received,np.full(1024,30.))
-                guard_q=self.gpu.quality(reference,guarded,np.full(1024,30.))
+                raw_q=self.gpu.quality(reference,received,np.full(1024,snr))
+                guard_q=self.gpu.quality(reference,guarded,np.full(1024,snr))
                 quality=[]
                 guard_hashes=[c.digest(__import__('json').dumps(r['guard'],sort_keys=True).encode()) for r in self.records]
                 for k in range(1024):
@@ -161,7 +170,12 @@ class Decoder:
                 outputs.append(dict(block=block,inputs=inputs,masks={t:np.ones(1024,bool) for t in inputs},
                     sample_starts=starts,sample_counts=np.full(1024,1024,dtype='<i8'),quality=quality,
                     frames=self.records,finished_ns=time.time_ns(),
-                    release_before=None if self.frame==128 else max(0,at+FRAME_SAMPLES-384)))
+                    release_before=None if self.frame==self.total_frames else self.sample_base+max(0,at+FRAME_SAMPLES-384)))
                 self.parts=[];self.records=[]
+                if self.source_loader is not None:
+                    # Keep the next pilot/guard halo. Returned tensors and the
+                    # caller's immutable RX arena retain all uncommitted data.
+                    trim=max(0,at+FRAME_SAMPLES-384)
+                    self.samples=self.samples[trim:].copy();self.marker-=trim;self.sample_base+=trim
                 break  # Publish this block before tracking a later possibly bad frame.
         return outputs

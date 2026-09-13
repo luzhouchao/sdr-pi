@@ -24,7 +24,7 @@ pub fn validate(plan: &StreamPlan) -> Result<(), SdrError> {
     if plan.session_generation == 0
         || plan.sample_count == 0
         || plan.sample_count % 4096 != 0
-        || plan.sample_count > 64 * 1024 * 1024 / 4
+        || plan.sample_count > 1024 * 1024 * 1024 / 4
         || plan.max_bytes != plan.sample_count * 4
         || !(1000..=120000).contains(&plan.timeout_ms)
         || plan.reserve_bytes < plan.max_bytes + 64 * 1024 * 1024
@@ -73,11 +73,16 @@ pub fn run(
     }
     let cap: Value = wire.request("CAPABILITIES", "")?;
     identity(&cap)?;
-    if cap["radio_control"] != true
-        || cap["raw_iq_capture"] != true
-        || cap["max_capture_bytes"].as_u64().unwrap_or(0) < plan.max_bytes
-    {
+    if cap["radio_control"] != true || cap["raw_iq_capture"] != true {
         return Err(SdrError::new("stream_capability", "RX unavailable/budget"));
+    }
+    // A separate command preserves the frozen legacy CAPABILITIES schema.
+    let limits: Value = wire.request("STREAM_LIMITS", "")?;
+    if limits["max_stream_bytes"].as_u64().unwrap_or(0) < plan.max_bytes
+        || limits["max_timeout_ms"].as_u64().unwrap_or(0) < u64::from(plan.timeout_ms)
+        || limits["max_chunk_bytes"].as_u64() != Some(256 * 1024)
+    {
+        return Err(SdrError::new("stream_capability", "finite stream limits"));
     }
     let generation = plan.session_generation;
     let start: Value = wire.request("START_SESSION", &generation.to_string())?;
@@ -184,6 +189,14 @@ mod tests {
             reserve_bytes: 128 * 1024 * 1024,
         };
         validate(&plan).unwrap();
+        plan.sample_count = 225443840;
+        plan.max_bytes = plan.sample_count * 4;
+        plan.reserve_bytes = 2 * 1024 * 1024 * 1024;
+        plan.timeout_ms = 120000;
+        validate(&plan).unwrap();
+        plan.sample_count = 1024 * 1024 * 1024 / 4 + 4096;
+        plan.max_bytes = plan.sample_count * 4;
+        assert!(validate(&plan).is_err());
         plan.sample_count = u64::MAX;
         assert!(validate(&plan).is_err());
         plan.sample_count = 1;

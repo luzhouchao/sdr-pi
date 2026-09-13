@@ -68,8 +68,9 @@ def block_hash(inputs, masks, starts, counts, quality):
 
 class SnrStore:
     """Explicit create/open; close releases ownership without deleting data."""
-    def __init__(self, root, *, configuration=None):
+    def __init__(self, root, *, configuration=None, raw_parent=None):
         self.root = Path(root)
+        self.raw_parent=raw_parent
         c.require(self.root.is_absolute() and self.root.resolve() == self.root and
                   self.root.is_dir(), 'existing canonical corpus root')
         self.lock = os.open(self.root/'writer.lock', os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
@@ -80,6 +81,15 @@ class SnrStore:
                 c.require(set(p.name for p in self.root.iterdir()) == {'writer.lock'}, 'new empty SNR corpus')
                 self._create(configuration)
             self.config = json.loads((self.root/'configuration.json').read_text())
+            if raw_parent is not None:
+                c.require(raw_parent.raw_parent is None and raw_parent.lock is not None and
+                          self.root!=raw_parent.root and self.config.get('raw_parent')==dict(
+                              root=str(raw_parent.root),configuration_sha256=c.file_hash(raw_parent.root/'configuration.json')),
+                          'shared raw parent identity')
+                c.require(all(self.config[k]==raw_parent.config[k] for k in ('session_id','source_sha256',
+                    'preprocess_id','profile_sha256','label_map_sha256','sample_rate_hz','center_hz','bandwidth_hz',
+                    'rx_gain_db','tx_gain_db','max_raw_samples')),'shared raw session/RF identity')
+            else:c.require('raw_parent' not in self.config,'shared raw parent required on reopen')
             self.index = json.loads((self.root/'index.json').read_text())
             c.require(self.index['configuration_sha256'] == c.file_hash(self.root/'configuration.json'), 'configuration pin')
             self.verify()
@@ -99,7 +109,8 @@ class SnrStore:
         c.require(config['sample_rate_hz'] > 0 and config['bandwidth_hz'] > 0, 'positive RF rate/bandwidth')
         self._space(RESERVE)
         atomic_json(self.root/'configuration.json', config)
-        with (self.root/'raw.sigmf-data').open('xb') as f: f.flush(); os.fsync(f.fileno())
+        if self.raw_parent is None:
+            with (self.root/'raw.sigmf-data').open('xb') as f: f.flush(); os.fsync(f.fileno())
         with h5py.File(self.root/'processed.h5', 'x') as f:
             f.attrs['schema'] = 'rml2018a-snr-processed-v1'
             f.attrs['configuration_sha256'] = c.file_hash(self.root/'configuration.json')
@@ -120,13 +131,20 @@ class SnrStore:
         atomic_json(self.root/'index.json', index)
         self.index = json.loads(encoded(index))
 
+    def raw_receipts(self):
+        return (self.raw_parent.index if self.raw_parent is not None else self.index)['raw']
+
+    def raw_path(self):
+        return (self.raw_parent.root if self.raw_parent is not None else self.root)/'raw.sigmf-data'
+
     def _meta(self):
         annotations = [dict(**{'core:sample_start':r['sample_start'], 'core:sample_count':r['sample_count']},
-            **{'sdrharness:sequence':r['sequence'], 'sdrharness:quality':r['metadata']}) for r in self.index['raw']]
+            **{'sdrharness:sequence':r['sequence'], 'sdrharness:quality':r['metadata']}) for r in self.raw_receipts()]
         atomic_json(self.root/'raw.sigmf-meta', {'global':{'core:datatype':'ci16_le', 'core:version':'1.2.5',
             'core:sample_rate':self.config['sample_rate_hz'], 'core:recorder':'sdrharness',
             'core:description':'Unmodified P201 RX IQ, including guards and failed payloads',
-            'sdrharness:session_id':self.config['session_id'], 'sdrharness:configuration':'configuration.json'},
+            'sdrharness:session_id':self.config['session_id'], 'sdrharness:configuration':'configuration.json',
+            **({'core:dataset':str(self.raw_path()),'sdrharness:raw_parent':self.config['raw_parent']} if self.raw_parent is not None else {})},
             'captures':[{'core:sample_start':0, 'core:frequency':self.config['center_hz']}],
             'annotations':annotations})
 
@@ -138,6 +156,7 @@ class SnrStore:
     def append_raw(self, iq, metadata):
         """One immutable host buffer; offsets count complex samples, not bytes."""
         self._writable()
+        c.require(self.raw_parent is None,'only raw owner may append shared IQ')
         c.require(isinstance(iq, np.ndarray) and iq.dtype == np.dtype('<i2') and
                   iq.ndim == 2 and iq.shape[1] == 2 and 0 < len(iq) <= 4*1024**2, 'raw ci16 IQ shape/bound')
         c.require(isinstance(metadata, dict) and isinstance(metadata.get('capture_id'), str) and
@@ -179,7 +198,7 @@ class SnrStore:
         starts = np.asarray(sample_starts); counts = np.asarray(sample_counts)
         c.require(starts.shape == counts.shape == (N,) and starts.dtype == counts.dtype == np.dtype('<i8'), 'raw offset arrays')
         mapped = masks['raw'] | masks['guard']
-        raw_count = sum(v['sample_count'] for v in self.index['raw'])
+        raw_count = sum(v['sample_count'] for v in self.raw_receipts())
         c.require(((starts[mapped] >= 0) & (counts[mapped] > 0) & (starts[mapped] <= raw_count) &
                    (counts[mapped] <= raw_count-starts[mapped])).all() and
                   (starts[~mapped] == -1).all() and (counts[~mapped] == 0).all(), 'processed raw lineage bounds')
@@ -211,9 +230,10 @@ class SnrStore:
         c.require(self.index['schema'] == 'rml2018a-snr-corpus-v1' and
                   len(self.index['processed']) <= BLOCKS_PER_SNR and len(self.index['raw']) <= 4096 and
                   type(self.index['complete']) is bool, 'corpus schema/bounds')
-        raw = self.root/'raw.sigmf-data'; offset = 0
+        c.require(self.raw_parent is None or not self.index['raw'],'shared child has no independent raw receipts')
+        raw = self.raw_path(); offset = 0
         with raw.open('rb') as f:
-            for seq, r in enumerate(self.index['raw']):
+            for seq, r in enumerate(self.raw_receipts()):
                 c.require(r['sequence'] == seq and r['sample_start'] == offset and
                           type(r['sample_count']) is int and 0 < r['sample_count'] <= 4*1024**2 and
                           offset+r['sample_count'] <= self.config['max_raw_samples'], 'raw sequence/offset/budget')
@@ -259,9 +279,10 @@ class SnrStore:
 
     def finish(self):
         self._writable(); self.verify()
+        c.require(self.raw_parent is None or self.raw_parent.index['complete'],'seal shared raw owner first')
         c.require(len(self.index['processed']) == BLOCKS_PER_SNR, 'complete SNR requires96 blocks including failures')
         self._meta()
-        self._commit(dict(self.index, complete=True, raw_sha256=c.file_hash(self.root/'raw.sigmf-data'),
+        self._commit(dict(self.index, complete=True, raw_sha256=c.file_hash(self.raw_path()),
                           processed_sha256=c.file_hash(self.root/'processed.h5'),
                           metadata_sha256=c.file_hash(self.root/'raw.sigmf-meta')))
 

@@ -92,6 +92,7 @@ void sdrd_config_defaults(sdrd_config_t *config) {
   config->min_rf_bandwidth_hz = 200000u;
   config->max_rf_bandwidth_hz = 56000000u;
   config->max_capture_bytes = 64u * 1024u * 1024u;
+  config->max_stream_bytes = 64u * 1024u * 1024u;
 }
 
 const char *sdrd_mode_name(sdrd_mode_t mode) {
@@ -223,6 +224,9 @@ static int set_config_value(
   }
   if (strcmp(key, "max_capture_bytes") == 0) {
     return parse_u64(value, &config->max_capture_bytes);
+  }
+  if (strcmp(key, "max_stream_bytes") == 0) {
+    return parse_u64(value, &config->max_stream_bytes);
   }
   set_error(error, error_size, "unknown configuration key");
   return -EINVAL;
@@ -356,6 +360,10 @@ int sdrd_config_validate(
   }
   if (config->max_capture_bytes == 0u || config->max_capture_bytes > 64u * 1024u * 1024u) {
     set_error(error, error_size, "max_capture_bytes must be between 1 and 67108864");
+    return -ERANGE;
+  }
+  if (config->max_stream_bytes == 0u || config->max_stream_bytes > 1024u * 1024u * 1024u) {
+    set_error(error, error_size, "max_stream_bytes must be between 1 and 1073741824");
     return -ERANGE;
   }
   return 0;
@@ -1452,7 +1460,7 @@ static int handle_capture_stream(const sdrd_config_t *config, const parsed_reque
   if (radio->capture_stream == NULL || radio->stream_write == NULL)
     return format_error(request->request_id, "stream_unavailable", response, response_size);
   if (capture.sample_count == 0u || capture.sample_count > UINT64_MAX / 4u ||
-      capture.max_bytes != capture.sample_count * 4u || capture.max_bytes > config->max_capture_bytes ||
+      capture.max_bytes != capture.sample_count * 4u || capture.max_bytes > config->max_stream_bytes ||
       capture.timeout_ms < 100u || capture.timeout_ms > 120000u ||
       config->iio_buffer_samples > SDRD_MAX_INLINE_CAPTURE_BYTES / 4u)
     return format_error(request->request_id, "stream_out_of_bounds", response, response_size);
@@ -1513,6 +1521,13 @@ int sdrd_handle_request(
         request.request_id,
         sdrd_mode_name(config->mode),
         config->mode == SDRD_MODE_CONTROLLED && radio_ops_available(radio) != 0 ? "true" : "false");
+  } else if (strcmp(request.command, "STREAM_LIMITS") == 0) {
+    if (request_has_fields(&request, 3u) != 0) {
+      return format_error(request.request_id, "invalid_arguments", response, response_size);
+    }
+    written = snprintf(response, response_size,
+        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"max_stream_bytes\":%" PRIu64 ",\"max_timeout_ms\":120000,\"max_chunk_bytes\":%u}\n",
+        request.request_id, config->max_stream_bytes, SDRD_MAX_INLINE_CAPTURE_BYTES);
   } else if (strcmp(request.command, "CAPABILITIES") == 0 ||
              strcmp(request.command, "HEALTH") == 0) {
     if (request_has_fields(&request, 3u) != 0) {

@@ -24,7 +24,7 @@ class Ticket:
 
 class BufferPool:
     def __init__(self, capacity, maximum_samples):
-        c.require(type(capacity) is int and 0 < capacity <= 128 and
+        c.require(type(capacity) is int and 0 < capacity <= 256 and
                   type(maximum_samples) is int and maximum_samples > 0, 'finite memory pool')
         self.capacity=capacity;self.maximum_samples=maximum_samples;self.next_offset=0;self.sequence=0
         self.held={};self.released=[];self.watermark=0;self.commit_ns=0;self.peak_buffers=0;self.peak_bytes=0

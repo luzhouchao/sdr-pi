@@ -97,8 +97,9 @@ def background_record(directory):
         raw_path=str(directory/'raw.sigmf-data'))
 
 
-def capture_background(root,p):
-    dest=root/'background-after';dest.mkdir(mode=0o700);generation=p['generation']+1
+def capture_background(root,p,*,name='background-after',generation_offset=1):
+    c.require(name in ('background-before','background-after') and generation_offset in (-1,1),'background phase')
+    dest=root/name;dest.mkdir(mode=0o700);generation=p['generation']+generation_offset
     plan=dict(session_generation=generation,sample_count=CHUNK,max_bytes=CHUNK*4,timeout_ms=10000,
         storage_directory=str(dest),reserve_bytes=p['reserve_bytes'])
     c.save(dest/'plan.json',plan);audit=dict(generation=generation,started_ns=time.time_ns(),bytes_received=0)

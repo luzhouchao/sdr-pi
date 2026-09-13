@@ -21,6 +21,7 @@
 using Clock = std::chrono::steady_clock;
 using Sample = std::complex<float>;
 constexpr size_t FRAME = 26112, TOTAL = FRAME*321, MAX_RECORDS = 20000;
+constexpr size_t SNR_SAMPLES = 17920*64*96;
 volatile std::sig_atomic_t interrupted = 0;
 void stop_signal(int) { interrupted = 1; }
 void check(bool ok, const char* why) { if (!ok) throw std::runtime_error(why); }
@@ -35,13 +36,14 @@ struct SendRecord { size_t offset, requested, accepted; long long before, after;
 using Sender = std::function<size_t(size_t,size_t,bool)>;
 size_t feed(const Sender& send, const std::function<bool()>& cancelled,
             std::vector<SendRecord>& records, double seconds=6,
-            size_t frame_samples=FRAME, size_t total_samples=TOTAL) {
-    check(frame_samples>0 && total_samples>0 && total_samples<=TOTAL, "finite frame/train samples");
+            size_t frame_samples=FRAME, size_t total_samples=TOTAL, bool snr_stream=false) {
+    check(frame_samples>0 && total_samples>0 &&
+          (snr_stream ? (total_samples==SNR_SAMPLES || total_samples==2*SNR_SAMPLES) : total_samples<=TOTAL), "finite frame/train samples");
     size_t offset=0, zeros=0; const auto end=Clock::now()+std::chrono::duration<double>(seconds);
     while(offset<total_samples) {
         check(!cancelled(), "TX cancelled"); check(Clock::now()<end, "TX feed deadline");
         check(records.size()<MAX_RECORDS, "send record budget");
-        size_t request=std::min({size_t(1024),frame_samples-offset%frame_samples,total_samples-offset});
+        size_t request=std::min({size_t(snr_stream ? 16384 : 1024),frame_samples-offset%frame_samples,total_samples-offset});
         auto before=mono_ns(); size_t accepted=send(offset,request,offset==0); auto after=mono_ns();
         check(accepted<=request, "invalid UHD send count");
         records.push_back({offset,request,accepted,before,after,offset==0});
@@ -68,12 +70,18 @@ void self_test() {
     v.clear();
     n=feed([](size_t,size_t count,bool){return std::min(count,size_t(777));},[]{return false;},v,6,17920,17920*128);
     check(n==17920*128 && v.back().offset+v.back().accepted==n,"one-pass multi-frame train");
-    std::cout << "8 offline streamer tests passed; no USRP constructed\n";
+    for(size_t groups:{size_t(1),size_t(2)}) {
+        v.clear();
+        n=feed([](size_t,size_t count,bool){return count;},[]{return false;},v,6,groups*SNR_SAMPLES,groups*SNR_SAMPLES,true);
+        check(n==groups*SNR_SAMPLES && v.size()<=MAX_RECORDS && v.front().first && !v.back().first,"continuous SNR groups");
+    }
+    std::cout << "10 offline streamer tests passed; no USRP constructed\n";
 }
 int main(int argc,char** argv) {
     if(argc==2 && std::string(argv[1])=="--self-test") {self_test();return 0;}
-    const bool one_pass=argc==4 && std::string(argv[3])=="--stream-pilot";
-    if(argc!=3 && !one_pass) {std::cerr<<"usage: tx-events PACKET_FC32 EVENTS_JSONL [--stream-pilot] (fixed2455MHz/TX60/at most4s, requires GO)\n";return 2;}
+    const bool snr_stream=argc==4 && std::string(argv[3])=="--snr-stream";
+    const bool one_pass=snr_stream || (argc==4 && std::string(argv[3])=="--stream-pilot");
+    if(argc!=3 && !one_pass) {std::cerr<<"usage: tx-events PACKET_FC32 EVENTS_JSONL [--stream-pilot|--snr-stream] (fixed2455MHz/TX60, exact GO and finite size)\n";return 2;}
     std::ofstream log;
     std::vector<SendRecord> sends; sends.reserve(10000);
     std::vector<std::string> events; events.reserve(2000);
@@ -85,10 +93,11 @@ int main(int argc,char** argv) {
         std::ifstream input(argv[1],std::ios::binary|std::ios::ate);
         check(input.good(),"packet readable");
         const auto file_bytes=input.tellg();
-        check(file_bytes>0 && file_bytes<=std::streampos(TOTAL*sizeof(Sample)) &&
+        check(file_bytes>0 && file_bytes<=std::streampos((snr_stream ? 2*SNR_SAMPLES : TOTAL)*sizeof(Sample)) &&
               file_bytes%std::streamoff(sizeof(Sample))==0,"finite packet bytes");
         const size_t frame_samples=one_pass ? size_t(file_bytes)/sizeof(Sample) : FRAME;
         const size_t total_samples=one_pass ? frame_samples : TOTAL;
+        check(!snr_stream || total_samples==SNR_SAMPLES || total_samples==2*SNR_SAMPLES,"exact one or two SNR groups");
         check(file_bytes==std::streampos(frame_samples*sizeof(Sample)),"exact packet size");
         input.seekg(0); std::vector<Sample> packet(frame_samples);
         input.read(reinterpret_cast<char*>(packet.data()),frame_samples*sizeof(Sample));
@@ -135,7 +144,7 @@ int main(int argc,char** argv) {
         std::cout<<"{\"event\":\"tx_start\",\"scheduled_device_seconds\":"<<std::setprecision(17)<<scheduled<<"}"<<std::endl;
         started=true;
         sent=feed([&](size_t offset,size_t count,bool first){uhd::tx_metadata_t m;m.start_of_burst=first;m.end_of_burst=false;m.has_time_spec=first;m.time_spec=uhd::time_spec_t(scheduled);
-            return stream->send(&packet[offset%frame_samples],count,m,.25);},[&]{return interrupted || event_failed;},sends,6,frame_samples,total_samples);
+            return stream->send(&packet[offset%frame_samples],count,m,.25);},[&]{return interrupted || event_failed;},sends,snr_stream ? 115 : 6,frame_samples,total_samples,snr_stream);
         uhd::tx_metadata_t end;end.end_of_burst=true;Sample empty{};stream->send(&empty,0,end,.25);started=false;
         auto deadline=Clock::now()+std::chrono::milliseconds(1000);
         while(Clock::now()<deadline && !interrupted && !event_failed)std::this_thread::sleep_for(std::chrono::milliseconds(10));

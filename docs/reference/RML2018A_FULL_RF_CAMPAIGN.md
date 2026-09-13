@@ -6,7 +6,7 @@
 它按原 HDF5 行号读取全部 **2,555,904** 条 X/Y/Z，按计划在AGX USB（当前默认）或NX上调用
 [有限 TX helper](../../jetson-agx/sdrharness/scripts/rml2018a-nx-tx.py)（历史文件名保留），再由既有
 `sdr-agent --mode sweep` 控制 P201 接收，AGX 冻结模型分别识别源样本和实收样本。
-用户称为N210的设备实际枚举为B210，serial `2508504`，现已迁到AGX USB。
+设备为国产N210（USB B210兼容），UHD使用B200/B210驱动，serial `2508504`，现已迁到AGX USB。
 两个主机复用已核对的UHD文件发射程序，NX仍不需要h5py/PyTorch。
 设备程序/专用UHD镜像与P201接收入口分开，数据共享见[设备工作区](../../devices/README.md)。
 
@@ -44,9 +44,9 @@ SNR档内持续同时发收，1024条只是处理/写盘块，不在块间重新
 队列/空间不足时必须有有限停止和失败记录，
 不能静默丢样或让识别模型提前运行。先RX就绪再TX的握手必须来自真实接收状态，不能用固定sleep冒充。
 
-**实现边界**：已完成两个1024条块的真实有限连续TX/RX、RAM双消费者与常驻GPU先导，
-见[实测及优化](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13连续收发内存所有权与算法优化)。
-尚未完成每档96块/全26档持续流、完整分阶段总账与跨会话恢复，不直接扩大发射常量跑全库。
+**实现边界（2026-09-14）**：2048行先导之后，已完成一整档96块和两档192块的
+连续收发、RAM/GPU处理及封存，见[整档入口](#一整档与两档连续实验2026-09-14)。
+全26档持续流、完整分阶段总账与跨会话恢复尚未完成，不直接扩大发射常量跑全库。
 保持2.1MS/s；所有26档全部落盘才加载模型的全局门仍需接入总控，先导没有模型加载路径。
 
 [有限先导入口](../../jetson-agx/sdrharness/scripts/rml2018a-continuous-pilot.py)创建不可重用的
@@ -59,12 +59,12 @@ SDRD/1 CAPTURE_IQ_STREAM request_id generation samples exact_max_bytes timeout_m
 ```
 
 同一受控会话创建一个IIO接收buffer，返回`rx_ready`，再返回JSON `rx_chunk`头和精确长度
-ci16二进制，最后`rx_end`包含字节/分段数、错误和恢复状态。保持配置64MiB单次RX上限、
+ci16二进制，最后`rx_end`包含字节/分段数、错误和恢复状态。原2048行先导采用64MiB单次RX上限、
 单分段≤256KiB和有限截止；AGX核对request/generation、序号、采样偏移及精确总量。
 P201不写原始IQ临时文件；发射GO在AGX收到第一段真实IQ后才发送，不能仅凭创建buffer就宣布收到。
 旧sweep/`CAPTURE_IQ_INLINE`路径继续存在，生产Controller尚未安装stream-rx版本。
 
-[缓冲所有权](../../jetson-agx/sdrharness/scripts/rml2018a_buffer_pool.py)上限16个4MiB块；
+原2048行先导的[缓冲所有权](../../jetson-agx/sdrharness/scripts/rml2018a_buffer_pool.py)计划上限16个4MiB块；
 raw写入与GPU直接共享不可变数组，无GPU磁盘回读。跨1024行边界保留后续导频/保护区仍需的样点，
 每次释放记录原始fsync、GPU完成、处理结果提交和释放时间。接收线程不等待GPU/写盘腾位置，
 满池有限停止而不覆盖；异常未提交IQ另存并标记失败，未完成消费者不伪报正常释放。
@@ -96,6 +96,52 @@ CUDA与NumPy的归约/超越函数存在浮点差异，校正后输入不保证�
 固定验证要求：状态/拒绝原因精确一致、归一化最大绝对差≤1e-4、payload相对RMS差≤1e-5、
 条件SINR差≤0.001dB、频率差≤0.001Hz；这些是后端一致性界限，不是放宽RF验收门。
 实测和完整流水线边界见[多帧GPU验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13多帧gpu并行保护区拟合)。
+
+### 一整档与两档连续实验（2026-09-14）
+
+用户授权先完成一个完整源SNR档，通过后再做两档连续发送。新增
+[整档入口](../../jetson-agx/sdrharness/scripts/rml2018a-snr-stream.py)，复用同一Controller、
+N210/B210 C++ TX、CUDA处理与SnrStore。当前有限范围固定先`--snrs 30`，
+再`--snrs 30 28 --after <已通过首档根>`；没有隐式执行所有26档或加载模型。
+第二阶段核对首档的通过状态、原计划身份及全部封存文件SHA，缺失/改变时拒绝。
+
+```text
+rml2018a-snr-stream.py plan --root <新首档根> --backend <已核验制品根> --snrs 30
+rml2018a-snr-stream.py run --root <首档根>
+rml2018a-snr-stream.py plan --root <新两档根> --backend <已核验制品根> --snrs 30 28 --after <首档根>
+rml2018a-snr-stream.py run --root <两档根>
+```
+
+每档96块/98304行/24类，每64个不同导频帧对应1024行；跨档导频编号继续递增，
+不在SNR或处理块边界重开设备、重复波形或发送end-of-burst。
+单档/两档TX分别110100480/220200960点（52.4288/104.8576秒），
+RX分别115343360/225443840点（461373440/901775360字节），另登记前后停发背景各1048576点。
+2.1MS/s、2455MHz、TX60/RX50、1.5MHz带宽、LO+250kHz及20dB/15cm同轴保持。
+
+C++`--snr-stream`只接纳上述一种或两种整档长度，先读入有限TX波形再初始化设备/等待GO；
+每次send最多16384点，仍处理短发送、记录精确接受点数、start/end和UHD异步事件，
+发送截止115秒，记录数仍限制20000。旧小批模式与限制保留。
+P201新增独立`max_stream_bytes`配置，默认64MiB，整档部署显式设1GiB；硬上限1GiB、
+超时仍最多120秒，旧`max_capture_bytes`及旧CAPABILITIES结构保持64MiB。
+Controller通过独立只读`STREAM_LIMITS`核对流预算，再创建一个IIO连续会话。
+
+接收由独立spawn进程读取Controller分段流，写入有限共享RAM区；CPU/GPU/HDF5的Python GIL
+不会阻止该进程读取IQ。每次只写尚未交付的范围，父进程的只读视图按1Mi采样点交给原始写盘和GPU。
+共享RAM区按精确最大RX量一次预留；逻辑缓冲的使用权在GPU完成且raw/HDF5提交后释放，
+底层共享区保留到整次任务结束，不声称逐块归还OS内存或端到端零拷贝。
+容量最多256个接收块；源文件按1024行读入并核对X/Y/Z及预登记源IQ哈希，解码工作窗滚动保留导频/保护区边缘。
+每个源SNR的RMS/SINR使用其原Z，不能把+28档仍按+30估计。
+
+两档连续RX只存一份原始SigMF，位于首档目录。第二档HDF5保持独立，configuration固定
+`raw_parent`根和配置SHA，SigMF的`core:dataset`引用同一个原始文件；sample offset始终为整段全局位置。
+子档不得追加raw或复用其他session/RF/算法的raw；重开必须同时提供同一原始所有者，
+先封存原始所有者，再封存第二档。不为了按SNR分类复制接收IQ。
+
+通过条件是全部源行/导频/处理块完整、输入有限、无报告丢样/下溢/削顶、无队列或工作线程故障、
+原始与处理文件SHA及状态恢复通过。条件SINR无效和guard跳过是被保留的质量结果，
+不是删除样本的理由，也不自动代表模型识别失败。异常时保存已接收共享区尚未提交的尾部及缺失块清单，
+不伪报整档成功。真实结果、失败、部署与精确保留见
+[整档验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-14整档与两档连续流实验)。
 
 ### 每个SNR档的文件格式与质量字段
 
