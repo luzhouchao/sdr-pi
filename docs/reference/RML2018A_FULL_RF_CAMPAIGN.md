@@ -143,6 +143,43 @@ Controller通过独立只读`STREAM_LIMITS`核对流预算，再创建一个IIO�
 不伪报整档成功。真实结果、失败、部署与精确保留见
 [整档验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-14整档与两档连续流实验)。
 
+### 26档后台调度与恢复（2026-09-14）
+
+用户已批准每两档连续收发、处理排空后进入下一组，并要求由脚本后台执行。
+[同一整档CLI](../../jetson-agx/sdrharness/scripts/rml2018a-snr-stream.py)新增
+`full-plan/full-run/status/recover`；底层仍为已有Controller、TX helper和SnrStore。
+`full-plan --root <新全库根> --backend <已核验制品根> --after <首档通过根> --import-pair <两档通过根>`
+登记26个原Z档、13对互斥源范围。+30/+28通过完整SHA验证只读导入，其余24档在新会话采集。
+仅首个新+26/+24对额外预留一次实机联合停止验证；失败不自动重发，手动`--retry`仍受精确尝试列表约束。
+不复用失败root发射，不将失败尝试与已完成档重复计入唯一源行。
+
+每次RF仍限两档、TX104.8576秒、RX225443840点/901775360字节，采集前后背景各1048576点；
+最大发射13次×220200960点（含一次有限停止验证），新增RX含背景最多11832131584字节。
+全库空间预留224GiB、结果限额208GiB、每次调度最多6小时，RF/增益/衰减保持上一节。
+每对完成并验证后才安排下一对；每次GPU从初始化到排空保持，跨对释放资源，不承诺无间断26档TX。
+
+`ledger-plan.json`冻结范围，`entries/NN.complete.json`是完成凭据，`state.json`可从凭据重建。
+重启时先复核凭据及全部原始/处理封存SHA，已完成档不再发射；子任务已经成功但总控尚未写凭据时，
+核对并补登。`owner.lock`避免同一账本同时调度。未完成的部分RX不能冒充一整对成功：保留已收到的
+原始IQ、处理块和明确失败记录，由登记的额外尝试决定能否重发，默认停止。
+
+`recover --root <完整RX但处理被中止的根>`只在原TX/RX完整、无报告丢样/削顶、子进程停止且恢复通过时接纳；
+从硬盘一次载入已保留IQ至RAM，复用滚动GPU解码，校验已提交块的采样位置、输入及SINR状态/数值，
+只追加尚未提交块。原失败execution保持，新recovery单独记录；新TX/RX次数均0。
+这是停止RF后的恢复操作；实时接收阶段仍没有磁盘回读。严重文件损坏、未提交HDF5尾部及真实断电自动修复仍拒绝。
+
+[后台服务脚本](../../jetson-agx/sdrharness/scripts/rml2018a-snr-campaign-service.py)按顺序执行：
+有限联合停止→完整RX后的处理停止→缓存恢复→重复执行跳过→其余全库。
+每一步核对实际记录，失败就停，不放宽质量门；初始脚本/总账哈希写入`service-plan.json`。
+脚本只能启动一次，异常后先检查记录，通过独立CLI显式恢复，不配置自动重启或无限重试。
+SIGINT/SIGTERM或全库根`STOP`传给当前子任务；自动验证只删除自己带随机标记的STOP，不清除用户STOP。
+
+查看`service-state.json`、`state.json`和`full-run.log`即可了解进度；模型不由此服务加载。
+仅全部26档、2555904个唯一源行和全部封存验证通过后生成`acquisition-complete.json`，标记具备后续推理条件。
+结束/失败后脚本核对N210/P201恢复、生成`final-radio-state.json`和`retention.json`（精确路径/大小/SHA/删除方法），
+只清理scratch及可再生TX暂存，原始/处理结果、背景、失败及恢复记录都保留。
+运行根和实际验证/启动状态见[本轮记录](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-1426档后台调度与验证门)。
+
 ### 每个SNR档的文件格式与质量字段
 
 [SnrStore](../../jetson-agx/sdrharness/scripts/rml2018a_campaign_store.py)是campaign存储模块，

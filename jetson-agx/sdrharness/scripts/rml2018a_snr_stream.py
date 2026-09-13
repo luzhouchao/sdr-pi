@@ -5,6 +5,7 @@ No model load. All raw bytes survive a DSP failure; no live GPU disk fallback.
 """
 import argparse
 import ctypes
+import fcntl
 import importlib.util
 import json
 import multiprocessing as mp
@@ -14,6 +15,7 @@ import queue
 import shutil
 import signal
 import subprocess
+import sys
 import threading
 import time
 import uuid
@@ -34,6 +36,22 @@ DATA=c.REPO/'local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5'
 DATA_SHA='e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38'
 
 
+def valid_snrs(snrs):
+    return (isinstance(snrs,(list,tuple)) and len(snrs) in (1,2) and
+            all(type(z) is int and z in range(-20,31,2) for z in snrs) and
+            (len(snrs)==1 or snrs[1]==snrs[0]-2))
+
+
+def snr_name(snr):
+    return f'snr-plus{snr}' if snr>=0 else f'snr-minus{-snr}'
+
+
+def source_identity():
+    stat=DATA.stat()
+    return dict(path=str(DATA),bytes=stat.st_size,mtime_ns=stat.st_mtime_ns,
+                ctime_ns=stat.st_ctime_ns,device=stat.st_dev,inode=stat.st_ino,sha256=DATA_SHA)
+
+
 def module(name,path):
     spec=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 
@@ -44,7 +62,7 @@ def available_ram():
 
 class Source:
     def __init__(self,snrs,blocks=None):
-        c.require(tuple(snrs) in ((30,),(30,28)),'registered SNR groups')
+        c.require(valid_snrs(snrs),'registered SNR groups')
         self.snrs=tuple(snrs);self.blocks=blocks;self.file=h5py.File(DATA,'r')
     def __call__(self,block):
         c.require(type(block) is int and 0<=block<96*len(self.snrs),'source block budget')
@@ -85,9 +103,9 @@ def validate_stage_one(root):
 
 def create(root,backend,snrs,after=None):
     c.require(root.resolve()==root and root.parent==Path('/var/tmp/sdrharness-dev') and not root.exists(),'fresh SNR root')
-    c.require(tuple(snrs) in ((30,),(30,28)),'one SNR then two consecutive SNRs')
+    c.require(valid_snrs(snrs),'one or two consecutive original SNRs')
     prior=validate_stage_one(after) if len(snrs)==2 and after is not None else None
-    c.require(len(snrs)==1 or prior is not None,'two-SNR stage requires verified first stage')
+    c.require(snrs==[30] or prior is not None,'expanded SNR stage requires verified first stage')
     c.require(c.file_hash(DATA)==DATA_SHA,'original source SHA')
     tx_samples=SNR_SAMPLES*len(snrs);rx_chunks=(tx_samples+2*c.RATE+CHUNK-1)//CHUNK;rx_samples=rx_chunks*CHUNK
     reserve=len(snrs)*8*1024**3
@@ -170,14 +188,14 @@ def receive_process(p,root,arena,connection,stop):
 
 def run(root):
     p=json.loads((root/'plan.json').read_text());groups=len(p['snrs'])
-    c.require(p['schema']=='rml2018a-full-snr-stream-v1' and tuple(p['snrs']) in ((30,),(30,28)) and
+    c.require(p['schema']=='rml2018a-full-snr-stream-v1' and valid_snrs(p['snrs']) and
               p['total_blocks']==groups*96 and p['tx_samples']==groups*SNR_SAMPLES and
               p['maximum_rx_bytes']==p['rx_samples']*4<=1024**3 and p['rx_samples']==p['rx_chunks']*CHUNK and
               p['rx_chunks']==(p['tx_samples']+2*c.RATE+CHUNK-1)//CHUNK and p['source_rows']==groups*98304 and
               p['maximum_seconds']==180+600*groups and p['reserve_bytes']==groups*8*1024**3 and
               p['model_windows']==0 and p['guard_backend']=='cuda-batch','finite SNR run')
     c.require(not (root/'started.json').exists() and not (root/'STOP').exists(),'new finite attempt/no STOP')
-    if groups==2:c.require(validate_stage_one(Path(p['prior_stage']['root']))==p['prior_stage'],'stage one remains sealed')
+    if p['snrs']!=[30]:c.require(validate_stage_one(Path(p['prior_stage']['root']))==p['prior_stage'],'stage one remains sealed')
     for path,sha in p['software'].items():c.require(c.file_hash(path)==sha,'software changed after plan')
     for name,key in ((p['controller'],'controller_sha256'),(p['tx_binary'],'tx_binary_sha256'),(root/'tx.fc32','tx_sha256')):
         c.require(c.file_hash(name)==p[key],'executable/TX identity')
@@ -203,7 +221,7 @@ def run(root):
     for sig in (signal.SIGINT,signal.SIGTERM,signal.SIGALRM):signal.signal(sig,interrupt)
     signal.alarm(p['maximum_seconds'])
     for snr in p['snrs']:
-        dest=root/f'snr-plus{snr}';dest.mkdir(mode=0o700)
+        dest=root/snr_name(snr);dest.mkdir(mode=0o700)
         config=dict(session_id=p['run_id'],source_snr_db=snr,max_raw_samples=p['rx_samples'],source_sha256=DATA_SHA,
             preprocess_id='continuous16-rolling-cuda-guard-v2-experimental',profile_sha256=c.file_hash(c.REPO/'jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json'),
             label_map_sha256=c.file_hash(c.REPO/'jetson-agx/sdrharness/config/amc/rml2018a-labels.server-v1.json'),
@@ -272,12 +290,14 @@ def run(root):
         finally:audit['disk_done_ns']=time.time_ns();disk_done.set()
     try:
         background=base.capture_background(root,p,name='background-before',generation_offset=-1)
+        c.require(not (root/'STOP').exists(),'STOP after background')
         bg.restoration(baseline['radio']);bg.idle()
         (root/'frames').mkdir(mode=0o700)
         token=__import__('asyncio').run(lease.acquire(time.monotonic()+10,request='full-snr-dsp'))
         workers=[threading.Thread(target=gpu_worker),threading.Thread(target=writer_worker)]
         for worker in workers:worker.start()
         c.require(gpu_ready.wait(60) and not stop.is_set(),'GPU warmup/ready')
+        c.require(not (root/'STOP').exists(),'STOP before device initialization')
         rxplan=dict(session_generation=p['generation'],sample_count=p['rx_samples'],max_bytes=p['maximum_rx_bytes'],timeout_ms=p['rx_timeout_ms'],storage_directory=str(owner.root),reserve_bytes=p['reserve_bytes'])
         c.save(root/'rx-plan.json',rxplan)
         with (root/'tx.log').open('xb') as txlog:
@@ -291,6 +311,7 @@ def run(root):
                     event=parent_pipe.recv()
                     if event[0]=='pid':audit['rx_pid']=event[1]
                     elif event[0]=='first':
+                        c.require(not (root/'STOP').exists(),'STOP before TX GO')
                         audit['first_rx_ns']=event[1];tx.stdin.write(b'GO\n');tx.stdin.flush()
                         c.require(json.loads(tx.stdout.readline())['event']=='tx_start','TX GO')
                     elif event[0]=='buffer':
@@ -369,5 +390,288 @@ def run(root):
         audit['memory_pool']=pool.snapshot()
         try:bg.restoration(baseline['radio']);bg.idle();transport.preflight();base.spark_off();audit['restored']=True
         except BaseException as error:audit['restoration_error']=repr(error);audit['status']='failed'
-        c.save(root/'execution.json',audit);parent_pipe.close()
+        storage.atomic_json(root/'execution.json',audit);parent_pipe.close()
     c.require(audit['status']=='passed','SNR experiment failed; retained execution and IQ')
+
+
+def tx_complete(root,p):
+    events=[json.loads(line) for line in (root/'tx-events.jsonl').read_text().splitlines()]
+    c.require(events[-1]['status']=='sent_complete' and events[-1]['accepted_samples']==p['tx_samples'] and
+              all((v['event_code']&62)==0 for v in events if v['kind']=='async'),'complete TX without reported loss')
+    return events[-1]
+
+
+def sealed_artifacts(root,snrs):
+    paths=[root/snr_name(z)/name for z in snrs for name in
+           ('configuration.json','index.json','raw.sigmf-meta','processed.h5')]
+    paths.append(root/snr_name(snrs[0])/'raw.sigmf-data')
+    return {str(path.relative_to(root)):c.file_hash(path) for path in paths}
+
+
+def completed(root,expected_snrs):
+    """Read-only completion receipt; verify exact artifacts before skipping RF."""
+    p=json.loads((root/'plan.json').read_text())
+    receipt=root/'recovery.json' if (root/'recovery.json').exists() else root/'execution.json'
+    a=json.loads(receipt.read_text())
+    c.require(p['snrs']==list(expected_snrs) and valid_snrs(p['snrs']) and p['source_sha256']==DATA_SHA and
+              a['status']=='passed' and a['source_rows']==len(expected_snrs)*98304 and
+              a['all_frames_synchronized'] and a['raw_verified'] and a['worker_threads_stopped'] and a['restored'],
+              'sealed complete SNR group required')
+    c.require(a['plan_sha256']==c.file_hash(root/'plan.json'),'completed plan pin')
+    c.require(a['sealed_artifacts']==sealed_artifacts(root,expected_snrs),'completed artifact seals')
+    for snr in expected_snrs:
+        directory=root/snr_name(snr);config=json.loads((directory/'configuration.json').read_text())
+        index=json.loads((directory/'index.json').read_text())
+        c.require(config['session_id']==p['run_id'] and config['source_snr_db']==snr and
+                  config['source_sha256']==DATA_SHA and config['parent_plan_sha256']==a['plan_sha256'] and
+                  index['complete'] and len(index['processed'])==96,'completed source/session coverage')
+    return dict(root=str(root),snrs=list(expected_snrs),source_rows=a['source_rows'],
+                plan_sha256=a['plan_sha256'],receipt=str(receipt),receipt_sha256=c.file_hash(receipt),
+                sealed_artifacts=a['sealed_artifacts'])
+
+
+def recovery_preflight(root):
+    p=json.loads((root/'plan.json').read_text());a=json.loads((root/'execution.json').read_text())
+    c.require(a['plan_sha256']==c.file_hash(root/'plan.json') and a['status']=='failed' and
+              a['worker_threads_stopped'] and a.get('restored'),'stopped/restored failed attempt required')
+    rx=json.loads((root/'rx-process.json').read_text())
+    c.require(rx['status']=='completed' and rx['bytes_received']==p['maximum_rx_bytes'] and
+              rx['end']['restored'],'recovery requires entire finite RX; partial capture retained')
+    for path,sha in p['software'].items():c.require(c.file_hash(path)==sha,'recovery software pin')
+    tx_complete(root,p)
+    c.require(not any(v['clipped'] for v in a['raw_receipts']),'recovery no clipped IQ')
+    c.require(not (root/'recovery.json').exists(),'recovery already published')
+    return p,a
+
+
+def compare_committed(store,result):
+    """Replayed prefix validates positions/inputs/status; never overwrites it."""
+    with h5py.File(store.root/'processed.h5','r') as f:
+        b=f['blocks'][f"{result['block']%96:03d}"]
+        c.require(np.array_equal(b['raw_sample_start'][:],result['sample_starts']) and
+                  np.array_equal(b['raw_sample_count'][:],result['sample_counts']),'recovery prefix sample mapping')
+        for tag in storage.TAGS:
+            c.require(np.array_equal(b['valid/'+tag][:],result['masks'][tag]) and
+                      np.allclose(b['inputs/'+tag][:],result['inputs'][tag],rtol=0,atol=1e-4,equal_nan=True),
+                      'recovery prefix input equivalence')
+        for old,new in zip(map(json.loads,b['quality_json'].asstr()[:]),result['quality']):
+            for tag in ('raw','guard'):
+                for key in ('rx_sinr_status','rx_sinr_reason'):
+                    c.require(old[tag][key]==new[tag][key],'recovery prefix quality status')
+                if old[tag]['rx_sinr_status']=='estimated':
+                    c.require(abs(old[tag]['rx_sinr_db']-new[tag]['rx_sinr_db'])<=.001,'recovery prefix SINR equivalence')
+
+
+def recover(root):
+    """RF is stopped: load preserved IQ into RAM and append missing DSP only."""
+    p,failed=recovery_preflight(root)
+    c.require(available_ram()>p['maximum_rx_bytes']+8*1024**3 and
+              shutil.disk_usage(root).free>p['reserve_bytes'],'recovery RAM/disk budget')
+    lock=os.open(root/'recovery.lock',os.O_RDWR|os.O_CREAT|os.O_NOFOLLOW,0o600)
+    fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    journal=root/'recovery-started.json'
+    if not journal.exists():storage.atomic_json(journal,dict(plan_sha256=c.file_hash(root/'plan.json'),
+        failed_execution_sha256=c.file_hash(root/'execution.json'),new_tx_samples=0,new_rx_samples=0,
+        started_ns=time.time_ns(),maximum_seconds=1800))
+    c.require(json.loads(journal.read_text())['failed_execution_sha256']==c.file_hash(root/'execution.json'),
+              'original failed execution retained')
+    stores=[];source=None;lease=None;token=None
+    audit=dict(status='failed',plan_sha256=c.file_hash(root/'plan.json'),started_ns=time.time_ns(),
+               new_tx_samples=0,new_rx_samples=0,committed_prefix_blocks=0,appended_blocks=0)
+    until=time.monotonic()+1800
+    try:
+        for snr in p['snrs']:
+            stores.append(storage.SnrStore(root/snr_name(snr),raw_parent=stores[0] if stores else None))
+        owner=stores[0];durable=sum(v['sample_count'] for v in owner.index['raw'])
+        if durable<p['rx_samples']:
+            pending=failed['pending_raw'];path=Path(pending['path'])
+            c.require(path==root/'pending-raw.ci16' and pending['sample_offset']==durable and
+                      pending['samples']==p['rx_samples']-durable and c.file_hash(path)==pending['sha256'],'preserved RX tail identity')
+            metadata=owner.index['raw'][-1]['metadata']
+            with path.open('rb') as f:
+                while data:=f.read(CHUNK*4):
+                    iq=np.frombuffer(data,dtype='<i2').reshape(-1,2)
+                    c.require(not np.any((iq<=-2048)|(iq>=2047)),'recovered raw clipping')
+                    owner.append_raw(iq,dict(metadata,recovery_parent_sha256=pending['sha256']))
+        c.require(owner.raw_path().stat().st_size==p['maximum_rx_bytes'],'full durable RX')
+        iq=np.fromfile(owner.raw_path(),dtype='<i2').reshape(-1,2);iq.setflags(write=False)
+        source=Source(p['snrs'],p['blocks']);lease=GpuLease(root/'scratch/recovery-gpu','mamba')
+        token=__import__('asyncio').run(lease.acquire(time.monotonic()+10,request='stopped-rf-cache-recovery'))
+        gpu=g.PayloadBatch('cuda');decoder=dsp.Decoder(p['run_id'],None,gpu,guard_backend='cuda-batch',
+            source_loader=source,total_blocks=p['total_blocks'])
+        for at in range(0,len(iq),CHUNK):
+            c.require(time.monotonic()<until and not (root/'RECOVERY_STOP').exists(),'recovery stop/deadline')
+            for result in decoder.feed(iq[at:at+CHUNK]):
+                store=stores[result['block']//96]
+                if result['block']%96<len(store.index['processed']):
+                    compare_committed(store,result);audit['committed_prefix_blocks']+=1
+                else:
+                    store.append_processed(*[result[k] for k in ('inputs','masks','sample_starts','sample_counts','quality')])
+                    storage.atomic_json(root/'frames'/f"{result['block']:03d}.json",result['frames']);audit['appended_blocks']+=1
+                if result['block']%8==7:print(json.dumps(dict(event='recovery',blocks=result['block']+1,total=p['total_blocks'])),flush=True)
+        gpu.torch.cuda.synchronize()
+        c.require(decoder.frame==p['total_blocks']*64,'recovery all pilots')
+        for store in stores:
+            if not store.index['complete']:store.finish()
+        audit.update(status='passed',source_rows=p['source_rows'],all_frames_synchronized=True,raw_verified=True,
+            sealed_artifacts=sealed_artifacts(root,p['snrs']),worker_threads_stopped=True,restored=True,
+            restoration_basis='original finite RX and failed execution verified stopped/restored; recovery invokes no hardware',
+            finished_ns=time.time_ns())
+        storage.atomic_json(root/'recovery.json',audit)
+    finally:
+        for store in reversed(stores):store.close()
+        if source:source.close()
+        if token is not None:lease.release(token)
+        if lease:lease.close()
+        os.close(lock)
+    return audit
+
+
+ALL_SNRS=list(range(30,-21,-2))
+PAIRS=[ALL_SNRS[i:i+2] for i in range(0,26,2)]
+
+
+def full_plan(root,backend,first,two):
+    """Campaign ledger for13 finite sessions; first sealed pair is imported."""
+    c.require(root.is_absolute() and root.resolve()==root and root.parent==Path('/var/tmp/sdrharness-dev') and
+              not root.exists(),'fresh full campaign root')
+    initial=validate_stage_one(first);imported=completed(two,[30,28])
+    c.require(c.file_hash(DATA)==DATA_SHA,'full campaign original source hash')
+    reserve=224*1024**3
+    c.require(shutil.disk_usage(root.parent).free>reserve,'full campaign disk reserve')
+    root.mkdir(mode=0o700);(root/'entries').mkdir(mode=0o700)
+    identity=json.loads((two/'plan.json').read_text())
+    groups=[dict(index=i,snrs=pair,attempts=[str(root.parent/(root.name+f'-g{i:02d}-a{a}'))
+                for a in range(2 if i==1 else 1)]) for i,pair in enumerate(PAIRS)]
+    # One additional bounded attempt is reserved solely for joint-stop validation.
+    groups[0]['attempts']=[]
+    p=dict(schema='rml2018a-snr-campaign-ledger-v1',source=source_identity(),snrs=ALL_SNRS,groups=groups,
+        imported=imported,initial=initial,backend=str(backend),software_sha256=c.file_hash(Path(__file__)),
+        cli_sha256=c.file_hash(SCRIPTS/'rml2018a-snr-stream.py'),rf=identity['rf'],connection=identity['connection'],
+        maximum_new_attempts=13,maximum_new_tx_samples=13*2*SNR_SAMPLES,
+        maximum_new_rx_bytes=13*(225443840+2*CHUNK)*4,maximum_new_tx_seconds=13*2*SNR_SAMPLES/c.RATE,
+        reserve_bytes=reserve,maximum_wall_seconds=21600,maximum_pair_seconds=1380,
+        maximum_retained_bytes=208*1024**3,source_rows=2555904,automatic_retry=False,
+        model_windows=0,recognizer_available=False,created_ns=time.time_ns(),free_bytes=shutil.disk_usage(root).free,
+        stop='campaign STOP or SIGINT/SIGTERM forwards STOP to current exact child; completed pairs remain sealed',
+        recovery='completed pair skipped; full RX can resume DSP from preserved RAM-loaded IQ without TX; partial RX requires explicit retry and consumes its reserved attempt',
+        model_gate='all26 unique source groups verified, raw/processed seals and restoration required before inference eligibility')
+    storage.atomic_json(root/'ledger-plan.json',p)
+    storage.atomic_json(root/'entries/00.complete.json',imported)
+    return p
+
+
+def full_load(root):
+    p=json.loads((root/'ledger-plan.json').read_text())
+    c.require(p['schema']=='rml2018a-snr-campaign-ledger-v1' and p['snrs']==ALL_SNRS and
+              p['source']==source_identity() and p['source_rows']==2555904 and p['maximum_new_attempts']==13 and
+              p['maximum_new_tx_samples']==13*2*SNR_SAMPLES and p['maximum_new_rx_bytes']==13*(225443840+2*CHUNK)*4 and
+              p['maximum_wall_seconds']==21600 and p['reserve_bytes']==224*1024**3 and
+              p['maximum_retained_bytes']==208*1024**3 and not p['automatic_retry'] and p['model_windows']==0 and
+              p['software_sha256']==c.file_hash(Path(__file__)) and
+              p['cli_sha256']==c.file_hash(SCRIPTS/'rml2018a-snr-stream.py'),'full campaign pinned scope')
+    c.require(len(p['groups'])==13,'all13 groups')
+    for i,group in enumerate(p['groups']):
+        expected=[] if i==0 else [str(root.parent/(root.name+f'-g{i:02d}-a{a}')) for a in range(2 if i==1 else 1)]
+        c.require(group==dict(index=i,snrs=PAIRS[i],attempts=expected),'exact nonoverlapping attempt roots')
+    return p
+
+
+def full_status(root,deep=True):
+    p=full_load(root);rows=0;groups=[]
+    for group in p['groups']:
+        receipt=root/'entries'/f"{group['index']:02d}.complete.json"
+        if receipt.exists():
+            value=json.loads(receipt.read_text())
+            c.require(value['snrs']==group['snrs'] and value['source_rows']==196608 and
+                      value['root'] in ([p['imported']['root']] if group['index']==0 else group['attempts']),
+                      'completion receipt registered source range')
+            if deep:c.require(value==completed(Path(value['root']),group['snrs']),'completion receipt changed')
+            rows+=value['source_rows'];groups.append(dict(index=group['index'],snrs=group['snrs'],status='complete',root=value['root']))
+        else:groups.append(dict(index=group['index'],snrs=group['snrs'],status='pending'))
+    return dict(complete=rows==2555904,source_rows=rows,total_source_rows=2555904,
+                completed_snr_groups=rows//98304,groups=groups,model_loaded=False)
+
+
+def full_run(root,retry=False,stop_after=None):
+    """Serial pairs with one owner; receipts survive restarts, state is derived."""
+    p=full_load(root)
+    lock=os.open(root/'owner.lock',os.O_RDWR|os.O_CREAT|os.O_NOFOLLOW,0o600)
+    fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    active=None;child=None;stopping=False;previous={};started=time.monotonic()
+    def stop(sig,frame):
+        nonlocal stopping
+        stopping=True
+        if active is not None:(active/'STOP').touch()
+    for sig in (signal.SIGINT,signal.SIGTERM):previous[sig]=signal.signal(sig,stop)
+    try:
+        c.require(not (root/'STOP').exists(),'campaign STOP exists')
+        status=full_status(root)
+        for group in p['groups']:
+            i=group['index'];receipt=root/'entries'/f'{i:02d}.complete.json'
+            if receipt.exists():
+                if stop_after is not None and i>=stop_after:break
+                continue
+            c.require(not stopping and not (root/'STOP').exists() and time.monotonic()-started<p['maximum_wall_seconds'],'full campaign stop/deadline')
+            paths=[Path(x) for x in group['attempts']];active=None
+            # Reconcile a child completed before the controller wrote its receipt.
+            for path in paths:
+                if (path/'execution.json').exists():
+                    try:value=completed(path,group['snrs'])
+                    except (ValueError,KeyError,FileNotFoundError):continue
+                    storage.atomic_json(receipt,value);break
+            if receipt.exists():
+                if stop_after is not None and i>=stop_after:break
+                continue
+            for path in paths:
+                if not path.exists() or not (path/'started.json').exists():active=path;break
+                if not retry:raise ValueError('interrupted/failed group retained; use recover for complete RX, or explicit --retry for partial RX')
+            c.require(active is not None,'registered attempts exhausted; no implicit retransmit')
+            if not (active/'plan.json').exists():
+                c.require(not active.exists(),'incomplete plan retained; inspect before retry')
+                create(active,Path(p['backend']),group['snrs'],Path(p['initial']['root']))
+            plan=json.loads((active/'plan.json').read_text())
+            c.require(plan['snrs']==group['snrs'] and plan['rf']==p['rf'] and plan['connection']==p['connection'],'child exact RF/source scope')
+            used=sum(f.stat().st_size for path in [root,*[Path(v) for q in p['groups'] for v in q['attempts']]] if path.exists() for f in path.rglob('*') if f.is_file())
+            c.require(used<p['maximum_retained_bytes'] and shutil.disk_usage(root).free>plan['reserve_bytes'],'global retained/disk budget')
+            c.require(not stopping and not (root/'STOP').exists(),'STOP before child')
+            storage.atomic_json(root/'state.json',dict(active=str(active),group=i,status='running',updated_ns=time.time_ns()))
+            with (active/'campaign-run.log').open('ab') as log:
+                child=subprocess.Popen([sys.executable,'-B',str(SCRIPTS/'rml2018a-snr-stream.py'),'run','--root',str(active)],stdout=log,stderr=subprocess.STDOUT)
+                deadline=time.monotonic()+plan['maximum_seconds']+180;sent_stop=None
+                while child.poll() is None:
+                    if stopping or (root/'STOP').exists() or time.monotonic()>deadline:
+                        (active/'STOP').touch()
+                        if sent_stop is None:sent_stop=time.monotonic()
+                        if time.monotonic()-sent_stop>180:
+                            child.terminate();raise RuntimeError('child stop deadline exceeded; inspect exact hardware owner')
+                    time.sleep(.2)
+                c.require(child.returncode==0,'child failed/stopped; raw and processed data retained')
+            value=completed(active,group['snrs']);storage.atomic_json(receipt,value)
+            status=full_status(root,deep=False);storage.atomic_json(root/'state.json',status)
+            print(json.dumps(dict(event='pair_sealed',snrs=group['snrs'],source_rows=status['source_rows'],total=2555904)),flush=True)
+            # TX waveform is regenerable; IQ/HDF5 and failed evidence stay intact.
+            wave=active/'tx.fc32'
+            if wave.exists():
+                c.require(c.file_hash(wave)==plan['tx_sha256'],'TX cleanup hash')
+                storage.atomic_json(active/'tx-staging-cleanup.json',dict(path=str(wave),bytes=wave.stat().st_size,sha256=plan['tx_sha256']))
+                wave.unlink();storage.sync_directory(active)
+            active=None;child=None
+            if stop_after is not None and i==stop_after:break
+        status=full_status(root)
+        storage.atomic_json(root/'state.json',status)
+        if status['complete']:
+            storage.atomic_json(root/'acquisition-complete.json',dict(**status,ledger_plan_sha256=c.file_hash(root/'ledger-plan.json'),
+                completed_ns=time.time_ns(),inference_eligible=True,source_overlap_policy='one imported+30/+28 pair; exactly one sealed pair per remaining source group'))
+        return status
+    except BaseException as error:
+        storage.atomic_json(root/'state.json',dict(status='stopped_or_failed',error=repr(error),
+            active=str(active) if active else None,updated_ns=time.time_ns(),model_loaded=False))
+        raise
+    finally:
+        if child is not None and child.poll() is None:
+            if active is not None:(active/'STOP').touch()
+            try:child.wait(timeout=180)
+            except subprocess.TimeoutExpired:child.terminate();child.wait(timeout=20)
+        for sig,handler in previous.items():signal.signal(sig,handler)
+        os.close(lock)

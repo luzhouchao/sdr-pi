@@ -2830,3 +2830,43 @@ P201暂存2文件51540字节及目录已删除并核对不存在。接收原始I
 新旧P201持久发布/回滚6文件108327字节保留，生产AGX Controller未替换。
 AGX保留377文件9554657583字节；精确路径、SHA、source/session/profile血缘和人工删除方法见
 [整档证据清单](../evidence/RML2018A_FULL_SNR_STREAM_2026-09-14.json)，原数据集及旧实验未改动。
+
+## 2026-09-14：26档后台调度与验证门
+
+用户批准每两档连续收发、处理排空后自动进入下一对，随后明确要求由脚本启动，无需Agent逐档监看。
+本单元以`9e707f6`为起点，复用旧两档+30/+28封存语料；其余24档及额外一次+26/+24联合停止尝试单独登记。
+新增同一整档入口的全库调度、完成凭据、跨会话核验/跳过、完整RX后的缓存处理恢复和后台顺序验证脚本。
+原失败记录不覆盖，重复尝试不增加唯一源行数；全部26档通过前不发出推理就绪凭据，服务没有模型调用。
+操作合同与停止路径见[后台调度](../reference/RML2018A_FULL_RF_CAMPAIGN.md#26档后台调度与恢复2026-09-14)。
+
+离线测试覆盖26档2555904行恰好一次、非法SNR组、部分RX拒绝完整恢复、封存损坏拒绝跳过、
+预启动STOP、完成子任务补登记/重复跳过、失败必须显式重试/总额度以及缺档时模型门关闭。
+第一次全套测试从stdin启动，multiprocessing spawn无法重入stdin，接收子进程测试因此失败；
+已改为有`__main__`保护的独立文件运行器，原失败日志保留。这是测试启动方式修正，不改接收算法。
+C/C++/Rust及P201制品不变，本单元不重复其构建/部署/回滚，不把Python测试当硬件验收。
+
+当前运行与保留根：`/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914`；
+离线验证根：`/var/tmp/sdrharness-dev/rml2018a-all-snrs-20260914`。
+实时状态以运行根`service-state.json`及systemd为准；`joint-stop-validation.json`、`recovery-validation.json`
+必须实际通过后，脚本才启动其余采集。后台启动不表示这些门或26档已完成。
+运行中语料仍增长，最大新增RX含背景11832131584字节，全部结果预留224GiB、保留限额208GiB；
+实机结束后由脚本生成精确文件SHA/大小/人工删除方法`retention.json`及`final-radio-state.json`，
+此前保留全部活动语料，不清理运行根或子尝试。旧两档、原数据集、持久设备发布均不改动。
+
+最终回归184项中183通过/1项既有可选GPU测试跳过；本单元沿用的两个CUDA测试已实跑。
+后台验证门补充测试及整档相关13项通过，覆盖错误服务身份零硬件访问、首个实机门失败禁止继续全库。
+P201只读核对仍为PID21201、单43110监听，新daemon/config哈希与前单元一致，系统recovery timer active；
+国产N210 serial2508504仍为USB3，专用UHD状态核对通过。未变更设备制品或生产Controller。
+
+后台单元名：`sdr-rml2018a-all26-20260914.service`（用户systemd，单次运行，无Restart）。
+查看：`systemctl --user status sdr-rml2018a-all26-20260914.service`，或读取运行根`service-state.json`。
+停止：`systemctl --user stop sdr-rml2018a-all26-20260914.service`；也可在运行根创建`STOP`。
+验证阶段日志为`validation-*.log`，正式剩余档日志为`full-run.log`，每对子目录另有`campaign-run.log`。
+源码/离线证据及启动快照见[后台单元清单](../evidence/RML2018A_ALL_SNR_SERVICE_2026-09-14.json)；
+后台的最终验证和采集结果需按链接读取，不在启动时预先勾选。
+
+启动快照：用户systemd报告active/running、MainPID188272、ExecMainStatus0，
+服务阶段为validating_joint_stop，尚未记为实机门通过或26档完成。
+根据用户要求，后续由脚本监督阶段和失败停止，不由Agent逐档轮询。
+本单元测试scratch已清理1个零字节租约文件，目录验证不存在；保留8文件57691字节的测试/启动/清理依据。
+后台运行根及新尝试由服务继续持有，明确不作本次开发清理；最终清理由服务在设备恢复后执行并登记。

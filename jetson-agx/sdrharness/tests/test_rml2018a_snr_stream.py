@@ -87,4 +87,111 @@ send(dict(event='rx_end',restored=True))
                 rx.close()
 
 
+
+
+class FullCampaignTests(unittest.TestCase):
+    def test_all_original_rows_exactly_once_in_thirteen_pairs(self):
+        rows=[]
+        for pair in stream.PAIRS:
+            self.assertTrue(stream.valid_snrs(pair))
+            for snr in pair:
+                rows.extend(stream.g.snr_rows(snr))
+        np.testing.assert_array_equal(np.sort(rows),np.arange(2555904))
+        for invalid in ([30,26],[30,30],[32,30],[-20,-22],[30,28,26],[30.,28],[]):
+            self.assertFalse(stream.valid_snrs(invalid))
+        self.assertEqual(stream.snr_name(-20),'snr-minus20')
+
+    def test_partial_rx_cannot_be_recovered_as_a_complete_group(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'plan.json').write_text('{}')
+            (root/'execution.json').write_text(json.dumps(dict(plan_sha256=stream.c.file_hash(root/'plan.json'),
+                status='failed',worker_threads_stopped=True,restored=True)))
+            (root/'rx-process.json').write_text(json.dumps(dict(status='failed',bytes_received=4)))
+            with self.assertRaisesRegex(ValueError,'entire finite RX'):
+                stream.recovery_preflight(root)
+
+    def test_changed_sealed_artifact_rejected_before_skipping(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'plan.json').write_text(json.dumps(dict(snrs=[26,24],source_sha256=stream.DATA_SHA)))
+            (root/'execution.json').write_text(json.dumps(dict(status='passed',source_rows=196608,
+                all_frames_synchronized=True,raw_verified=True,worker_threads_stopped=True,restored=True,
+                plan_sha256=stream.c.file_hash(root/'plan.json'),sealed_artifacts={'raw':'expected'})))
+            with patch.object(stream,'sealed_artifacts',return_value={'raw':'changed'}):
+                with self.assertRaisesRegex(ValueError,'artifact seals'):stream.completed(root,[26,24])
+
+    def ledger(self,root,child):
+        (root/'entries').mkdir()
+        p=dict(groups=[dict(index=1,snrs=[26,24],attempts=[str(child)])],maximum_wall_seconds=21600,
+            maximum_retained_bytes=208*1024**3,backend='/unused',initial=dict(root='/unused'))
+        return p
+
+    def test_stopped_campaign_never_creates_or_runs_child(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);child=root/'child';p=self.ledger(root,child);(root/'STOP').touch()
+            with patch.object(stream,'full_load',return_value=p),patch.object(stream,'create') as create,patch.object(stream.subprocess,'Popen') as launch:
+                with self.assertRaisesRegex(ValueError,'STOP exists'):stream.full_run(root)
+                create.assert_not_called();launch.assert_not_called()
+
+    def test_restart_reconciles_completed_child_without_retransmission(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);child=root/'child';p=self.ledger(root,child);child.mkdir();(child/'execution.json').write_text('{}')
+            result=dict(root=str(child),snrs=[26,24],source_rows=196608)
+            with patch.object(stream,'full_load',return_value=p),patch.object(stream,'full_status',return_value={'complete':False}),patch.object(stream,'completed',return_value=result),patch.object(stream.subprocess,'Popen') as launch:
+                stream.full_run(root,stop_after=1)
+                self.assertEqual(json.loads((root/'entries/01.complete.json').read_text()),result)
+                stream.full_run(root,stop_after=1);launch.assert_not_called()
+
+    def test_failed_attempt_needs_explicit_retry_and_has_no_implicit_extra_budget(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);child=root/'child';p=self.ledger(root,child);child.mkdir();(child/'started.json').write_text('{}')
+            with patch.object(stream,'full_load',return_value=p),patch.object(stream,'full_status',return_value={'complete':False}),patch.object(stream.subprocess,'Popen') as launch:
+                with self.assertRaisesRegex(ValueError,'explicit --retry'):stream.full_run(root)
+                with self.assertRaisesRegex(ValueError,'attempts exhausted'):stream.full_run(root,retry=True)
+                launch.assert_not_called()
+
+    def test_partial_global_coverage_never_opens_model_gate(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);p=self.ledger(root,root/'child')
+            with patch.object(stream,'full_load',return_value=p):
+                result=stream.full_status(root)
+                self.assertFalse(result['complete']);self.assertFalse(result['model_loaded'])
+                self.assertEqual(result['source_rows'],0)
+
+
+class ServiceGateTests(unittest.TestCase):
+    def test_invalid_service_identity_never_touches_hardware(self):
+        from unittest.mock import patch
+        service=stream.module('test_snr_service',stream.SCRIPTS/'rml2018a-snr-campaign-service.py')
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'ledger-plan.json').write_text('{}')
+            (root/'service-plan.json').write_text(json.dumps(dict(service_sha256='wrong',ledger_plan_sha256='wrong')))
+            with patch.object(stream,'full_load',return_value={}),patch.object(service,'hardware_idle') as hardware:
+                with self.assertRaisesRegex(ValueError,'identities'):service.main(root)
+                hardware.assert_not_called()
+
+    def test_failed_live_gate_never_launches_full_acquisition(self):
+        from unittest.mock import patch,MagicMock
+        service=stream.module('test_snr_service',stream.SCRIPTS/'rml2018a-snr-campaign-service.py')
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);first=root/'first';second=root/'second';first.mkdir()
+            (root/'ledger-plan.json').write_text('{}')
+            (root/'service-plan.json').write_text(json.dumps(dict(service_sha256=stream.c.file_hash(Path(service.__file__)),
+                ledger_plan_sha256=stream.c.file_hash(root/'ledger-plan.json'))))
+            (first/'rx-events.jsonl').write_bytes(b'x'*262145)
+            (first/'execution.json').write_text(json.dumps(dict(status='failed',restored=False,worker_threads_stopped=True)))
+            (first/'rx-process.json').write_text(json.dumps(dict(bytes_received=4)))
+            process=MagicMock();process.wait.return_value=2;process.poll.return_value=2
+            p=dict(backend='/unused',groups=[{},dict(attempts=[str(first),str(second)])])
+            with patch.object(stream,'full_load',return_value=p),patch.object(service,'hardware_idle',return_value={}),patch.object(service,'final_inventory'),patch.object(service.subprocess,'Popen',return_value=process) as launch:
+                with self.assertRaisesRegex(ValueError,'partial RX preserved/restored'):service.main(root)
+                self.assertEqual(launch.call_count,1)
+                self.assertEqual(json.loads((root/'service-state.json').read_text())['phase'],'stopped_or_failed')
+
+
 if __name__=='__main__':unittest.main()

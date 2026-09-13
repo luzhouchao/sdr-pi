@@ -1,0 +1,187 @@
+{
+  "schema": "rml2018a-all-snr-service-evidence-v1",
+  "date": "2026-09-14",
+  "base_commit": "9e707f6c52622796cf34f233771205b0db250930",
+  "purpose": "Full SNR scheduler/offline regression and background service launch; live gates and acquisition pending at snapshot",
+  "tests": {
+    "regression_discovered": 184,
+    "passed": 183,
+    "optional_skipped": 1,
+    "related_cuda_executed": 2,
+    "final_related_tests_passed": 13,
+    "initial_failure": "stdin unittest runner cannot be re-entered by multiprocessing spawn; corrected standalone guarded runner passed"
+  },
+  "development_retention": {
+    "root": "/var/tmp/sdrharness-dev/rml2018a-all-snrs-20260914",
+    "files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-all-snrs-20260914/cleanup.json",
+        "bytes": 297,
+        "sha256": "6ccfebd9acc617ceea69e81136a4d6c6c4c8acee21fc69974c2dfb2ef41847ae"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-all-snrs-20260914/full-plan.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-all-snrs-20260914/python-final.log",
+        "bytes": 25891,
+        "sha256": "1d1681fbaf192c879f617d935ebf027aea7ff7301a1f7526724ef842060cd2a6"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-all-snrs-20260914/python-tests.log",
+        "bytes": 27359,
+        "sha256": "7875d353cee84d9e0b3695f6acfc3ddd21a724bc405288e4c679bb21b5a32028"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-all-snrs-20260914/run-tests.py",
+        "bytes": 678,
+        "sha256": "0c758092d6d01c39b80e2a8d71ad17fbb585a5e8fd9aa1f5e04ff54c08e53a57"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-all-snrs-20260914/service-tests.log",
+        "bytes": 1890,
+        "sha256": "6d3f42005a2242b0c4f51feee1cc3450b4a690b9a2659d36d02bd5967c1d5eec"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-all-snrs-20260914/startup.json",
+        "bytes": 246,
+        "sha256": "3ac0e9f086fe713eb448b83b16d64f2c64cd365eac50e95c152f9253a152fb24"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-all-snrs-20260914/stream-tests.log",
+        "bytes": 1330,
+        "sha256": "f64fed62e224f0414166e4c9fec0ef491b94d54eacb0c83d77a6bc94658ca7f3"
+      }
+    ],
+    "file_count": 8,
+    "bytes": 57691,
+    "manual_delete": "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all-snrs-20260914'"
+  },
+  "cleanup": {
+    "removed": [
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-all-snrs-20260914/scratch/gpu-test/inference.lock",
+        "bytes": 0
+      }
+    ],
+    "files": 1,
+    "bytes": 0,
+    "scratch_absent": true,
+    "active_service_root_untouched": "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914"
+  },
+  "launch_snapshot": {
+    "systemd": "RuntimeMaxUSec=7h 30min\nMainPID=188272\nExecMainStatus=0\nActiveState=active\nSubState=running\n",
+    "service_state": {
+      "model_loaded": false,
+      "phase": "validating_joint_stop",
+      "updated_ns": 1789318394516855920
+    }
+  },
+  "campaign": {
+    "root": "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914",
+    "purpose": "User-authorized remaining24 source-SNR groups plus bounded joint-stop/cache-recovery validation; original IQ and processed HDF5 retained",
+    "immutable_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914/ledger-plan.json",
+        "bytes": 4798,
+        "sha256": "c34b3633f248850f43a46faa7dfa5d7202dda33f19147a38e863424f13d55aab"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914/service-plan.json",
+        "bytes": 1089,
+        "sha256": "5bd1560e62169ace243c493e84518ee55368cca6ed7f58613d80078fb1d9a70e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914/entries/00.complete.json",
+        "bytes": 1254,
+        "sha256": "87c362981840bf8a9df1b00e6b42dacd06ceb6c9722a05552dc24298b89c1200"
+      }
+    ],
+    "source": {
+      "bytes": 21449148312,
+      "ctime_ns": 1788511356624300758,
+      "device": 66305,
+      "inode": 47739861,
+      "mtime_ns": 1627354882000000000,
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+      "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38"
+    },
+    "imported_pair": {
+      "plan_sha256": "d678fd4b2baf2b370a1b322609692f9ba2c0a3308ee03ea152c39cd131cf0a62",
+      "receipt": "/var/tmp/sdrharness-dev/rml2018a-snr30-28-live-20260914/execution.json",
+      "receipt_sha256": "025b6e78e8903f4da3365c14651e220104d38da769ec207b08f945c441a6bb77",
+      "root": "/var/tmp/sdrharness-dev/rml2018a-snr30-28-live-20260914",
+      "sealed_artifacts": {
+        "snr-plus28/configuration.json": "6f02d65e86c279a43e748a8e8cb99b6051538ac7ca8d8abb8078c322ff201513",
+        "snr-plus28/index.json": "09633b04da2e7cd3259b61d322a7e02d48333cdbf706fb492a02429dc7cf9889",
+        "snr-plus28/processed.h5": "de39e9d252113fc98f9124037572b8a6c70cca731bcbaa30658aaa4b4219c4d9",
+        "snr-plus28/raw.sigmf-meta": "241f2453ece4943cb4c78d0a560bcea81767e5b630661499cad17374dea49566",
+        "snr-plus30/configuration.json": "44130646b10aecb0ef6582bfad667ef67f86a4f74839b5a7dddc196af8b9d834",
+        "snr-plus30/index.json": "863eb13faa3f30f18fe629b832124dc1623d808bdb5c9e74b6121774b769c405",
+        "snr-plus30/processed.h5": "15e9f39e34c8b5353f186cca8bfc7a307573c3a8070415d4614b1e51a6ae0fe6",
+        "snr-plus30/raw.sigmf-data": "28ae81ff62c9ad6ac594fb65be8a485dc22b9014b8df11896a417a5cec58347a",
+        "snr-plus30/raw.sigmf-meta": "089559db5173f142614d4976c2a2abefe3dd2e8f76dbb14a705c179965775e3b"
+      },
+      "snrs": [
+        30,
+        28
+      ],
+      "source_rows": 196608
+    },
+    "new_attempt_roots": [
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g01-a0",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g01-a1",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g02-a0",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g03-a0",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g04-a0",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g05-a0",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g06-a0",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g07-a0",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g08-a0",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g09-a0",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g10-a0",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g11-a0",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g12-a0"
+    ],
+    "maximum_new_rx_bytes": 11832131584,
+    "maximum_new_tx_samples": 2862612480,
+    "reserve_bytes": 240518168576,
+    "maximum_retained_bytes": 223338299392,
+    "current_status": "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914/service-state.json",
+    "live_gate_results": [
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914/joint-stop-validation.json",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914/recovery-validation.json"
+    ],
+    "final_acquisition_receipt": "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914/acquisition-complete.json",
+    "final_precise_retention_manifest": "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914/retention.json",
+    "final_radio_state": "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914/final-radio-state.json",
+    "manual_stop": "systemctl --user stop sdr-rml2018a-all26-20260914.service",
+    "manual_delete_after_service_stopped": [
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g01-a0'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g01-a1'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g02-a0'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g03-a0'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g04-a0'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g05-a0'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g06-a0'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g07-a0'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g08-a0'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g09-a0'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g10-a0'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g11-a0'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g12-a0'",
+      "rm -rf -- '/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914'"
+    ],
+    "deletion_constraint": "Do not delete active campaign files. After stopped, use final retention.json exact inventory; delete continuous pairs as units because each shares one raw owner. Imported previous experiment/source dataset untouched."
+  },
+  "model": {
+    "inference_calls": 0,
+    "training_calls": 0,
+    "spark": "kept stopped",
+    "recognizer_available": false
+  },
+  "deployment": "Python background service only; isolated existing Controller/TX and installed P201 daemon unchanged",
+  "live_result_boundary": "Started is not passed; script must pass live gates before remaining acquisition. Consult linked live receipts, never infer26-group completion from launch."
+}
