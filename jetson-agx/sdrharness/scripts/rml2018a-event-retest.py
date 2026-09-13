@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""One finite four-class Z30 retest, timestamped TX and frozen source/raw/guard inference."""
+"""Finite four-class or uniform24 Z30 comparison, timestamped TX and frozen source/raw/guard inference."""
 import argparse
+from collections import Counter
 import json
 from pathlib import Path
 import shutil
@@ -28,9 +29,19 @@ DATA_SHA='e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38'
 SEMANTICS='96 new Z30 engineering rows; fixed source/raw/guard, all failures retained. Conditional SINR includes link distortion; not calibrated physical SINR or independent accuracy. No TX/RX sample clock mapping.'
 
 
-def check_root(root):
+def experiment(profile=PROFILE):
+    c.require(profile in (PROFILE,'uniform24-high-snr-pilot'),'registered event experiment')
+    if profile==PROFILE:
+        return dict(batches=c.RML_EVENT_BATCHES,classes=c.RML_EVENT_CLASSES,prefix='b210-rml-event-retest-',
+            schema='rml2018a-event-retest-v1',semantics=SEMANTICS,deadline=400,reserve=128*1024*1024)
+    return dict(batches=c.RML_UNIFORM_BATCHES,classes=c.RML_UNIFORM_CLASSES,prefix='b210-rml-uniform24-',
+        schema='rml2018a-uniform24-high-snr-v1',deadline=900,reserve=512*1024*1024,
+        semantics='576 new Z30 rows, all24 classes at identical TX60/RX50. Fixed source/raw/guard; all failures and regressions retained. Conditional SINR is source-assisted, not calibrated physical SINR. Engineering, not independent accuracy or whole dataset completion. No TX/RX sample clock mapping.')
+
+
+def check_root(root,profile=PROFILE):
     c.require(root.is_absolute() and root.resolve()==root and root.parent==Path('/var/tmp/sdrharness-dev') and
-              root.name.startswith('b210-rml-event-retest-') and root.name.replace('-','').isalnum(),'finite retest root')
+              root.name.startswith(experiment(profile)['prefix']) and root.name.replace('-','').isalnum(),'finite retest root')
 
 
 def software():
@@ -48,40 +59,42 @@ def rx_plan(tag,generation):
         point_timeout_ms=1000,detection_threshold_db=12.)
 
 
-def source(run_id,batch,cid):
+def source(run_id,batch,cid,profile=PROFILE):
     rows=c.batch_rows(2555904,batch)
     with h5py.File(m.DATASET,'r') as h:
         iq=h['X'][rows];labels=h['Y'][rows].argmax(axis=1);zs=h['Z'][rows].ravel()
     c.require(iq.shape==(24,1024,2) and np.all(labels==cid) and np.all(zs==30),'new source X/Y/Z membership')
-    frame,scales=c.packet(iq,run_id,batch,level_profile=PROFILE)
-    tx=c.tx_plan(frame,run_id,batch,rows,60,level_profile=PROFILE);c.validate_tx(tx,frame.tobytes())
+    frame,scales=c.packet(iq,run_id,batch,level_profile=profile)
+    tx=c.tx_plan(frame,run_id,batch,rows,60,level_profile=profile);c.validate_tx(tx,frame.tobytes())
     return iq,frame,dict(rows=rows,class_ids=labels.tolist(),source_snr_db=zs.tolist(),
         original_iq_sha256=c.digest(iq.tobytes()),scales=scales.tolist()),tx
 
 
-def fixed_points(root,run_id,generation):
-    points=[]
-    for i,tag in enumerate(TAGS):
+def fixed_points(root,run_id,generation,profile=PROFILE):
+    e=experiment(profile);points=[]
+    tags=('off-before',*(f'batch-{b:07d}' for b in e['batches']),'off-after')
+    for i,tag in enumerate(tags):
         point=dict(tag=tag,mode=None if tag.startswith('off-') else 'rml',rx=rx_plan(tag,generation+i),
             result_path=str(root/tag),p201_staging=f'/tmp/sdr-agent-dev/agx-sweep-{generation+i}-0')
         if point['mode']:
-            batch=c.RML_EVENT_BATCHES[i-1];cid=c.RML_EVENT_CLASSES[i-1]
-            _,_,s,tx=source(run_id,batch,cid)
+            batch=e['batches'][i-1];cid=e['classes'][i-1]
+            _,_,s,tx=source(run_id,batch,cid,profile)
             point.update(batch=batch,class_id=cid,source=s,tx=tx,packet_sha256=tx['payload_sha256'])
         points.append(point)
     return points
 
 
-def fixed_fields():
-    return dict(schema='rml2018a-event-retest-v1',tx_level_profile=PROFILE,
+def fixed_fields(profile=PROFILE):
+    e=experiment(profile);n=len(e['batches'])
+    return dict(schema=e['schema'],tx_level_profile=profile,
         connection='B210 RF A TX/RX ->20dB50ohm2W DC-8GHz attenuator+15cm SMA ->P201 RX1',
         rf=dict(center_hz=c.CENTER,rate_sps=c.RATE,bandwidth_hz=c.BW,tx_gain_db=60,rx_gain_db=50,
-            tx_lo_offset_hz=250000,peak=c.packet_peak(PROFILE)),
-        maximum_tx_seconds=16,maximum_tx_samples=33527808,maximum_rx_bytes=1572840,
-        maximum_log_bytes_per_tx=16000000,reserve_bytes=128*1024*1024,deadline_seconds=400,
+            tx_lo_offset_hz=250000,peak=c.packet_peak(profile)),
+        maximum_tx_seconds=n*4,maximum_tx_samples=n*8381952,maximum_rx_bytes=(n+2)*262140,
+        maximum_log_bytes_per_tx=16000000,reserve_bytes=e['reserve'],deadline_seconds=e['deadline'],
         point_outer_deadline_seconds=65,rx_deadline_seconds=15,maximum_component_peak_counts=512,
-        source_rows=96,model_windows=0,maximum_model_windows=288,maximum_warmups=2,inference_deadline_seconds=650,
-        recognizer_available=False,guard_contract=guard.contract(),semantics=SEMANTICS,
+        source_rows=n*24,model_windows=0,maximum_model_windows=n*72,maximum_warmups=2,inference_deadline_seconds=650,
+        recognizer_available=False,guard_contract=guard.contract(),semantics=e['semantics'],
         stop='Parent SIGINT/SIGTERM -> Controller generation cancel + identified TX SIGINT; 65s hard outer TX timeout, finite4s TX; full radio/USB restoration. Inference restores idle Spark and GPU lease.')
 
 
@@ -97,36 +110,41 @@ def identity():
         profile_sha256=c.file_hash(m.PROFILE),label_map_sha256=c.file_hash(m.LABELS))
 
 
-def plan(root):
-    check_root(root);c.require(not root.exists(),'new retest only');root.mkdir(mode=0o700)
+def plan(root,profile=PROFILE):
+    check_root(root,profile);c.require(not root.exists(),'new retest only');root.mkdir(mode=0o700)
     print('Checking full original dataset SHA-256 (read-only)...',flush=True)
     c.require(m.DATASET.stat().st_size==21449148312 and c.file_hash(m.DATASET)==DATA_SHA,'full dataset pin')
     run_id=uuid.uuid4().hex;gen=time.time_ns()//1000000
-    p=dict(**fixed_fields(),**identity(),software=software(),run_id=run_id,generation=gen,
+    p=dict(**fixed_fields(profile),**identity(),software=software(),run_id=run_id,generation=gen,
         base_head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=c.REPO,text=True).strip(),
         source=dict(path=str(m.DATASET),bytes=m.DATASET.stat().st_size,mtime_ns=m.DATASET.stat().st_mtime_ns,sha256=DATA_SHA),
-        free_bytes=shutil.disk_usage(root).free,points=fixed_points(root,run_id,gen))
+        free_bytes=shutil.disk_usage(root).free,points=fixed_points(root,run_id,gen,profile))
     c.require(p['free_bytes']>p['reserve_bytes'],'disk reserve')
     # Earlier RF diagnostics remain immutable. No source row from any previous
     # native campaign source.json may enter this new finite experiment.
     old=set();parents=[]
     for path in sorted(root.parent.glob('b210-rml2018a-*/batch-*/source.json')):
         d=m.document(path);old.update(d['rows']);parents.append(dict(path=str(path),sha256=c.file_hash(path)))
+    event_parents=[]
+    for pattern in ('b210-rml-event-retest-*/plan.json','b210-rml-uniform24-*/plan.json'):
+        for path in sorted(root.parent.glob(pattern)):
+            prior=m.document(path);old.update(r for point in prior['points'] if point['mode'] for r in point['source']['rows'])
+            event_parents.append(dict(path=str(path),sha256=c.file_hash(path)))
     rows=[r for point in p['points'] if point['mode'] for r in point['source']['rows']]
-    c.require(len(set(rows))==96 and not old.intersection(rows),'new disjoint source rows')
-    p['source_disjointness']=dict(previous_source_records=parents,previous_unique_rows=len(old),intersection=0)
+    c.require(len(set(rows))==p['source_rows'] and not old.intersection(rows),'new disjoint source rows')
+    p['source_disjointness']=dict(previous_source_records=parents,previous_event_plans=event_parents,previous_unique_rows=len(old),intersection=0)
     validate(root,p);c.save(root/'plan.json',p)
-    return dict(status='planned',root=str(root),plan_sha256=c.file_hash(root/'plan.json'),source_rows=96,
-        maximum_tx_seconds=16,maximum_rx_bytes=1572840,maximum_model_windows=288,free_bytes=p['free_bytes'])
+    return dict(status='planned',root=str(root),plan_sha256=c.file_hash(root/'plan.json'),source_rows=p['source_rows'],
+        maximum_tx_seconds=p['maximum_tx_seconds'],maximum_rx_bytes=p['maximum_rx_bytes'],maximum_model_windows=p['maximum_model_windows'],free_bytes=p['free_bytes'])
 
 
 def validate(root,p):
-    check_root(root)
-    c.require(all(p.get(k)==v for k,v in fixed_fields().items()),'fixed finite retest settings')
+    profile=p['tx_level_profile'];check_root(root,profile)
+    c.require(all(p.get(k)==v for k,v in fixed_fields(profile).items()),'fixed finite retest settings')
     c.require(all(p.get(k)==v for k,v in identity().items()) and p['software']==software(),'sealed software/runtime')
     c.require(type(p['generation']) is int and p['generation']>0 and len(p['run_id'])==32 and
         all(x in '0123456789abcdef' for x in p['run_id']),'run identity')
-    c.require(p['points']==fixed_points(root,p['run_id'],p['generation']),'exact finite points/source/paths')
+    c.require(p['points']==fixed_points(root,p['run_id'],p['generation'],profile),'exact finite points/source/paths')
     stat=m.DATASET.stat()
     c.require(p['source']==dict(path=str(m.DATASET),bytes=stat.st_size,mtime_ns=stat.st_mtime_ns,sha256=DATA_SHA),'source dataset identity')
     c.require(p['free_bytes']>p['reserve_bytes'],'planned disk reserve')
@@ -135,15 +153,18 @@ def validate(root,p):
         path=Path(parent['path'])
         c.require(c.file_hash(path)==parent['sha256'],'immutable prior source record')
         old.update(m.document(path)['rows'])
+    for parent in p['source_disjointness'].get('previous_event_plans',[]):
+        path=Path(parent['path']);c.require(c.file_hash(path)==parent['sha256'],'immutable prior event plan')
+        prior=m.document(path);old.update(r for point in prior['points'] if point['mode'] for r in point['source']['rows'])
     rows={r for point in p['points'] if point['mode'] for r in point['source']['rows']}
-    c.require(len(rows)==96 and not old.intersection(rows) and
+    c.require(len(rows)==p['source_rows'] and not old.intersection(rows) and
         p['source_disjointness']['intersection']==0 and p['source_disjointness']['previous_unique_rows']==len(old),'source disjointness replay')
 
 
 def acquire(root):
     p=m.document(root/'plan.json');validate(root,p)
     def packet_bytes(point):
-        _,frame,s,tx=source(p['run_id'],point['batch'],point['class_id'])
+        _,frame,s,tx=source(p['run_id'],point['batch'],point['class_id'],p['tx_level_profile'])
         c.require(s==point['source'] and tx==point['tx'],'source immediately before TX')
         return frame.tobytes()
     return events.acquire_validated(root,p,packet_bytes)
@@ -175,7 +196,7 @@ def prepare(root):
         event=events.parse_events(d/'tx-events.jsonl');c.require(event==a['events'] and a['tx_exit']==0,'timestamped TX replay')
         batch=point['batch'];received,guarded,sync,info,error=receive_parts(raw,p['run_id'],batch)
         # Receiver DSP is fixed and does not consume source labels or predictions.
-        iq,_,_,_=source(p['run_id'],batch,point['class_id']);src=iq[:,:,0]+1j*iq[:,:,1]
+        iq,_,_,_=source(p['run_id'],batch,point['class_id'],p['tx_level_profile']);src=iq[:,:,0]+1j*iq[:,:,1]
         parts=dict(source=src,raw=received,guard=guarded);tensors[batch]=parts;rows=[]
         status='sync_failed' if sync is None else 'synchronized'
         for k,row in enumerate(point['source']['rows']):
@@ -192,21 +213,63 @@ def prepare(root):
         results.append(dict(batch=batch,class_id=point['class_id'],class_name=m.document(m.LABELS)['classes'][point['class_id']],
             seal=seal,parent_audit_sha256=c.file_hash(d/'audit.json'),status=status,sync=sync,sync_error=error,
             component_peak_counts=peak,guard_correction=info,quality_summary=summary,events=event,rows=rows))
-    report=dict(schema='rml2018a-event-retest-comparison-v1',parent=str(root),parent_plan_sha256=c.file_hash(root/'plan.json'),
-        run_id=p['run_id'],software=software(),source_rows=96,maximum_model_windows=288,maximum_warmups=2,
+    report=dict(schema=p['schema'].replace('-v1','-comparison-v1'),parent=str(root),parent_plan_sha256=c.file_hash(root/'plan.json'),
+        run_id=p['run_id'],software=software(),source_rows=p['source_rows'],maximum_model_windows=p['maximum_model_windows'],maximum_warmups=2,
         profile_sha256=p['profile_sha256'],label_map_sha256=p['label_map_sha256'],recognizer_available=False,
-        tags=['source','raw','guard'],semantics=SEMANTICS,results=results,stopped_controls=controls)
+        tags=['source','raw','guard'],semantics=p['semantics'],results=results,stopped_controls=controls)
     return report,tensors
+
+
+def summarize_predictions(report,receipt):
+    """Full source denominators; quality validity never filters recognition rows."""
+    c.require(receipt['status']=='completed' and len(receipt['rows'])==report['source_rows'],'complete inference rows')
+    predictions={(r['batch'],r['row']):r for r in receipt['rows']}
+    c.require(len(predictions)==report['source_rows'],'unique inference rows')
+    results=[]
+    for b in report['results']:
+        rows=b['rows'];pairs=[(r,predictions[(b['batch'],r['row'])]) for r in rows];cid=b['class_id']
+        c.require(all(r['true_id']==p['true_id']==cid for r,p in pairs),'summary class association')
+        classification={}
+        for tag in ('source','raw','guard'):
+            values=[p['predictions'][tag] for _,p in pairs]
+            classification[tag]=dict(total=len(rows),predicted=sum(v is not None for v in values),
+                correct=sum(v is not None and v['id']==cid for v in values),
+                predicted_ids=dict(Counter(str(v['id']) for v in values if v is not None)))
+        quality={}
+        for tag in ('raw','guard'):
+            quality[tag]=dict(**b['quality_summary'][tag],
+                invalid_reasons=dict(Counter(r['quality'][tag]['rx_sinr_reason'] for r in rows if r['quality'][tag]['rx_sinr_status']!='estimated')),
+                recognition_by_quality={status:dict(total=sum(r['quality'][tag]['rx_sinr_status']==status for r in rows),
+                    correct=sum(r['quality'][tag]['rx_sinr_status']==status and p['predictions'][tag] is not None and
+                        p['predictions'][tag]['id']==cid for r,p in pairs)) for status in ('estimated','invalid','not_measured')})
+        def correct(pred,tag):return pred['predictions'][tag] is not None and pred['predictions'][tag]['id']==cid
+        results.append(dict(batch=b['batch'],class_id=cid,class_name=b['class_name'],status=b['status'],
+            guard_status=b['guard_correction']['status'],guard_reason=b['guard_correction'].get('reason'),
+            component_peak_counts=b['component_peak_counts'],events=b['events']['event_counts'],quality=quality,classification=classification,
+            raw_to_guard=dict(corrected=sum(not correct(p,'raw') and correct(p,'guard') for _,p in pairs),
+                regressed=sum(correct(p,'raw') and not correct(p,'guard') for _,p in pairs))))
+    c.require(sum(v['classification']['source']['total'] for v in results)==report['source_rows'],'complete source denominator')
+    total={tag:dict(total=report['source_rows'],predicted=sum(v['classification'][tag]['predicted'] for v in results),
+        correct=sum(v['classification'][tag]['correct'] for v in results)) for tag in ('source','raw','guard')}
+    c.require(total==receipt['summary'],'summary receipt replay')
+    return dict(schema='rml2018a-event-class-summary-v1',source_rows=report['source_rows'],results=results,classification=total,
+        raw_to_guard={k:sum(v['raw_to_guard'][k] for v in results) for k in ('corrected','regressed')},
+        stopped_controls=[{k:v for k,v in control.items() if k!='power_blocks256'} for control in report['stopped_controls']],
+        semantics=report['semantics'],recognizer_available=False)
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command',choices=['plan','acquire','prepare','infer','verify'])
-    parser.add_argument('--root',type=Path,required=True);args=parser.parse_args();root=args.root;check_root(root)
+    parser.add_argument('command',choices=['plan','acquire','prepare','infer','verify','summary'])
+    parser.add_argument('--root',type=Path,required=True)
+    parser.add_argument('--profile',choices=[PROFILE,'uniform24-high-snr-pilot'],default=PROFILE,help='plan only; subsequent commands use sealed plan')
+    args=parser.parse_args();root=args.root
+    profile=args.profile if args.command=='plan' else m.document(root/'plan.json')['tx_level_profile']
+    check_root(root,profile)
     def abort(sig,frame):raise RuntimeError(f'finite retest stop {sig}')
     for sig in (signal.SIGINT,signal.SIGTERM,signal.SIGALRM):signal.signal(sig,abort)
     signal.alarm(650)
-    if args.command=='plan':result=plan(root)
+    if args.command=='plan':result=plan(root,profile)
     else:
         with m.lock(root):
             if args.command=='acquire':result=acquire(root)
@@ -216,7 +279,12 @@ def main():
                 result=[dict(batch=r['batch'],name=r['class_name'],status=r['status'],guard=r['guard_correction']['status'],
                     reason=r['guard_correction'].get('reason'),quality=r['quality_summary']) for r in report['results']]
             elif args.command=='infer':result=compare.infer(root,root,prepare_inputs=prepare)['summary']
-            else:result=compare.verify(root,root,prepare_inputs=prepare)
+            elif args.command=='verify':result=compare.verify(root,root,prepare_inputs=prepare)
+            else:
+                compare.verify(root,root,prepare_inputs=prepare)
+                result=summarize_predictions(m.document(root/'prepared.json'),m.document(root/'inference.json'))
+                if (root/'summary.json').exists():c.require(result==m.document(root/'summary.json'),'deterministic summary')
+                else:c.save(root/'summary.json',result)
     print(json.dumps(result,indent=2))
 
 

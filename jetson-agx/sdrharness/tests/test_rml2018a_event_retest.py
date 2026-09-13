@@ -30,10 +30,15 @@ class RetestTests(unittest.TestCase):
         self.assertEqual(c.packet_peak('standard'),.2)
 
     def test_plan_mutations_fail_before_hardware(self):
-        root=Path('/var/tmp/sdrharness-dev/b210-rml-event-retest-test')
+        for profile in (m.PROFILE,'uniform24-high-snr-pilot'):
+            with self.subTest(profile=profile):self.check_mutations(profile)
+
+    def check_mutations(self,profile):
+        root=Path('/var/tmp/sdrharness-dev')/(m.experiment(profile)['prefix']+'test')
+        count=m.fixed_fields(profile)['source_rows']
         stat=SimpleNamespace(st_size=21449148312,st_mtime_ns=123)
-        points=[dict(mode='rml',source=dict(rows=list(range(96))))]
-        p=dict(**m.fixed_fields(),generation=1,run_id='a'*32,points=points,software={},free_bytes=2**30,
+        points=[dict(mode='rml',source=dict(rows=list(range(count))))]
+        p=dict(**m.fixed_fields(profile),generation=1,run_id='a'*32,points=points,software={},free_bytes=2**30,
             source_disjointness=dict(previous_source_records=[],previous_unique_rows=0,intersection=0),
             source=dict(path=str(m.m.DATASET),bytes=stat.st_size,mtime_ns=stat.st_mtime_ns,sha256=m.DATA_SHA))
         dataset=Mock();dataset.stat.return_value=stat
@@ -44,6 +49,36 @@ class RetestTests(unittest.TestCase):
                            {'points':['other']},{'rf':{**p['rf'],'rx_gain_db':40}},{'source_rows':120},
                            {'guard_contract':{}},{'free_bytes':1}):
                 with self.assertRaises(ValueError):m.validate(root,{**p,**change})
+
+    def test_uniform_class_partition_packet_and_budgets(self):
+        profile='uniform24-high-snr-pilot';fields=m.fixed_fields(profile)
+        self.assertEqual((fields['source_rows'],fields['maximum_tx_seconds'],fields['maximum_tx_samples'],fields['maximum_rx_bytes'],fields['maximum_model_windows']),(576,96,201166848,6815640,1728))
+        self.assertGreater(fields['reserve_bytes'],24*fields['maximum_log_bytes_per_tx']+fields['maximum_rx_bytes'])
+        self.assertEqual(list(c.RML_UNIFORM_CLASSES),list(range(24)))
+        old=set(c.RML_EVENT_BATCHES+c.RML_TIMING_BATCHES+c.RML_REMAINING_BATCHES+c.RML_GUARD_BATCHES+c.RML_RXGAIN_BATCHES)
+        self.assertFalse(old&set(c.RML_UNIFORM_BATCHES))
+        iq=np.random.default_rng(414).normal(size=(24,1024,2))
+        for batch,cid in zip(c.RML_UNIFORM_BATCHES,c.RML_UNIFORM_CLASSES):
+            rows=c.batch_rows(2555904,batch)
+            self.assertTrue(all(cid*106496+102400<=r<(cid+1)*106496 for r in rows))
+            frame,_=c.packet(iq,'uniform',batch,level_profile=profile)
+            tx=c.tx_plan(frame,'uniform',batch,rows,60,level_profile=profile);c.validate_tx(tx,frame.tobytes())
+            with self.assertRaises(ValueError):c.validate_tx({**tx,'schema':c.RML_EVENT_SCHEMA},frame.tobytes())
+        with self.assertRaises(ValueError):m.experiment('all-unbounded')
+        with self.assertRaises(ValueError):m.check_root(Path('/var/tmp/sdrharness-dev/b210-rml-event-retest-test'),profile)
+
+    def test_summary_keeps_invalid_quality_and_missing_predictions(self):
+        quality={tag:dict(rx_sinr_status=status,rx_sinr_reason='reason') for tag,status in [('raw','invalid'),('guard','invalid')]}
+        b=dict(batch=1,class_id=3,class_name='BPSK',rows=[dict(row=1,true_id=3,quality=quality),dict(row=2,true_id=3,quality=quality)],
+            status='synchronized',guard_correction=dict(status='skipped',reason='guard'),component_peak_counts=10,events=dict(event_counts={}),quality_summary=dict(raw={},guard={}))
+        report=dict(source_rows=2,results=[b],stopped_controls=[],semantics='test')
+        receipt=dict(status='completed',rows=[dict(batch=1,row=1,true_id=3,predictions=dict(source=dict(id=3),raw=dict(id=3),guard=dict(id=3))),
+            dict(batch=1,row=2,true_id=3,predictions=dict(source=dict(id=3),raw=None,guard=None))],
+            summary=dict(source=dict(total=2,predicted=2,correct=2),raw=dict(total=2,predicted=1,correct=1),guard=dict(total=2,predicted=1,correct=1)))
+        result=m.summarize_predictions(report,receipt)
+        self.assertEqual(result['classification']['guard'],dict(total=2,predicted=1,correct=1))
+        self.assertEqual(result['results'][0]['quality']['guard']['recognition_by_quality']['invalid'],dict(total=2,correct=1))
+        with self.assertRaises(ValueError):m.summarize_predictions(report,{**receipt,'rows':receipt['rows'][:1]})
 
     def test_sync_failure_retains_missing_inputs(self):
         with patch.object(c,'synchronize',side_effect=ValueError('no marker')),patch.object(m.guard,'cancel') as cancel:

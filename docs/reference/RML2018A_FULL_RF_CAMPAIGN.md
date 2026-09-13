@@ -488,3 +488,31 @@ plan核验完整原HDF5 SHA、所选X/Y/Z及行级原始哈希，绑定软件、
 模型采用冻结epoch10、FP16 autocast/FP32权重的单1024窗工程对照，`recognizer_available=false`，名称provisional。
 本次计划、源行、接收会话、288输入/预测及清理见[四类复测证据](../evidence/RML2018A_EVENT_RETEST_2026-09-13.json)，
 [实际结果](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13四类新源行带事件复测)。
+
+## 统一24类RX50有限确认
+
+同一[rml2018a-event-retest.py](../../jetson-agx/sdrharness/scripts/rml2018a-event-retest.py)新增独立
+`uniform24-high-snr-pilot`，旧四类profile仍只允许原四批。新profile按原始ID0–23顺序，每类固定24条Z30，
+batch为`ceil((class_id*106496+102400+3072)/24)`，总576条；实际X/Y/Z和源行/包SHA由新plan核验。
+检查既有campaign源记录及带事件实验plan中的行号交集，拒绝复用旧源行；不根据源模型预测筛选行。
+
+```text
+rml2018a-event-retest.py plan --profile uniform24-high-snr-pilot --root /var/tmp/sdrharness-dev/b210-rml-uniform24-<唯一标识>
+rml2018a-event-retest.py acquire --root <该根>
+rml2018a-event-retest.py prepare --root <该根>
+rml2018a-event-retest.py infer --root <该根>
+rml2018a-event-retest.py summary --root <该根>
+```
+
+`--profile`仅plan使用，后续从封存plan读取；使用相同venv `python -B`与feature临时/缓存路径。
+参数保持2455MHz、TX60/RX50、20dB同轴、峰值0.632455532、2.1MS/s/BW1.5MHz、LO+250kHz、原guard门。
+24次TX最多96秒/201,166,848主机接受复数样本；24次实收和前后停流共26次RX、6,815,640字节。
+每次65,535点/settle500ms，单次TX65秒外层期限、整体采集900秒；预留512MiB覆盖有界事件日志、IQ、报告和缓存。
+直接停止路径及恢复沿用四类入口；推理650秒、建议外层680秒，最多1728个单窗输入加2预热。
+它是有限工程确认，不会自动接续全库或低源SNR，也不替换普通campaign/生产默认。
+
+`summary`先确定性重放原生/同步/guard/质量及输入/预测关联，再输出逐类source/raw/guard完整分母、缺失预测、
+SINR有效数/原因、质量有效性与识别的交叉计数及纠正/回退；无效SINR不会删去识别行。
+`verify`可单独执行同一复核，不重跑模型；再次summary要求结果完全一致。AM的解释遵守
+[指标报告边界](RML2018A_RF_REPRODUCTION.md#5-am单边带的条件sinr与识别报告2026-09-13补充)。
+实际执行及逐文件保留依据通过[实验记录](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md)和[evidence索引](../evidence/README.md)按需读取。

@@ -125,7 +125,8 @@ def acquire_validated(root,p,packet_bytes):
     with (root/'started.json').open('x') as f:json.dump(dict(pid=os.getpid(),started_ns=time.time_ns(),plan_sha256=c.file_hash(root/'plan.json')),f)
     baseline=lo.preflight(bg,tr);c.save(root/'preflight.json',baseline)
     result=dict(status='failed',source_rows=p['source_rows'],model_windows=0)
-    signal.alarm(400)
+    c.require(p['deadline_seconds'] in (400,900),'registered acquisition deadline')
+    signal.alarm(p['deadline_seconds'])
     try:
         for point in p['points']:
             dest=Path(point['result_path']);c.require(not dest.exists(),'fresh point');dest.mkdir(mode=0o700)
