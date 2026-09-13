@@ -411,3 +411,42 @@ run-plan保存源文件、软件和模型/profile/标签身份；TX包在成功�
 核对run-plan与根目录真实路径，再按对应保留清单逐个删除该根；不清空公共开发根，
 不删除既有数据集和其他实验。验收保留包的精确路径、哈希、大小和人工删除方法见
 [库存](../evidence/RML2018A_FULL_RF_CAMPAIGN_EVIDENCE_2026-09-10.json)。
+
+## 有限B210事件记录与控制源
+
+2026-09-13新增[tx-events.cpp](../../devices/b210/tx-events.cpp)与
+[validate-b210-event-controls.py](../../jetson-agx/sdrharness/scripts/validate-b210-event-controls.py)。
+它们是独立实验入口，不替换普通campaign helper、系统UHD或生产Controller。
+固定B210 serial2508504/channel0/A:A/TX-RX、2455MHz、TX60、2.1MS/s、BW1.5MHz、LO+250kHz，
+包峰值≤0.632456、26,112点×321，要求精确GO后发送，首次设备时间安排为当前设备时刻+0.2秒。
+4秒有限源、6秒feed期限、10秒GO期限、外层65秒保护；逐send/异步记录分别最多20,000条。
+用户取消或零进展/超时仍写失败记录，不将主机已接受样本数称实际辐射样本数。
+
+构建仅需要与现有libuhd4.1.0.5-3匹配的开发头文件；本次从同版本arm64 deb解包到feature根，
+未安装系统包。deb URL/SHA、编译器/命令参数、库与二进制哈希见
+[构建与实机证据](../evidence/B210_EVENT_CONTROLS_2026-09-13.json)。编译形式为：
+
+```text
+g++ -std=c++14 -O2 -Wall -Wextra -Werror -pthread \
+  -I <feature>/build/headers/usr/include devices/b210/tx-events.cpp \
+  /usr/lib/aarch64-linux-gnu/libuhd.so.4.1.0 -o <feature>/build/tx-events
+<feature>/build/tx-events --self-test
+```
+
+新根必须位于`/var/tmp/sdrharness-dev/b210-event-controls-<唯一标识>`，先完成构建和离线测试；
+使用既有模型venv的Python和`-B`调用`validate-b210-event-controls.py plan/acquire/analyze --root <feature>`，
+临时/缓存指向该根scratch，执行acquire的外层timeout430秒。
+plan固定停流前、零源取消、zero1、known1、known2、zero2、停流后7个动作，
+6次RX均RX50/settle500ms/65,535点，精确RX总预算1,572,840字节，5次TX总上限20秒。
+known源为固定seed的合成矩形脉冲QPSK，含已知导频/保护区；没有RadioML行或模型调用。
+不重用已封存根，不因失败自动重试；普通RML发射仍走原入口。
+
+每次事件文件保存configuration、GO、设备时钟查询前后AGX时刻、send和async、最终summary。
+UHD设备时间缺失时为null；各次USRP初始化后的设备时间不假定共用纪元。
+`nominal_sample_from_scheduled_start`只在有设备时间时计算，允许负值/超过名义包长，
+尤其不能在欠载后把它当连续发送样本索引。P201没有首样本时间戳，RX launch/return主机包络不等于硬件采样边界。
+没有UHD错误事件不证明RF模拟波形无异常；ACK只按设备事件语义报告。
+
+初版analyze的FFT-bin候选单音残差仅作粗略描述，频点量化会留下拍频，不能用于可靠噪声底。
+本单元的前缀细化单音/非LO频带统计及复核脚本在证据包中另作派生，不覆盖原analysis或改变接收质量门。
+停流/全零控制仍可能有LO及其他能量；known载荷的宽带功率是信号，不能当背景。

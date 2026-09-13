@@ -8,6 +8,7 @@
 - `programs/campaign.py`：统一收发工程编排入口，P201接收继续由既有Controller负责。
 - `programs/rml2018a-tx.py`：既有有限TX helper的链接，历史文件名仍含nx；现在支持AGX本机或NX。没有精确GO不会发送数据。
 - `dataset/`：共享RadioML2018A目录的链接。
+- `tx-events.cpp`：新增固定参数/精确GO/4秒有限发送与UHD异步时间记录实验源码；未替换原运行时，构建及七动作控制计划见[事件入口](../../docs/reference/RML2018A_FULL_RF_CAMPAIGN.md#有限b210事件记录与控制源)。
 
 ```bash
 python3 -B devices/b210/b210.py status
