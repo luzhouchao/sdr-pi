@@ -1,0 +1,362 @@
+{
+  "schema": "rml2018a-gpu-payload-evidence-v1",
+  "base_head": "1a109366ecbff556f6cc0e8bb5c2c5f7976761f9",
+  "purpose": "Validate offline GPU payload math and original-Z1024 block mapping before continuous RF integration",
+  "software": {
+    "jetson-agx/sdrharness/scripts/rml2018a_campaign_gpu.py": "34d213a0d956a6d727fd2174c4f957edf09f451c0bb4765943d223c4252d9522",
+    "jetson-agx/sdrharness/scripts/benchmark-rml2018a-gpu.py": "7040ad24ff737d81ce77baf620883ca61af89f6a2a5c3b0e90436e6040304612",
+    "jetson-agx/sdrharness/scripts/rml2018a_campaign.py": "6dedffd4d3c89bcaabd6c4bb68f8088cf9f2b06a376598f912e3c08ff776ced4"
+  },
+  "benchmark": {
+    "status": "completed",
+    "plan_sha256": "fef415b3385200c283db8a2f37376920c911477b3146768f78ed906a21a40868",
+    "results": [
+      {
+        "rows": 24,
+        "normalization_scalar_cpu": {
+          "seconds": [
+            0.002301669999724254,
+            0.0026232890086248517,
+            0.0024188490060623735
+          ],
+          "median_seconds": 0.0024188490060623735
+        },
+        "normalization_vector_cpu": {
+          "seconds": [
+            0.0016035849985200912,
+            0.0011133649968542159,
+            0.0011602099984884262
+          ],
+          "median_seconds": 0.0011602099984884262
+        },
+        "normalization_gpu_host_to_host": {
+          "seconds": [
+            0.002136524999514222,
+            0.0019476989982649684,
+            0.0042152589885517955
+          ],
+          "median_seconds": 0.002136524999514222
+        },
+        "quality_scalar_cpu": {
+          "seconds": [
+            0.012463222985388711,
+            0.011095566005678847,
+            0.009540618018945679
+          ],
+          "median_seconds": 0.011095566005678847
+        },
+        "quality_gpu_host_to_host": {
+          "seconds": [
+            0.006288905977271497,
+            0.006362823012750596,
+            0.006536160013638437
+          ],
+          "median_seconds": 0.006362823012750596
+        },
+        "normalization_max_abs": 0.0,
+        "identical_normalized_rows": 24,
+        "sinr_max_abs_db": 5.329070518200751e-15,
+        "quality_status_reason_agree": true,
+        "disk_write_fsync_seconds": 0.015356134012108669,
+        "disk_bytes": 196736,
+        "disk_roundtrip_equal": true,
+        "cuda_peak_allocated_bytes": 2953216,
+        "cuda_peak_reserved_bytes": 4194304,
+        "process_peak_rss_bytes": 942948352
+      },
+      {
+        "rows": 1024,
+        "normalization_scalar_cpu": {
+          "seconds": [
+            0.08572614600416273,
+            0.08068448802805506,
+            0.08126782500767149
+          ],
+          "median_seconds": 0.08126782500767149
+        },
+        "normalization_vector_cpu": {
+          "seconds": [
+            0.03683177300263196,
+            0.03209115899517201,
+            0.03281855399836786
+          ],
+          "median_seconds": 0.03281855399836786
+        },
+        "normalization_gpu_host_to_host": {
+          "seconds": [
+            0.016610933002084494,
+            0.02081943998928182,
+            0.018848733976483345
+          ],
+          "median_seconds": 0.018848733976483345
+        },
+        "quality_scalar_cpu": {
+          "seconds": [
+            0.3877759159950074,
+            0.394354635005584,
+            0.39039690198842436
+          ],
+          "median_seconds": 0.39039690198842436
+        },
+        "quality_gpu_host_to_host": {
+          "seconds": [
+            0.06819953699596226,
+            0.0510049459990114,
+            0.05913163602235727
+          ],
+          "median_seconds": 0.05913163602235727
+        },
+        "normalization_max_abs": 0.0,
+        "identical_normalized_rows": 1024,
+        "sinr_max_abs_db": 7.105427357601002e-15,
+        "quality_status_reason_agree": true,
+        "disk_write_fsync_seconds": 0.03301717102294788,
+        "disk_bytes": 8388736,
+        "disk_roundtrip_equal": true,
+        "cuda_peak_allocated_bytes": 125928448,
+        "cuda_peak_reserved_bytes": 142606336,
+        "process_peak_rss_bytes": 1054081024
+      },
+      {
+        "rows": 4096,
+        "normalization_scalar_cpu": {
+          "seconds": [
+            0.3221750649972819,
+            0.3232438870181795,
+            0.3212167019955814
+          ],
+          "median_seconds": 0.3221750649972819
+        },
+        "normalization_vector_cpu": {
+          "seconds": [
+            0.15763833999517374,
+            0.157588966016192,
+            0.15774038300151005
+          ],
+          "median_seconds": 0.15763833999517374
+        },
+        "normalization_gpu_host_to_host": {
+          "seconds": [
+            0.08996450898121111,
+            0.06457926399889402,
+            0.07128751301206648
+          ],
+          "median_seconds": 0.07128751301206648
+        },
+        "quality_scalar_cpu": {
+          "seconds": [
+            1.5619046410138253,
+            1.7170469269913156,
+            1.5750224770163186
+          ],
+          "median_seconds": 1.5750224770163186
+        },
+        "quality_gpu_host_to_host": {
+          "seconds": [
+            0.20352361802360974,
+            0.2040519810107071,
+            0.20136226300382987
+          ],
+          "median_seconds": 0.20352361802360974
+        },
+        "normalization_max_abs": 0.0,
+        "identical_normalized_rows": 4096,
+        "sinr_max_abs_db": 7.105427357601002e-15,
+        "quality_status_reason_agree": true,
+        "disk_write_fsync_seconds": 0.06950739299645647,
+        "disk_bytes": 33554560,
+        "disk_roundtrip_equal": true,
+        "cuda_peak_allocated_bytes": 503713792,
+        "cuda_peak_reserved_bytes": 645922816,
+        "process_peak_rss_bytes": 1396039680
+      },
+      {
+        "rows": 8192,
+        "normalization_scalar_cpu": {
+          "seconds": [
+            0.6462794549879618,
+            0.6467097749991808,
+            0.6481625839951448
+          ],
+          "median_seconds": 0.6467097749991808
+        },
+        "normalization_vector_cpu": {
+          "seconds": [
+            0.31036626000422984,
+            0.31182946800254285,
+            0.31040110799949616
+          ],
+          "median_seconds": 0.31040110799949616
+        },
+        "normalization_gpu_host_to_host": {
+          "seconds": [
+            0.15332523500546813,
+            0.15093704100581817,
+            0.1364284890005365
+          ],
+          "median_seconds": 0.15093704100581817
+        },
+        "quality_scalar_cpu": {
+          "seconds": [
+            3.151767628995003,
+            3.172975977999158,
+            3.304678855027305
+          ],
+          "median_seconds": 3.172975977999158
+        },
+        "quality_gpu_host_to_host": {
+          "seconds": [
+            0.36519769398728386,
+            0.37602514401078224,
+            0.54146235898952
+          ],
+          "median_seconds": 0.37602514401078224
+        },
+        "normalization_max_abs": 0.0,
+        "identical_normalized_rows": 8192,
+        "sinr_max_abs_db": 7.105427357601002e-15,
+        "quality_status_reason_agree": true,
+        "disk_write_fsync_seconds": 0.12323813102557324,
+        "disk_bytes": 67108992,
+        "disk_roundtrip_equal": true,
+        "cuda_peak_allocated_bytes": 1007427584,
+        "cuda_peak_reserved_bytes": 1585446912,
+        "process_peak_rss_bytes": 1837420544
+      }
+    ],
+    "source_read_seconds": 0.09694595300243236,
+    "source": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+      "bytes": 21449148312,
+      "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+      "row_ids_sha256": "f1cd33ca9a7e0244a2961ad6b928230257b9af4282299dd2ae09b55122c102c6",
+      "snr_db": 30,
+      "unique_rows": 8192
+    },
+    "parents": [
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913",
+        "plan_sha256": "8614da5799bd4c2248f469be95a976775682dc51a8d300e0965e967d33e9f7db",
+        "prepared_sha256": "87ef838462ac49036e8d31d593c49a99b0b0d5f9587c110b34820ecd16e0b727",
+        "captures": [
+          {
+            "batch": 16811,
+            "capture_sha256": "b0a03105c42b449cbe3b37fe859836d0df6cc62baf83ecadde49c6bf2928221f"
+          },
+          {
+            "batch": 21248,
+            "capture_sha256": "fb6308d54cca40eca829edb8abcf1550dc5a617770785dc5c04a6672d4e535f3"
+          }
+        ]
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913",
+        "plan_sha256": "b17d30fcaeea7634a05553a61f90708433021ebd229cf5299552e33a8f6c7d16",
+        "prepared_sha256": "152ae366640d3e80407951d3ff77ebf6fd0b3bdce593946b82188da95a085f63",
+        "captures": [
+          {
+            "batch": 56747,
+            "capture_sha256": "c8fd77f7ff7fe5ae893a3266a4f2912efbf7b10514b619aa63903c84c97b37ea"
+          },
+          {
+            "batch": 65622,
+            "capture_sha256": "6029401f61f4fb1ed4880370d7b8f26e9e5d6ec2d488de286bbefdbd586a2aac"
+          }
+        ]
+      }
+    ],
+    "unique_rf_rows": 96,
+    "cuda_startup_seconds": 3.0471462640271056,
+    "torch_version": "2.8.0",
+    "device": "Orin",
+    "cuda_device_total_bytes": 65893097472,
+    "spark_after": [
+      "MainPID=0",
+      "ActiveState=inactive",
+      "SubState=dead"
+    ],
+    "lease": {
+      "acquired": 1,
+      "released": 1,
+      "wait_us": 91,
+      "held_us": 51355019,
+      "cancelled": 0,
+      "expired": 0
+    },
+    "finished_ns": 1789302459424060575
+  },
+  "tests": {
+    "regression": 152,
+    "final_gpu_and_mapping": 6,
+    "passed": true,
+    "rf_and_model_in_tests": "fixtures only; no radio/model opened"
+  },
+  "deployment": {
+    "gpu_payload_experimental_only": true,
+    "continuous_rf_implemented": false,
+    "new_rf_samples": 0,
+    "model_windows": 0,
+    "recognizer_available": false
+  },
+  "current_user_choice": {
+    "simultaneous_tx_rx": true,
+    "raw_iq_retained": true,
+    "gpu_preprocess_during_rx": true,
+    "processed_inputs_retained": true,
+    "load_model_after_all_26_snr_groups_persisted": true,
+    "rows_per_block": 1024,
+    "blocks_per_snr": 96,
+    "spark_must_remain_stopped": true
+  },
+  "cleanup": {
+    "final_scratch_files": 2,
+    "final_scratch_bytes": 12592,
+    "removed_paths": [
+      "/var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/scratch/gpu-gate/inference.lock",
+      "/var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/scratch/torch/kernels/abs_kernel_arch8.7_nvrtc12.6_sass_45999_584b6cb085e598dca178ed7cd37e4ae8078baf17"
+    ],
+    "benchmark_normalized_files_removed": 4,
+    "benchmark_normalized_bytes_removed": 109249024,
+    "scratch_absent": true,
+    "test_fixture_directories_self_cleaned": true
+  },
+  "retained_files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/benchmark-plan.json",
+      "bytes": 1287,
+      "sha256": "fef415b3385200c283db8a2f37376920c911477b3146768f78ed906a21a40868"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/benchmark-results.json",
+      "bytes": 8261,
+      "sha256": "6b5da385c13a13dc53b65403979bc3a956a64848fee0664e72132b5e92c16ff3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/cleanup.json",
+      "bytes": 510,
+      "sha256": "60b0333c0f21d2993e86ffaa18d25742bb9660f02b92c92ff48d159272a3cebb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/final-tests.log",
+      "bytes": 976,
+      "sha256": "d4b9375ac420637096eb378c92c7421df9f330d13756f61d39651f1076be47e2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/run.log",
+      "bytes": 4759,
+      "sha256": "51bfb30bea54366e9ace37d280321914ef1cdd2db8f65d3df812612017b8098a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/tests.log",
+      "bytes": 7607,
+      "sha256": "08e0a0213ab4864943571a3617232186be69396e156bc4d8b781a0a600e4460d"
+    }
+  ],
+  "retained_count": 6,
+  "retained_bytes": 23400,
+  "retention_reason": "Small reproducibility/audit records; original dataset and prior RF captures referenced without copying. Benchmark processed arrays removed; these are offline test arrays, not requested campaign corpus.",
+  "delete_commands": [
+    "rm -- /var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/benchmark-plan.json /var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/benchmark-results.json /var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/cleanup.json /var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/final-tests.log /var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/run.log /var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913/tests.log",
+    "rmdir -- /var/tmp/sdrharness-dev/rml2018a-gpu-batch-20260913"
+  ]
+}

@@ -47,6 +47,7 @@
 - [跨块总控与源核验复用](RML2018A_GLOBAL_LEDGER_2026-09-13.json)：96行只读导入＋48行新测；登记/完成凭据、恢复与预算STOP门、源核验复用、总分母及三根精确保留清单。
 - [完整覆盖规则与24批有限验证](RML2018A_FULL_COVERAGE_2026-09-13.json)：历史源血缘及全行互斥分区、144行只读导入＋576行新测；固定三路结果、耗时及五根精确保留清单。
 - [接收落盘与常驻模型](RML2018A_RESIDENT_PIPELINE_2026-09-13.json)：576条回放/冷启动数值差异、96条新实收，两阶段时间顺序、单模型复用、恢复与6根保留清单。
+- [GPU批量payload与1024条映射](RML2018A_GPU_PAYLOAD_2026-09-13.json)：24/1024/4096/8192条离线CPU/GPU耗时、数值一致性、Spark停止及精确保留/清理；无新RF或模型推理。
 
 - [RadioML2018A全量脚本先导保留清单](RML2018A_FULL_RF_CAMPAIGN_EVIDENCE_2026-09-10.json)
 - [RadioML2018A当前IQ与历史175kHz滤波方法的离线对照](RML2018A_HISTORICAL_FILTER_COMPARISON_2026-09-10.json)
