@@ -223,7 +223,7 @@ def import_completed(root,child,evidence):
     c.require(cp['tx_level_profile']=='event-chunk','only compatible completed event-chunks can be imported')
     if 'coverage' in p:
         # Orchestration may evolve; the acquisition/DSP/model contract must agree.
-        allowed={'rml2018a-rf-campaign.py','rml2018a_campaign_events.py','rml2018a_campaign_ledger.py','rml2018a_campaign_coverage.py'}
+        allowed={'rml2018a-rf-campaign.py','rml2018a_campaign_events.py','rml2018a_campaign_ledger.py','rml2018a_campaign_coverage.py','rml2018a_campaign_resident.py','compare-rml2018a-pilot-timing.py'}
         current=software()
         c.require(all(current.get(name)==sha for name,sha in cp['event_software'].items() if Path(name).name not in allowed),'import scientific software compatibility')
         c.require(cp['guard_contract']==e.r.guard.contract() and cp['event_identity']==e.r.identity(),'import runtime/guard compatibility')

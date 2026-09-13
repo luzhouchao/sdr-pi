@@ -71,7 +71,7 @@ def is_event(campaign):
 def campaign_software():
     return {name:file_hash(SCRIPTS/name) for name in (
         Path(__file__).resolve().name,'rml2018a_campaign.py','rml2018a-nx-tx.py',
-        'amc-mamba-worker.py','amc-rf-v1-runtime.py','gpu_lease.py','rml2018a_campaign_events.py','rml2018a_event_archive.py','rml2018a_campaign_ledger.py','rml2018a_campaign_coverage.py',
+        'amc-mamba-worker.py','amc-rf-v1-runtime.py','gpu_lease.py','rml2018a_campaign_events.py','rml2018a_event_archive.py','rml2018a_campaign_ledger.py','rml2018a_campaign_coverage.py','rml2018a_campaign_resident.py',
         'validate-b210-multiclass.py','validate-p201-termination-background.py','validate-b210-p201-link.py')}
 
 
@@ -615,9 +615,11 @@ def selected_batches(total, start, count, explicit=None):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command',choices=['plan','acquire','infer','run','summary','analysis-plan','verify','ledger-plan','ledger-status','ledger-import','ledger-reserve','ledger-run'])
+    p.add_argument('command',choices=['plan','acquire','infer','run','summary','analysis-plan','verify','ledger-plan','ledger-status','ledger-import','ledger-reserve','ledger-run','resident-plan','resident-run'])
     p.add_argument('--root',type=Path,required=True)
     p.add_argument('--campaign-root',type=Path)
+    p.add_argument('--campaign-roots',type=Path,nargs='+',help='resident-plan: ordered event-chunk parents, at most32 total batches')
+    p.add_argument('--acquire',action='store_true',help='resident-plan only: acquire and preprocess concurrently, then resident inference')
     p.add_argument('--inventory',type=Path)
     p.add_argument('--ledger-max-new-batches',type=int,default=2)
     p.add_argument('--ledger-deep',action='store_true')
@@ -634,6 +636,13 @@ def main():
     p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot','remaining-high-snr-pilot','event-boundary-pilot','event-chunk'],help='plan only; finite profiles restrict batch IDs and AGX gains; remaining-high-snr uses TX60/RX50')
     args=p.parse_args();root=args.root
     require(args.coverage_policy is None or args.command=='ledger-plan','coverage policy is new-ledger-plan only')
+    require(args.campaign_roots is None or args.command=='resident-plan','resident parents are plan-only')
+    require(not args.acquire or args.command=='resident-plan','resident acquisition is plan-only')
+    if args.command.startswith('resident-'):
+        require(not args.analysis_revision and args.tx_gain_db is None and args.rx_gain_db is None and args.tx_level_profile is None and args.tx_host is None and args.batch_indices is None,'resident uses complete sealed parent scopes')
+        import rml2018a_campaign_resident as resident
+        result=resident.create(root,args.campaign_roots,args.acquire) if args.command=='resident-plan' else resident.run(root)
+        print(json.dumps(result),flush=True);return
     if args.command.startswith('ledger-'):
         require(not args.analysis_revision and args.tx_gain_db is None and args.rx_gain_db is None and args.tx_level_profile is None and args.tx_host is None,'ledger fixes RF/profile')
         import rml2018a_campaign_ledger as ledger

@@ -312,7 +312,7 @@ def prediction_complete(root,p,index):
     return True
 
 
-def infer_batches(root,p,indices):
+def infer_batches(root,p,indices,*,resident=None,prepare_inputs=None):
     # First finish publication from a complete shard, even if the requested
     # pending subset changed after an interruption. No CUDA/model reexecution.
     for receipt in sorted(root.glob('inference-*/attempt-*/inference.json')):
@@ -328,16 +328,17 @@ def infer_batches(root,p,indices):
             continue
         prior=[m.document(path) for path in root.glob('inference-*/attempt-*/prepared.json')]
         c.require(all(sum(any(b['batch']==index for b in old['results']) for old in prior)<2 for index in pending),'per-batch inference attempt ceiling across shards')
-        out.mkdir(mode=0o700);report,_=prepare(root,p,pending);c.save(out/'prepared.json',report)
-        r.compare.infer(root,out,prepare_inputs=lambda _:prepare(root,p,pending),isolation_root=root)
-        publish(root,p,out);return
+        out.mkdir(mode=0o700);provider=(lambda _:prepare_inputs(pending)) if prepare_inputs is not None else (lambda _:prepare(root,p,pending))
+        report,_=provider(root);c.save(out/'prepared.json',report)
+        r.compare.infer(root,out,prepare_inputs=provider,isolation_root=root,resident=resident,normalized_inputs=prepare_inputs is not None)
+        publish(root,p,out,prepare_inputs=provider);return
     raise ValueError('finite inference attempt budget exhausted')
 
 
-def publish(root,p,out):
+def publish(root,p,out,*,prepare_inputs=None):
     report=m.document(out/'prepared.json');indices=[b['batch'] for b in report['results']]
     c.require(len(indices)==len(set(indices)) and set(indices)<=set(p.get('execution_limits',limits())['allowed_batch_indices']),'inference batches')
-    r.compare.verify(root,out,prepare_inputs=lambda _:prepare(root,p,indices))
+    r.compare.verify(root,out,prepare_inputs=prepare_inputs or (lambda _:prepare(root,p,indices)))
     receipt=m.document(out/'inference.json')
     for index in indices:
         dest=batch_dir(root,index);value=dict(schema='rml2018a-event-campaign-predictions-v1',batch=index,

@@ -1,0 +1,2100 @@
+{
+  "schema": "rml2018a-resident-disk-pipeline-evidence-v1",
+  "base_head": "3d48fe9b54c1db25408298d7aca9ce3a0efd68b6",
+  "purpose": "Receive concurrently with one CPU preprocessing worker, persist normalized model inputs on disk, then load a single resident model after the full registered receive/preprocess phase",
+  "plans": {
+    "replay": {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/resident-plan.json",
+      "sha256": "dcd226327f4d24951b7fe50a38dfdf13324a9604a288d9d9b4f6abc0b70be909",
+      "maximum_new_tx_seconds": 0,
+      "maximum_model_windows": 1728
+    },
+    "live": {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/resident-plan.json",
+      "sha256": "3d35d5a1b4148c412a7cac69cedab2fb946c6d3c09d6fa6353c2dade78732d8b",
+      "maximum_new_tx_seconds": 16,
+      "maximum_model_windows": 288
+    }
+  },
+  "replay": {
+    "status": "verified_inputs_and_top1_only",
+    "strict_logits_check_passed": false,
+    "strict_logits_limit": 1e-05,
+    "original_cli_exit": 1,
+    "original_cli_error": "duplicate status keyword after successful completion; retained log",
+    "timing_scope": "worker execution excluding parent startup/cleanup",
+    "wall_seconds": 156.152992369,
+    "model_stage_seconds": 127.799327942,
+    "load_and_warmup_seconds": 59.6477109779953,
+    "model_calls": 1728,
+    "identical_input_hashes": 1728,
+    "identical_top1": 1728,
+    "maximum_absolute_logit_difference": 0.015625,
+    "parent_unchanged_files": 412,
+    "all_preprocessing_before_model": true,
+    "repeat_new_model_windows": 0,
+    "repeat_new_tx_seconds": 0,
+    "cache_removed_bytes": 34318118
+  },
+  "cold_control": {
+    "status": "completed",
+    "wall_seconds": 84.03412147299969,
+    "model_windows": 432,
+    "comparisons": {
+      "historical_cold": {
+        "inputs": 432,
+        "top1_agree": 432,
+        "changed_logits": 427,
+        "max_absolute_difference": 0.015625,
+        "strict_logits_check_passed": false
+      },
+      "resident": {
+        "inputs": 432,
+        "top1_agree": 432,
+        "changed_logits": 0,
+        "max_absolute_difference": 0.0,
+        "strict_logits_check_passed": true
+      }
+    }
+  },
+  "live": {
+    "status": "verified",
+    "wall_seconds": 152.6605732490134,
+    "model_stage_seconds": 71.183079447,
+    "model_loads": 1,
+    "source_rows": 96,
+    "model_windows": 288,
+    "warmup_windows": 2,
+    "cpu_worker_pid": 164994,
+    "cpu_receive_overlaps": [
+      {
+        "cpu_batch": 16811,
+        "next_capture_batch": 21248,
+        "overlap_seconds": 0.008367146
+      },
+      {
+        "cpu_batch": 21248,
+        "next_capture_batch": 56747,
+        "overlap_seconds": 0.0
+      },
+      {
+        "cpu_batch": 56747,
+        "next_capture_batch": 65622,
+        "overlap_seconds": 0.0
+      }
+    ],
+    "all_preprocessing_before_model": true,
+    "classification": {
+      "source": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 96
+      },
+      "raw": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 77
+      },
+      "guard": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 95
+      }
+    },
+    "repeated_new_model_windows": 0,
+    "repeated_new_tx_seconds": 0,
+    "prelaunch_stop_rejected": true
+  },
+  "sessions": {
+    "replay": {
+      "status": "completed",
+      "pid": 163242,
+      "model_loads": 1,
+      "model_windows": 1728,
+      "warmup_windows": 2,
+      "started_ns": 1789298675362375267,
+      "load_and_warmup_seconds": 59.6477109779953,
+      "model_identity": {
+        "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+        "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+        "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+        "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+        "compute": "cuda_fp16_autocast",
+        "resident_weight_precision": "fp32",
+        "input_precision": "fp32",
+        "logit_return_precision": "fp32",
+        "sample_rate_hz": 2100000,
+        "window_count": 4,
+        "samples_per_window": 1024,
+        "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+      },
+      "finished_ns": 1789298803161703209,
+      "lease": {
+        "acquired": 1,
+        "released": 1,
+        "wait_us": 58,
+        "held_us": 127798522,
+        "cancelled": 0,
+        "expired": 0
+      }
+    },
+    "live": {
+      "status": "completed",
+      "pid": 164925,
+      "model_loads": 1,
+      "model_windows": 288,
+      "warmup_windows": 2,
+      "started_ns": 1789299629868894880,
+      "load_and_warmup_seconds": 59.74507044599159,
+      "model_identity": {
+        "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+        "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+        "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+        "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+        "compute": "cuda_fp16_autocast",
+        "resident_weight_precision": "fp32",
+        "input_precision": "fp32",
+        "logit_return_precision": "fp32",
+        "sample_rate_hz": 2100000,
+        "window_count": 4,
+        "samples_per_window": 1024,
+        "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+      },
+      "finished_ns": 1789299701051974327,
+      "lease": {
+        "acquired": 1,
+        "released": 1,
+        "wait_us": 59,
+        "held_us": 71182213,
+        "cancelled": 0,
+        "expired": 0
+      }
+    }
+  },
+  "old_model_stage_seconds": 308.610094142,
+  "resident_model_stage_seconds": 127.799327942,
+  "model_stage_speedup": 2.4148021676769575,
+  "limitations": [
+    "Historical strict logit equality at1e-5 failed (maximum0.015625), preserved; all1728 input hashes/top1 match. One independent cold432-input control equals resident logits exactly; physical numeric variation source not independently proven.",
+    "Initial replay CLI response failed after successful completion publication; fixed response merge, old software snapshot/log retained. Completed replay skipped model before source fix; corrected CLI exercised by live run.",
+    "Bounded sessions of1-32 total batches; whole-dataset receive-first scheduling and multiday cancellation are not validated. This is a single-window engineering path, not production recognition.",
+    "No GPU tensor batching introduced: one loaded model executes source/raw/guard sequentially. Preprocessing overlap uses capture-process intervals, not an ADC sample-start timestamp.",
+    "Live STOP checked before launch; running-session forced kill/Spark watchdog timeout and host power loss not exercised."
+  ],
+  "actual_inference": "Single1024 normalized source/raw/guard inputs; frozen profile identity describes production four-window aggregation, which this engineering path does not execute",
+  "new_source_capture_associations": [
+    {
+      "child": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913",
+      "batch": 16811,
+      "source": {
+        "rows": [
+          403464,
+          403465,
+          403466,
+          403467,
+          403468,
+          403469,
+          403470,
+          403471,
+          403472,
+          403473,
+          403474,
+          403475,
+          403476,
+          403477,
+          403478,
+          403479,
+          403480,
+          403481,
+          403482,
+          403483,
+          403484,
+          403485,
+          403486,
+          403487
+        ],
+        "class_ids": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "source_snr_db": [
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20
+        ],
+        "original_iq_sha256": "f0039cab39efcbbd113b0912f2582bf6a48f5a6d791adf0cd95fb0059454b6de",
+        "scales": [
+          0.34579708852919394,
+          0.3640262109681369,
+          0.34375840916272227,
+          0.35055562019205894,
+          0.35798313080165567,
+          0.36636684917950174,
+          0.3733406030609084,
+          0.35305739785818235,
+          0.38444949015132984,
+          0.3715936433830862,
+          0.3426815219631302,
+          0.3655734907817126,
+          0.36210149560578114,
+          0.3722452216425971,
+          0.3537483222877644,
+          0.36371795320022604,
+          0.3482199999137652,
+          0.3728442534629251,
+          0.3612628597664968,
+          0.36056829031742194,
+          0.34565976096455103,
+          0.37641086584927447,
+          0.3596617784247895,
+          0.37134596533538256
+        ]
+      },
+      "rx": {
+        "sweep_id": "retest-boundary-16811-1789299426325",
+        "session_generation": 1789299426325,
+        "frequencies": {
+          "kind": "centers",
+          "centers_hz": [
+            2455000000
+          ]
+        },
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_db": 50,
+        "settle_ms": 500,
+        "frame_samples": 65535,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 1000,
+        "detection_threshold_db": 12.0
+      },
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/rx/retest-boundary-16811-1789299426325-1789299426325-1789299583327282522.sigmf-data",
+        "iq_sha256": "47349b770bf925e8e5d028656de28e9245f4937c17f3e2efbe2addb6cfe22bd1",
+        "metadata_sha256": "a2b9e6fd466f042469907062969a672970b8c9aa9f3a6eef345f6d2860bb25da",
+        "request_id": 5,
+        "sequence": 1701,
+        "session_generation": 1789299426325
+      },
+      "events": {
+        "summary": {
+          "kind": "summary",
+          "status": "sent_complete",
+          "accepted_samples": 8381952,
+          "send_records": 8346,
+          "async_records": 1,
+          "error": ""
+        },
+        "event_counts": {
+          "1": 1
+        },
+        "events": [
+          {
+            "kind": "async",
+            "host_receive_mono_ns": 185629142800044,
+            "host_receive_unix_ns": 1789299587495861398,
+            "channel": 0,
+            "event_code": 1,
+            "has_device_time": true,
+            "device_seconds": 5.390136766515649,
+            "user_payload": [
+              154,
+              0,
+              0,
+              0
+            ],
+            "name": "burst_ack",
+            "nominal_sample_from_scheduled_start": 8381953.343649125
+          }
+        ],
+        "clock_brackets": [
+          {
+            "kind": "clock_bracket",
+            "phase": "before_tx",
+            "host_before_ns": 185624950853366,
+            "host_after_ns": 185624950999949,
+            "host_unix_ns": 1789299583303910177,
+            "device_seconds": 1.1987304123970182
+          },
+          {
+            "kind": "clock_bracket",
+            "phase": "after_tx",
+            "host_before_ns": 185630128964850,
+            "host_after_ns": 185630129377274,
+            "host_unix_ns": 1789299588482022269,
+            "device_seconds": 6.376483042764377
+          }
+        ],
+        "scheduled_device_seconds": 1.3987304123970181,
+        "host_send_span_ns": [
+          185624951275132,
+          185629121752960
+        ],
+        "sample_index_semantics": "Nominal TX schedule index only, may be outside burst; not P201 capture index, especially after discontinuity"
+      },
+      "component_peak_counts": 200.0,
+      "restored": true
+    },
+    {
+      "child": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913",
+      "batch": 21248,
+      "source": {
+        "rows": [
+          509952,
+          509953,
+          509954,
+          509955,
+          509956,
+          509957,
+          509958,
+          509959,
+          509960,
+          509961,
+          509962,
+          509963,
+          509964,
+          509965,
+          509966,
+          509967,
+          509968,
+          509969,
+          509970,
+          509971,
+          509972,
+          509973,
+          509974,
+          509975
+        ],
+        "class_ids": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "source_snr_db": [
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20
+        ],
+        "original_iq_sha256": "12d5030b52631b97f6755e283a13f448e1156afce5b6ffa102d894106a7d00b6",
+        "scales": [
+          0.3782486815332961,
+          0.38474208028163653,
+          0.37034020926169037,
+          0.40906558400668513,
+          0.3787708432576797,
+          0.3903289049769966,
+          0.3609804372818007,
+          0.38617835754621416,
+          0.3820304015158906,
+          0.36028594803166064,
+          0.3644666251009857,
+          0.41268812728046045,
+          0.38132729141525223,
+          0.3890757811231692,
+          0.37841238310113073,
+          0.37582632119702264,
+          0.38080397276850925,
+          0.4038344106869088,
+          0.393011577997751,
+          0.3675844890269477,
+          0.3746332662301236,
+          0.39253933416456777,
+          0.36631148303264194,
+          0.3811624702984818
+        ]
+      },
+      "rx": {
+        "sweep_id": "retest-boundary-21248-1789299426327",
+        "session_generation": 1789299426327,
+        "frequencies": {
+          "kind": "centers",
+          "centers_hz": [
+            2455000000
+          ]
+        },
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_db": 50,
+        "settle_ms": 500,
+        "frame_samples": 65535,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 1000,
+        "detection_threshold_db": 12.0
+      },
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/rx/retest-boundary-21248-1789299426327-1789299426327-1789299595903928942.sigmf-data",
+        "iq_sha256": "69b167f6c5dd5bd4729546458b70c94dccb473ac7fb5428f588fba5e8c8b78ba",
+        "metadata_sha256": "6ec5602d3b2d524e574f04bd7bf022de1f144e39b44d5576cc392a38d87f654c",
+        "request_id": 5,
+        "sequence": 1702,
+        "session_generation": 1789299426327
+      },
+      "events": {
+        "summary": {
+          "kind": "summary",
+          "status": "sent_complete",
+          "accepted_samples": 8381952,
+          "send_records": 8346,
+          "async_records": 1,
+          "error": ""
+        },
+        "event_counts": {
+          "1": 1
+        },
+        "events": [
+          {
+            "kind": "async",
+            "host_receive_mono_ns": 185641718758782,
+            "host_receive_unix_ns": 1789299600071820617,
+            "channel": 0,
+            "event_code": 1,
+            "has_device_time": true,
+            "device_seconds": 5.393079117695645,
+            "user_payload": [
+              154,
+              0,
+              0,
+              0
+            ],
+            "name": "burst_ack",
+            "nominal_sample_from_scheduled_start": 8381953.343649126
+          }
+        ],
+        "clock_brackets": [
+          {
+            "kind": "clock_bracket",
+            "phase": "before_tx",
+            "host_before_ns": 185637526729063,
+            "host_after_ns": 185637526885534,
+            "host_unix_ns": 1789299595879785810,
+            "device_seconds": 1.2016727635770141
+          },
+          {
+            "kind": "clock_bracket",
+            "phase": "after_tx",
+            "host_before_ns": 185642705416489,
+            "host_after_ns": 185642705903244,
+            "host_unix_ns": 1789299601058474164,
+            "device_seconds": 6.37995970941866
+          }
+        ],
+        "scheduled_device_seconds": 1.401672763577014,
+        "host_send_span_ns": [
+          185637527069779,
+          185641697668966
+        ],
+        "sample_index_semantics": "Nominal TX schedule index only, may be outside burst; not P201 capture index, especially after discontinuity"
+      },
+      "component_peak_counts": 187.0,
+      "restored": true
+    },
+    {
+      "child": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913",
+      "batch": 56747,
+      "source": {
+        "rows": [
+          1361928,
+          1361929,
+          1361930,
+          1361931,
+          1361932,
+          1361933,
+          1361934,
+          1361935,
+          1361936,
+          1361937,
+          1361938,
+          1361939,
+          1361940,
+          1361941,
+          1361942,
+          1361943,
+          1361944,
+          1361945,
+          1361946,
+          1361947,
+          1361948,
+          1361949,
+          1361950,
+          1361951
+        ],
+        "class_ids": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "source_snr_db": [
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20
+        ],
+        "original_iq_sha256": "10dd346a010d96acf3870fa630bec6db2fb4abccb4bb7407319ed40a1b41e4da",
+        "scales": [
+          0.36397277623712787,
+          0.29233329919912115,
+          0.3264285205843318,
+          0.31684608776173334,
+          0.33991550601793075,
+          0.33273616017453905,
+          0.33175325972115866,
+          0.328229641673426,
+          0.3100563133389035,
+          0.3171617421948776,
+          0.36755237800257773,
+          0.3733890380745287,
+          0.30026168229925937,
+          0.3321387243792983,
+          0.3442718305828836,
+          0.34980483565707593,
+          0.3284131885391418,
+          0.32706993824626523,
+          0.3129022420490771,
+          0.3354427524498874,
+          0.3476408023156427,
+          0.35578972731572234,
+          0.30239327959739926,
+          0.3532264031094813
+        ]
+      },
+      "rx": {
+        "sweep_id": "retest-boundary-56747-1789299428575",
+        "session_generation": 1789299428575,
+        "frequencies": {
+          "kind": "centers",
+          "centers_hz": [
+            2455000000
+          ]
+        },
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_db": 50,
+        "settle_ms": 500,
+        "frame_samples": 65535,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 1000,
+        "detection_threshold_db": 12.0
+      },
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/rx/retest-boundary-56747-1789299428575-1789299428575-1789299608560902928.sigmf-data",
+        "iq_sha256": "52011c821f9422e3c122109000ce98757d84135f5f637acf307f4b5df0454a68",
+        "metadata_sha256": "9f20174f087598f9fcba51ac29c65c0c46190d2f7f7abbacb4259d5551259092",
+        "request_id": 5,
+        "sequence": 1703,
+        "session_generation": 1789299428575
+      },
+      "events": {
+        "summary": {
+          "kind": "summary",
+          "status": "sent_complete",
+          "accepted_samples": 8381952,
+          "send_records": 8346,
+          "async_records": 1,
+          "error": ""
+        },
+        "event_counts": {
+          "1": 1
+        },
+        "events": [
+          {
+            "kind": "async",
+            "host_receive_mono_ns": 185654374189116,
+            "host_receive_unix_ns": 1789299612727250214,
+            "channel": 0,
+            "event_code": 1,
+            "has_device_time": true,
+            "device_seconds": 5.388781201044287,
+            "user_payload": [
+              154,
+              0,
+              0,
+              0
+            ],
+            "name": "burst_ack",
+            "nominal_sample_from_scheduled_start": 8381953.343649125
+          }
+        ],
+        "clock_brackets": [
+          {
+            "kind": "clock_bracket",
+            "phase": "before_tx",
+            "host_before_ns": 185650182242126,
+            "host_after_ns": 185650182359463,
+            "host_unix_ns": 1789299608535299033,
+            "device_seconds": 1.197374846925656
+          },
+          {
+            "kind": "clock_bracket",
+            "phase": "after_tx",
+            "host_before_ns": 185655361055217,
+            "host_after_ns": 185655361571506,
+            "host_unix_ns": 1789299613714112667,
+            "device_seconds": 6.375811524909626
+          }
+        ],
+        "scheduled_device_seconds": 1.397374846925656,
+        "host_send_span_ns": [
+          185650182534685,
+          185654353157778
+        ],
+        "sample_index_semantics": "Nominal TX schedule index only, may be outside burst; not P201 capture index, especially after discontinuity"
+      },
+      "component_peak_counts": 177.0,
+      "restored": true
+    },
+    {
+      "child": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913",
+      "batch": 65622,
+      "source": {
+        "rows": [
+          1574928,
+          1574929,
+          1574930,
+          1574931,
+          1574932,
+          1574933,
+          1574934,
+          1574935,
+          1574936,
+          1574937,
+          1574938,
+          1574939,
+          1574940,
+          1574941,
+          1574942,
+          1574943,
+          1574944,
+          1574945,
+          1574946,
+          1574947,
+          1574948,
+          1574949,
+          1574950,
+          1574951
+        ],
+        "class_ids": [
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14
+        ],
+        "source_snr_db": [
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20
+        ],
+        "original_iq_sha256": "5521a97507eca0debccf367ee22a904bfbf4f7e1ea5f6d6da29e078f4c965d9e",
+        "scales": [
+          0.310791577297884,
+          0.3344264282034785,
+          0.30376263089846717,
+          0.3025983305410554,
+          0.30348383303247395,
+          0.2997982545548139,
+          0.3662056970387348,
+          0.34212720712669675,
+          0.31645526392393775,
+          0.31075118588353434,
+          0.31490232764559817,
+          0.32417238333791365,
+          0.34348990645710015,
+          0.2981799929461224,
+          0.2754472929185712,
+          0.30280619876300147,
+          0.3059296773407526,
+          0.3393243025655547,
+          0.3202699820663741,
+          0.34453751751322675,
+          0.3238211811539114,
+          0.29598327752010023,
+          0.3320686017290284,
+          0.28776215013465706
+        ]
+      },
+      "rx": {
+        "sweep_id": "retest-boundary-65622-1789299428577",
+        "session_generation": 1789299428577,
+        "frequencies": {
+          "kind": "centers",
+          "centers_hz": [
+            2455000000
+          ]
+        },
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_db": 50,
+        "settle_ms": 500,
+        "frame_samples": 65535,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 1000,
+        "detection_threshold_db": 12.0
+      },
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/rx/retest-boundary-65622-1789299428577-1789299428577-1789299621238398306.sigmf-data",
+        "iq_sha256": "058790cf1991f8a83502a581976e26a510f3b013927e93a7d6aa32eb63057e59",
+        "metadata_sha256": "a96a7d41bb64a9f775b45acbf6e2d7355ae1041af1eb5ef1e85f6c4865d2ac8b",
+        "request_id": 5,
+        "sequence": 1704,
+        "session_generation": 1789299428577
+      },
+      "events": {
+        "summary": {
+          "kind": "summary",
+          "status": "sent_complete",
+          "accepted_samples": 8381952,
+          "send_records": 8346,
+          "async_records": 1,
+          "error": ""
+        },
+        "event_counts": {
+          "1": 1
+        },
+        "events": [
+          {
+            "kind": "async",
+            "host_receive_mono_ns": 185667053144855,
+            "host_receive_unix_ns": 1789299625406206433,
+            "channel": 0,
+            "event_code": 1,
+            "has_device_time": true,
+            "device_seconds": 5.377219832037847,
+            "user_payload": [
+              154,
+              0,
+              0,
+              0
+            ],
+            "name": "burst_ack",
+            "nominal_sample_from_scheduled_start": 8381953.343649125
+          }
+        ],
+        "clock_brackets": [
+          {
+            "kind": "clock_bracket",
+            "phase": "before_tx",
+            "host_before_ns": 185662860875755,
+            "host_after_ns": 185662861052225,
+            "host_unix_ns": 1789299621213933078,
+            "device_seconds": 1.1858134779192162
+          },
+          {
+            "kind": "clock_bracket",
+            "phase": "after_tx",
+            "host_before_ns": 185668038507656,
+            "host_after_ns": 185668039028490,
+            "host_unix_ns": 1789299626391565139,
+            "device_seconds": 6.363005513050476
+          }
+        ],
+        "scheduled_device_seconds": 1.3858134779192162,
+        "host_send_span_ns": [
+          185662861324433,
+          185667031843534
+        ],
+        "sample_index_semantics": "Nominal TX schedule index only, may be outside burst; not P201 capture index, especially after discontinuity"
+      },
+      "component_peak_counts": 194.0,
+      "restored": true
+    }
+  ],
+  "new_summary": {
+    "classification": {
+      "source": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 96
+      },
+      "raw": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 77
+      },
+      "guard": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 95
+      }
+    },
+    "quality": {
+      "raw": {
+        "estimated": 96,
+        "invalid": 0,
+        "not_measured": 0,
+        "pending": 0
+      },
+      "guard": {
+        "estimated": 92,
+        "invalid": 4,
+        "not_measured": 0,
+        "pending": 0
+      }
+    },
+    "quality_reasons": {
+      "raw": {},
+      "guard": {
+        "residual_not_stationary_across_halves": 4
+      }
+    },
+    "recognition_by_quality": {
+      "raw": {
+        "estimated": {
+          "total": 96,
+          "correct": 77
+        },
+        "invalid": {
+          "total": 0,
+          "correct": 0
+        },
+        "not_measured": {
+          "total": 0,
+          "correct": 0
+        },
+        "pending": {
+          "total": 0,
+          "correct": 0
+        }
+      },
+      "guard": {
+        "estimated": {
+          "total": 92,
+          "correct": 91
+        },
+        "invalid": {
+          "total": 4,
+          "correct": 4
+        },
+        "not_measured": {
+          "total": 0,
+          "correct": 0
+        },
+        "pending": {
+          "total": 0,
+          "correct": 0
+        }
+      }
+    },
+    "raw_to_guard": {
+      "corrected": 18,
+      "regressed": 0
+    }
+  },
+  "new_rf_source_rows": 96,
+  "replayed_source_rows": 576,
+  "cold_control_source_rows": 144,
+  "new_tx_attempts": 4,
+  "maximum_actual_new_tx_seconds": 16,
+  "new_rx_iq_bytes": 1048560,
+  "new_model_windows": 2448,
+  "new_warmup_windows": 6,
+  "old_evidence": {
+    "path": "/home/jetson/sdrharness/docs/evidence/RML2018A_FULL_COVERAGE_2026-09-13.json",
+    "sha256": "23402051eb5103c60162f99b18c7861f3693ecebd4353b828d429a8c2d02c045",
+    "unchanged_files": 465
+  },
+  "tests": {
+    "distinct_python_tests": 146,
+    "new_resident_tests": 7,
+    "cached_input_hash_tampering_rejected": true,
+    "failed_calls_charge_budget": true,
+    "stop_and_deadline_gates": true,
+    "cpu_failure_prevents_model": true,
+    "all_disk_ready_before_model": true,
+    "model_lifetime_once_per_session": true
+  },
+  "final_state": {
+    "radio": {
+      "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "daemon_pid": [
+        "5909"
+      ],
+      "daemon_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+      "controller_sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+      "health": {
+        "online": true,
+        "healthy": true,
+        "health_flags": 0,
+        "iio_visible": true,
+        "can_retune": true,
+        "can_capture_iq": true,
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        }
+      },
+      "b210": {
+        "host": "agx",
+        "serial": "2508504",
+        "usb_speed_mbps": 5000.0,
+        "usb_node": "/dev/bus/usb/002/004",
+        "usb_holder_pids": []
+      }
+    },
+    "spark": {
+      "pid": 1321,
+      "start_ticks": "1515",
+      "state": "S",
+      "idle_slots": 1
+    },
+    "cpu_and_model_owners_absent": true,
+    "p201_staging_absent": true
+  },
+  "cleanup_summary": {
+    "removed_file_count": 1098,
+    "removed_bytes": 83209084,
+    "scratch_and_input_caches_absent": true,
+    "owner_locks_absent": true,
+    "p201_staging_absent": true
+  },
+  "retained_roots": [
+    "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913",
+    "/var/tmp/sdrharness-dev/b210-rml2018a-resident-cold-20260913",
+    "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913",
+    "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913",
+    "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913",
+    "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913"
+  ],
+  "retained_files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/cache-cleanup.json",
+      "bytes": 109783,
+      "sha256": "1965c992ed7c8b753b7791a69a785e8a9f558675bb9e41b289b9b1d37eafbd53"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/completion.json",
+      "bytes": 14572,
+      "sha256": "920277d4c35afa344d23bc43f9806859e0930fc6a3f317417f6413cbd15255f9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/execution.json",
+      "bytes": 11730,
+      "sha256": "27a8d6495993c7403f6e362ffde9c80054fbdc7f07293f354d0a8c85a3c75ad8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/gpu-isolation.json",
+      "bytes": 295,
+      "sha256": "489ab0ae9b67bef0866e37b2fffff76529b315590fa7da58f3cb5747581db7a2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-000/inference.json",
+      "bytes": 369655,
+      "sha256": "098f6319d1e1e3be0d9a406952889d586a187b09c1affa77147775863a0303d4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-000/prepared.json",
+      "bytes": 575602,
+      "sha256": "2c30fdc2f0cfcac85bea1f80b26ed48c3da07d330cd718a7b87fc0ab6f64e8d9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-001/inference.json",
+      "bytes": 368125,
+      "sha256": "6ef1c72b7a3c16eb173baa855fe6a6a54491353f2c9fbde0083cbf0be58f37cd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-001/prepared.json",
+      "bytes": 576696,
+      "sha256": "58c7ae3b76e18cf9961e9f4f7b355d25e37c761dc0c2e9d40875a3e5d91d67d4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-002/inference.json",
+      "bytes": 368798,
+      "sha256": "a89b2052f39f0b816435ea8cd423f3d123f7f6f8d89c7a0f6da9c63911c96439"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-002/prepared.json",
+      "bytes": 577569,
+      "sha256": "9bcaf449bbaddf565ca604786ac071c20e9f5b70b9a5dccb7a8237e0e550a95c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-003/inference.json",
+      "bytes": 370621,
+      "sha256": "94c2c12d64cfc06de686f76802b34c2747edd5c2101d9123fa25b57667fb5f1a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-003/prepared.json",
+      "bytes": 577808,
+      "sha256": "c29566b2f84d813a172527f8e96f09f20a9ae27b76ad896500f986683fce8175"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-000/cache.json",
+      "bytes": 421,
+      "sha256": "71f0195b81f2f080ac2a9e2cbc8a1824b72e05d15e1692a4e3dc19717d54c4d0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-000/prepared.json",
+      "bytes": 97406,
+      "sha256": "b7ca702d28a3c1160c4d4a18a8ef89ddfed89296321c007294eb925893e4fbfb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-001/cache.json",
+      "bytes": 422,
+      "sha256": "658ae7d0dd0d10c570426d8d631b903ba763eb6f916f4ae7fb7ec0e75597e202"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-001/prepared.json",
+      "bytes": 95692,
+      "sha256": "365ed7b8bb2a9505987c5a01982b35953f5d3fa975470fde13ee7cbc6f9520d1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-002/cache.json",
+      "bytes": 423,
+      "sha256": "00e31fc051e80903490328d29113829603148355c64f728f3bd2ebeb664c4359"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-002/prepared.json",
+      "bytes": 96550,
+      "sha256": "88ce143ff6393dcccfcdff72dd76c3bbc81d6ca2ee23cec72d24cc298f258f96"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-003/cache.json",
+      "bytes": 423,
+      "sha256": "05e638b2eb9dd27bf7ad47150fbdd8dc837c467c82c00fc0695a8b1ce76a313b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-003/prepared.json",
+      "bytes": 97550,
+      "sha256": "364625d557bba36e950283d3157a7f5cce4815d0372c3647ca73d141d8c3b672"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-004/cache.json",
+      "bytes": 423,
+      "sha256": "3fdb7d43cb31cf7347dc96c52e94fdfa481a883711f4da0423d0c9c4de15c3f9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-004/prepared.json",
+      "bytes": 96626,
+      "sha256": "a30778ac4c834f4059f62bce5aa5e8d32ecf37a1dd950a38c2cd101ba7bbd835"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-005/cache.json",
+      "bytes": 423,
+      "sha256": "eeef797d9885c2c626e297c4ed81da1f006fe7fe6178752e84f6c92253460749"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-005/prepared.json",
+      "bytes": 96566,
+      "sha256": "aa25044789b002bd05aacedd8d5318b9919c2c4b8ffdb5c1add49bc39690f9df"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-006/cache.json",
+      "bytes": 423,
+      "sha256": "ee973020a2e47fca3ddfa20360c709f9ee1e781609771be439f62129c468a20d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-006/prepared.json",
+      "bytes": 97471,
+      "sha256": "eea14589c3f9a536535d23852eb9c593c774710804565e76c928a530850803ad"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-007/cache.json",
+      "bytes": 423,
+      "sha256": "d5d4c97d43593078c33023a67ddf3b62d6192fe0f704f363b9fec67e93f68cf6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-007/prepared.json",
+      "bytes": 96697,
+      "sha256": "73a139540d76a70329dfea027e3711d2be9cb68a9369ec5731e69aafed946d01"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-008/cache.json",
+      "bytes": 423,
+      "sha256": "a8df2c25a52e5762cd5e713d1d8b71a5831b8fc01aafdf0334eb601295013420"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-008/prepared.json",
+      "bytes": 97441,
+      "sha256": "7b3271764338e6b3533ab9a06a8bad4ad03459361fe38c5018707bac770f4411"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-009/cache.json",
+      "bytes": 423,
+      "sha256": "36331051d473a2babf6f7f5e5e07bccb5d358267f037a6d3b4674ec0904a0865"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-009/prepared.json",
+      "bytes": 95694,
+      "sha256": "cf9930d2f4615d8ede15b33e48e5a8d56d3084cfa0a0090fea06b815424a4b86"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-010/cache.json",
+      "bytes": 424,
+      "sha256": "fa6132b094f5603b9a70c341c34f75425bfa9dbd803ca1e6a3bae962b08640c3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-010/prepared.json",
+      "bytes": 97473,
+      "sha256": "1889141c5c5ed3fca2cb1419f2c5217c9970226f68e59715c76557db961a4769"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-011/cache.json",
+      "bytes": 424,
+      "sha256": "938aae25fe565499892538707c730b35fe0f5db0047805b3be4080c6290a6f24"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-011/prepared.json",
+      "bytes": 96708,
+      "sha256": "d87c2be349ec27b5554c4c4ff1f8d6324e44152c3506402a4ec632eef2077a67"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-012/cache.json",
+      "bytes": 424,
+      "sha256": "99531b4aaf7bb798417a60a2bf5e57076762f11a07aa6cc62a9a23115b9036ff"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-012/prepared.json",
+      "bytes": 97533,
+      "sha256": "02902aaf166f3649d09306994531f923f80cf60f67957587c4fda555c070e522"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-013/cache.json",
+      "bytes": 424,
+      "sha256": "17863bb4d5bc79196bc0b7d59c4b37319156a2a3cb3f04ea131a858593ade1c3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-013/prepared.json",
+      "bytes": 96437,
+      "sha256": "d282289e034b0729420cededfbd25dc4d5dc2965ddc32d9b4b022638ddf271a4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-014/cache.json",
+      "bytes": 424,
+      "sha256": "fcf54314e32854ceced27ea84ba11247c6b8be9951b2c00120af7608765a21e0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-014/prepared.json",
+      "bytes": 97500,
+      "sha256": "b674fdaa5159964d06a79dbb0fcc99f3118491764410f2b3c57f3cd7f3e80d7f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-015/cache.json",
+      "bytes": 424,
+      "sha256": "6b9f8c6ebf4c594481e23050b620eb67191de8f54a22cf309789fee95e8a6a70"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-015/prepared.json",
+      "bytes": 97558,
+      "sha256": "89b253494e44d3196c3be5f4c18855b519c45411d285d784983d18bbeb6c0a00"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-016/cache.json",
+      "bytes": 424,
+      "sha256": "accb762eb058a8a783bf3ed19f5ea13d429ba5d000085e0da52c4370c288a1f1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-016/prepared.json",
+      "bytes": 96629,
+      "sha256": "c976c593b7282e192d01d891bb5478f34e41be7bcaa8b26e77fbe1bb3e9f9220"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-017/cache.json",
+      "bytes": 424,
+      "sha256": "123025e26445bbe804cc246d78d44627aaaf15927f9a45b66a5eb25c07e307d4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-017/prepared.json",
+      "bytes": 96700,
+      "sha256": "e6de155900464d4316057357153da9fc830e8eb77eb05d2c2af22dc84d4a45db"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-018/cache.json",
+      "bytes": 424,
+      "sha256": "28c0254c8f038f2af0eef1b67e74b7f836c9bf28cea86efe2de9307af0514422"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-018/prepared.json",
+      "bytes": 97469,
+      "sha256": "8ef0433af328ac751f66940e2d62953e3105e874e0acd94ab1fec602b157fbbc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-019/cache.json",
+      "bytes": 424,
+      "sha256": "5fe133c41e28bfb299d2b591de76983967f413d1a922e0ce1c9e589667c9c6a1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-019/prepared.json",
+      "bytes": 97599,
+      "sha256": "0677727d18cf7c1c0173db42f6cf95f0eb28e61b424cf1ca6ef01291c27045fb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-020/cache.json",
+      "bytes": 424,
+      "sha256": "3f21422bd54242596e601a0cef4d0fd1c2f0480a464e0f7242b0aa24f5c307c9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-020/prepared.json",
+      "bytes": 97480,
+      "sha256": "b95df93348d6fdf6af027a283438e87dae85b3e6bcdbc45a1388524a6c1bb9bd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-021/cache.json",
+      "bytes": 424,
+      "sha256": "47e9f86414c730d1cdf80ca961a3fa8dfb17167f8c83dee6383f6e3001a81cdc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-021/prepared.json",
+      "bytes": 95763,
+      "sha256": "6c380d92d97786581a2bec68e2c8a87189a85710d77f724d521770f3a36c266b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-022/cache.json",
+      "bytes": 425,
+      "sha256": "d16e73e86b924b975939f69937504af10491e17a89ba54fe150ac52d38307da7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-022/prepared.json",
+      "bytes": 96665,
+      "sha256": "59b99f117a4d90ee55d44c04ccda2ac3f2b04b105c2bad0ea04ce9b2a7aafc2b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-023/cache.json",
+      "bytes": 425,
+      "sha256": "0aa769ceaf42f4bfce0f16fc272fef13bd3980aa5ec1e7417abe815d7810523e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-023/prepared.json",
+      "bytes": 97620,
+      "sha256": "a5170d4b65d143ed24461f12b5fb245933ae3e04dcc3b9c7c33f18ad7926b05f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared-stage.json",
+      "bytes": 11689,
+      "sha256": "6deb82df9cb80ae49ffa669ee30b6ef209534834ae643f6929199c02e771ea50"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/resident-plan.json",
+      "bytes": 116412,
+      "sha256": "dcd226327f4d24951b7fe50a38dfdf13324a9604a288d9d9b4f6abc0b70be909"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/resident-session.json",
+      "bytes": 1038,
+      "sha256": "537c13b883d482a781c1a8bec443964dbe10be691888db9cb5f9996d4bcf5849"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/started.json",
+      "bytes": 193,
+      "sha256": "0f4a843c5d7fdbaefeba343df3a7393c3b264f3b8cebafcd7d9cd54e4319e200"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/validation-plan.json",
+      "bytes": 765,
+      "sha256": "21b14d502fd986cf9c06e849a01929a5d7ad58b5e6bbe4418209cbe36142c14c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-cold-20260913/control-plan.json",
+      "bytes": 4538,
+      "sha256": "572f4e133d9fefb168817957788c7864fb280efd1d3cc9d700547b810b6562f5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-cold-20260913/control-result.json",
+      "bytes": 481,
+      "sha256": "8e4104b1a9254e8f836f214ab07f876f9275bdb470e3b8c87cd3d3071159eeb3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-cold-20260913/gpu-isolation.json",
+      "bytes": 295,
+      "sha256": "7129adf118701ba82191db015d89ab47ac09516556b6e4600ea6b984405b48dd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-cold-20260913/inference.json",
+      "bytes": 368028,
+      "sha256": "42735feb40c9ee40c955ada3ca7288d65d591f3b74388246dcad0dc09c7101d5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-cold-20260913/prepared.json",
+      "bytes": 576696,
+      "sha256": "58c7ae3b76e18cf9961e9f4f7b355d25e37c761dc0c2e9d40875a3e5d91d67d4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/cleanup.json",
+      "bytes": 321336,
+      "sha256": "75ebcd63cbd2aaeba862b7b51f9f827f023e641ba17ff8afc94a8432d72805df"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/coverage-policy.json",
+      "bytes": 37755,
+      "sha256": "8665aa652bf6a13ef32c5d2353a5dadd7a795bf3911f621707dea12223049064"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/entries/7213fe2490ff4b2ce93e4886.complete.json",
+      "bytes": 20898,
+      "sha256": "bdfecbba8bfcf40ab235d5efeeb0d3519983847751048db76dd03023918407a6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/entries/7213fe2490ff4b2ce93e4886.entry.json",
+      "bytes": 246,
+      "sha256": "a17581ce3cb2f6926b8c688224750e809e64eee6baf601332290b349934369e1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/entries/bf15feeb78322ad3b564a948.complete.json",
+      "bytes": 20894,
+      "sha256": "20c268468bac48e1f92a79efef466bdfacb2f4bc9ae94f675f0f3b3a989a4b6b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/entries/bf15feeb78322ad3b564a948.entry.json",
+      "bytes": 246,
+      "sha256": "edae484f92ee94b67f6f48fa3d985cc84fed7afe6d7b18c92f6a9f83943dae17"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/final-state.json",
+      "bytes": 2408,
+      "sha256": "60ae6f84c2a2efd69a21c30ac638ac6f5151f5a0176e56f210a98c81ae3c4436"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/ledger-plan.json",
+      "bytes": 5058,
+      "sha256": "4739c2d5b7e97c286c3fd22a09e49b08cd45e41a0c4694fae53be71c2cbb593a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/state.json",
+      "bytes": 20205,
+      "sha256": "14736056bdb0e87aac8b34171ffe093ea6d7c0a35c5214274f9c2ba80161ae44"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/cold-control.log",
+      "bytes": 1834,
+      "sha256": "eebb605b6addf232e3e28e1058b9de95b0bc8bb174f4ed38b1c5b4668772c7d3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/cold-control.py",
+      "bytes": 2171,
+      "sha256": "5543d1719eedcce749413a878862a01137abcaa607897fe8ffd9fa4825edeabf"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/finalize.py",
+      "bytes": 11268,
+      "sha256": "38818d7753ff541900ce87189c64604ad56e8f67d111028c5f6192b418b95584"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/live-plan.log",
+      "bytes": 98281,
+      "sha256": "9f730f7efafef88d753d024f672e3ca3de76772afdf04a9db92aad5c4862fbcd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/live-repeat.log",
+      "bytes": 77,
+      "sha256": "c3e59d72770c55c9b105ae8b24fe54d5d0aa5e58a1c6e6bc1562855458b3678f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/live-run.log",
+      "bytes": 29035,
+      "sha256": "2ad0d6cbe13b3b7f5317493ffc83789b2b97280aeb10cbdcb36d3842f33b31a8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/live-stop-rejected.log",
+      "bytes": 740,
+      "sha256": "62a451f7f718376703da463f4ecbe7875448a4cea09d9849f0f1ce7516b7c2f3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/live-validation.json",
+      "bytes": 989,
+      "sha256": "7ab489143ab66c3a507144f5d07874c597da12b75612f67fa940e7f57296fdea"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/plan-live.py",
+      "bytes": 2780,
+      "sha256": "e7f654d769a4402ff2b2350e14488c6f96dd050542738a75b40ec528ecccdcbc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/replay-plan.log",
+      "bytes": 2689,
+      "sha256": "ea1f71e2d339bf9f62d3e85ed586b9412fbc280867cd1eaa2130f84a4b749dcb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/replay-repeat.log",
+      "bytes": 77,
+      "sha256": "c3e59d72770c55c9b105ae8b24fe54d5d0aa5e58a1c6e6bc1562855458b3678f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/replay-run.log",
+      "bytes": 3398,
+      "sha256": "9b09ec93564e68034467fa4c2ac85564bf504f13e01a083fcace29e1ab8718d8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/replay-validation.json",
+      "bytes": 735,
+      "sha256": "7e9f4b17ae6a08e9ef0cebf4f895c2e9d0e6ec8d8a57cbb3f92210857426cca9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/rml2018a_campaign_resident.before-response-fix.py",
+      "bytes": 17192,
+      "sha256": "d1eaf4e00c83ad4bb36ca158de6d844b3940bb5e92c1b577b66a0022a90983a1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/rml2018a_campaign_resident.cold-control-version.py",
+      "bytes": 17171,
+      "sha256": "4354c8fdbed3f2f1d790edbf0c1975d526dd51ae5cd1da4be221dd259d160747"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/run-live.py",
+      "bytes": 3240,
+      "sha256": "8d322b4931906bdb60a1ec581277fbc60c7919d10e53cb2baec15ccb691fb491"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/stop-cleanup.json",
+      "bytes": 177,
+      "sha256": "85d0e4ca0f5522a1ee8616e6ae3c05eb299ee136255144fa1880101692ac1b62"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/tests-final.log",
+      "bytes": 7268,
+      "sha256": "5006aec62435c83816389b41f7aeb19de12095d08154b414c290088e6c776d81"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/tests-release.log",
+      "bytes": 7268,
+      "sha256": "9d1d2354b1532032f2f5feb2d188ca05cdebf9feee928cbc8dbc059399249fad"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/tests.log",
+      "bytes": 7267,
+      "sha256": "c268d07d862f9ecdf80f41c22a4d322e3c6e1d79fe0ca80a4fcf62768b77ab7b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/validate-replay-strict-failed.py",
+      "bytes": 3849,
+      "sha256": "376a6fd6f32fd64cb216d5f9149881e54cf5cd6930ac1ed64ad2db2e8d13f56e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/validate-replay.py",
+      "bytes": 3921,
+      "sha256": "a259d17220cfb90ced040170851e3a8b4402150617da924e3eea1c21d63b780b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/cache-cleanup.json",
+      "bytes": 104511,
+      "sha256": "8665a1a9587219128207513ecb083db48c4a457f4446a303f7434f8e938057aa"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/completion.json",
+      "bytes": 3618,
+      "sha256": "3a6d7fa6a4bc3dd86ef7908b36e0b0631d6549ed27350e0f6ff28967257410a0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/execution.json",
+      "bytes": 2217,
+      "sha256": "b700d9028f5c15e414e74bca635de1de1e40c16301ce6464563fb19ca26da6ca"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/gpu-isolation.json",
+      "bytes": 295,
+      "sha256": "873ea2ae9da6fc1903d04f9665f81b0b34385aa4472144b2ac5e6a6b52f3979e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-000/cache.json",
+      "bytes": 428,
+      "sha256": "4e021b8e0512b24b68e8663c0fd5152fb1bdc496b7c269f23e311a762501998a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-000/prepared.json",
+      "bytes": 97555,
+      "sha256": "d325917fb98cbfe9fab6a3cfe3ad72e7bcd704244930ff156b7185c8966e34b4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-001/cache.json",
+      "bytes": 428,
+      "sha256": "3c1cb316945af9f9a683bbaa4adfcfe5634c0d1fbee4c455f76a02f8ff31dd79"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-001/prepared.json",
+      "bytes": 96813,
+      "sha256": "a7ace866770649ac36d3c36a7eff72cd10ff5d9a94090001f941cbf391f4675b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-002/cache.json",
+      "bytes": 428,
+      "sha256": "8b5a68551d111a781dcb7aa9d91ac250ad7660e77e93e3ff0ab195739fee4b91"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-002/prepared.json",
+      "bytes": 97618,
+      "sha256": "65cca1d9621c320576354bb38284616cfa88a36777cc8cf7723494529a0fe51e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-003/cache.json",
+      "bytes": 428,
+      "sha256": "942be57f9ea9a0b54b39541e0d440cf04392e22947c576b8b1686ebfb53c05f2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-003/prepared.json",
+      "bytes": 96798,
+      "sha256": "69de13be2ba59f8dc439f44a9fdd9d6c592ee9f2d8b3a33d6375593614c63a90"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared-stage.json",
+      "bytes": 2176,
+      "sha256": "e225591fcf80fa904ea8a7879772c8899d5226abbd876e94a88ce83852e994d5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/resident-plan.json",
+      "bytes": 6053,
+      "sha256": "3d35d5a1b4148c412a7cac69cedab2fb946c6d3c09d6fa6353c2dade78732d8b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/resident-session.json",
+      "bytes": 1037,
+      "sha256": "bfb6ed2f2a1d1b26ec8b9f7080c067e9eee2352c24ef2ed0512be8196df82177"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/started.json",
+      "bytes": 193,
+      "sha256": "6c9446561e270b3562fefae5087873122053f515a4575380cf3157e03b2cfc32"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/validation-plan.json",
+      "bytes": 27340,
+      "sha256": "dc07a627429ca92f730d61af2b6c7b5e1ca0b1efe08f269683ccba7677837abb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/audit.json",
+      "bytes": 7702,
+      "sha256": "5720fca388497962db6f4f6df1ee22f5740ba3e1680d2f2b8b5972524d8d96fd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/event-storage.json",
+      "bytes": 633,
+      "sha256": "ca37447c667609f1606fc0e4e96d5a4d4eeae63afe5cd6cac38ba29db74f802f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/report.json",
+      "bytes": 2344,
+      "sha256": "0c5bffe3c3925f5f780d7ef26a9ba749443957c57d6f57eb247010a96b4d3ac7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/rx/retest-boundary-16811-1789299426325-1789299426325-1789299583327282522.sigmf-data",
+      "bytes": 262140,
+      "sha256": "47349b770bf925e8e5d028656de28e9245f4937c17f3e2efbe2addb6cfe22bd1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/rx/retest-boundary-16811-1789299426325-1789299426325-1789299583327282522.sigmf-meta",
+      "bytes": 487,
+      "sha256": "a2b9e6fd466f042469907062969a672970b8c9aa9f3a6eef345f6d2860bb25da"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/rx-plan.json",
+      "bytes": 394,
+      "sha256": "6734f6b4e19d1f734930885108f8431cc9369c41c519b6bc77c625a550b8038a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/tx-events.jsonl.gz",
+      "bytes": 132736,
+      "sha256": "4ac2bfe531334318a2ca073de4444633accbbe1070dfa7546cdcdbd6de131312"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/tx-uhd.log",
+      "bytes": 842,
+      "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/plan.json",
+      "bytes": 5028,
+      "sha256": "2e1c7a1c69b084b442df40e14a2f1b003cfbe914de1fddae9c1269a7a0317ae5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/postflight.json",
+      "bytes": 2326,
+      "sha256": "9d8c2d830dd6de399bf9b2ece49d2b07378796d20d79a366c1d33584ba4cec7b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/preflight.json",
+      "bytes": 2157,
+      "sha256": "580e11494d803d90b1044fc1fdce83467dbf34256ddc7b93a0b26bac7ba2794d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/started.json",
+      "bytes": 133,
+      "sha256": "06d61e1599d0cf3be82a10d212e87d7046d50472a9ed241bb1f3b997eba70142"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/capture-complete.json",
+      "bytes": 1244,
+      "sha256": "b0a03105c42b449cbe3b37fe859836d0df6cc62baf83ecadde49c6bf2928221f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/predictions.json",
+      "bytes": 61319,
+      "sha256": "2407fef1b827ebc0d83ed5aa19977879e7d30d2398ce983310716ef31027eed3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/source.json",
+      "bytes": 1412,
+      "sha256": "6f3bc23aa90590673776030cec56309fc86bbfec5205b4f391f4069b5045e8af"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/audit.json",
+      "bytes": 7697,
+      "sha256": "62294a6bfc841c4347702c836243a90303fee69ccd809f4ec82539226b1d6ca4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/event-storage.json",
+      "bytes": 633,
+      "sha256": "e27498895db517067c6ced8b30e16798dbe3c87d9e2c098d4e968b3207477e69"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/report.json",
+      "bytes": 2343,
+      "sha256": "9ea3801339e818523d64b9c15ca80bc356166c8dfe5dbe8e901abdb2b24c42aa"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/rx/retest-boundary-21248-1789299426327-1789299426327-1789299595903928942.sigmf-data",
+      "bytes": 262140,
+      "sha256": "69b167f6c5dd5bd4729546458b70c94dccb473ac7fb5428f588fba5e8c8b78ba"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/rx/retest-boundary-21248-1789299426327-1789299426327-1789299595903928942.sigmf-meta",
+      "bytes": 487,
+      "sha256": "6ec5602d3b2d524e574f04bd7bf022de1f144e39b44d5576cc392a38d87f654c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/rx-plan.json",
+      "bytes": 394,
+      "sha256": "c5fdbdabd6dc6813b7f56bb34a362f91bc3fade2d27657d2aa119e6455645430"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/tx-events.jsonl.gz",
+      "bytes": 132808,
+      "sha256": "8676446f034f77051a014426787883fe07ea133b2d7540116db401af5e8d2c94"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/tx-uhd.log",
+      "bytes": 842,
+      "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/plan.json",
+      "bytes": 5026,
+      "sha256": "e6dfeba492e9bc4b113df024c9c88875396d3045f06b338b9cedf84179545a16"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/postflight.json",
+      "bytes": 2326,
+      "sha256": "9d8c2d830dd6de399bf9b2ece49d2b07378796d20d79a366c1d33584ba4cec7b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/preflight.json",
+      "bytes": 2157,
+      "sha256": "580e11494d803d90b1044fc1fdce83467dbf34256ddc7b93a0b26bac7ba2794d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/started.json",
+      "bytes": 133,
+      "sha256": "77fbcb63ef0a2a27c9454b44c5bfef4c1af8e55d9716e18a52e171d934243a19"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/capture-complete.json",
+      "bytes": 1244,
+      "sha256": "fb6308d54cca40eca829edb8abcf1550dc5a617770785dc5c04a6672d4e535f3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/predictions.json",
+      "bytes": 61553,
+      "sha256": "adff8c2499470ec87b1f2aac9ce0cf2daf4ddf25c8c6c2b513d979046cb341ed"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/source.json",
+      "bytes": 1410,
+      "sha256": "34df63f45f43d649ef31a0d8b0526fc6259eb417999ea6996b949c29df01322f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/chunks/c9e9e84c2fd04085.json",
+      "bytes": 3795,
+      "sha256": "20068958f61ed26e98d7e2441ae9576638c7b5c41ff1eea5bdf56467d7bb49a5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/inference-a7dfbdce87364d43/attempt-0/inference.json",
+      "bytes": 124160,
+      "sha256": "5c23f4a31cdbf2e6e83cc93e268523e8a34b654b526dae788df7c0728281f339"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/inference-a7dfbdce87364d43/attempt-0/prepared.json",
+      "bytes": 193411,
+      "sha256": "b410faa3a667ab4a683b4bdb34b665e1febb94d77d95a331695256d1199e9fe0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/run-plan.json",
+      "bytes": 48891,
+      "sha256": "8614da5799bd4c2248f469be95a976775682dc51a8d300e0965e967d33e9f7db"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/summary.json",
+      "bytes": 280072,
+      "sha256": "60a9c04638a482eddd66cf4307d3fce59087e93a049ea727da50260077291a7d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/audit.json",
+      "bytes": 7769,
+      "sha256": "9de255c3e03e6366dc11c58d5bdb6bceb1e585ffbd6be8dbf518cc9e9a3fe892"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/event-storage.json",
+      "bytes": 633,
+      "sha256": "de07d5bed287a5253a2e94d6162561b6bc7e48e622e36c7c3d253bab5a17206a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/report.json",
+      "bytes": 2344,
+      "sha256": "bfba138aae3e0717f9a17f0dd068b6fa2c0ef1e12ef249900aebf271de2cb9cc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/rx/retest-boundary-56747-1789299428575-1789299428575-1789299608560902928.sigmf-data",
+      "bytes": 262140,
+      "sha256": "52011c821f9422e3c122109000ce98757d84135f5f637acf307f4b5df0454a68"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/rx/retest-boundary-56747-1789299428575-1789299428575-1789299608560902928.sigmf-meta",
+      "bytes": 487,
+      "sha256": "9f20174f087598f9fcba51ac29c65c0c46190d2f7f7abbacb4259d5551259092"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/rx-plan.json",
+      "bytes": 394,
+      "sha256": "c85f0940aef0e167d29eaa86325dd147bd00c8deb7480495ca4fb48eaa864841"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/tx-events.jsonl.gz",
+      "bytes": 132445,
+      "sha256": "f0f4afbfce8e06118e7d06bed524a42135b38d255a22d8f409dff290c51fd6ad"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/tx-uhd.log",
+      "bytes": 842,
+      "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/plan.json",
+      "bytes": 5098,
+      "sha256": "54be3a6f2b0ddf95edb652577152aac067dad04b74f71f4aaccf22af5a3dd942"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/postflight.json",
+      "bytes": 2326,
+      "sha256": "9d8c2d830dd6de399bf9b2ece49d2b07378796d20d79a366c1d33584ba4cec7b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/preflight.json",
+      "bytes": 2157,
+      "sha256": "580e11494d803d90b1044fc1fdce83467dbf34256ddc7b93a0b26bac7ba2794d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/started.json",
+      "bytes": 133,
+      "sha256": "07e6c596b798147f625b5ac00f45d6100acb8d98532447a3285968e492bec67f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/capture-complete.json",
+      "bytes": 1268,
+      "sha256": "c8fd77f7ff7fe5ae893a3266a4f2912efbf7b10514b619aa63903c84c97b37ea"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/predictions.json",
+      "bytes": 61383,
+      "sha256": "cc7104c2543984570d98d8f589196d01b9fef9b26023a87cf67d6ac3e34a302e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/source.json",
+      "bytes": 1458,
+      "sha256": "f7938ab4fc12cd88b3f6e1a440a36e506ee88e11ade2e7219e345df14782fc87"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/audit.json",
+      "bytes": 7772,
+      "sha256": "ffb1106bf56121cffd4d979d350c7a58cf26358024981d4fdd4ce90e271cb22e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/event-storage.json",
+      "bytes": 633,
+      "sha256": "c42764ff6ecff62b2c20a9cd7d300d3178cbcc3ba76041a89aa3aaaaa9ae2826"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/report.json",
+      "bytes": 2341,
+      "sha256": "d9aa9736a4bff40d017217725bab9274ba32dc07fca036795998e6ca32619fe4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/rx/retest-boundary-65622-1789299428577-1789299428577-1789299621238398306.sigmf-data",
+      "bytes": 262140,
+      "sha256": "058790cf1991f8a83502a581976e26a510f3b013927e93a7d6aa32eb63057e59"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/rx/retest-boundary-65622-1789299428577-1789299428577-1789299621238398306.sigmf-meta",
+      "bytes": 487,
+      "sha256": "a96a7d41bb64a9f775b45acbf6e2d7355ae1041af1eb5ef1e85f6c4865d2ac8b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/rx-plan.json",
+      "bytes": 394,
+      "sha256": "6000aae01987b7e2ca0fb75d5ab12fea8dcdc0965b5b5f27799f4c2358e9bd4a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/tx-events.jsonl.gz",
+      "bytes": 132450,
+      "sha256": "836996ad6bd5894c22b233639079e9ba28959a8ebffb5c20d730cde172686a29"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/tx-uhd.log",
+      "bytes": 842,
+      "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/plan.json",
+      "bytes": 5098,
+      "sha256": "16ab740532ae69ced95a04a94b1a8fad9fff90ea0780c5a94e5ae7a0ad8214a2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/postflight.json",
+      "bytes": 2326,
+      "sha256": "9d8c2d830dd6de399bf9b2ece49d2b07378796d20d79a366c1d33584ba4cec7b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/preflight.json",
+      "bytes": 2157,
+      "sha256": "580e11494d803d90b1044fc1fdce83467dbf34256ddc7b93a0b26bac7ba2794d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/started.json",
+      "bytes": 133,
+      "sha256": "3706e9f0eebef08f97164780d7801d61db7a0c59a3a27694332b01a5d87058bd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/capture-complete.json",
+      "bytes": 1268,
+      "sha256": "6029401f61f4fb1ed4880370d7b8f26e9e5d6ec2d488de286bbefdbd586a2aac"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/predictions.json",
+      "bytes": 61221,
+      "sha256": "04a9df18cdecb639722e059d9410107b7a92632c4d292029cd3ee97d83f8e569"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/source.json",
+      "bytes": 1458,
+      "sha256": "747055eb336b374f5f6746d279dfde0a62ba90b7a02127d1329fa67ea2d3f1c5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/chunks/c5986779d7d88c56.json",
+      "bytes": 3891,
+      "sha256": "9c31b88a98f487ad6cbac6618b0a7d7fd4c7df05d128cd0b14954c10b3e9b3f3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/inference-c1fb1c7808a63ee3/attempt-0/inference.json",
+      "bytes": 123892,
+      "sha256": "aa6b7303d49851b93c30b108278ee49dbeaf6252be1478b269bdb471cefc6f64"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/inference-c1fb1c7808a63ee3/attempt-0/prepared.json",
+      "bytes": 193459,
+      "sha256": "7266a92d53881a939088e1b863f98cf39b25b7ed029d69aef8a8d71ca8c4fd67"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/run-plan.json",
+      "bytes": 49231,
+      "sha256": "b17d30fcaeea7634a05553a61f90708433021ebd229cf5299552e33a8f6c7d16"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/summary.json",
+      "bytes": 279736,
+      "sha256": "34e59c2ad9298e9e3587db6d7cf4923565f5069f21394b1fef2bc4642095fdb6"
+    }
+  ],
+  "retained_file_count": 192,
+  "retained_bytes": 11751015,
+  "retention_reason": "Finite plans, original4 native RX/archives, source/capture lineage, normalized input SHA and immutable prediction receipts, cold-control numeric discrepancy, software snapshots, CPU/RX ordering/timing, restoration and exact cleanup. Old IQ stays at original paths; no dataset/weight copies; normalized disk caches removed after verification.",
+  "recognizer_available": false,
+  "training": false,
+  "production_deployment": false,
+  "whole_dataset_complete": false,
+  "manual_delete_command": "rm -- /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/cache-cleanup.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/completion.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/execution.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/gpu-isolation.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-000/inference.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-000/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-001/inference.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-001/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-002/inference.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-002/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-003/inference.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-003/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-000/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-000/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-001/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-001/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-002/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-002/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-003/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-003/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-004/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-004/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-005/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-005/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-006/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-006/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-007/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-007/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-008/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-008/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-009/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-009/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-010/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-010/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-011/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-011/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-012/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-012/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-013/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-013/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-014/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-014/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-015/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-015/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-016/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-016/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-017/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-017/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-018/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-018/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-019/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-019/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-020/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-020/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-021/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-021/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-022/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-022/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-023/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-023/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared-stage.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/resident-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/resident-session.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/started.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/validation-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-cold-20260913/control-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-cold-20260913/control-result.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-cold-20260913/gpu-isolation.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-cold-20260913/inference.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-cold-20260913/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/cleanup.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/coverage-policy.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/entries/7213fe2490ff4b2ce93e4886.complete.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/entries/7213fe2490ff4b2ce93e4886.entry.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/entries/bf15feeb78322ad3b564a948.complete.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/entries/bf15feeb78322ad3b564a948.entry.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/final-state.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/ledger-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/state.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/cold-control.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/cold-control.py /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/finalize.py /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/live-plan.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/live-repeat.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/live-run.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/live-stop-rejected.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/live-validation.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/plan-live.py /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/replay-plan.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/replay-repeat.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/replay-run.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/replay-validation.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/rml2018a_campaign_resident.before-response-fix.py /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/rml2018a_campaign_resident.cold-control-version.py /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/run-live.py /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/stop-cleanup.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/tests-final.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/tests-release.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/tests.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/validate-replay-strict-failed.py /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation/validate-replay.py /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/cache-cleanup.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/completion.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/execution.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/gpu-isolation.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-000/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-000/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-001/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-001/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-002/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-002/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-003/cache.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-003/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared-stage.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/resident-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/resident-session.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/started.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/validation-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/audit.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/event-storage.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/report.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/rx/retest-boundary-16811-1789299426325-1789299426325-1789299583327282522.sigmf-data /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/rx/retest-boundary-16811-1789299426325-1789299426325-1789299583327282522.sigmf-meta /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/rx-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/rx-stderr.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/tx-events.jsonl.gz /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/tx-uhd.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/postflight.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/preflight.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/started.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/capture-complete.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/predictions.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/source.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/audit.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/event-storage.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/report.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/rx/retest-boundary-21248-1789299426327-1789299426327-1789299595903928942.sigmf-data /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/rx/retest-boundary-21248-1789299426327-1789299426327-1789299595903928942.sigmf-meta /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/rx-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/rx-stderr.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/tx-events.jsonl.gz /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/tx-uhd.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/postflight.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/preflight.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/started.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/capture-complete.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/predictions.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/source.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/chunks/c9e9e84c2fd04085.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/inference-a7dfbdce87364d43/attempt-0/inference.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/inference-a7dfbdce87364d43/attempt-0/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/run-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/summary.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/audit.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/event-storage.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/report.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/rx/retest-boundary-56747-1789299428575-1789299428575-1789299608560902928.sigmf-data /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/rx/retest-boundary-56747-1789299428575-1789299428575-1789299608560902928.sigmf-meta /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/rx-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/rx-stderr.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/tx-events.jsonl.gz /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/tx-uhd.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/postflight.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/preflight.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/started.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/capture-complete.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/predictions.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/source.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/audit.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/event-storage.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/report.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/rx/retest-boundary-65622-1789299428577-1789299428577-1789299621238398306.sigmf-data /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/rx/retest-boundary-65622-1789299428577-1789299428577-1789299621238398306.sigmf-meta /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/rx-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/rx-stderr.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/tx-events.jsonl.gz /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/tx-uhd.log /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/postflight.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/preflight.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/started.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/capture-complete.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/predictions.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/source.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/chunks/c5986779d7d88c56.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/inference-c1fb1c7808a63ee3/attempt-0/inference.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/inference-c1fb1c7808a63ee3/attempt-0/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/run-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/summary.json && rmdir -- /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture/rx /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture/rx /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture/rx /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture/rx /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0/capture /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0/capture /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0/capture /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0/capture /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-023 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-022 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-021 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-020 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-019 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-018 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-017 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-016 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-015 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-014 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-013 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-012 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-011 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-010 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-009 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-008 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-007 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-006 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-005 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-004 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-003 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-002 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-001 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared/task-000 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/inference-c1fb1c7808a63ee3/attempt-0 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622/attempt-0 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747/attempt-0 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/inference-a7dfbdce87364d43/attempt-0 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248/attempt-0 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811/attempt-0 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-003 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-002 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-001 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared/task-000 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/prepared /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-003 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-002 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-001 /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913/inference-000 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/inference-c1fb1c7808a63ee3 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/chunks /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0065622 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913/batch-0056747 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/inference-a7dfbdce87364d43 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/chunks /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0021248 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913/batch-0016811 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913/prepared /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/validation /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913/entries /var/tmp/sdrharness-dev/b210-rml2018a-resident-replay-20260913 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-b-20260913 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-a-20260913 /var/tmp/sdrharness-dev/b210-rml2018a-resident-live-20260913 /var/tmp/sdrharness-dev/b210-rml2018a-resident-ledger-20260913 /var/tmp/sdrharness-dev/b210-rml2018a-resident-cold-20260913"
+}

@@ -18,6 +18,47 @@ B210仍停发，见[返测](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.m
 不能作为独立 locked-test 准入成绩。训练/微调暂停，生产 `recognizer_available=false`，
 名称采用 server-v1 原始 24 类顺序并保持 provisional。
 
+## 接收时预处理落盘，之后常驻模型识别（2026-09-13）
+
+按用户最新选择，新实验使用以下顺序：接收时由一个独立CPU进程预处理和校验已完成的批次，
+把归一化模型输入写到AGX硬盘；该会话的全部接收/预处理结束后，才加载一次冻结模型，
+连续识别各块。模型在这个有限识别会话内常驻，结束/取消后释放并恢复Spark。
+没有在接收过程中运行模型，也没有将整个数据集堆入内存；原始IQ仍在原采集目录保留。
+
+同一campaign CLI新增入口，实现在
+[resident模块](../../jetson-agx/sdrharness/scripts/rml2018a_campaign_resident.py)：
+
+```text
+# 先创建当前软件身份下的有限event-chunk子计划（可由ledger-reserve创建）
+rml2018a-rf-campaign.py resident-plan --root <新会话根> \
+  --campaign-roots <子计划A> <子计划B> --acquire
+rml2018a-rf-campaign.py resident-run --root <同一会话根>
+```
+
+`resident-plan`省略`--acquire`时只回放已完成的event-chunk采集，不进入射频执行器。
+它冻结父计划/原文件清单、源身份和软件、处理顺序及预算；旧软件采集须验证未改的科学制品和原生采集凭据。
+`--acquire`仅接纳当前软件下的event-chunk计划，仍经同一Controller有限RX/外部B210执行器。
+如果父计划属于ledger，会持有其锁、检查累计额度/额外空间并提交原完成凭据；一个会话至多关联一个ledger。
+子计划参数不能在执行时覆盖，旧`run`/`ledger-run`入口保留原行为。
+
+目前每会话总计1–32批、每批24行，CPU进程只有一个，最多两个未完成预处理任务；
+超过队列长度时等待，处理失败就停止，不丢弃失败批次。每批至多600,000字节的未压缩NPZ缓存，
+包含float32 `[24,2,1024]` 的source/raw/guard模型输入（未同步的通道不伪造输入）。
+缓存按文件SHA及每个输入SHA复核，拒绝压缩/超界、非有限数值和错误形状；按父块顺序读盘，
+没有引入GPU张量批处理或改变归一化/模型/滤波。固定输入payload全库约62.81GB，另需容器/元数据；
+该估算不是本有限入口已经支持全库跨天接收完成后统一识别。
+
+会话额外预留512MiB磁盘空间；新采集仍使用子计划自己的最坏保留预算。
+模型加载及两次预热只发生一次，子块收据记录同一PID/会话计划SHA、各块`warmup_windows=0`；
+会话收据承担预热计数。整会话600秒，父进程620秒后停止，SIGINT最多等待60秒恢复，
+再TERM10秒/KILL5秒；既有700秒Spark恢复watchdog保持。`<会话根>/STOP`及父SIGINT/TERM可停止。
+成功后模型/CPU进程退出、Spark恢复，才清理临时归一化缓存及编译缓存并发布完成清单；
+保留原始IQ、输入哈希、预测和删除明细。重复已完成会话只核验完成清单；失败会话不自动重试，需保留证据另行登记。
+
+576条回放、独立冷启动数值对照、96条实收及严格数值一致性未通过项见
+[常驻与落盘流水线验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13接收预处理落盘与常驻模型)。
+生产识别配置和`recognizer_available=false`保持。
+
 ## 跨块总控与可重建进度（2026-09-13）
 
 同一个campaign CLI新增`ledger-*`命令，由

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Eight-class finite source/raw/LO/timing comparison; RF remains in campaign CLI."""
 import argparse
+from contextlib import contextmanager
 import asyncio
 import importlib.util
 import json
@@ -167,26 +168,43 @@ def prepare(root):
     return report,tensors
 
 
-def infer(root,output,prepare_inputs=None,*,isolation_root=None):
-    m=runner();report,tensors=(prepare_inputs or prepare)(root)
-    tags=report.get('tags',TAGS);total=report['source_rows'];maximum=report['maximum_model_windows']
-    c.require(report==m.document(output/'prepared.json'),'prepared source/software changed')
-    c.require(not (output/'inference.json').exists(),'inference already recorded')
-    scratch=output/'scratch';scratch.mkdir(mode=0o700,exist_ok=True)
+@contextmanager
+def inference_backend(output,isolation_root,resident):
+    if resident is not None:
+        # The caller owns the finite session, GPU lease and Spark restoration.
+        resident.check()
+        yield resident,dict(model_identity=resident.admission_identity,warmup_windows=0,
+            resident_session=resident.identity)
+        return
+    m=runner();scratch=output/'scratch';scratch.mkdir(mode=0o700,exist_ok=True)
     os.environ.update(TMPDIR=str(scratch),XDG_CACHE_HOME=str(scratch),TRITON_CACHE_DIR=str(scratch/'triton'),
         CUDA_CACHE_PATH=str(scratch/'cuda'),PYTHONDONTWRITEBYTECODE='1')
     multi=m.module('timing_compare_multi','validate-b210-multiclass.py')
     from gpu_lease import GpuLease
     lease=GpuLease(scratch/'gpu-gate','mamba');token=None
-    receipt=dict(status='failed',prepared_sha256=c.file_hash(output/'prepared.json'),rows=[],model_windows=0,warmup_windows=0,
-        maximum_model_windows=maximum,recognizer_available=False,name_status='provisional',profile_sha256=report['profile_sha256'],
-        label_map_sha256=report['label_map_sha256'],semantics=report['semantics'])
     try:
         token=asyncio.run(lease.acquire(time.monotonic()+10,request='eight-class-pilot-timing'))
         with multi.idle_spark_pause(evidence_root=output if isolation_root is None else isolation_root):
             w=m.module('timing_compare_worker','amc-mamba-worker.py');backend=w.RfV1Backend(m.PROFILE)
             c.require(all(v.dtype==w.torch.float32 for v in backend.model.parameters()),'FP32 weights')
-            receipt.update(model_identity=backend.admission_identity,warmup_windows=2)
+            try:yield backend,dict(model_identity=backend.admission_identity,warmup_windows=2,lease=lease.metrics)
+            finally:del backend
+    finally:
+        if token is not None:lease.release(token)
+        lease.close()
+
+
+def infer(root,output,prepare_inputs=None,*,isolation_root=None,resident=None,normalized_inputs=False):
+    m=runner();report,tensors=(prepare_inputs or prepare)(root)
+    tags=report.get('tags',TAGS);total=report['source_rows'];maximum=report['maximum_model_windows']
+    c.require(report==m.document(output/'prepared.json'),'prepared source/software changed')
+    c.require(not (output/'inference.json').exists(),'inference already recorded')
+    receipt=dict(status='failed',prepared_sha256=c.file_hash(output/'prepared.json'),rows=[],model_windows=0,warmup_windows=0,
+        maximum_model_windows=maximum,recognizer_available=False,name_status='provisional',profile_sha256=report['profile_sha256'],
+        label_map_sha256=report['label_map_sha256'],semantics=report['semantics'])
+    try:
+        with inference_backend(output,isolation_root,resident) as (backend,identity):
+            receipt.update(identity)
             end=time.monotonic()+580
             for result in report['results']:
                 batch=result['batch'];parts=tensors[batch]
@@ -195,7 +213,9 @@ def infer(root,output,prepare_inputs=None,*,isolation_root=None):
                     for tag,values in parts.items():
                         if values is None:entry['predictions'][tag]=None;continue
                         c.require(time.monotonic()<end and receipt['model_windows']<maximum,'inference budget')
-                        tensor=c.normalize_window(values[k]);sha=c.digest(tensor.tobytes())
+                        tensor=np.asarray(values[k]) if normalized_inputs else c.normalize_window(values[k])
+                        c.require(tensor.shape==(2,1024) and tensor.dtype==np.float32 and np.isfinite(tensor).all(),'model tensor shape/dtype/finite')
+                        sha=c.digest(tensor.tobytes())
                         c.require(sha==row['inputs'][tag],'actual model input')
                         logits,us=backend.classify_logits(tensor)
                         c.require(np.asarray(logits).shape==(24,) and np.isfinite(logits).all(),'finite logits')
@@ -203,13 +223,10 @@ def infer(root,output,prepare_inputs=None,*,isolation_root=None):
                         receipt['model_windows']+=1
                     receipt['rows'].append(entry)
                 print(json.dumps(dict(event='inferred',batch=batch,rows=24)),flush=True)
-            del backend
         receipt.update(status='completed',summary={tag:dict(total=total,predicted=sum(v['predictions'][tag] is not None for v in receipt['rows']),
             correct=sum(v['predictions'][tag] is not None and v['predictions'][tag]['id']==v['true_id'] for v in receipt['rows'])) for tag in tags})
     except BaseException as e:receipt['error']=f'{type(e).__name__}: {e}';raise
-    finally:
-        if token is not None:lease.release(token)
-        receipt['lease']=lease.metrics.copy();lease.close();c.save(output/'inference.json',receipt)
+    finally:c.save(output/'inference.json',receipt)
     return receipt
 
 
