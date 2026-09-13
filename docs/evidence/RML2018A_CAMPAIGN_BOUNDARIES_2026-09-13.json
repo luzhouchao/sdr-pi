@@ -1,0 +1,4114 @@
+{
+  "schema": "rml2018a-event-campaign-boundaries-evidence-v1",
+  "base_head": "338ce43bb1b6e7958dae8896d4ee45bd63f0ca04",
+  "purpose": "Finite contiguous24 campaign boundary/resume engineering comparison. Per-row original Y/Z; fixed source/raw/guard with all failures. Conditional source-assisted SINR includes link distortion, not calibrated RF SINR. Clean pilot; single1024 inference, not blind synchronization, production four-window aggregation or independent accuracy.",
+  "plan": {
+    "schema": "rml2018a-all-row-rf-v3",
+    "run_id": "a4ad8c11361145f3892f276ff1c3391a",
+    "source": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+      "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+      "bytes": 21449148312,
+      "mtime_ns": 1627354882000000000
+    },
+    "budget": {
+      "rows": 2555904,
+      "batches": 106496,
+      "rows_per_batch": 24,
+      "maximum_rx_iq_bytes": 27916861440,
+      "maximum_tx_seconds": 425984,
+      "maximum_transient_packet_bytes": 208896,
+      "metadata_and_predictions_reserve_bytes": 27917287424,
+      "estimated_wall_seconds_unvalidated": 1064960,
+      "warning": "wall estimate includes per-batch radio/SSH setup; replace with pilot measurement"
+    },
+    "scope": "96 new boundary rows only; up to two attempts each, no full-dataset execution",
+    "tx_host": "agx",
+    "tx_host_identity": {
+      "host": "agx",
+      "transport_sha256": "f4f453b6e7d4f76e4ed8c02ae8373489106106093814f1ecf2c5bba84fb42620",
+      "device_helper_sha256": "8b092061886b633b2615a9fcc73ab662caf9360893863a0c35bb9a646e705bbc",
+      "runtime": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t",
+      "manifest_sha256": "fae1fb324ec69546c40a691e0d9b913aadfefad51b19934a06b6c34d7b97eccf"
+    },
+    "tx_level_profile": "event-boundary-pilot",
+    "semantics": "Finite contiguous24 campaign boundary/resume engineering comparison. Per-row original Y/Z; fixed source/raw/guard with all failures. Conditional source-assisted SINR includes link distortion, not calibrated RF SINR. Clean pilot; single1024 inference, not blind synchronization, production four-window aggregation or independent accuracy.",
+    "train": false,
+    "recognizer_available": false,
+    "name_status": "provisional",
+    "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "software": {
+      "rml2018a-rf-campaign.py": "9f028fcda40e60685a75a98fcbdcaf4fd2b80735e5e0670935a24a4f51e6a8ed",
+      "rml2018a_campaign.py": "f9939c302f111e43095b1a4d139553e8ffc272c1a777368d14642b7e3d8fa638",
+      "rml2018a-nx-tx.py": "d33c28d442e923173964d9a3511401a62f8ad2ae312439be8a16167cae54b52f",
+      "amc-mamba-worker.py": "750eef925be33ab925798f49907c0a35a2cf1c5cd9f00672ee64fcda9d0872b5",
+      "amc-rf-v1-runtime.py": "a920c4260ce02f824cc1bfad596242330b69dbfdf3008c45be6142d8aa077e82",
+      "gpu_lease.py": "cbc8038a375f1c44cf4c16d68c94d19ae146b8b9b496a340603be62340c1e1c7",
+      "rml2018a_campaign_events.py": "f6fd636e70d438713ceac74ed2cae3f8f2f7aa58e5ccdd3c23df1b8d38e01639",
+      "validate-b210-multiclass.py": "2bd5a801b25aa3a5a5e8d48d8d930207b9f34fa6b7c037292edf3108e0a657f8",
+      "validate-p201-termination-background.py": "007fce5064507803b6d75f178e7f3619f14aaec089ce9083900e40601b27975b",
+      "validate-b210-p201-link.py": "9454da8cdc70aadff2aba96a23c4c0a5284c15d53854b996c55ee24778955686"
+    },
+    "rf": {
+      "center_hz": 2455000000,
+      "rate_sps": 2100000,
+      "bandwidth_hz": 1500000,
+      "tx_gain_db": 60,
+      "rx_gain_db": 50,
+      "peak": 0.632455532033676,
+      "tx_lo_offset_hz": 250000,
+      "settle_ms": 500,
+      "point_deadline_ms": 1000,
+      "rx_samples": 65535
+    },
+    "framing": "24 independent1024 rows with per-row peak normalization, batch-specific pilot and guards",
+    "synchronization": {
+      "cfo_search_max_hz": 14500,
+      "cfo_step_hz": 500,
+      "cfo_limit_hz": 17000,
+      "initial_marker_threshold": 0.55,
+      "final_marker_threshold": 0.65
+    },
+    "quality_contract": {
+      "source_snr_db": "original dataset Z; never relabeled as received SINR",
+      "rx_sinr": "conditional effective SINR including additional link distortion; not independently measured RF SINR",
+      "source_reference": "X already contains source impairments; not a clean signal reference",
+      "estimator": {
+        "method": "nominal-source-plus-crossfit-link-error-v1",
+        "target": "conditional_effective_sinr_including_link_distortion",
+        "assumptions": [
+          "Z describes nominal source signal/noise power ratio in X",
+          "single complex gain is adequate over each fixed 1024-sample window",
+          "additional interference/noise is uncorrelated with X",
+          "source signal and source noise undergo the same gain"
+        ],
+        "limitations": [
+          "not independently measured total RF SINR or per-realization source SNR",
+          "stable multipath/nonlinearity remains in link error; correlated interference can bias gain",
+          "no separation of Wi-Fi, receiver noise and hardware distortion"
+        ],
+        "folds": "two contiguous512 halves; train centered scalar gain on one, evaluate other, swap",
+        "maximum_gain_disagreement": 0.25,
+        "maximum_residual_power_ratio": 4.0,
+        "minimum_reference_residual_db": -10.0,
+        "minimum_centered_reference_fraction": 0.0001,
+        "digital_filter": "none",
+        "integration_bandwidth_hz": 2100000,
+        "integration_band": "entire sampled complex baseband [-Fs/2, Fs/2); after analog RX filter",
+        "analog_rf_bandwidth_hz": 1500000,
+        "confidence_interval": null
+      },
+      "source_rx_correlation": "waveform fidelity only, not SINR"
+    },
+    "preprocessing": "pilot timing/CFO/phase correction then per-row complex RMS; no label-guided alignment",
+    "created_unix_ns": 1789287951000652916,
+    "base_head": "338ce43bb1b6e7958dae8896d4ee45bd63f0ca04",
+    "execution_limits": {
+      "allowed_batch_indices": [
+        170,
+        4266,
+        4437,
+        62122
+      ],
+      "maximum_attempts_per_batch": 2,
+      "maximum_tx_seconds": 32,
+      "maximum_tx_samples": 67055616,
+      "maximum_rx_iq_bytes": 2097120,
+      "maximum_source_rows": 96,
+      "maximum_inference_attempts_per_shard": 2,
+      "maximum_model_windows": 576,
+      "maximum_warmup_windows": 16,
+      "reserve_bytes": 268435456
+    },
+    "event_identity": {
+      "binary": {
+        "path": "/var/tmp/sdrharness-dev/b210-event-controls-20260913/build/tx-events",
+        "sha256": "8a2a3fcfc242d63c918ecfa61d9bae3705b68f7b27144e9bc4c5cd079034d17b",
+        "bytes": 76696
+      },
+      "build_receipt_sha256": "e7d75adbdd2deb2c0b2bd6e99f2f2491bf3b2caeb906985f8af503a4fe9a5442",
+      "tx_identity": {
+        "host": "agx",
+        "transport_sha256": "f4f453b6e7d4f76e4ed8c02ae8373489106106093814f1ecf2c5bba84fb42620",
+        "device_helper_sha256": "8b092061886b633b2615a9fcc73ab662caf9360893863a0c35bb9a646e705bbc",
+        "runtime": "/home/jetson/sdrharness/local-assets/devices/b210/uhd-4.1.0.5-3-a7-100t",
+        "manifest_sha256": "fae1fb324ec69546c40a691e0d9b913aadfefad51b19934a06b6c34d7b97eccf"
+      },
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3"
+    },
+    "event_software": {
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-b210-event-controls.py": "d548dc05b8b253c88326eded8b8b40c9ba1c5fbfb41defefb73e8513c5c48b1f",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_campaign.py": "f9939c302f111e43095b1a4d139553e8ffc272c1a777368d14642b7e3d8fa638",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_guard_tone.py": "f6805c8c12cd4fbb0e207bb63d34f8d2fa5d8e696a2f12850d498bebc7feeae0",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_lo_cancellation.py": "6adc011afd8ba8ba5971b07a8715beaeaa8d5f58c1c251a6e15c3015da37d020",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-b210-cable-lo.py": "ef0943cf3c8741cea2045e5da9d6eb2261cf71200a942be502a8854bb7b9ee4a",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py": "9f028fcda40e60685a75a98fcbdcaf4fd2b80735e5e0670935a24a4f51e6a8ed",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-p201-termination-background.py": "007fce5064507803b6d75f178e7f3619f14aaec089ce9083900e40601b27975b",
+      "/home/jetson/sdrharness/devices/b210/tx-events.cpp": "f45b8e07aa8f5a6644ba12d670c6e007ac4acb62b7f4b5a6682b023af94f16ca",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-b210-multiclass.py": "2bd5a801b25aa3a5a5e8d48d8d930207b9f34fa6b7c037292edf3108e0a657f8",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-b210-p201-link.py": "9454da8cdc70aadff2aba96a23c4c0a5284c15d53854b996c55ee24778955686",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/gpu_lease.py": "cbc8038a375f1c44cf4c16d68c94d19ae146b8b9b496a340603be62340c1e1c7",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc-mamba-worker.py": "750eef925be33ab925798f49907c0a35a2cf1c5cd9f00672ee64fcda9d0872b5",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/compare-rml2018a-wideband.py": "11cac6442d5afa12a4cacfd103a54388505dc1b77f496cc6709af6834f1bd91b",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_pilot_timing.py": "5d7545215022c99fe8c3641ebf966856165af80a405c536de2ceab708f57ce76",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-nx-tx.py": "d33c28d442e923173964d9a3511401a62f8ad2ae312439be8a16167cae54b52f",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/compare-rml2018a-pilot-timing.py": "88c78391daec6db87f2f5a1d77c8a04f60a80a9caffad661e548c4a742839e3f",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_campaign_events.py": "f6fd636e70d438713ceac74ed2cae3f8f2f7aa58e5ccdd3c23df1b8d38e01639",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-event-retest.py": "ca0325f0f0a871f7e3aea899c3a44e871cf7e4a7afcbc5eb8246acbf6fb26cfe",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc-rf-v1-runtime.py": "a920c4260ce02f824cc1bfad596242330b69dbfdf3008c45be6142d8aa077e82",
+      "/home/jetson/sdrharness/devices/b210/transport.py": "f4f453b6e7d4f76e4ed8c02ae8373489106106093814f1ecf2c5bba84fb42620"
+    },
+    "event_generation": 1789287951110,
+    "guard_contract": {
+      "method": "guard-tone-block-margin-v1",
+      "frequency_fit": "unchanged v1 training guards and pilot prior",
+      "validation": "every training and heldout guard half; eight contiguous24-sample block phasors",
+      "maximum_relative_tone_error_margin": 0.31622776601683794,
+      "block_standard_error_multiplier": 4,
+      "minimum_complete_guards": 2,
+      "minimum_tone_margin_db": 10,
+      "unchanged_v1_total_residual_gate_db": 10,
+      "v1_results_preserved": true,
+      "maximum_amplitude_spread": 0.25,
+      "maximum_phase_spread_rad": 0.25,
+      "maximum_pilot_residual_cfo_hz": 25,
+      "minimum_pilot_half_coherence": 0.95,
+      "source_payload_used": false,
+      "discarded_guards": 0,
+      "validation_refit": false,
+      "failure_action": "unchanged raw IQ with explicit reason",
+      "limitations": [
+        "new empirical tone-error criterion, not equivalent to v1 total-power suppression",
+        "block standard error is not a calibrated confidence bound under arbitrary correlated interference",
+        "guard-only validation cannot detect payload-only LO changes",
+        "does not remove broadband noise, source noise, or payload distortion"
+      ]
+    },
+    "connection": "B210 RF A TX/RX ->20dB50ohm2W DC-8GHz attenuator+15cm SMA ->P201 RX1",
+    "event_sources": {
+      "170": {
+        "source": {
+          "rows": [
+            4080,
+            4081,
+            4082,
+            4083,
+            4084,
+            4085,
+            4086,
+            4087,
+            4088,
+            4089,
+            4090,
+            4091,
+            4092,
+            4093,
+            4094,
+            4095,
+            4096,
+            4097,
+            4098,
+            4099,
+            4100,
+            4101,
+            4102,
+            4103
+          ],
+          "class_ids": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "source_snr_db": [
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -18,
+            -18,
+            -18,
+            -18,
+            -18,
+            -18,
+            -18,
+            -18
+          ],
+          "original_iq_sha256": "c4814d6ed0411b14b5f95f2748430940a309036ca9a1eac8479d6fe5b2e0a5c7",
+          "scales": [
+            0.19968931098158185,
+            0.24497346527649655,
+            0.21170555612521566,
+            0.22260961189586323,
+            0.2294587976609826,
+            0.23637489197661796,
+            0.2370286864790942,
+            0.24168345065693833,
+            0.22065426926629866,
+            0.2219094886905858,
+            0.22508507165593364,
+            0.24631883245288771,
+            0.22477637187035246,
+            0.2349599427458395,
+            0.2553375652142197,
+            0.2333497575007769,
+            0.2478349693629632,
+            0.245759352169769,
+            0.22438560625027437,
+            0.2357973221997673,
+            0.2582922589737156,
+            0.23462277967882536,
+            0.24118086216956555,
+            0.21181398429355303
+          ]
+        },
+        "tx": {
+          "schema": "rml2018a-event-boundary-pilot-v1",
+          "run_id": "a4ad8c11361145f3892f276ff1c3391a",
+          "batch": 170,
+          "rows": [
+            4080,
+            4081,
+            4082,
+            4083,
+            4084,
+            4085,
+            4086,
+            4087,
+            4088,
+            4089,
+            4090,
+            4091,
+            4092,
+            4093,
+            4094,
+            4095,
+            4096,
+            4097,
+            4098,
+            4099,
+            4100,
+            4101,
+            4102,
+            4103
+          ],
+          "center_hz": 2455000000,
+          "rate_sps": 2100000,
+          "bandwidth_hz": 1500000,
+          "tx_gain_db": 60,
+          "tx_channel": 0,
+          "tx_antenna": "TX/RX",
+          "serial": "2508504",
+          "lo_offset_hz": 250000,
+          "payload_bytes": 208896,
+          "payload_sha256": "854070c638b94840be258b0594fef061042bb3f1439b953987b269332bc5cc4a",
+          "packet_samples": 26112,
+          "repeats": 321,
+          "tx_samples": 8381952,
+          "max_seconds": 4,
+          "complex_peak": 0.632455532033676
+        }
+      },
+      "4266": {
+        "source": {
+          "rows": [
+            102384,
+            102385,
+            102386,
+            102387,
+            102388,
+            102389,
+            102390,
+            102391,
+            102392,
+            102393,
+            102394,
+            102395,
+            102396,
+            102397,
+            102398,
+            102399,
+            102400,
+            102401,
+            102402,
+            102403,
+            102404,
+            102405,
+            102406,
+            102407
+          ],
+          "class_ids": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "source_snr_db": [
+            28,
+            28,
+            28,
+            28,
+            28,
+            28,
+            28,
+            28,
+            28,
+            28,
+            28,
+            28,
+            28,
+            28,
+            28,
+            28,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30
+          ],
+          "original_iq_sha256": "0e950501914023a926719a3d01a4debff299a58aef3a854644b9814451bc5dba",
+          "scales": [
+            0.2199031367263958,
+            0.2260098289918046,
+            0.22141901573356046,
+            0.23331249088285158,
+            0.23431415097833003,
+            0.22762427400867152,
+            0.2155187106357879,
+            0.24071026948792332,
+            0.2241793303607426,
+            0.23365242331704883,
+            0.22493129281173632,
+            0.22948749410479596,
+            0.2197193571483282,
+            0.2199668300512686,
+            0.23516455924601992,
+            0.22415278574496453,
+            0.22260325138324175,
+            0.22454968325111532,
+            0.23064980969137147,
+            0.23027538629000524,
+            0.22313185229987312,
+            0.22287456315894916,
+            0.22343217300965423,
+            0.22568643211203318
+          ]
+        },
+        "tx": {
+          "schema": "rml2018a-event-boundary-pilot-v1",
+          "run_id": "a4ad8c11361145f3892f276ff1c3391a",
+          "batch": 4266,
+          "rows": [
+            102384,
+            102385,
+            102386,
+            102387,
+            102388,
+            102389,
+            102390,
+            102391,
+            102392,
+            102393,
+            102394,
+            102395,
+            102396,
+            102397,
+            102398,
+            102399,
+            102400,
+            102401,
+            102402,
+            102403,
+            102404,
+            102405,
+            102406,
+            102407
+          ],
+          "center_hz": 2455000000,
+          "rate_sps": 2100000,
+          "bandwidth_hz": 1500000,
+          "tx_gain_db": 60,
+          "tx_channel": 0,
+          "tx_antenna": "TX/RX",
+          "serial": "2508504",
+          "lo_offset_hz": 250000,
+          "payload_bytes": 208896,
+          "payload_sha256": "d19eeabc4211d253aea717f9b9609ecb1814dcd680b8a593c98967062f31c10a",
+          "packet_samples": 26112,
+          "repeats": 321,
+          "tx_samples": 8381952,
+          "max_seconds": 4,
+          "complex_peak": 0.632455532033676
+        }
+      },
+      "4437": {
+        "source": {
+          "rows": [
+            106488,
+            106489,
+            106490,
+            106491,
+            106492,
+            106493,
+            106494,
+            106495,
+            106496,
+            106497,
+            106498,
+            106499,
+            106500,
+            106501,
+            106502,
+            106503,
+            106504,
+            106505,
+            106506,
+            106507,
+            106508,
+            106509,
+            106510,
+            106511
+          ],
+          "class_ids": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "source_snr_db": [
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20
+          ],
+          "original_iq_sha256": "f2f3317211d4da5faebc947fc57734527bccc9463bcedc87ed0a5ccde339a800",
+          "scales": [
+            0.22416769150139285,
+            0.22248683318214238,
+            0.22671751528067718,
+            0.2241882585047534,
+            0.2187839353362562,
+            0.22855843758094913,
+            0.2313630421049393,
+            0.2241185499911565,
+            0.2227842283964761,
+            0.24883184993187138,
+            0.18334244654938858,
+            0.24896456677833034,
+            0.24249382980946982,
+            0.25064115739853166,
+            0.20735938462218895,
+            0.23257520451771843,
+            0.2368637360209304,
+            0.24251548729550282,
+            0.214348880990892,
+            0.2013278870420377,
+            0.21955218693976078,
+            0.21435577132152966,
+            0.2182711169811279,
+            0.22217915230398674
+          ]
+        },
+        "tx": {
+          "schema": "rml2018a-event-boundary-pilot-v1",
+          "run_id": "a4ad8c11361145f3892f276ff1c3391a",
+          "batch": 4437,
+          "rows": [
+            106488,
+            106489,
+            106490,
+            106491,
+            106492,
+            106493,
+            106494,
+            106495,
+            106496,
+            106497,
+            106498,
+            106499,
+            106500,
+            106501,
+            106502,
+            106503,
+            106504,
+            106505,
+            106506,
+            106507,
+            106508,
+            106509,
+            106510,
+            106511
+          ],
+          "center_hz": 2455000000,
+          "rate_sps": 2100000,
+          "bandwidth_hz": 1500000,
+          "tx_gain_db": 60,
+          "tx_channel": 0,
+          "tx_antenna": "TX/RX",
+          "serial": "2508504",
+          "lo_offset_hz": 250000,
+          "payload_bytes": 208896,
+          "payload_sha256": "a3cd0e11e364b14e5a2a3bb4711307da7c70a367f71210a1c027beb4e7779497",
+          "packet_samples": 26112,
+          "repeats": 321,
+          "tx_samples": 8381952,
+          "max_seconds": 4,
+          "complex_peak": 0.632455532033676
+        }
+      },
+      "62122": {
+        "source": {
+          "rows": [
+            1490928,
+            1490929,
+            1490930,
+            1490931,
+            1490932,
+            1490933,
+            1490934,
+            1490935,
+            1490936,
+            1490937,
+            1490938,
+            1490939,
+            1490940,
+            1490941,
+            1490942,
+            1490943,
+            1490944,
+            1490945,
+            1490946,
+            1490947,
+            1490948,
+            1490949,
+            1490950,
+            1490951
+          ],
+          "class_ids": [
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14
+          ],
+          "source_snr_db": [
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            30,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20,
+            -20
+          ],
+          "original_iq_sha256": "0fe8e36623fe4706392558fa91b0771942dd985c7b828f2b0ebc0b5e9ef3f28e",
+          "scales": [
+            0.35062748747048517,
+            0.33129585577222803,
+            0.3551826434795397,
+            0.33801891692721836,
+            0.33298403617917643,
+            0.33984084540896053,
+            0.3487715677630459,
+            0.34635018542448864,
+            0.3782570416622729,
+            0.3426523608684881,
+            0.34339957725742287,
+            0.34555927294582883,
+            0.3404688531169762,
+            0.3222915367799013,
+            0.34014624306950836,
+            0.3264865066296722,
+            0.20883868034077607,
+            0.24867491597805752,
+            0.21438593957599292,
+            0.24442080344595452,
+            0.2028177154815013,
+            0.2355451724963133,
+            0.25138849018881176,
+            0.2316735811464317
+          ]
+        },
+        "tx": {
+          "schema": "rml2018a-event-boundary-pilot-v1",
+          "run_id": "a4ad8c11361145f3892f276ff1c3391a",
+          "batch": 62122,
+          "rows": [
+            1490928,
+            1490929,
+            1490930,
+            1490931,
+            1490932,
+            1490933,
+            1490934,
+            1490935,
+            1490936,
+            1490937,
+            1490938,
+            1490939,
+            1490940,
+            1490941,
+            1490942,
+            1490943,
+            1490944,
+            1490945,
+            1490946,
+            1490947,
+            1490948,
+            1490949,
+            1490950,
+            1490951
+          ],
+          "center_hz": 2455000000,
+          "rate_sps": 2100000,
+          "bandwidth_hz": 1500000,
+          "tx_gain_db": 60,
+          "tx_channel": 0,
+          "tx_antenna": "TX/RX",
+          "serial": "2508504",
+          "lo_offset_hz": 250000,
+          "payload_bytes": 208896,
+          "payload_sha256": "1cc78a59de517f662a746258b04121f6cf46b096a5212aa71c6547730dd4d447",
+          "packet_samples": 26112,
+          "repeats": 321,
+          "tx_samples": 8381952,
+          "max_seconds": 4,
+          "complex_peak": 0.632455532033676
+        }
+      }
+    },
+    "source_disjointness": {
+      "parents": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0004352/source.json",
+          "sha256": "e4b08dfc90a35b33783068154abf994998f6033a9d637f26d91da45e32b48274"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0008790/source.json",
+          "sha256": "a300812600ce2a3e4579d1580040b2e7459000578ab3217a3cc9081292a3707f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0013227/source.json",
+          "sha256": "90d898b5d31f2625d27067b2f79b9b2a53f1d82335749d4d5084e392c90e9bbd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0017664/source.json",
+          "sha256": "0f27ea560e7048f8301193cb4d519b7436dfd1b8e77e8e12392c49b76ae93e6c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0022102/source.json",
+          "sha256": "93c2e42cee0fabb75288e29b516e7e63ecdea7e674aa36fb667f639b34222ddf"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0026539/source.json",
+          "sha256": "cecae2aa1df4f1c10cf7ccfbac3c12f7b0f9bcbb8d3bd3014d7655084b615a21"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0030976/source.json",
+          "sha256": "e82be65eb362b6716f3e30f8d76554fa36d90fe59db1ae006e14ec1aa24d3ef6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0035414/source.json",
+          "sha256": "6e187f9f2d447243e50ef0aa3bceb947534fa93058774a44109c4fc3d72e1d21"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0039851/source.json",
+          "sha256": "0d3394698ba84423f445d5abaf2be648ff2b5a1071863fce368755ecc80d9937"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0044288/source.json",
+          "sha256": "0ec3c2cf2aa096b3b26a1df0068d7a8d248f1356d26d5843ac7148d6976f7cf2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0048726/source.json",
+          "sha256": "fcb62cc3c436d71fd285677b4ab841f89c4f2ac93901305362d9f282d64f42a1"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0053163/source.json",
+          "sha256": "0ebc7081289d9bb27710b9a7b7734d35b510fc5f357590eb478c4b33b2b6499b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0057600/source.json",
+          "sha256": "0a550d0d8c6807efb43619453d932b216f0fe1956b8147b969e03e298d6e21f9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0062038/source.json",
+          "sha256": "5b006b625ca57923b1348e8069b878840082563a444ffe2dc13383949c5cd467"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0066475/source.json",
+          "sha256": "6fdb5bbb9ae3739fa8a9b6f7ff486bc2d6d27e12e8abd6381ccfb8bfbc938d7e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0070912/source.json",
+          "sha256": "e7933005038f4b9481281655a0a0d0ef8b4fa923f4fe9f773b5fe5da37134ec4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0075350/source.json",
+          "sha256": "022109bd32f57020ba3cc926c09b7e6d979936c2f4135715207eaaef3de8e066"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0079787/source.json",
+          "sha256": "668ea464fc4c294139cc6fd353afa4ee6bcabde6a4568670437e7cb13e55162d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0084224/source.json",
+          "sha256": "9b85a66aeb9841c256bd004cdfdbf0e1edbf4cdb78f2ef606fc4248c35aa41fc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0088662/source.json",
+          "sha256": "d80affcabb62198c06e9fefc09af0d9664d044ef43d1cd8df293d9991c7873c8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0093099/source.json",
+          "sha256": "2ce5a4169dfcc3397950e718bffe97446adaa253ae00be16eff6c36113e374ce"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0097536/source.json",
+          "sha256": "4786f91dbe4dcce885a3a65e73266d330b7b85d2998cadbfb3aae2538cf8fbba"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0101974/source.json",
+          "sha256": "95beda5fdfd175b89440bd0df33be0a8b27743ca8df6fa6e631706909f0b23b9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-24class-20260911/batch-0106411/source.json",
+          "sha256": "ac329bbefa1c463cfbd65063e2e5a5a2717c03fcd415d27874acb53cb4249246"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-antenna-20260911/batch-0022016/source.json",
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-20260912/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx20-20260912/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx40-20260912/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx60-20260912/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80-20260912/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable-tx80rx40-20260912/batch-0022016/source.json",
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable20-tx70rx40-20260912/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable20-tx70rx40-20260912/batch-0022016/source.json",
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable20-tx80rx40-20260912/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable20-tx80rx40-20260912/batch-0022016/source.json",
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-stopfix-20260912/batch-0004268/source.json",
+          "sha256": "ba9692dd909f1cba5573b82b0b6b56b6e8276f298db7ddbae1779d65a10b3ae6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx70rx40-20260912/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0004268/source.json",
+          "sha256": "ba9692dd909f1cba5573b82b0b6b56b6e8276f298db7ddbae1779d65a10b3ae6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-agx-cable30-tx80rx40-20260912/batch-0022016/source.json",
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-a-20260912/batch-0022016/source.json",
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0004267/source.json",
+          "sha256": "ebe2065d03149baffe2b60d312497045273327cdf87abe47a27ad131be862d9d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-cable20-level-b-20260912/batch-0022016/source.json",
+          "sha256": "8fc1fbd8e4320b8cba17b4362d9379d7c3f96f3c3ef9497652ecaf15a8f86c0a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910a/batch-0004267/source.json",
+          "sha256": "2426cbc24d9d4c048fdfc49d832444c0d574d6d11dc89048a7b65872f053587b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910b/batch-0004267/source.json",
+          "sha256": "2426cbc24d9d4c048fdfc49d832444c0d574d6d11dc89048a7b65872f053587b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004267/source.json",
+          "sha256": "2426cbc24d9d4c048fdfc49d832444c0d574d6d11dc89048a7b65872f053587b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0004268/source.json",
+          "sha256": "2545f55c5c795a4f725593dd3595416d0225cce59ff03c2f505ea6ddc337de5b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-pilot-20260910c/batch-0022016/source.json",
+          "sha256": "ff4a0e939307c6952b8646c1ee579786e5c0bf0435c24b15fdeaffda10e050be"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066422/source.json",
+          "sha256": "b2ec50f8d457f28bc317eb619d08b51e7dcf96ba2c230f7d44117b5c89aa2e22"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0066423/source.json",
+          "sha256": "684148543cb6d5b0a0547677eee4f9568dd4758e19b529d7f713f8eef317aec2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075296/source.json",
+          "sha256": "04ed9c174143568b1d2379445bf403648ebef01fcd1d49df3aaedc1a01e422e8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-qamguard-20260912/batch-0075297/source.json",
+          "sha256": "0f6de0287f90d8bed7ba0cc410b427a2a3445c215d6c0b3bfd657637b1f99b48"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0008790/source.json",
+          "sha256": "184fdd629f33ee247dce75d508aa4b37015e0d7bbe117d3ab01b9dd573f8bb73"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0013227/source.json",
+          "sha256": "7efc886bd0c6d851788d19488fb39595f31b2411ad8d7535e4c6a9224d3fe396"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0017664/source.json",
+          "sha256": "188b38db2de207144c66afae1e392113a9c32c6301557848c26544656fc13884"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0030976/source.json",
+          "sha256": "cea5de08608f482a88b6e4207690a9ab6cf00b6d684ebee141edd664eff3e36a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0035414/source.json",
+          "sha256": "799ef03e6a137e28ec9455ca1e149cc4ef8125776ad09342c32b27594eecec91"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0039851/source.json",
+          "sha256": "1ac95e782fe9b27f551e40563ffa8146c82f9e495ed76f768dbd3c6aeedc5f18"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0044288/source.json",
+          "sha256": "659018215f08717477c61f5af3a8162a93d91a30c1b776935e9a688823a10856"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0048726/source.json",
+          "sha256": "633abf441f23554a3a401da04c87c4e59ccb699adac1852fa585dcf1079e0bf5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0053163/source.json",
+          "sha256": "0340df126da7e56fd23bf419b63723ae04ecb80a463686a7d85a2fa998f25ba8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0062038/source.json",
+          "sha256": "da737f6baa47d7b1411a63de41f2b63615fcd91010a3df80a29f93badad6409b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0070912/source.json",
+          "sha256": "26eef10256af03c9c09db78a26f83ea587f953b1b01b4d4bfcf54846d25cfd66"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0079787/source.json",
+          "sha256": "6015feaebf4383763d83edd88fcb6b957be345b83bdc5b868935886e9425acee"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0084224/source.json",
+          "sha256": "01e31c689abecda2d9612c9a68e694cffa0f8106f4a2e3d2e5eb66073eaa8da5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0088662/source.json",
+          "sha256": "45e5cef8ca49529fc9a9247225e0e80d571d4e171da8b16100ed743f6530eae6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0097536/source.json",
+          "sha256": "9ff7ab7f25757be615efdb49811416c0759b268d24e3d97c0d45c40e017fe012"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0106411/source.json",
+          "sha256": "6d97c402464067d5a6214b2aaa1f7c710de6c3bde34a275191d74a496af73017"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-rxgain40-20260912/batch-0066440/source.json",
+          "sha256": "726fd6c525c40fe1dbfaee77e565e31c2758ac6f0a44b2a2337e45175ea7c7ce"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-rxgain40-20260912/batch-0066441/source.json",
+          "sha256": "58fd7b0889965bc4550826a7d5c3b78605e4a24a62566cbea645c5be267093b7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-rxgain40-20260912/batch-0075314/source.json",
+          "sha256": "362fe1f457ac1570928e31d2dda990bb6481686285ae3f0d0a7818ca60586ed2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-rxgain40-20260912/batch-0075315/source.json",
+          "sha256": "82969d2a888fde008afd68de7b52ccc4f9b89d6f654d7f69a477f130e2bdecc7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-rxgain50-20260912/batch-0066440/source.json",
+          "sha256": "726fd6c525c40fe1dbfaee77e565e31c2758ac6f0a44b2a2337e45175ea7c7ce"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-rxgain50-20260912/batch-0066441/source.json",
+          "sha256": "58fd7b0889965bc4550826a7d5c3b78605e4a24a62566cbea645c5be267093b7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-rxgain50-20260912/batch-0075314/source.json",
+          "sha256": "362fe1f457ac1570928e31d2dda990bb6481686285ae3f0d0a7818ca60586ed2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-rxgain50-20260912/batch-0075315/source.json",
+          "sha256": "82969d2a888fde008afd68de7b52ccc4f9b89d6f654d7f69a477f130e2bdecc7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911/batch-0022016/source.json",
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-sinr-2455-20260911b/batch-0022016/source.json",
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0004283/source.json",
+          "sha256": "8ed9e0444f817cb84706a4a9a03ed540e7f6ab2ab8b9947d62b4a135d311cc24"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0022032/source.json",
+          "sha256": "787cbc5ed41dcda8b4a649ff8084ce9fed8ddf0a46ef24a0c8f343e741f2f696"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0026470/source.json",
+          "sha256": "b4f137dfd4c00895041516cdbe3215030ebdbaaa1a3718bbf0e358119b7c6c20"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0057531/source.json",
+          "sha256": "ca757ffe4d9f0d7f1fd0da15524c3e5cac118c4256723b1c101268556e870694"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0066406/source.json",
+          "sha256": "cf101e9aa1f674044cfde21f69d7c4b74f514eda6f487fc3796181a010640efa"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0075280/source.json",
+          "sha256": "e38f4d559703575e143d831852c70a5c739e559495e6ea263e4f9cdc2f7a59b7"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0093030/source.json",
+          "sha256": "f77b0b8c7d6bfb8dd288ea7c4eaf152425466c2bf464838f03bc4b4057089142"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-timing8-20260912/batch-0101904/source.json",
+          "sha256": "315ca3372eeae8967ea6f9d608e0a10f5c6af080636813c3942df9d5fc4fa52b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-tx70rx40-20260911/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-tx70rx40-20260911/batch-0022016/source.json",
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-tx80rx40-20260911/batch-0004267/source.json",
+          "sha256": "3982aac94ea0d8926dfe909fe48da7dc29042a2599e9827989397fbc36a6b794"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml2018a-tx80rx40-20260911/batch-0022016/source.json",
+          "sha256": "759f498a2cb990169f41778e4ebeab3b19a376f9496608269dd7ae08fd102662"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml-event-retest-20260913/plan.json",
+          "sha256": "54fed61a914149c8999789b107d698f7432997d2769f04673ccc0bedd5ec4297"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml-uniform24-20260913/plan.json",
+          "sha256": "723cf8348742bfbcbd31bb010e551d2e59025bf83270be248cd7ed784ee86c79"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-rml-snr-strata-20260913/plan.json",
+          "sha256": "31596cb5833ea90d3411b6fc455e27ab47d4eec2dbe02e0398c0662a3def471f"
+        }
+      ],
+      "previous_unique_rows": 2184,
+      "intersection": 0
+    }
+  },
+  "plan_sha256": "9b4e9e59bd257020161c2879584abcbabd71402c4184285fe6a8ed535e030555",
+  "analysis_revisions": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/analysis-plan-v1.json",
+      "sha256": "51b3c8d76b52a3678e0dbdfd8244bba72d23d51fbad44fa18147088d9fddca23"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/analysis-plan-v2.json",
+      "sha256": "68d7626d7ba9b055f442f552b5625c0eb8f9c6b8aff0c057bba8db4417739d58"
+    }
+  ],
+  "summary": {
+    "schema": "rml2018a-event-campaign-summary-v1",
+    "total_dataset_rows": 2555904,
+    "registered_source_rows": 96,
+    "capture_attempts": 5,
+    "captured_rows": 96,
+    "not_captured_rows": 0,
+    "batch_states": {
+      "170": "inferred",
+      "4266": "inferred",
+      "4437": "inferred",
+      "62122": "inferred"
+    },
+    "classification": {
+      "source": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 49
+      },
+      "raw": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 45
+      },
+      "guard": {
+        "total": 96,
+        "predicted": 96,
+        "correct": 49
+      }
+    },
+    "quality": {
+      "raw": {
+        "estimated": 96,
+        "invalid": 0,
+        "not_measured": 0,
+        "pending": 0
+      },
+      "guard": {
+        "estimated": 93,
+        "invalid": 3,
+        "not_measured": 0,
+        "pending": 0
+      }
+    },
+    "quality_reasons": {
+      "raw": {},
+      "guard": {
+        "residual_not_stationary_across_halves": 3
+      }
+    },
+    "recognition_by_quality": {
+      "raw": {
+        "estimated": {
+          "total": 96,
+          "correct": 45
+        },
+        "invalid": {
+          "total": 0,
+          "correct": 0
+        },
+        "not_measured": {
+          "total": 0,
+          "correct": 0
+        },
+        "pending": {
+          "total": 0,
+          "correct": 0
+        }
+      },
+      "guard": {
+        "estimated": {
+          "total": 93,
+          "correct": 46
+        },
+        "invalid": {
+          "total": 3,
+          "correct": 3
+        },
+        "not_measured": {
+          "total": 0,
+          "correct": 0
+        },
+        "pending": {
+          "total": 0,
+          "correct": 0
+        }
+      }
+    },
+    "raw_to_guard": {
+      "corrected": 5,
+      "regressed": 1
+    },
+    "by_source_snr": {
+      "-20": {
+        "classification": {
+          "source": {
+            "total": 40,
+            "predicted": 40,
+            "correct": 1
+          },
+          "raw": {
+            "total": 40,
+            "predicted": 40,
+            "correct": 1
+          },
+          "guard": {
+            "total": 40,
+            "predicted": 40,
+            "correct": 1
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 40,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 40,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {}
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 40,
+              "correct": 1
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 40,
+              "correct": 1
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 1,
+          "regressed": 1
+        }
+      },
+      "-18": {
+        "classification": {
+          "source": {
+            "total": 8,
+            "predicted": 8,
+            "correct": 0
+          },
+          "raw": {
+            "total": 8,
+            "predicted": 8,
+            "correct": 0
+          },
+          "guard": {
+            "total": 8,
+            "predicted": 8,
+            "correct": 0
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 8,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 8,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {}
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 8,
+              "correct": 0
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 8,
+              "correct": 0
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 0,
+          "regressed": 0
+        }
+      },
+      "28": {
+        "classification": {
+          "source": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          },
+          "raw": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          },
+          "guard": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {}
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 16,
+              "correct": 16
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 16,
+              "correct": 16
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 0,
+          "regressed": 0
+        }
+      },
+      "30": {
+        "classification": {
+          "source": {
+            "total": 32,
+            "predicted": 32,
+            "correct": 32
+          },
+          "raw": {
+            "total": 32,
+            "predicted": 32,
+            "correct": 28
+          },
+          "guard": {
+            "total": 32,
+            "predicted": 32,
+            "correct": 32
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 32,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 29,
+            "invalid": 3,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {
+            "residual_not_stationary_across_halves": 3
+          }
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 32,
+              "correct": 28
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 29,
+              "correct": 29
+            },
+            "invalid": {
+              "total": 3,
+              "correct": 3
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 4,
+          "regressed": 0
+        }
+      }
+    },
+    "by_class": {
+      "0": {
+        "classification": {
+          "source": {
+            "total": 56,
+            "predicted": 56,
+            "correct": 32
+          },
+          "raw": {
+            "total": 56,
+            "predicted": 56,
+            "correct": 32
+          },
+          "guard": {
+            "total": 56,
+            "predicted": 56,
+            "correct": 32
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 56,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 56,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {}
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 56,
+              "correct": 32
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 56,
+              "correct": 32
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 0,
+          "regressed": 0
+        }
+      },
+      "1": {
+        "classification": {
+          "source": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 0
+          },
+          "raw": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 0
+          },
+          "guard": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 0
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {}
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 16,
+              "correct": 0
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 16,
+              "correct": 0
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 0,
+          "regressed": 0
+        }
+      },
+      "13": {
+        "classification": {
+          "source": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          },
+          "raw": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 12
+          },
+          "guard": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 13,
+            "invalid": 3,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {
+            "residual_not_stationary_across_halves": 3
+          }
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 16,
+              "correct": 12
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 13,
+              "correct": 13
+            },
+            "invalid": {
+              "total": 3,
+              "correct": 3
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 4,
+          "regressed": 0
+        }
+      },
+      "14": {
+        "classification": {
+          "source": {
+            "total": 8,
+            "predicted": 8,
+            "correct": 1
+          },
+          "raw": {
+            "total": 8,
+            "predicted": 8,
+            "correct": 1
+          },
+          "guard": {
+            "total": 8,
+            "predicted": 8,
+            "correct": 1
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 8,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 8,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {}
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 8,
+              "correct": 1
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 8,
+              "correct": 1
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 1,
+          "regressed": 1
+        }
+      }
+    },
+    "by_class_source_snr": {
+      "0/-20": {
+        "classification": {
+          "source": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 0
+          },
+          "raw": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 0
+          },
+          "guard": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 0
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {}
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 16,
+              "correct": 0
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 16,
+              "correct": 0
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 0,
+          "regressed": 0
+        }
+      },
+      "0/-18": {
+        "classification": {
+          "source": {
+            "total": 8,
+            "predicted": 8,
+            "correct": 0
+          },
+          "raw": {
+            "total": 8,
+            "predicted": 8,
+            "correct": 0
+          },
+          "guard": {
+            "total": 8,
+            "predicted": 8,
+            "correct": 0
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 8,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 8,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {}
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 8,
+              "correct": 0
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 8,
+              "correct": 0
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 0,
+          "regressed": 0
+        }
+      },
+      "0/28": {
+        "classification": {
+          "source": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          },
+          "raw": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          },
+          "guard": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {}
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 16,
+              "correct": 16
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 16,
+              "correct": 16
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 0,
+          "regressed": 0
+        }
+      },
+      "0/30": {
+        "classification": {
+          "source": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          },
+          "raw": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          },
+          "guard": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {}
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 16,
+              "correct": 16
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 16,
+              "correct": 16
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 0,
+          "regressed": 0
+        }
+      },
+      "1/-20": {
+        "classification": {
+          "source": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 0
+          },
+          "raw": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 0
+          },
+          "guard": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 0
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {}
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 16,
+              "correct": 0
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 16,
+              "correct": 0
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 0,
+          "regressed": 0
+        }
+      },
+      "13/30": {
+        "classification": {
+          "source": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          },
+          "raw": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 12
+          },
+          "guard": {
+            "total": 16,
+            "predicted": 16,
+            "correct": 16
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 16,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 13,
+            "invalid": 3,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {
+            "residual_not_stationary_across_halves": 3
+          }
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 16,
+              "correct": 12
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 13,
+              "correct": 13
+            },
+            "invalid": {
+              "total": 3,
+              "correct": 3
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 4,
+          "regressed": 0
+        }
+      },
+      "14/-20": {
+        "classification": {
+          "source": {
+            "total": 8,
+            "predicted": 8,
+            "correct": 1
+          },
+          "raw": {
+            "total": 8,
+            "predicted": 8,
+            "correct": 1
+          },
+          "guard": {
+            "total": 8,
+            "predicted": 8,
+            "correct": 1
+          }
+        },
+        "quality": {
+          "raw": {
+            "estimated": 8,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          },
+          "guard": {
+            "estimated": 8,
+            "invalid": 0,
+            "not_measured": 0,
+            "pending": 0
+          }
+        },
+        "quality_reasons": {
+          "raw": {},
+          "guard": {}
+        },
+        "recognition_by_quality": {
+          "raw": {
+            "estimated": {
+              "total": 8,
+              "correct": 1
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          },
+          "guard": {
+            "estimated": {
+              "total": 8,
+              "correct": 1
+            },
+            "invalid": {
+              "total": 0,
+              "correct": 0
+            },
+            "not_measured": {
+              "total": 0,
+              "correct": 0
+            },
+            "pending": {
+              "total": 0,
+              "correct": 0
+            }
+          }
+        },
+        "raw_to_guard": {
+          "corrected": 1,
+          "regressed": 1
+        }
+      }
+    },
+    "complete": true,
+    "whole_dataset_complete": false,
+    "semantics": "Finite contiguous24 campaign boundary/resume engineering comparison. Per-row original Y/Z; fixed source/raw/guard with all failures. Conditional source-assisted SINR includes link distortion, not calibrated RF SINR. Clean pilot; single1024 inference, not blind synchronization, production four-window aggregation or independent accuracy.",
+    "recognizer_available": false
+  },
+  "source_capture_associations": [
+    {
+      "batch": 170,
+      "attempt": "attempt-0",
+      "source": {
+        "rows": [
+          4080,
+          4081,
+          4082,
+          4083,
+          4084,
+          4085,
+          4086,
+          4087,
+          4088,
+          4089,
+          4090,
+          4091,
+          4092,
+          4093,
+          4094,
+          4095,
+          4096,
+          4097,
+          4098,
+          4099,
+          4100,
+          4101,
+          4102,
+          4103
+        ],
+        "class_ids": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "source_snr_db": [
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -18,
+          -18,
+          -18,
+          -18,
+          -18,
+          -18,
+          -18,
+          -18
+        ],
+        "original_iq_sha256": "c4814d6ed0411b14b5f95f2748430940a309036ca9a1eac8479d6fe5b2e0a5c7",
+        "scales": [
+          0.19968931098158185,
+          0.24497346527649655,
+          0.21170555612521566,
+          0.22260961189586323,
+          0.2294587976609826,
+          0.23637489197661796,
+          0.2370286864790942,
+          0.24168345065693833,
+          0.22065426926629866,
+          0.2219094886905858,
+          0.22508507165593364,
+          0.24631883245288771,
+          0.22477637187035246,
+          0.2349599427458395,
+          0.2553375652142197,
+          0.2333497575007769,
+          0.2478349693629632,
+          0.245759352169769,
+          0.22438560625027437,
+          0.2357973221997673,
+          0.2582922589737156,
+          0.23462277967882536,
+          0.24118086216956555,
+          0.21181398429355303
+        ]
+      },
+      "rx": {
+        "sweep_id": "retest-boundary-170-1789287951110",
+        "session_generation": 1789287951110,
+        "frequencies": {
+          "kind": "centers",
+          "centers_hz": [
+            2455000000
+          ]
+        },
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_db": 50,
+        "settle_ms": 500,
+        "frame_samples": 65535,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 1000,
+        "detection_threshold_db": 12.0
+      },
+      "seal": null,
+      "events": {
+        "summary": {
+          "kind": "summary",
+          "status": "failed",
+          "accepted_samples": 402944,
+          "send_records": 401,
+          "async_records": 0,
+          "error": "TX cancelled"
+        },
+        "event_counts": {},
+        "events": [],
+        "clock_brackets": [
+          {
+            "kind": "clock_bracket",
+            "phase": "before_tx",
+            "host_before_ns": 174048630377429,
+            "host_after_ns": 174048630512018,
+            "host_unix_ns": 1789288006983434208,
+            "device_seconds": 1.1853042814924586
+          }
+        ],
+        "scheduled_device_seconds": 1.3853042814924585,
+        "host_send_span_ns": [
+          174048630710447,
+          174049001142680
+        ],
+        "sample_index_semantics": "Nominal TX schedule index only, may be outside burst; not P201 capture index, especially after discontinuity"
+      },
+      "status": "failed",
+      "restored": true
+    },
+    {
+      "batch": 170,
+      "attempt": "attempt-1",
+      "source": {
+        "rows": [
+          4080,
+          4081,
+          4082,
+          4083,
+          4084,
+          4085,
+          4086,
+          4087,
+          4088,
+          4089,
+          4090,
+          4091,
+          4092,
+          4093,
+          4094,
+          4095,
+          4096,
+          4097,
+          4098,
+          4099,
+          4100,
+          4101,
+          4102,
+          4103
+        ],
+        "class_ids": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "source_snr_db": [
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -18,
+          -18,
+          -18,
+          -18,
+          -18,
+          -18,
+          -18,
+          -18
+        ],
+        "original_iq_sha256": "c4814d6ed0411b14b5f95f2748430940a309036ca9a1eac8479d6fe5b2e0a5c7",
+        "scales": [
+          0.19968931098158185,
+          0.24497346527649655,
+          0.21170555612521566,
+          0.22260961189586323,
+          0.2294587976609826,
+          0.23637489197661796,
+          0.2370286864790942,
+          0.24168345065693833,
+          0.22065426926629866,
+          0.2219094886905858,
+          0.22508507165593364,
+          0.24631883245288771,
+          0.22477637187035246,
+          0.2349599427458395,
+          0.2553375652142197,
+          0.2333497575007769,
+          0.2478349693629632,
+          0.245759352169769,
+          0.22438560625027437,
+          0.2357973221997673,
+          0.2582922589737156,
+          0.23462277967882536,
+          0.24118086216956555,
+          0.21181398429355303
+        ]
+      },
+      "rx": {
+        "sweep_id": "retest-boundary-170-1789287951111",
+        "session_generation": 1789287951111,
+        "frequencies": {
+          "kind": "centers",
+          "centers_hz": [
+            2455000000
+          ]
+        },
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_db": 50,
+        "settle_ms": 500,
+        "frame_samples": 65535,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 1000,
+        "detection_threshold_db": 12.0
+      },
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/rx/retest-boundary-170-1789287951111-1789287951111-1789288045577750950.sigmf-data",
+        "iq_sha256": "09314562c0edb986b0cdfc26fbc862e1acc6b41fe0ddcb2d96f53280726e72a4",
+        "metadata_sha256": "94ef41fcb6c332ef032c0cdcb657f13b052a41c6a28b44a890373ba727b7d536",
+        "request_id": 5,
+        "sequence": 1667,
+        "session_generation": 1789287951111
+      },
+      "events": {
+        "summary": {
+          "kind": "summary",
+          "status": "sent_complete",
+          "accepted_samples": 8381952,
+          "send_records": 8346,
+          "async_records": 1,
+          "error": ""
+        },
+        "event_counts": {
+          "1": 1
+        },
+        "events": [
+          {
+            "kind": "async",
+            "host_receive_mono_ns": 174091392296445,
+            "host_receive_unix_ns": 1789288049745357736,
+            "channel": 0,
+            "event_code": 1,
+            "has_device_time": true,
+            "device_seconds": 5.378643403461348,
+            "user_payload": [
+              154,
+              0,
+              0,
+              0
+            ],
+            "name": "burst_ack",
+            "nominal_sample_from_scheduled_start": 8381953.343649125
+          }
+        ],
+        "clock_brackets": [
+          {
+            "kind": "clock_bracket",
+            "phase": "before_tx",
+            "host_before_ns": 174087200581727,
+            "host_after_ns": 174087200896665,
+            "host_unix_ns": 1789288045553638474,
+            "device_seconds": 1.1872370493427171
+          },
+          {
+            "kind": "clock_bracket",
+            "phase": "after_tx",
+            "host_before_ns": 174092377936932,
+            "host_after_ns": 174092378213280,
+            "host_unix_ns": 1789288050730994447,
+            "device_seconds": 6.364833102329682
+          }
+        ],
+        "scheduled_device_seconds": 1.387237049342717,
+        "host_send_span_ns": [
+          174087201067031,
+          174091370993556
+        ],
+        "sample_index_semantics": "Nominal TX schedule index only, may be outside burst; not P201 capture index, especially after discontinuity"
+      },
+      "status": "captured",
+      "restored": true
+    },
+    {
+      "batch": 4266,
+      "attempt": "attempt-0",
+      "source": {
+        "rows": [
+          102384,
+          102385,
+          102386,
+          102387,
+          102388,
+          102389,
+          102390,
+          102391,
+          102392,
+          102393,
+          102394,
+          102395,
+          102396,
+          102397,
+          102398,
+          102399,
+          102400,
+          102401,
+          102402,
+          102403,
+          102404,
+          102405,
+          102406,
+          102407
+        ],
+        "class_ids": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "source_snr_db": [
+          28,
+          28,
+          28,
+          28,
+          28,
+          28,
+          28,
+          28,
+          28,
+          28,
+          28,
+          28,
+          28,
+          28,
+          28,
+          28,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30
+        ],
+        "original_iq_sha256": "0e950501914023a926719a3d01a4debff299a58aef3a854644b9814451bc5dba",
+        "scales": [
+          0.2199031367263958,
+          0.2260098289918046,
+          0.22141901573356046,
+          0.23331249088285158,
+          0.23431415097833003,
+          0.22762427400867152,
+          0.2155187106357879,
+          0.24071026948792332,
+          0.2241793303607426,
+          0.23365242331704883,
+          0.22493129281173632,
+          0.22948749410479596,
+          0.2197193571483282,
+          0.2199668300512686,
+          0.23516455924601992,
+          0.22415278574496453,
+          0.22260325138324175,
+          0.22454968325111532,
+          0.23064980969137147,
+          0.23027538629000524,
+          0.22313185229987312,
+          0.22287456315894916,
+          0.22343217300965423,
+          0.22568643211203318
+        ]
+      },
+      "rx": {
+        "sweep_id": "retest-boundary-4266-1789287951112",
+        "session_generation": 1789287951112,
+        "frequencies": {
+          "kind": "centers",
+          "centers_hz": [
+            2455000000
+          ]
+        },
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_db": 50,
+        "settle_ms": 500,
+        "frame_samples": 65535,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 1000,
+        "detection_threshold_db": 12.0
+      },
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/rx/retest-boundary-4266-1789287951112-1789287951112-1789288056643356732.sigmf-data",
+        "iq_sha256": "809834443eb4ece89e657540460ddc201a63ce027c148c0eb19216bff7edd2fa",
+        "metadata_sha256": "b7f49aef5925dd2ff686119a6b4c376eceec2aa183358da5474deacde405199f",
+        "request_id": 5,
+        "sequence": 1668,
+        "session_generation": 1789287951112
+      },
+      "events": {
+        "summary": {
+          "kind": "summary",
+          "status": "sent_complete",
+          "accepted_samples": 8381952,
+          "send_records": 8346,
+          "async_records": 1,
+          "error": ""
+        },
+        "event_counts": {
+          "1": 1
+        },
+        "events": [
+          {
+            "kind": "async",
+            "host_receive_mono_ns": 174102457462576,
+            "host_receive_unix_ns": 1789288060810523387,
+            "channel": 0,
+            "event_code": 1,
+            "has_device_time": true,
+            "device_seconds": 5.386886379622465,
+            "user_payload": [
+              154,
+              0,
+              0,
+              0
+            ],
+            "name": "burst_ack",
+            "nominal_sample_from_scheduled_start": 8381953.343649125
+          }
+        ],
+        "clock_brackets": [
+          {
+            "kind": "clock_bracket",
+            "phase": "before_tx",
+            "host_before_ns": 174098266317426,
+            "host_after_ns": 174098266424176,
+            "host_unix_ns": 1789288056619373821,
+            "device_seconds": 1.1954800255038336
+          },
+          {
+            "kind": "clock_bracket",
+            "phase": "after_tx",
+            "host_before_ns": 174103444695223,
+            "host_after_ns": 174103445025330,
+            "host_unix_ns": 1789288061797752546,
+            "device_seconds": 6.374534054676081
+          }
+        ],
+        "scheduled_device_seconds": 1.3954800255038335,
+        "host_send_span_ns": [
+          174098266621901,
+          174102436455328
+        ],
+        "sample_index_semantics": "Nominal TX schedule index only, may be outside burst; not P201 capture index, especially after discontinuity"
+      },
+      "status": "captured",
+      "restored": true
+    },
+    {
+      "batch": 4437,
+      "attempt": "attempt-0",
+      "source": {
+        "rows": [
+          106488,
+          106489,
+          106490,
+          106491,
+          106492,
+          106493,
+          106494,
+          106495,
+          106496,
+          106497,
+          106498,
+          106499,
+          106500,
+          106501,
+          106502,
+          106503,
+          106504,
+          106505,
+          106506,
+          106507,
+          106508,
+          106509,
+          106510,
+          106511
+        ],
+        "class_ids": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "source_snr_db": [
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20
+        ],
+        "original_iq_sha256": "f2f3317211d4da5faebc947fc57734527bccc9463bcedc87ed0a5ccde339a800",
+        "scales": [
+          0.22416769150139285,
+          0.22248683318214238,
+          0.22671751528067718,
+          0.2241882585047534,
+          0.2187839353362562,
+          0.22855843758094913,
+          0.2313630421049393,
+          0.2241185499911565,
+          0.2227842283964761,
+          0.24883184993187138,
+          0.18334244654938858,
+          0.24896456677833034,
+          0.24249382980946982,
+          0.25064115739853166,
+          0.20735938462218895,
+          0.23257520451771843,
+          0.2368637360209304,
+          0.24251548729550282,
+          0.214348880990892,
+          0.2013278870420377,
+          0.21955218693976078,
+          0.21435577132152966,
+          0.2182711169811279,
+          0.22217915230398674
+        ]
+      },
+      "rx": {
+        "sweep_id": "retest-boundary-4437-1789287951114",
+        "session_generation": 1789287951114,
+        "frequencies": {
+          "kind": "centers",
+          "centers_hz": [
+            2455000000
+          ]
+        },
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_db": 50,
+        "settle_ms": 500,
+        "frame_samples": 65535,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 1000,
+        "detection_threshold_db": 12.0
+      },
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/rx/retest-boundary-4437-1789287951114-1789287951114-1789288067706879706.sigmf-data",
+        "iq_sha256": "e4c04073214741267d01f3932378a417d7f59e7fa782354170ac52f60bc7b591",
+        "metadata_sha256": "c0d21c916fc91ee9c2d08ac5d1584e5854c1212ba79be6b9dcabc2bd6a214087",
+        "request_id": 5,
+        "sequence": 1669,
+        "session_generation": 1789287951114
+      },
+      "events": {
+        "summary": {
+          "kind": "summary",
+          "status": "sent_complete",
+          "accepted_samples": 8381952,
+          "send_records": 8346,
+          "async_records": 1,
+          "error": ""
+        },
+        "event_counts": {
+          "1": 1
+        },
+        "events": [
+          {
+            "kind": "async",
+            "host_receive_mono_ns": 174113522219305,
+            "host_receive_unix_ns": 1789288071875279668,
+            "channel": 0,
+            "event_code": 1,
+            "has_device_time": true,
+            "device_seconds": 5.393186647457167,
+            "user_payload": [
+              154,
+              0,
+              0,
+              0
+            ],
+            "name": "burst_ack",
+            "nominal_sample_from_scheduled_start": 8381953.343649125
+          }
+        ],
+        "clock_brackets": [
+          {
+            "kind": "clock_bracket",
+            "phase": "before_tx",
+            "host_before_ns": 174109330391973,
+            "host_after_ns": 174109330516195,
+            "host_unix_ns": 1789288067683448752,
+            "device_seconds": 1.201780293338536
+          },
+          {
+            "kind": "clock_bracket",
+            "phase": "after_tx",
+            "host_before_ns": 174114508013056,
+            "host_after_ns": 174114508284219,
+            "host_unix_ns": 1789288072861069995,
+            "device_seconds": 6.379090215374139
+          }
+        ],
+        "scheduled_device_seconds": 1.401780293338536,
+        "host_send_span_ns": [
+          174109330708960,
+          174113501183257
+        ],
+        "sample_index_semantics": "Nominal TX schedule index only, may be outside burst; not P201 capture index, especially after discontinuity"
+      },
+      "status": "captured",
+      "restored": true
+    },
+    {
+      "batch": 62122,
+      "attempt": "attempt-0",
+      "source": {
+        "rows": [
+          1490928,
+          1490929,
+          1490930,
+          1490931,
+          1490932,
+          1490933,
+          1490934,
+          1490935,
+          1490936,
+          1490937,
+          1490938,
+          1490939,
+          1490940,
+          1490941,
+          1490942,
+          1490943,
+          1490944,
+          1490945,
+          1490946,
+          1490947,
+          1490948,
+          1490949,
+          1490950,
+          1490951
+        ],
+        "class_ids": [
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14,
+          14
+        ],
+        "source_snr_db": [
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20,
+          -20
+        ],
+        "original_iq_sha256": "0fe8e36623fe4706392558fa91b0771942dd985c7b828f2b0ebc0b5e9ef3f28e",
+        "scales": [
+          0.35062748747048517,
+          0.33129585577222803,
+          0.3551826434795397,
+          0.33801891692721836,
+          0.33298403617917643,
+          0.33984084540896053,
+          0.3487715677630459,
+          0.34635018542448864,
+          0.3782570416622729,
+          0.3426523608684881,
+          0.34339957725742287,
+          0.34555927294582883,
+          0.3404688531169762,
+          0.3222915367799013,
+          0.34014624306950836,
+          0.3264865066296722,
+          0.20883868034077607,
+          0.24867491597805752,
+          0.21438593957599292,
+          0.24442080344595452,
+          0.2028177154815013,
+          0.2355451724963133,
+          0.25138849018881176,
+          0.2316735811464317
+        ]
+      },
+      "rx": {
+        "sweep_id": "retest-boundary-62122-1789287951116",
+        "session_generation": 1789287951116,
+        "frequencies": {
+          "kind": "centers",
+          "centers_hz": [
+            2455000000
+          ]
+        },
+        "sample_rate_hz": 2100000,
+        "rf_bandwidth_hz": 1500000,
+        "gain_db": 50,
+        "settle_ms": 500,
+        "frame_samples": 65535,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 1000,
+        "detection_threshold_db": 12.0
+      },
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/rx/retest-boundary-62122-1789287951116-1789287951116-1789288078705120446.sigmf-data",
+        "iq_sha256": "c9a4e231ace8764eb0010bd670969e1209671dcd8e695f7fa2ddd538685c594d",
+        "metadata_sha256": "e07de069cbd4a2076c87c97b5e80960b5e151e9f7aee0fab2ae4116101b78541",
+        "request_id": 5,
+        "sequence": 1670,
+        "session_generation": 1789287951116
+      },
+      "events": {
+        "summary": {
+          "kind": "summary",
+          "status": "sent_complete",
+          "accepted_samples": 8381952,
+          "send_records": 8346,
+          "async_records": 1,
+          "error": ""
+        },
+        "event_counts": {
+          "1": 1
+        },
+        "events": [
+          {
+            "kind": "async",
+            "host_receive_mono_ns": 174124519727010,
+            "host_receive_unix_ns": 1789288082872788461,
+            "channel": 0,
+            "event_code": 1,
+            "has_device_time": true,
+            "device_seconds": 5.358463849961796,
+            "user_payload": [
+              154,
+              0,
+              0,
+              0
+            ],
+            "name": "burst_ack",
+            "nominal_sample_from_scheduled_start": 8381953.343649126
+          }
+        ],
+        "clock_brackets": [
+          {
+            "kind": "clock_bracket",
+            "phase": "before_tx",
+            "host_before_ns": 174120327398780,
+            "host_after_ns": 174120327695959,
+            "host_unix_ns": 1789288078680455655,
+            "device_seconds": 1.1670574958431643
+          },
+          {
+            "kind": "clock_bracket",
+            "phase": "after_tx",
+            "host_before_ns": 174125504999351,
+            "host_after_ns": 174125505508719,
+            "host_unix_ns": 1789288083858056802,
+            "device_seconds": 6.344139590498626
+          }
+        ],
+        "scheduled_device_seconds": 1.3670574958431643,
+        "host_send_span_ns": [
+          174120327914739,
+          174124498412373
+        ],
+        "sample_index_semantics": "Nominal TX schedule index only, may be outside burst; not P201 capture index, especially after discontinuity"
+      },
+      "status": "captured",
+      "restored": true
+    }
+  ],
+  "parents": [
+    {
+      "path": "/home/jetson/sdrharness/docs/evidence/RML2018A_SNR_STRATA_2026-09-13.json",
+      "sha256": "438f884b3a4e45b84079383471ef814dcde95f136e64a08c22c3eb7d576f5380",
+      "verified_files": 193,
+      "verified_bytes": 36988199
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/evidence/B210_EVENT_CONTROLS_2026-09-13.json",
+      "sha256": "9ff56190308b7e1ef50a1a4cebd61cbe1d69c05ed0259de7ebe65f1fd1440cef",
+      "verified_files": 64,
+      "verified_bytes": 7843340
+    }
+  ],
+  "model_identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "actual_inference": "One normalized1024 window per source/raw/guard; FP16 autocast with FP32 weights; no production four-window aggregation",
+  "model_windows": 288,
+  "warmup_windows": 2,
+  "failed_inference_attempts": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/inference-2c79b3e0f3d768d5/attempt-0/inference.json",
+      "model_windows": 0,
+      "warmup_windows": 0,
+      "error": "AssertionError: "
+    }
+  ],
+  "accepted_tx_samples": 33930752,
+  "actual_tx_attempts": 5,
+  "maximum_actual_attempt_tx_seconds": 20,
+  "rx_iq_bytes": 1048560,
+  "tests": {
+    "distinct_python_tests": 117,
+    "full_suite_before_final_two_tests": 115,
+    "final_boundary_suite": 16,
+    "completed_capture_files_unchanged": 65,
+    "repeated_infer_new_model_windows": 0,
+    "repeated_completed_capture_new_tx": 0,
+    "verified_inputs": 288,
+    "arithmetic_and_guard_planes": true,
+    "partial_publication_and_changed_shard_budget_tests": true,
+    "acquisition_functions_ast_unchanged": true
+  },
+  "final_state": {
+    "radio": {
+      "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "daemon_pid": [
+        "5909"
+      ],
+      "daemon_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+      "controller_sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+      "health": {
+        "online": true,
+        "healthy": true,
+        "health_flags": 0,
+        "iio_visible": true,
+        "can_retune": true,
+        "can_capture_iq": true,
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        }
+      },
+      "b210": {
+        "host": "agx",
+        "serial": "2508504",
+        "usb_speed_mbps": 5000.0,
+        "usb_node": "/dev/bus/usb/002/004",
+        "usb_holder_pids": []
+      }
+    },
+    "spark": {
+      "pid": 1321,
+      "start_ticks": "1515",
+      "state": "S",
+      "idle_slots": 1
+    },
+    "p201_staging_absent": true,
+    "tx_owners_absent": true
+  },
+  "resume_validation_sha256": "87fe93ff6f093c5dff6fa42a8be92b4f6d92d3a1af788b088bff4f2b17fe684e",
+  "cleanup_summary": {
+    "removed_file_count": 365,
+    "removed_bytes": 21291874,
+    "scratch_absent": true,
+    "checks_root_absent": true,
+    "owner_lock_absent": true,
+    "p201_staging_absent": true
+  },
+  "retained_root": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913",
+  "retained_files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/acquired-summary.json",
+      "bytes": 331096,
+      "sha256": "afcf6fda9bd7fc52628d717f731a3f7686bb5568ae180fe26574a5559fc5a360"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/acquisition-code-equivalence.json",
+      "bytes": 264,
+      "sha256": "538bd39864cad249e5a9a736fc9f75ff0db8116f7ed761ecaeb6a9a2f469fbf9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/acquisition-software/compare-rml2018a-pilot-timing.py",
+      "bytes": 18062,
+      "sha256": "88c78391daec6db87f2f5a1d77c8a04f60a80a9caffad661e548c4a742839e3f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/acquisition-software/rml2018a-rf-campaign.py",
+      "bytes": 38804,
+      "sha256": "9f028fcda40e60685a75a98fcbdcaf4fd2b80735e5e0670935a24a4f51e6a8ed"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/acquisition-software/rml2018a_campaign_events.py",
+      "bytes": 19564,
+      "sha256": "f6fd636e70d438713ceac74ed2cae3f8f2f7aa58e5ccdd3c23df1b8d38e01639"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/analysis-plan-v1.json",
+      "bytes": 9100,
+      "sha256": "51b3c8d76b52a3678e0dbdfd8244bba72d23d51fbad44fa18147088d9fddca23"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/analysis-plan-v2.json",
+      "bytes": 9260,
+      "sha256": "68d7626d7ba9b055f442f552b5625c0eb8f9c6b8aff0c057bba8db4417739d58"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/analysis-v1-software/rml2018a-rf-campaign.py",
+      "bytes": 39867,
+      "sha256": "cf7f1a8d67b70551595218ccb320c3c9f77fe29c76f1da445e26b94adea022a9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/analysis-v1-software/rml2018a_campaign_events.py",
+      "bytes": 22567,
+      "sha256": "f157bb1783581c171228a3b8b9ac945b07a70bbcaf72b5c8f508dec6d163a172"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/capture/audit.json",
+      "bytes": 5561,
+      "sha256": "a42932e6f8196a6b9eefcd89f5fa257126384c6793d9e2c11a21cd1ea669a056"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/capture/rx/retest-boundary-170-1789287951110-1789287951110-1789288007007156605.sigmf-data",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/capture/rx-plan.json",
+      "bytes": 392,
+      "sha256": "e0adea134efd2a4206b3147424cdb99f4e5b323097a55ee5249a186a71457467"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/capture/tx-events.jsonl",
+      "bytes": 65077,
+      "sha256": "9deb62de7baf3608d6b8a9b287c37af055bed1a56f9e9f25a68ed58f7dad2b6d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/capture/tx-uhd.log",
+      "bytes": 855,
+      "sha256": "eeb061b7c672fb045cc8b056a16333b75f6a5a9eb130db05764150b859b326e6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/plan.json",
+      "bytes": 4949,
+      "sha256": "3db23370c2d95a148b8edbb3cad6ec345c98abc7861f3e2c46f16650390b6e6f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/postflight.json",
+      "bytes": 2323,
+      "sha256": "2b72f1fccdcb4b9873e20dd0a25415eb6bc908e42636719f7726a8c95978fdd8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/preflight.json",
+      "bytes": 2157,
+      "sha256": "580e11494d803d90b1044fc1fdce83467dbf34256ddc7b93a0b26bac7ba2794d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/started.json",
+      "bytes": 133,
+      "sha256": "df02f344275343227008a91a9558d15c0ab4d0ea9eef4b00aaa767e3d8d86861"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/audit.json",
+      "bytes": 7619,
+      "sha256": "d6333208fdc179d23f12a9b2f0ab682d5589db2918951ad7a275a92bb3d7f517"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/report.json",
+      "bytes": 2321,
+      "sha256": "3e94235a2075e74a1201fd1677557f0976a1aaa3f123890f09968cca510b775f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/rx/retest-boundary-170-1789287951111-1789287951111-1789288045577750950.sigmf-data",
+      "bytes": 262140,
+      "sha256": "09314562c0edb986b0cdfc26fbc862e1acc6b41fe0ddcb2d96f53280726e72a4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/rx/retest-boundary-170-1789287951111-1789287951111-1789288045577750950.sigmf-meta",
+      "bytes": 487,
+      "sha256": "94ef41fcb6c332ef032c0cdcb657f13b052a41c6a28b44a890373ba727b7d536"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/rx-plan.json",
+      "bytes": 392,
+      "sha256": "9855f73e36cd2a75db829b7e0e31926f6b08dbc897e1ef93af55edb909b6bdde"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/tx-events.jsonl",
+      "bytes": 1351349,
+      "sha256": "6727a7c78e1391a145e10cc36d691d07997ebb5aca2d28abe8237a6b0d693cf7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/tx-uhd.log",
+      "bytes": 842,
+      "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/plan.json",
+      "bytes": 4949,
+      "sha256": "233fbbd0ebd5898fa53c32a4b6d347fd66885abf15478d83de6fac9ec6cd5908"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/postflight.json",
+      "bytes": 2326,
+      "sha256": "9d8c2d830dd6de399bf9b2ece49d2b07378796d20d79a366c1d33584ba4cec7b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/preflight.json",
+      "bytes": 2157,
+      "sha256": "580e11494d803d90b1044fc1fdce83467dbf34256ddc7b93a0b26bac7ba2794d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/started.json",
+      "bytes": 133,
+      "sha256": "f8412cd61be48563979fc0fc9fe0155fd11609913a479978ab49ea2410a6a2e6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/capture-complete.json",
+      "bytes": 1095,
+      "sha256": "8d3144ae2fba875febc8fca05260683fc8167fc8870d23087c3756f39ae01021"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/predictions.json",
+      "bytes": 63343,
+      "sha256": "30669a85fe5c40addcfa8d28089827ccec5b2dc464bf6b1a10cc263aa626be58"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/source.json",
+      "bytes": 1388,
+      "sha256": "0952a480501ce3306199abd9ec2bc0301a4e722b82ef3a85f14c2f8be703fa39"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/audit.json",
+      "bytes": 7702,
+      "sha256": "2bc867384c37c37e141ae1958f4aed3099d56cd1a82257413c7c1acc4fcdb401"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/report.json",
+      "bytes": 2331,
+      "sha256": "ecd8508b5df0299728934822459419cb0e63ff07adbc00b6186f5aefca0a77cb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/rx/retest-boundary-4266-1789287951112-1789287951112-1789288056643356732.sigmf-data",
+      "bytes": 262140,
+      "sha256": "809834443eb4ece89e657540460ddc201a63ce027c148c0eb19216bff7edd2fa"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/rx/retest-boundary-4266-1789287951112-1789287951112-1789288056643356732.sigmf-meta",
+      "bytes": 487,
+      "sha256": "b7f49aef5925dd2ff686119a6b4c376eceec2aa183358da5474deacde405199f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/rx-plan.json",
+      "bytes": 393,
+      "sha256": "e4f15b78e1991cc07735276e7484f743dc0456c7d403c6e1de9624622710e82c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/tx-events.jsonl",
+      "bytes": 1351349,
+      "sha256": "81ce15bebd5c838556fc39b80ed46170746df4a1d4de6ba71a80910469ba2804"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/tx-uhd.log",
+      "bytes": 842,
+      "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/plan.json",
+      "bytes": 5029,
+      "sha256": "9ad845d700866e0b807ac6b0eccccf07ac821c0e6b88428ed7205cedd506570f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/postflight.json",
+      "bytes": 2326,
+      "sha256": "9d8c2d830dd6de399bf9b2ece49d2b07378796d20d79a366c1d33584ba4cec7b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/preflight.json",
+      "bytes": 2157,
+      "sha256": "580e11494d803d90b1044fc1fdce83467dbf34256ddc7b93a0b26bac7ba2794d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/started.json",
+      "bytes": 133,
+      "sha256": "e78a3766bf54cf94ab5cfdffdc9a893d705b5a0e2120b2fe555101659d5bf766"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/capture-complete.json",
+      "bytes": 1144,
+      "sha256": "07709a079371becace79a1b7adde33a55ca0dedec8784c67386425c8b5144a9b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/predictions.json",
+      "bytes": 61041,
+      "sha256": "e4c8db97d8c94da8c6b2a03c6d1eeb5edc0d1a72fe77254bf87e47c695a92566"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/source.json",
+      "bytes": 1417,
+      "sha256": "3dc1c694b5d84f3bf438fe4bbffcf8db63d228e7a9c7a48d50779f6f25f699ab"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/audit.json",
+      "bytes": 7711,
+      "sha256": "b87fa42f0fed659bdc925de67ca9be0530ac9a90ab0b41324afd5570986b002f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/report.json",
+      "bytes": 2329,
+      "sha256": "597b72065fc556fd5efd5b646c602207a67d75a2a094bf94937493ff6d48b270"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/rx/retest-boundary-4437-1789287951114-1789287951114-1789288067706879706.sigmf-data",
+      "bytes": 262140,
+      "sha256": "e4c04073214741267d01f3932378a417d7f59e7fa782354170ac52f60bc7b591"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/rx/retest-boundary-4437-1789287951114-1789287951114-1789288067706879706.sigmf-meta",
+      "bytes": 487,
+      "sha256": "c0d21c916fc91ee9c2d08ac5d1584e5854c1212ba79be6b9dcabc2bd6a214087"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/rx-plan.json",
+      "bytes": 393,
+      "sha256": "c5ab670ed82de76fb6114513f065d7326bc6792f85957a0fddf1cca8f2ee96ab"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/tx-events.jsonl",
+      "bytes": 1351347,
+      "sha256": "5014ecb065297e25e9e9356713754aff0e5cd7df474fda66a006204d0bea721d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/tx-uhd.log",
+      "bytes": 842,
+      "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/plan.json",
+      "bytes": 5041,
+      "sha256": "92d24bb7aa69d338bcdcaa3ff9948669e38c8cdb45a9cd933f7355c7efdfab28"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/postflight.json",
+      "bytes": 2326,
+      "sha256": "9d8c2d830dd6de399bf9b2ece49d2b07378796d20d79a366c1d33584ba4cec7b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/preflight.json",
+      "bytes": 2157,
+      "sha256": "580e11494d803d90b1044fc1fdce83467dbf34256ddc7b93a0b26bac7ba2794d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/started.json",
+      "bytes": 133,
+      "sha256": "8a492d243e3d6af9582c9fe38b195bc8224573ba85c21642ba2391d849f022a2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/capture-complete.json",
+      "bytes": 1144,
+      "sha256": "7dd3406e311da73b2858d4fb34be85a61a48ce5afdd5a8ed22528684b15f8fd0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/predictions.json",
+      "bytes": 63744,
+      "sha256": "6f01e2e44c35658a5085e1ff1f43c495ecd1fb42d2f08638e3315ebfb948872d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/source.json",
+      "bytes": 1429,
+      "sha256": "7b713ac8bde8fbd375d40208d3120767fc6a89eb58b00897db5e23d373661654"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/audit.json",
+      "bytes": 7782,
+      "sha256": "6aac73239ff1a92a3e771011b24ec7619f08b077436749ecdaf8536124b042d0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/report.json",
+      "bytes": 2332,
+      "sha256": "683625306b5caff7f5a0f196a65ec43f94a4007e2a1af369ea174ff017b2c2d6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/rx/retest-boundary-62122-1789287951116-1789287951116-1789288078705120446.sigmf-data",
+      "bytes": 262140,
+      "sha256": "c9a4e231ace8764eb0010bd670969e1209671dcd8e695f7fa2ddd538685c594d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/rx/retest-boundary-62122-1789287951116-1789287951116-1789288078705120446.sigmf-meta",
+      "bytes": 487,
+      "sha256": "e07de069cbd4a2076c87c97b5e80960b5e151e9f7aee0fab2ae4116101b78541"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/rx-plan.json",
+      "bytes": 394,
+      "sha256": "d555a80f9910d8a790072ba1c535b6c0e06ce117c64dc2e50a06ee26b8aee3a9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/tx-events.jsonl",
+      "bytes": 1351349,
+      "sha256": "a15f61eb3c5d266bfd502987b0e36fdcc14bbd412776e33b139a15fa1823f358"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/tx-uhd.log",
+      "bytes": 842,
+      "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/plan.json",
+      "bytes": 5108,
+      "sha256": "e509fe9694a222290420d98170de7d70a5e6c86f40e3249f9febdab44edbb4fb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/postflight.json",
+      "bytes": 2326,
+      "sha256": "9d8c2d830dd6de399bf9b2ece49d2b07378796d20d79a366c1d33584ba4cec7b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/preflight.json",
+      "bytes": 2157,
+      "sha256": "580e11494d803d90b1044fc1fdce83467dbf34256ddc7b93a0b26bac7ba2794d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/started.json",
+      "bytes": 133,
+      "sha256": "7f822f7b832560f856145296506477af1ef2e35928490f5c644aa44310b681c5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/capture-complete.json",
+      "bytes": 1169,
+      "sha256": "a6368a448df4ffc027fd4aa14bcd37ecd47132b380e5c694d12db58ac2aa3ba6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/predictions.json",
+      "bytes": 62286,
+      "sha256": "02cae6e28ce151f5df53b59b3b8122a729095558275fce1f7bf58c67ca18b8d0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/source.json",
+      "bytes": 1469,
+      "sha256": "d3ee45e71eaf17e044af79b59b341ff91d5486c73f321fbe82a47f8c8596f89d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/cancel-summary.json",
+      "bytes": 44651,
+      "sha256": "0c45b6bdd0c296b107859cf4bcb075f6cd3dec3a45d6110efa571a1d4d4dc4db"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/cancel-validation.json",
+      "bytes": 3009,
+      "sha256": "098a7c41946cb1018e85520e26d64e6806c153ce4a2b1b75b754f585abc8b12f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/cleanup.json",
+      "bytes": 128158,
+      "sha256": "de6cfe92bd339038012b4b1d595d55dbedda7a3686b36184b76c28cc64343bd5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/execution-validation-plan.json",
+      "bytes": 779,
+      "sha256": "a21b4cc1023d93487b53d343010e36703ac4a95faa1b3db2df5e21822988951f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/final-state.json",
+      "bytes": 2397,
+      "sha256": "ec57d1b694903fa56afe3248c44b7d7bd461faf8c7b3fa6a1322519131ba1638"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/finalize.py",
+      "bytes": 9225,
+      "sha256": "f5a1309188933eec787ed1eba7a09a325072445ef60d91eca5dbf2be81a5a947"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/gpu-isolation-1789288667150731082.json",
+      "bytes": 295,
+      "sha256": "74c235127694137a25f033fd09627c115c770a3dfd334be6a2cb25b774fdf5bb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/inference-2c79b3e0f3d768d5/attempt-0/inference.json",
+      "bytes": 967,
+      "sha256": "7646b0b85b3d78fbd6892138cbd1a23ce66718f69b5710f3a551bd2b7b342d86"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/inference-2c79b3e0f3d768d5/attempt-0/prepared.json",
+      "bytes": 384709,
+      "sha256": "dad6f640fea74487a17bbd7995a7e130d4528ac099183890015df33c3d5bff30"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/inference-2c79b3e0f3d768d5/attempt-1/inference.json",
+      "bytes": 250753,
+      "sha256": "1c505ec1e5850bb37699f2219a9dd8655e2267f057e438b47a12db6feff65874"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/inference-2c79b3e0f3d768d5/attempt-1/prepared.json",
+      "bytes": 384709,
+      "sha256": "dad6f640fea74487a17bbd7995a7e130d4528ac099183890015df33c3d5bff30"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/resume-validation.json",
+      "bytes": 19258,
+      "sha256": "87fe93ff6f093c5dff6fa42a8be92b4f6d92d3a1af788b088bff4f2b17fe684e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/run-plan.json",
+      "bytes": 44198,
+      "sha256": "9b4e9e59bd257020161c2879584abcbabd71402c4184285fe6a8ed535e030555"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/summary.json",
+      "bytes": 569637,
+      "sha256": "416e1aba648cc3afe8ebc081115dab708ed1a27525c16d15c29d70e6d7f02e61"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/acquire-command.log",
+      "bytes": 15119,
+      "sha256": "5cbfa5ad299826e1b6576c2d14aa7f3c488bba8742e2d40155a80a4438054abf"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/cancel-command.log",
+      "bytes": 4908,
+      "sha256": "3a0ce335adb46cd59aece7310f18218eb7af678c5dd41ef06d22ad1fcfe855fa"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/cancel-trial.py",
+      "bytes": 2842,
+      "sha256": "1cfc5c8e585ba256e610fac17e546e5363321e922e15ae9ab082a31cf2e3b740"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/finish-validation-v1.py",
+      "bytes": 2634,
+      "sha256": "c4368d2e81c58f177aefe3f73cfa68b606af8817757128f40f87fd821dbeec76"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/finish-validation.py",
+      "bytes": 2634,
+      "sha256": "ad8b33eff3f1566bf141c7b5bbcc679225537952efdcd9e5f7a190ae3958308e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/infer-command.log",
+      "bytes": 15476,
+      "sha256": "f89005638c938e6341268c0a3512087f5856a46744e3491ce7d4cc9a52d2fc50"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/infer-failed-pathgate.log",
+      "bytes": 2415,
+      "sha256": "e059d44908c163a88ffa7e0ddd8c3bb6a7901aadde13f170d1035452e9f546f7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/infer-skip-command.log",
+      "bytes": 14134,
+      "sha256": "cd04bf1d7a857d3d5ce56a1807fcf7746d3edb647819be9a744c6e7afe833654"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/tests-boundary17.log",
+      "bytes": 262,
+      "sha256": "1cd01cd15c6b4e87a4a6c6e948378add9b66aeecc60873dbc63d29c19c35d174"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/tests-final115.log",
+      "bytes": 6971,
+      "sha256": "d0eda3824a1a899cb954f08c578fb3721e5372d77fd84e11f451f4185ba7c452"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/tests-revision2.log",
+      "bytes": 13177,
+      "sha256": "031ba52a31c37d385f2d87edb14dfc9f375c5113a258f0e10c5fb769f7aba7b9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/verify-captures.log",
+      "bytes": 282,
+      "sha256": "6fd71312211425fa898e4376e7d2139c68689d0ae9df9780225fe7fa89cfe0a3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/verify-final.log",
+      "bytes": 282,
+      "sha256": "6fd71312211425fa898e4376e7d2139c68689d0ae9df9780225fe7fa89cfe0a3"
+    }
+  ],
+  "retained_file_count": 105,
+  "retained_bytes": 9294141,
+  "retention_reason": "Four unique native captures, five timestamped TX attempts including active cancellation, original and versioned analysis plans, minimal original software snapshots, failed gate/inference receipts, 288 model inputs/logits and full denominator/recovery evidence. No source IQ copy or new runtime binary.",
+  "binary_retention_dependency": {
+    "path": "/var/tmp/sdrharness-dev/b210-event-controls-20260913/build/tx-events",
+    "sha256": "8a2a3fcfc242d63c918ecfa61d9bae3705b68f7b27144e9bc4c5cd079034d17b",
+    "bytes": 76696
+  },
+  "recognizer_available": false,
+  "training": false,
+  "production_deployment": false,
+  "whole_dataset_complete": false,
+  "rf_sample_clock_mapping_verified": false,
+  "manual_delete_command": "rm -- /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/acquired-summary.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/acquisition-code-equivalence.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/acquisition-software/compare-rml2018a-pilot-timing.py /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/acquisition-software/rml2018a-rf-campaign.py /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/acquisition-software/rml2018a_campaign_events.py /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/analysis-plan-v1.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/analysis-plan-v2.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/analysis-v1-software/rml2018a-rf-campaign.py /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/analysis-v1-software/rml2018a_campaign_events.py /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/capture/audit.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/capture/rx/retest-boundary-170-1789287951110-1789287951110-1789288007007156605.sigmf-data /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/capture/rx-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/capture/tx-events.jsonl /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/capture/tx-uhd.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/plan.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/postflight.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/preflight.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/started.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/audit.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/report.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/rx/retest-boundary-170-1789287951111-1789287951111-1789288045577750950.sigmf-data /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/rx/retest-boundary-170-1789287951111-1789287951111-1789288045577750950.sigmf-meta /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/rx-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/rx-stderr.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/tx-events.jsonl /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/tx-uhd.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/plan.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/postflight.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/preflight.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/started.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/capture-complete.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/predictions.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/source.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/audit.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/report.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/rx/retest-boundary-4266-1789287951112-1789287951112-1789288056643356732.sigmf-data /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/rx/retest-boundary-4266-1789287951112-1789287951112-1789288056643356732.sigmf-meta /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/rx-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/rx-stderr.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/tx-events.jsonl /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/tx-uhd.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/plan.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/postflight.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/preflight.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/started.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/capture-complete.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/predictions.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/source.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/audit.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/report.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/rx/retest-boundary-4437-1789287951114-1789287951114-1789288067706879706.sigmf-data /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/rx/retest-boundary-4437-1789287951114-1789287951114-1789288067706879706.sigmf-meta /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/rx-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/rx-stderr.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/tx-events.jsonl /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/tx-uhd.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/plan.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/postflight.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/preflight.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/started.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/capture-complete.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/predictions.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/source.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/audit.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/report.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/rx/retest-boundary-62122-1789287951116-1789287951116-1789288078705120446.sigmf-data /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/rx/retest-boundary-62122-1789287951116-1789287951116-1789288078705120446.sigmf-meta /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/rx-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/rx-stderr.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/tx-events.jsonl /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/tx-uhd.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/plan.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/postflight.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/preflight.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/started.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/capture-complete.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/predictions.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/source.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/cancel-summary.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/cancel-validation.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/cleanup.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/execution-validation-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/final-state.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/finalize.py /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/gpu-isolation-1789288667150731082.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/inference-2c79b3e0f3d768d5/attempt-0/inference.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/inference-2c79b3e0f3d768d5/attempt-0/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/inference-2c79b3e0f3d768d5/attempt-1/inference.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/inference-2c79b3e0f3d768d5/attempt-1/prepared.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/resume-validation.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/run-plan.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/summary.json /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/acquire-command.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/cancel-command.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/cancel-trial.py /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/finish-validation-v1.py /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/finish-validation.py /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/infer-command.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/infer-failed-pathgate.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/infer-skip-command.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/tests-boundary17.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/tests-final115.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/tests-revision2.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/verify-captures.log /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation/verify-final.log && rmdir -- /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture/rx /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture/rx /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture/rx /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture/rx /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/capture/rx /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0/capture /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0/capture /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0/capture /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1/capture /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0/capture /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/inference-2c79b3e0f3d768d5/attempt-1 /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/inference-2c79b3e0f3d768d5/attempt-0 /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122/attempt-0 /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437/attempt-0 /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266/attempt-0 /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-1 /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170/attempt-0 /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/validation /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/inference-2c79b3e0f3d768d5 /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0062122 /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004437 /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0004266 /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/batch-0000170 /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/analysis-v1-software /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/acquisition-software /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913",
+  "full_summary_record": {
+    "path": "/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913/summary.json",
+    "bytes": 569637,
+    "sha256": "416e1aba648cc3afe8ebc081115dab708ed1a27525c16d15c29d70e6d7f02e61",
+    "reason": "Per-row quality and full logits remain outside Git; no loss of failure denominators"
+  }
+}

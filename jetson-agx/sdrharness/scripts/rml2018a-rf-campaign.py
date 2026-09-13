@@ -59,15 +59,25 @@ def transport_module():
     value=importlib.util.module_from_spec(spec);spec.loader.exec_module(value);return value
 
 
+def event_backend():
+    import rml2018a_campaign_events
+    return rml2018a_campaign_events
+
+
+def is_event(campaign):
+    return campaign.get('tx_level_profile') == 'event-boundary-pilot'
+
+
 def campaign_software():
     return {name:file_hash(SCRIPTS/name) for name in (
         Path(__file__).resolve().name,'rml2018a_campaign.py','rml2018a-nx-tx.py',
-        'amc-mamba-worker.py','amc-rf-v1-runtime.py','gpu_lease.py',
+        'amc-mamba-worker.py','amc-rf-v1-runtime.py','gpu_lease.py','rml2018a_campaign_events.py',
         'validate-b210-multiclass.py','validate-p201-termination-background.py','validate-b210-p201-link.py')}
 
 
 def level_limits(profile='gain-pair-pilot'):
     batches=level_batches(profile)
+    if profile=='event-boundary-pilot':return event_backend().limits()
     return dict(allowed_batch_indices=list(batches), maximum_tx_seconds=len(batches)*4,
         maximum_rx_iq_bytes=len(batches)*RX_SAMPLES*4, maximum_source_rows=len(batches)*24)
 
@@ -132,11 +142,12 @@ def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profi
         plan['scope']='Only registered Z30 batches'+str(list(level_batches(tx_level_profile)))+'; full budget describes dataset indexing, not permitted execution'
         plan['semantics']='Finite cable gain-pair engineering pilot, not a full campaign or independent admission'
         campaign_level(plan)
+    if is_event(plan):event_backend().register(root,plan)
     save(root/'run-plan.json', plan)
     print(json.dumps(plan, indent=2), flush=True)
 
 
-def load_plan(root):
+def load_plan(root, analysis_only=False):
     require(root.resolve() == root and root.parent == Path('/var/tmp/sdrharness-dev') and
             root.name.startswith('b210-rml2018a-') and root.name.replace('-', '').isalnum(), 'run root')
     p = document(root/'run-plan.json')
@@ -147,13 +158,19 @@ def load_plan(root):
     profile=campaign_level(p)
     require(p['rf']['peak']==packet_peak(profile), 'TX peak changed; new plan required')
     require(p['tx_host_identity']==transport_module().identity(p['tx_host']), 'TX host/runtime changed; new campaign required')
+    require(not analysis_only or is_event(p),'analysis revision is event-only')
     for name, sha in p['software'].items():
+        if analysis_only and name in event_backend().ANALYSIS_CHANGES:
+            require(file_hash(root/'acquisition-software'/name)==sha,'archived capture software');continue
         require(file_hash(SCRIPTS/name) == sha, 'software changed; new campaign required: '+name)
     require(file_hash(LABELS) == p['label_map_sha256'] and file_hash(PROFILE) == p['profile_sha256'],
             'label/profile changed')
     stat = DATASET.stat()
     require(p['source']['path'] == str(DATASET) and stat.st_size == p['source']['bytes'] and
             stat.st_mtime_ns == p['source']['mtime_ns'], 'source identity changed; new plan required')
+    if is_event(p):
+        event_backend().validate(root,p,analysis_only=analysis_only)
+        if analysis_only:event_backend().verify_analysis(root,p)
     return p
 
 
@@ -232,6 +249,7 @@ def stop_tx(transport, tx, owner, remote):
 
 def acquire_batch(root, campaign, index, retry_failed=False):
     level=campaign_level(campaign,[index])
+    if is_event(campaign):return event_backend().acquire_batch(root,campaign,index,retry_failed)
     rx_gain=registered_rx_gain(campaign['rf']['rx_gain_db'])
     tx_gain=registered_tx_gain(campaign['rf']['tx_gain_db'])
     bg = module('campaign_bg', 'validate-p201-termination-background.py')
@@ -412,6 +430,7 @@ def document_health(bg):
 
 def infer_batches(root, campaign, indices):
     campaign_level(campaign,indices)
+    if is_event(campaign):return event_backend().infer_batches(root,campaign,indices)
     require(len(indices)<=32, 'bounded GPU shard: at most32 batches')
     pending=[i for i in indices if not (root/f'batch-{i:07d}'/'predictions.json').exists()]
     if not pending:
@@ -489,7 +508,9 @@ def infer_child(root, campaign, indices):
 
 
 def infer_shard(root, campaign, indices):
-    if all((root/f'batch-{i:07d}'/'predictions.json').exists() for i in indices):
+    if is_event(campaign):
+        if all(event_backend().prediction_complete(root,campaign,i) for i in indices):return
+    elif all((root/f'batch-{i:07d}'/'predictions.json').exists() for i in indices):
         return
     child = multiprocessing.get_context('spawn').Process(target=infer_child, args=(root,campaign,indices))
     child.start()
@@ -506,6 +527,7 @@ def infer_shard(root, campaign, indices):
 
 
 def summarize(root, campaign):
+    if is_event(campaign):return event_backend().summarize(root,campaign)
     total=campaign['budget']['rows']; attempted=0; inferred=0; correct=0; source_correct=0; source_inferred=0
     confusion=np.zeros((24,24),dtype=np.int64);by_source_snr={}; batches=0
     sinr_counts=dict(estimated=0,invalid=0,not_measured=0);sinr_reasons={};by_sinr={}
@@ -581,23 +603,28 @@ def selected_batches(total, start, count, explicit=None):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command',choices=['plan','acquire','infer','run','summary'])
+    p.add_argument('command',choices=['plan','acquire','infer','run','summary','analysis-plan','verify'])
     p.add_argument('--root',type=Path,required=True)
     p.add_argument('--start-batch',type=int,default=0)
     p.add_argument('--max-batches',type=int,default=1)
     p.add_argument('--batch-indices',type=int,nargs='+',help='explicit ordered pilot/shard, 1-32 unique batches; no range overrides')
     p.add_argument('--deadline-seconds',type=int,default=600)
+    p.add_argument('--analysis-revision',action='store_true',help='infer/summary/verify only; latest sealed analysis-plan-vN, no new RF')
     p.add_argument('--retry-failed',action='store_true',help='archive restored failed attempts, then retry; never discard evidence')
     p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],help='plan only; default20; all execution uses the sealed plan')
     p.add_argument('--tx-gain-db',type=int,choices=[0,20,40,60,70,80],help='plan only; default0; all execution uses the sealed plan')
     p.add_argument('--tx-host',choices=['agx','nx'],help='plan only; default agx; P201 remains network RX')
-    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot','remaining-high-snr-pilot'],help='plan only; finite profiles restrict batch IDs and AGX gains; remaining-high-snr uses TX60/RX50')
+    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot','remaining-high-snr-pilot','event-boundary-pilot'],help='plan only; finite profiles restrict batch IDs and AGX gains; remaining-high-snr uses TX60/RX50')
     args=p.parse_args();root=args.root
+    require(not args.analysis_revision or args.command in ('infer','summary','verify'),'analysis revision cannot transmit')
     if args.command=='plan':
         require(args.batch_indices is None,'batch selection is execution-only; preregister pilot separately')
         create_plan(root,20 if args.rx_gain_db is None else args.rx_gain_db,0 if args.tx_gain_db is None else args.tx_gain_db,args.tx_host or 'agx',args.tx_level_profile or 'standard');return
     require(args.rx_gain_db is None and args.tx_gain_db is None and args.tx_host is None and args.tx_level_profile is None,'RF gains/level are sealed in run-plan; create a new plan to change them')
-    campaign=load_plan(root)
+    if args.command=='analysis-plan':
+        with lock(root):print(json.dumps(event_backend().register_analysis(root)),flush=True)
+        return
+    campaign=load_plan(root,analysis_only=args.analysis_revision)
     indices=selected_batches(campaign['budget']['batches'],args.start_batch,args.max_batches,args.batch_indices)
     campaign_level(campaign,indices if args.command!='summary' else ())
     require(60<=args.deadline_seconds<=30*86400,'finite deadline')
@@ -610,6 +637,9 @@ def main():
     with lock(root):
         try:
             if args.command=='summary':summarize(root,campaign);return
+            if args.command=='verify':
+                require(is_event(campaign),'event verification only')
+                print(json.dumps(event_backend().verify_completed(root,campaign,indices)),flush=True);return
             for offset in range(0,len(indices),32):
                 shard=indices[offset:offset+32]
                 if args.command in ('acquire','run'):

@@ -18,6 +18,57 @@ B210仍停发，见[返测](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.m
 不能作为独立 locked-test 准入成绩。训练/微调暂停，生产 `recognizer_available=false`，
 名称采用 server-v1 原始 24 类顺序并保持 provisional。
 
+## 带事件记录的分批路径（2026-09-13）
+
+原 `rml2018a-rf-campaign.py` 新增有限 `event-boundary-pilot` 后端，仍使用同一个
+Controller 接收、共享原 HDF5、冻结模型及 `plan/acquire/infer/run/summary` 命令。
+该 profile 使用已验收的 `devices/b210/tx-events.cpp` 程序，记录逐次 send 与异步事件时间；
+普通 `standard` 仍走历史文件/FIFO发送，默认幅度与处理不变。
+
+本次严格限定批次 `170 4266 4437 62122`，96条源行；分别跨源Z−20/−18、28/30、
+OOK/4ASK及32QAM/64QAM边界。每行分别核对原Y/Z，不能将首行标签或Z复制给全批。
+RF固定2455MHz、2.1MS/s、BW1.5MHz、TX60/RX50、峰值0.632455532、LO+250kHz，
+接法为20dB衰减同轴。每批最多两次采集尝试，总TX≤32秒/67,055,616复样本、
+RX≤2,097,120字节；日志/暂存预留256MiB。分片推理每源批次最多两次尝试，即使改变分片组合也不能重置预算，
+总模型输入≤576、warmup≤16。旧全库预算表不能直接用作事件日志及三路推理的长期空间预算。
+
+- `batch-N/attempt-0`、`attempt-1` 保存成功/取消/失败，不移动已有IQ或覆盖失败记录。
+  `--retry-failed` 仅在已记录完整恢复后使用，最多补一次；硬终止缺少恢复记录时拒绝自动重试。
+- `capture-complete.json` 绑定采集计划、原生IQ、TX事件、恢复记录及真实行号。
+  已完成采集逐项重验后跳过；若在采集完成与写完成标志之间中断，从已完成尝试恢复标志，避免重发。
+- 推理保存在 `inference-<分片哈希>/attempt-N/`，批次 `predictions.json` 引用该凭据。
+  完整推理已结束但批次凭据发布中断时，可验证并补发布，不重跑模型。
+  部分失败推理保留在原尝试中，预算内重试该分片；不将部分输出冒充完成。
+- `summary` 按真实逐行Z、类别及其组合统计 source/raw/guard，并保留全部96条登记分母。
+  未尝试、采集失败、待推理、同步失败、SINR无效和LO拒绝分别保留；估计有效率不筛选识别分母。
+  `complete` 仅指有限profile；`whole_dataset_complete` 仍为false。
+- LO处理固定运行且保留原始组，不按源Z、类别或预测选择分数更高的一路。拒绝校正时保留原始输入。
+
+本次保存根为 `/var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913`。
+最初采集软件在汇总/推理衔接处有两项已修复问题；原始 `run-plan.json`、IQ、失败日志及旧软件字节保留。
+`analysis-plan-v1.json`、`analysis-plan-v2.json` 是显式版本化的处理计划，后者绑定前者哈希、
+所有已完成采集及当前软件；新增RF预算为0，模型仍受原尝试总预算限制。
+仅允许修订本后端、campaign入口及共享推理包装，其他DSP/运行库/模型/源文件变更继续拒绝；
+不能用分析修订覆盖射频计划或开启新的采集。
+
+可用原模型venv的Python运行以下**已有结果复核**（无新增RF或推理）：
+
+```bash
+local-assets/amc-eval/runtime/venv/bin/python -B \
+  jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py verify \
+  --root /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913 \
+  --analysis-revision --batch-indices 170 4266 4437 62122
+```
+
+`--analysis-revision` 选择最新连续编号且软件/父记录匹配的处理计划，只用于 `infer/summary/verify`；
+与 `acquire/run` 联用拒绝。新建处理修订用 `analysis-plan`，要求全部登记采集已封存，
+不会修改旧计划或重置推理尝试数。`verify` 预检全部选中采集后走完成批次跳过路径，并复核已有预测。
+上述命令会创建本单元锁和scratch目录，交付清理后再次运行者须按项目规则清理本次创建的临时项。
+
+新RF计划必须另行登记新源行与预算；这个边界fixture不提供任意批次/多日全库许可。
+实测结果、两个失败及修复、复核和保留清单见
+[分批验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13事件发射接入campaign与边界续跑)。
+
 ## 帧、参数和预算
 
 2026-09-11用户报告已换回2.4GHz；当前固定 **2455 MHz**、2.1 MS/s、TX/RX BW 1.5 MHz、TX 峰值 0.2、

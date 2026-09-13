@@ -167,7 +167,7 @@ def prepare(root):
     return report,tensors
 
 
-def infer(root,output,prepare_inputs=None):
+def infer(root,output,prepare_inputs=None,*,isolation_root=None):
     m=runner();report,tensors=(prepare_inputs or prepare)(root)
     tags=report.get('tags',TAGS);total=report['source_rows'];maximum=report['maximum_model_windows']
     c.require(report==m.document(output/'prepared.json'),'prepared source/software changed')
@@ -183,7 +183,7 @@ def infer(root,output,prepare_inputs=None):
         label_map_sha256=report['label_map_sha256'],semantics=report['semantics'])
     try:
         token=asyncio.run(lease.acquire(time.monotonic()+10,request='eight-class-pilot-timing'))
-        with multi.idle_spark_pause(evidence_root=output):
+        with multi.idle_spark_pause(evidence_root=output if isolation_root is None else isolation_root):
             w=m.module('timing_compare_worker','amc-mamba-worker.py');backend=w.RfV1Backend(m.PROFILE)
             c.require(all(v.dtype==w.torch.float32 for v in backend.model.parameters()),'FP32 weights')
             receipt.update(model_identity=backend.admission_identity,warmup_windows=2)
