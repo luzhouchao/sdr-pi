@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Finite four-class or uniform24 Z30 comparison, timestamped TX and frozen source/raw/guard inference."""
+"""Finite Z30 or source-SNR stratified comparison, timestamped TX and frozen source/raw/guard inference."""
 import argparse
 from collections import Counter
 import json
@@ -30,10 +30,14 @@ SEMANTICS='96 new Z30 engineering rows; fixed source/raw/guard, all failures ret
 
 
 def experiment(profile=PROFILE):
-    c.require(profile in (PROFILE,'uniform24-high-snr-pilot'),'registered event experiment')
+    c.require(profile in (PROFILE,'uniform24-high-snr-pilot','four-class-snr-strata'),'registered event experiment')
     if profile==PROFILE:
         return dict(batches=c.RML_EVENT_BATCHES,classes=c.RML_EVENT_CLASSES,prefix='b210-rml-event-retest-',
             schema='rml2018a-event-retest-v1',semantics=SEMANTICS,deadline=400,reserve=128*1024*1024)
+    if profile=='four-class-snr-strata':
+        return dict(batches=c.RML_STRATIFIED_BATCHES,classes=c.RML_STRATIFIED_CLASSES,snrs=c.RML_STRATIFIED_SNRS,
+            prefix='b210-rml-snr-strata-',schema='rml2018a-four-class-snr-strata-v1',deadline=900,reserve=512*1024*1024,
+            semantics='480 new rows: BPSK/16QAM/64QAM/FM at source Z20,10,0,-10,-20,24 rows per cell. Fixed interleaved order and TX60/RX50; no model-driven choice or retries. Source/raw/guard with all failures. Different original rows across Z, not identical clean signals plus controlled noise; no24-class, all26-SNR, independent or physical-SINR claim. Pilot stays clean while payload includes original dataset noise.')
     return dict(batches=c.RML_UNIFORM_BATCHES,classes=c.RML_UNIFORM_CLASSES,prefix='b210-rml-uniform24-',
         schema='rml2018a-uniform24-high-snr-v1',deadline=900,reserve=512*1024*1024,
         semantics='576 new Z30 rows, all24 classes at identical TX60/RX50. Fixed source/raw/guard; all failures and regressions retained. Conditional SINR is source-assisted, not calibrated physical SINR. Engineering, not independent accuracy or whole dataset completion. No TX/RX sample clock mapping.')
@@ -59,11 +63,20 @@ def rx_plan(tag,generation):
         point_timeout_ms=1000,detection_threshold_db=12.)
 
 
+def source_snr(profile,batch,cid):
+    e=experiment(profile)
+    c.require(batch in e['batches'],'registered source batch')
+    index=e['batches'].index(batch)
+    c.require(cid==e['classes'][index],'registered source class')
+    return e.get('snrs',(30,)*len(e['batches']))[index]
+
+
 def source(run_id,batch,cid,profile=PROFILE):
+    expected_z=source_snr(profile,batch,cid)
     rows=c.batch_rows(2555904,batch)
     with h5py.File(m.DATASET,'r') as h:
         iq=h['X'][rows];labels=h['Y'][rows].argmax(axis=1);zs=h['Z'][rows].ravel()
-    c.require(iq.shape==(24,1024,2) and np.all(labels==cid) and np.all(zs==30),'new source X/Y/Z membership')
+    c.require(iq.shape==(24,1024,2) and np.all(labels==cid) and np.all(zs==expected_z),'new source X/Y/Z membership')
     frame,scales=c.packet(iq,run_id,batch,level_profile=profile)
     tx=c.tx_plan(frame,run_id,batch,rows,60,level_profile=profile);c.validate_tx(tx,frame.tobytes())
     return iq,frame,dict(rows=rows,class_ids=labels.tolist(),source_snr_db=zs.tolist(),
@@ -126,7 +139,7 @@ def plan(root,profile=PROFILE):
     for path in sorted(root.parent.glob('b210-rml2018a-*/batch-*/source.json')):
         d=m.document(path);old.update(d['rows']);parents.append(dict(path=str(path),sha256=c.file_hash(path)))
     event_parents=[]
-    for pattern in ('b210-rml-event-retest-*/plan.json','b210-rml-uniform24-*/plan.json'):
+    for pattern in ('b210-rml-event-retest-*/plan.json','b210-rml-uniform24-*/plan.json','b210-rml-snr-strata-*/plan.json'):
         for path in sorted(root.parent.glob(pattern)):
             prior=m.document(path);old.update(r for point in prior['points'] if point['mode'] for r in point['source']['rows'])
             event_parents.append(dict(path=str(path),sha256=c.file_hash(path)))
@@ -200,17 +213,18 @@ def prepare(root):
         parts=dict(source=src,raw=received,guard=guarded);tensors[batch]=parts;rows=[]
         status='sync_failed' if sync is None else 'synchronized'
         for k,row in enumerate(point['source']['rows']):
-            q=c.receive_quality(status,src[k],None if received is None else received[k],30.)
-            c.validate_receive_quality(q,30.)
-            gq={**q,'rx_sinr_reference_plane':guard.PLANE} if guarded is None else guard.quality(src[k],guarded[k],30.,info)
-            rows.append(dict(row=row,true_id=point['class_id'],source_snr_db=30.,quality=dict(raw=q,guard=gq),
+            source_z=float(point['source']['source_snr_db'][k])
+            q=c.receive_quality(status,src[k],None if received is None else received[k],source_z)
+            c.validate_receive_quality(q,source_z)
+            gq={**q,'rx_sinr_reference_plane':guard.PLANE} if guarded is None else guard.quality(src[k],guarded[k],source_z,info)
+            rows.append(dict(row=row,true_id=point['class_id'],source_snr_db=source_z,quality=dict(raw=q,guard=gq),
                 inputs={tag:None if value is None else c.digest(c.normalize_window(value[k]).tobytes()) for tag,value in parts.items()}))
         summary={}
         for tag in ('raw','guard'):
             vals=[r['quality'][tag]['rx_sinr_db'] for r in rows if r['quality'][tag]['rx_sinr_status']=='estimated']
             summary[tag]=dict(total_rows=24,estimated_rows=len(vals),median_db=float(np.median(vals)) if vals else None,
                 min_db=min(vals) if vals else None,max_db=max(vals) if vals else None)
-        results.append(dict(batch=batch,class_id=point['class_id'],class_name=m.document(m.LABELS)['classes'][point['class_id']],
+        results.append(dict(batch=batch,class_id=point['class_id'],source_snr_db=source_snr(p['tx_level_profile'],batch,point['class_id']),class_name=m.document(m.LABELS)['classes'][point['class_id']],
             seal=seal,parent_audit_sha256=c.file_hash(d/'audit.json'),status=status,sync=sync,sync_error=error,
             component_peak_counts=peak,guard_correction=info,quality_summary=summary,events=event,rows=rows))
     report=dict(schema=p['schema'].replace('-v1','-comparison-v1'),parent=str(root),parent_plan_sha256=c.file_hash(root/'plan.json'),
@@ -243,7 +257,7 @@ def summarize_predictions(report,receipt):
                     correct=sum(r['quality'][tag]['rx_sinr_status']==status and p['predictions'][tag] is not None and
                         p['predictions'][tag]['id']==cid for r,p in pairs)) for status in ('estimated','invalid','not_measured')})
         def correct(pred,tag):return pred['predictions'][tag] is not None and pred['predictions'][tag]['id']==cid
-        results.append(dict(batch=b['batch'],class_id=cid,class_name=b['class_name'],status=b['status'],
+        results.append(dict(batch=b['batch'],class_id=cid,source_snr_db=b.get('source_snr_db',30.),class_name=b['class_name'],status=b['status'],
             guard_status=b['guard_correction']['status'],guard_reason=b['guard_correction'].get('reason'),
             component_peak_counts=b['component_peak_counts'],events=b['events']['event_counts'],quality=quality,classification=classification,
             raw_to_guard=dict(corrected=sum(not correct(p,'raw') and correct(p,'guard') for _,p in pairs),
@@ -252,7 +266,14 @@ def summarize_predictions(report,receipt):
     total={tag:dict(total=report['source_rows'],predicted=sum(v['classification'][tag]['predicted'] for v in results),
         correct=sum(v['classification'][tag]['correct'] for v in results)) for tag in ('source','raw','guard')}
     c.require(total==receipt['summary'],'summary receipt replay')
-    return dict(schema='rml2018a-event-class-summary-v1',source_rows=report['source_rows'],results=results,classification=total,
+    by_snr={}
+    for snr in sorted({b['source_snr_db'] for b in results}):
+        group=[b for b in results if b['source_snr_db']==snr]
+        by_snr[str(snr)]=dict(source_snr_db=snr,classes=[b['class_id'] for b in group],
+            classification={tag:{key:sum(b['classification'][tag][key] for b in group) for key in ('total','predicted','correct')} for tag in ('source','raw','guard')},
+            estimated_rows={tag:sum(b['quality'][tag].get('estimated_rows',0) for b in group) for tag in ('raw','guard')},
+            raw_to_guard={key:sum(b['raw_to_guard'][key] for b in group) for key in ('corrected','regressed')})
+    return dict(schema='rml2018a-event-class-summary-v1',source_rows=report['source_rows'],results=results,classification=total,by_source_snr=by_snr,
         raw_to_guard={k:sum(v['raw_to_guard'][k] for v in results) for k in ('corrected','regressed')},
         stopped_controls=[{k:v for k,v in control.items() if k!='power_blocks256'} for control in report['stopped_controls']],
         semantics=report['semantics'],recognizer_available=False)
@@ -262,7 +283,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command',choices=['plan','acquire','prepare','infer','verify','summary'])
     parser.add_argument('--root',type=Path,required=True)
-    parser.add_argument('--profile',choices=[PROFILE,'uniform24-high-snr-pilot'],default=PROFILE,help='plan only; subsequent commands use sealed plan')
+    parser.add_argument('--profile',choices=[PROFILE,'uniform24-high-snr-pilot','four-class-snr-strata'],default=PROFILE,help='plan only; subsequent commands use sealed plan')
     args=parser.parse_args();root=args.root
     profile=args.profile if args.command=='plan' else m.document(root/'plan.json')['tx_level_profile']
     check_root(root,profile)

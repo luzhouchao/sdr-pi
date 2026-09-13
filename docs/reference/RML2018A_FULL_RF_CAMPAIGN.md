@@ -516,3 +516,20 @@ SINR有效数/原因、质量有效性与识别的交叉计数及纠正/回退�
 `verify`可单独执行同一复核，不重跑模型；再次summary要求结果完全一致。AM的解释遵守
 [指标报告边界](RML2018A_RF_REPRODUCTION.md#5-am单边带的条件sinr与识别报告2026-09-13补充)。
 实际执行及逐文件保留依据通过[实验记录](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md)和[evidence索引](../evidence/README.md)按需读取。
+
+## 四类低源SNR分层
+
+`rml2018a-event-retest.py plan --profile four-class-snr-strata --root /var/tmp/sdrharness-dev/b210-rml-snr-strata-<唯一标识>`
+登记BPSK/16QAM/64QAM/FM（ID3/12/14/21）在源Z20/10/0/−10/−20各24行，共480行。
+随后使用同一入口的acquire、prepare、infer、summary；解释以源Z分组，不把条件接收SINR当分组真值。
+固定Z执行顺序0/20/−20/10/−10，类别顺序随每档循环移位，具体20批顺序在plan中封存；不按结果挑选或重排。
+源batch为`ceil((cid*106496+((Z+20)/2)*4096+3072)/24)`，读取时校验真实X/Y/Z与该固定单元一致。
+旧Z30 profiles保持原样；新质量记录使用每行真实Z，summary增加by_source_snr及每个类别/源Z单元的统计。
+
+沿用2455MHz、TX60/RX50、峰值0.632455532、20dB同轴、2.1MS/s/BW1.5MHz和LO+250kHz、原guard门。
+20次TX最多80秒/167,639,040主机接受复数样本；加前后停流共22RX/5,767,080字节，1440模型输入加2预热。
+900秒采集/650秒推理期限、单TX65秒、512MiB余量和完整停止/恢复流程同统一24类入口。
+只使用原数据集不同Z的原始IQ，没有额外合成payload噪声；导频保持固定已知序列，不代表盲检测在相同低SNR下通过。
+不同Z来自不同原始行，不能当作同一个干净信号的加噪配对；旧Z30单元不拼接进此次分层成绩。
+低Z时条件估计中的名义源噪声项会占主导，估计接近源Z并不能单独证明链路更干净或物理SINR已校准。
+本单元不完成24类×全部26个SNR档位或全库执行；以[验证记录](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md)和[evidence](../evidence/README.md)登记实际结果。

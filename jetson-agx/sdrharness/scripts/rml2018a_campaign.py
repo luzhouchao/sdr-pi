@@ -51,15 +51,26 @@ RML_EVENT_CLASSES = (3, 7, 13, 21)
 RML_UNIFORM_SCHEMA = 'rml2018a-uniform24-high-snr-pilot-v1'
 RML_UNIFORM_CLASSES = tuple(range(24))
 RML_UNIFORM_BATCHES = tuple((cid*106496+102400+3072+23)//24 for cid in RML_UNIFORM_CLASSES)
+RML_STRATIFIED_SCHEMA = 'rml2018a-four-class-snr-strata-pilot-v1'
+# Fixed interleaving, selected before any model results. Each source row is used once.
+RML_STRATIFIED_CLASS_SET = (3, 12, 14, 21)
+RML_STRATIFIED_SNR_ORDER = (0, 20, -20, 10, -10)
+RML_STRATIFIED_CASES = tuple((RML_STRATIFIED_CLASS_SET[(j+i)%4],snr)
+    for i,snr in enumerate(RML_STRATIFIED_SNR_ORDER) for j in range(4))
+RML_STRATIFIED_CLASSES = tuple(cid for cid,snr in RML_STRATIFIED_CASES)
+RML_STRATIFIED_SNRS = tuple(snr for cid,snr in RML_STRATIFIED_CASES)
+RML_STRATIFIED_BATCHES = tuple((cid*106496+((snr+20)//2)*4096+3072+23)//24 for cid,snr in RML_STRATIFIED_CASES)
+
 
 
 def packet_peak(level_profile):
-    require(level_profile in ('standard', 'gain-pair-pilot', 'timing-multiclass-pilot', 'qam-guard-pilot', 'qam-rx-gain-pilot', 'remaining-high-snr-pilot', 'event-retest-pilot', 'uniform24-high-snr-pilot'), 'registered TX level profile')
+    require(level_profile in ('standard', 'gain-pair-pilot', 'timing-multiclass-pilot', 'qam-guard-pilot', 'qam-rx-gain-pilot', 'remaining-high-snr-pilot', 'event-retest-pilot', 'uniform24-high-snr-pilot', 'four-class-snr-strata'), 'registered TX level profile')
     return .2 if level_profile == 'standard' else .2*math.sqrt(10.)
 
 
 def level_batches(profile):
     packet_peak(profile)
+    if profile == 'four-class-snr-strata': return RML_STRATIFIED_BATCHES
     if profile == 'uniform24-high-snr-pilot': return RML_UNIFORM_BATCHES
     if profile == 'event-retest-pilot': return RML_EVENT_BATCHES
     if profile == 'remaining-high-snr-pilot': return RML_REMAINING_BATCHES
@@ -72,12 +83,12 @@ def level_schema(profile):
     packet_peak(profile)
     return {'standard':SCHEMA,'gain-pair-pilot':RML_GAIN_PAIR_SCHEMA,
             'timing-multiclass-pilot':RML_TIMING_SCHEMA, 'qam-guard-pilot':RML_GUARD_SCHEMA,
-            'qam-rx-gain-pilot':RML_RXGAIN_SCHEMA, 'remaining-high-snr-pilot':RML_REMAINING_SCHEMA, 'event-retest-pilot':RML_EVENT_SCHEMA, 'uniform24-high-snr-pilot':RML_UNIFORM_SCHEMA}[profile]
+            'qam-rx-gain-pilot':RML_RXGAIN_SCHEMA, 'remaining-high-snr-pilot':RML_REMAINING_SCHEMA, 'event-retest-pilot':RML_EVENT_SCHEMA, 'uniform24-high-snr-pilot':RML_UNIFORM_SCHEMA, 'four-class-snr-strata':RML_STRATIFIED_SCHEMA}[profile]
 
 
 def pilot_rx_gains(profile):
     packet_peak(profile)
-    if profile in ('remaining-high-snr-pilot','event-retest-pilot','uniform24-high-snr-pilot'):return (50,)
+    if profile in ('remaining-high-snr-pilot','event-retest-pilot','uniform24-high-snr-pilot','four-class-snr-strata'):return (50,)
     return (40,50) if profile=='qam-rx-gain-pilot' else (40,)
 
 
@@ -165,7 +176,7 @@ def validate_tx(plan, payload):
         require(plan == expected and payload == waveform.tobytes(), 'unregistered LO reference plan/payload')
         return
     registered_tx_gain(plan.get('tx_gain_db'))
-    profiles={SCHEMA:'standard',RML_GAIN_PAIR_SCHEMA:'gain-pair-pilot',RML_TIMING_SCHEMA:'timing-multiclass-pilot',RML_GUARD_SCHEMA:'qam-guard-pilot',RML_RXGAIN_SCHEMA:'qam-rx-gain-pilot',RML_REMAINING_SCHEMA:'remaining-high-snr-pilot',RML_EVENT_SCHEMA:'event-retest-pilot',RML_UNIFORM_SCHEMA:'uniform24-high-snr-pilot'}
+    profiles={SCHEMA:'standard',RML_GAIN_PAIR_SCHEMA:'gain-pair-pilot',RML_TIMING_SCHEMA:'timing-multiclass-pilot',RML_GUARD_SCHEMA:'qam-guard-pilot',RML_RXGAIN_SCHEMA:'qam-rx-gain-pilot',RML_REMAINING_SCHEMA:'remaining-high-snr-pilot',RML_EVENT_SCHEMA:'event-retest-pilot',RML_UNIFORM_SCHEMA:'uniform24-high-snr-pilot',RML_STRATIFIED_SCHEMA:'four-class-snr-strata'}
     require(plan.get('schema') in profiles, 'registered TX schema')
     profile=profiles[plan['schema']];paired=profile!='standard'
     peak = packet_peak(profile)
