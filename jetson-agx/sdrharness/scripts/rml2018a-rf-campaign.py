@@ -71,7 +71,7 @@ def is_event(campaign):
 def campaign_software():
     return {name:file_hash(SCRIPTS/name) for name in (
         Path(__file__).resolve().name,'rml2018a_campaign.py','rml2018a-nx-tx.py',
-        'amc-mamba-worker.py','amc-rf-v1-runtime.py','gpu_lease.py','rml2018a_campaign_events.py','rml2018a_event_archive.py','rml2018a_campaign_ledger.py',
+        'amc-mamba-worker.py','amc-rf-v1-runtime.py','gpu_lease.py','rml2018a_campaign_events.py','rml2018a_event_archive.py','rml2018a_campaign_ledger.py','rml2018a_campaign_coverage.py',
         'validate-b210-multiclass.py','validate-p201-termination-background.py','validate-b210-p201-link.py')}
 
 
@@ -93,7 +93,7 @@ def campaign_level(campaign, indices=()):
     return profile
 
 
-def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profile='standard',selected=None,source_receipt=None):
+def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profile='standard',selected=None,source_receipt=None,coverage_receipt=None):
     if tx_level_profile=='event-chunk':event_backend().storage.batches(selected)
     rx_gain_db=registered_rx_gain(rx_gain_db)
     tx_gain_db=registered_tx_gain(tx_gain_db)
@@ -148,6 +148,9 @@ def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profi
         plan['semantics']='Finite cable gain-pair engineering pilot, not a full campaign or independent admission'
         campaign_level(plan)
     if source_receipt is not None:plan['source_verification']=source_receipt
+    if coverage_receipt is not None:
+        require(source_receipt is not None and tx_level_profile=='event-chunk','coverage requires ledger event-chunk')
+        plan['coverage']=coverage_receipt
     if is_event(plan):event_backend().register(root,plan)
     save(root/'run-plan.json', plan)
     print(json.dumps(plan, indent=2), flush=True)
@@ -618,6 +621,7 @@ def main():
     p.add_argument('--inventory',type=Path)
     p.add_argument('--ledger-max-new-batches',type=int,default=2)
     p.add_argument('--ledger-deep',action='store_true')
+    p.add_argument('--coverage-policy',choices=['standardized-replay-v1'])
     p.add_argument('--start-batch',type=int,default=0)
     p.add_argument('--max-batches',type=int,default=1)
     p.add_argument('--batch-indices',type=int,nargs='+',help='explicit ordered pilot/shard, 1-32 unique batches; no range overrides')
@@ -629,6 +633,7 @@ def main():
     p.add_argument('--tx-host',choices=['agx','nx'],help='plan only; default agx; P201 remains network RX')
     p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot','remaining-high-snr-pilot','event-boundary-pilot','event-chunk'],help='plan only; finite profiles restrict batch IDs and AGX gains; remaining-high-snr uses TX60/RX50')
     args=p.parse_args();root=args.root
+    require(args.coverage_policy is None or args.command=='ledger-plan','coverage policy is new-ledger-plan only')
     if args.command.startswith('ledger-'):
         require(not args.analysis_revision and args.tx_gain_db is None and args.rx_gain_db is None and args.tx_level_profile is None and args.tx_host is None,'ledger fixes RF/profile')
         import rml2018a_campaign_ledger as ledger

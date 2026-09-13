@@ -13,6 +13,7 @@ import h5py
 import numpy as np
 import rml2018a_campaign as c
 import rml2018a_event_archive as storage
+import rml2018a_campaign_coverage as coverage
 import importlib.util
 
 SCRIPTS=Path(__file__).resolve().parent
@@ -120,17 +121,19 @@ def register(root,p):
         guard_contract=r.guard.contract(),connection=r.fixed_fields()['connection'],semantics=semantics(p['tx_level_profile']),
         scope=f"{len(indices(p))*24} registered chunk rows; up to two attempts each, no full-dataset execution")
     p['event_sources']={str(b):dict(source=source(p['run_id'],b,p['tx_level_profile'])[2],tx=source(p['run_id'],b,p['tx_level_profile'])[3]) for b in indices(p)}
-    old=set();parents=[]
-    patterns=('b210-rml2018a-*/batch-*/source.json','b210-rml-event-retest-*/plan.json',
-        'b210-rml-uniform24-*/plan.json','b210-rml-snr-strata-*/plan.json')
-    for pattern in patterns:
-        for path in sorted(root.parent.glob(pattern)):
-            d=m.document(path);old.update(d['rows'] if path.name=='source.json' else
-                [row for point in d['points'] if point['mode'] for row in point['source']['rows']])
-            parents.append(dict(path=str(path),sha256=c.file_hash(path)))
+    if 'coverage' in p:
+        parents,old=coverage.history(root.parent,root)
+    else:
+        # Preserve the exact disjoint-only contract of legacy sealed profiles.
+        old=set();parents=[]
+        for pattern in (coverage.PATTERNS[0],*coverage.PATTERNS[2:]):
+            for path in sorted(root.parent.glob(pattern)):
+                old.update(coverage.source_rows(path));parents.append(dict(path=str(path),sha256=c.file_hash(path)))
     rows={row for v in p['event_sources'].values() for row in v['source']['rows']}
-    c.require(len(rows)==len(indices(p))*24 and not rows&old,'new disjoint boundary rows')
-    p['source_disjointness']=dict(parents=parents,previous_unique_rows=len(old),intersection=0)
+    c.require(len(rows)==len(indices(p))*24,'unique chunk rows')
+    if 'coverage' in p:coverage.authorize(root,p,parents,rows&old)
+    else:c.require(not rows&old,'new disjoint boundary rows')
+    p['source_disjointness']=dict(parents=parents,previous_unique_rows=len(old),intersection=len(rows&old))
     validate(root,p)
 
 
@@ -158,11 +161,13 @@ def validate(root,p,analysis_only=False):
     old=set()
     for parent in p['source_disjointness']['parents']:
         path=Path(parent['path']);c.require(c.file_hash(path)==parent['sha256'],'prior evidence changed')
-        d=m.document(path);old.update(d['rows'] if path.name=='source.json' else
-            [row for point in d['points'] if point['mode'] for row in point['source']['rows']])
+        old.update(coverage.source_rows(path))
     rows={row for v in p['event_sources'].values() for row in v['source']['rows']}
-    c.require(not old&rows and p['source_disjointness']['intersection']==0 and
-        len(old)==p['source_disjointness']['previous_unique_rows'],'disjointness replay')
+    if 'coverage' in p:coverage.authorize(root,p,p['source_disjointness']['parents'],rows&old)
+    else:c.require(not old&rows,'disjointness replay')
+    c.require(p['source_disjointness']['intersection']==len(old&rows) and
+        len(old)==p['source_disjointness']['previous_unique_rows'],'historical intersection replay')
+
 
 
 def batch_dir(root,index):return root/f'batch-{index:07d}'

@@ -14,6 +14,7 @@ import time
 
 import rml2018a_campaign as c
 import rml2018a_campaign_events as e
+import rml2018a_campaign_coverage as coverage
 m=e.m
 BASE=Path('/var/tmp/sdrharness-dev')
 DATA_SHA='e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38'
@@ -33,7 +34,8 @@ def source_identity():
 def software():return e.r.software()
 
 
-def create(root,max_new=2):
+def create(root,max_new=2,coverage_policy=None):
+    c.require(coverage_policy in (None,coverage.POLICY),'coverage policy choice')
     private_root(root);c.require(not root.exists() and type(max_new) is int and 1<=max_new<=106496,'new finite ledger')
     c.require(m.DATASET.stat().st_size==21449148312 and c.file_hash(m.DATASET)==DATA_SHA,'full source pin')
     root.mkdir(mode=0o700);(root/'entries').mkdir(mode=0o700)
@@ -45,6 +47,7 @@ def create(root,max_new=2):
         source_verification='one full SHA at ledger creation; exact path/device/inode/size/mtime and known SHA before every child plan/run',
         scope='Explicit bounded cross-chunk engineering campaign; imported engineering results remain separately identified',
         recognizer_available=False,created_unix_ns=time.time_ns())
+    if coverage_policy is not None:p['coverage']=coverage.create(root)
     c.save(root/'ledger-plan.json',p);return p
 
 
@@ -55,6 +58,7 @@ def load(root):
     c.require(type(p['maximum_new_batches']) is int and 1<=p['maximum_new_batches']<=106496 and
         p['maximum_new_tx_seconds']==p['maximum_new_batches']*8 and p['failure_pool_bytes']==e.storage.FAILURE_POOL and
         p['retention_limit_bytes']==TOTAL_CAP and p['automatic_next_chunk'] is False,'ledger fixed total limits')
+    if 'coverage' in p:coverage.verify(root,p['coverage'])
     return p
 
 
@@ -181,6 +185,7 @@ def refresh(root,deep=False):
         classification_completed=sums,by_class_source_snr_completed=groups,
         by_class_source_snr={group:dict(registered_rows=count,completed=groups.get(group),pending_rows=count-groups.get(group,{}).get('source',{}).get('total',0)) for group,count in registered_groups.items()},campaigns=states,recognizer_available=False,
         whole_dataset_complete=completed==106496,stop_requested=(root/'STOP').exists())
+    if 'coverage' in p:result['coverage']=coverage.partition(coverage.verify(root,p['coverage']),states)
     temp=root/'state.json.tmp'
     if temp.exists():
         c.require(temp.is_file() and not temp.is_symlink(),'state staging type');recovery=root/'recovery';recovery.mkdir(exist_ok=True)
@@ -206,7 +211,7 @@ def reserve(root,child,ids):
     else:
         c.require(not child.exists() and not set(ids).intersection(i for row in state['campaigns'] for i in row['batch_indices']),'duplicate source or existing child')
         gate(p,state,len(ids));c.save(path,value) # Durable before creating a child plan.
-    if not child.exists():m.create_plan(child,50,60,'agx','event-chunk',ids,source_receipt=cached_source(root))
+    if not child.exists():m.create_plan(child,50,60,'agx','event-chunk',ids,source_receipt=cached_source(root),coverage_receipt=p.get('coverage'))
     cp=m.load_plan(child);c.require(cp.get('source_verification')==cached_source(root) and e.indices(cp)==ids,'reserved child/source identity')
     refresh(root);return value
 
@@ -215,6 +220,13 @@ def import_completed(root,child,evidence):
     p=load(root);private_root(child);audit=m.document(evidence)
     c.require(audit['retained_root']==str(child),'import root');check_inventory(audit['retained_files'])
     cp=m.document(child/'run-plan.json');ids=e.indices(cp);path=entry_path(root,child)
+    c.require(cp['tx_level_profile']=='event-chunk','only compatible completed event-chunks can be imported')
+    if 'coverage' in p:
+        # Orchestration may evolve; the acquisition/DSP/model contract must agree.
+        allowed={'rml2018a-rf-campaign.py','rml2018a_campaign_events.py','rml2018a_campaign_ledger.py','rml2018a_campaign_coverage.py'}
+        current=software()
+        c.require(all(current.get(name)==sha for name,sha in cp['event_software'].items() if Path(name).name not in allowed),'import scientific software compatibility')
+        c.require(cp['guard_contract']==e.r.guard.contract() and cp['event_identity']==e.r.identity(),'import runtime/guard compatibility')
     value=dict(kind='imported',child_root=str(child),batch_indices=ids,ledger_plan_sha256=c.file_hash(root/'ledger-plan.json'),
         inventory_path=str(evidence),inventory_sha256=c.file_hash(evidence))
     if path.exists():c.require(m.document(path)==value,'import identity changed')
@@ -261,7 +273,7 @@ def run(root,child,retry=False):
 
 def main(args):
     root=args.root
-    if args.command=='ledger-plan':return create(root,args.ledger_max_new_batches)
+    if args.command=='ledger-plan':return create(root,args.ledger_max_new_batches,args.coverage_policy)
     load(root)
     with m.lock(root):
         if args.command=='ledger-status':return refresh(root,deep=args.ledger_deep)
