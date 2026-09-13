@@ -1,0 +1,586 @@
+{
+  "schema": "rml2018a-am-metrics-evidence-v1",
+  "base_head": "18b067b5da393a787b33045a8481293713ee557c",
+  "purpose": "96 existing source rows/four captures; audit AM-SSB estimator conditioning and archived model behavior, no new RF or inference",
+  "plan": {
+    "schema": "rml2018a-am-metric-audit-plan-v1",
+    "parent": "/home/jetson/sdrharness/docs/evidence/RML2018A_REMAINING16_2026-09-12.json",
+    "parent_sha256": "a24b0bf080e272bce0aadb20f50f9f20e7f45a6dedc7a13329d9ff8da9f2e1f7",
+    "base_head": "18b067b5da393a787b33045a8481293713ee557c",
+    "software": {
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/diagnose-rml2018a-am-metrics.py": "cf031812e7936503beb2e22e6197e3f44e0ad7708aabcdae0f95e7b13d045f39",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_campaign.py": "21b59a3eb0a81c3b9059f6e19f3c571d8168523b7ebba13359964fc59ce40caf",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_guard_tone.py": "f6805c8c12cd4fbb0e207bb63d34f8d2fa5d8e696a2f12850d498bebc7feeae0",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_lo_cancellation.py": "6adc011afd8ba8ba5971b07a8715beaeaa8d5f58c1c251a6e15c3015da37d020",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py": "07755bf754fb7227122c100dbbed4f51c5df7097d3683064a994c54dfa7a3b9e"
+    },
+    "batches": [
+      17664,
+      79787,
+      84224,
+      88662
+    ],
+    "classes": [
+      3,
+      17,
+      18,
+      19
+    ],
+    "source_rows": 96,
+    "source_iq_bytes": 786432,
+    "native_captures": 4,
+    "native_iq_bytes": 1048560,
+    "new_iq_files": 0,
+    "new_rf_operations": 0,
+    "new_model_windows": 0,
+    "ideal_reference_controls": 96,
+    "deadline_seconds": 180,
+    "maximum_output_bytes": 2097152,
+    "reserve_bytes": 16777216,
+    "free_bytes": 809145020416,
+    "metrics": [
+      "original native/sync/guard/quality and288 model-input/logit associations replay",
+      "source/full-window mean and centered-power fractions; two512 half centered fractions/power ratio",
+      "identity-link y=X control with unchanged nominal Z and unchanged SINR gates",
+      "source/raw/guard confusion and transitions; estimator validity vs recognition cross-tab"
+    ],
+    "restrictions": "Descriptive offline audit only; no new filtering, refitting or inference. Window mean is not independently identified carrier power. Invalid SINR remains null. Existing logs/failed rows immutable."
+  },
+  "plan_sha256": "41b0eef695eb77b4ecc7fd8673437a8be6cb71739f37a9dcae4d04c2b0b441f9",
+  "analysis_sha256": "8582ef5ce332ed23beffcb2572cb963bfae8b02ba61fa9c3c029d6d6ea9b62ad",
+  "source": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "bytes": 21449148312,
+    "mtime_ns": 1627354882000000000
+  },
+  "run_id": "06c19db239064398ac749ba4373fd9b7",
+  "rf": {
+    "center_hz": 2455000000,
+    "rate_sps": 2100000,
+    "bandwidth_hz": 1500000,
+    "tx_gain_db": 60,
+    "rx_gain_db": 50,
+    "peak": 0.632455532033676,
+    "tx_lo_offset_hz": 250000,
+    "settle_ms": 500,
+    "point_deadline_ms": 1000,
+    "rx_samples": 65535
+  },
+  "model_identity": {
+    "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+    "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+    "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+    "compute": "cuda_fp16_autocast",
+    "resident_weight_precision": "fp32",
+    "input_precision": "fp32",
+    "logit_return_precision": "fp32",
+    "sample_rate_hz": 2100000,
+    "window_count": 4,
+    "samples_per_window": 1024,
+    "aggregation": "float64_arithmetic_mean_logits_then_softmax"
+  },
+  "actual_inference": "Archived single1024 source/raw/guard windows;288 hashes checked, no new model calls",
+  "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "label_map_sha256": "859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3",
+  "results": [
+    {
+      "batch": 17664,
+      "class_id": 3,
+      "class_name": "BPSK",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0017664/rx/rml2018a-17664-1789215688564-1789215688564-1789215691834088887.sigmf-data",
+        "iq_sha256": "db5c7267fffa915bd0709792930dcc307f84fbc451d3434b85cd48bafd310d37",
+        "metadata_sha256": "c595263052b9a88c6697363cf85398ed0b4afe236b651c47ad15f440e569b371",
+        "request_id": 5,
+        "sequence": 1563,
+        "session_generation": 1789215688564
+      },
+      "source_sha256": "e8f08d32390deef8ac4448506fa312659829b8bc8a3b2958bb6933e6a06b8cf4",
+      "quality": {
+        "raw": {
+          "total": 24,
+          "estimated": 24,
+          "sinr_db": {
+            "min": 7.731317703261068,
+            "median": 8.359264070842286,
+            "max": 8.885111730981505
+          },
+          "invalid_reasons": {},
+          "correct_when_estimated": 24,
+          "correct_when_invalid": 0,
+          "minimum_half_centered_fraction_valid": {
+            "min": 0.9199120491720104,
+            "median": 0.9784178953933754,
+            "max": 0.9992354348991236
+          },
+          "minimum_half_centered_fraction_invalid": null
+        },
+        "guard": {
+          "total": 24,
+          "estimated": 24,
+          "sinr_db": {
+            "min": 18.459130076528655,
+            "median": 19.457375395643297,
+            "max": 20.4370029132215
+          },
+          "invalid_reasons": {},
+          "correct_when_estimated": 24,
+          "correct_when_invalid": 0,
+          "minimum_half_centered_fraction_valid": {
+            "min": 0.9199120491720104,
+            "median": 0.9784178953933754,
+            "max": 0.9992354348991236
+          },
+          "minimum_half_centered_fraction_invalid": null
+        }
+      },
+      "classification": {
+        "source": {
+          "total": 24,
+          "correct": 24,
+          "prediction_counts": {
+            "3": 24
+          }
+        },
+        "raw": {
+          "total": 24,
+          "correct": 24,
+          "prediction_counts": {
+            "3": 24
+          }
+        },
+        "guard": {
+          "total": 24,
+          "correct": 24,
+          "prediction_counts": {
+            "3": 24
+          }
+        }
+      },
+      "source_mean_power_fraction": {
+        "min": 1.4516735167904704e-05,
+        "median": 0.002840296101625781,
+        "max": 0.03654777680599096
+      },
+      "minimum_half_centered_fraction": {
+        "min": 0.9199120491720104,
+        "median": 0.9784178953933754,
+        "max": 0.9992354348991236
+      },
+      "source_half_power_ratio": {
+        "min": 1.0088619171109705,
+        "median": 1.0577243652941297,
+        "max": 1.1805895535414284
+      },
+      "ideal_link_valid": 24,
+      "ideal_link_invalid_reasons": {},
+      "source_guard_prediction_agreement": 24,
+      "both_source_guard_wrong": 0,
+      "raw_to_guard": {
+        "corrected": 0,
+        "regressed": 0
+      }
+    },
+    {
+      "batch": 79787,
+      "class_id": 17,
+      "class_name": "AM-SSB-WC",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0079787/rx/rml2018a-79787-1789215787251-1789215787251-1789215790514462010.sigmf-data",
+        "iq_sha256": "bcf39a51f8c06b9d17dfa2483f42784417c6610a67b62a0062ea70032ea10fb9",
+        "metadata_sha256": "255320c782c8a53fb5b66048f222c154730aadb99161288d62f945748eaaf1a5",
+        "request_id": 5,
+        "sequence": 1572,
+        "session_generation": 1789215787251
+      },
+      "source_sha256": "70caea654a00e09634a747bd31993313a86ca2838f0d6cf4c274e41f336afbbf",
+      "quality": {
+        "raw": {
+          "total": 24,
+          "estimated": 15,
+          "sinr_db": {
+            "min": 7.553791733403533,
+            "median": 12.059858218774623,
+            "max": 13.224623927673797
+          },
+          "invalid_reasons": {
+            "gain_not_stable_across_halves": 8,
+            "reference_not_identifiable": 1
+          },
+          "correct_when_estimated": 15,
+          "correct_when_invalid": 9,
+          "minimum_half_centered_fraction_valid": {
+            "min": 0.00044770392483770043,
+            "median": 0.0009739111801707696,
+            "max": 0.004080964932550807
+          },
+          "minimum_half_centered_fraction_invalid": {
+            "min": 5.4209379878009897e-05,
+            "median": 0.00030728440505843233,
+            "max": 0.0010237205886534045
+          }
+        },
+        "guard": {
+          "total": 24,
+          "estimated": 14,
+          "sinr_db": {
+            "min": 12.508656116126609,
+            "median": 14.649126094088475,
+            "max": 24.61986634170941
+          },
+          "invalid_reasons": {
+            "residual_not_stationary_across_halves": 4,
+            "reference_not_identifiable": 1,
+            "gain_not_stable_across_halves": 5
+          },
+          "correct_when_estimated": 9,
+          "correct_when_invalid": 7,
+          "minimum_half_centered_fraction_valid": {
+            "min": 0.00024754503180007175,
+            "median": 0.0009454522088113412,
+            "max": 0.00389840280913865
+          },
+          "minimum_half_centered_fraction_invalid": {
+            "min": 5.4209379878009897e-05,
+            "median": 0.0004550800707203296,
+            "max": 0.004080964932550807
+          }
+        }
+      },
+      "classification": {
+        "source": {
+          "total": 24,
+          "correct": 15,
+          "prediction_counts": {
+            "18": 9,
+            "17": 15
+          }
+        },
+        "raw": {
+          "total": 24,
+          "correct": 24,
+          "prediction_counts": {
+            "17": 24
+          }
+        },
+        "guard": {
+          "total": 24,
+          "correct": 16,
+          "prediction_counts": {
+            "17": 16,
+            "18": 8
+          }
+        }
+      },
+      "source_mean_power_fraction": {
+        "min": 0.987163218290095,
+        "median": 0.9967253760823811,
+        "max": 0.9991506266419432
+      },
+      "minimum_half_centered_fraction": {
+        "min": 5.4209379878009897e-05,
+        "median": 0.0007610285194954926,
+        "max": 0.004080964932550807
+      },
+      "source_half_power_ratio": {
+        "min": 1.0137699339363042,
+        "median": 1.0989303142044635,
+        "max": 1.209220395229689
+      },
+      "ideal_link_valid": 23,
+      "ideal_link_invalid_reasons": {
+        "reference_not_identifiable": 1
+      },
+      "source_guard_prediction_agreement": 23,
+      "both_source_guard_wrong": 8,
+      "raw_to_guard": {
+        "corrected": 0,
+        "regressed": 8
+      }
+    },
+    {
+      "batch": 84224,
+      "class_id": 18,
+      "class_name": "AM-SSB-SC",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0084224/rx/rml2018a-84224-1789215798236-1789215798236-1789215801474117042.sigmf-data",
+        "iq_sha256": "f2b78884d36590c8fb9ff12cb635fb32d1dbf32e869ba60101a9a2344317cf71",
+        "metadata_sha256": "b7444920b390d8358afa36e91870267afc87b3717bcc9d25163f4009e8a20cfa",
+        "request_id": 5,
+        "sequence": 1573,
+        "session_generation": 1789215798236
+      },
+      "source_sha256": "4ba763b24869c65d1d6490703cd30a8add94eed261e3b13afdb45691e443b12e",
+      "quality": {
+        "raw": {
+          "total": 24,
+          "estimated": 11,
+          "sinr_db": {
+            "min": 4.427206888728704,
+            "median": 10.733228994897864,
+            "max": 11.954028781674058
+          },
+          "invalid_reasons": {
+            "gain_not_stable_across_halves": 13
+          },
+          "correct_when_estimated": 9,
+          "correct_when_invalid": 9,
+          "minimum_half_centered_fraction_valid": {
+            "min": 0.00019673071268940017,
+            "median": 0.0029891489138989262,
+            "max": 0.013648587028188972
+          },
+          "minimum_half_centered_fraction_invalid": {
+            "min": 0.0002430828598203143,
+            "median": 0.0009555349265244411,
+            "max": 0.008062921171637538
+          }
+        },
+        "guard": {
+          "total": 24,
+          "estimated": 8,
+          "sinr_db": {
+            "min": 7.7759947529088,
+            "median": 16.58411440657261,
+            "max": 24.181645871662802
+          },
+          "invalid_reasons": {
+            "gain_not_stable_across_halves": 14,
+            "residual_not_stationary_across_halves": 2
+          },
+          "correct_when_estimated": 7,
+          "correct_when_invalid": 14,
+          "minimum_half_centered_fraction_valid": {
+            "min": 0.0016713641130015754,
+            "median": 0.003689600255001416,
+            "max": 0.013648587028188972
+          },
+          "minimum_half_centered_fraction_invalid": {
+            "min": 0.00019673071268940017,
+            "median": 0.0012274610881346844,
+            "max": 0.009479581399100965
+          }
+        }
+      },
+      "classification": {
+        "source": {
+          "total": 24,
+          "correct": 21,
+          "prediction_counts": {
+            "18": 21,
+            "17": 3
+          }
+        },
+        "raw": {
+          "total": 24,
+          "correct": 18,
+          "prediction_counts": {
+            "17": 6,
+            "18": 18
+          }
+        },
+        "guard": {
+          "total": 24,
+          "correct": 21,
+          "prediction_counts": {
+            "18": 21,
+            "17": 3
+          }
+        }
+      },
+      "source_mean_power_fraction": {
+        "min": 0.9583179531087171,
+        "median": 0.9910282974526683,
+        "max": 0.998280129930867
+      },
+      "minimum_half_centered_fraction": {
+        "min": 0.00019673071268940017,
+        "median": 0.002081325944505408,
+        "max": 0.013648587028188972
+      },
+      "source_half_power_ratio": {
+        "min": 1.0047602594759772,
+        "median": 1.1677055569977044,
+        "max": 1.5118671900340128
+      },
+      "ideal_link_valid": 24,
+      "ideal_link_invalid_reasons": {},
+      "source_guard_prediction_agreement": 24,
+      "both_source_guard_wrong": 3,
+      "raw_to_guard": {
+        "corrected": 3,
+        "regressed": 0
+      }
+    },
+    {
+      "batch": 88662,
+      "class_id": 19,
+      "class_name": "AM-DSB-WC",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912/batch-0088662/rx/rml2018a-88662-1789215809134-1789215809134-1789215812406177980.sigmf-data",
+        "iq_sha256": "5cc0b3c1eb62c56f603d2565d7a5d8af40806c3070fe2f530b147fac6bd6e34c",
+        "metadata_sha256": "da93fa9d27e4d35c7e16a2dc29eca5e0384cf2e3f913b65d42b0cd2ba297be9f",
+        "request_id": 5,
+        "sequence": 1574,
+        "session_generation": 1789215809134
+      },
+      "source_sha256": "5c65f7b4af7054102ce7628ade684fdfa37f961ccca4e446ca26d0ce9fac3396",
+      "quality": {
+        "raw": {
+          "total": 24,
+          "estimated": 24,
+          "sinr_db": {
+            "min": 7.766326940588716,
+            "median": 9.460665715710494,
+            "max": 10.059253607659643
+          },
+          "invalid_reasons": {},
+          "correct_when_estimated": 24,
+          "correct_when_invalid": 0,
+          "minimum_half_centered_fraction_valid": {
+            "min": 0.9999656533577863,
+            "median": 0.999998998235873,
+            "max": 0.9999999281500452
+          },
+          "minimum_half_centered_fraction_invalid": null
+        },
+        "guard": {
+          "total": 24,
+          "estimated": 24,
+          "sinr_db": {
+            "min": 11.831834104757386,
+            "median": 19.02517576151402,
+            "max": 19.476911545061398
+          },
+          "invalid_reasons": {},
+          "correct_when_estimated": 23,
+          "correct_when_invalid": 0,
+          "minimum_half_centered_fraction_valid": {
+            "min": 0.9999656533577863,
+            "median": 0.999998998235873,
+            "max": 0.9999999281500452
+          },
+          "minimum_half_centered_fraction_invalid": null
+        }
+      },
+      "classification": {
+        "source": {
+          "total": 24,
+          "correct": 24,
+          "prediction_counts": {
+            "19": 24
+          }
+        },
+        "raw": {
+          "total": 24,
+          "correct": 24,
+          "prediction_counts": {
+            "19": 24
+          }
+        },
+        "guard": {
+          "total": 24,
+          "correct": 23,
+          "prediction_counts": {
+            "19": 23,
+            "20": 1
+          }
+        }
+      },
+      "source_mean_power_fraction": {
+        "min": 2.9622411342121816e-08,
+        "median": 3.871233436280557e-07,
+        "max": 6.588427623380513e-06
+      },
+      "minimum_half_centered_fraction": {
+        "min": 0.9999656533577863,
+        "median": 0.999998998235873,
+        "max": 0.9999999281500452
+      },
+      "source_half_power_ratio": {
+        "min": 1.0030270675305233,
+        "median": 1.0563870073770882,
+        "max": 1.2274087768762438
+      },
+      "ideal_link_valid": 24,
+      "ideal_link_invalid_reasons": {},
+      "source_guard_prediction_agreement": 23,
+      "both_source_guard_wrong": 0,
+      "raw_to_guard": {
+        "corrected": 0,
+        "regressed": 1
+      }
+    }
+  ],
+  "parent_files_verified": 182,
+  "model_input_hashes_verified": 288,
+  "new_model_windows": 0,
+  "new_rf_operations": 0,
+  "recognizer_available": false,
+  "production_deployment": false,
+  "tests": {
+    "analytic": 5,
+    "deterministic_replay": true,
+    "parent_hashes": true,
+    "archived_sync_guard_quality_inputs_predictions": true
+  },
+  "reporting": "Keep original conditional metric with null/reasons and source-Z; report validity rate and total-denominator source/raw/guard accuracy separately. Window mean is not independently measured carrier, source model confusion is not RF-only error; no class-specific gate exception or DSP chosen using predictions.",
+  "cleanup_summary": {
+    "removed_files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-am-metrics-20260913/analyze.log",
+        "bytes": 10246,
+        "sha256": "a51b760b0cee48cadff62c991d7ffaa6010ed03e524b1df1e39b3ea9d9a505e1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-am-metrics-20260913/replay.log",
+        "bytes": 10246,
+        "sha256": "a51b760b0cee48cadff62c991d7ffaa6010ed03e524b1df1e39b3ea9d9a505e1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml-am-metrics-checks-20260913/plan.log",
+        "bytes": 2131,
+        "sha256": "41b0eef695eb77b4ecc7fd8673437a8be6cb71739f37a9dcae4d04c2b0b441f9"
+      }
+    ],
+    "removed_file_count": 3,
+    "removed_bytes": 22623,
+    "removed_dirs": [
+      "/var/tmp/sdrharness-dev/rml-am-metrics-checks-20260913/tmp",
+      "/var/tmp/sdrharness-dev/rml-am-metrics-checks-20260913"
+    ],
+    "checks_root_absent": true,
+    "new_iq_files": 0,
+    "hardware_processes_started": 0,
+    "model_processes_started": 0
+  },
+  "retained_root": "/var/tmp/sdrharness-dev/rml-am-metrics-20260913",
+  "retained_files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-am-metrics-20260913/analysis.json",
+      "bytes": 556699,
+      "sha256": "8582ef5ce332ed23beffcb2572cb963bfae8b02ba61fa9c3c029d6d6ea9b62ad"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-am-metrics-20260913/cleanup.json",
+      "bytes": 938,
+      "sha256": "a2c68942d0f73bc2c0b13568339f29c80dcf7a59ff48034f59243b581a04dea7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-am-metrics-20260913/plan.json",
+      "bytes": 2131,
+      "sha256": "41b0eef695eb77b4ecc7fd8673437a8be6cb71739f37a9dcae4d04c2b0b441f9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml-am-metrics-20260913/tests.log",
+      "bytes": 103,
+      "sha256": "baf49b59538192f3e136ca0404cac516ecb8dd2fe5ba1416604056f3080fa49c"
+    }
+  ],
+  "retained_file_count": 4,
+  "retained_bytes": 559871,
+  "retention_reason": "One derived per-row audit, fixed plan, analytical test receipt and cleanup record; reuses all parent native IQ and source HDF5 without copies; Git analyzer reproduces the audit.",
+  "manual_delete_command": "rm -- /var/tmp/sdrharness-dev/rml-am-metrics-20260913/analysis.json /var/tmp/sdrharness-dev/rml-am-metrics-20260913/cleanup.json /var/tmp/sdrharness-dev/rml-am-metrics-20260913/plan.json /var/tmp/sdrharness-dev/rml-am-metrics-20260913/tests.log && rmdir -- /var/tmp/sdrharness-dev/rml-am-metrics-20260913"
+}
