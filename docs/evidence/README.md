@@ -44,6 +44,7 @@
 - [四类五档低源SNR分层](RML2018A_SNR_STRATA_2026-09-13.json)：480新行、22RX/20TX事件/1440输入；按真实源Z分组、48纠正/22回退、低SNR额外损失、PNG/PDF与完整清理清单。
 - [事件campaign边界与续跑](RML2018A_CAMPAIGN_BOUNDARIES_2026-09-13.json)：96新行、5TX尝试含取消、4RX/288输入；逐行混合Y/Z、原始失败及处理修订、完成不重发/不重推理和精确保留清单。
 - [通用有限chunk与无损日志预算](RML2018A_GENERIC_CHUNKS_2026-09-13.json)：两个48行新块、288输入、暂停/重复跳过、原日志逐字节归档；条件全库空间预算、失败保留边界及精确清理清单。
+- [跨块总控与源核验复用](RML2018A_GLOBAL_LEDGER_2026-09-13.json)：96行只读导入＋48行新测；登记/完成凭据、恢复与预算STOP门、源核验复用、总分母及三根精确保留清单。
 
 - [RadioML2018A全量脚本先导保留清单](RML2018A_FULL_RF_CAMPAIGN_EVIDENCE_2026-09-10.json)
 - [RadioML2018A当前IQ与历史175kHz滤波方法的离线对照](RML2018A_HISTORICAL_FILTER_COMPARISON_2026-09-10.json)

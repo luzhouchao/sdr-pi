@@ -71,7 +71,7 @@ def is_event(campaign):
 def campaign_software():
     return {name:file_hash(SCRIPTS/name) for name in (
         Path(__file__).resolve().name,'rml2018a_campaign.py','rml2018a-nx-tx.py',
-        'amc-mamba-worker.py','amc-rf-v1-runtime.py','gpu_lease.py','rml2018a_campaign_events.py','rml2018a_event_archive.py',
+        'amc-mamba-worker.py','amc-rf-v1-runtime.py','gpu_lease.py','rml2018a_campaign_events.py','rml2018a_event_archive.py','rml2018a_campaign_ledger.py',
         'validate-b210-multiclass.py','validate-p201-termination-background.py','validate-b210-p201-link.py')}
 
 
@@ -93,7 +93,7 @@ def campaign_level(campaign, indices=()):
     return profile
 
 
-def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profile='standard',selected=None):
+def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profile='standard',selected=None,source_receipt=None):
     if tx_level_profile=='event-chunk':event_backend().storage.batches(selected)
     rx_gain_db=registered_rx_gain(rx_gain_db)
     tx_gain_db=registered_tx_gain(tx_gain_db)
@@ -106,8 +106,12 @@ def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profi
             root.name.startswith('b210-rml2018a-') and root.name.replace('-', '').isalnum(), 'run root')
     pins = document(REPO/'jetson-agx/sdrharness/config/amc/rf-preprocess-v1-selection-plan.json')['pinned_inputs']
     require(DATASET.stat().st_size == pins['dataset']['bytes'], 'dataset size')
-    print('Checking full dataset SHA-256 (read-only)...', flush=True)
-    sha = file_hash(DATASET)
+    if source_receipt is None:
+        print('Checking full dataset SHA-256 (read-only)...', flush=True)
+        sha=file_hash(DATASET)
+    else:
+        import rml2018a_campaign_ledger as ledger
+        sha=ledger.verify_cached(source_receipt)
     require(sha == pins['dataset']['sha256'], 'dataset hash')
     with h5py.File(DATASET, 'r') as f:
         require(f['X'].shape == (2555904, 1024, 2) and f['X'].dtype == np.dtype('float32'), 'X layout')
@@ -143,6 +147,7 @@ def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profi
         plan['scope']='Only registered Z30 batches'+str(plan['execution_limits']['allowed_batch_indices'])+'; full budget describes dataset indexing, not permitted execution'
         plan['semantics']='Finite cable gain-pair engineering pilot, not a full campaign or independent admission'
         campaign_level(plan)
+    if source_receipt is not None:plan['source_verification']=source_receipt
     if is_event(plan):event_backend().register(root,plan)
     save(root/'run-plan.json', plan)
     print(json.dumps(plan, indent=2), flush=True)
@@ -169,6 +174,9 @@ def load_plan(root, analysis_only=False):
     stat = DATASET.stat()
     require(p['source']['path'] == str(DATASET) and stat.st_size == p['source']['bytes'] and
             stat.st_mtime_ns == p['source']['mtime_ns'], 'source identity changed; new plan required')
+    if 'source_verification' in p:
+        import rml2018a_campaign_ledger as ledger
+        ledger.verify_cached(p['source_verification'])
     if is_event(p):
         event_backend().validate(root,p,analysis_only=analysis_only)
         if analysis_only:event_backend().verify_analysis(root,p)
@@ -604,8 +612,12 @@ def selected_batches(total, start, count, explicit=None):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command',choices=['plan','acquire','infer','run','summary','analysis-plan','verify'])
+    p.add_argument('command',choices=['plan','acquire','infer','run','summary','analysis-plan','verify','ledger-plan','ledger-status','ledger-import','ledger-reserve','ledger-run'])
     p.add_argument('--root',type=Path,required=True)
+    p.add_argument('--campaign-root',type=Path)
+    p.add_argument('--inventory',type=Path)
+    p.add_argument('--ledger-max-new-batches',type=int,default=2)
+    p.add_argument('--ledger-deep',action='store_true')
     p.add_argument('--start-batch',type=int,default=0)
     p.add_argument('--max-batches',type=int,default=1)
     p.add_argument('--batch-indices',type=int,nargs='+',help='explicit ordered pilot/shard, 1-32 unique batches; no range overrides')
@@ -617,6 +629,11 @@ def main():
     p.add_argument('--tx-host',choices=['agx','nx'],help='plan only; default agx; P201 remains network RX')
     p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot','remaining-high-snr-pilot','event-boundary-pilot','event-chunk'],help='plan only; finite profiles restrict batch IDs and AGX gains; remaining-high-snr uses TX60/RX50')
     args=p.parse_args();root=args.root
+    if args.command.startswith('ledger-'):
+        require(not args.analysis_revision and args.tx_gain_db is None and args.rx_gain_db is None and args.tx_level_profile is None and args.tx_host is None,'ledger fixes RF/profile')
+        import rml2018a_campaign_ledger as ledger
+        result=ledger.main(args)
+        print(json.dumps({k:v for k,v in result.items() if k not in ('software','campaigns','by_class_source_snr_completed')}),flush=True);return
     require(not args.analysis_revision or args.command in ('infer','summary','verify'),'analysis revision cannot transmit')
     if args.command=='plan':
         require(args.batch_indices is None or args.tx_level_profile=='event-chunk','plan batch selection is event-chunk only')
