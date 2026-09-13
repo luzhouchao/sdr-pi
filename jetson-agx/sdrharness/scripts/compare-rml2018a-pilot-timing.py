@@ -167,8 +167,8 @@ def prepare(root):
     return report,tensors
 
 
-def infer(root,output):
-    m=runner();report,tensors=prepare(root)
+def infer(root,output,prepare_inputs=None):
+    m=runner();report,tensors=(prepare_inputs or prepare)(root)
     tags=report.get('tags',TAGS);total=report['source_rows'];maximum=report['maximum_model_windows']
     c.require(report==m.document(output/'prepared.json'),'prepared source/software changed')
     c.require(not (output/'inference.json').exists(),'inference already recorded')
@@ -213,6 +213,26 @@ def infer(root,output):
     return receipt
 
 
+def verify(root,output,prepare_inputs=None):
+    report,_=(prepare_inputs or prepare)(root);m=runner();c.require(report==m.document(output/'prepared.json'),'deterministic report replay')
+    tags=report.get('tags',TAGS);total=report['source_rows']
+    receipt=m.document(output/'inference.json');c.require(receipt['status']=='completed' and
+        receipt['prepared_sha256']==c.file_hash(output/'prepared.json') and len(receipt['rows'])==total,'inference receipt')
+    count=0;expected=[(b['batch'],r) for b in report['results'] for r in b['rows']]
+    for (batch,row),pred in zip(expected,receipt['rows']):
+        c.require((batch,row['row'],row['true_id'])==(pred['batch'],pred['row'],pred['true_id']),'prediction association')
+        for tag in tags:
+            q=pred['predictions'][tag]
+            if row['inputs'][tag] is None:c.require(q is None,'missing input');continue
+            c.require(q['input_sha256']==row['inputs'][tag] and len(q['logits'])==24 and
+                np.isfinite(q['logits']).all() and int(np.argmax(q['logits']))==q['id'],'prediction/input replay');count+=1
+    c.require(count==receipt['model_windows'],'window count')
+    for tag in tags:
+        c.require(receipt['summary'][tag]==dict(total=total,predicted=sum(v['predictions'][tag] is not None for v in receipt['rows']),
+            correct=sum(v['predictions'][tag] is not None and v['predictions'][tag]['id']==v['true_id'] for v in receipt['rows'])),'summary count')
+    print(json.dumps(dict(status='verified',source_rows=total,native_captures=len(report['results']),model_input_hashes=count,model_reexecuted=False)))
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=['prepare','infer','verify'])
     p.add_argument('--root',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
@@ -230,23 +250,7 @@ def main():
         with runner().lock(a.output):
             result=infer(a.root,a.output);print(json.dumps(result['summary']))
     else:
-        report,_=prepare(a.root);m=runner();c.require(report==m.document(a.output/'prepared.json'),'deterministic report replay')
-        tags=report.get('tags',TAGS);total=report['source_rows']
-        receipt=m.document(a.output/'inference.json');c.require(receipt['status']=='completed' and
-            receipt['prepared_sha256']==c.file_hash(a.output/'prepared.json') and len(receipt['rows'])==total,'inference receipt')
-        count=0;expected=[(b['batch'],r) for b in report['results'] for r in b['rows']]
-        for (batch,row),pred in zip(expected,receipt['rows']):
-            c.require((batch,row['row'],row['true_id'])==(pred['batch'],pred['row'],pred['true_id']),'prediction association')
-            for tag in tags:
-                q=pred['predictions'][tag]
-                if row['inputs'][tag] is None:c.require(q is None,'missing input');continue
-                c.require(q['input_sha256']==row['inputs'][tag] and len(q['logits'])==24 and
-                    np.isfinite(q['logits']).all() and int(np.argmax(q['logits']))==q['id'],'prediction/input replay');count+=1
-        c.require(count==receipt['model_windows'],'window count')
-        for tag in tags:
-            c.require(receipt['summary'][tag]==dict(total=total,predicted=sum(v['predictions'][tag] is not None for v in receipt['rows']),
-                correct=sum(v['predictions'][tag] is not None and v['predictions'][tag]['id']==v['true_id'] for v in receipt['rows'])),'summary count')
-        print(json.dumps(dict(status='verified',source_rows=total,native_captures=len(report['results']),model_input_hashes=count,model_reexecuted=False)))
+        verify(a.root,a.output)
 
 
 if __name__=='__main__':main()

@@ -45,14 +45,19 @@ RML_REMAINING_SCHEMA = 'rml2018a-remaining-high-snr-pilot-v1'
 RML_REMAINING_CLASSES = (1,2,3,6,7,8,9,10,11,13,15,17,18,19,21,23)
 RML_REMAINING_BATCHES = tuple((cid*106496+102400+2048+23)//24 for cid in RML_REMAINING_CLASSES)
 
+RML_EVENT_SCHEMA = 'rml2018a-event-retest-pilot-v1'
+RML_EVENT_BATCHES = (17680, 35430, 62054, 97552)
+RML_EVENT_CLASSES = (3, 7, 13, 21)
+
 
 def packet_peak(level_profile):
-    require(level_profile in ('standard', 'gain-pair-pilot', 'timing-multiclass-pilot', 'qam-guard-pilot', 'qam-rx-gain-pilot', 'remaining-high-snr-pilot'), 'registered TX level profile')
+    require(level_profile in ('standard', 'gain-pair-pilot', 'timing-multiclass-pilot', 'qam-guard-pilot', 'qam-rx-gain-pilot', 'remaining-high-snr-pilot', 'event-retest-pilot'), 'registered TX level profile')
     return .2 if level_profile == 'standard' else .2*math.sqrt(10.)
 
 
 def level_batches(profile):
     packet_peak(profile)
+    if profile == 'event-retest-pilot': return RML_EVENT_BATCHES
     if profile == 'remaining-high-snr-pilot': return RML_REMAINING_BATCHES
     if profile == 'qam-rx-gain-pilot': return RML_RXGAIN_BATCHES
     if profile == 'qam-guard-pilot': return RML_GUARD_BATCHES
@@ -63,12 +68,12 @@ def level_schema(profile):
     packet_peak(profile)
     return {'standard':SCHEMA,'gain-pair-pilot':RML_GAIN_PAIR_SCHEMA,
             'timing-multiclass-pilot':RML_TIMING_SCHEMA, 'qam-guard-pilot':RML_GUARD_SCHEMA,
-            'qam-rx-gain-pilot':RML_RXGAIN_SCHEMA, 'remaining-high-snr-pilot':RML_REMAINING_SCHEMA}[profile]
+            'qam-rx-gain-pilot':RML_RXGAIN_SCHEMA, 'remaining-high-snr-pilot':RML_REMAINING_SCHEMA, 'event-retest-pilot':RML_EVENT_SCHEMA}[profile]
 
 
 def pilot_rx_gains(profile):
     packet_peak(profile)
-    if profile=='remaining-high-snr-pilot':return (50,)
+    if profile in ('remaining-high-snr-pilot','event-retest-pilot'):return (50,)
     return (40,50) if profile=='qam-rx-gain-pilot' else (40,)
 
 
@@ -156,7 +161,7 @@ def validate_tx(plan, payload):
         require(plan == expected and payload == waveform.tobytes(), 'unregistered LO reference plan/payload')
         return
     registered_tx_gain(plan.get('tx_gain_db'))
-    profiles={SCHEMA:'standard',RML_GAIN_PAIR_SCHEMA:'gain-pair-pilot',RML_TIMING_SCHEMA:'timing-multiclass-pilot',RML_GUARD_SCHEMA:'qam-guard-pilot',RML_RXGAIN_SCHEMA:'qam-rx-gain-pilot',RML_REMAINING_SCHEMA:'remaining-high-snr-pilot'}
+    profiles={SCHEMA:'standard',RML_GAIN_PAIR_SCHEMA:'gain-pair-pilot',RML_TIMING_SCHEMA:'timing-multiclass-pilot',RML_GUARD_SCHEMA:'qam-guard-pilot',RML_RXGAIN_SCHEMA:'qam-rx-gain-pilot',RML_REMAINING_SCHEMA:'remaining-high-snr-pilot',RML_EVENT_SCHEMA:'event-retest-pilot'}
     require(plan.get('schema') in profiles, 'registered TX schema')
     profile=profiles[plan['schema']];paired=profile!='standard'
     peak = packet_peak(profile)

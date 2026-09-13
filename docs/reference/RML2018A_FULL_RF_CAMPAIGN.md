@@ -454,3 +454,37 @@ UHD设备时间缺失时为null；各次USRP初始化后的设备时间不假定
 初版analyze的FFT-bin候选单音残差仅作粗略描述，频点量化会留下拍频，不能用于可靠噪声底。
 本单元的前缀细化单音/非LO频带统计及复核脚本在证据包中另作派生，不覆盖原analysis或改变接收质量门。
 停流/全零控制仍可能有LO及其他能量；known载荷的宽带功率是信号，不能当背景。
+
+
+## 四类RadioML带时间事件复测
+
+[rml2018a-event-retest.py](../../jetson-agx/sdrharness/scripts/rml2018a-event-retest.py)为本次独立有限入口，
+复用事件控制的收发执行器和既有冻结模型推理/复核代码；普通campaign CLI/default不替换。
+`event-retest-pilot`只接纳batch17680/35430/62054/97552，依次BPSK/32PSK/32QAM/FM，
+每类24行、源Z30；本次与95份旧campaign源记录的1032个唯一行无重叠。
+严格保持2455MHz、TX60/RX50、20dB同轴、峰值0.632455532、2.1MS/s、BW1.5MHz、LO+250kHz及原guard门限。
+四次TX至多16秒/33,527,808个主机接受复数样本；前后停发控制加四次实收共6×65,535点，
+精确原生IQ预算1,572,840字节。288个source/raw/guard单窗模型输入加2次预热；没有时序/额外滤波。
+
+使用既有venv Python `-B`，设置`PYTHONDONTWRITEBYTECODE=1`、`OPENBLAS_NUM_THREADS=1`及feature临时/缓存路径。
+新根格式为`/var/tmp/sdrharness-dev/b210-rml-event-retest-<唯一标识>`，执行顺序：
+
+```text
+rml2018a-event-retest.py plan --root <新根>
+rml2018a-event-retest.py acquire --root <该根>
+rml2018a-event-retest.py prepare --root <该根>
+rml2018a-event-retest.py infer --root <该根>
+rml2018a-event-retest.py verify --root <该根>
+```
+
+plan核验完整原HDF5 SHA、所选X/Y/Z及行级原始哈希，绑定软件、runtime、profile和既有事件二进制/构建receipt；
+不再编译或复制二进制。acquire重新核验后仅一次执行，有owner锁及started排重，执行器400秒alarm/单次TX65秒外层限制。
+直接停止为向`started.json`中本单元PID发送SIGINT；接收忙时仅用Controller generation cancel，随后核对完整恢复。
+推理650秒alarm，建议外层680秒；使用同一GPU lease及空闲Spark暂停/恢复机制。
+同步失败仍保存24条源预测和raw/guard缺失，LO拒绝保留未经该校正的载荷；不按识别结果放宽门限或重采挑样。
+这里“新行”指本次相对封存campaign父记录的比较，并不授权用同一个profile反复试到成功。
+
+事件ACK/接受样本数不等于物理连续性证明，P201未与B210样本时钟映射；条件SINR保持工程定义。
+模型采用冻结epoch10、FP16 autocast/FP32权重的单1024窗工程对照，`recognizer_available=false`，名称provisional。
+本次计划、源行、接收会话、288输入/预测及清理见[四类复测证据](../evidence/RML2018A_EVENT_RETEST_2026-09-13.json)，
+[实际结果](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13四类新源行带事件复测)。

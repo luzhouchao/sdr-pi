@@ -116,10 +116,15 @@ def parse_events(path,complete=True):
 
 def acquire(root):
     p=campaign.document(root/'plan.json');validate_plan(root,p)
+    return acquire_validated(root,p,lambda point:waveform(point['mode'],p['run_id']).tobytes())
+
+
+def acquire_validated(root,p,packet_bytes):
+    """Internal executor: callers must validate their own fixed finite plan first."""
     bg=campaign.module('event_bg','validate-p201-termination-background.py');tr=campaign.transport_module().Transport('agx',bg)
     with (root/'started.json').open('x') as f:json.dump(dict(pid=os.getpid(),started_ns=time.time_ns(),plan_sha256=c.file_hash(root/'plan.json')),f)
     baseline=lo.preflight(bg,tr);c.save(root/'preflight.json',baseline)
-    result=dict(status='failed',source_rows=0,model_windows=0)
+    result=dict(status='failed',source_rows=p['source_rows'],model_windows=0)
     signal.alarm(400)
     try:
         for point in p['points']:
@@ -131,8 +136,8 @@ def acquire(root):
             c.save(dest/'audit.json',audit);tx=None;rx=None;log=None
             try:
                 if point['mode']:
-                    packet=dest/'packet.fc32';packet.write_bytes(waveform(point['mode'],p['run_id']).tobytes())
-                    c.require(c.file_hash(packet)==p['waveforms'][point['mode']]['sha256'],'staged source')
+                    packet=dest/'packet.fc32';packet.write_bytes(packet_bytes(point))
+                    c.require(c.file_hash(packet)==(point['packet_sha256'] if 'packet_sha256' in point else p['waveforms'][point['mode']]['sha256']),'staged source')
                     log=(dest/'tx-uhd.log').open('wb')
                     tx=subprocess.Popen(['timeout','--signal=INT','--kill-after=3s','65s',p['binary']['path'],str(packet),str(dest/'tx-events.jsonl')],env=tr.env(),cwd=dest,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=log)
                     ready=json.loads(campaign.read_line(tx,35));c.require(ready['event']=='ready','observer ready');audit['tx_ready']=ready
@@ -172,7 +177,7 @@ def acquire(root):
                     if point['p201_staging']:bg.ssh('test ! -e '+shlex.quote(point['p201_staging']))
                     packet=dest/'packet.fc32'
                     if packet.exists():
-                        c.require(c.file_hash(packet)==p['waveforms'][point['mode']]['sha256'],'source removal hash');audit['removed_packet_bytes']=packet.stat().st_size;packet.unlink()
+                        c.require(c.file_hash(packet)==(point['packet_sha256'] if 'packet_sha256' in point else p['waveforms'][point['mode']]['sha256']),'source removal hash');audit['removed_packet_bytes']=packet.stat().st_size;packet.unlink()
                     audit['restored']=True
                 finally:c.save(dest/'audit.json',audit)
             print(json.dumps(dict(tag=point['tag'],status=audit['status'],peak=audit.get('component_peak_counts'),events=audit.get('events',{}).get('event_counts'),restored=audit['restored'])),flush=True)
