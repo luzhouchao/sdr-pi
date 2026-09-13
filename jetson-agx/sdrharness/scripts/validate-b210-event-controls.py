@@ -89,8 +89,8 @@ def validate_plan(root,p):
 
 
 def parse_events(path,complete=True):
-    c.require(path.stat().st_size<16000000,'event byte bound')
-    rows=[json.loads(line) for line in path.read_text().splitlines()]
+    from rml2018a_event_archive import read
+    rows=[json.loads(line) for line in read(path).decode().splitlines()]
     c.require(len(rows)<40010 and rows[-1]['kind']=='summary','bounded final summary')
     sends=[r for r in rows if r['kind']=='send'];events=[r for r in rows if r['kind']=='async'];offset=0
     for r in sends:

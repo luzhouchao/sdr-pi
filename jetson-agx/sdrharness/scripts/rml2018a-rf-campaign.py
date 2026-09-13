@@ -65,19 +65,19 @@ def event_backend():
 
 
 def is_event(campaign):
-    return campaign.get('tx_level_profile') == 'event-boundary-pilot'
+    return campaign.get('tx_level_profile') in ('event-boundary-pilot','event-chunk')
 
 
 def campaign_software():
     return {name:file_hash(SCRIPTS/name) for name in (
         Path(__file__).resolve().name,'rml2018a_campaign.py','rml2018a-nx-tx.py',
-        'amc-mamba-worker.py','amc-rf-v1-runtime.py','gpu_lease.py','rml2018a_campaign_events.py',
+        'amc-mamba-worker.py','amc-rf-v1-runtime.py','gpu_lease.py','rml2018a_campaign_events.py','rml2018a_event_archive.py',
         'validate-b210-multiclass.py','validate-p201-termination-background.py','validate-b210-p201-link.py')}
 
 
-def level_limits(profile='gain-pair-pilot'):
+def level_limits(profile='gain-pair-pilot',selected=None):
     batches=level_batches(profile)
-    if profile=='event-boundary-pilot':return event_backend().limits()
+    if profile in ('event-boundary-pilot','event-chunk'):return event_backend().limits(profile,selected)
     return dict(allowed_batch_indices=list(batches), maximum_tx_seconds=len(batches)*4,
         maximum_rx_iq_bytes=len(batches)*RX_SAMPLES*4, maximum_source_rows=len(batches)*24)
 
@@ -88,12 +88,13 @@ def campaign_level(campaign, indices=()):
     if profile != 'standard':
         require(campaign['tx_host']=='agx' and campaign['rf']['tx_gain_db']==60 and
             campaign['rf']['rx_gain_db'] in pilot_rx_gains(profile) and campaign['rf']['peak']==peak and
-            campaign.get('execution_limits')==level_limits(profile), 'registered finite pilot campaign')
-        require(all(type(i) is int and i in level_batches(profile) for i in indices), 'finite pilot batch selection')
+            campaign.get('execution_limits')==level_limits(profile,campaign.get('execution_limits',{}).get('allowed_batch_indices')), 'registered finite pilot campaign')
+        require(all(type(i) is int and i in campaign['execution_limits']['allowed_batch_indices'] for i in indices), 'finite pilot batch selection')
     return profile
 
 
-def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profile='standard'):
+def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profile='standard',selected=None):
+    if tx_level_profile=='event-chunk':event_backend().storage.batches(selected)
     rx_gain_db=registered_rx_gain(rx_gain_db)
     tx_gain_db=registered_tx_gain(tx_gain_db)
     peak=packet_peak(tx_level_profile)
@@ -138,8 +139,8 @@ def create_plan(root, rx_gain_db=20, tx_gain_db=0, tx_host='agx', tx_level_profi
         created_unix_ns=time.time_ns(), base_head=subprocess.check_output(['git','-C',str(REPO),
             'rev-parse','HEAD'], text=True).strip())
     if tx_level_profile != 'standard':
-        plan['execution_limits']=level_limits(tx_level_profile)
-        plan['scope']='Only registered Z30 batches'+str(list(level_batches(tx_level_profile)))+'; full budget describes dataset indexing, not permitted execution'
+        plan['execution_limits']=level_limits(tx_level_profile,selected)
+        plan['scope']='Only registered Z30 batches'+str(plan['execution_limits']['allowed_batch_indices'])+'; full budget describes dataset indexing, not permitted execution'
         plan['semantics']='Finite cable gain-pair engineering pilot, not a full campaign or independent admission'
         campaign_level(plan)
     if is_event(plan):event_backend().register(root,plan)
@@ -614,14 +615,15 @@ def main():
     p.add_argument('--rx-gain-db',type=int,choices=[20,40,50],help='plan only; default20; all execution uses the sealed plan')
     p.add_argument('--tx-gain-db',type=int,choices=[0,20,40,60,70,80],help='plan only; default0; all execution uses the sealed plan')
     p.add_argument('--tx-host',choices=['agx','nx'],help='plan only; default agx; P201 remains network RX')
-    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot','remaining-high-snr-pilot','event-boundary-pilot'],help='plan only; finite profiles restrict batch IDs and AGX gains; remaining-high-snr uses TX60/RX50')
+    p.add_argument('--tx-level-profile',choices=['standard','gain-pair-pilot','timing-multiclass-pilot','qam-guard-pilot','qam-rx-gain-pilot','remaining-high-snr-pilot','event-boundary-pilot','event-chunk'],help='plan only; finite profiles restrict batch IDs and AGX gains; remaining-high-snr uses TX60/RX50')
     args=p.parse_args();root=args.root
     require(not args.analysis_revision or args.command in ('infer','summary','verify'),'analysis revision cannot transmit')
     if args.command=='plan':
-        require(args.batch_indices is None,'batch selection is execution-only; preregister pilot separately')
-        create_plan(root,20 if args.rx_gain_db is None else args.rx_gain_db,0 if args.tx_gain_db is None else args.tx_gain_db,args.tx_host or 'agx',args.tx_level_profile or 'standard');return
+        require(args.batch_indices is None or args.tx_level_profile=='event-chunk','plan batch selection is event-chunk only')
+        create_plan(root,20 if args.rx_gain_db is None else args.rx_gain_db,0 if args.tx_gain_db is None else args.tx_gain_db,args.tx_host or 'agx',args.tx_level_profile or 'standard',args.batch_indices);return
     require(args.rx_gain_db is None and args.tx_gain_db is None and args.tx_host is None and args.tx_level_profile is None,'RF gains/level are sealed in run-plan; create a new plan to change them')
     if args.command=='analysis-plan':
+        require(root.resolve()==root and root.parent==Path('/var/tmp/sdrharness-dev') and root.name.startswith('b210-rml2018a-'),'analysis root')
         with lock(root):print(json.dumps(event_backend().register_analysis(root)),flush=True)
         return
     campaign=load_plan(root,analysis_only=args.analysis_revision)
@@ -645,7 +647,9 @@ def main():
                 if args.command in ('acquire','run'):
                     for index in shard:acquire_batch(root,campaign,index,args.retry_failed)
                 if args.command in ('infer','run'):infer_shard(root,campaign,shard)
-            if args.command in ('acquire','infer','run'):summarize(root,campaign)
+            if args.command in ('acquire','infer','run'):
+                summarize(root,campaign)
+                if campaign['tx_level_profile']=='event-chunk':event_backend().pause_receipt(root,campaign,indices,args.command)
         finally:
             signal.alarm(0)
 

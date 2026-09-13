@@ -12,6 +12,7 @@ import time
 import h5py
 import numpy as np
 import rml2018a_campaign as c
+import rml2018a_event_archive as storage
 import importlib.util
 
 SCRIPTS=Path(__file__).resolve().parent
@@ -80,7 +81,17 @@ def verify_completed(root,p,indices):
     return dict(status='verified',batches=list(indices),new_tx_attempts=0,new_model_windows=0)
 
 
-def limits():
+def indices(p):
+    return p['execution_limits']['allowed_batch_indices']
+
+
+def semantics(profile):
+    return SEMANTICS if profile==PROFILE else SEMANTICS+' Explicit1-32 batch chunk; bounded lossless event archives, pauses and full failure retention.'
+
+
+def limits(profile=PROFILE,selected=None):
+    if profile=='event-chunk':return storage.budget(selected)
+    c.require(profile==PROFILE,'event profile')
     n=len(c.RML_BOUNDARY_BATCHES)
     return dict(allowed_batch_indices=list(c.RML_BOUNDARY_BATCHES),maximum_attempts_per_batch=2,
         maximum_tx_seconds=n*2*4,maximum_tx_samples=n*2*8381952,
@@ -89,8 +100,8 @@ def limits():
         maximum_warmup_windows=n*2*2,reserve_bytes=256*1024*1024)
 
 
-def source(run_id,batch):
-    c.require(type(batch) is int and batch in c.RML_BOUNDARY_BATCHES,'boundary allowlist')
+def source(run_id,batch,profile=PROFILE):
+    c.require(type(batch) is int and batch in c.level_batches(profile),'boundary allowlist')
     rows=c.batch_rows(2555904,batch)
     with h5py.File(m.DATASET,'r') as h:
         iq=h['X'][rows];y=h['Y'][rows];zs=h['Z'][rows].ravel()
@@ -98,17 +109,17 @@ def source(run_id,batch):
     c.require(np.array_equal(y,np.eye(24)[ids]) and np.isfinite(zs).all(),'one-hot Y / finite Z')
     c.require(ids.tolist()==[x//106496 for x in rows] and
         zs.tolist()==[2*((x%106496)//4096)-20 for x in rows],'per-row boundary membership')
-    frame,scales=c.packet(iq,run_id,batch,level_profile=PROFILE)
-    tx=c.tx_plan(frame,run_id,batch,rows,60,level_profile=PROFILE);c.validate_tx(tx,frame.tobytes())
+    frame,scales=c.packet(iq,run_id,batch,level_profile=profile)
+    tx=c.tx_plan(frame,run_id,batch,rows,60,level_profile=profile);c.validate_tx(tx,frame.tobytes())
     return iq,frame,dict(rows=rows,class_ids=ids.tolist(),source_snr_db=zs.tolist(),
         original_iq_sha256=c.digest(iq.tobytes()),scales=scales.tolist()),tx
 
 
 def register(root,p):
     p.update(event_identity=r.identity(),event_software=r.software(),event_generation=time.time_ns()//1000000,
-        guard_contract=r.guard.contract(),connection=r.fixed_fields()['connection'],semantics=SEMANTICS,
-        scope='96 new boundary rows only; up to two attempts each, no full-dataset execution')
-    p['event_sources']={str(b):dict(source=source(p['run_id'],b)[2],tx=source(p['run_id'],b)[3]) for b in c.RML_BOUNDARY_BATCHES}
+        guard_contract=r.guard.contract(),connection=r.fixed_fields()['connection'],semantics=semantics(p['tx_level_profile']),
+        scope=f"{len(indices(p))*24} registered chunk rows; up to two attempts each, no full-dataset execution")
+    p['event_sources']={str(b):dict(source=source(p['run_id'],b,p['tx_level_profile'])[2],tx=source(p['run_id'],b,p['tx_level_profile'])[3]) for b in indices(p)}
     old=set();parents=[]
     patterns=('b210-rml2018a-*/batch-*/source.json','b210-rml-event-retest-*/plan.json',
         'b210-rml-uniform24-*/plan.json','b210-rml-snr-strata-*/plan.json')
@@ -118,15 +129,17 @@ def register(root,p):
                 [row for point in d['points'] if point['mode'] for row in point['source']['rows']])
             parents.append(dict(path=str(path),sha256=c.file_hash(path)))
     rows={row for v in p['event_sources'].values() for row in v['source']['rows']}
-    c.require(len(rows)==96 and not rows&old,'new disjoint boundary rows')
+    c.require(len(rows)==len(indices(p))*24 and not rows&old,'new disjoint boundary rows')
     p['source_disjointness']=dict(parents=parents,previous_unique_rows=len(old),intersection=0)
     validate(root,p)
 
 
 def validate(root,p,analysis_only=False):
-    c.require(p['tx_level_profile']==PROFILE and p['execution_limits']==limits(),'finite event limits')
+    profile=p['tx_level_profile']
+    c.require(profile in (PROFILE,'event-chunk') and p['execution_limits']==limits(profile,indices(p)),'finite event limits')
+    c.require(not analysis_only or profile==PROFILE,'analysis revisions remain boundary-only')
     c.require(p['rf']==dict(center_hz=c.CENTER,rate_sps=c.RATE,bandwidth_hz=c.BW,tx_gain_db=60,
-        rx_gain_db=50,peak=c.packet_peak(PROFILE),tx_lo_offset_hz=250000,settle_ms=500,
+        rx_gain_db=50,peak=c.packet_peak(profile),tx_lo_offset_hz=250000,settle_ms=500,
         point_deadline_ms=1000,rx_samples=c.RX_SAMPLES),'exact event RF')
     c.require(p['event_identity']==r.identity(),'event runtime changed')
     current=r.software()
@@ -135,12 +148,12 @@ def validate(root,p,analysis_only=False):
         if analysis_only and Path(path).name in ANALYSIS_CHANGES:
             c.require(c.file_hash(root/'acquisition-software'/Path(path).name)==sha,'archived acquisition software')
         else:c.require(current[path]==sha,'event software changed')
-    c.require(p['guard_contract']==r.guard.contract() and p['semantics']==SEMANTICS and
+    c.require(p['guard_contract']==r.guard.contract() and p['semantics']==semantics(profile) and
         p['connection']==r.fixed_fields()['connection'],'comparison/connection contract')
     c.require(type(p['event_generation']) is int and p['event_generation']>0,'generation')
-    c.require(set(p['event_sources'])=={str(b) for b in c.RML_BOUNDARY_BATCHES},'source batches')
-    for batch in c.RML_BOUNDARY_BATCHES:
-        _,_,src,tx=source(p['run_id'],batch)
+    c.require(set(p['event_sources'])=={str(b) for b in indices(p)},'source batches')
+    for batch in indices(p):
+        _,_,src,tx=source(p['run_id'],batch,profile)
         c.require(p['event_sources'][str(batch)]==dict(source=src,tx=tx),'sealed source X/Y/Z')
     old=set()
     for parent in p['source_disjointness']['parents']:
@@ -156,18 +169,31 @@ def batch_dir(root,index):return root/f'batch-{index:07d}'
 
 
 def attempt_plan(root,p,index,attempt):
-    c.require(index in c.RML_BOUNDARY_BATCHES and type(attempt) is int and 0<=attempt<2,'finite attempt')
+    c.require(index in indices(p) and type(attempt) is int and 0<=attempt<2,'finite attempt')
     dest=batch_dir(root,index)/f'attempt-{attempt}'
-    gen=p['event_generation']+c.RML_BOUNDARY_BATCHES.index(index)*2+attempt
+    gen=p['event_generation']+indices(p).index(index)*2+attempt
     v=p['event_sources'][str(index)];rx=r.rx_plan(f'boundary-{index}',gen)
     point=dict(tag='capture',mode='rml',batch=index,source=v['source'],tx=v['tx'],
         packet_sha256=v['tx']['payload_sha256'],rx=rx,result_path=str(dest/'capture'),
         p201_staging=f'/tmp/sdr-agent-dev/agx-sweep-{gen}-0')
     return dict(schema='rml2018a-event-campaign-attempt-v1',parent_plan_sha256=c.file_hash(root/'run-plan.json'),
         points=[point],binary=p['event_identity']['binary'],source_rows=24,model_windows=0,
-        reserve_bytes=limits()['reserve_bytes'],deadline_seconds=400,maximum_tx_seconds=4,
+        reserve_bytes=p['execution_limits']['reserve_bytes'],deadline_seconds=400,maximum_tx_seconds=4,
         maximum_tx_samples=8381952,maximum_rx_bytes=262140,maximum_log_bytes_per_tx=16000000,
         agx_path=str(dest),p201_path=point['p201_staging'],stop=r.fixed_fields()['stop'])
+
+
+def event_path(directory,p):
+    if p.get('tx_level_profile')=='event-chunk':return storage.verify(directory)
+    return directory/'tx-events.jsonl'
+
+
+def finalize_storage(root,p,index,attempt):
+    if p.get('tx_level_profile')=='event-chunk':
+        directory=batch_dir(root,index)/f'attempt-{attempt}'/'capture'
+        audit=m.document(directory/'audit.json')
+        c.require(audit['status']=='captured' and audit['restored'],'archive only completed/restored new acquisition')
+        storage.seal(directory);storage.space(root,p['execution_limits'])
 
 
 def attempt_seal(root,p,index,attempt):
@@ -178,10 +204,11 @@ def attempt_seal(root,p,index,attempt):
     _,seal=m.native_check(dest/'capture',plan['points'][0]['rx'])
     c.require(seal==audit['seal'] and audit['point']==plan['points'][0] and
         audit['component_peak_counts']<=512,'native attempt association')
-    c.require(r.events.parse_events(dest/'capture/tx-events.jsonl')==audit['events'] and audit['tx_exit']==0,'TX event seal')
+    c.require(r.events.parse_events(event_path(dest/'capture',p))==audit['events'] and audit['tx_exit']==0,'TX event seal')
     return dict(attempt=attempt,rows=p['event_sources'][str(index)]['source']['rows'],
         parent_plan_sha256=c.file_hash(root/'run-plan.json'),plan_sha256=c.file_hash(dest/'plan.json'),
-        audit_sha256=c.file_hash(dest/'capture/audit.json'),postflight_sha256=c.file_hash(dest/'postflight.json'),seal=seal)
+        audit_sha256=c.file_hash(dest/'capture/audit.json'),postflight_sha256=c.file_hash(dest/'postflight.json'),seal=seal,
+        **({'event_storage_sha256':c.file_hash(dest/'capture/event-storage.json')} if p.get('tx_level_profile')=='event-chunk' else {}))
 
 
 def capture_complete(root,p,index):
@@ -201,21 +228,23 @@ def acquire_batch(root,p,index,retry_failed=False):
     src=p['event_sources'][str(index)]['source']
     if (dest/'source.json').exists():c.require(m.document(dest/'source.json')==src,'source receipt changed')
     else:c.save(dest/'source.json',src)
-    for attempt in range(limits()['maximum_attempts_per_batch']):
+    for attempt in range(p.get('execution_limits',limits())['maximum_attempts_per_batch']):
         run=dest/f'attempt-{attempt}'
         if run.exists():
             c.require(m.document(run/'plan.json')==attempt_plan(root,p,index,attempt),'existing attempt plan')
             after=m.document(run/'postflight.json')
             if after['status']=='completed':
                 # Recover a completed acquisition interrupted just before publishing.
+                finalize_storage(root,p,index,attempt)
                 done=attempt_seal(root,p,index,attempt);c.save(dest/'capture-complete.json',done);return done
             c.require(retry_failed and after.get('restored') is True and
                 m.document(run/'capture/audit.json')['restored'] is True,'retry requires recorded restoration and --retry-failed')
             continue
+        if p.get('tx_level_profile')=='event-chunk':storage.space(root,p['execution_limits'])
         run.mkdir(mode=0o700);plan=attempt_plan(root,p,index,attempt);c.save(run/'plan.json',plan)
         print(json.dumps(dict(event='event_batch_plan',batch=index,attempt=attempt,**plan)),flush=True)
         def payload(point):
-            _,frame,actual,tx=source(p['run_id'],index)
+            _,frame,actual,tx=source(p['run_id'],index,p['tx_level_profile'])
             c.require(actual==point['source'] and tx==point['tx'],'source before TX');return frame.tobytes()
         # Shared finite executor masks stop signals during its final restoration.
         # Restore the campaign's handlers AND remaining outer deadline afterwards.
@@ -225,6 +254,7 @@ def acquire_batch(root,p,index,retry_failed=False):
         finally:
             for sig,handler in handlers.items():signal.signal(sig,handler)
             signal.alarm(max(1,remaining-math.ceil(time.monotonic()-start)) if remaining else 0)
+        finalize_storage(root,p,index,attempt)
         done=attempt_seal(root,p,index,attempt);c.save(dest/'capture-complete.json',done);return done
     raise ValueError('finite capture attempt budget exhausted; failed evidence retained')
 
@@ -236,7 +266,7 @@ def prepare(root,p,indices):
         dest=batch_dir(root,index)/f"attempt-{done['attempt']}"/'capture'
         raw,seal=m.native_check(dest,m.document(dest/'rx-plan.json'))
         received,guarded,sync,info,error=r.receive_parts(raw,p['run_id'],index)
-        iq,_,src,_=source(p['run_id'],index);z=iq[:,:,0]+1j*iq[:,:,1]
+        iq,_,src,_=source(p['run_id'],index,p['tx_level_profile']);z=iq[:,:,0]+1j*iq[:,:,1]
         parts=dict(source=z,raw=received,guard=guarded);tensors[index]=parts
         status='sync_failed' if sync is None else 'synchronized';rows=[]
         for k,row in enumerate(src['rows']):
@@ -250,7 +280,7 @@ def prepare(root,p,indices):
     return dict(schema='rml2018a-event-campaign-comparison-v1',parent_plan_sha256=c.file_hash(root/'run-plan.json'),
         source_rows=len(indices)*24,maximum_model_windows=len(indices)*72,maximum_warmups=2,
         profile_sha256=p['profile_sha256'],label_map_sha256=p['label_map_sha256'],tags=list(TAGS),
-        results=results,semantics=SEMANTICS,recognizer_available=False),tensors
+        results=results,semantics=p['semantics'],recognizer_available=False),tensors
 
 
 def prediction_complete(root,p,index):
@@ -301,7 +331,7 @@ def infer_batches(root,p,indices):
 
 def publish(root,p,out):
     report=m.document(out/'prepared.json');indices=[b['batch'] for b in report['results']]
-    c.require(len(indices)==len(set(indices)) and set(indices)<=set(c.RML_BOUNDARY_BATCHES),'inference batches')
+    c.require(len(indices)==len(set(indices)) and set(indices)<=set(p.get('execution_limits',limits())['allowed_batch_indices']),'inference batches')
     r.compare.verify(root,out,prepare_inputs=lambda _:prepare(root,p,indices))
     receipt=m.document(out/'inference.json')
     for index in indices:
@@ -338,7 +368,7 @@ def aggregate(rows):
 
 def summarize(root,p):
     rows=[];states={};attempts=0;completed=0
-    for index in c.RML_BOUNDARY_BATCHES:
+    for index in indices(p):
         dest=batch_dir(root,index);src=p['event_sources'][str(index)]['source']
         attempts+=sum((dest/f'attempt-{i}'/'started.json').exists() for i in range(2))
         done=capture_complete(root,p,index);has=prediction_complete(root,p,index)
@@ -356,6 +386,26 @@ def summarize(root,p):
         by_class={str(cid):aggregate([v for v in rows if v['true_id']==cid]) for cid in sorted({v['true_id'] for v in rows})},
         by_class_source_snr={f'{cid}/{z}':aggregate([v for v in rows if v['true_id']==cid and v['source_snr_db']==z]) for cid,z in sorted({(v['true_id'],v['source_snr_db']) for v in rows})},
         complete=all(s=='inferred' for s in states.values()),whole_dataset_complete=False,
-        semantics=SEMANTICS,recognizer_available=False)
+        semantics=p['semantics'],recognizer_available=False)
     c.save(root/'summary.json',result)
     print(json.dumps({k:v for k,v in result.items() if k!='rows'}),flush=True);return result
+
+
+def pause_receipt(root,p,selected,command):
+    """A bounded CLI invocation ends here; it never schedules the next chunk."""
+    c.require(set(selected)<=set(indices(p)),'pause members')
+    usage={**storage.space(root,p['execution_limits']),**storage.retained_usage(root,p['execution_limits'])}
+    captures={str(i):capture_complete(root,p,i) for i in selected}
+    predictions={str(i):prediction_complete(root,p,i) for i in selected}
+    c.require(all(captures.values()),'pause requires restored completed captures')
+    if command in ('infer','run'):c.require(all(predictions.values()),'pause requires complete inference')
+    key=c.digest(json.dumps(dict(indices=selected,command=command),sort_keys=True).encode())[:16]
+    folder=root/'chunks';folder.mkdir(mode=0o700,exist_ok=True);path=folder/f'{key}.json'
+    value=dict(schema='rml2018a-finite-chunk-pause-v1',parent_plan_sha256=c.file_hash(root/'run-plan.json'),
+        batch_indices=selected,source_rows=[r for i in selected for r in p['event_sources'][str(i)]['source']['rows']],
+        command=command,captures=captures,predictions=predictions,automatic_next_chunk=False,
+        new_rf_permission=False)
+    if path.exists():c.require(m.document(path)==value,'completed chunk changed')
+    else:c.save(path,value)
+    print(json.dumps(dict(event='chunk_paused',receipt=str(path),registered_batches=len(indices(p)),selected_batches=len(selected),**usage)),flush=True)
+    return value
