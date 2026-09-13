@@ -1,0 +1,1108 @@
+{
+  "schema": "p201-independent-load-evidence-v1",
+  "base_head": "c135600c7fb7e9e2411a5d8bd9a1674d29eafbc0",
+  "purpose": "Six operator-confirmed independent RX1 50ohm controls, matched statistics versus prior four coax controls; not physical-source proof",
+  "plan": {
+    "schema": "p201-independent-load-controls-v1",
+    "base_head": "c135600c7fb7e9e2411a5d8bd9a1674d29eafbc0",
+    "connection": "User confirmed P201 RX1 independently terminated in50ohm after disconnecting B210 coax path; B210 remains stopped; USB power state checked separately",
+    "points": [
+      {
+        "tag": "load-1",
+        "rx": {
+          "sweep_id": "load-1789274290716",
+          "session_generation": 1789274290716,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 50,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        "tx": null,
+        "result_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1",
+        "agx_staging": "/var/tmp/sdrharness-dev/p201-independent-load-20260913-unused-tx0",
+        "p201_staging": "/tmp/sdr-agent-dev/agx-sweep-1789274290716-0"
+      },
+      {
+        "tag": "load-2",
+        "rx": {
+          "sweep_id": "load-1789274290717",
+          "session_generation": 1789274290717,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 50,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        "tx": null,
+        "result_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2",
+        "agx_staging": "/var/tmp/sdrharness-dev/p201-independent-load-20260913-unused-tx1",
+        "p201_staging": "/tmp/sdr-agent-dev/agx-sweep-1789274290717-0"
+      },
+      {
+        "tag": "load-3",
+        "rx": {
+          "sweep_id": "load-1789274290718",
+          "session_generation": 1789274290718,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 50,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        "tx": null,
+        "result_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3",
+        "agx_staging": "/var/tmp/sdrharness-dev/p201-independent-load-20260913-unused-tx2",
+        "p201_staging": "/tmp/sdr-agent-dev/agx-sweep-1789274290718-0"
+      },
+      {
+        "tag": "load-4",
+        "rx": {
+          "sweep_id": "load-1789274290719",
+          "session_generation": 1789274290719,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 50,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        "tx": null,
+        "result_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4",
+        "agx_staging": "/var/tmp/sdrharness-dev/p201-independent-load-20260913-unused-tx3",
+        "p201_staging": "/tmp/sdr-agent-dev/agx-sweep-1789274290719-0"
+      },
+      {
+        "tag": "load-5",
+        "rx": {
+          "sweep_id": "load-1789274290720",
+          "session_generation": 1789274290720,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 50,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        "tx": null,
+        "result_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5",
+        "agx_staging": "/var/tmp/sdrharness-dev/p201-independent-load-20260913-unused-tx4",
+        "p201_staging": "/tmp/sdr-agent-dev/agx-sweep-1789274290720-0"
+      },
+      {
+        "tag": "load-6",
+        "rx": {
+          "sweep_id": "load-1789274290721",
+          "session_generation": 1789274290721,
+          "frequencies": {
+            "kind": "centers",
+            "centers_hz": [
+              2455000000
+            ]
+          },
+          "sample_rate_hz": 2100000,
+          "rf_bandwidth_hz": 1500000,
+          "gain_db": 50,
+          "settle_ms": 500,
+          "frame_samples": 65535,
+          "aggregate_frames": 1,
+          "point_timeout_ms": 1000,
+          "detection_threshold_db": 12.0
+        },
+        "tx": null,
+        "result_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6",
+        "agx_staging": "/var/tmp/sdrharness-dev/p201-independent-load-20260913-unused-tx5",
+        "p201_staging": "/tmp/sdr-agent-dev/agx-sweep-1789274290721-0"
+      }
+    ],
+    "maximum_rx_bytes": 1572840,
+    "maximum_tx_seconds": 0,
+    "model_windows": 0,
+    "source_rows": 0,
+    "recognizer_available": false,
+    "expected_wall_seconds": 45,
+    "overall_deadline_seconds": 150,
+    "per_rx_deadline_seconds": 15,
+    "inter_capture_seconds": 1,
+    "free_bytes": 809173049344,
+    "reserve_bytes": 67108864,
+    "dwell_seconds": 0.031207142857142857,
+    "maximum_component_peak_counts": 512,
+    "parent": {
+      "path": "/home/jetson/sdrharness/docs/evidence/B210_EVENT_CONTROLS_2026-09-13.json",
+      "sha256": "9ff56190308b7e1ef50a1a4cebd61cbe1d69c05ed0259de7ebe65f1fd1440cef"
+    },
+    "software": {
+      "/var/tmp/sdrharness-dev/p201-independent-load-20260913/run.py": "7835c100297b86a30262adf5908d5f577b078f79c68400203171342bc043dde7",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-b210-cable-lo.py": "ef0943cf3c8741cea2045e5da9d6eb2261cf71200a942be502a8854bb7b9ee4a",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py": "07755bf754fb7227122c100dbbed4f51c5df7097d3683064a994c54dfa7a3b9e",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_campaign.py": "b061b3ba7dd94237ab91b7782b8f3a00c7eca9eb6188bc6bad1d4b847458e5a9",
+      "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-p201-termination-background.py": "007fce5064507803b6d75f178e7f3619f14aaec089ce9083900e40601b27975b"
+    },
+    "analysis": {
+      "window_samples": 256,
+      "hop_samples": 256,
+      "hann": true,
+      "additional_iq_processing": false,
+      "comparison": "all6 new load and4 previous stopped/zero controls; same fixed frequency mask, no model",
+      "exclude_frequency_hz": [
+        229000,
+        279000
+      ],
+      "bands_abs_hz": [
+        [
+          0,
+          100000
+        ],
+        [
+          100000,
+          350000
+        ],
+        [
+          350000,
+          700000
+        ],
+        [
+          700000,
+          1050001
+        ]
+      ],
+      "spike_description": "largest two non-LO blocks separated>=2048samples; call a pair prominent only if both exceed10times whole-capture block median; descriptive only, not new quality gate"
+    },
+    "stop": "SIGINT/SIGTERM -> existing capture generation cancel/restoration; no TX branch in plan"
+  },
+  "captures": [
+    {
+      "tag": "load-1",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/rx/load-1789274290716-1789274290716-1789274293058701751.sigmf-data",
+        "iq_sha256": "358262650f28098102c7ffdd1e95fc47b326bba65391224ed6a95e3250396452",
+        "metadata_sha256": "b7c767fa454f2c9f5eb163f704bdefadcba04aebe2f5390bd46dc7bf4ef823f0",
+        "request_id": 5,
+        "sequence": 1601,
+        "session_generation": 1789274290716
+      }
+    },
+    {
+      "tag": "load-2",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/rx/load-1789274290717-1789274290717-1789274299575475555.sigmf-data",
+        "iq_sha256": "5b26138c01e96cccebc5b0a5164784126b620a538be23adf9984082e7846e496",
+        "metadata_sha256": "c720058403e6e1c57401263df67298d7e2af86e93cf1cd608ab4f8f245a2dc9c",
+        "request_id": 5,
+        "sequence": 1602,
+        "session_generation": 1789274290717
+      }
+    },
+    {
+      "tag": "load-3",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/rx/load-1789274290718-1789274290718-1789274306136401910.sigmf-data",
+        "iq_sha256": "b30826a65cd6fbca990574a9b3640f07c06eee6fd36b57d1282cc6f59fcc8970",
+        "metadata_sha256": "f225be95e5f5418c775a86c32f318d3e6b39981373ae65a049082e3559149332",
+        "request_id": 5,
+        "sequence": 1603,
+        "session_generation": 1789274290718
+      }
+    },
+    {
+      "tag": "load-4",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/rx/load-1789274290719-1789274290719-1789274312707684332.sigmf-data",
+        "iq_sha256": "75fb8b2f8ec9d332f91c1836cb86324836bd0086ead646383f4c24e14c23d424",
+        "metadata_sha256": "8267c34864adb2e7fd5c08d6739e44d9e57b8df91f5583ae51ba1c3664b34290",
+        "request_id": 5,
+        "sequence": 1604,
+        "session_generation": 1789274290719
+      }
+    },
+    {
+      "tag": "load-5",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/rx/load-1789274290720-1789274290720-1789274319251885286.sigmf-data",
+        "iq_sha256": "364bf2c666e289d21ef7f7b79ef0cdf99470a765c21fb912b8e4fc1f6b5c5f23",
+        "metadata_sha256": "a00fe1a99da4703460b04c6a67bb0e43ba6c75189c3ff73b92143ffc09fff97c",
+        "request_id": 5,
+        "sequence": 1605,
+        "session_generation": 1789274290720
+      }
+    },
+    {
+      "tag": "load-6",
+      "seal": {
+        "iq_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/rx/load-1789274290721-1789274290721-1789274325812178992.sigmf-data",
+        "iq_sha256": "c909cca39191ac31fc93096e2e0fb5270ee7ed035d93890d1b6a341996b08e51",
+        "metadata_sha256": "c11d4bc39b3117fd99dbf6533c8688bf336603833a991358cd2c92da778b47af",
+        "request_id": 5,
+        "sequence": 1606,
+        "session_generation": 1789274290721
+      }
+    }
+  ],
+  "summary": {
+    "schema": "p201-independent-load-summary-v1",
+    "cases": [
+      {
+        "condition": "independent50ohm",
+        "tag": "load-1",
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/rx/load-1789274290716-1789274290716-1789274293058701751.sigmf-data",
+          "iq_sha256": "358262650f28098102c7ffdd1e95fc47b326bba65391224ed6a95e3250396452",
+          "metadata_sha256": "b7c767fa454f2c9f5eb163f704bdefadcba04aebe2f5390bd46dc7bf4ef823f0",
+          "request_id": 5,
+          "sequence": 1601,
+          "session_generation": 1789274290716
+        },
+        "raw_power_counts2": 7.483299000534066,
+        "component_peak_counts": 12.0,
+        "nonlo_median_counts2": 5.805757924633802,
+        "nonlo_max_counts2": 27.360555953272318,
+        "blocks_above10x_median": 0,
+        "complete_blocks": 255,
+        "tail_samples": 255,
+        "tail_raw_power_counts2": 7.376470588235295,
+        "top_two_min2048_separation": [
+          {
+            "start": 51200,
+            "center_ms": 24.441904761904762,
+            "raw_power_counts2": 27.65625,
+            "nonlo_power_counts2": 27.360555953272318,
+            "bands": [
+              2.9161303232372355,
+              8.967596080462139,
+              10.144855639045577,
+              5.331973910527367
+            ]
+          },
+          {
+            "start": 54528,
+            "center_ms": 26.026666666666667,
+            "raw_power_counts2": 27.25390625,
+            "nonlo_power_counts2": 26.56670224147927,
+            "bands": [
+              3.3739057171910325,
+              7.610408250785015,
+              11.01905468182756,
+              4.563333591675663
+            ]
+          }
+        ],
+        "prominent_pair": false,
+        "separation_samples": 3328,
+        "separation_ms": 1.5847619047619048
+      },
+      {
+        "condition": "independent50ohm",
+        "tag": "load-2",
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/rx/load-1789274290717-1789274290717-1789274299575475555.sigmf-data",
+          "iq_sha256": "5b26138c01e96cccebc5b0a5164784126b620a538be23adf9984082e7846e496",
+          "metadata_sha256": "c720058403e6e1c57401263df67298d7e2af86e93cf1cd608ab4f8f245a2dc9c",
+          "request_id": 5,
+          "sequence": 1602,
+          "session_generation": 1789274290717
+        },
+        "raw_power_counts2": 11.465293354695964,
+        "component_peak_counts": 28.0,
+        "nonlo_median_counts2": 5.838093820916499,
+        "nonlo_max_counts2": 191.40301165212145,
+        "blocks_above10x_median": 7,
+        "complete_blocks": 255,
+        "tail_samples": 255,
+        "tail_raw_power_counts2": 17.392156862745097,
+        "top_two_min2048_separation": [
+          {
+            "start": 22528,
+            "center_ms": 10.788571428571428,
+            "raw_power_counts2": 189.78515625,
+            "nonlo_power_counts2": 191.40301165212145,
+            "bands": [
+              41.83552582768653,
+              80.76505623616958,
+              54.68615090706215,
+              14.116278681203193
+            ]
+          },
+          {
+            "start": 62976,
+            "center_ms": 30.04952380952381,
+            "raw_power_counts2": 52.33984375,
+            "nonlo_power_counts2": 95.44325512428965,
+            "bands": [
+              14.731816182787709,
+              18.083390843515215,
+              42.79134640322141,
+              19.83670169476532
+            ]
+          }
+        ],
+        "prominent_pair": true,
+        "separation_samples": 40448,
+        "separation_ms": 19.260952380952382
+      },
+      {
+        "condition": "independent50ohm",
+        "tag": "load-3",
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/rx/load-1789274290718-1789274290718-1789274306136401910.sigmf-data",
+          "iq_sha256": "b30826a65cd6fbca990574a9b3640f07c06eee6fd36b57d1282cc6f59fcc8970",
+          "metadata_sha256": "f225be95e5f5418c775a86c32f318d3e6b39981373ae65a049082e3559149332",
+          "request_id": 5,
+          "sequence": 1603,
+          "session_generation": 1789274290718
+        },
+        "raw_power_counts2": 13.265156023498895,
+        "component_peak_counts": 48.0,
+        "nonlo_median_counts2": 5.8381524581186905,
+        "nonlo_max_counts2": 490.02109090560435,
+        "blocks_above10x_median": 9,
+        "complete_blocks": 255,
+        "tail_samples": 255,
+        "tail_raw_power_counts2": 5.772549019607843,
+        "top_two_min2048_separation": [
+          {
+            "start": 12544,
+            "center_ms": 6.034285714285715,
+            "raw_power_counts2": 151.30078125,
+            "nonlo_power_counts2": 147.6842402066791,
+            "bands": [
+              27.951809597768285,
+              62.10540891703139,
+              43.177970162547965,
+              14.449051529331463
+            ]
+          },
+          {
+            "start": 23296,
+            "center_ms": 11.154285714285715,
+            "raw_power_counts2": 413.46484375,
+            "nonlo_power_counts2": 490.02109090560435,
+            "bands": [
+              0.8264327641638045,
+              2.298093472152789,
+              50.20403135143924,
+              436.69253331784853
+            ]
+          }
+        ],
+        "prominent_pair": true,
+        "separation_samples": 10752,
+        "separation_ms": 5.12
+      },
+      {
+        "condition": "independent50ohm",
+        "tag": "load-4",
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/rx/load-1789274290719-1789274290719-1789274312707684332.sigmf-data",
+          "iq_sha256": "75fb8b2f8ec9d332f91c1836cb86324836bd0086ead646383f4c24e14c23d424",
+          "metadata_sha256": "8267c34864adb2e7fd5c08d6739e44d9e57b8df91f5583ae51ba1c3664b34290",
+          "request_id": 5,
+          "sequence": 1604,
+          "session_generation": 1789274290719
+        },
+        "raw_power_counts2": 6.628213931486992,
+        "component_peak_counts": 11.0,
+        "nonlo_median_counts2": 5.774356560929207,
+        "nonlo_max_counts2": 24.226583896816017,
+        "blocks_above10x_median": 0,
+        "complete_blocks": 255,
+        "tail_samples": 255,
+        "tail_raw_power_counts2": 21.51764705882353,
+        "top_two_min2048_separation": [
+          {
+            "start": 44800,
+            "center_ms": 21.394285714285715,
+            "raw_power_counts2": 19.0546875,
+            "nonlo_power_counts2": 24.226583896816017,
+            "bands": [
+              1.0764015467070902,
+              1.7733082185253817,
+              8.121128978568382,
+              13.255745153015162
+            ]
+          },
+          {
+            "start": 64256,
+            "center_ms": 30.65904761904762,
+            "raw_power_counts2": 21.859375,
+            "nonlo_power_counts2": 21.717318517425127,
+            "bands": [
+              2.623668415031102,
+              5.508244452164095,
+              10.525695042937196,
+              3.0597106072927356
+            ]
+          }
+        ],
+        "prominent_pair": false,
+        "separation_samples": 19456,
+        "separation_ms": 9.264761904761905
+      },
+      {
+        "condition": "independent50ohm",
+        "tag": "load-5",
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/rx/load-1789274290720-1789274290720-1789274319251885286.sigmf-data",
+          "iq_sha256": "364bf2c666e289d21ef7f7b79ef0cdf99470a765c21fb912b8e4fc1f6b5c5f23",
+          "metadata_sha256": "a00fe1a99da4703460b04c6a67bb0e43ba6c75189c3ff73b92143ffc09fff97c",
+          "request_id": 5,
+          "sequence": 1605,
+          "session_generation": 1789274290720
+        },
+        "raw_power_counts2": 8.387136644541085,
+        "component_peak_counts": 17.0,
+        "nonlo_median_counts2": 6.13924896114866,
+        "nonlo_max_counts2": 51.5557247942571,
+        "blocks_above10x_median": 0,
+        "complete_blocks": 255,
+        "tail_samples": 255,
+        "tail_raw_power_counts2": 13.866666666666667,
+        "top_two_min2048_separation": [
+          {
+            "start": 29952,
+            "center_ms": 14.323809523809524,
+            "raw_power_counts2": 46.68359375,
+            "nonlo_power_counts2": 51.5557247942571,
+            "bands": [
+              9.988450134348145,
+              12.056774010456026,
+              23.31539222841521,
+              6.195108421037717
+            ]
+          },
+          {
+            "start": 41984,
+            "center_ms": 20.053333333333335,
+            "raw_power_counts2": 15.53515625,
+            "nonlo_power_counts2": 15.862185254439765,
+            "bands": [
+              1.8530004178682398,
+              3.6480635080020454,
+              7.038302775410084,
+              3.322818553159395
+            ]
+          }
+        ],
+        "prominent_pair": false,
+        "separation_samples": 12032,
+        "separation_ms": 5.729523809523809
+      },
+      {
+        "condition": "independent50ohm",
+        "tag": "load-6",
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/rx/load-1789274290721-1789274290721-1789274325812178992.sigmf-data",
+          "iq_sha256": "c909cca39191ac31fc93096e2e0fb5270ee7ed035d93890d1b6a341996b08e51",
+          "metadata_sha256": "c11d4bc39b3117fd99dbf6533c8688bf336603833a991358cd2c92da778b47af",
+          "request_id": 5,
+          "sequence": 1606,
+          "session_generation": 1789274290721
+        },
+        "raw_power_counts2": 6.637781338216221,
+        "component_peak_counts": 12.0,
+        "nonlo_median_counts2": 5.84829512407225,
+        "nonlo_max_counts2": 14.746455278207298,
+        "blocks_above10x_median": 0,
+        "complete_blocks": 255,
+        "tail_samples": 255,
+        "tail_raw_power_counts2": 6.109803921568627,
+        "top_two_min2048_separation": [
+          {
+            "start": 42496,
+            "center_ms": 20.297142857142855,
+            "raw_power_counts2": 17.45703125,
+            "nonlo_power_counts2": 14.746455278207298,
+            "bands": [
+              1.1496715149354697,
+              0.9082362790538994,
+              3.2041273122268947,
+              9.484420171991035
+            ]
+          },
+          {
+            "start": 54016,
+            "center_ms": 25.782857142857143,
+            "raw_power_counts2": 9.7890625,
+            "nonlo_power_counts2": 10.170384904941862,
+            "bands": [
+              2.5582522768720195,
+              2.477016670713483,
+              2.958953081260166,
+              2.176162876096195
+            ]
+          }
+        ],
+        "prominent_pair": false,
+        "separation_samples": 11520,
+        "separation_ms": 5.485714285714286
+      },
+      {
+        "condition": "previous20dBcoax",
+        "tag": "off-before",
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-event-controls-20260913/off-before/rx/events-off-before-1789272691166-1789272691166-1789272693590901009.sigmf-data",
+          "iq_sha256": "6e73f4061735f64dc664c602e0ba1b1d0335e89afd18b40ff1b52212bc3b5ae4",
+          "metadata_sha256": "eaa3477d30f91fad4ef57b1c9db2ab431a808f87c7471b7d4e4ffcc30727e6cc",
+          "request_id": 5,
+          "sequence": 1577,
+          "session_generation": 1789272691166
+        },
+        "raw_power_counts2": 36.08554207675288,
+        "component_peak_counts": 139.0,
+        "nonlo_median_counts2": 5.387733927561938,
+        "nonlo_max_counts2": 1894.771357980594,
+        "blocks_above10x_median": 3,
+        "complete_blocks": 255,
+        "tail_samples": 255,
+        "tail_raw_power_counts2": 16.07843137254902,
+        "top_two_min2048_separation": [
+          {
+            "start": 20992,
+            "center_ms": 10.057142857142857,
+            "raw_power_counts2": 1566.76953125,
+            "nonlo_power_counts2": 597.696160061062,
+            "bands": [
+              32.63216132472336,
+              51.016309152285636,
+              109.5101865497587,
+              404.5375030342943
+            ]
+          },
+          {
+            "start": 54528,
+            "center_ms": 26.026666666666667,
+            "raw_power_counts2": 1884.578125,
+            "nonlo_power_counts2": 1894.771357980594,
+            "bands": [
+              77.88688214048268,
+              331.92056961357304,
+              459.24661729804757,
+              1025.717288928491
+            ]
+          }
+        ],
+        "prominent_pair": true,
+        "separation_samples": 33536,
+        "separation_ms": 15.96952380952381
+      },
+      {
+        "condition": "previous20dBcoax",
+        "tag": "zero1",
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-event-controls-20260913/zero1/rx/events-zero1-1789272691168-1789272691168-1789272703907952816.sigmf-data",
+          "iq_sha256": "8b03ef4f10f536411e1035c9c22100a93edf581421591c082543141a30aac31e",
+          "metadata_sha256": "6818b38cfb6d6e0156ab58df46e543f4efc261626359ebf5ceaa60f81744139e",
+          "request_id": 5,
+          "sequence": 1578,
+          "session_generation": 1789272691168
+        },
+        "raw_power_counts2": 540.9062485694667,
+        "component_peak_counts": 128.0,
+        "nonlo_median_counts2": 5.896943386064229,
+        "nonlo_max_counts2": 2195.6967764654364,
+        "blocks_above10x_median": 18,
+        "complete_blocks": 255,
+        "tail_samples": 255,
+        "tail_raw_power_counts2": 527.8274509803922,
+        "top_two_min2048_separation": [
+          {
+            "start": 17664,
+            "center_ms": 8.472380952380952,
+            "raw_power_counts2": 1802.828125,
+            "nonlo_power_counts2": 1084.3997442754585,
+            "bands": [
+              50.280967347425396,
+              192.45043320526068,
+              271.34859617555753,
+              570.3197475472149
+            ]
+          },
+          {
+            "start": 51200,
+            "center_ms": 24.441904761904762,
+            "raw_power_counts2": 1708.74609375,
+            "nonlo_power_counts2": 2195.6967764654364,
+            "bands": [
+              111.01460337276355,
+              313.836256809519,
+              749.0408705025342,
+              1021.80504578062
+            ]
+          }
+        ],
+        "prominent_pair": true,
+        "separation_samples": 33536,
+        "separation_ms": 15.96952380952381
+      },
+      {
+        "condition": "previous20dBcoax",
+        "tag": "zero2",
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-event-controls-20260913/zero2/rx/events-zero2-1789272691171-1789272691171-1789272729291775977.sigmf-data",
+          "iq_sha256": "6b13ec9cbb527abf7c4826504153b0f1d9ec4be6019f6324609c519c225be07a",
+          "metadata_sha256": "01a196a4d5df2c31805a9e0d1cb0871ef439576780012b31121587c575eeb87e",
+          "request_id": 5,
+          "sequence": 1581,
+          "session_generation": 1789272691171
+        },
+        "raw_power_counts2": 679.8091248950942,
+        "component_peak_counts": 129.0,
+        "nonlo_median_counts2": 7.131652237412695,
+        "nonlo_max_counts2": 2144.7724644098516,
+        "blocks_above10x_median": 4,
+        "complete_blocks": 255,
+        "tail_samples": 255,
+        "tail_raw_power_counts2": 656.2823529411764,
+        "top_two_min2048_separation": [
+          {
+            "start": 7168,
+            "center_ms": 3.474285714285714,
+            "raw_power_counts2": 1799.1875,
+            "nonlo_power_counts2": 2144.7724644098516,
+            "bands": [
+              105.46673243203887,
+              270.91250880826,
+              717.821041404844,
+              1050.572181764709
+            ]
+          },
+          {
+            "start": 40704,
+            "center_ms": 19.443809523809524,
+            "raw_power_counts2": 1959.55859375,
+            "nonlo_power_counts2": 1154.894684665645,
+            "bands": [
+              79.9643558581184,
+              55.58291425291007,
+              284.41750185899775,
+              734.9299126956187
+            ]
+          }
+        ],
+        "prominent_pair": true,
+        "separation_samples": 33536,
+        "separation_ms": 15.96952380952381
+      },
+      {
+        "condition": "previous20dBcoax",
+        "tag": "off-after",
+        "seal": {
+          "iq_path": "/var/tmp/sdrharness-dev/b210-event-controls-20260913/off-after/rx/events-off-after-1789272691172-1789272691172-1789272735965817791.sigmf-data",
+          "iq_sha256": "64e1631348bd334e2ea16617935c84f928281cc3814534f50a0121c87f8e4ec7",
+          "metadata_sha256": "c02ec2945b15ebb568ba1bb944c8d532271bca7c2d153d1ffca2615457658057",
+          "request_id": 5,
+          "sequence": 1582,
+          "session_generation": 1789272691172
+        },
+        "raw_power_counts2": 32.45181963836118,
+        "component_peak_counts": 86.0,
+        "nonlo_median_counts2": 5.446583293848449,
+        "nonlo_max_counts2": 563.9616003005278,
+        "blocks_above10x_median": 10,
+        "complete_blocks": 255,
+        "tail_samples": 255,
+        "tail_raw_power_counts2": 16.929411764705883,
+        "top_two_min2048_separation": [
+          {
+            "start": 8960,
+            "center_ms": 4.327619047619048,
+            "raw_power_counts2": 913.0234375,
+            "nonlo_power_counts2": 563.9616003005278,
+            "bands": [
+              37.70378458999481,
+              27.03399008637962,
+              123.00590391173104,
+              376.2179217124224
+            ]
+          },
+          {
+            "start": 42496,
+            "center_ms": 20.297142857142855,
+            "raw_power_counts2": 849.82421875,
+            "nonlo_power_counts2": 549.4050905231006,
+            "bands": [
+              22.104588519520014,
+              98.20661070107846,
+              110.78811709989303,
+              318.3057742026092
+            ]
+          }
+        ],
+        "prominent_pair": true,
+        "separation_samples": 33536,
+        "separation_ms": 15.96952380952381
+      }
+    ],
+    "new_rx_bytes": 1572840,
+    "tx_operations": 0,
+    "model_windows": 0,
+    "limitation": "Descriptive sequential connection comparison; no randomized return bracket yet, no long-term periodicity or physical-source attribution"
+  },
+  "postflight": {
+    "status": "completed",
+    "tx_operations": 0,
+    "model_windows": 0,
+    "after": {
+      "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n5985999996\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+      "daemon_pid": [
+        "5909"
+      ],
+      "daemon_sha256": "83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f",
+      "controller_sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f",
+      "health": {
+        "online": true,
+        "healthy": true,
+        "health_flags": 0,
+        "iio_visible": true,
+        "can_retune": true,
+        "can_capture_iq": true,
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        }
+      },
+      "b210": {
+        "host": "agx",
+        "serial": "2508504",
+        "usb_speed_mbps": 5000.0,
+        "usb_node": "/dev/bus/usb/002/004",
+        "usb_holder_pids": []
+      }
+    },
+    "restored": true,
+    "p201_paths_absent": true,
+    "unused_tx_paths_absent": true
+  },
+  "tests": {
+    "independent_numeric": 3,
+    "full_native_and_statistical_replay": true,
+    "parent_retained_files": 64,
+    "plot_visually_checked": true
+  },
+  "rx_iq_bytes": 1572840,
+  "tx_operations": 0,
+  "model_windows": 0,
+  "model_profile": null,
+  "production_changes": 0,
+  "recognizer_available": false,
+  "cleanup_summary": {
+    "status": "verified",
+    "removed_files": 4,
+    "removed_bytes": 138691,
+    "removed_directories": 2,
+    "absent_paths": [
+      "/var/tmp/sdrharness-dev/p201-independent-load-20260913/scratch",
+      "/var/tmp/sdrharness-dev/p201-independent-load-20260913/plan.log",
+      "/var/tmp/sdrharness-dev/p201-independent-load-20260913/analysis.log",
+      "/var/tmp/sdrharness-dev/p201-independent-load-20260913/replay.log"
+    ],
+    "parent64_files_verified": true,
+    "new_iq_copies": 0
+  },
+  "retained_root": "/var/tmp/sdrharness-dev/p201-independent-load-20260913",
+  "retained_files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/acquire.log",
+      "bytes": 426,
+      "sha256": "fffbfda3429794aa1dfa86601754ed5adbc3ff0ba583bf50e453be3b207632f6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/analysis.json",
+      "bytes": 958706,
+      "sha256": "df412fed0b782f44a1e39aacc80c0c47a3f898d3af1d9f206d8cdc61481ccc67"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/analyze.py",
+      "bytes": 5154,
+      "sha256": "73cec4eb58ea407c1a2d52b0ca4556cd3c132734360e6f3a1e33c1b0ccb1ec5b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/cleanup.json",
+      "bytes": 1320,
+      "sha256": "791f16d5f448e3e4ed50f89b103ed79e1492fb3335868efd2b5f627db5e73efc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/finalize.py",
+      "bytes": 4074,
+      "sha256": "5600bd350c6bd83e60e6fb63fbee8f4efffb6ab2e7d487866f95e4b4cfcbdfaa"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/audit.json",
+      "bytes": 2907,
+      "sha256": "d3dd481d2bf764048bab9a65ecbba74a72aebd6bff8987ef92284d2188eedccc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/report.json",
+      "bytes": 2223,
+      "sha256": "8e63c926692a350bb06af96dfc0f65f4e8345f8d325e2516d9e8fc68a1e6b5f1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/rx/load-1789274290716-1789274290716-1789274293058701751.sigmf-data",
+      "bytes": 262140,
+      "sha256": "358262650f28098102c7ffdd1e95fc47b326bba65391224ed6a95e3250396452"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/rx/load-1789274290716-1789274290716-1789274293058701751.sigmf-meta",
+      "bytes": 487,
+      "sha256": "b7c767fa454f2c9f5eb163f704bdefadcba04aebe2f5390bd46dc7bf4ef823f0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/rx-plan.json",
+      "bytes": 377,
+      "sha256": "0785ec77f70b0770532b72eecfa52874fd587ed219dc24b4e15cf69dfbfa363c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/audit.json",
+      "bytes": 2909,
+      "sha256": "c8ad518ccaf25d3f2017bc18fba801a77380044cdafd28aa716fba730cb264d2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/report.json",
+      "bytes": 2225,
+      "sha256": "9149f4aeab8e899b160ec57dba5fff87ba45055a8d28e5df1dde83393885f815"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/rx/load-1789274290717-1789274290717-1789274299575475555.sigmf-data",
+      "bytes": 262140,
+      "sha256": "5b26138c01e96cccebc5b0a5164784126b620a538be23adf9984082e7846e496"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/rx/load-1789274290717-1789274290717-1789274299575475555.sigmf-meta",
+      "bytes": 487,
+      "sha256": "c720058403e6e1c57401263df67298d7e2af86e93cf1cd608ab4f8f245a2dc9c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/rx-plan.json",
+      "bytes": 377,
+      "sha256": "ad01d682016392d58237a486794c20b8c5bf7244047e0db63470fbc9882947eb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/audit.json",
+      "bytes": 2907,
+      "sha256": "dadc9fd28120f61fa9bf17a10cf3b41059a5a8546e65e9eb7314872cb9f84fb4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/report.json",
+      "bytes": 2222,
+      "sha256": "6b5852ab39ec9db66283a18ad37baa6b51b82406f2d137aad446ff2f156dd4a4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/rx/load-1789274290718-1789274290718-1789274306136401910.sigmf-data",
+      "bytes": 262140,
+      "sha256": "b30826a65cd6fbca990574a9b3640f07c06eee6fd36b57d1282cc6f59fcc8970"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/rx/load-1789274290718-1789274290718-1789274306136401910.sigmf-meta",
+      "bytes": 487,
+      "sha256": "f225be95e5f5418c775a86c32f318d3e6b39981373ae65a049082e3559149332"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/rx-plan.json",
+      "bytes": 377,
+      "sha256": "4dd0dfaa5348197b781e8c002aa2577ae2d12dd1a6f81e3d66fed2559ea99cdc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/audit.json",
+      "bytes": 2909,
+      "sha256": "1da5d0d2d8b464abeac92fcea274b3341f3fa9ba9a5f0519857db42917f1daa2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/report.json",
+      "bytes": 2225,
+      "sha256": "c2e761bc44c00fd8d95d37c2c4696596f67a5eb97b5b55a9b898fecb143672c2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/rx/load-1789274290719-1789274290719-1789274312707684332.sigmf-data",
+      "bytes": 262140,
+      "sha256": "75fb8b2f8ec9d332f91c1836cb86324836bd0086ead646383f4c24e14c23d424"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/rx/load-1789274290719-1789274290719-1789274312707684332.sigmf-meta",
+      "bytes": 487,
+      "sha256": "8267c34864adb2e7fd5c08d6739e44d9e57b8df91f5583ae51ba1c3664b34290"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/rx-plan.json",
+      "bytes": 377,
+      "sha256": "d803a880e3cd4aabfe7915e31cfa680b8817c71735538d1f440810f2f0234e87"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/audit.json",
+      "bytes": 2909,
+      "sha256": "2430fb4d035f8926c2b89fae5a5b0686ec07e67afb75a9939f558bc73547c708"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/report.json",
+      "bytes": 2225,
+      "sha256": "d5a64462130c06323de422338c785bf7a08e885fb6c55125dfe81ecec39c3248"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/rx/load-1789274290720-1789274290720-1789274319251885286.sigmf-data",
+      "bytes": 262140,
+      "sha256": "364bf2c666e289d21ef7f7b79ef0cdf99470a765c21fb912b8e4fc1f6b5c5f23"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/rx/load-1789274290720-1789274290720-1789274319251885286.sigmf-meta",
+      "bytes": 487,
+      "sha256": "a00fe1a99da4703460b04c6a67bb0e43ba6c75189c3ff73b92143ffc09fff97c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/rx-plan.json",
+      "bytes": 377,
+      "sha256": "ac572ce1924a81643f40ec003280143e9db3a9c3739ba10094c3c00d98d31335"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/audit.json",
+      "bytes": 2909,
+      "sha256": "67573728e87e518290ebb9ab7aea1622c6cb663c37750c0003cd222745bb01c4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/report.json",
+      "bytes": 2222,
+      "sha256": "03dde66bc7923191a6de97102b8098761e6cb1c2e6db5dbe643eedc65fc67afd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/rx/load-1789274290721-1789274290721-1789274325812178992.sigmf-data",
+      "bytes": 262140,
+      "sha256": "c909cca39191ac31fc93096e2e0fb5270ee7ed035d93890d1b6a341996b08e51"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/rx/load-1789274290721-1789274290721-1789274325812178992.sigmf-meta",
+      "bytes": 487,
+      "sha256": "c11d4bc39b3117fd99dbf6533c8688bf336603833a991358cd2c92da778b47af"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/rx-plan.json",
+      "bytes": 377,
+      "sha256": "4eae79a87a5f546bf722db1c48ff0fc3622291cf957b878eb1219e8adf5926a7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-power.png",
+      "bytes": 190707,
+      "sha256": "8b9cceb09fa8f53285714dedc4d0e0bbad5250c2c13ceb77448996a023f9cc16"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/plan.json",
+      "bytes": 7229,
+      "sha256": "3405ab6448c3040f2e9c5aa68c989104bf7b1fd49a52e91ec3adc9a653df5061"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/plot.py",
+      "bytes": 835,
+      "sha256": "5392db964f35e9f322241edfd91bb137b6b55995f6e15130cab02384a55fab81"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/postflight.json",
+      "bytes": 2390,
+      "sha256": "69870da1cd6905c0f5b00074fbc28e10ee98f8a65fe309c6f06523315660f5b3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/preflight.json",
+      "bytes": 2157,
+      "sha256": "580e11494d803d90b1044fc1fdce83467dbf34256ddc7b93a0b26bac7ba2794d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/run.py",
+      "bytes": 4413,
+      "sha256": "7835c100297b86a30262adf5908d5f577b078f79c68400203171342bc043dde7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/started.json",
+      "bytes": 133,
+      "sha256": "3ab2dadcca08ae3dbcd2ca422bb51dad3fd08ea34d7a2ee3d3387035464753ba"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/summary.json",
+      "bytes": 17244,
+      "sha256": "b567e85e4770c6a36d69e2f78ea4d32af8926f1b9987f9bda21dcaaa615e8790"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/p201-independent-load-20260913/tests.log",
+      "bytes": 94,
+      "sha256": "5c8dac986d77262e96cb372f874e5b83934d38c6ddbcb807b97747e3c97b9375"
+    }
+  ],
+  "retained_file_count": 50,
+  "retained_bytes": 2803698,
+  "manual_delete_command": "rm -- '/var/tmp/sdrharness-dev/p201-independent-load-20260913/acquire.log' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/analysis.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/analyze.py' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/cleanup.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/finalize.py' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/audit.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/report.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/rx/load-1789274290716-1789274290716-1789274293058701751.sigmf-data' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/rx/load-1789274290716-1789274290716-1789274293058701751.sigmf-meta' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/rx-plan.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/rx-stderr.log' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/audit.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/report.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/rx/load-1789274290717-1789274290717-1789274299575475555.sigmf-data' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/rx/load-1789274290717-1789274290717-1789274299575475555.sigmf-meta' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/rx-plan.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/rx-stderr.log' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/audit.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/report.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/rx/load-1789274290718-1789274290718-1789274306136401910.sigmf-data' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/rx/load-1789274290718-1789274290718-1789274306136401910.sigmf-meta' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/rx-plan.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/rx-stderr.log' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/audit.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/report.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/rx/load-1789274290719-1789274290719-1789274312707684332.sigmf-data' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/rx/load-1789274290719-1789274290719-1789274312707684332.sigmf-meta' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/rx-plan.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/rx-stderr.log' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/audit.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/report.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/rx/load-1789274290720-1789274290720-1789274319251885286.sigmf-data' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/rx/load-1789274290720-1789274290720-1789274319251885286.sigmf-meta' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/rx-plan.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/rx-stderr.log' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/audit.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/report.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/rx/load-1789274290721-1789274290721-1789274325812178992.sigmf-data' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/rx/load-1789274290721-1789274290721-1789274325812178992.sigmf-meta' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/rx-plan.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/rx-stderr.log' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-power.png' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/plan.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/plot.py' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/postflight.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/preflight.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/run.py' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/started.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/summary.json' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/tests.log' && rmdir -- '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2/rx' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3/rx' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6/rx' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4/rx' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5/rx' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1/rx' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-2' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-3' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-6' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-4' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-5' '/var/tmp/sdrharness-dev/p201-independent-load-20260913/load-1' '/var/tmp/sdrharness-dev/p201-independent-load-20260913'"
+}

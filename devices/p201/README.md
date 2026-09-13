@@ -8,6 +8,7 @@
 - `dataset/`：与B210共享同一份RadioML2018A，实际由AGX读取；P201不保存数据集或跑模型。
 
 固定链路：P201 `192.168.1.10:43110` → AGX接收/存储/预处理/识别。
+用户2026-09-13确认RX1独立接50Ω负载，当前仅做有界RX对照，B210停发。
 射频输入RX1/RX0/A_BALANCED。设备发布仍为`/sd/sdr-agent/current/`，本机Controller仍为
 `/home/jetson/.local/lib/sdrharness/bin/sdr-agent`；本次只整理入口，没有移动或替换已安装制品。
 这个目录不使用UHD/B210镜像，不提供TX、FPGA烧写或BOOT操作。
