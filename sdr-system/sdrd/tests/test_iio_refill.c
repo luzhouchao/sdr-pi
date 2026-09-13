@@ -132,6 +132,37 @@ static void exercise(const char *root, ssize_t returned, size_t span, int pointe
   assert(pthread_mutex_destroy(&adapter.cancel_mutex) == 0);
 }
 
+static struct iio_buffer *stream_buffer;
+static int stream_created, stream_ready, stream_chunks, stream_disconnected;
+static struct iio_buffer *fake_create(const struct iio_device *device, size_t samples, bool cyclic) {
+  (void)device; assert(samples == 256u && !cyclic); ++stream_created; return stream_buffer;
+}
+static void fake_destroy(struct iio_buffer *buffer) { assert(buffer == stream_buffer); }
+static int receive_stream(void *context, const void *data, size_t bytes) {
+  (void)context;
+  if (data == NULL) { assert(bytes == 0u && stream_created == 1); ++stream_ready; return 0; }
+  assert(stream_ready == 1 && bytes == 1024u); ++stream_chunks;
+  return stream_disconnected ? -EPIPE : 0;
+}
+static void test_stream_refills(const char *root) {
+  for (int mode = 0; mode < 3; ++mode) {
+    sdrd_iio_adapter_t adapter; struct iio_buffer buffer; struct iio_channel channels[4];
+    sdrd_capture_request_t request; sdrd_capture_result_t result;
+    memset(&buffer, 0, sizeof(buffer)); memset(&request, 0, sizeof(request));
+    initialize(&adapter, &buffer, channels, root); adapter.buffer = NULL;
+    adapter.api.device_create_buffer = fake_create; adapter.api.buffer_destroy = fake_destroy;
+    stream_buffer = &buffer; stream_created = stream_ready = stream_chunks = 0; stream_disconnected = mode == 1;
+    if (mode == 2) { buffer.bad_call = 2; buffer.returned = 512; buffer.span = 512; }
+    request.sample_count = 512; request.max_bytes = 2048; request.timeout_ms = 1000;
+    int rc = adapter_capture_stream(&adapter, &request, receive_stream, NULL, &result);
+    assert(rc == (mode == 0 ? 0 : mode == 1 ? -EPIPE : -EPROTO));
+    assert(stream_created == 1 && stream_ready == 1 && adapter.capture_active == 0);
+    if (mode == 0) assert(stream_chunks == 2 && result.samples_captured == 512u);
+    if (mode == 2) assert(result.dropped_samples == 128u);
+    destroy_buffer(&adapter, 0); assert(pthread_mutex_destroy(&adapter.cancel_mutex) == 0);
+  }
+}
+
 int main(void) {
   char root[1024];
   const char *temporary = getenv("TMPDIR");
@@ -175,6 +206,7 @@ int main(void) {
   exercise(root, 1024, 1024, 0, 0, 0, 0, 0);
   exercise(root, 512, 1024, 0, 2, -EPROTO, SDRD_EXEC_HEALTH_SHAPE_ERROR, 0);
   cases += 2;
+  test_stream_refills(root);
   assert(rmdir(root) == 0);
   printf("iio_refill_cases=%u raw_and_power=pass cleanup=pass\n", cases);
   return 0;

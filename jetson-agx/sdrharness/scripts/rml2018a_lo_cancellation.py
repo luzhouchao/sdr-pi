@@ -38,7 +38,15 @@ def guard_intervals(marker_offset, row_count, samples=c.RX_SAMPLES):
             if at-448 >= 0 and at-64 <= samples]
 
 
-def cancel(raw, sync, row_count=24):
+def filtered_pilot(z, fir, at, hz):
+    """Equivalent FIR samples for the pilot, with the full convolution halo."""
+    c.require(0 <= at <= len(z)-c.MARKER and len(fir) == 129, 'pilot FIR window')
+    segment=z[max(0,at-64):min(len(z),at+c.MARKER+64)]
+    segment=np.pad(segment,(max(0,64-at),max(0,at+c.MARKER+64-len(z))))
+    return np.convolve(segment,fir,mode='valid')*np.exp(-2j*np.pi*hz*np.arange(at,at+c.MARKER)/c.RATE)
+
+
+def cancel(raw, sync, row_count=24, *, pilot_only=False):
     """Fit first half of guard interiors; validate later halves; subtract one tone.
 
     No source samples, modulation IDs, source Z, or model outputs are accepted.
@@ -68,13 +76,20 @@ def cancel(raw, sync, row_count=24):
         return np.mean(z[indices]*np.exp(-2j*np.pi*frequency*indices/c.RATE))
 
     frequencies = center+np.arange(-30,31,dtype=float)
-    best = int(np.argmax([abs(project(f)) for f in frequencies]))
+    # Batch the short guard projections; preserve per-frequency reduction order.
+    # This replaces61 Python/NumPy calls with one bounded61xguard operation.
+    def projects(frequencies):
+        return np.mean(z[train][None,:]*np.exp(
+            -2j*np.pi*np.asarray(frequencies)[:,None]*train[None,:]/c.RATE),axis=1)
+
+    best = int(np.argmax(abs(projects(frequencies))))
     if best in (0, len(frequencies)-1):
         return skip('frequency_at_prior_boundary')
     lo, hi = frequencies[best]-1, frequencies[best]+1
     for _ in range(50):
         left, right = lo+(hi-lo)/3, hi-(hi-lo)/3
-        if abs(project(left)) > abs(project(right)):
+        left_value,right_value=projects((left,right))
+        if abs(left_value) > abs(right_value):
             hi = right
         else:
             lo = left
@@ -106,8 +121,11 @@ def cancel(raw, sync, row_count=24):
     pilot_offset = sync.get('marker_offset', at)
     c.require(type(pilot_offset) is int and 0 <= pilot_offset <= len(z)-c.MARKER,
               'complete anchor pilot')
-    filtered = np.convolve(corrected,fir,mode='same')*np.exp(-2j*np.pi*hz*indices/c.RATE)
-    pilot = filtered[pilot_offset:pilot_offset+c.MARKER]
+    if pilot_only:
+        pilot = filtered_pilot(corrected,fir,pilot_offset,hz)
+    else:
+        filtered = np.convolve(corrected,fir,mode='same')*np.exp(-2j*np.pi*hz*indices/c.RATE)
+        pilot = filtered[pilot_offset:pilot_offset+c.MARKER]
     a,b = pilot[64:448],pilot[576:960]
     coherence = float(abs(np.vdot(a,b))/max(np.linalg.norm(a)*np.linalg.norm(b),1e-30))
     residual = float(np.angle(np.vdot(a,b))*c.RATE/(2*np.pi*512))

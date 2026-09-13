@@ -28,9 +28,9 @@ def contract():
             'does not remove broadband noise, source noise, or payload distortion'])
 
 
-def cancel(raw, sync, row_count=24):
+def cancel(raw, sync, row_count=24, *, pilot_only=False):
     z = np.asarray(raw, dtype=np.complex128)
-    _, old = v1.cancel(z, sync, row_count)
+    prior_corrected, old = v1.cancel(z, sync, row_count, pilot_only=pilot_only)
     info = dict(method=METHOD, status='skipped', reason=None, contract=contract(),
                 v1=old, halves=[], corrected_samples_sha256=None)
 
@@ -65,21 +65,27 @@ def cancel(raw, sync, row_count=24):
     if np.ptp(abs(observed))/abs(amplitude) > .25 or max(abs(np.angle(observed/amplitude))) > .25:
         return skip('guard_tone_not_stable')
     n = np.arange(len(z))
-    corrected = z-amplitude*np.exp(2j*np.pi*frequency*n/c.RATE)
+    corrected = (prior_corrected if old['status']=='applied' else
+                 z-amplitude*np.exp(2j*np.pi*frequency*n/c.RATE))
     # Independent pilot half check is required even when v1 stopped at its
     # total-power gate before reaching this check.
     t = np.arange(129)-64
     fir = (2*500000/c.RATE)*np.sinc(2*500000/c.RATE*t)*np.hamming(129); fir /= fir.sum()
-    filtered = np.convolve(corrected, fir, mode='same')*np.exp(-2j*np.pi*sync['estimated_cfo_hz']*n/c.RATE)
     at = sync.get('marker_offset', sync['payload_marker_offset'])
     c.require(type(at) is int and 0 <= at <= len(z)-c.MARKER, 'complete anchor pilot')
-    a, b = filtered[at+64:at+448], filtered[at+576:at+960]
+    if pilot_only:
+        pilot = v1.filtered_pilot(corrected,fir,at,sync['estimated_cfo_hz'])
+    else:
+        filtered = np.convolve(corrected, fir, mode='same')*np.exp(-2j*np.pi*sync['estimated_cfo_hz']*n/c.RATE)
+        pilot = filtered[at:at+c.MARKER]
+    a, b = pilot[64:448], pilot[576:960]
     coherence = float(abs(np.vdot(a,b))/max(np.linalg.norm(a)*np.linalg.norm(b),1e-30))
     residual = float(np.angle(np.vdot(a,b))*c.RATE/(2*np.pi*512))
     info.update(pilot_half_coherence=coherence, pilot_residual_cfo_hz=residual)
     if coherence < .95 or abs(residual) > 25:
         return skip('pilot_does_not_confirm_frequency_prior')
-    info.update(status='applied', corrected_samples_sha256=c.digest(corrected.astype('<c16').tobytes()))
+    info.update(status='applied', corrected_samples_sha256=(old['corrected_samples_sha256']
+        if old['status']=='applied' else c.digest(corrected.astype('<c16').tobytes())))
     return corrected, info
 
 

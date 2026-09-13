@@ -704,12 +704,58 @@ static void test_seeded_protocol_mutations(void) {
   puts("o1a_fuzz=sdrd seed=20260906 cases=256");
 }
 
+static unsigned char streamed[4096];
+static size_t streamed_bytes;
+static int stream_failure;
+static int fake_stream_write(void *context, const void *data, size_t bytes) {
+  (void)context;
+  if (stream_failure) return -EPIPE;
+  assert(streamed_bytes + bytes < sizeof(streamed));
+  memcpy(streamed + streamed_bytes, data, bytes); streamed_bytes += bytes;
+  return 0;
+}
+static int fake_stream_capture(void *context, const sdrd_capture_request_t *request,
+    int (*sink)(void *, const void *, size_t), void *sink_context, sdrd_capture_result_t *result) {
+  unsigned char data[256]; int rc; (void)context;
+  memset(result, 0, sizeof(*result)); memset(data, 0x0a, sizeof(data));
+  rc = sink(sink_context, NULL, 0u);
+  if (rc == 0) rc = sink(sink_context, data, sizeof(data));
+  result->bytes_written = rc == 0 ? sizeof(data) : 0u;
+  result->samples_captured = result->bytes_written / 4u;
+  result->timeout_ms = request->timeout_ms;
+  return rc;
+}
+static void test_stream_protocol(void) {
+  for (int fail = 0; fail < 2; ++fail) {
+    sdrd_config_t config; sdrd_session_t session; fake_radio_t fake;
+    sdrd_radio_ops_t ops; char response[8192];
+    memset(&fake, 0, sizeof(fake)); set_valid_rx_input(&fake.state.rx_input);
+    ops = fake_ops(&fake); ops.capture_stream = fake_stream_capture; ops.stream_write = fake_stream_write;
+    sdrd_config_defaults(&config); config.mode = SDRD_MODE_CONTROLLED;
+    sdrd_session_init(&session); session.active = 1; session.profile_applied = 1;
+    session.restore_required = 1; session.generation = 17; session.saved_state = fake.state;
+    streamed_bytes = 0; stream_failure = fail;
+    assert(sdrd_handle_request(&config, &session, &ops, "SDRD/1 CAPTURE_IQ_STREAM 1 17 64 255 1000", response, sizeof(response)) == 0);
+    assert(strstr(response, "stream_out_of_bounds") != NULL && streamed_bytes == 0u);
+    assert(sdrd_handle_request(&config, &session, &ops, "SDRD/1 CAPTURE_IQ_STREAM 2 17 64 256 1000", response, sizeof(response)) == 0);
+    assert(strstr(response, "\"event\":\"rx_end\"") != NULL);
+    assert(strstr(response, "\"restored\":true") != NULL && fake.restore_calls == 1u);
+    assert(strstr(response, fail ? "\"status\":\"error\"" : "\"status\":\"ok\"") != NULL);
+    if (!fail) {
+      assert(strstr((char *)streamed, "rx_ready") != NULL);
+      assert(strstr((char *)streamed, "rx_chunk") != NULL);
+      assert(streamed[streamed_bytes-1] == 0x0a);
+    }
+  }
+}
+
 int main(void) {
   char root[256];
   const char *temporary = getenv("TMPDIR");
   assert(snprintf(root, sizeof(root), "%s/sdrd-test-XXXXXX", temporary != NULL ? temporary : "/tmp") < (int)sizeof(root));
   assert(mkdtemp(root) != NULL);
   test_seeded_protocol_mutations();
+  test_stream_protocol();
   test_shadow_config_and_protocol(root);
   test_iio_control_limits();
   test_controlled_allowlist_and_restore();

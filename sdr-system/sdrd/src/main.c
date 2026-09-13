@@ -93,6 +93,10 @@ static int receive_line(int fd, char *line, size_t line_size) {
   return -EMSGSIZE;
 }
 
+static int stream_write(void *context, const void *data, size_t length) {
+  return send_all(*(int *)context, data, length);
+}
+
 static int serve_client(
     int fd,
     const sdrd_config_t *config,
@@ -105,10 +109,19 @@ static int serve_client(
   struct timeval timeout;
   int result = 0;
   int use_first_line = first_line != NULL;
+  sdrd_radio_ops_t client_radio;
+  if (radio != NULL) {
+    client_radio = *radio;
+    client_radio.stream_write = stream_write;
+    client_radio.stream_context = &fd;
+    radio = &client_radio;
+  }
   sdrd_session_init(&session);
   timeout.tv_sec = (time_t)(config->client_timeout_ms / 1000u);
   timeout.tv_usec = (suseconds_t)(config->client_timeout_ms % 1000u) * 1000;
   (void)setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+  /* A stalled stream consumer must not hold the RX owner indefinitely. */
+  (void)setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
   while (stop_requested == 0) {
     int read_rc;
     int response_rc;

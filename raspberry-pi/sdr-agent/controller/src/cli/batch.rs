@@ -135,6 +135,7 @@ pub(super) fn run(mut args: impl Iterator<Item = String>) -> AppResult<()> {
             | "execute"
             | "cancel"
             | "sweep"
+            | "stream-rx"
             | "run-once"
     ) {
         return Err(invalid_input(
@@ -438,6 +439,18 @@ pub(super) fn run(mut args: impl Iterator<Item = String>) -> AppResult<()> {
             runner.run_once(request, approval)?
         };
         println!("{}", serde_json::to_string(&result)?);
+        return Ok(());
+    }
+
+    if mode == "stream-rx" {
+        if instruction.is_some() {
+            return Err(invalid_input("--instruction is valid only in plan mode").into());
+        }
+        let address = sdrd_address
+            .ok_or_else(|| invalid_input("--mode stream-rx requires --sdrd HOST:PORT"))?;
+        let bytes = read_request(&request_path, MAX_FRAME_BYTES)?;
+        let plan = serde_json::from_slice(&bytes)?;
+        sdr_agent_controller::streaming_rx::run(address, &plan, &mut io::stdout().lock())?;
         return Ok(());
     }
 

@@ -605,6 +605,64 @@ static int checked_refill(
   return 0;
 }
 
+static int adapter_capture_stream(
+    void *context, const sdrd_capture_request_t *request,
+    int (*sink)(void *, const void *, size_t), void *sink_context,
+    sdrd_capture_result_t *result) {
+  sdrd_iio_adapter_t *adapter = context;
+  sdrd_rx_input_identity_t identity;
+  struct timespec started, now;
+  uint64_t remaining;
+  int rc;
+  if (adapter == NULL || request == NULL || result == NULL || sink == NULL) return -EINVAL;
+  memset(result, 0, sizeof(*result));
+  result->timeout_ms = request->timeout_ms;
+  result->sequence = ++adapter->sequence;
+  (void)clock_gettime(CLOCK_MONOTONIC, &started);
+  rc = adapter_probe_rx_input(adapter, &identity);
+  if (rc != 0 || adapter->api.device_get_sample_size(adapter->rx) != 4) {
+    record_capture_failure(result, rc != 0 ? rc : -EPROTO, started);
+    return rc != 0 ? rc : -EPROTO;
+  }
+  destroy_buffer(adapter, 0);
+  adapter->buffer = adapter->api.device_create_buffer(adapter->rx, adapter->buffer_samples, false);
+  if (adapter->buffer == NULL) {
+    rc = errno != 0 ? -errno : -EIO;
+    record_capture_failure(result, rc, started);
+    return rc;
+  }
+  (void)pthread_mutex_lock(&adapter->cancel_mutex);
+  rc = adapter->cancel_requested != 0 ? -ECANCELED : 0;
+  if (rc == 0) adapter->capture_active = 1;
+  (void)pthread_mutex_unlock(&adapter->cancel_mutex);
+  /* Ready means buffer creation succeeded; only delivered samples prove RX. */
+  if (rc == 0) rc = sink(sink_context, NULL, 0u);
+  remaining = request->sample_count * 4u;
+  while (rc == 0 && remaining > 0u) {
+    const unsigned char *data;
+    size_t available;
+    rc = checked_refill(adapter, &data, &available, &result->dropped_samples, &result->health_flags);
+    if (rc != 0) break;
+    if ((uint64_t)available > remaining) available = (size_t)remaining;
+    rc = sink(sink_context, data, available);
+    if (rc != 0) break;
+    remaining -= available;
+    result->bytes_written += available;
+    result->samples_captured += available / 4u;
+    (void)clock_gettime(CLOCK_MONOTONIC, &now);
+    if (elapsed_microseconds(started, now) > (uint64_t)request->timeout_ms * 1000u) rc = -ETIMEDOUT;
+  }
+  (void)pthread_mutex_lock(&adapter->cancel_mutex);
+  adapter->capture_active = 0;
+  (void)pthread_mutex_unlock(&adapter->cancel_mutex);
+  if (rc == 0) rc = adapter_probe_rx_input(adapter, &identity);
+  if (rc == 0 && get_scan_mask(adapter) != adapter->selected_scan_mask) rc = -EPROTO;
+  (void)clock_gettime(CLOCK_MONOTONIC, &now);
+  result->elapsed_us = elapsed_microseconds(started, now);
+  if (rc != 0) record_capture_failure(result, rc, started);
+  return rc;
+}
+
 static int adapter_capture_iq(
     void *context,
     const sdrd_capture_request_t *request,
@@ -1113,6 +1171,7 @@ void sdrd_iio_adapter_ops(sdrd_iio_adapter_t *adapter, sdrd_radio_ops_t *ops) {
   ops->snapshot = adapter_snapshot;
   ops->apply_profile = adapter_apply_profile;
   ops->capture_iq = adapter_capture_iq;
+  ops->capture_stream = adapter_capture_stream;
   /* Legacy summary fields are named rx0; do not put RX2 power in those fields. */
   ops->capture_power = adapter->selected_scan_mask == 0x03u ? adapter_capture_power : NULL;
   ops->cancel = adapter_cancel;

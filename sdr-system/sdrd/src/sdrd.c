@@ -1402,6 +1402,78 @@ static int handle_stop_session(
   return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
 }
 
+typedef struct stream_sink_context {
+  const sdrd_radio_ops_t *radio;
+  uint64_t id, generation, offset, sequence, maximum;
+  int ready;
+} stream_sink_context_t;
+
+static int stream_sink(void *context, const void *data, size_t bytes) {
+  stream_sink_context_t *s = context;
+  char header[384];
+  int written, rc;
+  if (data == NULL && bytes == 0u) {
+    if (s->ready != 0) return -EPROTO;
+    s->ready = 1;
+    written = snprintf(header, sizeof(header),
+        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"event\":\"rx_ready\",\"generation\":%" PRIu64 ",\"maximum_bytes\":%" PRIu64 "}\n",
+        s->id, s->generation, s->maximum);
+  } else {
+    if (s->ready == 0 || data == NULL || bytes == 0u || bytes % 4u != 0u ||
+        bytes > SDRD_MAX_INLINE_CAPTURE_BYTES || s->offset > s->maximum || bytes > s->maximum - s->offset) return -EPROTO;
+    written = snprintf(header, sizeof(header),
+        "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"ok\",\"event\":\"rx_chunk\",\"generation\":%" PRIu64 ",\"sequence\":%" PRIu64 ",\"sample_offset\":%" PRIu64 ",\"bytes\":%zu}\n",
+        s->id, s->generation, s->sequence, s->offset / 4u, bytes);
+  }
+  if (written < 0 || (size_t)written >= sizeof(header)) return -ENOSPC;
+  rc = s->radio->stream_write(s->radio->stream_context, header, (size_t)written);
+  if (rc == 0 && bytes != 0u) {
+    rc = s->radio->stream_write(s->radio->stream_context, data, bytes);
+    if (rc == 0) { s->offset += bytes; ++s->sequence; }
+  }
+  return rc;
+}
+
+static int handle_capture_stream(const sdrd_config_t *config, const parsed_request_t *request,
+    sdrd_session_t *session, const sdrd_radio_ops_t *radio, char *response, size_t response_size) {
+  sdrd_capture_request_t capture;
+  sdrd_capture_result_t result;
+  sdrd_rx_input_identity_t identity;
+  stream_sink_context_t sink;
+  int rc, restored, written;
+  memset(&capture, 0, sizeof(capture)); memset(&result, 0, sizeof(result)); memset(&sink, 0, sizeof(sink));
+  if (request->field_count != 7u || parse_u64(request->fields[3], &capture.generation) != 0 ||
+      parse_u64(request->fields[4], &capture.sample_count) != 0 ||
+      parse_u64(request->fields[5], &capture.max_bytes) != 0 ||
+      parse_u32(request->fields[6], &capture.timeout_ms) != 0)
+    return format_error(request->request_id, "invalid_arguments", response, response_size);
+  if (session->active == 0 || session->profile_applied == 0 || session->generation != capture.generation)
+    return format_error(request->request_id, "stale_or_missing_session", response, response_size);
+  if (radio->capture_stream == NULL || radio->stream_write == NULL)
+    return format_error(request->request_id, "stream_unavailable", response, response_size);
+  if (capture.sample_count == 0u || capture.sample_count > UINT64_MAX / 4u ||
+      capture.max_bytes != capture.sample_count * 4u || capture.max_bytes > config->max_capture_bytes ||
+      capture.timeout_ms < 100u || capture.timeout_ms > 120000u ||
+      config->iio_buffer_samples > SDRD_MAX_INLINE_CAPTURE_BYTES / 4u)
+    return format_error(request->request_id, "stream_out_of_bounds", response, response_size);
+  sink.radio = radio; sink.id = request->request_id; sink.generation = capture.generation; sink.maximum = capture.max_bytes;
+  rc = probe_selected_rx_input(radio, &identity);
+  if (rc == 0 && memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0) rc = -EPROTO;
+  if (rc == 0) rc = radio->capture_stream(radio->context, &capture, stream_sink, &sink, &result);
+  if (rc == 0) rc = probe_selected_rx_input(radio, &identity);
+  if (rc == 0 && (memcmp(&identity, &session->saved_state.rx_input, sizeof(identity)) != 0 ||
+      sink.ready == 0 || sink.offset != capture.max_bytes || result.bytes_written != capture.max_bytes ||
+      result.samples_captured != capture.sample_count || result.health_flags != 0u ||
+      result.dropped_samples != 0u || result.overflow != 0 || result.timed_out != 0)) rc = -EPROTO;
+  restored = sdrd_session_close(session, radio) == 0;
+  written = snprintf(response, response_size,
+      "{\"schema_version\":1,\"request_id\":%" PRIu64 ",\"status\":\"%s\",\"event\":\"rx_end\",\"generation\":%" PRIu64 ",\"bytes_transferred\":%" PRIu64 ",\"chunks\":%" PRIu64 ",\"elapsed_us\":%" PRIu64 ",\"restored\":%s,\"error_code\":%d,\"health_flags\":%u,\"dropped_samples\":%" PRIu64 "}\n",
+      request->request_id, rc == 0 && restored != 0 ? "ok" : "error", capture.generation,
+      sink.offset, sink.sequence, result.elapsed_us, restored != 0 ? "true" : "false", rc,
+      result.health_flags, result.dropped_samples);
+  return written < 0 || (size_t)written >= response_size ? -ENOSPC : 0;
+}
+
 int sdrd_handle_request(
     const sdrd_config_t *config,
     sdrd_session_t *session,
@@ -1511,6 +1583,7 @@ int sdrd_handle_request(
              strcmp(request.command, "APPLY_PROFILE") == 0 ||
              strcmp(request.command, "CAPTURE_IQ") == 0 ||
              strcmp(request.command, "CAPTURE_IQ_INLINE") == 0 ||
+             strcmp(request.command, "CAPTURE_IQ_STREAM") == 0 ||
              strcmp(request.command, "CAPTURE_POWER") == 0 ||
              strcmp(request.command, "EXECUTION_STATUS") == 0 ||
              strcmp(request.command, "STOP_SESSION") == 0) {
@@ -1531,6 +1604,9 @@ int sdrd_handle_request(
     }
     if (strcmp(request.command, "CAPTURE_IQ_INLINE") == 0) {
       return handle_capture_iq_inline(config, &request, session, radio, response, response_size);
+    }
+    if (strcmp(request.command, "CAPTURE_IQ_STREAM") == 0) {
+      return handle_capture_stream(config, &request, session, radio, response, response_size);
     }
     if (strcmp(request.command, "CAPTURE_POWER") == 0) {
       return handle_capture_power(&request, session, radio, response, response_size);

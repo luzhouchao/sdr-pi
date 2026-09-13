@@ -145,6 +145,12 @@ typedef struct sdrd_radio_ops {
       void *context,
       const sdrd_capture_request_t *request,
       sdrd_capture_result_t *result);
+  /* NULL/zero sink payload reports a created RX buffer before first refill. */
+  int (*capture_stream)(void *context, const sdrd_capture_request_t *request,
+      int (*sink)(void *, const void *, size_t), void *sink_context,
+      sdrd_capture_result_t *result);
+  int (*stream_write)(void *context, const void *data, size_t bytes);
+  void *stream_context;
   int (*capture_power)(
       void *context,
       const sdrd_summary_request_t *request,

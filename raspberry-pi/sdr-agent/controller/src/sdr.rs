@@ -125,6 +125,105 @@ pub(crate) struct SdrdWire {
 }
 
 impl SdrdWire {
+    /// Finite binary IQ stream. Keep the same buffered reader across JSON and
+    /// payload boundaries; never interpret payload bytes as control responses.
+    pub(crate) fn stream_iq(
+        &mut self,
+        generation: u64,
+        samples: u64,
+        deadline_ms: u32,
+        mut receive: impl FnMut(&serde_json::Value, &[u8]) -> Result<(), SdrError>,
+    ) -> Result<serde_json::Value, SdrError> {
+        let id = self.next_request_id;
+        self.next_request_id = id
+            .checked_add(1)
+            .ok_or_else(|| SdrError::new("request_id", "exhausted"))?;
+        let maximum = samples
+            .checked_mul(4)
+            .ok_or_else(|| SdrError::new("stream_budget", "overflow"))?;
+        writeln!(
+            self.stream,
+            "SDRD/1 CAPTURE_IQ_STREAM {id} {generation} {samples} {maximum} {deadline_ms}"
+        )
+        .map_err(|e| SdrError::io("stream_request", e))?;
+        let started = std::time::Instant::now();
+        let mut sequence = 0_u64;
+        let mut offset = 0_u64;
+        let mut ready = false;
+        loop {
+            if started.elapsed() > Duration::from_millis(u64::from(deadline_ms) + 5000) {
+                return Err(SdrError::new("stream_deadline", "finite deadline exceeded"));
+            }
+            let mut line = Vec::new();
+            self.reader
+                .by_ref()
+                .take(2049)
+                .read_until(b'\n', &mut line)
+                .map_err(|e| SdrError::io("stream_header", e))?;
+            if line.len() > 2048 || line.last() != Some(&b'\n') {
+                return Err(SdrError::new("stream_header", "missing or oversized frame"));
+            }
+            let value: serde_json::Value = serde_json::from_slice(&line)
+                .map_err(|e| SdrError::new("stream_json", e.to_string()))?;
+            if value["schema_version"] != 1
+                || value["request_id"] != id
+                || value["generation"] != generation
+            {
+                return Err(SdrError::new("stream_identity", "response mismatch"));
+            }
+            match value["event"].as_str() {
+                Some("rx_ready")
+                    if !ready && value["status"] == "ok" && value["maximum_bytes"] == maximum =>
+                {
+                    ready = true;
+                    receive(&value, &[])?;
+                }
+                Some("rx_chunk") if ready && value["status"] == "ok" => {
+                    let bytes = value["bytes"].as_u64().unwrap_or(0);
+                    if bytes == 0
+                        || bytes > 256 * 1024
+                        || bytes % 4 != 0
+                        || bytes > maximum.saturating_sub(offset)
+                        || value["sequence"] != sequence
+                        || value["sample_offset"] != offset / 4
+                    {
+                        return Err(SdrError::new(
+                            "stream_chunk",
+                            "budget/sequence/offset mismatch",
+                        ));
+                    }
+                    let mut payload = vec![0; bytes as usize];
+                    self.reader
+                        .read_exact(&mut payload)
+                        .map_err(|e| SdrError::io("stream_payload", e))?;
+                    receive(&value, &payload)?;
+                    offset += bytes;
+                    sequence += 1;
+                }
+                Some("rx_end") => {
+                    receive(&value, &[])?;
+                    if !ready
+                        || value["status"] != "ok"
+                        || offset != maximum
+                        || value["bytes_transferred"] != offset
+                        || value["chunks"] != sequence
+                        || value["restored"] != true
+                        || value["error_code"] != 0
+                        || value["health_flags"] != 0
+                        || value["dropped_samples"] != 0
+                    {
+                        return Err(SdrError::new(
+                            "stream_failed",
+                            "incomplete stream or restoration/health fault",
+                        ));
+                    }
+                    return Ok(value);
+                }
+                _ => return Err(SdrError::new("stream_protocol", "unexpected response")),
+            }
+        }
+    }
+
     pub(crate) fn connect(address: SocketAddr, timeout: Duration) -> Result<Self, SdrError> {
         let stream = TcpStream::connect_timeout(&address, timeout)
             .map_err(|error| SdrError::io("connect", error))?;
