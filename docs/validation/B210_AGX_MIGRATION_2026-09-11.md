@@ -76,3 +76,21 @@ AGX后端使用本机暂存/进程管道/文件回收，NX后端才使用SSH/SCP
 没有新增IQ、权重或数据集副本，原实验保留包不参与本次清理。
 NX原安装保留；回退须将B210接回NX并创建显式NX新计划，不改旧计划身份。
 AGX全局UHD与P201安装未替换；删除本单元专用运行时只会使B210入口校验拒绝，不能删除共享数据集。
+
+## 2026-09-13：国产N210设备技能
+
+用户澄清设备是国产B210兼容设备，名称就是N210；它以USB B200/B210驱动枚举，
+不是NI网口N210。新增[技能](../../.codex/skills/n210-sdr-workflow/SKILL.md)，
+保留现有devices/b210/UHD运行时路径，使用入口与按需有限TX参考，不复制驱动、脚本或数据集。
+技能包含serial2508504、A7-100T、AGX默认/NX历史入口、有限计划与精确GO、
+USB所有权、Controller/P201分工、停止/失败/背景语义及原始和处理数据保留。
+已有用户授权在原范围内持续有效，不新增重复接线确认或任意持续发射许可。
+
+项目目录`.codex/skills/n210-sdr-workflow/`是唯一源码；用户发现入口
+`/home/jetson/.codex/skills/n210-sdr-workflow`为指向它的符号链接，不禁用默认发现。
+创建过程中临时b210-sdr-workflow命名已按用户澄清改为n210，没有留下另一个技能副本。
+quick_validate通过，前置脚本/相对链接和实际只读status核对通过：serial2508504、USB5000Mbps、
+专用运行时/系统libuhd逐文件SHA有效；status不证明USB空闲或RF性能，未执行probe/发射/接收。
+本单元没有临时采集/构建/缓存或IQ副本需要删除，既有运行时/实验语料保持。
+手动注销个人发现入口用`unlink /home/jetson/.codex/skills/n210-sdr-workflow`，
+不会删除Git中的技能源码；项目内P201和N210分别路由，当前整档RF任务继续。

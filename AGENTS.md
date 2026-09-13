@@ -79,6 +79,9 @@ Cargo 包/库名 `sdr-agent-controller` 无需改名；不要另建重复实现�
 
 ## 4. 硬件访问与有界接收
 
+国产N210（USB B210兼容设备，serial2508504）操作使用
+[n210-sdr-workflow](.codex/skills/n210-sdr-workflow/SKILL.md)；N210为用户设备名称，
+现有`devices/b210/`及UHD B200/B210驱动路径保持，不套用NI网口N210流程。
 P201 操作使用 [p201-sdr-workflow](.codex/skills/p201-sdr-workflow/SKILL.md)，遵守
 其访问、凭证、单实例、ARMv7 ABI、部署、回滚和恢复流程。密码/密钥不得打印、
 复制进日志或 Git；使用既有受保护凭证和严格主机密钥校验，不输出完整秘密配置。

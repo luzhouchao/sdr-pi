@@ -1318,6 +1318,7 @@ Evidence:
 - [x] Record the user's development-only authorization for bounded receive
       sweeps, isolated per-feature data directories, hard data caps, and
       mandatory cleanup before feature completion.
+- [x] 国产N210设备技能：USB B210兼容身份、专用UHD/A7-100T、有限计划/GO/停止、P201分工及证据流程；项目源码与用户技能目录同一份链接，元数据/链接/实际无RF运行时状态核验通过，见[验证](validation/B210_AGX_MIGRATION_2026-09-11.md#2026-09-13国产n210设备技能)。
 - [x] Add and validate the project-local `p201-sdr-workflow` skill for bounded
       access, cross-build, deployment, duplicate-instance gating and cleanup.
 - [x] O1a adds deterministic bounded mutation across application-owned protocol
