@@ -1,0 +1,141 @@
+{
+  "schema": "rml2018a-snr-storage-evidence-v1",
+  "base_head": "493f8568257cc1bf384931cff41ed70c17d7bf34",
+  "purpose": "Validate agreed per-SNR SigMF/HDF5 corpus serialization, failed-row retention and safe reopen before continuous-RF integration",
+  "scope": {
+    "synthetic_only": true,
+    "source_file_reads": 0,
+    "new_rf_seconds": 0,
+    "gpu_calls": 0,
+    "model_windows": 0,
+    "production_deployment": false
+  },
+  "runtime": {
+    "python": "3.10.12",
+    "numpy": "1.26.4",
+    "h5py": "3.14.0",
+    "hdf5": "1.14.6"
+  },
+  "software": {
+    "jetson-agx/sdrharness/scripts/rml2018a_campaign_store.py": "b79cf176d2a1ad793e7de7351964b73b6a7033e47587206718f9eac4ca00d84e",
+    "jetson-agx/sdrharness/scripts/validate-rml2018a-store.py": "3e72b4a28972940c1a2db8849afd6362e8710f136949b7fbf8c6f32cea3d9e1f",
+    "jetson-agx/sdrharness/tests/test_rml2018a_store.py": "73382393df5273ae75633e2b97fb5b5717385c8458e5609c1f95ca40cf62bd53"
+  },
+  "validation": {
+    "status": "completed",
+    "plan_sha256": "f856e71bb6fab1738db4261ca14d12233c34170621655951fcf127fc43e1e667",
+    "stored_rows": 98304,
+    "valid_raw_rows": 98208,
+    "unsynchronized_rows": 96,
+    "append_seconds": 33.817875086999265,
+    "finish_verify_seconds": 14.606550383992726,
+    "reopen_verify_seconds": 14.379359402984846,
+    "wall_seconds": 68.31688952600234,
+    "files": [
+      {
+        "bytes": 541,
+        "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/synthetic-corpus/configuration.json",
+        "sha256": "331069ac317e8a93115eb02a9bada925abd489aad433e3db4193b7a7ae9b07ed"
+      },
+      {
+        "bytes": 68638,
+        "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/synthetic-corpus/index.json",
+        "sha256": "ac6d539720bb581d00dfe4b31816a4f8b146006eb51c5f497b367c7048d8cb9e"
+      },
+      {
+        "bytes": 2538636152,
+        "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/synthetic-corpus/processed.h5",
+        "sha256": "2aa22d1f3c9ad7ce2273e86effeacab62bc28ca8f9b90420bfd9750ca67fad9a"
+      },
+      {
+        "bytes": 402653184,
+        "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/synthetic-corpus/raw.sigmf-data",
+        "sha256": "310951c5e1627be3a12f04af06ee9cf27d020b9c1cecae52fc8b07b7bec0723a"
+      },
+      {
+        "bytes": 52399,
+        "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/synthetic-corpus/raw.sigmf-meta",
+        "sha256": "2a0a11c1bc05a5ec4b9fce1aef7025716c524b1aea71d935962e39ce7987392c"
+      },
+      {
+        "bytes": 0,
+        "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/synthetic-corpus/writer.lock",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "complete": true,
+    "block_count": 96,
+    "block_median_seconds": {
+      "raw_seconds": 0.0952624315104913,
+      "processed_seconds": 0.25710673349385615
+    },
+    "detail": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/validation.json"
+  },
+  "tests": {
+    "discovered": 160,
+    "passed": 159,
+    "skipped": 1,
+    "skip_reason": "Existing explicit CUDA test; GPU math already validated in previous unit. This unit is disk storage only.",
+    "final_store_tests": 8,
+    "final_store_passed": 8
+  },
+  "limitations": [
+    "No radio/GPU-buffer pipeline connected",
+    "No actual power-loss/HDF5 repair validation; uncommitted tails preserved and rejected",
+    "Full96-block timing used immutable inputs; final power-summary calculation now explicitly derives from the same serialized raw-byte snapshot and passed8 final tests",
+    "All26-SNR pre-inference gate belongs to future campaign orchestration"
+  ],
+  "cleanup": {
+    "synthetic_corpus_removed_files": 6,
+    "synthetic_corpus_removed_bytes": 2941410914,
+    "scratch_removed_files": 0,
+    "scratch_removed_bytes": 0,
+    "reason": "All large IQ/HDF5 in this unit are synthetic storage fixtures, not user RF corpus. Actual RF evidence and shared RML source remain untouched.",
+    "corpus_absent": true,
+    "scratch_absent": true
+  },
+  "retained_files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/cleanup.json",
+      "bytes": 358,
+      "sha256": "81db23f1f2c6e7051580e13f31612ac402f922b12513f9a2804a569ba7e1c0ed"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/final-tests.log",
+      "bytes": 106,
+      "sha256": "edf114581b22b4396743798b0b29b78fabc2285b1ed5c6613a2dc39e9c30d316"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/plan.json",
+      "bytes": 463,
+      "sha256": "f856e71bb6fab1738db4261ca14d12233c34170621655951fcf127fc43e1e667"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/regression.log",
+      "bytes": 7276,
+      "sha256": "a970db8e1b3cef9dd6f12f63caa1dce8a7b39504ce4a66be844b6987fd0d1627"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/tests.log",
+      "bytes": 104,
+      "sha256": "37d7067e60e3ebe160e5cdd8e965969ab2d130eda8f5dd853414ba73814a03ac"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/validation.json",
+      "bytes": 78999,
+      "sha256": "24e570d8745277fd3abf784b554aea4d29e07fc8afa27910dfbfe6c7360337b8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-storage-20260913/validation.log",
+      "bytes": 138,
+      "sha256": "e5e7b792f34802f441429edf2e9fffa237fdd732642d969d10c42e74e5aa07a5"
+    }
+  ],
+  "retained_count": 7,
+  "retained_bytes": 87444,
+  "retention_reason": "Minimal plans, synthetic corpus hashes, timings and fault-test logs; fixture data reproducible by committed validator",
+  "delete_commands": [
+    "rm -- /var/tmp/sdrharness-dev/rml2018a-storage-20260913/cleanup.json /var/tmp/sdrharness-dev/rml2018a-storage-20260913/final-tests.log /var/tmp/sdrharness-dev/rml2018a-storage-20260913/plan.json /var/tmp/sdrharness-dev/rml2018a-storage-20260913/regression.log /var/tmp/sdrharness-dev/rml2018a-storage-20260913/tests.log /var/tmp/sdrharness-dev/rml2018a-storage-20260913/validation.json /var/tmp/sdrharness-dev/rml2018a-storage-20260913/validation.log",
+    "rmdir -- /var/tmp/sdrharness-dev/rml2018a-storage-20260913"
+  ]
+}
