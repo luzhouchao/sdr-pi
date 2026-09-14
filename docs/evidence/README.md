@@ -242,6 +242,8 @@
 
 - [HTML报告：四窗标记为探索方式的定位修订](SDR_REPORT_FOUR_WINDOW_EXPLORATION_2026-09-14.json)
 
+- [单窗全量三组混淆矩阵：计数、百分比及报告核验](RML2018A_SINGLE_CONFUSION_2026-09-14.json)
+
 ## 冻结路径例外
 
 下面三份原始审计由冻结配置按固定路径引用，保留在 docs 根目录且不复制：

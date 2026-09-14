@@ -1,0 +1,268 @@
+{
+  "schema": "rml2018a-single-window-confusion-matrices-v1",
+  "source_summary": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-b1024-20260914/summary.json",
+  "source_summary_sha256": "41feb6ff8d89e577bc846b0731bb07fe48ecb691e13e1ed7b10aaa20093f07be",
+  "parent_commit": "d5709df485731d1ec97225da66c9f9823899c2e1",
+  "labels": [
+    "OOK",
+    "4ASK",
+    "8ASK",
+    "BPSK",
+    "QPSK",
+    "8PSK",
+    "16PSK",
+    "32PSK",
+    "16APSK",
+    "32APSK",
+    "64APSK",
+    "128APSK",
+    "16QAM",
+    "32QAM",
+    "64QAM",
+    "128QAM",
+    "256QAM",
+    "AM-SSB-WC",
+    "AM-SSB-SC",
+    "AM-DSB-WC",
+    "AM-DSB-SC",
+    "FM",
+    "GMSK",
+    "OQPSK"
+  ],
+  "window_count": 1,
+  "source_snr_db": [
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20,
+    22,
+    24,
+    26,
+    28,
+    30
+  ],
+  "orientation": {
+    "rows": "true class",
+    "columns": "predicted class"
+  },
+  "color_range_percent": [
+    0,
+    100
+  ],
+  "normalization": "divide each row by full true-class total",
+  "annotation": "diagonal and off-diagonal >= 1 percent; blank annotations do not imply zero",
+  "results": {
+    "source": {
+      "title": "源数据（未经射频链路）",
+      "total": 2555904,
+      "correct": 1594095,
+      "missing": 0,
+      "accuracy_percent": 62.36912653996394,
+      "row_totals": [
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496
+      ]
+    },
+    "raw": {
+      "title": "未相消接收数据",
+      "total": 2555904,
+      "correct": 1341319,
+      "missing": 0,
+      "accuracy_percent": 52.479240221854965,
+      "row_totals": [
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496
+      ]
+    },
+    "guard": {
+      "title": "校正接收数据",
+      "total": 2555904,
+      "correct": 1509753,
+      "missing": 0,
+      "accuracy_percent": 59.0692373422476,
+      "row_totals": [
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496,
+        106496
+      ]
+    }
+  },
+  "outputs": [
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/confusion-matrices-2026-09-14/guard-counts.csv",
+      "bytes": 2695,
+      "sha256": "f034024aa807da01ee730a454507d3bf03627274cd9d1c7c7c75294383fcc934"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/confusion-matrices-2026-09-14/guard-percent.csv",
+      "bytes": 11018,
+      "sha256": "5016af73c130fd9283bdc80d02831e18a75b7f87410fc42bab793868c561c066"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/confusion-matrices-2026-09-14/guard.png",
+      "bytes": 474834,
+      "sha256": "19ed659b8a90e146dd045c87fd5ff851139370f7a8ff480985b03a669dcd562b"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/confusion-matrices-2026-09-14/guard.svg",
+      "bytes": 94771,
+      "sha256": "5db165f5d9179b2c372865e33f66bd83d534f650d9adcd5e4f6abe26290e6795"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/confusion-matrices-2026-09-14/raw-counts.csv",
+      "bytes": 2943,
+      "sha256": "f550966b2e3c822d5655a56b9dcbee3084cc640035652794438609ec99ed9d01"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/confusion-matrices-2026-09-14/raw-percent.csv",
+      "bytes": 11084,
+      "sha256": "afd0cf1a4395e80e32b504ec915802302cd0e0e4c7f64c51fbdb8ad19b665534"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/confusion-matrices-2026-09-14/raw.png",
+      "bytes": 494654,
+      "sha256": "bc9bf8a0c2f916fc00e76ad6cc68ffcd4310138bc9b920c9e8ecf3d18f120878"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/confusion-matrices-2026-09-14/raw.svg",
+      "bytes": 103943,
+      "sha256": "de1346faf8092e54ac156d75828b3435059f6360220211387b70b7b9c6012134"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/confusion-matrices-2026-09-14/source-counts.csv",
+      "bytes": 2895,
+      "sha256": "c9a5a95b5ccd25999ad0fef5a02f3ba92c021bffc3a193b919295c02caef0755"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/confusion-matrices-2026-09-14/source-percent.csv",
+      "bytes": 10939,
+      "sha256": "d1ff5717774487fe055b656dff78cd32007b48ebfbded3fc6f532c74e9ada0a7"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/confusion-matrices-2026-09-14/source.png",
+      "bytes": 474824,
+      "sha256": "7e464e21bb1fcff1148560b0eb50131766ccca628aee01a7f1ab3dc7ac825d9a"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/confusion-matrices-2026-09-14/source.svg",
+      "bytes": 103449,
+      "sha256": "d016b340e847985d9adad38e757700f6181f09540ca96ab1cb82b276eb2ad1bd"
+    }
+  ],
+  "report": {
+    "path": "/home/jetson/sdrharness/docs/reports/SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14.html",
+    "bytes": 449000,
+    "sha256": "ba0907323cd38719f17812d4b69b72d44e8d08e546d39895b84a50fcd647fba7"
+  },
+  "validation": [
+    "all matrices nonnegative integer 24x24",
+    "all row totals equal 106496",
+    "all totals equal 2555904 and diagonal sums equal archived correct counts",
+    "sum of 26 per-SNR matrices equals each overall matrix",
+    "all normalized rows sum to 100 percent",
+    "existing embedded report data and CSV text unchanged"
+  ],
+  "browser_validation": {
+    "passed": true,
+    "checks": [
+      "three separate embedded confusion figures",
+      "all twelve PNG/SVG/CSV links exist",
+      "unique SVG/HTML IDs",
+      "all three print figures visible with preserved square matrix aspect",
+      "390px mobile no page overflow",
+      "single-window remains default",
+      "no browser errors"
+    ]
+  },
+  "visual_review": "all three standalone PNGs inspected; identical axes, labels and percentage scale",
+  "retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-confusion-20260914/retention.json",
+    "bytes": 1600,
+    "sha256": "5c936f4a1a2cc44cf3920e5b183bfce611d212066b6a39156e03868cc841c090"
+  },
+  "rf_calls": 0,
+  "model_calls": 0,
+  "iq_files_deleted": 0
+}
