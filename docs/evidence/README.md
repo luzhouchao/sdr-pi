@@ -236,6 +236,8 @@
 
 - [外接硬盘IQ副本完成校验及最终保留依据](RML2018A_EXTERNAL_IQ_COPY_COMPLETE_2026-09-14.json)
 
+- [全量四窗ACC、单窗对照及完整输出核验](RML2018A_FOUR_WINDOW_COMPLETE_2026-09-14.json)
+
 ## 冻结路径例外
 
 下面三份原始审计由冻结配置按固定路径引用，保留在 docs 根目录且不复制：
