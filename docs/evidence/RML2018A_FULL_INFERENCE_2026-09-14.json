@@ -1,0 +1,136 @@
+{
+  "schema": "rml2018a-full-inference-completion-v1",
+  "verification": {
+    "status": "passed",
+    "source_rows": 2555904,
+    "blocks": 2496,
+    "output_bytes": 774438912,
+    "plan_sha256": "5523d0f7b1036f06550ae51c83ce87a8a2e7cd57c74131561f19a9a0ceabe1de",
+    "summary_sha256": "41feb6ff8d89e577bc846b0731bb07fe48ecb691e13e1ed7b10aaa20093f07be",
+    "checks": "All2496 NPZ hashes, exact unique source-row/class/Z mappings, masks, finite logits, confusion/count recomputation; block quality aggregates match summary; parent index hashes and input-payload references checked. No GPU/model rerun or full IQ/HDF5 rescan.",
+    "runtime_seconds": 4686.158372512989,
+    "prediction_missing": {
+      "source": 0,
+      "raw": 0,
+      "guard": 0
+    },
+    "totals": {
+      "source": {
+        "total": 2555904,
+        "predicted": 2555904,
+        "correct": 1594095,
+        "missing": 0
+      },
+      "raw": {
+        "total": 2555904,
+        "predicted": 2555904,
+        "correct": 1341319,
+        "missing": 0
+      },
+      "guard": {
+        "total": 2555904,
+        "predicted": 2555904,
+        "correct": 1509753,
+        "missing": 0
+      }
+    },
+    "grouped_accuracy_percent": {
+      "-20_to_-2": {
+        "source": 18.091227213541668,
+        "raw": 16.926066080729168,
+        "guard": 12.051900227864584
+      },
+      "0_to_30": {
+        "source": 90.04281361897786,
+        "raw": 74.6999740600586,
+        "guard": 88.45507303873698
+      },
+      "10_to_30": {
+        "source": 95.31083540482955,
+        "raw": 78.58054421164773,
+        "guard": 94.43516586766098
+      }
+    },
+    "acquisition_root": "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914",
+    "inference_root": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-b1024-20260914",
+    "source_scope": "All-source engineering comparison; not independent locked-test admission. SINR is conditional, invalid SINR does not exclude predictions. Missing inputs keep full denominators. Labels remain provisional.",
+    "completed_ns": 1789359900086753449
+  },
+  "report_root": "/var/tmp/sdrharness-dev/rml2018a-full-inference-results-20260914",
+  "purpose": "All-row classification verification and human-readable SNR/class results and figure",
+  "model_profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "retained": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-full-inference-results-20260914/accuracy-by-class.csv",
+      "bytes": 2907,
+      "sha256": "306c42c810cef2432a25a263b75f99c698733ee1b3868cb728cf81a66b07bfee"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-full-inference-results-20260914/accuracy-by-source-snr.csv",
+      "bytes": 1715,
+      "sha256": "5ea7e9a4f8e12bbbe5ab6ce1801077966be1164d6bd3419dc41cf9def5d61314"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-full-inference-results-20260914/accuracy-by-source-snr.png",
+      "bytes": 117552,
+      "sha256": "7238c9625b12f27c09a1f3bc0140f0b42abe3d132bddfd5848d76c668cc4bb14"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-full-inference-results-20260914/accuracy-by-source-snr.svg",
+      "bytes": 53303,
+      "sha256": "d0c98e09a2ed8cecc4bd53d1629504f9c74934734c31b26902f775cd755261df"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-full-inference-results-20260914/report.py",
+      "bytes": 7465,
+      "sha256": "b6be2aaac14089605d3d5dd597a147102f78145bc90db0a1c176f4da39967ce8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-full-inference-results-20260914/results.md",
+      "bytes": 3082,
+      "sha256": "4b674e4ace5092221ab206dbc0e77ed98b0f468831b48ba24d72019b29a9ba4d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-full-inference-results-20260914/verification.json",
+      "bytes": 1871,
+      "sha256": "7afaabdfb44438cf20afcb847b9712c98d87fc3ca41cd539298c3f7f43c3cc71"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-full-inference-results-20260914/verification.log",
+      "bytes": 2701,
+      "sha256": "96bcd21d87a28b478681f926aeb237d67fbdac948207c0f94f4fae7e5599fe03"
+    }
+  ],
+  "retained_files": 8,
+  "retained_bytes": 190596,
+  "removed": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-full-inference-results-20260914/scratch/mpl/fontlist-v330.json",
+      "bytes": 123432
+    }
+  ],
+  "removed_files": 1,
+  "removed_bytes": 123432,
+  "manual_delete_argv": [
+    "rm",
+    "-rf",
+    "--",
+    "/var/tmp/sdrharness-dev/rml2018a-full-inference-results-20260914"
+  ],
+  "inference_retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-b1024-20260914/retention.json",
+    "sha256": "1431de05027d00688b132c51ff0c771b14e1ee7b68d51bdaf41ccbd1fd500cfa",
+    "files": 4999,
+    "bytes": 792149979,
+    "removed_files": 380,
+    "removed_bytes": 21269694,
+    "scratch_absent": true
+  },
+  "service": {
+    "unit": "sdr-rml2018a-all26-infer-b1024-20260914.service",
+    "main_pid": 0,
+    "result": "success",
+    "exit_status": 0,
+    "spark": "inactive"
+  }
+}

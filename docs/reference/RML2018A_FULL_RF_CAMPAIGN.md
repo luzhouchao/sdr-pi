@@ -243,6 +243,9 @@ SINR invalid不排除模型识别；未同步等缺失输入保留NaN logits和f
 
 ### 当前运行：1024从头识别
 
+本次已完成，后台正常退出；完整26档/24类表、CSV和曲线，以及证据边界见
+[全量结果](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-14全量1024识别完成与结果)。
+
 用户最新要求GPU每批1024、全部26档从头重新识别，并删除此前识别结果。
 当前根为`/var/tmp/sdrharness-dev/rml2018a-all26-infer-b1024-20260914`，
 服务为`sdr-rml2018a-all26-infer-b1024-20260914.service`。
