@@ -1,10 +1,11 @@
-"""Read sealed all-SNR corpora with one frozen, batch-one RF-v1 model.
+"""Read sealed all-SNR corpora with one frozen RF-v1 model.
 
 No RF or training entry points. Per-block predictions are atomic and restartable;
 source IQ and acquisition receipts are never opened for writing.
 """
 import argparse
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import fcntl
 import importlib.util
 import json
@@ -70,17 +71,43 @@ def corpus(campaign):
     return groups
 
 
-def plan(campaign, root):
+def batch_validation(path, batch_size, campaign):
+    from rml2018a_infer_batch import BATCH_SIZES
+    c.require(batch_size in BATCH_SIZES and path is not None, 'validated batch size required')
+    result = read(path/'benchmark.json'); registration = read(path/'plan.json')
+    c.require(result['complete'] and registration['samples'] == 1024 and
+              registration['acquisition_sha256'] == c.file_hash(campaign/'acquisition-complete.json') and
+              registration['profile_sha256'] == c.file_hash(PROFILE), 'batch validation source/profile')
+    for filename in ('rml2018a_infer_batch.py','amc-mamba-worker.py','amc-rf-v1-runtime.py',
+                     'validate-rf-aligned-checkpoint.py'):
+        c.require(registration['software'][str(SCRIPTS/filename)] == c.file_hash(SCRIPTS/filename), 'batch validation implementation pin')
+    match = [v for v in result['results'] if v['batch_size'] == batch_size]
+    c.require(len(match) == 1, 'batch validation result')
+    v = match[0]
+    c.require(v['passed'] and v['top1_mismatches'] == 0 and v['max_abs_logit'] <= 0.0625 and
+              v['max_abs_softmax'] <= 0.005 and v['peak_reserved_bytes'] <= 40*1024**3 and
+              v['speedup'] >= 2, 'batch numerical/resource/throughput gate')
+    return dict(root=str(path),plan_sha256=c.file_hash(path/'plan.json'),
+                benchmark_sha256=c.file_hash(path/'benchmark.json'),result=v)
+
+
+def plan(campaign, root, batch_size=1, validation=None):
     c.require(root.parent == Path('/var/tmp/sdrharness-dev') and root.resolve() == root and
               not root.exists(), 'new private inference root')
     groups = corpus(campaign)
+    proof = batch_validation(validation,batch_size,campaign) if batch_size != 1 else None
     c.require(shutil.disk_usage(root.parent).free > RESERVE, 'inference free space')
     root.mkdir(mode=0o700)
     value = dict(schema='rml2018a-all26-offline-inference-v1', campaign=str(campaign), groups=groups,
                  acquisition_sha256=c.file_hash(campaign/'acquisition-complete.json'),
                  software=software(), profile_sha256=c.file_hash(PROFILE), label_map_sha256=c.file_hash(LABELS),
-                 total_rows=TOTAL, maximum_model_windows=TOTAL*3, maximum_warmup_windows=2,
-                 deadline_seconds=7*86400, reserve_bytes=RESERVE, batch_size=1, tags=list(TAGS),
+                 total_rows=TOTAL, maximum_model_windows=TOTAL*(3 if batch_size == 1 else 6),
+                 maximum_warmup_windows=2 if batch_size == 1 else 2+3*(batch_size+16),
+                 maximum_padding_windows=0 if batch_size == 1 else 312*((batch_size-1)+(24576//batch_size+1)*15),
+                 deadline_seconds=7*86400 if batch_size==1 else 86400,
+                 reserve_bytes=RESERVE, batch_size=batch_size, tags=list(TAGS),
+                 batch_validation=proof,
+                 pipeline_blocks=1 if batch_size == 1 else 8,maximum_pending_groups=3,
                  model='frozen epoch10 FP32 weights / FP16 autocast / existing RF-v1 backend',
                  semantics='All-source engineering comparison; not independent locked-test admission. '
                            'SINR is conditional, invalid SINR does not exclude predictions. '
@@ -172,13 +199,95 @@ def spark_stopped():
     c.require('ActiveState=inactive' in state and 'MainPID=0' in state, 'Spark must remain stopped')
 
 
+def infer_inputs(backend, inputs, masks, batch_size, check, progress):
+    """Keep all row positions/missing masks; GPU calls use only valid inputs."""
+    from rml2018a_infer_batch import infer
+    output = {t:np.full((len(masks[t]),24),np.nan,dtype=np.float32) for t in TAGS}
+    for tag in TAGS:
+        selected = np.flatnonzero(masks[tag])
+        if not len(selected): continue
+        if batch_size == 1:
+            for i in selected:
+                check();output[tag][i] = backend.classify_logits(inputs[tag][i])[0];progress(1,tag)
+        else:
+            output[tag][selected] = infer(backend,inputs[tag][selected],batch_size,check,
+                                          lambda n:progress(n,tag))
+    return output
+
+
+def completed_statistics(root, key, data, sha):
+    target=root/'blocks'/f'{key}.json'
+    if not target.exists(): return None
+    rows,ids,inputs,masks,quality=data
+    receipt=read(target)
+    c.require(receipt['input_sha256']==sha and c.file_hash(target.with_suffix('.npz'))==receipt['output_sha256'],
+              'committed result pin')
+    with np.load(target.with_suffix('.npz'),allow_pickle=False) as f:
+        c.require(np.array_equal(f['source_row'],rows) and np.array_equal(f['class_id'],ids) and
+                  all(np.array_equal(f['valid_'+t],masks[t]) for t in TAGS), 'result lineage')
+        stats=statistics(ids,{t:f['logits_'+t] for t in TAGS},masks,quality)
+    c.require(stats==receipt['statistics'],'committed statistics')
+    return stats
+
+
+def prepare_group(root, group, index, numbers):
+    entries=[];arrays=[]
+    for number in numbers:
+        data=load_block(group,index,number);key=f"{group['snr']:+03d}-{number:03d}"
+        sha=index['processed'][number]['payload_sha256'];stats=completed_statistics(root,key,data,sha)
+        rows,ids,inputs,masks,quality=data
+        if stats is None:
+            arrays.extend(inputs[t][masks[t]] for t in TAGS)
+        entries.append(dict(block=number,key=key,sha=sha,rows=rows,ids=ids,masks=masks,quality=quality,stats=stats))
+    packed=np.concatenate(arrays) if arrays else np.empty((0,2,1024),dtype=np.float32)
+    c.require(len(packed)<=8*3*1024,'prefetch group bound')
+    return entries,packed
+
+
+def commit_group(root, entries, output):
+    cursor=0;results=[]
+    for entry in entries:
+        stats=entry['stats']
+        if stats is None:
+            logits={t:np.full((len(entry['rows']),24),np.nan,np.float32) for t in TAGS}
+            for tag in TAGS:
+                mask=entry['masks'][tag];count=int(mask.sum())
+                logits[tag][mask]=output[cursor:cursor+count];cursor+=count
+            stats=statistics(entry['ids'],logits,entry['masks'],entry['quality'])
+            publish(root,entry['key'],entry['rows'],entry['ids'],logits,entry['masks'],stats,entry['sha'])
+        results.append((entry['block'],stats))
+    c.require(cursor==len(output),'packed prediction accounting')
+    return results
+
+
+def pipelined_groups(root, group, index, backend, size, check, progress):
+    """At most current GPU group, one prefetch and one CPU commit group."""
+    from rml2018a_infer_batch import infer
+    chunks=[list(range(start,start+8)) for start in range(0,96,8)]
+    with ThreadPoolExecutor(max_workers=2,thread_name_prefix='snr-infer-io') as pool:
+        pending=pool.submit(prepare_group,root,group,index,chunks[0]);writing=None
+        for i in range(len(chunks)):
+            check();entries,packed=pending.result()
+            if i+1<len(chunks):pending=pool.submit(prepare_group,root,group,index,chunks[i+1])
+            c.require(shutil.disk_usage(root).free>RESERVE,'pipeline disk reserve')
+            output=infer(backend,packed,size,check,lambda n:progress(n,'packed-source-raw-guard'))
+            del packed
+            if writing is not None: yield from writing.result()
+            writing=pool.submit(commit_group,root,entries,output)
+        if writing is not None:yield from writing.result()
+
+
 def run(root):
     p = read(root/'plan.json')
     c.require(p['software'] == software() and p['profile_sha256'] == c.file_hash(PROFILE) and
               p['label_map_sha256'] == c.file_hash(LABELS), 'inference software/profile pin')
-    c.require(p['maximum_model_windows'] == TOTAL*3 and p['batch_size'] == 1 and
+    c.require(p['maximum_model_windows'] == TOTAL*(3 if p['batch_size']==1 else 6) and
+              p['batch_size'] in (1,256,512,1024,4096,8192) and
               p['groups'] == corpus(Path(p['campaign'])) and
               p['acquisition_sha256'] == c.file_hash(Path(p['campaign'])/'acquisition-complete.json'), 'inference plan scope')
+    if p['batch_size'] != 1:
+        c.require(p['batch_validation'] == batch_validation(Path(p['batch_validation']['root']),
+                  p['batch_size'],Path(p['campaign'])), 'pinned batch validation')
     lock = (root/'owner.lock').open('a')
     fcntl.flock(lock, fcntl.LOCK_EX|fcntl.LOCK_NB)
     c.require(not (root/'complete.json').exists(), 'already complete; inspect result instead')
@@ -208,13 +317,34 @@ def run(root):
         c.require(all(v.dtype == worker.torch.float32 for v in backend.model.parameters()) and
                   not backend.model.training, 'frozen FP32 eval model')
         atomic_json(root/'model.json',dict(identity=backend.admission_identity,model_loads=1,warmup_windows=2,
-                                         batch_size=1,compute='FP16 autocast; FP32 weights/logits',pid=os.getpid()))
-        status(phase='model_loaded',model_loads=1)
+                                         batch_size=p['batch_size'],compute='FP16 autocast; FP32 weights/logits',pid=os.getpid()))
+        status(phase='model_loaded',model_loads=1,batch_size=p['batch_size'])
+        def record(z,block,stats):
+            merge(total,stats);merge(by_snr[str(z)],stats)
+            status(phase='inferring',block=block,completed_blocks=state['completed_blocks']+1,
+                   completed_rows=state['completed_rows']+1024,model_windows=calls,
+                   numerical_fallback_windows=getattr(backend,'_snr_fallback_windows',0),
+                   eager_fallback_windows=getattr(backend,'_snr_eager_fallback_windows',0),
+                   cuda_peak_allocated_bytes=worker.torch.cuda.max_memory_allocated(),
+                   cuda_peak_reserved_bytes=worker.torch.cuda.max_memory_reserved(),
+                   graph_warmup_windows=getattr(backend,'_snr_graph_warmup_windows',0))
+            atomic_json(root/'summary.json',dict(complete=False,classification=total,by_source_snr_db=by_snr,
+                        labels=read(LABELS)['classes'],semantics=p['semantics'],recognizer_available=False))
+            print(json.dumps({k:state[k] for k in ('completed_blocks','completed_rows','source_snr_db','elapsed_seconds')}),flush=True)
+        last_progress=time.monotonic()
+        def progress(n,tag):
+            nonlocal calls,last_progress
+            calls+=n;c.require(calls<=p['maximum_model_windows'],'model window bound')
+            if time.monotonic()-last_progress>=0.5:
+                status(phase='inferring',tag=tag,model_windows=calls);last_progress=time.monotonic()
         for g in p['groups']:
             check(); spark_stopped(); z = g['snr']; folder = Path(g['root'])
             status(phase='verifying_snr',source_snr_db=z)
             c.require(c.file_hash(folder/'processed.h5') == g['processed_sha256'], 'sealed HDF5 hash')
             index = read(folder/'index.json'); by_snr[str(z)] = {}
+            if p['batch_size'] != 1:
+                for block,stats in pipelined_groups(root,g,index,backend,p['batch_size'],check,progress):record(z,block,stats)
+                spark_stopped();continue
             for block in range(96):
                 check(); key = f'{z:+03d}-{block:03d}'; target = root/'blocks'/f'{key}.json'
                 rows,ids,inputs,masks,quality = load_block(g,index,block)
@@ -229,22 +359,12 @@ def run(root):
                     c.require(stats == r['statistics'], 'committed statistics')
                 else:
                     c.require(shutil.disk_usage(root).free > RESERVE, 'inference disk reserve')
-                    logits = {t:np.full((1024,24),np.nan,dtype=np.float32) for t in TAGS}
-                    for tag in TAGS:
-                        for i in np.flatnonzero(masks[tag]):
-                            check(); c.require(calls < p['maximum_model_windows'], 'model window bound')
-                            calls += 1
-                            logits[tag][i] = backend.classify_logits(inputs[tag][i])[0]
-                            if calls%64 == 0:
-                                status(phase='inferring',block=block,tag=tag,model_windows=calls)
+                    c.require(calls+sum(int(v.sum()) for v in masks.values()) <= p['maximum_model_windows'],
+                              'model window bound')
+                    logits = infer_inputs(backend,inputs,masks,p['batch_size'],check,progress)
                     stats = statistics(ids,logits,masks,quality)
                     r = publish(root,key,rows,ids,logits,masks,stats,sha)
-                merge(total,stats); merge(by_snr[str(z)],stats)
-                status(phase='inferring',block=block,completed_blocks=state['completed_blocks']+1,
-                       completed_rows=state['completed_rows']+1024,model_windows=calls)
-                atomic_json(root/'summary.json',dict(complete=False,classification=total,by_source_snr_db=by_snr,
-                            labels=read(LABELS)['classes'],semantics=p['semantics'],recognizer_available=False))
-                print(json.dumps({k:state[k] for k in ('completed_blocks','completed_rows','source_snr_db','elapsed_seconds')}),flush=True)
+                record(z,block,stats)
             spark_stopped()
         c.require(state['completed_rows'] == TOTAL and state['completed_blocks'] == 2496, 'full inference accounting')
         result = read(root/'summary.json'); result['complete'] = True
@@ -281,10 +401,12 @@ def main():
     parser.add_argument('command',choices=['plan','run'])
     parser.add_argument('--root',type=Path,required=True)
     parser.add_argument('--campaign',type=Path)
+    parser.add_argument('--batch-size',type=int,choices=[1,256,512,1024,4096,8192],default=1)
+    parser.add_argument('--validation',type=Path)
     args = parser.parse_args()
     if args.command == 'plan':
         c.require(args.campaign is not None,'campaign required')
-        plan(args.campaign,args.root)
+        plan(args.campaign,args.root,args.batch_size,args.validation)
     else: run(args.root)
 
 

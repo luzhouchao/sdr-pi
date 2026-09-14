@@ -1,0 +1,308 @@
+{
+  "schema": "rml2018a-batch-inference-evidence-v1",
+  "validation_packages": [
+    {
+      "root": "/var/tmp/sdrharness-dev/rml2018a-infer-batch-tests-20260914",
+      "purpose": "Batch inference tests, numerical failures and final graph benchmark; model logits and source row/hash references only",
+      "retention_path": "/var/tmp/sdrharness-dev/rml2018a-infer-batch-tests-20260914/retention.json",
+      "retention_sha256": "e1584652179e48fcc215c0b525e4edd3e5db1dda4a057da332f2215543eb38ba",
+      "removed_files": 3,
+      "removed_bytes": 2887,
+      "retained_files_including_manifest": 6,
+      "retained_bytes_including_manifest": 12004,
+      "manual_delete_argv": [
+        "rm",
+        "-rf",
+        "--",
+        "/var/tmp/sdrharness-dev/rml2018a-infer-batch-tests-20260914"
+      ],
+      "deletion_constraint": "After the active inference no longer depends on this validation proof and the diagnostic evidence is no longer needed."
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml2018a-infer-batch-validation-20260914",
+      "purpose": "Batch inference tests, numerical failures and final graph benchmark; model logits and source row/hash references only",
+      "retention_path": "/var/tmp/sdrharness-dev/rml2018a-infer-batch-validation-20260914/retention.json",
+      "retention_sha256": "adc96b4575eab6bf3d24e9f822be0d6da8f5a323e719829ce6d3cac3790b1dbf",
+      "removed_files": 379,
+      "removed_bytes": 21301870,
+      "retained_files_including_manifest": 9,
+      "retained_bytes_including_manifest": 645085,
+      "manual_delete_argv": [
+        "rm",
+        "-rf",
+        "--",
+        "/var/tmp/sdrharness-dev/rml2018a-infer-batch-validation-20260914"
+      ],
+      "deletion_constraint": "After the active inference no longer depends on this validation proof and the diagnostic evidence is no longer needed."
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml2018a-infer-batch-numerics-20260914",
+      "purpose": "Batch inference tests, numerical failures and final graph benchmark; model logits and source row/hash references only",
+      "retention_path": "/var/tmp/sdrharness-dev/rml2018a-infer-batch-numerics-20260914/retention.json",
+      "retention_sha256": "0bceef7c5b17507d1a462fe5bd15248780f54bb54345d3713734fcf116435856",
+      "removed_files": 379,
+      "removed_bytes": 21238346,
+      "retained_files_including_manifest": 9,
+      "retained_bytes_including_manifest": 488530,
+      "manual_delete_argv": [
+        "rm",
+        "-rf",
+        "--",
+        "/var/tmp/sdrharness-dev/rml2018a-infer-batch-numerics-20260914"
+      ],
+      "deletion_constraint": "After the active inference no longer depends on this validation proof and the diagnostic evidence is no longer needed."
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml2018a-infer-graph-validation-20260914",
+      "purpose": "Batch inference tests, numerical failures and final graph benchmark; model logits and source row/hash references only",
+      "retention_path": "/var/tmp/sdrharness-dev/rml2018a-infer-graph-validation-20260914/retention.json",
+      "retention_sha256": "aa70ffb325213046178e3839d4f2a1d784525ac9ae605d3b72a8467123b7d19c",
+      "removed_files": 379,
+      "removed_bytes": 21238990,
+      "retained_files_including_manifest": 8,
+      "retained_bytes_including_manifest": 2707071,
+      "manual_delete_argv": [
+        "rm",
+        "-rf",
+        "--",
+        "/var/tmp/sdrharness-dev/rml2018a-infer-graph-validation-20260914"
+      ],
+      "deletion_constraint": "After the active inference no longer depends on this validation proof and the diagnostic evidence is no longer needed."
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml2018a-infer-graph-v2-validation-20260914",
+      "purpose": "Batch inference tests, numerical failures and final graph benchmark; model logits and source row/hash references only",
+      "retention_path": "/var/tmp/sdrharness-dev/rml2018a-infer-graph-v2-validation-20260914/retention.json",
+      "retention_sha256": "2aabc26683188511ac7d0aec0e3e83766cf8cb0dadf71e8ad5447b633716d2cf",
+      "removed_files": 379,
+      "removed_bytes": 21272877,
+      "retained_files_including_manifest": 8,
+      "retained_bytes_including_manifest": 2708227,
+      "manual_delete_argv": [
+        "rm",
+        "-rf",
+        "--",
+        "/var/tmp/sdrharness-dev/rml2018a-infer-graph-v2-validation-20260914"
+      ],
+      "deletion_constraint": "After the active inference no longer depends on this validation proof and the diagnostic evidence is no longer needed."
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml2018a-infer-parallel-validation-20260914",
+      "purpose": "Batch inference tests, numerical failures and final graph benchmark; model logits and source row/hash references only",
+      "retention_path": "/var/tmp/sdrharness-dev/rml2018a-infer-parallel-validation-20260914/retention.json",
+      "retention_sha256": "5664930501ae8b5d39b6d960b8022c040e8ad34785dfa2da1ba5669a88390a45",
+      "removed_files": 379,
+      "removed_bytes": 21366081,
+      "retained_files_including_manifest": 8,
+      "retained_bytes_including_manifest": 2708225,
+      "manual_delete_argv": [
+        "rm",
+        "-rf",
+        "--",
+        "/var/tmp/sdrharness-dev/rml2018a-infer-parallel-validation-20260914"
+      ],
+      "deletion_constraint": "After the active inference no longer depends on this validation proof and the diagnostic evidence is no longer needed."
+    }
+  ],
+  "active_inference_root": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-b8192-20260914",
+  "active_service": "sdr-rml2018a-all26-infer-b8192-20260914.service",
+  "original_inference_root": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-20260914",
+  "original_state": {
+    "block": 8,
+    "completed_blocks": 8,
+    "completed_rows": 8192,
+    "elapsed_seconds": 1150.597195423994,
+    "error": "InterruptedError('inference signal stop')",
+    "model_loads": 1,
+    "model_windows": 27537,
+    "phase": "stopped",
+    "pid": 210714,
+    "source_snr_db": 30,
+    "started_ns": 1789350128056172726,
+    "tag": "guard",
+    "total_blocks": 2496,
+    "updated_ns": 1789351278653354965
+  },
+  "benchmark": {
+    "complete": true,
+    "elapsed_seconds": 192.79178706600214,
+    "model_identity": {
+      "aggregation": "float64_arithmetic_mean_logits_then_softmax",
+      "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+      "compute": "cuda_fp16_autocast",
+      "input_precision": "fp32",
+      "logit_return_precision": "fp32",
+      "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+      "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "resident_weight_precision": "fp32",
+      "sample_rate_hz": 2100000,
+      "samples_per_window": 1024,
+      "window_count": 4
+    },
+    "results": [
+      {
+        "batch_size": 1024,
+        "fallback_windows": 5376,
+        "max_abs_logit": 0.0234375,
+        "max_abs_softmax": 0.0012187867828251653,
+        "passed": true,
+        "peak_allocated_bytes": 965373952,
+        "peak_reserved_bytes": 1551892480,
+        "repeat_max_abs_logit": 0.0,
+        "seconds": [
+          6.063660740997875,
+          5.947718125011306
+        ],
+        "speedup": 52.52249703989088,
+        "strict_historical_logit_pass": false,
+        "top1_mismatches": 0,
+        "windows_per_second": 1377.3349422110396
+      },
+      {
+        "batch_size": 4096,
+        "fallback_windows": 5376,
+        "max_abs_logit": 0.0234375,
+        "max_abs_softmax": 0.0012187867828251653,
+        "passed": true,
+        "peak_allocated_bytes": 3936382976,
+        "peak_reserved_bytes": 5171576832,
+        "repeat_max_abs_logit": 0.0078125,
+        "seconds": [
+          6.4359398480155505,
+          6.500858456973219
+        ],
+        "speedup": 48.990238047460295,
+        "strict_historical_logit_pass": false,
+        "top1_mismatches": 0,
+        "windows_per_second": 1272.8521697613303
+      },
+      {
+        "batch_size": 8192,
+        "fallback_windows": 5376,
+        "max_abs_logit": 0.0234375,
+        "max_abs_softmax": 0.0012187867828251653,
+        "passed": true,
+        "peak_allocated_bytes": 7795666944,
+        "peak_reserved_bytes": 9055502336,
+        "repeat_max_abs_logit": 0.00390625,
+        "seconds": [
+          5.816050608991645,
+          5.997685534995981
+        ],
+        "speedup": 53.100250331843526,
+        "strict_historical_logit_pass": false,
+        "top1_mismatches": 0,
+        "windows_per_second": 1408.51594161425
+      }
+    ],
+    "selected_batch_size": 8192,
+    "single_seconds": 39.80982541499543
+  },
+  "removed_files": 1898,
+  "removed_bytes": 106421051,
+  "retained_files": 48,
+  "retained_bytes": 9269142,
+  "active_cleanup": "Active inference root and scratch are owned by the background service; retain until its exit inventory. Original RF corpus and stopped single-window results untouched.",
+  "pipeline_check": {
+    "checked": "sealed inputs/row IDs/masks/normalized RMS; output hashes/logits/three-plane statistics and missing denominators",
+    "checks": [
+      {
+        "block": 0,
+        "predicted": {
+          "guard": 1024,
+          "raw": 1024,
+          "source": 1024
+        },
+        "rows": 1024
+      },
+      {
+        "block": 1,
+        "predicted": {
+          "guard": 1024,
+          "raw": 1024,
+          "source": 1024
+        },
+        "rows": 1024
+      },
+      {
+        "block": 2,
+        "predicted": {
+          "guard": 1024,
+          "raw": 1024,
+          "source": 1024
+        },
+        "rows": 1024
+      },
+      {
+        "block": 3,
+        "predicted": {
+          "guard": 1024,
+          "raw": 1024,
+          "source": 1024
+        },
+        "rows": 1024
+      },
+      {
+        "block": 4,
+        "predicted": {
+          "guard": 1024,
+          "raw": 1024,
+          "source": 1024
+        },
+        "rows": 1024
+      },
+      {
+        "block": 5,
+        "predicted": {
+          "guard": 1024,
+          "raw": 1024,
+          "source": 1024
+        },
+        "rows": 1024
+      },
+      {
+        "block": 6,
+        "predicted": {
+          "guard": 1024,
+          "raw": 1024,
+          "source": 1024
+        },
+        "rows": 1024
+      },
+      {
+        "block": 7,
+        "predicted": {
+          "guard": 1024,
+          "raw": 1024,
+          "source": 1024
+        },
+        "rows": 1024
+      }
+    ],
+    "model_rerun": false,
+    "state": {
+      "batch_size": 8192,
+      "block": 15,
+      "completed_blocks": 112,
+      "completed_rows": 114688,
+      "cuda_peak_allocated_bytes": 7518187520,
+      "cuda_peak_reserved_bytes": 8927576064,
+      "eager_fallback_windows": 0,
+      "elapsed_seconds": 307.55545437301043,
+      "graph_warmup_windows": 24624,
+      "model_loads": 1,
+      "model_windows": 406762,
+      "numerical_fallback_windows": 29811,
+      "phase": "inferring",
+      "pid": 216644,
+      "source_snr_db": 28,
+      "started_ns": 1789353105456623474,
+      "tag": "packed-source-raw-guard",
+      "total_blocks": 2496,
+      "updated_ns": 1789353413012066999
+    },
+    "status": "passed",
+    "unique_source_rows": 8192
+  }
+}
