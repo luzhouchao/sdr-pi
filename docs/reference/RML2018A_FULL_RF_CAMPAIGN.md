@@ -1070,3 +1070,28 @@ SINR有效数/原因、质量有效性与识别的交叉计数及纠正/回退�
 不同Z来自不同原始行，不能当作同一个干净信号的加噪配对；旧Z30单元不拼接进此次分层成绩。
 低Z时条件估计中的名义源噪声项会占主导，估计接近源Z并不能单独证明链路更干净或物理SINR已校准。
 本单元不完成24类×全部26个SNR档位或全库执行；以[验证记录](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md)和[evidence](../evidence/README.md)登记实际结果。
+
+## 外接硬盘实收 IQ 副本（2026-09-14）
+
+用户要求把当前全26档原始接收IQ与校正接收IQ另存一份到外接硬盘的独立目录。
+目标为 `/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914`，
+NTFS卷UUID `5C1822D81822B0C6`。保留AGX原数据及运行中的四窗识别结果。
+
+副本保持原SigMF/HDF5字节：13份主原始IQ覆盖26档，两档共享一次原始流；26份`processed.h5`
+保留校正`blocks/<块号>/inputs/guard`、未相消归一化`inputs/raw`和源对照，以及行号、标签、
+原始采样位置、有效性及`quality_json`中的条件SINR/诊断。校正IQ已同步、相消并逐窗单位RMS归一化，
+不是完整ADC流，也不是四窗共享RMS重识别输入。背景IQ、逐帧CFO/相位/相消参数与采集凭据一并保存。
+顶层`dataset-map.json`用相对路径定位每档，原文件里的AGX绝对路径保持原字节用于审计。
+
+注册清单2802文件、82136084528字节（约82.14GB）；实际复制后还生成计划、校验表及完成凭据。
+`SHA256SUMS`涵盖全部注册文件，`COPY_COMPLETE.json`的complete=true表示全部源流SHA匹配且每个副本完整读回SHA通过。
+读回完成前不能仅凭文件夹存在或文件大小宣称备份完成。顶层README解释数据格式及独立读取方法。
+可在该目录执行 `sha256sum -c SHA256SUMS` 自行复核；无模型权重或原始RML数据集额外副本。
+
+复制进程由`sdr-rml2018a-external-iq-copy-20260914.service`单次用户服务持有，Nice10，六小时内部期限，
+无自动重试。每个文件用partial名称写入、fsync并读回校验后才改为最终名称；校验失败保留现场。
+持续核对目标仍是同一挂载设备，防止掉盘后写入本机同名目录；新目标必须不存在，不覆盖已有用户文件。
+本机状态位于`/var/tmp/sdrharness-dev/rml2018a-external-copy-20260914/state.json`，
+直接停止为 `systemctl --user stop sdr-rml2018a-external-iq-copy-20260914.service`。
+人工删除副本是在停止复制且确认不再需要后，仅删除上述独立目标目录；不删除AGX父语料。
+实际复制/验证、清理及保留清单见[外接副本记录](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-14外接硬盘iq副本)。

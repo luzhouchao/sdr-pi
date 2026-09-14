@@ -1,0 +1,62 @@
+{
+  "schema": "rml2018a-external-iq-copy-launch-v1",
+  "created_ns": 1789363183869342085,
+  "destination": "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914",
+  "mount_uuid": "5C1822D81822B0C6",
+  "planned_files": 2802,
+  "planned_bytes": 82136084528,
+  "source_rows": 2555904,
+  "snr_count": 26,
+  "primary_raw_files": 13,
+  "processed_hdf5_files": 26,
+  "source_preserved": true,
+  "copy_status": "running; full completion not yet verified",
+  "plan": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-external-copy-20260914/plan.json",
+    "bytes": 935883,
+    "sha256": "e0388992f4dbb818aa64c80f2d704c0e9a1c3a0021164c19105559a810fc2d65"
+  },
+  "local_retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-external-copy-20260914/retention.json",
+    "bytes": 1780,
+    "sha256": "c3e15872b35be07b19137f23b0906b9b5211b3fe1913ff561f2f8ee8ce748774"
+  },
+  "first_hdf5_validation": {
+    "first_hdf5": {
+      "relative": "corpus/rml2018a-all26-live-20260914-g01-a1/snr-plus24/processed.h5",
+      "bytes": 2679657336,
+      "sha256": "16cd9f722ccf048312f36de66a969354d99c0ad91d3e20271de78eef70d94df1"
+    },
+    "blocks": 96,
+    "unique_source_rows": 98304,
+    "guard_shape_per_block": [
+      1024,
+      2,
+      1024
+    ],
+    "first_last_blocks_read": true
+  },
+  "state_snapshot": {
+    "phase": "copying",
+    "completed_files": 2766,
+    "completed_bytes": 7193111792,
+    "total_files": 2802,
+    "total_bytes": 82136084528,
+    "pid": 227774,
+    "file": "corpus/rml2018a-all26-live-20260914-g02-a0/snr-plus20/processed.h5",
+    "file_bytes": 1778384896,
+    "elapsed_seconds": 370.9561412349867,
+    "updated_ns": 1789363175590624559
+  },
+  "service": "sdr-rml2018a-external-iq-copy-20260914.service",
+  "service_properties": "Restart=no\nRuntimeMaxUSec=6h 2min\nMainPID=227774\nNice=10\nActiveState=active\n",
+  "completion_marker": "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914/COPY_COMPLETE.json",
+  "checksum_manifest": "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914/SHA256SUMS",
+  "manual_delete_argv": [
+    "rm",
+    "-rf",
+    "--",
+    "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914"
+  ],
+  "deletion_constraint": "Stop the copy service and confirm the external backup is no longer needed; leave original AGX IQ intact"
+}
