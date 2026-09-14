@@ -1,0 +1,200 @@
+{
+  "schema": "rml2018a-four-window-launch-evidence-v1",
+  "created_ns": 1789362501049529240,
+  "parent_campaign": "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914",
+  "model_profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+  "model": {
+    "batch_size": 1024,
+    "compute": "FP16 autocast; FP32 weights/logits",
+    "identity": {
+      "aggregation": "float64_arithmetic_mean_logits_then_softmax",
+      "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+      "compute": "cuda_fp16_autocast",
+      "input_precision": "fp32",
+      "logit_return_precision": "fp32",
+      "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+      "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+      "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+      "resident_weight_precision": "fp32",
+      "sample_rate_hz": 2100000,
+      "samples_per_window": 1024,
+      "window_count": 4
+    },
+    "model_loads": 1,
+    "pid": 226593,
+    "warmup_windows": 2
+  },
+  "window_count": 4,
+  "total_rows": 2555904,
+  "total_decisions_per_tag": 638976,
+  "semantics": "All-source engineering comparison; not independent locked-test admission. SINR is conditional, invalid SINR does not exclude predictions. Missing inputs keep full denominators. Labels remain provisional. Four adjacent same-source-Z/class payloads within one TX frame; shared RMS then float64 mean logits. Group SINR not estimated; member estimates retained. TX per-row peak scaling changes inter-window ratios versus source X.",
+  "grouping": {
+    "aggregate": "float64 arithmetic mean of four logits",
+    "group_sinr": "not estimated; member estimates in parent HDF5",
+    "grouping": "fixed payload positions 0:4,4:8,8:12,12:16; never label-selected",
+    "method": "four-window-capture-rms-replay-v1",
+    "normalize": "shared RMS over 4096 complex samples; float32 planar before float64 RMS",
+    "raw_sha256": {
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g01-a1/snr-plus26/raw.sigmf-data": "8576969dad9278d8c493977c05aabfe00c31558089dab1ae2fc614140a3a0bbe",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g02-a0/snr-plus22/raw.sigmf-data": "0170c93b03fd6eca5d930f6ec3370d1bc9fb3d94a038435ce5bb72b024cb3e97",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g03-a0/snr-plus18/raw.sigmf-data": "76ba1d45e7a89fa298150196a145b4bcfe13c1e4ecef56d282ddc739a7f0be22",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g04-a0/snr-plus14/raw.sigmf-data": "33b88f88999439377ba233bf583dba5960d63609c9d502331ae902062d2a84fb",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g05-a0/snr-plus10/raw.sigmf-data": "4b1d3be889817b3df59d61aa2a187ed496232696bb6a1742dd2b1c16ebcf9fe4",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g06-a0/snr-plus6/raw.sigmf-data": "fc89cee60b0ba3ab6024a3853509f7b912fb804bb00a61d426e3a391379a0196",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g07-a0/snr-plus2/raw.sigmf-data": "63fa74a98c505a193f03a7096790ba8a76ecdd7a90cfa17fffd07a0c12503d1d",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g08-a0/snr-minus2/raw.sigmf-data": "d52bee397dd46a7631611340cd8d0c8caddccc4caa650ae14d776acb61d7d9cc",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g09-a0/snr-minus6/raw.sigmf-data": "571df15246c0c382dcc213a0829c203a0d0989197e9764b0579beb3527a89deb",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g10-a0/snr-minus10/raw.sigmf-data": "e90d3537a84d63d53daa059fce5bbea7531326bd968e1f8d984f5d5cdbd07393",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g11-a0/snr-minus14/raw.sigmf-data": "452b2f1cf37d23af2bc2fa1daa451d544a021d0376c989b415cf11fd0ff1e53f",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914-g12-a0/snr-minus18/raw.sigmf-data": "acd21792555c6308fc7e0c652d31050a9fdf003912d8f36b9457d86d217d2cc9",
+      "/var/tmp/sdrharness-dev/rml2018a-snr30-28-live-20260914/snr-plus30/raw.sigmf-data": "28ae81ff62c9ad6ac594fb65be8a485dc22b9014b8df11896a417a5cec58347a"
+    },
+    "source_path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "source_sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38"
+  },
+  "scope": "offline replay and finite compatibility validation complete; full inference running, final accuracy not yet verified",
+  "validation": {
+    "root": "/var/tmp/sdrharness-dev/rml2018a-four-gpu-validation-20260914",
+    "benchmark": {
+      "batch_seconds": 9.219417342013912,
+      "complete": true,
+      "elapsed_seconds": 151.53670957501163,
+      "joint_top1_mismatches": 0,
+      "max_abs_logit": 0.0390625,
+      "max_abs_softmax": 0.0009334930253767637,
+      "model_identity": {
+        "aggregation": "float64_arithmetic_mean_logits_then_softmax",
+        "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+        "compute": "cuda_fp16_autocast",
+        "input_precision": "fp32",
+        "logit_return_precision": "fp32",
+        "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+        "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+        "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+        "resident_weight_precision": "fp32",
+        "sample_rate_hz": 2100000,
+        "samples_per_window": 1024,
+        "window_count": 4
+      },
+      "model_windows": 3174,
+      "passed": true,
+      "peak_reserved_bytes": 1551892480,
+      "single_seconds": 32.77355996100232,
+      "strict_historical_logit_pass": false,
+      "window_top1_mismatches": 0
+    },
+    "retention": {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-four-gpu-validation-20260914/retention.json",
+      "bytes": 73161,
+      "sha256": "49a188e124321674143907876ea6f5393074747a151d7c479d1965fb3dd6c794"
+    }
+  },
+  "development_retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-four-validation-20260914/retention.json",
+    "bytes": 903,
+    "sha256": "22406d6b4b5fdb32f81f26a81331fe82c30e45402d36f0314ae89f2f2023dd31"
+  },
+  "unit_tests": {
+    "tests_passed": 16,
+    "single_window_regressions": 10,
+    "four_window_tests": 6,
+    "commands": [
+      "python -B -m unittest discover -s jetson-agx/sdrharness/tests -p test_rml2018a*infer.py -v",
+      "python -B -m unittest discover -s jetson-agx/sdrharness/tests -p test_rml2018a_four_window.py -v"
+    ],
+    "shell_syntax_check": "bash -n rml2018a-progress.sh passed"
+  },
+  "launch": {
+    "root": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-four-b1024-20260914",
+    "plan": {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-four-b1024-20260914/plan.json",
+      "bytes": 29731,
+      "sha256": "33072d389e593824b35022eab36d52051f461dee4fc88874af60a03a4c540286"
+    },
+    "service": "sdr-rml2018a-all26-infer-four-b1024-20260914.service",
+    "service_properties": "Restart=no\nTimeoutStopUSec=1min 30s\nRuntimeMaxUSec=1d 2min\nMainPID=226593\nExecStart={ path=/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python ; argv[]=/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python -B /home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_snr_infer.py run --root /var/tmp/sdrharness-dev/rml2018a-all26-infer-four-b1024-20260914 ; ignore_errors=no ; start_time=[Mon 2026-09-14 13:05:01 CST] ; stop_time=[n/a] ; pid=226593 ; code=(null) ; status=0/0 }\nActiveState=active\n",
+    "state_snapshot": {
+      "batch_size": 1024,
+      "block": 47,
+      "completed_blocks": 48,
+      "completed_decisions": 12288,
+      "completed_rows": 49152,
+      "cuda_peak_allocated_bytes": 965373952,
+      "cuda_peak_reserved_bytes": 1551892480,
+      "eager_fallback_windows": 0,
+      "elapsed_seconds": 198.68339968999499,
+      "graph_warmup_windows": 3120,
+      "model_loads": 1,
+      "model_windows": 182029,
+      "numerical_fallback_windows": 9997,
+      "phase": "inferring",
+      "pid": 226593,
+      "source_snr_db": 30,
+      "started_ns": 1789362302280290350,
+      "tag": "packed-source-raw-guard",
+      "total_blocks": 2496,
+      "updated_ns": 1789362500963677433
+    },
+    "first_blocks_verified": [
+      {
+        "block": 0,
+        "receipt_sha256": "466641b9e89cf46f39feb8743c5b96e7e6f699baf3448958f9d59b4c2284829c",
+        "output_sha256": "68f8db63d2f33ead3b3d4bc208f4d2bdeb430303346e177d6662cd4c11949f13"
+      },
+      {
+        "block": 1,
+        "receipt_sha256": "3ed01f27df2c9d4c133293372a978896b58d7c2ad019b5e340e9f60c6322a320",
+        "output_sha256": "ae11e9d60e0ec9da839513a76e95ab0c02ef69cfec5535a4ac14eaad538f2ed6"
+      },
+      {
+        "block": 2,
+        "receipt_sha256": "1f72c3b7057c9879f06f574aefb41583ef20055ae828ff86c8a11e6d2ee18881",
+        "output_sha256": "aeebc96e21dde7ed1f4c4092ff04d37dd4b59fff601d63f2e123c2cd9ce8e698"
+      },
+      {
+        "block": 3,
+        "receipt_sha256": "510fe3a4ec44371033cb6dbe740900df389794230b1a181bc43aa9dacb9fd328",
+        "output_sha256": "1bebdcd412488ea429cba45a87998e2a00df4e5888cd3795fc5158c71e3ee3f7"
+      },
+      {
+        "block": 4,
+        "receipt_sha256": "7649d0b394183a3adfcd754c88e057d97ea65572e6457372c3e55d1a493b1dec",
+        "output_sha256": "a1b02bf2ce1accd5eec22619ea89aed8aada86e6f02e87a241fa8f54873db470"
+      },
+      {
+        "block": 5,
+        "receipt_sha256": "07bd562a7384250c52eb87e247fe8c9e6a8c9f7adcec6ea0eecc8bdd600d2fe1",
+        "output_sha256": "6835a8d50b68459d0640309d8939721082c6984f215d9891bcbe4259521c66b0"
+      },
+      {
+        "block": 6,
+        "receipt_sha256": "60c3f18b4137ec8a19c7c4651b2455f2e6aa63b13555d2847cf443db84c98b64",
+        "output_sha256": "ddc99e58b76f95050343932feca40864efca6663f0a7999ceba79c653f5dec12"
+      },
+      {
+        "block": 7,
+        "receipt_sha256": "a5406ca9f505e384861f82681f8078ee37b6479c221a59dac171a5754c315b54",
+        "output_sha256": "a7a0031edc31761078b54fefa97c1d6078f6c036d483d0c5c88e6b7752ab8c0b"
+      }
+    ],
+    "verified_rows": 8192,
+    "verified_groups_per_tag": 2048,
+    "retained": "Live service owns results/logs/scratch; after exit retention.json lists exact files, SHA, bytes and deleted caches",
+    "manual_delete_argv": [
+      "rm",
+      "-rf",
+      "--",
+      "/var/tmp/sdrharness-dev/rml2018a-all26-infer-four-b1024-20260914"
+    ],
+    "deletion_constraint": "Stop service first; do not delete original RF corpus or successful single-window results",
+    "stop_argv": [
+      "systemctl",
+      "--user",
+      "stop",
+      "sdr-rml2018a-all26-infer-four-b1024-20260914.service"
+    ]
+  },
+  "previous_single_window_root": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-b1024-20260914",
+  "recognizer_available": false,
+  "spark": "MainPID=0\nActiveState=inactive\n"
+}

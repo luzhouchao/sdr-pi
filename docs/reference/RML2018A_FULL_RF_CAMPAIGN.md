@@ -986,6 +986,46 @@ plan核验完整原HDF5 SHA、所选X/Y/Z及行级原始哈希，绑定软件、
 本次计划、源行、接收会话、288输入/预测及清理见[四类复测证据](../evidence/RML2018A_EVENT_RETEST_2026-09-13.json)，
 [实际结果](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13四类新源行带事件复测)。
 
+## 全量四窗联合重识别（2026-09-14）
+
+`rml2018a_snr_infer.py plan`新增`--window-count 4 --four-validation <已通过的验证根>`，
+保持`--batch-size 1024`及原`--validation`批量证明。默认参数仍为单窗；四窗使用独立新结果根。
+当前四窗结果根为`/var/tmp/sdrharness-dev/rml2018a-all26-infer-four-b1024-20260914`，
+服务为`sdr-rml2018a-all26-infer-four-b1024-20260914.service`。
+
+按每个实际16载荷发射帧的位置0–3、4–7、8–11、12–15固定分组，不跨帧、SNR档或采集会话。
+校验四行源Z及类别一致，但不用标签或预测挑选成员。全部2555904行产生每种输入638976个联合判决。
+四窗是4096点观测预算；原数据集的四条独立记录不因此成为原始连续4096点信号。
+
+从只读SigMF原始ci16 IQ重放已保存的同步CFO/相位及guard相消参数，不重新拟合。
+每窗单位RMS复原结果必须与旧HDF5输入误差≤1e−5，再执行RF-v1四窗共享RMS；
+源对照从原始X读取，不能直接平均旧单窗logits，因为它们使用了不同归一化。
+模型保持冻结epoch10、FP32权重/FP16 autocast；四窗logits以float64求算术均值后argmax。
+源/未相消接收/guard相消接收各自处理，并保留旧单窗结果。
+
+历史TX按每条源记录单独峰值缩放，因此收到的四窗相对幅度与原X可能不同；
+该差异也是源/接收对照的实验因素，不用源幅度偷偷还原接收输入。
+每个成员原条件SINR、失败原因、背景功率仍在父HDF5中；组SINR标记未估计，不能平均dB冒充实测。
+四窗summary的total/correct/confusion分母为组数；state的completed_rows仍计源行，completed_decisions计组数。
+NPZ保留逐窗logits及group_source_rows/group_class_id/group_logits_*/group_valid_*，块receipt绑定重放方法与派生输入SHA。
+
+原数据集整体SHA在运行前核验，各SNR的processed.h5及每对共享raw文件在消费前核验；
+逐块验证源映射、旧payload SHA、保存相消参数哈希和新输入SHA。恢复时重算并核验组均值和统计。
+现有单次24小时期限、STOP、空间余量、单模型加载、CPU预取/GPU/写盘流水线及退出清理沿用。
+该全库四窗是同轴工程对照，不能直接与4090独立划分的原始seed44模型成绩比较；没有训练或生产准入。
+
+直接运行进度脚本（默认指向这轮四窗）：
+
+```bash
+/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-progress.sh
+```
+
+查看旧单窗可加`--root /var/tmp/sdrharness-dev/rml2018a-all26-infer-b1024-20260914`。
+停止四窗：`systemctl --user stop sdr-rml2018a-all26-infer-four-b1024-20260914.service`。
+验证入口为`validate-rml2018a-four-window.py --root <新验证根> --campaign <封存campaign>`；
+24类×源Z30/0/−20×三输入×四窗共864输入，有限逐窗基准与batch1024联合判决/数值门对照。
+实际验证、启动和保留证据见[四窗记录](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-14全量四窗联合识别)。
+
 ## 统一24类RX50有限确认
 
 同一[rml2018a-event-retest.py](../../jetson-agx/sdrharness/scripts/rml2018a-event-retest.py)新增独立

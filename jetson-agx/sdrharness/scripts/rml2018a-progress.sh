@@ -10,7 +10,7 @@ import time
 
 parser = argparse.ArgumentParser(description="查看 RadioML 全量识别进度；Ctrl+C 只退出查看。")
 parser.add_argument("--root", type=Path, default=Path(
-    "/var/tmp/sdrharness-dev/rml2018a-all26-infer-b1024-20260914"))
+    "/var/tmp/sdrharness-dev/rml2018a-all26-infer-four-b1024-20260914"))
 parser.add_argument("--interval", type=float, default=5, help="刷新间隔秒数，默认 5")
 parser.add_argument("--once", action="store_true", help="只显示一次")
 args = parser.parse_args()
@@ -18,7 +18,7 @@ if not math.isfinite(args.interval) or args.interval <= 0:
     parser.error("刷新间隔必须是有限正数")
 
 phases = {"starting": "启动中", "loading_model": "加载模型", "model_loaded": "模型已加载",
-          "verifying_snr": "校验数据", "inferring": "识别中", "complete": "已完成",
+          "verifying_source": "校验源数据", "verifying_snr": "校验数据", "inferring": "识别中", "complete": "已完成",
           "failed": "失败", "stopped": "已暂停"}
 try:
     plan = json.loads((args.root / "plan.json").read_text())
@@ -37,6 +37,8 @@ try:
         print(f"状态：{phases.get(phase, phase)}")
         print(f"GPU 批量：{plan['batch_size']}")
         print(f"已完成并落盘：{done:,} / {total:,} 条")
+        if plan.get("window_count", 1) == 4:
+            print(f"四窗联合判决（每种输入）：{done // 4:,} / {total // 4:,} 组")
         print(f"尚未完成：{total - done:,} 条")
         print(f"总进度：{done / total:.2%}")
         print(f"完整 SNR 档：{done // 98304} / {len(plan['groups'])}")

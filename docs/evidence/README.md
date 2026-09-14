@@ -230,6 +230,8 @@
 - [P201_WIFI5_BACKGROUND_2026-09-09-overview.png](P201_WIFI5_BACKGROUND_2026-09-09-overview.png)
 - [P201_WIFI5_BACKGROUND_2026-09-09-time.png](P201_WIFI5_BACKGROUND_2026-09-09-time.png)
 
+- [全量四窗推理验证、启动及保留依据](RML2018A_FOUR_WINDOW_INFERENCE_2026-09-14.json)
+
 ## 冻结路径例外
 
 下面三份原始审计由冻结配置按固定路径引用，保留在 docs 根目录且不复制：

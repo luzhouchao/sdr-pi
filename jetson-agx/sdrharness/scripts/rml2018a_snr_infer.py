@@ -91,16 +91,22 @@ def batch_validation(path, batch_size, campaign):
                 benchmark_sha256=c.file_hash(path/'benchmark.json'),result=v)
 
 
-def plan(campaign, root, batch_size=1, validation=None):
+def plan(campaign, root, batch_size=1, validation=None, window_count=1, four_validation=None):
     c.require(root.parent == Path('/var/tmp/sdrharness-dev') and root.resolve() == root and
               not root.exists(), 'new private inference root')
+    c.require(window_count in (1,4) and (window_count==1 or batch_size==1024), 'supported joint inference mode')
     groups = corpus(campaign)
+    joint_proof = None
+    if window_count == 4:
+        import rml2018a_four_window as four
+        joint_proof = four.validation(four_validation, campaign)
     proof = batch_validation(validation,batch_size,campaign) if batch_size != 1 else None
     c.require(shutil.disk_usage(root.parent).free > RESERVE, 'inference free space')
     root.mkdir(mode=0o700)
     value = dict(schema='rml2018a-all26-offline-inference-v1', campaign=str(campaign), groups=groups,
                  acquisition_sha256=c.file_hash(campaign/'acquisition-complete.json'),
                  software=software(), profile_sha256=c.file_hash(PROFILE), label_map_sha256=c.file_hash(LABELS),
+                 window_count=window_count,total_decisions_per_tag=TOTAL//window_count,four_validation=joint_proof,
                  total_rows=TOTAL, maximum_model_windows=TOTAL*(3 if batch_size == 1 else 6),
                  maximum_warmup_windows=2 if batch_size == 1 else 2+3*(batch_size+16),
                  maximum_padding_windows=0 if batch_size == 1 else 312*((batch_size-1)+(24576//batch_size+1)*15),
@@ -114,6 +120,9 @@ def plan(campaign, root, batch_size=1, validation=None):
                            'Missing inputs keep full denominators. Labels remain provisional.',
                  maximum_rf_samples=0, recognizer_available=False, spark='must remain inactive',
                  automatic_retry=False, created_ns=time.time_ns())
+    if window_count == 4:
+        value['four_window'] = four.identity(groups)
+        value['semantics'] += ' Four adjacent same-source-Z/class payloads within one TX frame; shared RMS then float64 mean logits. Group SINR not estimated; member estimates retained. TX per-row peak scaling changes inter-window ratios versus source X.'
     atomic_json(root/'plan.json', value)
     return value
 
@@ -179,16 +188,23 @@ def merge(a, b):
         else: a[k] = a.get(k,0)+v
 
 
-def publish(root, key, rows, ids, logits, masks, stats, input_sha):
+def publish(root, key, rows, ids, logits, masks, stats, input_sha, recipe=None):
     path = root/'blocks'/f'{key}.npz'; pending = path.with_suffix('.pending')
     c.require(not path.exists() and not pending.exists(), 'no overwrite of partial predictions')
+    extra = {}
+    if recipe is not None:
+        import rml2018a_four_window as four
+        group_ids,means,valid=four.reduce(rows,ids,logits,masks)
+        extra=dict(group_source_rows=rows.reshape(-1,4),group_class_id=group_ids,
+                   **{f'group_logits_{t}':means[t] for t in TAGS}, **{f'group_valid_{t}':valid[t] for t in TAGS})
     with pending.open('xb') as f:
-        np.savez(f, source_row=rows, class_id=ids, **{f'logits_{t}':logits[t] for t in TAGS},
+        np.savez(f, **extra, source_row=rows, class_id=ids, **{f'logits_{t}':logits[t] for t in TAGS},
                  **{f'valid_{t}':masks[t] for t in TAGS})
         f.flush(); os.fsync(f.fileno())
     os.replace(pending,path); sync_directory(path.parent)
     receipt = dict(input_sha256=input_sha, output_sha256=c.file_hash(path), statistics=stats,
                    rows=len(rows), completed_ns=time.time_ns())
+    if recipe is not None: receipt.update(four_window=recipe,decisions=len(rows)//4)
     atomic_json(path.with_suffix('.json'), receipt)
     return receipt
 
@@ -215,7 +231,7 @@ def infer_inputs(backend, inputs, masks, batch_size, check, progress):
     return output
 
 
-def completed_statistics(root, key, data, sha):
+def completed_statistics(root, key, data, sha, recipe=None):
     target=root/'blocks'/f'{key}.json'
     if not target.exists(): return None
     rows,ids,inputs,masks,quality=data
@@ -225,20 +241,33 @@ def completed_statistics(root, key, data, sha):
     with np.load(target.with_suffix('.npz'),allow_pickle=False) as f:
         c.require(np.array_equal(f['source_row'],rows) and np.array_equal(f['class_id'],ids) and
                   all(np.array_equal(f['valid_'+t],masks[t]) for t in TAGS), 'result lineage')
-        stats=statistics(ids,{t:f['logits_'+t] for t in TAGS},masks,quality)
+        logits={t:f['logits_'+t] for t in TAGS}
+        if recipe is None:
+            c.require('four_window' not in receipt, 'single-window receipt mode')
+            stats=statistics(ids,logits,masks,quality)
+        else:
+            import rml2018a_four_window as four
+            c.require(receipt['four_window']==recipe and receipt['decisions']==len(rows)//4,'joint recipe identity')
+            group_ids,means,valid=four.reduce(rows,ids,logits,masks)
+            c.require(np.array_equal(f['group_source_rows'],rows.reshape(-1,4)) and np.array_equal(f['group_class_id'],group_ids) and
+                      all(np.array_equal(f['group_logits_'+t],means[t],equal_nan=True) and np.array_equal(f['group_valid_'+t],valid[t]) for t in TAGS),'joint result lineage/means')
+            stats=four.statistics(rows,ids,logits,masks,quality)
     c.require(stats==receipt['statistics'],'committed statistics')
     return stats
 
 
-def prepare_group(root, group, index, numbers):
+def prepare_group(root, group, index, numbers, window_count=1):
     entries=[];arrays=[]
     for number in numbers:
         data=load_block(group,index,number);key=f"{group['snr']:+03d}-{number:03d}"
-        sha=index['processed'][number]['payload_sha256'];stats=completed_statistics(root,key,data,sha)
-        rows,ids,inputs,masks,quality=data
+        rows,ids,inputs,masks,quality=data;recipe=None
+        if window_count==4:
+            import rml2018a_four_window as four
+            inputs,recipe=four.restore(group,number,data)
+        sha=index['processed'][number]['payload_sha256'];stats=completed_statistics(root,key,data,sha,recipe)
         if stats is None:
             arrays.extend(inputs[t][masks[t]] for t in TAGS)
-        entries.append(dict(block=number,key=key,sha=sha,rows=rows,ids=ids,masks=masks,quality=quality,stats=stats))
+        entries.append(dict(block=number,key=key,sha=sha,rows=rows,ids=ids,masks=masks,quality=quality,stats=stats,recipe=recipe))
     packed=np.concatenate(arrays) if arrays else np.empty((0,2,1024),dtype=np.float32)
     c.require(len(packed)<=8*3*1024,'prefetch group bound')
     return entries,packed
@@ -253,22 +282,26 @@ def commit_group(root, entries, output):
             for tag in TAGS:
                 mask=entry['masks'][tag];count=int(mask.sum())
                 logits[tag][mask]=output[cursor:cursor+count];cursor+=count
-            stats=statistics(entry['ids'],logits,entry['masks'],entry['quality'])
-            publish(root,entry['key'],entry['rows'],entry['ids'],logits,entry['masks'],stats,entry['sha'])
+            recipe=entry.get('recipe')
+            if recipe is None: stats=statistics(entry['ids'],logits,entry['masks'],entry['quality'])
+            else:
+                import rml2018a_four_window as four
+                stats=four.statistics(entry['rows'],entry['ids'],logits,entry['masks'],entry['quality'])
+            publish(root,entry['key'],entry['rows'],entry['ids'],logits,entry['masks'],stats,entry['sha'],recipe)
         results.append((entry['block'],stats))
     c.require(cursor==len(output),'packed prediction accounting')
     return results
 
 
-def pipelined_groups(root, group, index, backend, size, check, progress):
+def pipelined_groups(root, group, index, backend, size, check, progress, window_count=1):
     """At most current GPU group, one prefetch and one CPU commit group."""
     from rml2018a_infer_batch import infer
     chunks=[list(range(start,start+8)) for start in range(0,96,8)]
     with ThreadPoolExecutor(max_workers=2,thread_name_prefix='snr-infer-io') as pool:
-        pending=pool.submit(prepare_group,root,group,index,chunks[0]);writing=None
+        pending=pool.submit(prepare_group,root,group,index,chunks[0],window_count);writing=None
         for i in range(len(chunks)):
             check();entries,packed=pending.result()
-            if i+1<len(chunks):pending=pool.submit(prepare_group,root,group,index,chunks[i+1])
+            if i+1<len(chunks):pending=pool.submit(prepare_group,root,group,index,chunks[i+1],window_count)
             c.require(shutil.disk_usage(root).free>RESERVE,'pipeline disk reserve')
             output=infer(backend,packed,size,check,lambda n:progress(n,'packed-source-raw-guard'))
             del packed
@@ -288,6 +321,12 @@ def run(root):
     if p['batch_size'] != 1:
         c.require(p['batch_validation'] == batch_validation(Path(p['batch_validation']['root']),
                   p['batch_size'],Path(p['campaign'])), 'pinned batch validation')
+    window_count=p.get('window_count',1)
+    c.require(window_count in (1,4) and (window_count==1 or p['batch_size']==1024),'joint mode scope')
+    if window_count==4:
+        import rml2018a_four_window as four
+        c.require(p['four_validation']==four.validation(Path(p['four_validation']['root']),Path(p['campaign'])) and
+                  p['four_window']==four.identity(p['groups']) and p['total_decisions_per_tag']==TOTAL//4,'joint proof/source pins')
     lock = (root/'owner.lock').open('a')
     fcntl.flock(lock, fcntl.LOCK_EX|fcntl.LOCK_NB)
     c.require(not (root/'complete.json').exists(), 'already complete; inspect result instead')
@@ -307,7 +346,11 @@ def run(root):
     def stop(*_): raise InterruptedError('inference signal stop')
     for sig in (signal.SIGINT,signal.SIGTERM): signal.signal(sig,stop)
     try:
-        check(); spark_stopped(); status(phase='loading_model')
+        check(); spark_stopped()
+        if window_count==4:
+            status(phase='verifying_source')
+            c.require(c.file_hash(four.DATA)==four.DATA_SHA,'original source SHA')
+        status(phase='loading_model')
         from gpu_lease import GpuLease
         lease = GpuLease(scratch/'gpu-gate','mamba')
         token = asyncio.run(lease.acquire(time.monotonic()+10,request='sealed-all26-inference'))
@@ -322,7 +365,7 @@ def run(root):
         def record(z,block,stats):
             merge(total,stats);merge(by_snr[str(z)],stats)
             status(phase='inferring',block=block,completed_blocks=state['completed_blocks']+1,
-                   completed_rows=state['completed_rows']+1024,model_windows=calls,
+                   completed_rows=state['completed_rows']+1024,completed_decisions=(state['completed_rows']+1024)//window_count,model_windows=calls,
                    numerical_fallback_windows=getattr(backend,'_snr_fallback_windows',0),
                    eager_fallback_windows=getattr(backend,'_snr_eager_fallback_windows',0),
                    cuda_peak_allocated_bytes=worker.torch.cuda.max_memory_allocated(),
@@ -337,13 +380,19 @@ def run(root):
             calls+=n;c.require(calls<=p['maximum_model_windows'],'model window bound')
             if time.monotonic()-last_progress>=0.5:
                 status(phase='inferring',tag=tag,model_windows=calls);last_progress=time.monotonic()
+        verified_raw=set()
         for g in p['groups']:
             check(); spark_stopped(); z = g['snr']; folder = Path(g['root'])
             status(phase='verifying_snr',source_snr_db=z)
             c.require(c.file_hash(folder/'processed.h5') == g['processed_sha256'], 'sealed HDF5 hash')
             index = read(folder/'index.json'); by_snr[str(z)] = {}
+            if window_count==4:
+                raw=four.raw_path(g)
+                if str(raw) not in verified_raw:
+                    c.require(c.file_hash(raw)==p['four_window']['raw_sha256'][str(raw)],'sealed raw IQ hash')
+                    verified_raw.add(str(raw))
             if p['batch_size'] != 1:
-                for block,stats in pipelined_groups(root,g,index,backend,p['batch_size'],check,progress):record(z,block,stats)
+                for block,stats in pipelined_groups(root,g,index,backend,p['batch_size'],check,progress,window_count):record(z,block,stats)
                 spark_stopped();continue
             for block in range(96):
                 check(); key = f'{z:+03d}-{block:03d}'; target = root/'blocks'/f'{key}.json'
@@ -369,7 +418,7 @@ def run(root):
         c.require(state['completed_rows'] == TOTAL and state['completed_blocks'] == 2496, 'full inference accounting')
         result = read(root/'summary.json'); result['complete'] = True
         atomic_json(root/'summary.json',result)
-        atomic_json(root/'complete.json',dict(source_rows=TOTAL,blocks=2496,summary_sha256=c.file_hash(root/'summary.json'),
+        atomic_json(root/'complete.json',dict(source_rows=TOTAL,decisions_per_tag=TOTAL//window_count,window_count=window_count,blocks=2496,summary_sha256=c.file_hash(root/'summary.json'),
                                              plan_sha256=c.file_hash(root/'plan.json'),completed_ns=time.time_ns()))
         status(phase='complete',model_windows=calls)
     except BaseException as error:
@@ -403,10 +452,12 @@ def main():
     parser.add_argument('--campaign',type=Path)
     parser.add_argument('--batch-size',type=int,choices=[1,256,512,1024,4096,8192],default=1)
     parser.add_argument('--validation',type=Path)
+    parser.add_argument('--window-count',type=int,choices=[1,4],default=1)
+    parser.add_argument('--four-validation',type=Path)
     args = parser.parse_args()
     if args.command == 'plan':
         c.require(args.campaign is not None,'campaign required')
-        plan(args.campaign,args.root,args.batch_size,args.validation)
+        plan(args.campaign,args.root,args.batch_size,args.validation,args.window_count,args.four_validation)
     else: run(args.root)
 
 
