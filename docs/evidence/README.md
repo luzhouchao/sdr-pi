@@ -16,6 +16,7 @@
 以及其哈希未改动；开发清理不能删除这些用户数据。修改读取脚本的定位路径不
 会追溯改写旧审计记录的脚本哈希。
 
+- [seed42原validation的8模型启动](RML2018A_SEED42_VALIDATION_2026-09-14.json)：精确成员、质量选择、前两轮结果删除、零复用fresh启动及动态24组；尚未全量完成。
 - [识别暂停与seed42原始验证划分](RML2018A_SEED42_PAUSE_2026-09-14.json)：已落盘保留、STOP、原NPZ身份及合格val源行数量；无新推理。
 - [清洗数据SSD复制审计](RML2018A_CLEAN_SSD_IMPORT_2026-09-14.json) · [12模型筛选接入与启动](RML2018A_CLEAN12_EVALUATION_2026-09-14.json)
 - [4090模型导入与旧epoch-010删除审计](RML2018A_MODEL_IMPORT_2026-09-14.json)：8种/12份权重身份、源端与AGX核验及保留清单。

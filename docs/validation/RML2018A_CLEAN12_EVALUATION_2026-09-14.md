@@ -104,3 +104,33 @@ MainPID=0；SIGTERM按runner的InterruptedError退出，systemd标为failed/exit
 [暂停/划分证据](../evidence/RML2018A_SEED42_PAUSE_2026-09-14.json)保存原计划保留边界、
 val索引哈希、分组数量、split与审计retention；本单元无新推理/RF/训练，无临时传输包。
 仅保留原NPZ和最小暂停/块收据清单，精确人工删除路径见各自retention.json。
+
+## seed42原验证集8模型启动
+
+用户明确“使用验证集跑这8个模型”，随后进一步要求“直接重新从头开始”“把之前的删了”。
+按最终指令停止此前新validation服务，删除旧全量`clean12-single-20260914`与首次复用validation
+`seed42-val-single-20260914`两根：共314文件467,835,397字节。逐路径/大小/SHA登记后删除，
+核验两根不存在；权重、SSD HDF5与split保持。只保留小型计划/数值探针及删除清单作审计，
+不保留旧预测副本。此前复用71,495行的尝试属于已删除历史，不进入最终结果。
+
+最终根`/home/jetson/sdrharness/local-assets/amc-eval/results/seed42-val-fresh-20260914`，
+prepare-validation --fresh从原HDF5重新生成共享metadata。启动前确认没有模型预测目录/块或reuse.json，
+reused_predictions=0。原NPZ val383,385源行及排序保持；RX按source_row映射并取严格合格交集，
+source/raw/guard分别383,385/379,662/371,108，共同369,497，总预算9,073,240。
+实际全量metadata核对证明train/test选中0，validation_rank逐条还原原val数组。
+
+10项合同测试通过：原val成员及RX重排映射、训练/test排除、错seed/集合交叉拒绝、
+动态8模型×3输入完整收口、断点续跑与读回统计，以及不依赖旧metadata/预测的fresh准备。
+相同8模型的FP32数值依据已验证，不重新挑精度或重跑GPU探针；实际加载仍校验权重、结构及真实后端。
+识别预测全部新算，继承数值验证记录不等于复用预测。FP32/关闭TF32及1024批量保持。
+
+最终服务`sdr-rml2018a-seed42-val-fresh-20260914.service`已实际启动并从0写出新val预测块。
+首3个新块7,474条已核对SHA-256、原val行号、有限logits及argmax，收据不含旧预测复用字段。
+24组/24张真实矩阵尚未全部完成，不能提前勾选。先导粗估约8.1小时；内部24小时期限、
+服务清理余量、3GiB空间门、STOP和单实例锁保持。本轮无新RF、训练或生产配置变更。
+
+原进度脚本默认fresh根，按计划显示真实服务、validation分母、质量跳过和24组计数。
+完成后自动独立读回核验、绘制24张PNG/SVG、导出计数/比例/共同成员CSV，再生成最终完成标志。
+保留清单扩展到预测、metadata、报告和图表，控制文件单列；退出finally清理该根的运行缓存。
+临时测试目录自动清理，源数据没有新增IQ副本。活动结果/缓存保留至后台结束。
+路径、字节、哈希、人工删除依据及实际启动快照见[验证集从零启动证据](../evidence/RML2018A_SEED42_VALIDATION_2026-09-14.json)。

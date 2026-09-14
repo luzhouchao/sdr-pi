@@ -59,7 +59,7 @@ def render(root, plan):
             ax.set_yticks(range(24),plan["classes"],fontsize=8)
             ax.set_xlabel("Predicted modulation");ax.set_ylabel("True source modulation")
             ax.set_title(f"{spec['display_name']} seed {spec['seed']} | {plane}\n"
-                         f"Single 1024-point window | ACC {s['accuracy']:.2%} | N={s['rows']:,} | skipped={s['skipped_rows']:,}",fontsize=11)
+                         f"{'Server seed42 validation' if 'split' in plan else 'Single 1024-point window'} | ACC {s['accuracy']:.2%} | N={s['rows']:,} | skipped={s['skipped_rows']:,}",fontsize=11)
             for i in range(24):
                 for j in range(24):
                     if pct[i,j]>=1 or i==j:

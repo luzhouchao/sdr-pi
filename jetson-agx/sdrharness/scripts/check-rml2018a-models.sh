@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)
-result_root=${1:-"$repo_root/local-assets/amc-eval/results/clean12-single-20260914"}
+result_root=${1:-"$repo_root/local-assets/amc-eval/results/seed42-val-fresh-20260914"}
 python3 - "$result_root" <<'PY'
-import json, sys
+import json, sys, subprocess
 from pathlib import Path
 r=Path(sys.argv[1])
 print('结果目录:',r)
+plan={}
 paused=(r/'PAUSED.json').exists() and (r/'STOP').exists()
 if paused:
     pause=json.loads((r/'PAUSED.json').read_text())
@@ -14,9 +15,11 @@ if paused:
     print('后续选择: 仅 seed42 的 8 个模型；其他 Mamba seeds 不再安排。')
 if (r/'plan.json').exists():
     plan=json.loads((r/'plan.json').read_text())
-    print('计数规则: 原始数据全量；RX 仅 usable 且 strict_quality_pass；单窗1024点')
+    print('计数规则: 服务器 seed42 原validation；RX再取严格质量合格行；单窗1024点' if 'split' in plan else
+          '计数规则: 原始数据全量；RX 仅 usable 且 strict_quality_pass；单窗1024点')
     for d in plan['datasets']:
-        print(f"  {d['plane']:6} 待识别 {d['selected_rows']:,} / {plan['rows_per_dataset']:,}；跳过 {d['skipped_rows']:,}")
+        scope=d.get('scope_rows',plan['rows_per_dataset'])
+        print(f"  {d['plane']:6} 待识别 {d['selected_rows']:,} / {scope:,}；质量跳过 {d['skipped_rows']:,}")
     print(f"共同通过校验的源行: {plan['datasets'][0]['common_rows']:,}")
 if (r/'progress.json').exists():
     p=json.loads((r/'progress.json').read_text())
@@ -35,7 +38,8 @@ done=[]
 for f in reports:
     s=json.loads(f.read_text())
     if s['complete']:done.append(s)
-print(f'已完成模型×数据集: {len(done)} / 36')
+pairs=plan.get('model_dataset_pairs',36)
+print(f'已完成模型×数据集: {len(done)} / {pairs}')
 for s in done:
     print(f"  {s['model']:32} {s['dataset']:6} ACC {s['accuracy']:.2%}  {s['rows']:,} 条；跳过 {s['skipped_rows']:,}；共同子集 ACC {s['common_accuracy']:.2%}")
 if (r/'COMPLETE.json').exists():
@@ -43,6 +47,7 @@ if (r/'COMPLETE.json').exists():
     print('混淆矩阵:',r/'confusion-matrices')
 elif paused:print('退出原因: 用户暂停信号；systemd的非零退出码来自这次人工停止。')
 elif (r/'ERROR.json').exists():print('错误记录（若已续跑请结合服务状态）:',(r/'ERROR.json').read_text())
+sys.stdout.flush()
+subprocess.run(['systemctl','--user','show',plan.get('service','sdr-rml2018a-clean12-eval-20260914.service'),
+                '-p','ActiveState','-p','SubState','-p','ExecMainStatus'],check=True)
 PY
-systemctl --user show sdr-rml2018a-clean12-eval-20260914.service \
-  -p ActiveState -p SubState -p ExecMainStatus

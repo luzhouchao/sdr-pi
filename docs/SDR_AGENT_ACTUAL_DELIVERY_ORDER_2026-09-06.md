@@ -7,10 +7,12 @@
 
 ## 当前执行选择
 
-最新状态：用户明确暂停识别，旧36组服务已退出，保留29块/475,136条CNN2 source预测；STOP阻止自动续跑。
-后续模型范围仅seed42的8种，Mamba seeds43–46不再安排。4090原seed42验证集383,385条已取回并校验，
-raw/guard合格成员分别379,662/371,108，共同369,497源行。当前只完成划分复核，不启动新识别；
-旧12权重计划保留作历史，不能移除STOP直接恢复旧范围。见[暂停与划分](validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#用户暂停与seed42原验证集核对)。
+最新状态：用户明确使用服务器原seed42 validation运行8个模型，并要求删除之前结果、从零开始。
+旧全量与首次复用validation两根已停止并删除；新根为`local-assets/amc-eval/results/seed42-val-fresh-20260914`，
+24组、9,073,240次预测，复用预测数0。source/raw/guard分别383,385/379,662/371,108，共同369,497源行。
+原始源值、RX已逐窗RMS、FP32/关闭TF32保持，完成后自动核验和生成24张矩阵。
+旧删除审计保留，不恢复旧结果或seeds43–46。见[当前操作](reference/RML2018A_MODEL_COLLECTION_EVALUATION.md)
+及[validation从零启动验证](validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#seed42原验证集8模型启动)。
 
 2026-09-14最新模型选择：4090的8种RadioML2018A模型（12份权重）已导入AGX，
 用户要求的四窗微调epoch-010权重已删除；原始D8 seed44保留。

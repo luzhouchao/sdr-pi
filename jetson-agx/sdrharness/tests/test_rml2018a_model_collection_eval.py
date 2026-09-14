@@ -111,8 +111,77 @@ class Contracts(unittest.TestCase):
         self.assertEqual(cm[25,2,1],1)
         self.assertEqual(ev.confusion(y,z,p,np.array([True,False,False])).sum(),1)
 
+    def test_original_validation_membership_with_reordered_rx(self):
+        p=self.cleaned()
+        m=ev.metadata(p,"raw",self.labels,self.snr,self.classes)
+        source=dict(source_row=np.arange(12),class_id=self.labels,source_snr_db=self.snr)
+        guard={k:v[::-1].copy() for k,v in m.items()}
+        datasets=[]
+        for plane,values in (("source",source),("raw",m),("guard",guard)):
+            np.savez(self.root/f"{plane}-metadata.npz",**values)
+            datasets.append(dict(plane=plane,path=str(p)))
+        val=np.array([0,1,4,7],np.int64)
+        ev.select_metadata(self.root,datasets,val)
+        self.assertEqual([d['selected_rows'] for d in datasets],[4,2,2])
+        self.assertEqual([d['skipped_rows'] for d in datasets],[0,2,2])
+        for ds in datasets:
+            with np.load(self.root/f"{ds['plane']}-metadata.npz") as f:
+                ids=f['source_row'][f['selected_for_inference']]
+                self.assertTrue(np.isin(ids,val).all())
+                np.testing.assert_array_equal(val[f['validation_rank'][f['selected_for_inference']]],ids)
+                self.assertEqual(f['common_source_subset'].sum(),2)
+        # No train/test row may acquire a validation rank or a prediction mask.
+        with np.load(self.root/'source-metadata.npz') as f:
+            self.assertTrue((f['validation_rank'][~f['validation_member']]==-1).all())
+
+    def test_validation_split_rejects_overlap_and_wrong_seed(self):
+        p=self.root/'split.npz'
+        def write(seed=42,val=(8,9)):
+            np.savez(p,train=np.arange(8,dtype=np.int64),val=np.array(val,np.int64),
+                     test=np.array([10,11],np.int64),num_samples=[12],seed=[seed],
+                     train_ratio=[.7],val_ratio=[.15],test_ratio=[.15])
+        write()
+        val,record=ev.load_validation_split(p,ev.digest(p))
+        np.testing.assert_array_equal(val,[8,9])
+        write(val=(7,9))
+        with self.assertRaisesRegex(ValueError,'overlap'):
+            ev.load_validation_split(p,ev.digest(p))
+        write(seed=43)
+        with self.assertRaisesRegex(ValueError,'seed'):
+            ev.load_validation_split(p,ev.digest(p))
+
+    def test_fresh_prepare_needs_no_old_metadata_or_predictions(self):
+        source=self.root/'source.h5'
+        with h5py.File(source,'w') as f:
+            f['X']=np.zeros((12,1024,2),np.float32)
+            f['Y']=np.eye(24,dtype=np.int64)[:12]
+            f['Z']=self.snr[:,None]
+        rx=self.cleaned()
+        split=self.root/'original-split.npz'
+        np.savez(split,train=np.arange(8,dtype=np.int64),val=np.array([8,9],np.int64),
+                 test=np.array([10,11],np.int64),num_samples=[12],seed=[42],
+                 train_ratio=[.7],val_ratio=[.15],test_ratio=[.15])
+        collection=self.root/'collection';collection.mkdir()
+        models=[dict(variant=f'm{i}',seed=42) for i in range(8)]
+        ev.atomic(collection/'manifest.json',dict(models=models,transferred_files=[]))
+        parent=self.root/'audit-parent';parent.mkdir();(parent/'STOP').touch()
+        ev.atomic(parent/'probe.json',dict(passed=True,models=[dict(m,passed=True,precision='fp32',full_batch_seconds=1) for m in models]))
+        datasets=[dict(plane=k,**ev.identity(source if k=='source' else rx)) for k in ('source','raw','guard')]
+        ev.atomic(parent/'plan.json',dict(datasets=datasets,collection_manifest=ev.identity(collection/'manifest.json'),
+                   probe_sha256=ev.digest(parent/'probe.json'),classes=self.classes,batch_size=1024))
+        target=self.root/'fresh-run'
+        with patch.object(ev,'COLLECTION',collection),patch.object(ev,'SEED42_SPLIT_SHA',ev.digest(split)):
+            ev.prepare_validation(target,parent,split,fresh=True)
+        plan=json.loads((target/'plan.json').read_text())
+        self.assertEqual(plan['reused_predictions'],0)
+        self.assertTrue(plan['fresh_predictions'])
+        self.assertEqual(plan['model_dataset_pairs'],24)
+        self.assertFalse(list(target.glob('*-seed*')))
+        with np.load(target/'source-metadata.npz') as f:
+            np.testing.assert_array_equal(f['source_row'][f['selected_for_inference']],[8,9])
+
     def test_stream_resume_and_identity_rejection(self):
-        models=[dict(variant="m",seed=i,checkpoint=dict(sha256=str(i))) for i in range(12)]
+        models=[dict(variant=f"m{i}",seed=42,checkpoint=dict(sha256=str(i))) for i in range(8)]
         datasets=[]
         for plane in ("source","raw","guard"):
             selected=np.ones(12,bool) if plane=="source" else np.array([True,False]*6)
@@ -121,9 +190,10 @@ class Contracts(unittest.TestCase):
                      common_source_subset=np.array([True,False]*6))
             datasets.append(dict(plane=plane,sha256=plane,selected_rows=int(selected.sum()),
                                  skipped_rows=int((~selected).sum()),metadata_sha256=ev.digest(self.root/f"{plane}-metadata.npz")))
-        ev.atomic(self.root/"probe.json",dict(passed=True,models=[dict(variant="m",seed=i,precision="fp32") for i in range(12)]))
-        plan=dict(models=models,datasets=datasets,deadline_seconds=60,batch_size=3,total_predictions=288,
-                  probe_sha256=ev.digest(self.root/"probe.json"))
+        ev.atomic(self.root/"probe.json",dict(passed=True,models=[dict(variant=f"m{i}",seed=42,precision="fp32") for i in range(8)]))
+        plan=dict(models=models,datasets=datasets,deadline_seconds=60,batch_size=3,total_predictions=192,
+                  probe_sha256=ev.digest(self.root/"probe.json"),sample_scope="test fixture")
+        ev.atomic(self.root/'plan.json',plan)
         def read(_ds,lo,hi,selected):
             x=np.zeros((hi-lo,2,1024),np.float32);x[:,0,0]=np.arange(lo,hi);return x[selected]
         def predict(_model,x,_torch,_precision):
@@ -137,17 +207,18 @@ class Contracts(unittest.TestCase):
              patch.object(ev,"predict",side_effect=predict) as pred:
             ev.run(self.root,plan,Torch)
             self.assertTrue((self.root/"COMPLETE.json").exists())
-            summary=json.loads((self.root/"m-seed0/raw-summary.json").read_text())
+            self.assertEqual(json.loads((self.root/'COMPLETE.json').read_text())['model_dataset_pairs'],24)
+            summary=json.loads((self.root/"m0-seed42/raw-summary.json").read_text())
             self.assertEqual(summary["rows"],6)
             self.assertEqual(summary["common_rows"],6)
             self.assertEqual(summary["skipped_rows"],6)
             self.assertEqual(summary["accuracy"],1)
-            with np.load(self.root/"m-seed0/raw/0000000.npz") as f:
+            with np.load(self.root/"m0-seed42/raw/0000000.npz") as f:
                 np.testing.assert_array_equal(f["dataset_row"],[0,2,4])
             pred.reset_mock()
             ev.run(self.root,plan,Torch)
             pred.assert_not_called()
-            receipt=self.root/"m-seed0/source/0000000.json"
+            receipt=self.root/"m0-seed42/source/0000000.json"
             r=json.loads(receipt.read_text());r["input_sha256"]="wrong";ev.atomic(receipt,r)
             with self.assertRaisesRegex(ValueError,"identity mismatch"):
                 ev.run(self.root,plan,Torch)

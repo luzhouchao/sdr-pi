@@ -29,6 +29,7 @@ ASSET = REPO / "local-assets/amc-eval"
 COLLECTION = ASSET / "checkpoints/rml2018a/server-models-20260914"
 CLEAN = ASSET / "datasets/rml2018a/rx-clean-20260914"
 ORIGINAL_SHA = "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38"
+SEED42_SPLIT_SHA = "0a7cbd3b8a4b921b7dc3d0c37473322207c6bd9fb362ea58498c851fad9dc5a3"
 FIELDS = ("d_model", "dropout", "use_real_mamba", "mamba_d_state",
           "mamba_d_conv", "mamba_expand", "mamba_headdim")
 
@@ -101,14 +102,26 @@ def metadata(path, plane, original_y=None, original_z=None, classes=None):
         return dict(source_row=ids, class_id=y, source_snr_db=z.astype(np.int16), **extra)
 
 
-def select_metadata(root, datasets):
+def select_metadata(root, datasets, validation_indices=None):
     """User-selected strict RX masks; common source IDs for fair paired reports."""
     values = {}
     common = np.ones(ROWS, bool)
+    membership = np.ones(ROWS, bool)
+    rank = None
+    if validation_indices is not None:
+        membership[:] = False
+        membership[validation_indices] = True
+        rank = np.full(ROWS, -1, np.int32)
+        rank[validation_indices] = np.arange(len(validation_indices), dtype=np.int32)
     for ds in datasets:
         with np.load(root / f"{ds['plane']}-metadata.npz", allow_pickle=False) as f:
             m = {k: f[k] for k in f.files}
         selected = np.ones(ROWS, bool) if ds["plane"] == "source" else m["usable"] & m["strict_quality_pass"]
+        member = membership[m["source_row"]]
+        selected &= member
+        if rank is not None:
+            m["validation_member"] = member
+            m["validation_rank"] = rank[m["source_row"]]
         m["selected_for_inference"] = selected
         if ds["plane"] != "source":
             canonical = np.zeros(ROWS, bool)
@@ -122,18 +135,20 @@ def select_metadata(root, datasets):
         np.savez(root / f"{ds['plane']}-metadata.npz", **m)
         ds.update(metadata_sha256=digest(root / f"{ds['plane']}-metadata.npz"),
                   selected_rows=int(m["selected_for_inference"].sum()),
-                  skipped_rows=int((~m["selected_for_inference"]).sum()), common_rows=int(common.sum()))
+                  skipped_rows=int((membership[m["source_row"]]&~m["selected_for_inference"]).sum()),
+                  scope_rows=int(membership.sum()), excluded_by_split=ROWS-int(membership.sum()),
+                  common_rows=int(common.sum()))
         ds["eligibility_by_snr"] = [dict(source_snr_db=z,
-            file_rows=int((m["source_snr_db"]==z).sum()),
+            file_rows=int(((m["source_snr_db"]==z)&membership[m["source_row"]]).sum()),
             selected_rows=int(((m["source_snr_db"]==z)&m["selected_for_inference"]).sum()),
-            skipped_rows=int(((m["source_snr_db"]==z)&~m["selected_for_inference"]).sum()))
+            skipped_rows=int(((m["source_snr_db"]==z)&membership[m["source_row"]]&~m["selected_for_inference"]).sum()))
             for z in range(-20,31,2)]
         if ds["plane"] != "source":
             with h5py.File(ds["path"],"r") as f:
                 required = int(f.attrs["strict_quality_required_mask"]) | int(f.attrs["usable_required_mask"])
                 definitions = json.loads(f.attrs["quality_flag_definitions_json"])
             ds["skip_reasons_overlapping"] = {
-                definitions[str(bit)]: int(((m["quality_flags"] & bit)==0).sum())
+                definitions[str(bit)]: int((((m["quality_flags"] & bit)==0)&membership[m["source_row"]]).sum())
                 for bit in (1,2,4,8,16,32) if required & bit}
 
 
@@ -176,6 +191,78 @@ def prepare(root):
                 recognizer_available=False, training=False, rf=False)
     atomic(root / "plan.json", plan)
     print(json.dumps(dict(prepared=True, predictions=plan["total_predictions"])), flush=True)
+
+
+def load_validation_split(path, expected_sha):
+    """直接复用服务器原索引，拒绝换seed、重复成员或三集合交叉。"""
+    record = identity(path, expected_sha)
+    with np.load(path, allow_pickle=False) as f:
+        require(int(f["seed"][0])==42 and int(f["num_samples"][0])==ROWS, "split seed/size")
+        require(tuple(float(f[k][0]) for k in ("train_ratio","val_ratio","test_ratio"))==(.7,.15,.15), "split ratios")
+        groups = [f[k] for k in ("train","val","test")]
+        require(all(x.ndim==1 and x.dtype==np.int64 for x in groups), "split index type")
+        require(np.array_equal(np.sort(np.concatenate(groups)),np.arange(ROWS)), "split coverage/overlap")
+        val = groups[1].copy()
+        require(np.all(np.diff(val)>0), "expected original sorted validation order")
+    record.update(partition="val",seed=42,counts={k:len(x) for k,x in zip(("train","val","test"),groups)},
+                  validation_indices_sha256=hashlib.sha256(val.tobytes()).hexdigest())
+    return val, record
+
+
+def prepare_validation(root, parent_root, split_path, fresh=False):
+    """派生只读validation计划，沿用已校验输入与FP32数值依据，不重切数据集。"""
+    require(not root.exists(), "use a new output root")
+    parent_root = parent_root.resolve(strict=True)
+    parent = json.loads((parent_root/"plan.json").read_text())
+    require((parent_root/"STOP").exists(), "prior full-data campaign must stay stopped")
+    require(shutil.disk_usage(root.parent).free > 5*1024**3, "5 GiB free required")
+    val, split = load_validation_split(split_path, SEED42_SPLIT_SHA)
+    require(digest(COLLECTION/"manifest.json")==parent["collection_manifest"]["sha256"], "collection changed")
+    manifest = json.loads((COLLECTION/"manifest.json").read_text())
+    models = [m for m in manifest["models"] if m["seed"]==42]
+    require(len(models)==8 and len({m["variant"] for m in models})==8, "exactly eight seed42 variants required")
+    require(digest(parent_root/"probe.json")==parent["probe_sha256"], "parent numerical probe changed")
+    prior_probe = json.loads((parent_root/"probe.json").read_text())
+    tested = [m for m in prior_probe["models"] if m["seed"]==42]
+    require(len(tested)==8 and all(m["passed"] and m["precision"]=="fp32" for m in tested), "FP32 evidence missing")
+    require([(m["variant"],m["seed"]) for m in models]==[(m["variant"],m["seed"]) for m in tested], "probe model order")
+    for f in manifest["transferred_files"]:
+        require(digest(COLLECTION/f["relative"])==f["sha256"], "model source/weights changed")
+    root.mkdir(mode=0o700)
+    datasets = json.loads(json.dumps(parent["datasets"]))
+    source_meta = None
+    if fresh:
+        source_ds = next(ds for ds in datasets if ds["plane"]=="source")
+        unchanged(source_ds)
+        source_meta = metadata(source_ds["path"],"source")
+    for ds in datasets:
+        unchanged(ds)
+        if fresh:
+            values = source_meta if ds["plane"]=="source" else metadata(
+                ds["path"],ds["plane"],source_meta["class_id"],source_meta["source_snr_db"],parent["classes"])
+            np.savez(root/f"{ds['plane']}-metadata.npz",**values)
+        else:
+            path = parent_root/f"{ds['plane']}-metadata.npz"
+            require(digest(path)==ds["metadata_sha256"], "parent metadata changed")
+            shutil.copyfile(path,root/path.name)
+    select_metadata(root,datasets,val)
+    probe_result = dict(prior_probe,models=tested,parent_probe=identity(parent_root/"probe.json"),
+                        scope="inherited same-model same-input FP32 numerical evidence; no new precision selection")
+    atomic(root/"probe.json",probe_result)
+    plan = dict(parent,schema="rml2018a-collection-seed42-validation-v1",created_ns=time.time_ns(),
+                script=identity(__file__),plot_script=identity(Path(__file__).with_name("rml2018a_collection_plots.py")),
+                parent_plan=identity(parent_root/"plan.json"),split=split,models=models,datasets=datasets,
+                probe_sha256=digest(root/"probe.json"),model_dataset_pairs=24,deadline_seconds=86400,
+                total_predictions=sum(d["selected_rows"] for d in datasets)*8,
+                sample_scope="original server seed42 validation only; RX strict quality intersection",
+                service="sdr-rml2018a-seed42-val-20260914.service",
+                reused_predictions=0,fresh_predictions=bool(fresh))
+    for key in ("initial_pilot_estimate_seconds","supersedes_plan_sha256","probe_parent_plan_sha256"):
+        plan.pop(key,None)
+    plan["initial_pilot_estimate_seconds"]=sum(m["full_batch_seconds"] for m in tested)*sum(d["selected_rows"] for d in datasets)/plan["batch_size"]
+    atomic(root/"plan.json",plan)
+    atomic(root/"progress.json",dict(stage="prepared_validation",completed_predictions=0,total_predictions=plan["total_predictions"]))
+    print(json.dumps(dict(prepared=True,models=8,validation_rows=len(val),predictions=plan["total_predictions"])),flush=True)
 
 
 def setup(root):
@@ -342,7 +429,7 @@ def report(root, name, ds, counts, common, done):
 def run(root, plan, torch):
     require(digest(root/"probe.json")==plan["probe_sha256"], "probe changed")
     probe_result = json.loads((root / "probe.json").read_text())
-    require(probe_result["passed"] and len(probe_result["models"]) == 12, "all-model probe required")
+    require(probe_result["passed"] and len(probe_result["models"]) == len(plan["models"]), "all-model probe required")
     start = time.monotonic()
     completed = 0
     def check():
@@ -426,14 +513,16 @@ def run(root, plan, torch):
         torch.cuda.empty_cache()
     require(completed == plan["total_predictions"], "incomplete evaluation")
     summaries = [json.loads(p.read_text()) for p in sorted(root.glob("*-seed*/*-summary.json"))]
-    require(len(summaries)==36 and all(s["complete"] for s in summaries), "36 reports required")
+    pairs=len(plan["models"])*len(plan["datasets"])
+    require(len(summaries)==pairs and all(s["complete"] for s in summaries), "all model/dataset reports required")
     with (root / "summary.csv").open("w") as f:
         writer = csv.DictWriter(f,fieldnames=("model","dataset","rows","skipped_rows","correct","accuracy","common_rows","common_accuracy"))
         writer.writeheader()
         writer.writerows({k:s[k] for k in writer.fieldnames} for s in summaries)
     verify_outputs(root, plan)
     render(root, plan)
-    atomic(root / "COMPLETE.json",dict(complete=True,predictions=completed,model_dataset_pairs=36,
+    finalize_retention(root, plan)
+    atomic(root / "COMPLETE.json",dict(complete=True,predictions=completed,model_dataset_pairs=pairs,
                                       elapsed_seconds=time.monotonic()-start,summary_sha256=digest(root/"summary.csv")))
     atomic(root / "progress.json",dict(stage="complete",predictions=completed))
 
@@ -480,7 +569,7 @@ def verify_outputs(root, plan):
                     and np.array_equal(common,s["common_confusion_by_snr"]), "readback statistics mismatch")
     atomic(root/"verification.json",dict(passed=True,files=len(files),predictions=plan["total_predictions"],
                                         method="full logits readback, hashes, argmax, independent indexed confusion recount"))
-    atomic(root/"retention.json",dict(purpose="user-authorized 12 checkpoints x 3 datasets single-window engineering comparison",
+    atomic(root/"retention.json",dict(purpose=f"user-authorized {len(plan['models'])} checkpoints x {len(plan['datasets'])} datasets single-window engineering comparison",
                                       predictions=files,bytes=sum(f["bytes"] for f in files),
                                       plan_sha256=digest(root/"plan.json") if (root/"plan.json").exists() else None,
                                       manual_delete_argv=["rm","-rf","--",str(root)],
@@ -495,13 +584,35 @@ def render(root, plan):
     subprocess.run(["/usr/bin/python3", "-B", str(script), "--root", str(root)], check=True)
 
 
+def finalize_retention(root, plan):
+    """汇总预测、共享元数据和真实图表；运行控制文件单独列出。"""
+    previous=json.loads((root/"retention.json").read_text())
+    known={x["path"]:x for x in previous["predictions"]}
+    control={"retention.json","progress.json","RUN.lock","COMPLETE.json"}
+    files=[]
+    for p in sorted(root.rglob("*")):
+        if not p.is_file() or p.parent==root and p.name in control:
+            continue
+        value=known.get(str(p))
+        files.append(value if value is not None else dict(path=str(p),bytes=p.stat().st_size,sha256=digest(p)))
+    atomic(root/"retention.json",dict(purpose=plan["sample_scope"],files=files,
+          bytes=sum(f["bytes"] for f in files),unsealed_control_files=sorted(control),
+          plan_sha256=digest(root/"plan.json"),manual_delete_argv=["rm","-rf","--",str(root)]))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("prepare", "probe", "run", "verify", "render", "status"))
+    parser.add_argument("action", choices=("prepare", "prepare-validation", "probe", "run", "verify", "render", "status"))
     parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--parent-root", type=Path)
+    parser.add_argument("--split", type=Path)
+    parser.add_argument("--fresh", action="store_true", help="重新从HDF5生成元数据，不导入任何旧预测")
     args = parser.parse_args(); root = args.root.resolve()
     if args.action == "prepare":
         prepare(root); return
+    if args.action == "prepare-validation":
+        require(args.parent_root is not None and args.split is not None, "parent root and split required")
+        prepare_validation(root,args.parent_root,args.split,args.fresh); return
     if args.action == "status":
         print((root / "progress.json").read_text()); return
     lock = (root / "RUN.lock").open("a")
@@ -511,6 +622,8 @@ def main():
     require(digest(COLLECTION / "manifest.json") == plan["collection_manifest"]["sha256"], "collection changed")
     for ds in plan["datasets"]:
         unchanged(ds)
+    if "split" in plan:
+        require(digest(plan["split"]["path"])==plan["split"]["sha256"], "validation split changed")
     if args.action == "verify":
         verify_outputs(root,plan); return
     if args.action == "render":

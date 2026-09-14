@@ -13,7 +13,7 @@ import subprocess
 
 parser = argparse.ArgumentParser(description="查看 RadioML 全量识别进度；Ctrl+C 只退出查看。")
 parser.add_argument("--root", type=Path, default=Path(
-    "/home/jetson/sdrharness/local-assets/amc-eval/results/clean12-single-20260914"))
+    "/home/jetson/sdrharness/local-assets/amc-eval/results/seed42-val-fresh-20260914"))
 parser.add_argument("--interval", type=float, default=5, help="刷新间隔秒数，默认 5")
 parser.add_argument("--once", action="store_true", help="只显示一次")
 args = parser.parse_args()
@@ -25,7 +25,7 @@ phases = {"starting": "启动中", "loading_model": "加载模型", "model_loade
           "failed": "失败", "stopped": "已暂停"}
 try:
     plan = json.loads((args.root / "plan.json").read_text())
-    if plan.get("schema", "").startswith("rml2018a-clean12"):
+    if plan.get("schema", "").startswith(("rml2018a-clean12", "rml2018a-collection")):
         while True:
             if sys.stdout.isatty() and not args.once:
                 print("\033[2J\033[H", end="", flush=True)
