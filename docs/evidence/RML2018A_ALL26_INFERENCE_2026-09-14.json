@@ -1,0 +1,81 @@
+{
+  "schema": "rml2018a-all26-inference-start-v1",
+  "purpose": "Sealed-corpus reader tests and first actual frozen-model inference; not full inference completion",
+  "source_campaign": "/var/tmp/sdrharness-dev/rml2018a-all26-live-20260914",
+  "inference_root": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-20260914",
+  "validation_root": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-validation-20260914",
+  "snapshot": {
+    "state": {
+      "block": 5,
+      "completed_blocks": 5,
+      "completed_rows": 5120,
+      "elapsed_seconds": 768.6354513359838,
+      "model_loads": 1,
+      "model_windows": 17664,
+      "phase": "inferring",
+      "pid": 210714,
+      "source_snr_db": 30,
+      "started_ns": 1789350128056172726,
+      "tag": "guard",
+      "total_blocks": 2496,
+      "updated_ns": 1789350896691611229
+    },
+    "model": {
+      "batch_size": 1,
+      "compute": "FP16 autocast; FP32 weights/logits",
+      "identity": {
+        "aggregation": "float64_arithmetic_mean_logits_then_softmax",
+        "checkpoint_sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+        "compute": "cuda_fp16_autocast",
+        "input_precision": "fp32",
+        "logit_return_precision": "fp32",
+        "model_id": "rml2018a-d8-rf-v1-epoch010-fp16-experimental",
+        "preprocess_sha256": "18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f",
+        "profile_sha256": "6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab",
+        "resident_weight_precision": "fp32",
+        "sample_rate_hz": 2100000,
+        "samples_per_window": 1024,
+        "window_count": 4
+      },
+      "model_loads": 1,
+      "pid": 210714,
+      "warmup_windows": 2
+    },
+    "service": "MainPID=210714\nResult=success\nActiveState=active\nSubState=running\n",
+    "estimated_total_hours_at_122_seconds_per_block": 84.58666666666667
+  },
+  "retained": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-validation-20260914/cleanup.json",
+      "bytes": 60,
+      "sha256": "d5a0e989cead0bca119c736c60c530f76581bad86837d9206a14997e1c220fed"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-validation-20260914/corpus-check.json",
+      "bytes": 305,
+      "sha256": "61fef787c441d3c3b72603759252b9e3f0ae1a9cc881fb489282bb49d081f5cd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-validation-20260914/startup.json",
+      "bytes": 1379,
+      "sha256": "ee33d794ccde2b71e4f28b0d591bb1c1f48598a77bc3073d1c7823c385a5d938"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-validation-20260914/tests.log",
+      "bytes": 556,
+      "sha256": "5f6819738b32cd5bf33f49c687a8bdf92ba712475d93a90b5ef507a44e5173e6"
+    }
+  ],
+  "retained_files": 4,
+  "retained_bytes": 2300,
+  "deleted_files": 0,
+  "deleted_bytes": 0,
+  "manual_delete_argv": [
+    "rm",
+    "-rf",
+    "--",
+    "/var/tmp/sdrharness-dev/rml2018a-all26-infer-validation-20260914"
+  ],
+  "active_inference_retention": "Service still owns its results and scratch; final retention.json is generated on normal/error exit. Do not clean the active root.",
+  "scope": "No RF, no training, no production admission or deployment."
+}

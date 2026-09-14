@@ -214,6 +214,33 @@ SigMF派生注释可从已提交索引重建。未提交raw/HDF5尾部、`.pendi
 真实文件系统上的96块合成IQ写入/重开/读回及故障注入见
 [存储验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13sigmfhdf5整档存储与中断留证)。
 
+## 26档封存语料离线识别（2026-09-14）
+
+入口：[rml2018a_snr_infer.py](../../jetson-agx/sdrharness/scripts/rml2018a_snr_infer.py)。
+`plan --campaign <26档采集根> --root <新推理根>`登记全部26档；`run --root <推理根>`
+核对采集完成凭据、每对封存凭据、冻结profile/标签和代码哈希，要求Spark已经停止。
+使用现有模型venv，不加载源数据集副本、不进行RF操作或训练。
+
+复用现有`RfV1Backend`，冻结epoch10、FP32权重/FP16 autocast，模型每次进程加载一次、预热两窗，
+保持已验证的batch1推理数值路径。按+30到−20处理，每档96块，每块1024行的source/raw/guard；
+最多7,667,712次模型调用、内部7天期限，systemd单次运行且不自动重启。该期限是执行上限，非耗时预测。
+开始每档前校验整个processed.h5哈希；每块再校验输入payload、行号/类别/源Z、有效掩码及复数RMS。
+这次没有修改模型或引入张量批推理，吞吐由实际进度估算。
+
+逐块`blocks/<有符号SNR>-<块号>.npz`保存FP32的24类logits、有效掩码、原始source_row/class_id；
+对应JSON保存输入/输出SHA与统计，原子落盘。质量与背景继续引用父级封存HDF5/SigMF，不复制IQ。
+`summary.json`按源SNR及24类混淆矩阵分别汇总三组，保留完整分母、缺失输入、SINR有效性/原因及2dB分箱。
+SINR invalid不排除模型识别；未同步等缺失输入保留NaN logits和false mask。
+类别名称使用server-v1映射，保持provisional；全量是工程对照，不是独立locked-test成绩。
+
+本次推理根：`/var/tmp/sdrharness-dev/rml2018a-all26-infer-20260914`。
+后台单元：`sdr-rml2018a-all26-infer-20260914.service`；读取`state.json`或`run.log`查看进度。
+停止：`systemctl --user stop sdr-rml2018a-all26-infer-20260914.service`，也可创建推理根`STOP`。
+已提交块可在显式再次run时校验跳过；未提交NPZ/partial文件不会覆盖，需保留现场后检查，不能盲重启。
+`complete.json`只在2496块全部识别并汇总后产生；退出释放模型/GPU租约，清理自身scratch，
+写`retention.json`记录精确大小/SHA及人工删除方法。SIGKILL或断电后的清理需另行核对，未声称自动修复。
+生产`recognizer_available=false`保持，Spark不会被此入口自动启动。
+
 ## 接收时预处理落盘，之后常驻模型识别（2026-09-13早期有限入口）
 
 以下描述已验收的早期有限入口；不满足上方新增连续收发和原始/处理语料长期保留要求。
