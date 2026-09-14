@@ -71,3 +71,36 @@ SSD副本保留清单为其根下retention.json；复制审计根
 接入审计根`/var/tmp/sdrharness-dev/rml2018a-clean12-eval-20260914`的精确保留/删除数量、字节及哈希见
 其retention.json和Git启动证据；合成绘图样例已精确删除，模型/数据及历史识别结果保留。
 各根retention均给出精确人工删除命令；活动推理结果/缓存须先停止所属任务，不清理共享父目录。
+
+## 用户暂停与seed42原验证集核对
+
+用户随后要求仅使用seed42的8种模型，并明确“先暂停现在的识别”。已停止原服务，
+MainPID=0；SIGTERM按runner的InterruptedError退出，systemd标为failed/exit1是本次人工暂停，
+不是新增数据或模型失败。运行缓存已清理，源数据/权重保持；29块475,136条CNN2 source结果
+逐块SHA-256复核后保留。STOP和PAUSED.json阻止旧范围自动续跑，原进度脚本明确显示暂停。
+只记录下一模型选择，没有启动8模型的新识别或重跑GPU探针。
+
+通过connect-4090-server既有Aliyun SSH只读取得
+`/data/lzc/mamba/datasets/RML2018a_split_seed42_tr700_val150_te150.npz`，
+保存到`/home/jetson/sdrharness/local-assets/amc-eval/splits/server-seed42-20260914/`同名文件。
+3,906,318字节，源端与本地SHA-256均为
+`0a7cbd3b8a4b921b7dc3d0c37473322207c6bd9fb362ea58498c851fad9dc5a3`。
+文件实际seed42/比例0.7、0.15、0.15；train1,789,132、val383,385、test383,387。
+已核对三个索引数组无重复、无跨集合重叠且完整覆盖原2,555,904行；8份seed42模型配置
+均引用同名划分文件。无需重新随机切分，原val数组的成员与顺序可以直接复用。
+
+按全量已核对的source_row映射及当前usable/strict质量mask，得到：
+
+| 输入 | 原validation成员 | 可识别 | 因质量跳过 |
+| --- | ---: | ---: | ---: |
+| source | 383,385 | 383,385 | 0 |
+| raw | 383,385 | 379,662 | 3,723 |
+| guard | 383,385 | 371,108 | 12,277 |
+
+三组共同合格369,497源行。不能在接收文件当前位置重新shuffle或按前15%取样；
+复用原val成员后再按质量排除。精确索引复用不保证跨AGX/4090的浮点结果逐位一致，
+更不保证经过RF链路的准确率与服务器一致。仍属validation对照，不改写原test划分。
+
+[暂停/划分证据](../evidence/RML2018A_SEED42_PAUSE_2026-09-14.json)保存原计划保留边界、
+val索引哈希、分组数量、split与审计retention；本单元无新推理/RF/训练，无临时传输包。
+仅保留原NPZ和最小暂停/块收据清单，精确人工删除路径见各自retention.json。

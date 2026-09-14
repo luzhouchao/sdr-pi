@@ -1,0 +1,91 @@
+{
+  "schema": "rml2018a-user-pause-and-seed42-selection-v1",
+  "paused": true,
+  "paused_ns": 1789395602207919422,
+  "reason": "User explicitly paused current recognition",
+  "process_exited": true,
+  "main_pid": 0,
+  "exit_reason": "InterruptedError(operator signal)",
+  "committed_predictions": 475136,
+  "blocks": 29,
+  "last_model": "baseline_cnn2_stable-seed42",
+  "last_dataset": "source",
+  "next_model_seeds": [
+    {
+      "variant": "baseline_cnn2_stable",
+      "seed": 42
+    },
+    {
+      "variant": "baseline_resnet",
+      "seed": 42
+    },
+    {
+      "variant": "baseline_gru",
+      "seed": 42
+    },
+    {
+      "variant": "baseline_cldnn",
+      "seed": 42
+    },
+    {
+      "variant": "baseline_mcldnn",
+      "seed": 42
+    },
+    {
+      "variant": "baseline_mcformer",
+      "seed": 42
+    },
+    {
+      "variant": "baseline_mamc",
+      "seed": 42
+    },
+    {
+      "variant": "amc_mamba_d8",
+      "seed": 42
+    }
+  ],
+  "next_partition": "seed42 original validation indices inspected; no new inference started",
+  "split_file": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/splits/server-seed42-20260914/RML2018a_split_seed42_tr700_val150_te150.npz",
+    "bytes": 3906318,
+    "sha256": "0a7cbd3b8a4b921b7dc3d0c37473322207c6bd9fb362ea58498c851fad9dc5a3"
+  },
+  "split_counts": {
+    "train": 1789132,
+    "val": 383385,
+    "test": 383387
+  },
+  "validation_indices_sha256": "789f71e82178e5deffe2d78d7cf59540b43c0630c90707da60f63563654f2754",
+  "validation_coverage": {
+    "source": {
+      "validation_rows": 383385,
+      "eligible_rows": 383385,
+      "quality_skipped": 0,
+      "common_eligible_rows": 369497
+    },
+    "raw": {
+      "validation_rows": 383385,
+      "eligible_rows": 379662,
+      "quality_skipped": 3723,
+      "common_eligible_rows": 369497
+    },
+    "guard": {
+      "validation_rows": 383385,
+      "eligible_rows": 371108,
+      "quality_skipped": 12277,
+      "common_eligible_rows": 369497
+    }
+  },
+  "old_plan_preserved": true,
+  "runtime_cache_removed": true,
+  "audit_retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-seed42-pause-20260914/retention.json",
+    "bytes": 647,
+    "sha256": "6a8181d13c9965d5cafb3ac3812d354b5956b8263d914725d99573f11c7e8daf"
+  },
+  "split_retention": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/splits/server-seed42-20260914/retention.json",
+    "bytes": 622,
+    "sha256": "b22e19098f65f072d0f9379c80d104c058028c610f27d8952d6fd318ee3b4584"
+  }
+}
