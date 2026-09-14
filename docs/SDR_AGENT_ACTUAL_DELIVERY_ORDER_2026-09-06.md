@@ -175,8 +175,8 @@ GPU收发前初始化并常驻，RX结束继续排空处理队列，等落盘完
 运行入口及实时状态见[后台记录](validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-1426档后台调度与验证门)。
 服务遇错停机、保留现场，不自动重试；后续按实际失败或完成记录处理，不重跑已封存档。
 用户随后明确要求加载模型识别，已新增[整档语料离线识别入口](reference/RML2018A_FULL_RF_CAMPAIGN.md#26档封存语料离线识别2026-09-14)，
-原batch1任务已按用户提速要求停止，8192行提交结果保留。现改用[8192批量与并行读写](reference/RML2018A_FULL_RF_CAMPAIGN.md#当前大批量版本8192与并行读写)，
-仍执行三组source/raw/guard与冻结模型；新单次后台服务为`sdr-rml2018a-all26-infer-b8192-20260914.service`。
+用户最新要求全部改用GPU batch1024从头识别，并删除旧识别结果。旧batch1/batch8192服务均已停止，旧结果目录已按要求删除；原始RF语料和批量验证依据保留。
+继续复用[批量与并行读写](reference/RML2018A_FULL_RF_CAMPAIGN.md#当前运行1024从头识别)，执行三组source/raw/guard与冻结模型；当前单次后台服务为`sdr-rml2018a-all26-infer-b1024-20260914.service`。
 以新推理根state/complete凭据为实际进度。不重发、不训练、不逐块监看；完成后复核全分母、源Z/类别/SINR分层结果。
 本次处理仍慢于RF，由有限RAM吸收积压，不能直接扩成任意时长持续流。
 完成条件见[当前操作合同](reference/RML2018A_FULL_RF_CAMPAIGN.md#用户最新选择同时收发gpu处理双份结果落盘2026-09-13)。

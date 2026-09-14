@@ -241,7 +241,21 @@ SINR invalid不排除模型识别；未同步等缺失输入保留NaN logits和f
 写`retention.json`记录精确大小/SHA及人工删除方法。SIGKILL或断电后的清理需另行核对，未声称自动修复。
 生产`recognizer_available=false`保持，Spark不会被此入口自动启动。
 
-### 当前大批量版本：8192与并行读写
+### 当前运行：1024从头识别
+
+用户最新要求GPU每批1024、全部26档从头重新识别，并删除此前识别结果。
+当前根为`/var/tmp/sdrharness-dev/rml2018a-all26-infer-b1024-20260914`，
+服务为`sdr-rml2018a-all26-infer-b1024-20260914.service`。
+复用已通过的1024批量数值验证，保留并行读写/三组对照；没有改代码、重发或删除原始IQ/预处理HDF5。
+旧batch1和batch8192结果根已按用户要求删除，历史记录中保留状态只代表当时；删除依据见
+[切换记录](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-141024批量重跑与旧结果删除)。
+
+进度：读取当前根`state.json`，`completed_rows`是已提交的源样本数，分母2555904；
+`completed_blocks`分母2496，每96块一档。GPU已处理但仍待提交的数据不会预先计为完成。
+停止：`systemctl --user stop sdr-rml2018a-all26-infer-b1024-20260914.service`。
+最终完成与清理仍按当前根`complete.json`/`retention.json`核对。
+
+### 8192版本验证与并行读写
 
 用户随后要求加大GPU批量并继续提速。旧batch1单元已主动停止，8192行已提交结果只读保留；
 新根`/var/tmp/sdrharness-dev/rml2018a-all26-infer-b8192-20260914`以统一新计算方式识别全部26档，

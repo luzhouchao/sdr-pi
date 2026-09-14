@@ -1,0 +1,35 @@
+{
+  "purpose": "User requested full batch1024 restart and deletion of previous inference results; source IQ/HDF5 preserved",
+  "deletion_record": "/var/tmp/sdrharness-dev/rml2018a-infer-reset-20260914/deletion.json",
+  "deletion_sha256": "48c19220710255a74a62c81f9aae069ea035f607cb1ec2266b14640fb799a47d",
+  "retained_files": 1,
+  "retained_bytes": 418278,
+  "manual_delete_argv": [
+    "rm",
+    "-rf",
+    "--",
+    "/var/tmp/sdrharness-dev/rml2018a-infer-reset-20260914"
+  ],
+  "deleted_files": 1774,
+  "deleted_bytes": 279955848,
+  "current_root": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-b1024-20260914",
+  "service": "sdr-rml2018a-all26-infer-b1024-20260914.service",
+  "plan_sha256": "5523d0f7b1036f06550ae51c83ce87a8a2e7cd57c74131561f19a9a0ceabe1de",
+  "startup": {
+    "batch_size": 1024,
+    "completed_blocks": 0,
+    "completed_rows": 0,
+    "elapsed_seconds": 82.09389549898333,
+    "model_loads": 1,
+    "model_windows": 11279,
+    "phase": "inferring",
+    "pid": 218854,
+    "source_snr_db": 30,
+    "started_ns": 1789354714397784314,
+    "tag": "packed-source-raw-guard",
+    "total_blocks": 2496,
+    "updated_ns": 1789354796491669573
+  },
+  "software_commit": "10cc5aa853af3faa4fc4d376bb20ac42417f6348",
+  "active_retention": "Current runtime owns its new results/scratch; not part of previous-result deletion."
+}
