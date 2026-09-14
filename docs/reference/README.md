@@ -6,6 +6,7 @@
 
 | 主题 | 文档 |
 | --- | --- |
+| 4090原始模型及2018A基线权重、旧epoch-010删除边界 | [模型集合](RML2018A_MODEL_COLLECTION.md) |
 | AGX双SDR目录、独立运行时与共享RadioML2018A | [设备工作区](../../devices/README.md) |
 | RadioML2018A全部原始样本的B210发射/AGX工程识别 | [全量脚本操作](RML2018A_FULL_RF_CAMPAIGN.md) |
 | 当前RF配置、优化适用条件、复现及论文表述 | [复现与论文范围](RML2018A_RF_REPRODUCTION.md) |

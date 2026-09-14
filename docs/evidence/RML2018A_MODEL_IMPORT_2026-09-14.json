@@ -1,0 +1,244 @@
+{
+  "schema": "rml2018a-model-import-and-epoch010-deletion-v1",
+  "destination": "/home/jetson/sdrharness/local-assets/amc-eval/checkpoints/rml2018a/server-models-20260914",
+  "source_repo": "/data/lzc/mamba",
+  "source_commit": "3738cd3b530f3dae24783da2324170ddcd05888f",
+  "model_variants": 8,
+  "checkpoints": 12,
+  "checkpoint_bytes": 35565796,
+  "transfer_files": 154,
+  "transfer_bytes": 36687916,
+  "transport": "Existing Aliyun SSH route; Tailscale connectivity check timed out; no SSH/network configuration changed",
+  "models": [
+    {
+      "display_name": "CNN2-stable",
+      "variant": "baseline_cnn2_stable",
+      "seed": 42,
+      "checkpoint": {
+        "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/baseline_cnn2_stable/cnn2_stable_rml2018a_b128_seed42_nw8/checkpoints/best.pt",
+        "relative": "baseline_cnn2_stable/seed42/best.pt",
+        "bytes": 10348274,
+        "mtime_ns": 1786125684152737332,
+        "sha256": "be0a2705ef720e577491b99b9d574308e97ddd6f0c2c9b9f812dc6d123b5fe4e"
+      },
+      "backend": "pytorch_cnn2_stable",
+      "input_length": 1024,
+      "num_classes": 24,
+      "archived_test_acc": 0.5488109925479998
+    },
+    {
+      "display_name": "ResNet",
+      "variant": "baseline_resnet",
+      "seed": 42,
+      "checkpoint": {
+        "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/baseline_resnet/resnet_rml2018a_b128_seed42_nw8/checkpoints/best.pt",
+        "relative": "baseline_resnet/seed42/best.pt",
+        "bytes": 7737426,
+        "mtime_ns": 1785635291963148075,
+        "sha256": "a713257be65d757f52aaa74b54768bb6b1ef59315eaf27593189e854d98da1fb"
+      },
+      "backend": "pytorch_resnet2d",
+      "input_length": 1024,
+      "num_classes": 24,
+      "archived_test_acc": 0.5995691038037283
+    },
+    {
+      "display_name": "GRU",
+      "variant": "baseline_gru",
+      "seed": 42,
+      "checkpoint": {
+        "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/baseline_gru/gru_rml2018a_b128_seed42_nw8/checkpoints/best.pt",
+        "relative": "baseline_gru/seed42/best.pt",
+        "bytes": 1856196,
+        "mtime_ns": 1785667660463447584,
+        "sha256": "445f9fa6ebcf562ebd5d3bc58f085324238c5789f94ab2087297c9e232f4e1ac"
+      },
+      "backend": "pytorch_gru",
+      "input_length": 1024,
+      "num_classes": 24,
+      "archived_test_acc": 0.6436811889813687
+    },
+    {
+      "display_name": "CLDNN",
+      "variant": "baseline_cldnn",
+      "seed": 42,
+      "checkpoint": {
+        "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/baseline_cldnn/cldnn_rml2018a_b128_seed42_nw8/checkpoints/best.pt",
+        "relative": "baseline_cldnn/seed42/best.pt",
+        "bytes": 1113932,
+        "mtime_ns": 1785660406397815929,
+        "sha256": "5740940ea2a3e6bfb97c25543a2a12555fef3295e322cbc58144b225a801302d"
+      },
+      "backend": "pytorch_cldnn",
+      "input_length": 1024,
+      "num_classes": 24,
+      "archived_test_acc": 0.5158703868414943
+    },
+    {
+      "display_name": "MCLDNN",
+      "variant": "baseline_mcldnn",
+      "seed": 42,
+      "checkpoint": {
+        "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/baseline_mcldnn/mcldnn_rml2018a_b128_seed42_nw8/checkpoints/best.pt",
+        "relative": "baseline_mcldnn/seed42/best.pt",
+        "bytes": 4930676,
+        "mtime_ns": 1785523020109400499,
+        "sha256": "1ad99acc72f475051eb2032c173d86429a7380faf392786fc478842a62662ae3"
+      },
+      "backend": "pytorch_mcldnn",
+      "input_length": 1024,
+      "num_classes": 24,
+      "archived_test_acc": 0.637324687587216
+    },
+    {
+      "display_name": "MCformer",
+      "variant": "baseline_mcformer",
+      "seed": 42,
+      "checkpoint": {
+        "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/baseline_mcformer/mcformer_rml2018a_b128_seed42_nw8/checkpoints/best.pt",
+        "relative": "baseline_mcformer/seed42/best.pt",
+        "bytes": 960174,
+        "mtime_ns": 1785509709934136728,
+        "sha256": "d3881b822b917f4fb2b6ac3f65efac60bd7ff581198a6986c0aba66038a93475"
+      },
+      "backend": "pytorch_mcformer",
+      "input_length": 1024,
+      "num_classes": 24,
+      "archived_test_acc": 0.6240561104054128
+    },
+    {
+      "display_name": "MAMC",
+      "variant": "baseline_mamc",
+      "seed": 42,
+      "checkpoint": {
+        "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/baseline_mamc/mamc_rml2018a_b128_seed42_nw8/checkpoints/best.pt",
+        "relative": "baseline_mamc/seed42/best.pt",
+        "bytes": 162397,
+        "mtime_ns": 1785273133679978982,
+        "sha256": "b81433ac32903b83dfac17858c2b36963c7383f121126d852586f87a85024b85"
+      },
+      "backend": "real_mamba1_mamc",
+      "input_length": 1024,
+      "num_classes": 24,
+      "archived_test_acc": 0.4868501018553055
+    },
+    {
+      "display_name": "Shared-Bi / original Mamba D8",
+      "variant": "amc_mamba_d8",
+      "seed": 42,
+      "checkpoint": {
+        "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed42_nw8/checkpoints/best.pt",
+        "relative": "amc_mamba_d8/seed42/best.pt",
+        "bytes": 1691293,
+        "mtime_ns": 1784544418697035906,
+        "sha256": "6f984a78639a8e8e15403a1257b264839c6057165b3ae9ac8640ecc056f78143"
+      },
+      "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+      "input_length": 1024,
+      "num_classes": 24,
+      "archived_test_acc": 0.6332087420804565
+    },
+    {
+      "display_name": "Shared-Bi / original Mamba D8",
+      "variant": "amc_mamba_d8",
+      "seed": 43,
+      "checkpoint": {
+        "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed43_nw8/checkpoints/best.pt",
+        "relative": "amc_mamba_d8/seed43/best.pt",
+        "bytes": 1691357,
+        "mtime_ns": 1787572817391338490,
+        "sha256": "5e00b5eef2a01323da374700f658472ad990027ec2a95e99998ee963a0cbb33a"
+      },
+      "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+      "input_length": 1024,
+      "num_classes": 24,
+      "archived_test_acc": 0.6261792914209402
+    },
+    {
+      "display_name": "Shared-Bi / original Mamba D8",
+      "variant": "amc_mamba_d8",
+      "seed": 44,
+      "checkpoint": {
+        "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed44_nw8/checkpoints/best.pt",
+        "relative": "amc_mamba_d8/seed44/best.pt",
+        "bytes": 1691357,
+        "mtime_ns": 1787580430569081274,
+        "sha256": "e5a1bccdaf4b0290f41b26cb05b8b98565df9d5b07147727d79bbf43f6cb42dd"
+      },
+      "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+      "input_length": 1024,
+      "num_classes": 24,
+      "archived_test_acc": 0.6382532532401985
+    },
+    {
+      "display_name": "Shared-Bi / original Mamba D8",
+      "variant": "amc_mamba_d8",
+      "seed": 45,
+      "checkpoint": {
+        "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed45_nw8/checkpoints/best.pt",
+        "relative": "amc_mamba_d8/seed45/best.pt",
+        "bytes": 1691357,
+        "mtime_ns": 1787620676617585213,
+        "sha256": "794f94ff8e1df81f9e9da6ed95e1201daa9a06876c53efe136bf58ce0a7479c4"
+      },
+      "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+      "input_length": 1024,
+      "num_classes": 24,
+      "archived_test_acc": 0.6271913236494717
+    },
+    {
+      "display_name": "Shared-Bi / original Mamba D8",
+      "variant": "amc_mamba_d8",
+      "seed": 46,
+      "checkpoint": {
+        "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed46_nw8/checkpoints/best.pt",
+        "relative": "amc_mamba_d8/seed46/best.pt",
+        "bytes": 1691357,
+        "mtime_ns": 1787626415329929197,
+        "sha256": "b998125611730cdb83e1f8bb5d4562ec9bff7bcd4430481d8c44547f011993c6"
+      },
+      "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+      "input_length": 1024,
+      "num_classes": 24,
+      "archived_test_acc": 0.6317115603815466
+    }
+  ],
+  "verification": {
+    "all_file_hashes_match": true,
+    "all_class_orders_match_server_v1": true,
+    "original_seed44_identical": true,
+    "cpu_safe_load_passed": 12,
+    "cuda_initialized": false,
+    "model_forward_runs": 0
+  },
+  "deleted_epoch010": {
+    "reason": "User explicitly requested deletion of the four-window fine-tuned model weights",
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/checkpoints/rml2018a/rf-v1-ft-batched-seed44/epoch-010.pt",
+    "bytes": 1726724,
+    "sha256": "a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054",
+    "deleted": true,
+    "original_single_window_checkpoint_preserved": "/home/jetson/sdrharness/local-assets/amc-eval/checkpoints/rml2018a/seed44/best.pt",
+    "rf_v1_profile": "historical frozen profile retained; its checkpoint is now intentionally absent",
+    "checked_no_file_holder": true,
+    "deleted_ns": 1789389729111758477
+  },
+  "model_manifest": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/checkpoints/rml2018a/server-models-20260914/manifest.json",
+    "bytes": 81937,
+    "sha256": "031605026b5fb1e3ba9968daf009d6cacc9d2b6b30d3d4ac194b060914361a25"
+  },
+  "model_retention": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/checkpoints/rml2018a/server-models-20260914/retention.json",
+    "bytes": 41106,
+    "sha256": "d08ee55d90ae1f10de418b667fcc94201ead1fef58bbcf64efec41e1c63ebd10"
+  },
+  "audit_retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-model-import-20260914/retention.json",
+    "bytes": 1878,
+    "sha256": "1ce1c9cea47fad60be6550079651d612ebd642fdea6026a3ff91ea827075c777"
+  },
+  "recognizer_available": false,
+  "rf_calls": 0,
+  "training_calls": 0,
+  "production_replacement": false
+}

@@ -60,8 +60,11 @@ Cargo 包/库名 `sdr-agent-controller` 无需改名；不要另建重复实现�
 全量结果单列为工程对照，不用于调参后再作为独立locked-test准入成绩；原冻结划分/审计不改写。
 该例外仅适用于当前明确授权的全量RF任务，普通“继续”或部署不扩大为其他模型实验。
 
-- 沿用冻结 epoch-10、FP16 autocast + FP32 权重和 RF-v1；不自行训练、不重跑
-  完整精度实验、不自行重跑独立 locked-test 准入；当前全量RF工程源访问按本节明确授权例外执行。
+- 历史 RF 工程结果使用 epoch-10、FP16 autocast + FP32 权重和 RF-v1。用户于2026-09-14
+  明确删除 AGX 四窗微调 epoch-010 权重；不得自动恢复或将旧冻结配置指向其他模型。
+  新导入的4090模型见[权重集合](docs/reference/RML2018A_MODEL_COLLECTION.md)，仅完成传输与CPU参数检查，
+  不代表推理适配或生产准入。不自行训练、不重跑完整精度实验或独立 locked-test 准入；
+  当前全量RF工程源访问按本节明确授权例外执行。
 - 保持 `recognizer_available=false`。未来能力必须来自负责的 Adapter/Worker
   实测健康与已准入制品，不能由配置、测试替身或接口存在推定为 true。
 - 独立 known-RF/OOD 证据不足时，不冻结生产温度或拒识阈值。数字 ID 可信，

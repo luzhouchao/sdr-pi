@@ -1,6 +1,6 @@
 # SDR Agent project checklist
 
-Last reviewed: 2026-09-13
+Last reviewed: 2026-09-14
 
 This is the living source of truth for implementation status. Check an item only
 after the exact wording is implemented and verified. Split partial work into a
@@ -19,6 +19,8 @@ this file retains the detailed delivery and evidence ledger.
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
+- [x] 4090模型导入与旧四窗微调权重删除：8种模型/12份权重及配置、标签/源码身份已下载，154文件逐一SHA-256一致，12份CPU安全读取/有限值检查通过；epoch-010已按用户要求精确删除，原始seed44和实收IQ/结果保留。临时2文件36,868,214字节已删除，模型及最小审计登记保留。见[验证](validation/RML2018A_MODEL_IMPORT_2026-09-14.md)。历史epoch-10验证仍为当时事实，其权重当前已不可用。
+- [ ] 新导入模型的AGX运行适配：尚未验证模型结构strict load、前向或GPU推理；不得据导入成功替换旧Worker配置或开启生产识别。本单元未执行新模型评估。
 - [x] CodeGraph本地索引已初始化：180文件、5057节点、16234关系，CLI和MCP查源码/调用关系通过；索引Git忽略，实验资料仍按需读，不启动RF/模型。见[验收](validation/CODEGRAPH_INITIALIZATION_2026-09-10.md)。
 - [x] B210迁移AGX及双设备工作区：B210 USB与P201网口分别提供目录/执行入口，共享同一份RadioML2018A；NX的UHD工具和A7-100T/FX3运行时8文件已隔离安装，复用相同系统libuhd。实际USB3/两次寄存器回环、P201只读健康、最终AGX计划加载及43项测试通过；精确清理6文件33,263字节，运行时及最小证据已登记。无RF流/模型/生产部署。见[迁移验证](validation/B210_AGX_MIGRATION_2026-09-11.md)。
 - [x] AGX本机B210→P201有线有限收发及主动停止：用户确认50dB串联后改为30dB；低增益失败保留，30dB TX80/RX40两批48条全同步、实收45/48。首次取消残留FIFO的失败已记录并修正，新根主动取消/完整恢复通过；47测试、192模型输入哈希/质量复核及精确清理完成。见[同轴验证](validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12同轴衰减接收幅度与主动停止)。
