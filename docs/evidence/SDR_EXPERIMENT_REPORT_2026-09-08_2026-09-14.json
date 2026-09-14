@@ -1,0 +1,79 @@
+{
+  "schema": "sdr-experiment-html-report-v1",
+  "period": [
+    "2026-09-08",
+    "2026-09-14"
+  ],
+  "baseline_commit": "b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e",
+  "outputs": [
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14-both.svg",
+      "bytes": 28802,
+      "sha256": "dc8236f49f0516897438598f0999390f890cc39e2e12ab946c4d10cde3813977"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14-four.svg",
+      "bytes": 25311,
+      "sha256": "e98aa6469509a8f8b85dad93d79902dc6ef265f244a57e5e7cfa814fea410039"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14-single.svg",
+      "bytes": 15273,
+      "sha256": "6f5ec5cb5dbc136fe6b254ab2616a13a2fc14016675c019907689267ef17e338"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14.csv",
+      "bytes": 2891,
+      "sha256": "0004a6e804aa4a969142e14a098c7f415171454979e8ee36bdb2eceae14adc52"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14.html",
+      "bytes": 143414,
+      "sha256": "917699b7acdfb71af9573d8e8330fffe58a6281e7280a2a64d4bce3d93268aff"
+    },
+    {
+      "path": "/home/jetson/sdrharness/docs/reports/SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14.json",
+      "bytes": 24448,
+      "sha256": "0a1b698fb874568a3c31dea54288570fa7cfec0e5f9ae465ab9b74ce3b10ae6f"
+    }
+  ],
+  "source_manifest": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-report-20260914/source-and-output-manifest.json",
+    "bytes": 8093,
+    "sha256": "9147e8d04306b4a4a0f260647592714fdffbae2eea7baeffb8fa3889f373af06"
+  },
+  "browser_validation": {
+    "passed": true,
+    "checks": [
+      "desktop layout, internal anchors, unique IDs and offline initial render",
+      "all three chart modes",
+      "class range/search/empty/reset",
+      "CSV download matches all 26 rows and six numerical series",
+      "print expands details and produces PDF",
+      "390px mobile layout without page horizontal overflow"
+    ],
+    "page_errors": [],
+    "external_network_requests": []
+  },
+  "visual_review": [
+    "desktop cover and summary",
+    "desktop results and scientific curve",
+    "390px mobile cover"
+  ],
+  "print_validation": {
+    "pages": 12,
+    "paper": "A4",
+    "pdf_generated_for_validation_only": true
+  },
+  "retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-report-20260914/retention.json",
+    "bytes": 2817,
+    "sha256": "d7c9a0f511516085f3ad7e8a45446135a0a4b372480f755cf5f49c6ec33b003c"
+  },
+  "rf_calls": 0,
+  "model_calls": 0,
+  "training_calls": 0,
+  "iq_files_deleted": 0,
+  "iq_files_confirmed_present": 64,
+  "external_backup_currently_mounted": false
+}

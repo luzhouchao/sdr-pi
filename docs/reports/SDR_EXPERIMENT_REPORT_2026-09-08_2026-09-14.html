@@ -1,0 +1,1719 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>SDR实验报告｜2026年9月8日—14日</title><meta name="description" content="国产N210、P201和AGX七天实验：背景隔离、LO泄漏、全量同轴收发、单窗四窗识别与可复现证据。"><style>
+:root{--ink:#173753;--muted:#526c7e;--blue:#226b99;--teal:#087a83;--amber:#9a610d;--line:#d4e0e8;--paper:#fff;--wash:#f0f5f9;--purple:#7859a5}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:28px}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.85 "Noto Sans CJK SC","Microsoft YaHei",sans-serif}a{color:var(--blue);text-underline-offset:4px}a:hover{color:var(--teal)}button,select,input{font:inherit}button,select{cursor:pointer}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #e2ad37;outline-offset:4px}button{background:#fff;color:var(--ink);border:1px solid var(--line);padding:8px 15px;border-radius:6px;font-size:13px}button:hover{border-color:var(--blue)}.bar{max-width:1320px;margin:auto;padding:24px 36px;display:flex;gap:16px;justify-content:space-between;align-items:center}.brand{font:bold 12px/1.5 "DejaVu Sans Mono",monospace;letter-spacing:1px}.actions{display:flex;gap:8px;flex-wrap:wrap}.sheet{max-width:1280px;margin:0 auto 64px;background:var(--paper);box-shadow:0 14px 60px #17375312;border:1px solid var(--line)}.cover{padding:52px 64px 34px;border-top:6px solid var(--blue);background:linear-gradient(115deg,#fff 60%,#f1f8fb)}.kicker{color:var(--blue);font-size:12px;font-weight:700;letter-spacing:2px}.cover h1{font:600 clamp(28px,3.6vw,46px)/1.45 "Noto Serif CJK SC","Songti SC",serif;letter-spacing:-1px;margin:18px 0 20px;max-width:980px}.deck{font-size:17px;max-width:900px;line-height:1.95}.meta{font-size:12px;color:var(--muted);display:flex;gap:20px;flex-wrap:wrap;margin-top:22px}.journey{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:32px;background:white;border:1px solid var(--line);border-radius:8px;overflow:hidden}.journey div{position:relative;padding:14px 16px;border-right:1px solid var(--line)}.journey div:last-child{border:0;background:#eaf6f5}.journey strong{display:block;font:700 17px/1.5 "DejaVu Sans Mono",monospace}.journey span{display:block;font-size:11px;color:var(--muted)}.layout{display:grid;grid-template-columns:196px minmax(0,1fr);gap:36px;padding:40px 50px 60px}.toc{position:sticky;top:26px;align-self:start;font-size:12px}.toc p{font-weight:bold;font-size:11px;letter-spacing:1px;color:var(--muted)}.toc a{display:block;text-decoration:none;padding:7px 9px;border-left:2px solid var(--line);color:var(--muted)}.toc a[aria-current="true"]{color:var(--blue);border-color:var(--blue);background:#edf5fa;font-weight:bold}.toc small{display:block;margin:22px 8px;color:var(--muted);font-size:11px}.content{min-width:0}section{margin-bottom:55px}h2{font:600 25px/1.6 "Noto Serif CJK SC",serif;margin:0 0 22px;padding-bottom:12px;border-bottom:2px solid var(--ink)}h2 .n{font:12px "DejaVu Sans Mono",monospace;color:var(--blue);margin-right:12px;vertical-align:middle}h3{font-size:17px;line-height:1.65;margin:23px 0 9px}p{margin:10px 0 15px}ul,ol{padding-left:23px}li{padding-left:3px;margin:7px 0}.lead{font-size:18px;font-weight:500}.callout{padding:16px 21px;background:#eef7fa;border-left:4px solid var(--blue);margin:20px 0}.callout.warn{background:#fff8ea;border-color:#c28b2a}.callout p{margin:4px 0}.cite{font:11px "DejaVu Sans Mono",monospace;text-decoration:none;margin-left:4px;white-space:nowrap;vertical-align:super}.pair{display:grid;grid-template-columns:1fr 1fr;gap:24px}.pair>div{padding:0 0 8px}.label{font-size:12px;font-weight:bold;color:var(--teal);letter-spacing:1px}.label.warn{color:var(--amber)}.day{display:grid;grid-template-columns:65px minmax(0,1fr);gap:18px;margin:0 0 26px}.daytime{font:600 21px/1.4 "DejaVu Sans Mono",monospace;color:var(--blue);padding-top:5px}.daytime small{display:block;font:11px/1.8 sans-serif;color:var(--muted)}.daybody{border-left:2px solid var(--line);padding:0 0 15px 22px}.day h3{margin-top:0}.day p,.day li{font-size:14px;line-height:1.95}.result{background:#f3f7f9;border-radius:6px;padding:10px 14px;font-size:13px}.badge{display:inline-block;font-size:10px;padding:1px 7px;border-radius:4px;background:#e8f4f0;color:#17684e;margin:0 5px 5px 0}.badge.caution{background:#fff1d7;color:#875507}.badge.neutral{background:#edf0f5;color:#52657a}.table-scroll{overflow-x:auto;margin:16px 0 12px;max-width:100%}table{border-collapse:collapse;width:100%;font-size:12px;line-height:1.75;text-align:right;font-variant-numeric:tabular-nums}caption{text-align:left;color:var(--muted);font-size:11px;margin-bottom:9px}th,td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}th{font-weight:600}thead th{background:#edf3f7;border-top:1px solid var(--line)}th:first-child,td:first-child{text-align:left}tbody th{font-weight:500}tbody tr:nth-child(even){background:#f8fafc}.strong{font-weight:bold;color:var(--teal)}.note{font-size:12px;color:var(--muted);line-height:1.9}.chart{margin:18px 0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:white}.chart svg{display:block;width:100%;height:auto}.chart figcaption{font-size:11px;padding:8px 17px 15px;color:var(--muted)}.chart-tools{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0 8px;align-items:center}.chart-tools button[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:white}.legend{font-size:12px;display:flex;flex-wrap:wrap;gap:17px}.legend span:before{content:"";display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px;background:var(--c)}[hidden]{display:none!important}details{margin:16px 0;padding:12px 16px;border:1px solid var(--line);border-radius:6px}summary{cursor:pointer;font-size:13px;font-weight:600}code,pre{font-family:"DejaVu Sans Mono",monospace;font-size:11px;overflow-wrap:anywhere}pre{padding:16px;background:#f1f5f8;line-height:1.8;white-space:pre-wrap;border-radius:6px}.pipeline{display:grid;grid-template-columns:repeat(4,1fr);margin:20px 0;gap:8px}.pipeline>div{background:#f0f6fa;border-top:3px solid var(--blue);padding:13px 12px;font-size:12px;line-height:1.7}.pipeline strong{display:block;margin-bottom:7px}.pipeline small{color:var(--muted)}.formula{font:13px/2 "DejaVu Sans Mono",monospace;background:#f2f6fa;padding:15px 18px;border-radius:6px}.facts{display:grid;grid-template-columns:150px 1fr;margin:20px 0;font-size:13px}.facts dt,.facts dd{margin:0;padding:9px 11px;border-bottom:1px solid var(--line)}.facts dt{background:#f1f6f9;font-weight:600}.refs{font-size:12px;line-height:1.8}.refs li{margin-bottom:11px;overflow-wrap:anywhere}.refs a{font-weight:500}.footer{padding:22px 50px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:20px}.filterbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}.filterbar input,.filterbar select{padding:7px 9px;border:1px solid var(--line);border-radius:5px;max-width:100%;background:white;color:var(--ink)}.filterbar label{display:flex;align-items:center;gap:7px}.axisnotice{font-size:12px;background:#f0f6fa;padding:9px 14px;margin-top:10px}.print-only{display:none}.support-note{border-top:1px solid var(--line);margin-top:24px;padding-top:14px;font-size:12px;color:var(--muted)}
+@media(max-width:1000px){.layout{grid-template-columns:150px minmax(0,1fr);padding:30px;gap:23px}.cover{padding:35px}.journey div{padding:12px 9px}.journey strong{font-size:14px}}
+@media(max-width:760px){.bar{padding:15px 16px;align-items:flex-start}.brand{max-width:150px}.sheet{border-left:0;border-right:0;margin-bottom:0}.cover{padding:25px 20px}.cover h1{font-size:28px}.deck{font-size:14px}.layout{display:block;padding:25px 20px}.toc{position:static;display:flex;flex-wrap:wrap;gap:4px;margin-bottom:28px}.toc p,.toc small{display:none}.toc a{padding:5px 8px;font-size:11px;border:1px solid var(--line);border-radius:4px}.journey{grid-template-columns:repeat(2,1fr)}.journey div:last-child{grid-column:span 2}.journey div{border-bottom:1px solid var(--line)}.pair{grid-template-columns:1fr;gap:7px}.day{grid-template-columns:48px minmax(0,1fr);gap:10px}.daytime{font-size:17px}.daybody{padding-left:14px}.pipeline{grid-template-columns:1fr 1fr}.facts{grid-template-columns:108px 1fr}h2{font-size:22px}.chart{margin-left:-8px;margin-right:-8px}.footer{padding:18px 20px;display:block}section{margin-bottom:38px}body{font-size:14px}th,td{padding:8px}.chart-tools button{font-size:11px;padding:7px 10px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@page{size:A4;margin:15mm 13mm}
+@media print{body{background:white;color:#111;font-size:10pt;line-height:1.7}.bar,.toc,.actions,.chart-tools,.filterbar{display:none!important}.sheet{box-shadow:none;border:0;margin:0;max-width:none}.cover{padding:0 0 20px;background:white;border-top:3px solid #173753}.cover h1{font-size:26pt}.deck{font-size:11pt}.layout{display:block;padding:25px 0 0}.journey{margin-top:18px}.journey strong{font-size:12pt}.content{width:100%}section{margin-bottom:26px}h2{font-size:17pt;break-after:avoid}h3{font-size:12pt;break-after:avoid}p,li{orphans:3;widows:3}.day p,.day li{font-size:9.5pt}.day{break-inside:avoid;margin-bottom:14px}.chart{break-inside:avoid}.pair{gap:18px}.chart svg{max-height:85mm}table{font-size:8pt}thead{display:table-header-group}tr{break-inside:avoid}th,td{padding:5px 6px}.table-scroll{overflow:visible}.pipeline{break-inside:avoid}.facts{break-inside:avoid}.refs{font-size:8pt}.footer{padding:10px 0;display:block}.print-only{display:block}.chart-view:not([data-view="four"]){display:none!important}.chart-view[data-view="four"]{display:block!important}.cover,.callout,.result,thead th,.pipeline>div{print-color-adjust:exact;-webkit-print-color-adjust:exact}a{color:inherit}.note{font-size:8pt}.badge{font-size:7pt}details{border:0;padding:0}details>summary{font-size:10pt;margin-top:15px}.meta{font-size:8pt}.support-note{font-size:8pt}}
+</style></head><body>
+<div class="bar"><div class="brand">SDR HARNESS<br>EXPERIMENT REPORT / 2026.09</div><div class="actions"><button id="download-csv">下载逐 SNR 数据</button><button id="print-report">打印 / 保存 PDF</button></div></div>
+<main class="sheet">
+<header class="cover"><div class="kicker">实验阶段报告 · 2026 年 9 月 8 日—14 日</div><h1>从输入干扰排查，<br>到全量同轴调制识别</h1><p class="deck">围绕国产 N210（B210 兼容）、P201 与 Jetson AGX，记录七天内的背景隔离、频段与天线对照、LO 泄漏归因、接收校正和全量 RadioML2018A 收发识别。重点回答：哪些现象已经证实，哪些优化有效，以及当前成绩能够支持什么结论。</p><div class="meta"><span>编制日期：2026-09-14</span><span>证据基线：<code>b2329b6</code></span><span>范围：工程实验 · 非独立空口准入</span></div>
+<div class="journey" aria-label="实验路线变化"><div><strong>2.4 / 5 GHz</strong><span>09.09 · 背景分布与负载隔离</span></div><div><strong>3.5 GHz</strong><span>09.10 · 单音未获确认</span></div><div><strong>433.920 MHz</strong><span>09.10 · 单音通过，调制仍失败</span></div><div><strong>2455 MHz</strong><span>09.11 · 回到2.4GHz与条件SINR</span></div><div><strong>20 dB 同轴</strong><span>09.12–14 · LO处理与全量验证</span></div></div></header>
+<div class="layout"><nav class="toc" aria-label="报告目录"><p>阅读导航</p><a href="#overview">结论摘要</a><a href="#timeline">七天实验过程</a><a href="#setup">最终实验链路</a><a href="#results">全量识别结果</a><a href="#processing">四窗与SINR定义</a><a href="#limits">局限与论文表述</a><a href="#archive">数据与复现状态</a><a href="#references">证据索引</a><small>正文、图表与数据均内嵌，单个HTML可离线阅读。证据链接指向固定版本仓库，需联网打开。</small></nav>
+<div class="content">
+<section id="overview"><h2><span class="n">01</span>结论摘要</h2><p class="lead">已完成全 26 个源 SNR 档、24 类调制、2,555,904 条源样本的同轴收发与识别；四窗校正接收整体 ACC 为 <strong>61.68%</strong>，源 SNR 10～30 dB 区间为 <strong>98.17%</strong>。<a class="cite" href="#ref-21" aria-label="证据 21">[21]</a><a class="cite" href="#ref-22" aria-label="证据 22">[22]</a></p>
+<div class="pair"><div><div class="label">已经建立的证据</div><ul><li>外部输入存在时变强活动，负载与天线的反向对照支持这一点。</li><li>同轴下的主要窄带残差跟随 TX LO 偏移，强烈支持发射 LO 相关泄漏/杂散。</li><li>幅度/增益配对、保护区相消和四窗联合判决在已登记条件下改善结果。</li><li>全量源行、组成员、预测与汇总已独立核对，无缺失判决。</li></ul></div><div><div class="label warn">尚不能据此宣称</div><ul><li>所有干扰都是 Wi-Fi，或换天线已经证明旧天线损坏。</li><li>发射端 LO 泄漏已被硬件消除，或高 ACC 等于射频链路无误差。</li><li>四窗在未知空口信号中同样稳定，或当前结果是独立测试集成绩。</li><li>接收校正对所有 SNR、所有调制都更好。</li></ul></div></div>
+<div class="callout"><p><strong>本阶段真正完成的是：</strong>建立可追溯的同轴工程基线，并将背景、同步、LO 相关误差、预处理和模型判决分开验证。后续空口验证和发射端 DC 校准仍是新实验，不计入本报告已完成结果。</p></div></section>
+<section id="timeline"><h2><span class="n">02</span>七天实验过程</h2>
+<article class="day"><div class="daytime">09.08<small>接收基础</small></div><div class="daybody"><h3>先保证接收、停止和恢复能够可信执行</h3><span class="badge">有界RX验收</span><span class="badge neutral">未做模型识别</span><p>使用实际 Web、Controller、Planner 与 P201，验证 433MHz、2.4GHz、5.8GHz 日常扫描，以及接收中停止。矩阵采用 10MS/s、10MHz 带宽、RX20dB、每点4096个ci16样本；同时完成日志限额、只读健康检查和故障恢复的运维配置。<a class="cite" href="#ref-1" aria-label="证据 1">[01]</a><a class="cite" href="#ref-2" aria-label="证据 2">[02]</a></p><div class="result">意义：后续失败有明确的接收状态与恢复凭据；扫描界面或健康检查通过，不等于调制识别能力已经上线。</div></div></article>
+<article class="day"><div class="daytime">09.09<small>隔离背景</small></div><div class="daybody"><h3>负载—天线—负载：强活动主要从天线输入进入</h3><span class="badge">三阶段对照</span><span class="badge caution">Wi-Fi仅为工作假设</span><p>2455MHz 下完成18次负载→天线→负载对照。接回天线后六次采集均出现强短时事件，再接50Ω后强突发消失；变化突出在短时峰值，而不仅是普通背景中位数。<a class="cite" href="#ref-3" aria-label="证据 3">[03]</a></p><ul><li><strong>2.4GHz：</strong>70点×3轮发现，加5点×3次复测，共225次采样。强活动集中于约2410–2424MHz，同一中心不同时间可从低背景变为强活动；2455MHz也有短突发。<a class="cite" href="#ref-4" aria-label="证据 4">[04]</a></li><li><strong>5GHz：</strong>25个离散中心三轮，加独立复测，共90次采样。5805MHz复测最大RMS达85.83 ADC；5.50–5.72GHz的12个已测中心三轮最大值均不超过2.80 ADC。不是整个5GHz持续高底噪。<a class="cite" href="#ref-5" aria-label="证据 5">[05]</a></li><li><strong>历史对照：</strong>读回1586个唯一宽频扫描run，频段分布大体对应，但日期、带宽和增益不同，只能比较活跃频段，不能把ADC幅度直接作同一功率标尺。<a class="cite" href="#ref-6" aria-label="证据 6">[06]</a></li></ul><div class="result">结论：存在外部时变活动，但没有协议解码或受控发射源定位，不能把“位于Wi-Fi频段”写成“已确认Wi-Fi造成”。</div></div></article>
+<article class="day"><div class="daytime">09.10<small>换频与天线</small></div><div class="daybody"><h3>单音可见性恢复，调制数据保真仍未通过</h3><p>3.5GHz弹簧天线试验中，低增益矩阵以及历史TX70/RX50组合都没有确认测试单音；不据此认定设备坏了或3.5GHz不可用。2.440GHz换天线后通过原单音工程门，对停发前/后同bin余量为37.04/40.90dB。433.920MHz单音也通过，停发曲线较平稳，但其中位RMS反而更高，不能概括为整体噪声功率更低。<a class="cite" href="#ref-7" aria-label="证据 7">[07]</a><a class="cite" href="#ref-8" aria-label="证据 8">[08]</a><a class="cite" href="#ref-9" aria-label="证据 9">[09]</a></p><p>开始原始RadioML2018A全样本工程脚本。修正标记检测及重复帧定位后，OOK/QPSK三批72条均同步；源数据识别72/72，实收识别却为<strong>0/72</strong>。原始IQ中还有来源未定的窄带成分。<a class="cite" href="#ref-10" aria-label="证据 10">[10]</a></p><div class="result">关键转折：发射进程正常、收到单音、标记同步成功、模型分类正确，是四个不同的验收层次。</div></div></article>
+<article class="day"><div class="daytime">09.11<small>定义误差</small></div><div class="daybody"><h3>回到2455MHz，区分源SNR与新增链路误差</h3><p>按用户选择回到2.4GHz。条件有效SINR实现保留原源Z，利用固定两半窗交叉拟合估计新增链路残差；不能把原始+30dB标签当作接收机的真实SINR。修正433MHz遗留的CFO搜索范围后，最后48条中仅4条得到条件有效估计（−8.87～−5.99dB），20条估计无效、24条未同步；没有运行模型。<a class="cite" href="#ref-12" aria-label="证据 12">[12]</a></p><p>八频点发现与确认没有找到通过独立安静条件的替代频道；增加TX增益至80、RX降至40后两类可以同步，但有效SINR均值仍约−1.1dB。一个固定FIR反例中，实收相关度改善，识别却从41/48降到3/48，因而没有把该滤波默认加入载荷处理。<a class="cite" href="#ref-13" aria-label="证据 13">[13]</a></p><p>国产N210的USB B210兼容运行时由NX迁到AGX。两设备工作区分离，P201继续通过网口接收，N210通过USB3发射，共享一份原始RML数据集。<a class="cite" href="#ref-11" aria-label="证据 11">[11]</a></p><div class="result">结论：换频道、加增益或提高波形相关度都不自动保证识别改善；需要逐项独立验证。</div></div></article>
+<article class="day"><div class="daytime">09.12<small>定位LO</small></div><div class="daybody"><h3>同轴缩小变量范围，LO相关分量成为主要线索</h3><p>同轴衰减从50dB、30dB逐步比较到20dB。减少衰减显著提高接收幅度，但没有消除窄带残差。单音对照中，LO偏移改变500kHz，强峰跟随约499995.66Hz；有效信号功率基本不变。这强烈支持TX LO相关泄漏/杂散，具体器件与校准状态仍未定位。<a class="cite" href="#ref-14" aria-label="证据 14">[14]</a></p><ul><li><strong>幅度/增益配对：</strong>数字幅度0.1→0.3162、TX70→60，在保持有效单音电平约不变时，LO分量两次下降7.39/7.28dB。泄漏仍存在。</li><li><strong>保护区相消：</strong>只用静默保护区估计单音；导频先验避免稀疏采样频率别名。OOK/QPSK条件SINR中位数7.90/9.26→19.75/19.36dB，48条识别保持全对。<a class="cite" href="#ref-15" aria-label="证据 15">[15]</a></li><li><strong>QAM与时序：</strong>新64QAM/256QAM各48条，相消识别41/48、45/48；再加时序校正虽提高部分SINR，总正确数86→84，未作为默认。<a class="cite" href="#ref-16" aria-label="证据 16">[16]</a></li><li><strong>RX增益配对：</strong>另96条配对中，RX40→50使相消后正确数80→90；同一组源预测92/96。时序/宽带滤波组合未进一步提高总识别数。<a class="cite" href="#ref-17" aria-label="证据 17">[17]</a></li></ul><div class="result">最终参考逐步收敛到：20dB同轴、TX60/RX50、较高数字幅度、保护区LO相消；每个改善均附适用条件。</div></div></article>
+<article class="day"><div class="daytime">09.13<small>扩大覆盖</small></div><div class="daybody"><h3>从几类成功，推进到24类与低SNR；再解决吞吐瓶颈</h3><p>补充带设备时间的TX事件、停流/全零发射与独立50Ω负载对照，保留突发和失败。ACK能证明驱动接收了有限发送请求，不等于独立测得模拟射频持续不断。</p><p>统一24类、每类24条Z30的新源行试验：源/未相消/相消后正确数为548/457/548（各576），相消后<strong>95.14%</strong>；相同总数不等于逐行输出一致。随后四类×五个源SNR、480条分层试验：总数263/216/242；高源SNR改善，0dB和负源SNR出现回退。<a class="cite" href="#ref-18" aria-label="证据 18">[18]</a><a class="cite" href="#ref-19" aria-label="证据 19">[19]</a></p><p>工程侧逐步接入常驻模型、1024行分块、GPU批量预处理、SigMF/HDF5双份保存、共享RAM、独立接收进程及多帧GPU保护区拟合。流程改为同时发与收、边收边处理和写盘，全部落盘后再加载模型识别；Spark停止以释放资源。</p><div class="result">这一日验证了“估计无效仍保留样本和预测分母”，并说明相消不能按全SNR统一宣称有效。</div></div></article>
+<article class="day"><div class="daytime">09.14<small>全量完成</small></div><div class="daybody"><h3>26档封存、单窗/四窗完成，数据形成可复核副本</h3><p>先完成一个SNR档98,304条，再完成+30/+28两个完整档连续流。两档RX约107.5秒结束，GPU与写盘约311.2秒排空，含封存验证约370.1秒；说明有限RAM可以吸收积压，但处理仍未全程跟上RF速率。随后按13个两档组由后台脚本完成26档，原+30/+28只读导入，不重复计为新样本。<a class="cite" href="#ref-20" aria-label="证据 20">[20]</a></p><p>全量单窗采用GPU batch1024，78分6秒完成；四窗79分51秒完成。两轮各2496个输出块均核验，四窗638,976个联合判决覆盖全部2,555,904源行。接收校正整体ACC59.07%→61.68%；高源SNR区间94.44%→98.17%。<a class="cite" href="#ref-21" aria-label="证据 21">[21]</a><a class="cite" href="#ref-22" aria-label="证据 22">[22]</a></p><p>外接盘另存原始和处理后IQ及元数据：2,802个注册文件、82.14GB，36分46秒完成源SHA与目标完整读回SHA核验。后来提出本机删除，但在核对后切换为本报告任务，<strong>本机64个IQ/HDF5文件尚未删除</strong>。<a class="cite" href="#ref-23" aria-label="证据 23">[23]</a></p><div class="result">本阶段完成的是同轴全源工程对照；4090原始模型/CNN/GRU/Transformer等多模型四窗比较仍属后续安排，本报告不包含其新成绩。</div></div></article></section>
+<section id="setup"><h2><span class="n">03</span>最终全量实验链路与参数</h2>
+<div class="pipeline" aria-label="最终同轴实验链路"><div><strong>AGX → N210</strong>USB3 / UHD<br><small>国产B210兼容，serial2508504</small></div><div><strong>射频同轴</strong>RF A TX/RX → 20dB衰减器<br><small>15cm SMA；50Ω，DC–8GHz，2W</small></div><div><strong>P201 → AGX</strong>RX1接收 / 网口回传<br><small>Linux/IIO接收；AGX处理</small></div><div><strong>保存与识别</strong>原始IQ＋处理HDF5<br><small>完成落盘后运行冻结模型</small></div></div>
+<dl class="facts"><dt>中心频率</dt><dd>2455 MHz；不是3.5GHz，也不是最终使用433MHz。</dd><dt>采样率 / 带宽</dt><dd>2.1 MS/s / 1.5 MHz（TX与RX）。</dd><dt>增益与幅度</dt><dd>TX 60 dB / RX 50 dB；复数峰值0.632455532；TX LO偏移+250 kHz。增益设置不是输出dBm。</dd><dt>原始数据</dt><dd>RadioML2018A，24类；源SNR −20～+30dB，步长2dB；每类每档4096条，每条1024点。</dd><dt>帧与分块</dt><dd>每帧16条载荷；每处理块1024条；每档96块、98,304条。两档共享一次连续原始RX流。</dd><dt>模型</dt><dd>RF-v1 微调epoch010；FP32驻留权重，FP16 autocast；标签使用server-v1原24类顺序。</dd><dt>接收处理</dt><dd>已知导频同步/CFO/公共相位；静默保护区LO相消，未通过时保留原始载荷并记录原因。未将一般载荷FIR或时序组合设为默认。</dd></dl>
+<p class="note">这些是最后一轮全量同轴语料的参数，不是9月8日起每个试验都采用的参数，也不意味着持久射频状态一直保持在该设置。早期试验及恢复状态按各自凭据解释。<a class="cite" href="#ref-24" aria-label="证据 24">[24]</a><a class="cite" href="#ref-20" aria-label="证据 20">[20]</a></p></section>
+<section id="results"><h2><span class="n">04</span>全量识别结果</h2><div class="table-scroll"><table><caption>同一冻结 epoch10 模型，完整源集合；四窗按组评分</caption><thead><tr><th>输入</th><th>单窗 ACC</th><th>四窗 ACC</th><th>变化</th><th>四窗 · 源SNR 10～30dB</th></tr></thead><tbody><tr><th scope="row">源数据（无RF）</th><td>62.37%</td><td class="strong">67.60%</td><td>+5.23 pp</td><td>99.53%</td></tr><tr><th scope="row">未相消接收</th><td>52.48%</td><td class="strong">58.09%</td><td>+5.61 pp</td><td>86.25%</td></tr><tr><th scope="row">校正接收</th><td>59.07%</td><td class="strong">61.68%</td><td>+2.61 pp</td><td>98.17%</td></tr></tbody></table></div>
+<p class="note">单窗分母2,555,904条；四窗分母638,976组。两者源成员全集相同，但每次判决观测长度不同。这里“校正接收”是guard流程，包含校正拒绝时保留原始输入的回退，不是每一窗都成功应用相消。<a class="cite" href="#ref-21" aria-label="证据 21">[21]</a><a class="cite" href="#ref-22" aria-label="证据 22">[22]</a></p>
+<h3>源SNR曲线：高SNR收益明显，低SNR回退仍在</h3><div class="chart-tools" role="group" aria-label="曲线模式"><button data-mode="four" aria-pressed="true">四窗</button><button data-mode="single" aria-pressed="false">单窗</button><button data-mode="both" aria-pressed="false">叠加对照</button></div><div class="legend"><span style="--c:#7859a5">源数据（Source）</span><span style="--c:#b77813">接收未相消（RX before）</span><span style="--c:#087a83">接收校正（RX after）</span></div>
+<figure class="chart chart-view" data-view="four"><svg role="img" aria-label="four 模式源 SNR 与准确率曲线" xmlns:xlink="http://www.w3.org/1999/xlink" width="741.6pt" height="295.2pt" viewBox="0 0 741.6 295.2" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="four-figure_1">
+  <g id="four-patch_1">
+   <path d="M 0 295.2
+L 741.6 295.2
+L 741.6 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="four-axes_1">
+   <g id="four-patch_2">
+    <path d="M 53.25 251.04
+L 722.21 251.04
+L 722.21 13
+L 53.25 13
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="four-patch_3">
+    <path d="M 454.626 251.04
+L 454.626 13
+L 722.21 13
+L 722.21 251.04
+z
+" clip-path="url(#four-pad2bc7510e)" style="fill: #087a83; opacity: 0.06; stroke: #087a83; stroke-linejoin: miter"/>
+   </g>
+   <g id="four-matplotlib.axis_1">
+    <g id="four-xtick_1">
+     <g id="four-line2d_1">
+      <defs>
+       <path id="four-mfa406752c1" d="M 0 0
+L 0 3.5
+" style="stroke: #516779; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#four-mfa406752c1" x="53.25" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_1">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="53.25" y="265.638437" transform="rotate(-0, 53.25, 265.638437)">−20</text>
+     </g>
+    </g>
+    <g id="four-xtick_2">
+     <g id="four-line2d_2">
+      <g>
+       <use xlink:href="#four-mfa406752c1" x="120.146" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_2">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="120.146" y="265.638437" transform="rotate(-0, 120.146, 265.638437)">−15</text>
+     </g>
+    </g>
+    <g id="four-xtick_3">
+     <g id="four-line2d_3">
+      <g>
+       <use xlink:href="#four-mfa406752c1" x="187.042" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_3">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="187.042" y="265.638437" transform="rotate(-0, 187.042, 265.638437)">−10</text>
+     </g>
+    </g>
+    <g id="four-xtick_4">
+     <g id="four-line2d_4">
+      <g>
+       <use xlink:href="#four-mfa406752c1" x="253.938" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_4">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="253.938" y="265.638437" transform="rotate(-0, 253.938, 265.638437)">−5</text>
+     </g>
+    </g>
+    <g id="four-xtick_5">
+     <g id="four-line2d_5">
+      <g>
+       <use xlink:href="#four-mfa406752c1" x="320.834" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_5">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="320.834" y="265.638437" transform="rotate(-0, 320.834, 265.638437)">0</text>
+     </g>
+    </g>
+    <g id="four-xtick_6">
+     <g id="four-line2d_6">
+      <g>
+       <use xlink:href="#four-mfa406752c1" x="387.73" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_6">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="387.73" y="265.638437" transform="rotate(-0, 387.73, 265.638437)">5</text>
+     </g>
+    </g>
+    <g id="four-xtick_7">
+     <g id="four-line2d_7">
+      <g>
+       <use xlink:href="#four-mfa406752c1" x="454.626" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_7">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="454.626" y="265.638437" transform="rotate(-0, 454.626, 265.638437)">10</text>
+     </g>
+    </g>
+    <g id="four-xtick_8">
+     <g id="four-line2d_8">
+      <g>
+       <use xlink:href="#four-mfa406752c1" x="521.522" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_8">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="521.522" y="265.638437" transform="rotate(-0, 521.522, 265.638437)">15</text>
+     </g>
+    </g>
+    <g id="four-xtick_9">
+     <g id="four-line2d_9">
+      <g>
+       <use xlink:href="#four-mfa406752c1" x="588.418" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_9">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="588.418" y="265.638437" transform="rotate(-0, 588.418, 265.638437)">20</text>
+     </g>
+    </g>
+    <g id="four-xtick_10">
+     <g id="four-line2d_10">
+      <g>
+       <use xlink:href="#four-mfa406752c1" x="655.314" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_10">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="655.314" y="265.638437" transform="rotate(-0, 655.314, 265.638437)">25</text>
+     </g>
+    </g>
+    <g id="four-xtick_11">
+     <g id="four-line2d_11">
+      <g>
+       <use xlink:href="#four-mfa406752c1" x="722.21" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_11">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="722.21" y="265.638437" transform="rotate(-0, 722.21, 265.638437)">30</text>
+     </g>
+    </g>
+    <g id="four-text_12">
+     <text style="fill: #173753; font: 10px 'DejaVu Sans'; text-anchor: middle" x="387.73" y="279.316562" transform="rotate(-0, 387.73, 279.316562)">Source SNR label (dB)</text>
+    </g>
+   </g>
+   <g id="four-matplotlib.axis_2">
+    <g id="four-ytick_1">
+     <g id="four-line2d_12">
+      <path d="M 53.25 251.04
+L 722.21 251.04
+" clip-path="url(#four-pad2bc7510e)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="four-line2d_13">
+      <defs>
+       <path id="four-md7e94e4feb" d="M 0 0
+L -3.5 0
+" style="stroke: #516779; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#four-md7e94e4feb" x="53.25" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_13">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="254.839219" transform="rotate(-0, 46.25, 254.839219)">0</text>
+     </g>
+    </g>
+    <g id="four-ytick_2">
+     <g id="four-line2d_14">
+      <path d="M 53.25 204.36549
+L 722.21 204.36549
+" clip-path="url(#four-pad2bc7510e)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="four-line2d_15">
+      <g>
+       <use xlink:href="#four-md7e94e4feb" x="53.25" y="204.36549" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_14">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="208.164709" transform="rotate(-0, 46.25, 208.164709)">20</text>
+     </g>
+    </g>
+    <g id="four-ytick_3">
+     <g id="four-line2d_16">
+      <path d="M 53.25 157.69098
+L 722.21 157.69098
+" clip-path="url(#four-pad2bc7510e)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="four-line2d_17">
+      <g>
+       <use xlink:href="#four-md7e94e4feb" x="53.25" y="157.69098" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_15">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="161.490199" transform="rotate(-0, 46.25, 161.490199)">40</text>
+     </g>
+    </g>
+    <g id="four-ytick_4">
+     <g id="four-line2d_18">
+      <path d="M 53.25 111.016471
+L 722.21 111.016471
+" clip-path="url(#four-pad2bc7510e)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="four-line2d_19">
+      <g>
+       <use xlink:href="#four-md7e94e4feb" x="53.25" y="111.016471" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_16">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="114.815689" transform="rotate(-0, 46.25, 114.815689)">60</text>
+     </g>
+    </g>
+    <g id="four-ytick_5">
+     <g id="four-line2d_20">
+      <path d="M 53.25 64.341961
+L 722.21 64.341961
+" clip-path="url(#four-pad2bc7510e)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="four-line2d_21">
+      <g>
+       <use xlink:href="#four-md7e94e4feb" x="53.25" y="64.341961" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_17">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="68.14118" transform="rotate(-0, 46.25, 68.14118)">80</text>
+     </g>
+    </g>
+    <g id="four-ytick_6">
+     <g id="four-line2d_22">
+      <path d="M 53.25 17.667451
+L 722.21 17.667451
+" clip-path="url(#four-pad2bc7510e)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="four-line2d_23">
+      <g>
+       <use xlink:href="#four-md7e94e4feb" x="53.25" y="17.667451" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="four-text_18">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="21.46667" transform="rotate(-0, 46.25, 21.46667)">100</text>
+     </g>
+    </g>
+    <g id="four-text_19">
+     <text style="fill: #173753; font: 10px 'DejaVu Sans'; text-anchor: middle" x="21.082813" y="132.02" transform="rotate(-90, 21.082813, 132.02)">Accuracy (%)</text>
+    </g>
+   </g>
+   <g id="four-line2d_24">
+    <path d="M 320.834 251.04
+L 320.834 13
+" clip-path="url(#four-pad2bc7510e)" style="fill: none; stroke-dasharray: 0.8,1.32; stroke-dashoffset: 0; stroke: #94a8b7; stroke-width: 0.8"/>
+   </g>
+   <g id="four-line2d_25">
+    <path d="M 53.25 239.872759
+L 80.0084 239.084595
+L 106.7668 235.314701
+L 133.5252 228.031305
+L 160.2836 219.855289
+L 187.042 207.320631
+L 213.8004 189.544206
+L 240.5588 169.26085
+L 267.3172 147.781003
+L 294.0756 114.336256
+L 320.834 91.156634
+L 347.5924 61.054462
+L 374.3508 36.270024
+L 401.1092 21.418353
+L 427.8676 18.74999
+L 454.626 18.74999
+L 481.3844 18.674022
+L 508.1428 18.816461
+L 534.9012 18.721502
+L 561.6596 18.939909
+L 588.418 18.730998
+L 615.1764 18.74999
+L 641.9348 18.835453
+L 668.6932 18.588558
+L 695.4516 18.778478
+L 722.21 18.778478
+" clip-path="url(#four-pad2bc7510e)" style="fill: none; stroke: #7859a5; stroke-width: 2; stroke-linecap: square"/>
+    <defs>
+     <path id="four-m9c3734bbde" d="M 0 1.5
+C 0.397805 1.5 0.77937 1.341951 1.06066 1.06066
+C 1.341951 0.77937 1.5 0.397805 1.5 0
+C 1.5 -0.397805 1.341951 -0.77937 1.06066 -1.06066
+C 0.77937 -1.341951 0.397805 -1.5 0 -1.5
+C -0.397805 -1.5 -0.77937 -1.341951 -1.06066 -1.06066
+C -1.341951 -0.77937 -1.5 -0.397805 -1.5 0
+C -1.5 0.397805 -1.341951 0.77937 -1.06066 1.06066
+C -0.77937 1.341951 -0.397805 1.5 0 1.5
+z
+" style="stroke: #7859a5"/>
+    </defs>
+    <g clip-path="url(#four-pad2bc7510e)">
+     <use xlink:href="#four-m9c3734bbde" x="53.25" y="239.872759" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="80.0084" y="239.084595" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="106.7668" y="235.314701" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="133.5252" y="228.031305" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="160.2836" y="219.855289" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="187.042" y="207.320631" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="213.8004" y="189.544206" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="240.5588" y="169.26085" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="267.3172" y="147.781003" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="294.0756" y="114.336256" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="320.834" y="91.156634" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="347.5924" y="61.054462" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="374.3508" y="36.270024" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="401.1092" y="21.418353" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="427.8676" y="18.74999" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="454.626" y="18.74999" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="481.3844" y="18.674022" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="508.1428" y="18.816461" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="534.9012" y="18.721502" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="561.6596" y="18.939909" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="588.418" y="18.730998" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="615.1764" y="18.74999" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="641.9348" y="18.835453" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="668.6932" y="18.588558" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="695.4516" y="18.778478" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#four-m9c3734bbde" x="722.21" y="18.778478" style="fill: #7859a5; stroke: #7859a5"/>
+    </g>
+   </g>
+   <g id="four-line2d_26">
+    <path d="M 53.25 241.050257
+L 80.0084 239.521409
+L 106.7668 238.600301
+L 133.5252 234.203675
+L 160.2836 224.118972
+L 187.042 211.821713
+L 213.8004 193.959825
+L 240.5588 177.531825
+L 267.3172 161.835014
+L 294.0756 130.650304
+L 320.834 116.795708
+L 347.5924 92.296148
+L 374.3508 76.808248
+L 401.1092 59.630069
+L 427.8676 56.334973
+L 454.626 53.562155
+L 481.3844 51.615484
+L 508.1428 50.295547
+L 534.9012 47.836095
+L 561.6596 48.624259
+L 588.418 47.788615
+L 615.1764 47.560712
+L 641.9348 50.751352
+L 668.6932 50.001172
+L 695.4516 49.611838
+L 722.21 49.792261
+" clip-path="url(#four-pad2bc7510e)" style="fill: none; stroke: #b77813; stroke-width: 2; stroke-linecap: square"/>
+    <defs>
+     <path id="four-m526eb38836" d="M 0 1.5
+C 0.397805 1.5 0.77937 1.341951 1.06066 1.06066
+C 1.341951 0.77937 1.5 0.397805 1.5 0
+C 1.5 -0.397805 1.341951 -0.77937 1.06066 -1.06066
+C 0.77937 -1.341951 0.397805 -1.5 0 -1.5
+C -0.397805 -1.5 -0.77937 -1.341951 -1.06066 -1.06066
+C -1.341951 -0.77937 -1.5 -0.397805 -1.5 0
+C -1.5 0.397805 -1.341951 0.77937 -1.06066 1.06066
+C -0.77937 1.341951 -0.397805 1.5 0 1.5
+z
+" style="stroke: #b77813"/>
+    </defs>
+    <g clip-path="url(#four-pad2bc7510e)">
+     <use xlink:href="#four-m526eb38836" x="53.25" y="241.050257" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="80.0084" y="239.521409" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="106.7668" y="238.600301" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="133.5252" y="234.203675" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="160.2836" y="224.118972" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="187.042" y="211.821713" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="213.8004" y="193.959825" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="240.5588" y="177.531825" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="267.3172" y="161.835014" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="294.0756" y="130.650304" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="320.834" y="116.795708" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="347.5924" y="92.296148" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="374.3508" y="76.808248" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="401.1092" y="59.630069" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="427.8676" y="56.334973" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="454.626" y="53.562155" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="481.3844" y="51.615484" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="508.1428" y="50.295547" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="534.9012" y="47.836095" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="561.6596" y="48.624259" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="588.418" y="47.788615" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="615.1764" y="47.560712" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="641.9348" y="50.751352" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="668.6932" y="50.001172" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="695.4516" y="49.611838" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#four-m526eb38836" x="722.21" y="49.792261" style="fill: #b77813; stroke: #b77813"/>
+    </g>
+   </g>
+   <g id="four-line2d_27">
+    <path d="M 53.25 241.525055
+L 80.0084 241.430095
+L 106.7668 241.240176
+L 133.5252 240.888826
+L 160.2836 241.078745
+L 187.042 236.948005
+L 213.8004 229.009388
+L 240.5588 210.74867
+L 267.3172 186.040199
+L 294.0756 157.884698
+L 320.834 125.845351
+L 347.5924 87.472204
+L 374.3508 51.615484
+L 401.1092 29.16705
+L 427.8676 22.367948
+L 454.626 21.313897
+L 481.3844 21.085994
+L 508.1428 21.228433
+L 534.9012 21.399361
+L 561.6596 21.551296
+L 588.418 21.646255
+L 615.1764 21.104986
+L 641.9348 21.693735
+L 668.6932 21.5418
+L 695.4516 21.133474
+L 722.21 27.628706
+" clip-path="url(#four-pad2bc7510e)" style="fill: none; stroke: #087a83; stroke-width: 2; stroke-linecap: square"/>
+    <defs>
+     <path id="four-md00583cc4c" d="M 0 1.5
+C 0.397805 1.5 0.77937 1.341951 1.06066 1.06066
+C 1.341951 0.77937 1.5 0.397805 1.5 0
+C 1.5 -0.397805 1.341951 -0.77937 1.06066 -1.06066
+C 0.77937 -1.341951 0.397805 -1.5 0 -1.5
+C -0.397805 -1.5 -0.77937 -1.341951 -1.06066 -1.06066
+C -1.341951 -0.77937 -1.5 -0.397805 -1.5 0
+C -1.5 0.397805 -1.341951 0.77937 -1.06066 1.06066
+C -0.77937 1.341951 -0.397805 1.5 0 1.5
+z
+" style="stroke: #087a83"/>
+    </defs>
+    <g clip-path="url(#four-pad2bc7510e)">
+     <use xlink:href="#four-md00583cc4c" x="53.25" y="241.525055" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="80.0084" y="241.430095" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="106.7668" y="241.240176" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="133.5252" y="240.888826" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="160.2836" y="241.078745" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="187.042" y="236.948005" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="213.8004" y="229.009388" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="240.5588" y="210.74867" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="267.3172" y="186.040199" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="294.0756" y="157.884698" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="320.834" y="125.845351" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="347.5924" y="87.472204" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="374.3508" y="51.615484" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="401.1092" y="29.16705" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="427.8676" y="22.367948" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="454.626" y="21.313897" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="481.3844" y="21.085994" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="508.1428" y="21.228433" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="534.9012" y="21.399361" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="561.6596" y="21.551296" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="588.418" y="21.646255" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="615.1764" y="21.104986" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="641.9348" y="21.693735" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="668.6932" y="21.5418" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="695.4516" y="21.133474" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#four-md00583cc4c" x="722.21" y="27.628706" style="fill: #087a83; stroke: #087a83"/>
+    </g>
+   </g>
+   <g id="four-patch_4">
+    <path d="M 53.25 251.04
+L 53.25 13
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="four-patch_5">
+    <path d="M 53.25 251.04
+L 722.21 251.04
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="four-legend_1">
+    <g id="four-patch_6">
+     <path d="M 58.85 54.6275
+L 220.445 54.6275
+Q 222.045 54.6275 222.045 53.0275
+L 222.045 18.6
+Q 222.045 17 220.445 17
+L 58.85 17
+Q 57.25 17 57.25 18.6
+L 57.25 53.0275
+Q 57.25 54.6275 58.85 54.6275
+z
+" style="fill: #ffffff; opacity: 0.95; stroke: #cccccc; stroke-linejoin: miter"/>
+    </g>
+    <g id="four-line2d_28">
+     <path d="M 60.45 23.47875
+L 68.45 23.47875
+L 76.45 23.47875
+" style="fill: none; stroke: #7859a5; stroke-width: 2; stroke-linecap: square"/>
+     <g>
+      <use xlink:href="#four-m9c3734bbde" x="68.45" y="23.47875" style="fill: #7859a5; stroke: #7859a5"/>
+     </g>
+    </g>
+    <g id="four-text_20">
+     <text style="fill: #173753; font: 8px 'DejaVu Sans'; text-anchor: start" x="82.85" y="26.27875" transform="rotate(-0, 82.85, 26.27875)">Source / 4 window</text>
+    </g>
+    <g id="four-line2d_29">
+     <path d="M 60.45 35.22125
+L 68.45 35.22125
+L 76.45 35.22125
+" style="fill: none; stroke: #b77813; stroke-width: 2; stroke-linecap: square"/>
+     <g>
+      <use xlink:href="#four-m526eb38836" x="68.45" y="35.22125" style="fill: #b77813; stroke: #b77813"/>
+     </g>
+    </g>
+    <g id="four-text_21">
+     <text style="fill: #173753; font: 8px 'DejaVu Sans'; text-anchor: start" x="82.85" y="38.02125" transform="rotate(-0, 82.85, 38.02125)">RX before cancellation / 4 window</text>
+    </g>
+    <g id="four-line2d_30">
+     <path d="M 60.45 46.96375
+L 68.45 46.96375
+L 76.45 46.96375
+" style="fill: none; stroke: #087a83; stroke-width: 2; stroke-linecap: square"/>
+     <g>
+      <use xlink:href="#four-md00583cc4c" x="68.45" y="46.96375" style="fill: #087a83; stroke: #087a83"/>
+     </g>
+    </g>
+    <g id="four-text_22">
+     <text style="fill: #173753; font: 8px 'DejaVu Sans'; text-anchor: start" x="82.85" y="49.76375" transform="rotate(-0, 82.85, 49.76375)">RX after cancellation / 4 window</text>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="four-pad2bc7510e">
+   <rect x="53.25" y="13" width="668.96" height="238.04"/>
+  </clipPath>
+ </defs>
+</svg>
+<figcaption>横轴为原数据集源SNR标签，纵轴为完整分母ACC。淡色区为源SNR 10～30dB；实线为四窗，虚线为单窗。三组输入分别统计。</figcaption></figure><figure class="chart chart-view" data-view="single" hidden><svg role="img" aria-label="single 模式源 SNR 与准确率曲线" xmlns:xlink="http://www.w3.org/1999/xlink" width="741.6pt" height="295.2pt" viewBox="0 0 741.6 295.2" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="single-figure_1">
+  <g id="single-patch_1">
+   <path d="M 0 295.2
+L 741.6 295.2
+L 741.6 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="single-axes_1">
+   <g id="single-patch_2">
+    <path d="M 53.25 251.04
+L 722.21 251.04
+L 722.21 13
+L 53.25 13
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="single-patch_3">
+    <path d="M 454.626 251.04
+L 454.626 13
+L 722.21 13
+L 722.21 251.04
+z
+" clip-path="url(#single-p57245e38f5)" style="fill: #087a83; opacity: 0.06; stroke: #087a83; stroke-linejoin: miter"/>
+   </g>
+   <g id="single-matplotlib.axis_1">
+    <g id="single-xtick_1">
+     <g id="single-line2d_1">
+      <defs>
+       <path id="single-m5ef48ed7f5" d="M 0 0
+L 0 3.5
+" style="stroke: #516779; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#single-m5ef48ed7f5" x="53.25" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_1">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="53.25" y="265.638437" transform="rotate(-0, 53.25, 265.638437)">−20</text>
+     </g>
+    </g>
+    <g id="single-xtick_2">
+     <g id="single-line2d_2">
+      <g>
+       <use xlink:href="#single-m5ef48ed7f5" x="120.146" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_2">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="120.146" y="265.638437" transform="rotate(-0, 120.146, 265.638437)">−15</text>
+     </g>
+    </g>
+    <g id="single-xtick_3">
+     <g id="single-line2d_3">
+      <g>
+       <use xlink:href="#single-m5ef48ed7f5" x="187.042" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_3">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="187.042" y="265.638437" transform="rotate(-0, 187.042, 265.638437)">−10</text>
+     </g>
+    </g>
+    <g id="single-xtick_4">
+     <g id="single-line2d_4">
+      <g>
+       <use xlink:href="#single-m5ef48ed7f5" x="253.938" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_4">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="253.938" y="265.638437" transform="rotate(-0, 253.938, 265.638437)">−5</text>
+     </g>
+    </g>
+    <g id="single-xtick_5">
+     <g id="single-line2d_5">
+      <g>
+       <use xlink:href="#single-m5ef48ed7f5" x="320.834" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_5">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="320.834" y="265.638437" transform="rotate(-0, 320.834, 265.638437)">0</text>
+     </g>
+    </g>
+    <g id="single-xtick_6">
+     <g id="single-line2d_6">
+      <g>
+       <use xlink:href="#single-m5ef48ed7f5" x="387.73" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_6">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="387.73" y="265.638437" transform="rotate(-0, 387.73, 265.638437)">5</text>
+     </g>
+    </g>
+    <g id="single-xtick_7">
+     <g id="single-line2d_7">
+      <g>
+       <use xlink:href="#single-m5ef48ed7f5" x="454.626" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_7">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="454.626" y="265.638437" transform="rotate(-0, 454.626, 265.638437)">10</text>
+     </g>
+    </g>
+    <g id="single-xtick_8">
+     <g id="single-line2d_8">
+      <g>
+       <use xlink:href="#single-m5ef48ed7f5" x="521.522" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_8">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="521.522" y="265.638437" transform="rotate(-0, 521.522, 265.638437)">15</text>
+     </g>
+    </g>
+    <g id="single-xtick_9">
+     <g id="single-line2d_9">
+      <g>
+       <use xlink:href="#single-m5ef48ed7f5" x="588.418" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_9">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="588.418" y="265.638437" transform="rotate(-0, 588.418, 265.638437)">20</text>
+     </g>
+    </g>
+    <g id="single-xtick_10">
+     <g id="single-line2d_10">
+      <g>
+       <use xlink:href="#single-m5ef48ed7f5" x="655.314" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_10">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="655.314" y="265.638437" transform="rotate(-0, 655.314, 265.638437)">25</text>
+     </g>
+    </g>
+    <g id="single-xtick_11">
+     <g id="single-line2d_11">
+      <g>
+       <use xlink:href="#single-m5ef48ed7f5" x="722.21" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_11">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="722.21" y="265.638437" transform="rotate(-0, 722.21, 265.638437)">30</text>
+     </g>
+    </g>
+    <g id="single-text_12">
+     <text style="fill: #173753; font: 10px 'DejaVu Sans'; text-anchor: middle" x="387.73" y="279.316562" transform="rotate(-0, 387.73, 279.316562)">Source SNR label (dB)</text>
+    </g>
+   </g>
+   <g id="single-matplotlib.axis_2">
+    <g id="single-ytick_1">
+     <g id="single-line2d_12">
+      <path d="M 53.25 251.04
+L 722.21 251.04
+" clip-path="url(#single-p57245e38f5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="single-line2d_13">
+      <defs>
+       <path id="single-m052ead8cd1" d="M 0 0
+L -3.5 0
+" style="stroke: #516779; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#single-m052ead8cd1" x="53.25" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_13">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="254.839219" transform="rotate(-0, 46.25, 254.839219)">0</text>
+     </g>
+    </g>
+    <g id="single-ytick_2">
+     <g id="single-line2d_14">
+      <path d="M 53.25 204.36549
+L 722.21 204.36549
+" clip-path="url(#single-p57245e38f5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="single-line2d_15">
+      <g>
+       <use xlink:href="#single-m052ead8cd1" x="53.25" y="204.36549" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_14">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="208.164709" transform="rotate(-0, 46.25, 208.164709)">20</text>
+     </g>
+    </g>
+    <g id="single-ytick_3">
+     <g id="single-line2d_16">
+      <path d="M 53.25 157.69098
+L 722.21 157.69098
+" clip-path="url(#single-p57245e38f5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="single-line2d_17">
+      <g>
+       <use xlink:href="#single-m052ead8cd1" x="53.25" y="157.69098" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_15">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="161.490199" transform="rotate(-0, 46.25, 161.490199)">40</text>
+     </g>
+    </g>
+    <g id="single-ytick_4">
+     <g id="single-line2d_18">
+      <path d="M 53.25 111.016471
+L 722.21 111.016471
+" clip-path="url(#single-p57245e38f5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="single-line2d_19">
+      <g>
+       <use xlink:href="#single-m052ead8cd1" x="53.25" y="111.016471" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_16">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="114.815689" transform="rotate(-0, 46.25, 114.815689)">60</text>
+     </g>
+    </g>
+    <g id="single-ytick_5">
+     <g id="single-line2d_20">
+      <path d="M 53.25 64.341961
+L 722.21 64.341961
+" clip-path="url(#single-p57245e38f5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="single-line2d_21">
+      <g>
+       <use xlink:href="#single-m052ead8cd1" x="53.25" y="64.341961" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_17">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="68.14118" transform="rotate(-0, 46.25, 68.14118)">80</text>
+     </g>
+    </g>
+    <g id="single-ytick_6">
+     <g id="single-line2d_22">
+      <path d="M 53.25 17.667451
+L 722.21 17.667451
+" clip-path="url(#single-p57245e38f5)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="single-line2d_23">
+      <g>
+       <use xlink:href="#single-m052ead8cd1" x="53.25" y="17.667451" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="single-text_18">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="21.46667" transform="rotate(-0, 46.25, 21.46667)">100</text>
+     </g>
+    </g>
+    <g id="single-text_19">
+     <text style="fill: #173753; font: 10px 'DejaVu Sans'; text-anchor: middle" x="21.082813" y="132.02" transform="rotate(-90, 21.082813, 132.02)">Accuracy (%)</text>
+    </g>
+   </g>
+   <g id="single-line2d_24">
+    <path d="M 320.834 251.04
+L 320.834 13
+" clip-path="url(#single-p57245e38f5)" style="fill: none; stroke-dasharray: 0.8,1.32; stroke-dashoffset: 0; stroke: #94a8b7; stroke-width: 0.8"/>
+   </g>
+   <g id="single-line2d_25">
+    <path d="M 53.25 240.452012
+L 80.0084 240.119654
+L 106.7668 238.479228
+L 133.5252 235.015579
+L 160.2836 227.941094
+L 187.042 216.871186
+L 213.8004 201.148261
+L 240.5588 183.103576
+L 267.3172 164.420288
+L 294.0756 140.649543
+L 320.834 116.021788
+L 347.5924 91.301447
+L 374.3508 61.85687
+L 401.1092 39.477282
+L 427.8676 31.101851
+L 454.626 29.240644
+L 481.3844 28.447732
+L 508.1428 28.699375
+L 534.9012 28.675635
+L 561.6596 28.48809
+L 588.418 28.49996
+L 615.1764 28.542692
+L 641.9348 28.540318
+L 668.6932 28.378886
+L 695.4516 28.554561
+L 722.21 28.649521
+" clip-path="url(#single-p57245e38f5)" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #7859a5; stroke-width: 2"/>
+   </g>
+   <g id="single-line2d_26">
+    <path d="M 53.25 240.824728
+L 80.0084 240.466256
+L 106.7668 239.312498
+L 133.5252 236.755712
+L 160.2836 230.412415
+L 187.042 219.924135
+L 213.8004 204.227324
+L 240.5588 186.666932
+L 267.3172 169.645436
+L 294.0756 147.156645
+L 320.834 129.29713
+L 347.5924 109.721223
+L 374.3508 94.276054
+L 401.1092 77.038525
+L 427.8676 72.83894
+L 454.626 70.467325
+L 481.3844 68.734314
+L 508.1428 68.074345
+L 534.9012 65.925886
+L 561.6596 66.042211
+L 588.418 66.058829
+L 615.1764 66.046959
+L 641.9348 68.558639
+L 668.6932 68.183549
+L 695.4516 67.98176
+L 722.21 68.126573
+" clip-path="url(#single-p57245e38f5)" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #b77813; stroke-width: 2"/>
+   </g>
+   <g id="single-line2d_27">
+    <path d="M 53.25 241.282908
+L 80.0084 241.451461
+L 106.7668 241.133347
+L 133.5252 240.793866
+L 160.2836 240.000954
+L 187.042 236.637013
+L 213.8004 227.190913
+L 240.5588 210.734426
+L 267.3172 188.024854
+L 294.0756 161.89199
+L 320.834 130.861589
+L 347.5924 101.768362
+L 374.3508 67.188848
+L 401.1092 43.622265
+L 427.8676 33.124489
+L 454.626 30.800354
+L 481.3844 30.050174
+L 508.1428 29.879247
+L 534.9012 29.717816
+L 561.6596 29.677458
+L 588.418 29.936223
+L 615.1764 29.516027
+L 641.9348 29.758174
+L 668.6932 29.860255
+L 695.4516 30.005068
+L 722.21 37.995913
+" clip-path="url(#single-p57245e38f5)" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #087a83; stroke-width: 2"/>
+   </g>
+   <g id="single-patch_4">
+    <path d="M 53.25 251.04
+L 53.25 13
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="single-patch_5">
+    <path d="M 53.25 251.04
+L 722.21 251.04
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="single-legend_1">
+    <g id="single-patch_6">
+     <path d="M 58.85 54.6275
+L 220.445 54.6275
+Q 222.045 54.6275 222.045 53.0275
+L 222.045 18.6
+Q 222.045 17 220.445 17
+L 58.85 17
+Q 57.25 17 57.25 18.6
+L 57.25 53.0275
+Q 57.25 54.6275 58.85 54.6275
+z
+" style="fill: #ffffff; opacity: 0.95; stroke: #cccccc; stroke-linejoin: miter"/>
+    </g>
+    <g id="single-line2d_28">
+     <path d="M 60.45 23.47875
+L 68.45 23.47875
+L 76.45 23.47875
+" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #7859a5; stroke-width: 2"/>
+    </g>
+    <g id="single-text_20">
+     <text style="fill: #173753; font: 8px 'DejaVu Sans'; text-anchor: start" x="82.85" y="26.27875" transform="rotate(-0, 82.85, 26.27875)">Source / 1 window</text>
+    </g>
+    <g id="single-line2d_29">
+     <path d="M 60.45 35.22125
+L 68.45 35.22125
+L 76.45 35.22125
+" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #b77813; stroke-width: 2"/>
+    </g>
+    <g id="single-text_21">
+     <text style="fill: #173753; font: 8px 'DejaVu Sans'; text-anchor: start" x="82.85" y="38.02125" transform="rotate(-0, 82.85, 38.02125)">RX before cancellation / 1 window</text>
+    </g>
+    <g id="single-line2d_30">
+     <path d="M 60.45 46.96375
+L 68.45 46.96375
+L 76.45 46.96375
+" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #087a83; stroke-width: 2"/>
+    </g>
+    <g id="single-text_22">
+     <text style="fill: #173753; font: 8px 'DejaVu Sans'; text-anchor: start" x="82.85" y="49.76375" transform="rotate(-0, 82.85, 49.76375)">RX after cancellation / 1 window</text>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="single-p57245e38f5">
+   <rect x="53.25" y="13" width="668.96" height="238.04"/>
+  </clipPath>
+ </defs>
+</svg>
+<figcaption>横轴为原数据集源SNR标签，纵轴为完整分母ACC。淡色区为源SNR 10～30dB；实线为四窗，虚线为单窗。三组输入分别统计。</figcaption></figure><figure class="chart chart-view" data-view="both" hidden><svg role="img" aria-label="both 模式源 SNR 与准确率曲线" xmlns:xlink="http://www.w3.org/1999/xlink" width="741.6pt" height="295.2pt" viewBox="0 0 741.6 295.2" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="both-figure_1">
+  <g id="both-patch_1">
+   <path d="M 0 295.2
+L 741.6 295.2
+L 741.6 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="both-axes_1">
+   <g id="both-patch_2">
+    <path d="M 53.25 251.04
+L 722.21 251.04
+L 722.21 13
+L 53.25 13
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="both-patch_3">
+    <path d="M 454.626 251.04
+L 454.626 13
+L 722.21 13
+L 722.21 251.04
+z
+" clip-path="url(#both-pc10cf8abd7)" style="fill: #087a83; opacity: 0.06; stroke: #087a83; stroke-linejoin: miter"/>
+   </g>
+   <g id="both-matplotlib.axis_1">
+    <g id="both-xtick_1">
+     <g id="both-line2d_1">
+      <defs>
+       <path id="both-m42c8539d6c" d="M 0 0
+L 0 3.5
+" style="stroke: #516779; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#both-m42c8539d6c" x="53.25" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_1">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="53.25" y="265.638437" transform="rotate(-0, 53.25, 265.638437)">−20</text>
+     </g>
+    </g>
+    <g id="both-xtick_2">
+     <g id="both-line2d_2">
+      <g>
+       <use xlink:href="#both-m42c8539d6c" x="120.146" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_2">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="120.146" y="265.638437" transform="rotate(-0, 120.146, 265.638437)">−15</text>
+     </g>
+    </g>
+    <g id="both-xtick_3">
+     <g id="both-line2d_3">
+      <g>
+       <use xlink:href="#both-m42c8539d6c" x="187.042" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_3">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="187.042" y="265.638437" transform="rotate(-0, 187.042, 265.638437)">−10</text>
+     </g>
+    </g>
+    <g id="both-xtick_4">
+     <g id="both-line2d_4">
+      <g>
+       <use xlink:href="#both-m42c8539d6c" x="253.938" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_4">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="253.938" y="265.638437" transform="rotate(-0, 253.938, 265.638437)">−5</text>
+     </g>
+    </g>
+    <g id="both-xtick_5">
+     <g id="both-line2d_5">
+      <g>
+       <use xlink:href="#both-m42c8539d6c" x="320.834" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_5">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="320.834" y="265.638437" transform="rotate(-0, 320.834, 265.638437)">0</text>
+     </g>
+    </g>
+    <g id="both-xtick_6">
+     <g id="both-line2d_6">
+      <g>
+       <use xlink:href="#both-m42c8539d6c" x="387.73" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_6">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="387.73" y="265.638437" transform="rotate(-0, 387.73, 265.638437)">5</text>
+     </g>
+    </g>
+    <g id="both-xtick_7">
+     <g id="both-line2d_7">
+      <g>
+       <use xlink:href="#both-m42c8539d6c" x="454.626" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_7">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="454.626" y="265.638437" transform="rotate(-0, 454.626, 265.638437)">10</text>
+     </g>
+    </g>
+    <g id="both-xtick_8">
+     <g id="both-line2d_8">
+      <g>
+       <use xlink:href="#both-m42c8539d6c" x="521.522" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_8">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="521.522" y="265.638437" transform="rotate(-0, 521.522, 265.638437)">15</text>
+     </g>
+    </g>
+    <g id="both-xtick_9">
+     <g id="both-line2d_9">
+      <g>
+       <use xlink:href="#both-m42c8539d6c" x="588.418" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_9">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="588.418" y="265.638437" transform="rotate(-0, 588.418, 265.638437)">20</text>
+     </g>
+    </g>
+    <g id="both-xtick_10">
+     <g id="both-line2d_10">
+      <g>
+       <use xlink:href="#both-m42c8539d6c" x="655.314" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_10">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="655.314" y="265.638437" transform="rotate(-0, 655.314, 265.638437)">25</text>
+     </g>
+    </g>
+    <g id="both-xtick_11">
+     <g id="both-line2d_11">
+      <g>
+       <use xlink:href="#both-m42c8539d6c" x="722.21" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_11">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: middle" x="722.21" y="265.638437" transform="rotate(-0, 722.21, 265.638437)">30</text>
+     </g>
+    </g>
+    <g id="both-text_12">
+     <text style="fill: #173753; font: 10px 'DejaVu Sans'; text-anchor: middle" x="387.73" y="279.316562" transform="rotate(-0, 387.73, 279.316562)">Source SNR label (dB)</text>
+    </g>
+   </g>
+   <g id="both-matplotlib.axis_2">
+    <g id="both-ytick_1">
+     <g id="both-line2d_12">
+      <path d="M 53.25 251.04
+L 722.21 251.04
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="both-line2d_13">
+      <defs>
+       <path id="both-m459dc0aa4c" d="M 0 0
+L -3.5 0
+" style="stroke: #516779; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#both-m459dc0aa4c" x="53.25" y="251.04" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_13">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="254.839219" transform="rotate(-0, 46.25, 254.839219)">0</text>
+     </g>
+    </g>
+    <g id="both-ytick_2">
+     <g id="both-line2d_14">
+      <path d="M 53.25 204.36549
+L 722.21 204.36549
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="both-line2d_15">
+      <g>
+       <use xlink:href="#both-m459dc0aa4c" x="53.25" y="204.36549" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_14">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="208.164709" transform="rotate(-0, 46.25, 208.164709)">20</text>
+     </g>
+    </g>
+    <g id="both-ytick_3">
+     <g id="both-line2d_16">
+      <path d="M 53.25 157.69098
+L 722.21 157.69098
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="both-line2d_17">
+      <g>
+       <use xlink:href="#both-m459dc0aa4c" x="53.25" y="157.69098" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_15">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="161.490199" transform="rotate(-0, 46.25, 161.490199)">40</text>
+     </g>
+    </g>
+    <g id="both-ytick_4">
+     <g id="both-line2d_18">
+      <path d="M 53.25 111.016471
+L 722.21 111.016471
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="both-line2d_19">
+      <g>
+       <use xlink:href="#both-m459dc0aa4c" x="53.25" y="111.016471" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_16">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="114.815689" transform="rotate(-0, 46.25, 114.815689)">60</text>
+     </g>
+    </g>
+    <g id="both-ytick_5">
+     <g id="both-line2d_20">
+      <path d="M 53.25 64.341961
+L 722.21 64.341961
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="both-line2d_21">
+      <g>
+       <use xlink:href="#both-m459dc0aa4c" x="53.25" y="64.341961" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_17">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="68.14118" transform="rotate(-0, 46.25, 68.14118)">80</text>
+     </g>
+    </g>
+    <g id="both-ytick_6">
+     <g id="both-line2d_22">
+      <path d="M 53.25 17.667451
+L 722.21 17.667451
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke: #b0b0b0; stroke-opacity: 0.18; stroke-width: 0.8; stroke-linecap: square"/>
+     </g>
+     <g id="both-line2d_23">
+      <g>
+       <use xlink:href="#both-m459dc0aa4c" x="53.25" y="17.667451" style="fill: #516779; stroke: #516779; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="both-text_18">
+      <text style="fill: #516779; font: 10px 'DejaVu Sans'; text-anchor: end" x="46.25" y="21.46667" transform="rotate(-0, 46.25, 21.46667)">100</text>
+     </g>
+    </g>
+    <g id="both-text_19">
+     <text style="fill: #173753; font: 10px 'DejaVu Sans'; text-anchor: middle" x="21.082813" y="132.02" transform="rotate(-90, 21.082813, 132.02)">Accuracy (%)</text>
+    </g>
+   </g>
+   <g id="both-line2d_24">
+    <path d="M 320.834 251.04
+L 320.834 13
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke-dasharray: 0.8,1.32; stroke-dashoffset: 0; stroke: #94a8b7; stroke-width: 0.8"/>
+   </g>
+   <g id="both-line2d_25">
+    <path d="M 53.25 240.452012
+L 80.0084 240.119654
+L 106.7668 238.479228
+L 133.5252 235.015579
+L 160.2836 227.941094
+L 187.042 216.871186
+L 213.8004 201.148261
+L 240.5588 183.103576
+L 267.3172 164.420288
+L 294.0756 140.649543
+L 320.834 116.021788
+L 347.5924 91.301447
+L 374.3508 61.85687
+L 401.1092 39.477282
+L 427.8676 31.101851
+L 454.626 29.240644
+L 481.3844 28.447732
+L 508.1428 28.699375
+L 534.9012 28.675635
+L 561.6596 28.48809
+L 588.418 28.49996
+L 615.1764 28.542692
+L 641.9348 28.540318
+L 668.6932 28.378886
+L 695.4516 28.554561
+L 722.21 28.649521
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #7859a5; stroke-width: 2"/>
+   </g>
+   <g id="both-line2d_26">
+    <path d="M 53.25 240.824728
+L 80.0084 240.466256
+L 106.7668 239.312498
+L 133.5252 236.755712
+L 160.2836 230.412415
+L 187.042 219.924135
+L 213.8004 204.227324
+L 240.5588 186.666932
+L 267.3172 169.645436
+L 294.0756 147.156645
+L 320.834 129.29713
+L 347.5924 109.721223
+L 374.3508 94.276054
+L 401.1092 77.038525
+L 427.8676 72.83894
+L 454.626 70.467325
+L 481.3844 68.734314
+L 508.1428 68.074345
+L 534.9012 65.925886
+L 561.6596 66.042211
+L 588.418 66.058829
+L 615.1764 66.046959
+L 641.9348 68.558639
+L 668.6932 68.183549
+L 695.4516 67.98176
+L 722.21 68.126573
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #b77813; stroke-width: 2"/>
+   </g>
+   <g id="both-line2d_27">
+    <path d="M 53.25 241.282908
+L 80.0084 241.451461
+L 106.7668 241.133347
+L 133.5252 240.793866
+L 160.2836 240.000954
+L 187.042 236.637013
+L 213.8004 227.190913
+L 240.5588 210.734426
+L 267.3172 188.024854
+L 294.0756 161.89199
+L 320.834 130.861589
+L 347.5924 101.768362
+L 374.3508 67.188848
+L 401.1092 43.622265
+L 427.8676 33.124489
+L 454.626 30.800354
+L 481.3844 30.050174
+L 508.1428 29.879247
+L 534.9012 29.717816
+L 561.6596 29.677458
+L 588.418 29.936223
+L 615.1764 29.516027
+L 641.9348 29.758174
+L 668.6932 29.860255
+L 695.4516 30.005068
+L 722.21 37.995913
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #087a83; stroke-width: 2"/>
+   </g>
+   <g id="both-line2d_28">
+    <path d="M 53.25 239.872759
+L 80.0084 239.084595
+L 106.7668 235.314701
+L 133.5252 228.031305
+L 160.2836 219.855289
+L 187.042 207.320631
+L 213.8004 189.544206
+L 240.5588 169.26085
+L 267.3172 147.781003
+L 294.0756 114.336256
+L 320.834 91.156634
+L 347.5924 61.054462
+L 374.3508 36.270024
+L 401.1092 21.418353
+L 427.8676 18.74999
+L 454.626 18.74999
+L 481.3844 18.674022
+L 508.1428 18.816461
+L 534.9012 18.721502
+L 561.6596 18.939909
+L 588.418 18.730998
+L 615.1764 18.74999
+L 641.9348 18.835453
+L 668.6932 18.588558
+L 695.4516 18.778478
+L 722.21 18.778478
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke: #7859a5; stroke-width: 2; stroke-linecap: square"/>
+    <defs>
+     <path id="both-m4a5f8ab10b" d="M 0 1.5
+C 0.397805 1.5 0.77937 1.341951 1.06066 1.06066
+C 1.341951 0.77937 1.5 0.397805 1.5 0
+C 1.5 -0.397805 1.341951 -0.77937 1.06066 -1.06066
+C 0.77937 -1.341951 0.397805 -1.5 0 -1.5
+C -0.397805 -1.5 -0.77937 -1.341951 -1.06066 -1.06066
+C -1.341951 -0.77937 -1.5 -0.397805 -1.5 0
+C -1.5 0.397805 -1.341951 0.77937 -1.06066 1.06066
+C -0.77937 1.341951 -0.397805 1.5 0 1.5
+z
+" style="stroke: #7859a5"/>
+    </defs>
+    <g clip-path="url(#both-pc10cf8abd7)">
+     <use xlink:href="#both-m4a5f8ab10b" x="53.25" y="239.872759" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="80.0084" y="239.084595" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="106.7668" y="235.314701" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="133.5252" y="228.031305" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="160.2836" y="219.855289" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="187.042" y="207.320631" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="213.8004" y="189.544206" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="240.5588" y="169.26085" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="267.3172" y="147.781003" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="294.0756" y="114.336256" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="320.834" y="91.156634" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="347.5924" y="61.054462" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="374.3508" y="36.270024" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="401.1092" y="21.418353" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="427.8676" y="18.74999" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="454.626" y="18.74999" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="481.3844" y="18.674022" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="508.1428" y="18.816461" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="534.9012" y="18.721502" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="561.6596" y="18.939909" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="588.418" y="18.730998" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="615.1764" y="18.74999" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="641.9348" y="18.835453" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="668.6932" y="18.588558" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="695.4516" y="18.778478" style="fill: #7859a5; stroke: #7859a5"/>
+     <use xlink:href="#both-m4a5f8ab10b" x="722.21" y="18.778478" style="fill: #7859a5; stroke: #7859a5"/>
+    </g>
+   </g>
+   <g id="both-line2d_29">
+    <path d="M 53.25 241.050257
+L 80.0084 239.521409
+L 106.7668 238.600301
+L 133.5252 234.203675
+L 160.2836 224.118972
+L 187.042 211.821713
+L 213.8004 193.959825
+L 240.5588 177.531825
+L 267.3172 161.835014
+L 294.0756 130.650304
+L 320.834 116.795708
+L 347.5924 92.296148
+L 374.3508 76.808248
+L 401.1092 59.630069
+L 427.8676 56.334973
+L 454.626 53.562155
+L 481.3844 51.615484
+L 508.1428 50.295547
+L 534.9012 47.836095
+L 561.6596 48.624259
+L 588.418 47.788615
+L 615.1764 47.560712
+L 641.9348 50.751352
+L 668.6932 50.001172
+L 695.4516 49.611838
+L 722.21 49.792261
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke: #b77813; stroke-width: 2; stroke-linecap: square"/>
+    <defs>
+     <path id="both-mc6d42f4c00" d="M 0 1.5
+C 0.397805 1.5 0.77937 1.341951 1.06066 1.06066
+C 1.341951 0.77937 1.5 0.397805 1.5 0
+C 1.5 -0.397805 1.341951 -0.77937 1.06066 -1.06066
+C 0.77937 -1.341951 0.397805 -1.5 0 -1.5
+C -0.397805 -1.5 -0.77937 -1.341951 -1.06066 -1.06066
+C -1.341951 -0.77937 -1.5 -0.397805 -1.5 0
+C -1.5 0.397805 -1.341951 0.77937 -1.06066 1.06066
+C -0.77937 1.341951 -0.397805 1.5 0 1.5
+z
+" style="stroke: #b77813"/>
+    </defs>
+    <g clip-path="url(#both-pc10cf8abd7)">
+     <use xlink:href="#both-mc6d42f4c00" x="53.25" y="241.050257" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="80.0084" y="239.521409" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="106.7668" y="238.600301" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="133.5252" y="234.203675" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="160.2836" y="224.118972" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="187.042" y="211.821713" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="213.8004" y="193.959825" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="240.5588" y="177.531825" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="267.3172" y="161.835014" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="294.0756" y="130.650304" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="320.834" y="116.795708" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="347.5924" y="92.296148" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="374.3508" y="76.808248" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="401.1092" y="59.630069" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="427.8676" y="56.334973" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="454.626" y="53.562155" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="481.3844" y="51.615484" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="508.1428" y="50.295547" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="534.9012" y="47.836095" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="561.6596" y="48.624259" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="588.418" y="47.788615" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="615.1764" y="47.560712" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="641.9348" y="50.751352" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="668.6932" y="50.001172" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="695.4516" y="49.611838" style="fill: #b77813; stroke: #b77813"/>
+     <use xlink:href="#both-mc6d42f4c00" x="722.21" y="49.792261" style="fill: #b77813; stroke: #b77813"/>
+    </g>
+   </g>
+   <g id="both-line2d_30">
+    <path d="M 53.25 241.525055
+L 80.0084 241.430095
+L 106.7668 241.240176
+L 133.5252 240.888826
+L 160.2836 241.078745
+L 187.042 236.948005
+L 213.8004 229.009388
+L 240.5588 210.74867
+L 267.3172 186.040199
+L 294.0756 157.884698
+L 320.834 125.845351
+L 347.5924 87.472204
+L 374.3508 51.615484
+L 401.1092 29.16705
+L 427.8676 22.367948
+L 454.626 21.313897
+L 481.3844 21.085994
+L 508.1428 21.228433
+L 534.9012 21.399361
+L 561.6596 21.551296
+L 588.418 21.646255
+L 615.1764 21.104986
+L 641.9348 21.693735
+L 668.6932 21.5418
+L 695.4516 21.133474
+L 722.21 27.628706
+" clip-path="url(#both-pc10cf8abd7)" style="fill: none; stroke: #087a83; stroke-width: 2; stroke-linecap: square"/>
+    <defs>
+     <path id="both-mfef9bfcd98" d="M 0 1.5
+C 0.397805 1.5 0.77937 1.341951 1.06066 1.06066
+C 1.341951 0.77937 1.5 0.397805 1.5 0
+C 1.5 -0.397805 1.341951 -0.77937 1.06066 -1.06066
+C 0.77937 -1.341951 0.397805 -1.5 0 -1.5
+C -0.397805 -1.5 -0.77937 -1.341951 -1.06066 -1.06066
+C -1.341951 -0.77937 -1.5 -0.397805 -1.5 0
+C -1.5 0.397805 -1.341951 0.77937 -1.06066 1.06066
+C -0.77937 1.341951 -0.397805 1.5 0 1.5
+z
+" style="stroke: #087a83"/>
+    </defs>
+    <g clip-path="url(#both-pc10cf8abd7)">
+     <use xlink:href="#both-mfef9bfcd98" x="53.25" y="241.525055" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="80.0084" y="241.430095" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="106.7668" y="241.240176" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="133.5252" y="240.888826" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="160.2836" y="241.078745" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="187.042" y="236.948005" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="213.8004" y="229.009388" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="240.5588" y="210.74867" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="267.3172" y="186.040199" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="294.0756" y="157.884698" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="320.834" y="125.845351" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="347.5924" y="87.472204" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="374.3508" y="51.615484" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="401.1092" y="29.16705" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="427.8676" y="22.367948" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="454.626" y="21.313897" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="481.3844" y="21.085994" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="508.1428" y="21.228433" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="534.9012" y="21.399361" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="561.6596" y="21.551296" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="588.418" y="21.646255" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="615.1764" y="21.104986" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="641.9348" y="21.693735" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="668.6932" y="21.5418" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="695.4516" y="21.133474" style="fill: #087a83; stroke: #087a83"/>
+     <use xlink:href="#both-mfef9bfcd98" x="722.21" y="27.628706" style="fill: #087a83; stroke: #087a83"/>
+    </g>
+   </g>
+   <g id="both-patch_4">
+    <path d="M 53.25 251.04
+L 53.25 13
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="both-patch_5">
+    <path d="M 53.25 251.04
+L 722.21 251.04
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="both-legend_1">
+    <g id="both-patch_6">
+     <path d="M 58.85 54.6275
+L 394.84 54.6275
+Q 396.44 54.6275 396.44 53.0275
+L 396.44 18.6
+Q 396.44 17 394.84 17
+L 58.85 17
+Q 57.25 17 57.25 18.6
+L 57.25 53.0275
+Q 57.25 54.6275 58.85 54.6275
+z
+" style="fill: #ffffff; opacity: 0.95; stroke: #cccccc; stroke-linejoin: miter"/>
+    </g>
+    <g id="both-line2d_31">
+     <path d="M 60.45 23.47875
+L 68.45 23.47875
+L 76.45 23.47875
+" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #7859a5; stroke-width: 2"/>
+    </g>
+    <g id="both-text_20">
+     <text style="fill: #173753; font: 8px 'DejaVu Sans'; text-anchor: start" x="82.85" y="26.27875" transform="rotate(-0, 82.85, 26.27875)">Source / 1 window</text>
+    </g>
+    <g id="both-line2d_32">
+     <path d="M 60.45 35.22125
+L 68.45 35.22125
+L 76.45 35.22125
+" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #b77813; stroke-width: 2"/>
+    </g>
+    <g id="both-text_21">
+     <text style="fill: #173753; font: 8px 'DejaVu Sans'; text-anchor: start" x="82.85" y="38.02125" transform="rotate(-0, 82.85, 38.02125)">RX before cancellation / 1 window</text>
+    </g>
+    <g id="both-line2d_33">
+     <path d="M 60.45 46.96375
+L 68.45 46.96375
+L 76.45 46.96375
+" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #087a83; stroke-width: 2"/>
+    </g>
+    <g id="both-text_22">
+     <text style="fill: #173753; font: 8px 'DejaVu Sans'; text-anchor: start" x="82.85" y="49.76375" transform="rotate(-0, 82.85, 49.76375)">RX after cancellation / 1 window</text>
+    </g>
+    <g id="both-line2d_34">
+     <path d="M 234.845 23.47875
+L 242.845 23.47875
+L 250.845 23.47875
+" style="fill: none; stroke: #7859a5; stroke-width: 2; stroke-linecap: square"/>
+     <g>
+      <use xlink:href="#both-m4a5f8ab10b" x="242.845" y="23.47875" style="fill: #7859a5; stroke: #7859a5"/>
+     </g>
+    </g>
+    <g id="both-text_23">
+     <text style="fill: #173753; font: 8px 'DejaVu Sans'; text-anchor: start" x="257.245" y="26.27875" transform="rotate(-0, 257.245, 26.27875)">Source / 4 window</text>
+    </g>
+    <g id="both-line2d_35">
+     <path d="M 234.845 35.22125
+L 242.845 35.22125
+L 250.845 35.22125
+" style="fill: none; stroke: #b77813; stroke-width: 2; stroke-linecap: square"/>
+     <g>
+      <use xlink:href="#both-mc6d42f4c00" x="242.845" y="35.22125" style="fill: #b77813; stroke: #b77813"/>
+     </g>
+    </g>
+    <g id="both-text_24">
+     <text style="fill: #173753; font: 8px 'DejaVu Sans'; text-anchor: start" x="257.245" y="38.02125" transform="rotate(-0, 257.245, 38.02125)">RX before cancellation / 4 window</text>
+    </g>
+    <g id="both-line2d_36">
+     <path d="M 234.845 46.96375
+L 242.845 46.96375
+L 250.845 46.96375
+" style="fill: none; stroke: #087a83; stroke-width: 2; stroke-linecap: square"/>
+     <g>
+      <use xlink:href="#both-mfef9bfcd98" x="242.845" y="46.96375" style="fill: #087a83; stroke: #087a83"/>
+     </g>
+    </g>
+    <g id="both-text_25">
+     <text style="fill: #173753; font: 8px 'DejaVu Sans'; text-anchor: start" x="257.245" y="49.76375" transform="rotate(-0, 257.245, 49.76375)">RX after cancellation / 4 window</text>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="both-pc10cf8abd7">
+   <rect x="53.25" y="13" width="668.96" height="238.04"/>
+  </clipPath>
+ </defs>
+</svg>
+<figcaption>横轴为原数据集源SNR标签，纵轴为完整分母ACC。淡色区为源SNR 10～30dB；实线为四窗，虚线为单窗。三组输入分别统计。</figcaption></figure>
+<div class="callout warn"><p><strong>不能只看98.17%。</strong>它限定在源SNR 10～30dB。四窗在负源SNR区间，源/未相消/校正ACC分别为22.28% / 19.59% / 12.15%；相消后的识别仍有回退。Z30的校正ACC为95.73%，低于Z10～28约98.4%，这一局部异常尚未确认根因。</p></div>
+<details><summary>展开全部26个源SNR档的准确率</summary><div class="table-scroll"><table id="snr-table"><caption>单位%；表格保留单窗、四窗的全部三组输入</caption><thead><tr><th>源SNR / dB</th><th>单窗源</th><th>单窗未相消</th><th>单窗校正</th><th>四窗源</th><th>四窗未相消</th><th>四窗校正</th></tr></thead><tbody><tr><th scope="row">-20</th><td>4.54</td><td>4.38</td><td>4.18</td><td>4.79</td><td>4.28</td><td>4.08</td></tr><tr><th scope="row">-18</th><td>4.68</td><td>4.53</td><td>4.11</td><td>5.12</td><td>4.94</td><td>4.12</td></tr><tr><th scope="row">-16</th><td>5.38</td><td>5.03</td><td>4.24</td><td>6.74</td><td>5.33</td><td>4.20</td></tr><tr><th scope="row">-14</th><td>6.87</td><td>6.12</td><td>4.39</td><td>9.86</td><td>7.21</td><td>4.35</td></tr><tr><th scope="row">-12</th><td>9.90</td><td>8.84</td><td>4.73</td><td>13.36</td><td>11.54</td><td>4.27</td></tr><tr><th scope="row">-10</th><td>14.64</td><td>13.33</td><td>6.17</td><td>18.73</td><td>16.81</td><td>6.04</td></tr><tr><th scope="row">-8</th><td>21.38</td><td>20.06</td><td>10.22</td><td>26.35</td><td>24.46</td><td>9.44</td></tr><tr><th scope="row">-6</th><td>29.11</td><td>27.58</td><td>17.27</td><td>35.04</td><td>31.50</td><td>17.26</td></tr><tr><th scope="row">-4</th><td>37.12</td><td>34.88</td><td>27.00</td><td>44.25</td><td>38.22</td><td>27.85</td></tr><tr><th scope="row">-2</th><td>47.30</td><td>44.51</td><td>38.20</td><td>58.58</td><td>51.59</td><td>39.92</td></tr><tr><th scope="row">+0</th><td>57.86</td><td>52.17</td><td>51.50</td><td>68.51</td><td>57.52</td><td>53.65</td></tr><tr><th scope="row">+2</th><td>68.45</td><td>60.56</td><td>63.96</td><td>81.41</td><td>68.02</td><td>70.09</td></tr><tr><th scope="row">+4</th><td>81.06</td><td>67.17</td><td>78.78</td><td>92.03</td><td>74.66</td><td>85.45</td></tr><tr><th scope="row">+6</th><td>90.65</td><td>74.56</td><td>88.88</td><td>98.39</td><td>82.02</td><td>95.07</td></tr><tr><th scope="row">+8</th><td>94.24</td><td>76.36</td><td>93.38</td><td>99.54</td><td>83.43</td><td>97.99</td></tr><tr><th scope="row">+10</th><td>95.04</td><td>77.38</td><td>94.37</td><td>99.54</td><td>84.62</td><td>98.44</td></tr><tr><th scope="row">+12</th><td>95.38</td><td>78.12</td><td>94.69</td><td>99.57</td><td>85.45</td><td>98.54</td></tr><tr><th scope="row">+14</th><td>95.27</td><td>78.40</td><td>94.77</td><td>99.51</td><td>86.02</td><td>98.47</td></tr><tr><th scope="row">+16</th><td>95.28</td><td>79.32</td><td>94.84</td><td>99.55</td><td>87.07</td><td>98.40</td></tr><tr><th scope="row">+18</th><td>95.36</td><td>79.27</td><td>94.85</td><td>99.45</td><td>86.74</td><td>98.34</td></tr><tr><th scope="row">+20</th><td>95.36</td><td>79.26</td><td>94.74</td><td>99.54</td><td>87.09</td><td>98.30</td></tr><tr><th scope="row">+22</th><td>95.34</td><td>79.27</td><td>94.92</td><td>99.54</td><td>87.19</td><td>98.53</td></tr><tr><th scope="row">+24</th><td>95.34</td><td>78.19</td><td>94.82</td><td>99.50</td><td>85.82</td><td>98.27</td></tr><tr><th scope="row">+26</th><td>95.41</td><td>78.35</td><td>94.78</td><td>99.61</td><td>86.15</td><td>98.34</td></tr><tr><th scope="row">+28</th><td>95.33</td><td>78.44</td><td>94.71</td><td>99.52</td><td>86.31</td><td>98.51</td></tr><tr><th scope="row">+30</th><td>95.29</td><td>78.38</td><td>91.29</td><td>99.52</td><td>86.23</td><td>95.73</td></tr></tbody></table></div></details>
+<h3>24类结果：查看同一范围下的类别差异</h3><div class="filterbar"><label>统计范围<select id="class-scope"><option value="high">源SNR 10～30dB</option><option value="all">全部26档</option></select></label><label>筛选类别<input id="class-search" type="search" placeholder="例如 QAM / AM / BPSK"></label><span id="class-count" aria-live="polite">24类</span></div><div class="table-scroll"><table id="class-table"><caption id="class-caption">源SNR 10～30dB；每类四窗11,264组</caption><thead><tr><th>调制类别 / ID</th><th>单窗校正</th><th>四窗源</th><th>四窗未相消</th><th>四窗校正</th><th>四窗−单窗校正</th></tr></thead><tbody><tr><th scope="row">OOK / 0</th><td>99.93%</td><td>100.00%</td><td>100.00%</td><td>100.00%</td><td>+0.07 pp</td></tr><tr><th scope="row">4ASK / 1</th><td>94.44%</td><td>99.99%</td><td>92.89%</td><td>99.71%</td><td>+5.26 pp</td></tr><tr><th scope="row">8ASK / 2</th><td>98.83%</td><td>100.00%</td><td>99.81%</td><td>99.99%</td><td>+1.16 pp</td></tr><tr><th scope="row">BPSK / 3</th><td>99.92%</td><td>100.00%</td><td>100.00%</td><td>100.00%</td><td>+0.08 pp</td></tr><tr><th scope="row">QPSK / 4</th><td>99.96%</td><td>100.00%</td><td>100.00%</td><td>100.00%</td><td>+0.04 pp</td></tr><tr><th scope="row">8PSK / 5</th><td>99.96%</td><td>100.00%</td><td>100.00%</td><td>100.00%</td><td>+0.04 pp</td></tr><tr><th scope="row">16PSK / 6</th><td>99.40%</td><td>100.00%</td><td>100.00%</td><td>100.00%</td><td>+0.60 pp</td></tr><tr><th scope="row">32PSK / 7</th><td>99.28%</td><td>100.00%</td><td>99.37%</td><td>99.97%</td><td>+0.69 pp</td></tr><tr><th scope="row">16APSK / 8</th><td>98.76%</td><td>100.00%</td><td>100.00%</td><td>99.99%</td><td>+1.23 pp</td></tr><tr><th scope="row">32APSK / 9</th><td>99.40%</td><td>100.00%</td><td>99.96%</td><td>99.95%</td><td>+0.55 pp</td></tr><tr><th scope="row">64APSK / 10</th><td>98.76%</td><td>100.00%</td><td>99.88%</td><td>99.99%</td><td>+1.23 pp</td></tr><tr><th scope="row">128APSK / 11</th><td>98.48%</td><td>100.00%</td><td>78.58%</td><td>99.27%</td><td>+0.79 pp</td></tr><tr><th scope="row">16QAM / 12</th><td>99.90%</td><td>100.00%</td><td>99.97%</td><td>100.00%</td><td>+0.10 pp</td></tr><tr><th scope="row">32QAM / 13</th><td>98.16%</td><td>100.00%</td><td>95.04%</td><td>99.91%</td><td>+1.75 pp</td></tr><tr><th scope="row">64QAM / 14</th><td>93.05%</td><td>100.00%</td><td>29.86%</td><td>95.52%</td><td>+2.46 pp</td></tr><tr><th scope="row">128QAM / 15</th><td>94.26%</td><td>100.00%</td><td>3.14%</td><td>96.14%</td><td>+1.88 pp</td></tr><tr><th scope="row">256QAM / 16</th><td>84.30%</td><td>99.75%</td><td>5.17%</td><td>96.72%</td><td>+12.42 pp</td></tr><tr><th scope="row">AM-SSB-WC / 17</th><td>77.33%</td><td>98.54%</td><td>99.83%</td><td>83.12%</td><td>+5.79 pp</td></tr><tr><th scope="row">AM-SSB-SC / 18</th><td>74.71%</td><td>91.66%</td><td>89.15%</td><td>97.77%</td><td>+23.06 pp</td></tr><tr><th scope="row">AM-DSB-WC / 19</th><td>99.33%</td><td>99.97%</td><td>98.79%</td><td>91.65%</td><td>-7.67 pp</td></tr><tr><th scope="row">AM-DSB-SC / 20</th><td>58.60%</td><td>98.85%</td><td>78.66%</td><td>96.37%</td><td>+37.77 pp</td></tr><tr><th scope="row">FM / 21</th><td>99.68%</td><td>100.00%</td><td>99.79%</td><td>100.00%</td><td>+0.32 pp</td></tr><tr><th scope="row">GMSK / 22</th><td>100.00%</td><td>100.00%</td><td>100.00%</td><td>100.00%</td><td>+0.00 pp</td></tr><tr><th scope="row">OQPSK / 23</th><td>99.98%</td><td>100.00%</td><td>100.00%</td><td>100.00%</td><td>+0.02 pp</td></tr></tbody></table></div><p class="note">类别名称按用户指定的server-v1顺序解释；原始数字ID与源Y关联。工程名称映射不等于独立RF名称准入。源模型本身也会误判，所以源/接收准确率的差不能直接称为纯硬件损失。</p>
+<h3>原4090模型与当前模型：不要混用两套成绩</h3><div class="table-scroll"><table><thead><tr><th>对象</th><th>模型 / 范围</th><th>整体ACC</th></tr></thead><tbody><tr><th>原4090归档测试</th><td>原始seed44 best.pt；383,387条test样本；单窗</td><td>63.83%</td></tr><tr><th>本次源单窗</th><td>RF-v1微调epoch010；原始全源2,555,904条</td><td>62.37%</td></tr><tr><th>本次源四窗</th><td>同一epoch010；全源638,976组</td><td>67.60%</td></tr></tbody></table></div><p class="note">原4090数字来自现存 <code>seed44/metrics_test.json</code>（ACC 0.6382532532），本报告只读取归档文件，没有重新评估原模型。权重、成员划分、归一化/聚合都不同，不能把62.37%与63.83%的差直接归因于AGX硬件。CNN、GRU、CLDNN、MCLDNN、MCformer、MAMC、Shared-Bi等新对照尚未执行或未取得结果，不纳入本报告。</p></section>
+<section id="processing"><h2><span class="n">05</span>四窗聚合与SINR的准确含义</h2><h3>四窗是四次模型前向后的联合判决</h3><p>在实际16载荷帧内，固定取0–3、4–7、8–11、12–15四组；同组同源SNR、同类别，不跨采集会话或物理发射帧。标签用于核验与评分，不送入分类模型，不根据预测挑组。四条原RML记录并不因此成为源数据中真实连续的4096点信号。<a class="cite" href="#ref-25" aria-label="证据 25">[25]</a></p>
+<div class="formula">[B, 4, 2, 1024] 原始/复原IQ<br>rms = sqrt( Σ(I² + Q²) / 4096 )<br>同组四窗共享RMS → [4B, 2, 1024] → 冻结模型<br>[B, 4, 24] logits → float64算术平均 → argmax / softmax</div>
+<p>归一化前I/Q为float32，RMS用float64计算，再输出float32。它不是多数投票，不是平均softmax概率，也不是把4096点直接输入1024点网络。为复现共享RMS，本次从原始IQ重放已保存的同步与相消参数；不能直接平均旧单窗logits，因为旧输入曾逐窗各自归一化。</p>
+<div class="callout"><p><strong>四窗带来更多信息，也增加代价。</strong>每组包含4096个载荷采样点，在2.1MS/s下仅载荷时长约1.95ms；这不是完整判决延迟，尚有保护区、导频、处理和排队。真实空口还需确认四窗确属同一信号且调制没有变化，不能依赖真实类别或源SNR来完成盲分组。</p></div>
+<h3>源SNR、条件SINR与ACC分别回答不同的问题</h3><div class="table-scroll"><table><thead><tr><th>量</th><th>本实验的含义</th></tr></thead><tbody><tr><th>source_snr_db</th><td>RML原数据标签Z；发射波形已有源数据中的噪声/损伤。</td></tr><tr><th>条件rx_sinr_db</th><td>借助源X/Z和两半窗交叉拟合，在约定假设下衡量新增链路残差并组合估计。</td></tr><tr><th>invalid / not measured</th><td>稳定性、可辨识性或同步不满足；不等于未接收或必然分类错误。</td></tr><tr><th>ACC</th><td>完整窗口/组分母中的正确判决比例；不等同于射频干扰功率测量。</td></tr></tbody></table></div>
+<p>当前SINR估计包含链路失真，未用功率计校准为独立物理SINR；它需要源参考，不能直接用于未知空口信号。原始与校正结果分别保存。四窗仍保留每个成员的条件SINR，<strong>没有把四个dB值简单平均成“组SINR”</strong>。</p></section>
+<section id="limits"><h2><span class="n">06</span>局限、反例与论文表述</h2><div class="pair"><div><div class="label">适合写成论文贡献的部分</div><ul><li>异构SDR链路的可复现实验：N210 USB发射、P201网口接收、AGX处理，附参数与数据血缘。</li><li>通过负载、停发、LO跟随和增益配对逐步分离影响来源。</li><li>已知保护区辅助LO相消及拒绝回退机制，保留原始输入和失败分母。</li><li>单窗与四窗、源与接收、相消前后的配对工程对照。</li><li>全量采集和独立校验、CPU/GPU/写盘重叠，以及可重复运行的证据保存。</li></ul></div><div><div class="label warn">必须同时报告的限制</div><ul><li>全源集合含历史train/validation/test成员，且经历诊断与方案选择，不能充当独立locked-test。</li><li>当前高质量证据主要是20dB同轴；早期天线试验不等于全量空口部署验证。</li><li>已知帧结构辅助同步与分组，尚非未知协议的完全盲识别。</li><li>低SNR校正回退、Z30异常、部分AM参考不可辨识仍存在。</li><li>LO相关泄漏被减弱和软件相消，未证明发射端硬件泄漏彻底消失。</li></ul></div></div>
+<h3>三个不能被成功结果覆盖的反例</h3><ol><li><strong>9月10日：</strong>72条全部同步，但实收0/72正确，证明同步并不等于保真。</li><li><strong>9月11日：</strong>固定FIR使相关度提高，但41/48→3/48，证明单一波形指标不够。</li><li><strong>9月12日至14日：</strong>时序校正或LO相消可以提高SINR，却未必提高ACC；负源SNR回退在全量四窗里依然存在。</li></ol>
+<h3>建议的下一轮实验，不作为本报告完成项</h3><p>优先检查国产B210兼容设备的TX DC补偿接口，并做固定有效信号功率下的发射端校准前后对照；再以多调制验证镜像、LO功率与波形误差。随后做独立时段/场景的空口四窗验证，以及4090原模型和其他模型的统一单窗/四窗对照。普通外接宽带射频滤波器未必能分开2.455GHz附近仅相隔250kHz的有效信号与LO泄漏，尚未购置或验证专用滤波硬件。</p>
+<div class="result"><strong>可直接采用的阶段结论：</strong>“在已知帧结构辅助的2455MHz同轴链路中，完成RadioML2018A全源回放与接收识别。采用保护区相消及四窗联合判决后，整体ACC为61.68%，源SNR10～30dB区间为98.17%。上述结果属于全源工程对照，四窗增加观测预算，其独立空口泛化仍待验证。”</div></section>
+<section id="archive"><h2><span class="n">07</span>数据保存、复现与当前状态</h2><p>外接盘备份已完成并通过逐文件完整读回SHA校验：13份主原始IQ覆盖26档、26份processed.h5，以及背景、帧参数与元数据。注册文件共82,136,084,528字节；加自动生成的计划、SHA256SUMS和完成标记，实际2,805文件、82,137,371,844字节。<a class="cite" href="#ref-23" aria-label="证据 23">[23]</a></p>
+<pre>外接盘：陆周超的移动硬盘 / RadioML2018A_RX_IQ_20260914
+  dataset-map.json       按源SNR查找原始与处理数据
+  corpus/.../raw.sigmf-data  ci16_le原始连续IQ（每两档共享）
+  corpus/.../processed.h5    source/raw/guard输入及质量记录
+  SHA256SUMS            所有注册文件的校验表
+  COPY_COMPLETE.json    全部复制与完整读回已完成
+
+校正IQ：blocks/000..095/inputs/guard  [1024, 2, 1024]
+原始定位：raw_sample_start / raw_sample_count
+质量记录：quality_json（各窗条件SINR、同步、校正诊断）</pre>
+<div class="callout warn"><p><strong>截至本报告：</strong>本机64个已备份IQ/HDF5文件仍在，合计81.31GB，删除尚未执行；删除任务已暂停，待后续明确继续。外接盘当前未挂载，备份完成结论依据此前已完成的读回凭据，不是本次重新挂盘检查。本报告不复制IQ或权重，也不更改历史封存证据。</p></div>
+<details><summary>模型、语料与输出身份</summary><dl class="facts"><dt>epoch010权重SHA</dt><dd><code>a3c3e41ba9732171d65b023d7d9f1d334d88b7ca28be3d939b0536878c168054</code></dd><dt>原RML数据SHA</dt><dd><code>e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38</code></dd><dt>RF-v1 profile SHA</dt><dd><code>6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab</code></dd><dt>四窗summary SHA</dt><dd><code>03473350fa1db18d174cd7014c50524a87092d4cb056696d5098903e1c6df901</code></dd></dl><p class="note">完整source/capture/session、处理方法和每文件哈希由下方证据索引连接；这里仅列识别身份，不把摘要当作完整复现资产。</p></details>
+<p class="support-note">识别服务已退出且运行缓存清理完成；结果与报告保留。生产 <code>recognizer_available=false</code> 仍保持。当前报告只进行文档与汇总数据读取，没有新RF采集、模型推理、训练、硬件校准或数据删除。</p></section>
+<section id="references"><h2><span class="n">08</span>证据索引</h2><p class="note">下列链接固定到本报告的数据核对基线 <code>b2329b6</code>。历史记录中的“下一步”仅表示当时状态；本报告叙述以实际完成凭据和后续结果为准。</p><ol class="refs"><li id="ref-1"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/DAILY_RX_USE_VALIDATION_2026-09-08.md" target="_blank" rel="noopener">9月8日日常RX使用验收</a><br><span>docs/validation/DAILY_RX_USE_VALIDATION_2026-09-08.md</span></li><li id="ref-2"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md" target="_blank" rel="noopener">9月8日非模型运维部署</a><br><span>docs/validation/OPERATIONS_RX_DEPLOYMENT_VALIDATION_2026-09-08.md</span></li><li id="ref-3"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/P201_TERMINATION_BACKGROUND_VALIDATION_2026-09-09.md" target="_blank" rel="noopener">负载—天线—负载背景对照</a><br><span>docs/validation/P201_TERMINATION_BACKGROUND_VALIDATION_2026-09-09.md</span></li><li id="ref-4"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/P201_BACKGROUND_MAP_VALIDATION_2026-09-09.md" target="_blank" rel="noopener">2.4GHz背景分布与独立复测</a><br><span>docs/validation/P201_BACKGROUND_MAP_VALIDATION_2026-09-09.md</span></li><li id="ref-5"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/P201_WIFI5_BACKGROUND_VALIDATION_2026-09-09.md" target="_blank" rel="noopener">5GHz离散中心背景检查</a><br><span>docs/validation/P201_WIFI5_BACKGROUND_VALIDATION_2026-09-09.md</span></li><li id="ref-6"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/HISTORICAL_BACKGROUND_COMPARISON_2026-09-09.md" target="_blank" rel="noopener">1586轮历史宽频记录比较</a><br><span>docs/validation/HISTORICAL_BACKGROUND_COMPARISON_2026-09-09.md</span></li><li id="ref-7"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/B210_3500_TX70_RX50_VALIDATION_2026-09-10.md" target="_blank" rel="noopener">3.5GHz历史TX70/RX50仍未确认单音</a><br><span>docs/validation/B210_3500_TX70_RX50_VALIDATION_2026-09-10.md</span></li><li id="ref-8"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/B210_2440_ANTENNA_CHANGE_VALIDATION_2026-09-10.md" target="_blank" rel="noopener">2.440GHz换天线后单音通过</a><br><span>docs/validation/B210_2440_ANTENNA_CHANGE_VALIDATION_2026-09-10.md</span></li><li id="ref-9"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/B210_433920_ANTENNA_VALIDATION_2026-09-10.md" target="_blank" rel="noopener">433.920MHz天线单音与背景</a><br><span>docs/validation/B210_433920_ANTENNA_VALIDATION_2026-09-10.md</span></li><li id="ref-10"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md" target="_blank" rel="noopener">全量RF脚本与早期先导</a><br><span>docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md</span></li><li id="ref-11"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/B210_AGX_MIGRATION_2026-09-11.md" target="_blank" rel="noopener">国产N210迁移AGX及设备身份</a><br><span>docs/validation/B210_AGX_MIGRATION_2026-09-11.md</span></li><li id="ref-12"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11条件有效sinr实现与2455mhz有限验证" target="_blank" rel="noopener">条件SINR实现与2455MHz验证</a><br><span>docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11条件有效sinr实现与2455mhz有限验证</span></li><li id="ref-13"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11固定滤波与48条工程识别对照" target="_blank" rel="noopener">固定滤波反例：相关度提升而识别回退</a><br><span>docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11固定滤波与48条工程识别对照</span></li><li id="ref-14"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12干净单音与lo跟随分量" target="_blank" rel="noopener">单音LO跟随诊断及幅度/增益配对</a><br><span>docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12干净单音与lo跟随分量</span></li><li id="ref-15"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12保护间隔辅助lo相消" target="_blank" rel="noopener">保护间隔辅助LO相消</a><br><span>docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12保护间隔辅助lo相消</span></li><li id="ref-16"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12保护间隔lo修复及四批qam验证" target="_blank" rel="noopener">64QAM/256QAM相消与时序比较</a><br><span>docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12保护间隔lo修复及四批qam验证</span></li><li id="ref-17"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12rx40rx50配对实机与识别对照" target="_blank" rel="noopener">RX40/RX50配对</a><br><span>docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12rx40rx50配对实机与识别对照</span></li><li id="ref-18"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13统一24类rx50新源行有限确认" target="_blank" rel="noopener">统一24类576条确认</a><br><span>docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13统一24类rx50新源行有限确认</span></li><li id="ref-19"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13四类低源snr有限分层" target="_blank" rel="noopener">四类五档低源SNR分层</a><br><span>docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-13四类低源snr有限分层</span></li><li id="ref-20"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-14整档与两档连续流实验" target="_blank" rel="noopener">整档与两档连续收发验证</a><br><span>docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-14整档与两档连续流实验</span></li><li id="ref-21"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/evidence/RML2018A_FULL_INFERENCE_2026-09-14.json" target="_blank" rel="noopener">单窗全量完成与独立核验</a><br><span>docs/evidence/RML2018A_FULL_INFERENCE_2026-09-14.json</span></li><li id="ref-22"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/evidence/RML2018A_FOUR_WINDOW_COMPLETE_2026-09-14.json" target="_blank" rel="noopener">四窗全量完成与独立核验</a><br><span>docs/evidence/RML2018A_FOUR_WINDOW_COMPLETE_2026-09-14.json</span></li><li id="ref-23"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/evidence/RML2018A_EXTERNAL_IQ_COPY_COMPLETE_2026-09-14.json" target="_blank" rel="noopener">外接盘副本完成与校验</a><br><span>docs/evidence/RML2018A_EXTERNAL_IQ_COPY_COMPLETE_2026-09-14.json</span></li><li id="ref-24"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/docs/reference/RML2018A_RF_REPRODUCTION.md" target="_blank" rel="noopener">射频配置复现与论文适用范围</a><br><span>docs/reference/RML2018A_RF_REPRODUCTION.md</span></li><li id="ref-25"><a href="https://github.com/luzhouchao/sdr-pi/blob/b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e/jetson-agx/sdrharness/scripts/rml2018a_four_window.py" target="_blank" rel="noopener">四窗共享RMS及均值logits源码</a><br><span>jetson-agx/sdrharness/scripts/rml2018a_four_window.py</span></li></ol></section></div></div><footer class="footer"><span>SDR Harness · 2026.09.08—2026.09.14 · 工程实验阶段报告</span><span>完整分母 / 原始证据保留 / 成功与失败分列</span></footer></main><script type="application/json" id="report-data">{"period": ["2026-09-08", "2026-09-14"], "baseline_commit": "b2329b6ddeeca2661880f6f7b6c6e1b86bdc7e2e", "series": {"single": {"source": [4.536946614583333, 4.679361979166667, 5.382283528645833, 6.866455078125, 9.897867838541666, 14.641316731770834, 21.378580729166668, 29.1107177734375, 37.116495768229164, 47.30224609375, 57.855224609375, 68.4478759765625, 81.06486002604167, 90.65450032552083, 94.24336751302083, 95.0408935546875, 95.38065592447917, 95.2728271484375, 95.28299967447917, 95.36336263020833, 95.3582763671875, 95.3399658203125, 95.34098307291667, 95.41015625, 95.33487955729167, 95.294189453125], "raw": [4.377237955729167, 4.530843098958333, 5.025227864583333, 6.120808919270833, 8.838907877604166, 13.3331298828125, 20.0592041015625, 27.583821614583332, 34.877522786458336, 44.513956705729164, 52.166748046875, 60.555013020833336, 67.17325846354167, 74.55952962239583, 76.35904947916667, 77.37528483072917, 78.11787923177083, 78.40067545572917, 79.3212890625, 79.27144368489583, 79.26432291666667, 79.2694091796875, 78.19315592447917, 78.3538818359375, 78.44034830729167, 78.3782958984375], "guard": [4.180908203125, 4.108683268229167, 4.2449951171875, 4.390462239583333, 4.730224609375, 6.171671549479167, 10.219319661458334, 17.270914713541668, 27.001953125, 38.199869791666664, 51.496378580729164, 63.962809244791664, 78.78011067708333, 88.87837727864583, 93.37666829427083, 94.37255859375, 94.69401041666667, 94.76725260416667, 94.83642578125, 94.85371907552083, 94.74283854166667, 94.92289225260417, 94.81913248697917, 94.775390625, 94.71333821614583, 91.28926595052083]}, "four": {"source": [4.78515625, 5.122884114583333, 6.73828125, 9.859212239583334, 13.362630208333334, 18.733723958333332, 26.350911458333332, 35.042317708333336, 44.246419270833336, 58.577473958333336, 68.50992838541667, 81.40869140625, 92.02880859375, 98.39274088541667, 99.5361328125, 99.5361328125, 99.56868489583333, 99.50764973958333, 99.54833984375, 99.45475260416667, 99.54427083333333, 99.5361328125, 99.49951171875, 99.60530598958333, 99.52392578125, 99.52392578125], "raw": [4.280598958333333, 4.935709635416667, 5.330403645833333, 7.21435546875, 11.53564453125, 16.805013020833332, 24.458821614583332, 31.498209635416668, 38.224283854166664, 51.5869140625, 57.523600260416664, 68.02164713541667, 74.658203125, 82.01904296875, 83.43098958333333, 84.619140625, 85.45328776041667, 86.01888020833333, 87.07275390625, 86.73502604166667, 87.09309895833333, 87.19075520833333, 85.82356770833333, 86.14501953125, 86.31184895833333, 86.23453776041667], "guard": [4.0771484375, 4.117838541666667, 4.19921875, 4.349772135416667, 4.268391927083333, 6.038411458333333, 9.440104166666666, 17.264811197916668, 27.852376302083332, 39.9169921875, 53.645833333333336, 70.08870442708333, 85.45328776041667, 95.07242838541667, 97.98583984375, 98.4375, 98.53515625, 98.47412109375, 98.40087890625, 98.33577473958333, 98.29508463541667, 98.52701822916667, 98.27473958333333, 98.33984375, 98.51481119791667, 95.73160807291667]}}, "classes": {"single": {"all": [{"name": "OOK", "id": 0, "source": 76.79067758413461, "raw": 80.16357421875, "guard": 77.82733623798077}, {"name": "4ASK", "id": 1, "source": 65.91139573317308, "raw": 52.75409405048077, "guard": 62.24271334134615}, {"name": "8ASK", "id": 2, "source": 68.18472055288461, "raw": 63.39674729567308, "guard": 62.36853966346154}, {"name": "BPSK", "id": 3, "source": 76.75217848557692, "raw": 76.95406400240384, "guard": 69.15001502403847}, {"name": "QPSK", "id": 4, "source": 65.478515625, "raw": 65.1263897235577, "guard": 61.93941556490385}, {"name": "8PSK", "id": 5, "source": 62.30938251201923, "raw": 60.76190655048077, "guard": 58.43318058894231}, {"name": "16PSK", "id": 6, "source": 54.69313401442308, "raw": 54.04710036057692, "guard": 52.36159104567308}, {"name": "32PSK", "id": 7, "source": 61.30746694711539, "raw": 50.98970853365385, "guard": 57.65662560096154}, {"name": "16APSK", "id": 8, "source": 62.68216646634615, "raw": 61.72532301682692, "guard": 59.07170222355769}, {"name": "32APSK", "id": 9, "source": 63.97329477163461, "raw": 60.89618389423077, "guard": 64.7930438701923}, {"name": "64APSK", "id": 10, "source": 55.76641376201923, "raw": 50.88266225961539, "guard": 54.15132962740385}, {"name": "128APSK", "id": 11, "source": 57.26881760817308, "raw": 36.53188852163461, "guard": 62.17886117788461}, {"name": "16QAM", "id": 12, "source": 57.33079176682692, "raw": 52.99823467548077, "guard": 56.17863581730769}, {"name": "32QAM", "id": 13, "source": 54.83867938701923, "raw": 40.36865234375, "guard": 53.19636418269231}, {"name": "64QAM", "id": 14, "source": 51.24605618990385, "raw": 14.31415264423077, "guard": 51.43479567307692}, {"name": "128QAM", "id": 15, "source": 51.69396033653846, "raw": 3.9513221153846154, "guard": 51.44700270432692}, {"name": "256QAM", "id": 16, "source": 46.53883713942308, "raw": 5.708195612980769, "guard": 50.25446965144231}, {"name": "AM-SSB-WC", "id": 17, "source": 65.80904447115384, "raw": 70.17352764423077, "guard": 50.52208533653846}, {"name": "AM-SSB-SC", "id": 18, "source": 50.10047325721154, "raw": 38.87751652644231, "guard": 48.21495643028846}, {"name": "AM-DSB-WC", "id": 19, "source": 81.70166015625, "raw": 80.01708984375, "guard": 62.33755258413461}, {"name": "AM-DSB-SC", "id": 20, "source": 39.21555739182692, "raw": 22.129469651442307, "guard": 43.994140625}, {"name": "FM", "id": 21, "source": 85.24263822115384, "raw": 75.45823317307692, "guard": 71.46653395432692}, {"name": "GMSK", "id": 22, "source": 73.45064603365384, "raw": 72.06092247596153, "guard": 68.0682842548077}, {"name": "OQPSK", "id": 23, "source": 68.57252854567308, "raw": 69.21480618990384, "guard": 68.37252103365384}], "high": [{"name": "OOK", "id": 0, "source": 99.87127130681819, "raw": 99.9911221590909, "guard": 99.93341619318181}, {"name": "4ASK", "id": 1, "source": 96.12482244318181, "raw": 74.31862571022727, "guard": 94.4424715909091}, {"name": "8ASK", "id": 2, "source": 99.1455078125, "raw": 90.22327769886364, "guard": 98.83478338068181}, {"name": "BPSK", "id": 3, "source": 99.95339133522727, "raw": 99.86017400568181, "guard": 99.92231889204545}, {"name": "QPSK", "id": 4, "source": 99.98002485795455, "raw": 99.6182528409091, "guard": 99.96448863636364}, {"name": "8PSK", "id": 5, "source": 99.97780539772727, "raw": 100.0, "guard": 99.96448863636364}, {"name": "16PSK", "id": 6, "source": 99.55832741477273, "raw": 99.53169389204545, "guard": 99.40296519886364}, {"name": "32PSK", "id": 7, "source": 99.64710582386364, "raw": 89.6817294034091, "guard": 99.27867542613636}, {"name": "16APSK", "id": 8, "source": 98.88805042613636, "raw": 99.75363991477273, "guard": 98.76154119318181}, {"name": "32APSK", "id": 9, "source": 99.6493252840909, "raw": 99.1122159090909, "guard": 99.39630681818181}, {"name": "64APSK", "id": 10, "source": 99.47620738636364, "raw": 93.8232421875, "guard": 98.75710227272727}, {"name": "128APSK", "id": 11, "source": 99.82244318181819, "raw": 60.1318359375, "guard": 98.48410866477273}, {"name": "16QAM", "id": 12, "source": 99.97336647727273, "raw": 98.51740056818181, "guard": 99.89568536931819}, {"name": "32QAM", "id": 13, "source": 99.3075284090909, "raw": 74.73366477272727, "guard": 98.16228693181819}, {"name": "64QAM", "id": 14, "source": 97.58744673295455, "raw": 21.495472301136363, "guard": 93.05308948863636}, {"name": "128QAM", "id": 15, "source": 98.63059303977273, "raw": 6.6916725852272725, "guard": 94.25603693181819}, {"name": "256QAM", "id": 16, "source": 89.91033380681819, "raw": 8.413973721590908, "guard": 84.29953835227273}, {"name": "AM-SSB-WC", "id": 17, "source": 75.87890625, "raw": 96.33123224431819, "guard": 77.3348721590909}, {"name": "AM-SSB-SC", "id": 18, "source": 75.0643643465909, "raw": 59.93430397727273, "guard": 74.71147017045455}, {"name": "AM-DSB-WC", "id": 19, "source": 99.52281605113636, "raw": 99.99556107954545, "guard": 99.32750355113636}, {"name": "AM-DSB-SC", "id": 20, "source": 59.51260653409091, "raw": 27.54794034090909, "guard": 58.60262784090909}, {"name": "FM", "id": 21, "source": 100.0, "raw": 86.24822443181819, "guard": 99.68039772727273}, {"name": "GMSK", "id": 22, "source": 100.0, "raw": 100.0, "guard": 100.0}, {"name": "OQPSK", "id": 23, "source": 99.97780539772727, "raw": 99.97780539772727, "guard": 99.97780539772727}]}, "four": {"all": [{"name": "OOK", "id": 0, "source": 78.77854567307692, "raw": 84.42758413461539, "guard": 78.67713341346153}, {"name": "4ASK", "id": 1, "source": 74.37650240384616, "raw": 67.2100360576923, "guard": 67.48046875}, {"name": "8ASK", "id": 2, "source": 71.85621995192308, "raw": 70.35006009615384, "guard": 63.65685096153846}, {"name": "BPSK", "id": 3, "source": 77.87710336538461, "raw": 78.10997596153847, "guard": 69.83548677884616}, {"name": "QPSK", "id": 4, "source": 66.63536658653847, "raw": 65.51983173076923, "guard": 61.85772235576923}, {"name": "8PSK", "id": 5, "source": 65.76772836538461, "raw": 62.02674278846154, "guard": 58.33834134615385}, {"name": "16PSK", "id": 6, "source": 56.25, "raw": 54.96920072115385, "guard": 52.36628605769231}, {"name": "32PSK", "id": 7, "source": 64.6221454326923, "raw": 57.8125, "guard": 58.02659254807692}, {"name": "16APSK", "id": 8, "source": 66.21844951923077, "raw": 63.56295072115385, "guard": 57.99654447115385}, {"name": "32APSK", "id": 9, "source": 66.34239783653847, "raw": 60.91871995192308, "guard": 65.86162860576923}, {"name": "64APSK", "id": 10, "source": 59.99474158653846, "raw": 56.49038461538461, "guard": 54.541015625}, {"name": "128APSK", "id": 11, "source": 63.55543870192308, "raw": 51.91932091346154, "guard": 74.71454326923077}, {"name": "16QAM", "id": 12, "source": 59.01066706730769, "raw": 55.40489783653846, "guard": 55.54387019230769}, {"name": "32QAM", "id": 13, "source": 57.55709134615385, "raw": 52.81700721153846, "guard": 53.52689302884615}, {"name": "64QAM", "id": 14, "source": 54.97671274038461, "raw": 21.07872596153846, "guard": 52.79071514423077}, {"name": "128QAM", "id": 15, "source": 54.48467548076923, "raw": 2.001953125, "guard": 54.64618389423077}, {"name": "256QAM", "id": 16, "source": 52.41511418269231, "raw": 4.285606971153846, "guard": 64.55078125}, {"name": "AM-SSB-WC", "id": 17, "source": 80.46499399038461, "raw": 71.46559495192308, "guard": 50.03756009615385}, {"name": "AM-SSB-SC", "id": 18, "source": 63.97235576923077, "raw": 56.15985576923077, "guard": 64.02869591346153}, {"name": "AM-DSB-WC", "id": 19, "source": 86.31685697115384, "raw": 69.24203725961539, "guard": 48.99338942307692}, {"name": "AM-DSB-SC", "id": 20, "source": 65.5010516826923, "raw": 61.29807692307692, "guard": 71.10877403846153}, {"name": "FM", "id": 21, "source": 87.81174879807692, "raw": 81.85096153846153, "guard": 72.07782451923077}, {"name": "GMSK", "id": 22, "source": 76.55123197115384, "raw": 72.94921875, "guard": 66.29732572115384}, {"name": "OQPSK", "id": 23, "source": 71.01111778846153, "raw": 72.17923677884616, "guard": 63.32632211538461}], "high": [{"name": "OOK", "id": 0, "source": 100.0, "raw": 100.0, "guard": 100.0}, {"name": "4ASK", "id": 1, "source": 99.9911221590909, "raw": 92.88884943181819, "guard": 99.70703125}, {"name": "8ASK", "id": 2, "source": 100.0, "raw": 99.8135653409091, "guard": 99.9911221590909}, {"name": "BPSK", "id": 3, "source": 100.0, "raw": 100.0, "guard": 100.0}, {"name": "QPSK", "id": 4, "source": 100.0, "raw": 100.0, "guard": 100.0}, {"name": "8PSK", "id": 5, "source": 100.0, "raw": 100.0, "guard": 100.0}, {"name": "16PSK", "id": 6, "source": 100.0, "raw": 100.0, "guard": 100.0}, {"name": "32PSK", "id": 7, "source": 100.0, "raw": 99.36967329545455, "guard": 99.97336647727273}, {"name": "16APSK", "id": 8, "source": 100.0, "raw": 100.0, "guard": 99.9911221590909}, {"name": "32APSK", "id": 9, "source": 100.0, "raw": 99.96448863636364, "guard": 99.94673295454545}, {"name": "64APSK", "id": 10, "source": 100.0, "raw": 99.87571022727273, "guard": 99.9911221590909}, {"name": "128APSK", "id": 11, "source": 100.0, "raw": 78.57776988636364, "guard": 99.27201704545455}, {"name": "16QAM", "id": 12, "source": 100.0, "raw": 99.97336647727273, "guard": 100.0}, {"name": "32QAM", "id": 13, "source": 100.0, "raw": 95.03728693181819, "guard": 99.9112215909091}, {"name": "64QAM", "id": 14, "source": 100.0, "raw": 29.856178977272727, "guard": 95.5166903409091}, {"name": "128QAM", "id": 15, "source": 100.0, "raw": 3.1427556818181817, "guard": 96.13813920454545}, {"name": "256QAM", "id": 16, "source": 99.75142045454545, "raw": 5.166903409090909, "guard": 96.71519886363636}, {"name": "AM-SSB-WC", "id": 17, "source": 98.53515625, "raw": 99.83132102272727, "guard": 83.12322443181819}, {"name": "AM-SSB-SC", "id": 18, "source": 91.66370738636364, "raw": 89.1512784090909, "guard": 97.77166193181819}, {"name": "AM-DSB-WC", "id": 19, "source": 99.97336647727273, "raw": 98.79261363636364, "guard": 91.65482954545455}, {"name": "AM-DSB-SC", "id": 20, "source": 98.84588068181819, "raw": 78.65767045454545, "guard": 96.36896306818181}, {"name": "FM", "id": 21, "source": 100.0, "raw": 99.78693181818181, "guard": 100.0}, {"name": "GMSK", "id": 22, "source": 100.0, "raw": 100.0, "guard": 100.0}, {"name": "OQPSK", "id": 23, "source": 100.0, "raw": 100.0, "guard": 100.0}]}}, "totals": {"single": {"all": {"source": {"correct": 1594095, "total": 2555904, "acc": 62.36912653996394}, "raw": {"correct": 1341319, "total": 2555904, "acc": 52.479240221854965}, "guard": {"correct": 1509753, "total": 2555904, "acc": 59.0692373422476}}, "high": {"source": {"correct": 1030638, "total": 1081344, "acc": 95.31083540482955}, "raw": {"correct": 849726, "total": 1081344, "acc": 78.58054421164773}, "guard": {"correct": 1021169, "total": 1081344, "acc": 94.43516586766098}}, "low": {"source": {"correct": 177844, "total": 983040, "acc": 18.091227213541668}, "raw": {"correct": 166390, "total": 983040, "acc": 16.926066080729168}, "guard": {"correct": 118475, "total": 983040, "acc": 12.051900227864584}}}, "four": {"all": {"source": {"correct": 431934, "total": 638976, "acc": 67.59784405048077}, "raw": {"correct": 371152, "total": 638976, "acc": 58.08543669871795}, "guard": {"correct": 394110, "total": 638976, "acc": 61.67837289663461}}, "high": {"source": {"correct": 269070, "total": 270336, "acc": 99.53169389204545}, "raw": {"correct": 233152, "total": 270336, "acc": 86.24526515151516}, "guard": {"correct": 265388, "total": 270336, "acc": 98.16968513257575}}, "low": {"source": {"correct": 54760, "total": 245760, "acc": 22.281901041666668}, "raw": {"correct": 48137, "total": 245760, "acc": 19.586995442708332}, "guard": {"correct": 29866, "total": 245760, "acc": 12.152506510416666}}}}, "source_artifacts": [{"path": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-b1024-20260914/summary.json", "sha256": "41feb6ff8d89e577bc846b0731bb07fe48ecb691e13e1ed7b10aaa20093f07be", "mode": "single"}, {"path": "/var/tmp/sdrharness-dev/rml2018a-all26-infer-four-b1024-20260914/summary.json", "sha256": "03473350fa1db18d174cd7014c50524a87092d4cb056696d5098903e1c6df901", "mode": "four"}], "snrs": [-20, -18, -16, -14, -12, -10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], "local_iq_inventory": {"checked_files": 64, "bytes": 81307974192, "deleted": false, "backup_mounted_at_report_generation": false}}</script><script type="application/json" id="csv-data">"source_snr_db,single_source_acc_percent,single_raw_acc_percent,single_guard_acc_percent,four_source_acc_percent,four_raw_acc_percent,four_guard_acc_percent\r\n-20,4.536946614583333,4.377237955729167,4.180908203125,4.78515625,4.280598958333333,4.0771484375\r\n-18,4.679361979166667,4.530843098958333,4.108683268229167,5.122884114583333,4.935709635416667,4.117838541666667\r\n-16,5.382283528645833,5.025227864583333,4.2449951171875,6.73828125,5.330403645833333,4.19921875\r\n-14,6.866455078125,6.120808919270833,4.390462239583333,9.859212239583334,7.21435546875,4.349772135416667\r\n-12,9.897867838541666,8.838907877604166,4.730224609375,13.362630208333334,11.53564453125,4.268391927083333\r\n-10,14.641316731770834,13.3331298828125,6.171671549479167,18.733723958333332,16.805013020833332,6.038411458333333\r\n-8,21.378580729166668,20.0592041015625,10.219319661458334,26.350911458333332,24.458821614583332,9.440104166666666\r\n-6,29.1107177734375,27.583821614583332,17.270914713541668,35.042317708333336,31.498209635416668,17.264811197916668\r\n-4,37.116495768229164,34.877522786458336,27.001953125,44.246419270833336,38.224283854166664,27.852376302083332\r\n-2,47.30224609375,44.513956705729164,38.199869791666664,58.577473958333336,51.5869140625,39.9169921875\r\n0,57.855224609375,52.166748046875,51.496378580729164,68.50992838541667,57.523600260416664,53.645833333333336\r\n2,68.4478759765625,60.555013020833336,63.962809244791664,81.40869140625,68.02164713541667,70.08870442708333\r\n4,81.06486002604167,67.17325846354167,78.78011067708333,92.02880859375,74.658203125,85.45328776041667\r\n6,90.65450032552083,74.55952962239583,88.87837727864583,98.39274088541667,82.01904296875,95.07242838541667\r\n8,94.24336751302083,76.35904947916667,93.37666829427083,99.5361328125,83.43098958333333,97.98583984375\r\n10,95.0408935546875,77.37528483072917,94.37255859375,99.5361328125,84.619140625,98.4375\r\n12,95.38065592447917,78.11787923177083,94.69401041666667,99.56868489583333,85.45328776041667,98.53515625\r\n14,95.2728271484375,78.40067545572917,94.76725260416667,99.50764973958333,86.01888020833333,98.47412109375\r\n16,95.28299967447917,79.3212890625,94.83642578125,99.54833984375,87.07275390625,98.40087890625\r\n18,95.36336263020833,79.27144368489583,94.85371907552083,99.45475260416667,86.73502604166667,98.33577473958333\r\n20,95.3582763671875,79.26432291666667,94.74283854166667,99.54427083333333,87.09309895833333,98.29508463541667\r\n22,95.3399658203125,79.2694091796875,94.92289225260417,99.5361328125,87.19075520833333,98.52701822916667\r\n24,95.34098307291667,78.19315592447917,94.81913248697917,99.49951171875,85.82356770833333,98.27473958333333\r\n26,95.41015625,78.3538818359375,94.775390625,99.60530598958333,86.14501953125,98.33984375\r\n28,95.33487955729167,78.44034830729167,94.71333821614583,99.52392578125,86.31184895833333,98.51481119791667\r\n30,95.294189453125,78.3782958984375,91.28926595052083,99.52392578125,86.23453776041667,95.73160807291667\r\n"</script><script>
+const reportData = JSON.parse(document.getElementById('report-data').textContent);
+const csvData = JSON.parse(document.getElementById('csv-data').textContent);
+const setMode = mode => {
+ document.querySelectorAll('.chart-view').forEach(el => el.hidden = el.dataset.view !== mode);
+ document.querySelectorAll('[data-mode]').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.mode === mode)));
+};
+document.querySelectorAll('[data-mode]').forEach(el => el.addEventListener('click', () => setMode(el.dataset.mode)));
+function renderClasses(){
+ const scope=document.getElementById('class-scope').value;
+ const search=document.getElementById('class-search').value.trim().toLowerCase();
+ const single=reportData.classes.single[scope], four=reportData.classes.four[scope];
+ const tbody=document.querySelector('#class-table tbody');tbody.replaceChildren();let count=0;
+ four.forEach((row,i)=>{if(!row.name.toLowerCase().includes(search)&&String(row.id)!==search&&search)return;
+  const tr=document.createElement('tr');const delta=row.guard-single[i].guard;
+  const values=[row.name+' / '+row.id,single[i].guard.toFixed(2)+'%',row.source.toFixed(2)+'%',row.raw.toFixed(2)+'%',row.guard.toFixed(2)+'%',(delta>=0?'+':'')+delta.toFixed(2)+' pp'];
+  values.forEach((v,j)=>{const cell=document.createElement(j?'td':'th');if(!j)cell.scope='row';cell.textContent=v;tr.append(cell)});tbody.append(tr);count++;
+ });
+ document.getElementById('class-count').textContent=count+' / 24 类';
+ document.getElementById('class-caption').textContent=scope==='high'?'源SNR 10～30dB；每类四窗11,264组':'全部26档；每类四窗26,624组';
+ if(!count){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=6;td.textContent='没有匹配类别，请清空或修改筛选。';tr.append(td);tbody.append(tr)}
+}
+document.getElementById('class-scope').addEventListener('change',renderClasses);
+document.getElementById('class-search').addEventListener('input',renderClasses);
+document.getElementById('download-csv').addEventListener('click',()=>{
+ const blob=new Blob(['\ufeff'+csvData],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='SDR_20260908_20260914_accuracy.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+let closedDetails=[];
+window.addEventListener('beforeprint',()=>{closedDetails=[...document.querySelectorAll('details:not([open])')];closedDetails.forEach(d=>d.open=true)});
+window.addEventListener('afterprint',()=>{closedDetails.forEach(d=>d.open=false)});
+document.getElementById('print-report').addEventListener('click',()=>window.print());
+if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('.toc a').forEach(a=>a.setAttribute('aria-current',String(a.getAttribute('href')==='#'+e.target.id)))}})},{rootMargin:'0px 0px -65% 0px'});document.querySelectorAll('.content>section').forEach(s=>observer.observe(s))}
+</script></body></html>

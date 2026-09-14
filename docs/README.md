@@ -24,6 +24,8 @@
 
 其他资料入口（按需）：
 
+- [9月8—14日实验阶段报告（离线HTML）](reports/SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14.html)
+
 - [AGX设备工作区：B210 USB / P201网口 / 共享数据集](../devices/README.md)
 - [RadioML2018A全量RF脚本操作](reference/RML2018A_FULL_RF_CAMPAIGN.md)
 - [当前RF配置与复现、同轴/空口论文适用范围](reference/RML2018A_RF_REPRODUCTION.md)

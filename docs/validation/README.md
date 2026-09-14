@@ -18,6 +18,8 @@
 
 ## 近期射频排查（2026-09-09至10）
 
+- [9月8—14日实验阶段报告（HTML）](../reports/SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14.html) · [浏览器与来源核验](../evidence/SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14.json)
+
 后续实验频段见[当前选择](../SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。
 下列为历史实测入口；通过仅指该记录中的工程门，不能把旧计划直接重跑。
 
