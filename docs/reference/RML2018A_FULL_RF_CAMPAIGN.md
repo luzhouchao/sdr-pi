@@ -252,6 +252,15 @@ SINR invalid不排除模型识别；未同步等缺失输入保留NaN logits和f
 
 进度：读取当前根`state.json`，`completed_rows`是已提交的源样本数，分母2555904；
 `completed_blocks`分母2496，每96块一档。GPU已处理但仍待提交的数据不会预先计为完成。
+也可直接运行只读查看脚本（无需模型venv）：
+
+```bash
+/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-progress.sh
+```
+
+默认每5秒刷新，显示已完成/未完成、百分比、完整档数和当前源SNR；Ctrl+C只退出查看。
+`--once`只显示一次，`--interval 2`更改刷新间隔，`--root <推理根>`查看指定任务。
+脚本只读取计划与状态，不加载模型、不写结果、不调用服务停止或启动。
 停止：`systemctl --user stop sdr-rml2018a-all26-infer-b1024-20260914.service`。
 最终完成与清理仍按当前根`complete.json`/`retention.json`核对。
 
