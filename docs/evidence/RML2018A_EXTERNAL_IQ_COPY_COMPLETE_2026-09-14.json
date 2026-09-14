@@ -1,0 +1,60 @@
+{
+  "schema": "rml2018a-external-iq-copy-completion-v1",
+  "destination": "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914",
+  "mount_uuid": "5C1822D81822B0C6",
+  "complete": {
+    "complete": true,
+    "files": 2802,
+    "bytes": 82136084528,
+    "verified": "source streaming SHA-256 and full destination readback per file",
+    "elapsed_seconds": 2206.3039284669794,
+    "source_preserved": true,
+    "completed_ns": 1789365010938413711
+  },
+  "service": {
+    "name": "sdr-rml2018a-external-iq-copy-20260914.service",
+    "active_state": "inactive",
+    "main_pid": 0,
+    "result": "success",
+    "exit_status": 0
+  },
+  "checks": [
+    "2802 readback receipts exactly match planned relative paths, sizes and SHA-256",
+    "external/local completion receipts identical",
+    "SHA256SUMS exactly matches all readback receipts",
+    "all destination file sizes checked and no partial files remain"
+  ],
+  "registered_files": 2802,
+  "registered_bytes": 82136084528,
+  "generated_external_files": [
+    {
+      "path": "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914/export-plan.json",
+      "bytes": 935883,
+      "sha256": "e0388992f4dbb818aa64c80f2d704c0e9a1c3a0021164c19105559a810fc2d65"
+    },
+    {
+      "path": "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914/SHA256SUMS",
+      "bytes": 351180,
+      "sha256": "78442d324b1bb8573f3b380a8ccd0622348df2ae8fd41041dd9ee7021fbcd733"
+    },
+    {
+      "path": "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914/COPY_COMPLETE.json",
+      "bytes": 253,
+      "sha256": "4fced720bdb6103e29d89a1aa7b101b1a263661edf869555316856a998361ef4"
+    }
+  ],
+  "external_total_files": 2805,
+  "external_total_bytes": 82137371844,
+  "local_retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-external-copy-20260914/retention.json",
+    "bytes": 2419,
+    "sha256": "f4252fdf93ff67c6ec68aeffed0d9264fd63e1792254886a43b3bfe1fe51942d"
+  },
+  "source_preserved": true,
+  "manual_delete_argv": [
+    "rm",
+    "-rf",
+    "--",
+    "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914"
+  ]
+}
