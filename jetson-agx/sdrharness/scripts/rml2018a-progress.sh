@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Read-only viewer; independent of the inference runner and its source pins.
+export SDR_COLLECTION_PROGRESS_HELPER="$(cd -- "$(dirname -- "$0")" && pwd)/check-rml2018a-models.sh"
 exec python3 -B - "$@" <<'PY'
 import argparse
 import json
@@ -7,10 +8,12 @@ import math
 from pathlib import Path
 import sys
 import time
+import os
+import subprocess
 
 parser = argparse.ArgumentParser(description="查看 RadioML 全量识别进度；Ctrl+C 只退出查看。")
 parser.add_argument("--root", type=Path, default=Path(
-    "/var/tmp/sdrharness-dev/rml2018a-all26-infer-four-b1024-20260914"))
+    "/home/jetson/sdrharness/local-assets/amc-eval/results/clean12-single-20260914"))
 parser.add_argument("--interval", type=float, default=5, help="刷新间隔秒数，默认 5")
 parser.add_argument("--once", action="store_true", help="只显示一次")
 args = parser.parse_args()
@@ -22,6 +25,16 @@ phases = {"starting": "启动中", "loading_model": "加载模型", "model_loade
           "failed": "失败", "stopped": "已暂停"}
 try:
     plan = json.loads((args.root / "plan.json").read_text())
+    if plan.get("schema", "").startswith("rml2018a-clean12"):
+        while True:
+            if sys.stdout.isatty() and not args.once:
+                print("\033[2J\033[H", end="", flush=True)
+            subprocess.run(["bash", os.environ["SDR_COLLECTION_PROGRESS_HELPER"], str(args.root)], check=True)
+            print("Ctrl+C只退出查看，不停止后台识别。", flush=True)
+            if args.once or (args.root / "COMPLETE.json").exists():
+                break
+            time.sleep(args.interval)
+        sys.exit(0)
     total = plan["total_rows"]
     if type(total) is not int or total <= 0:
         raise ValueError("计划中的总样本数无效")

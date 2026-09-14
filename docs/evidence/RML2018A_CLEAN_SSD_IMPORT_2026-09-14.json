@@ -1,0 +1,45 @@
+{
+  "schema": "rml2018a-clean-ssd-import-v1",
+  "copy": {
+    "complete": true,
+    "files": [
+      {
+        "source": "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914/derived/RadioML2018A_RX_raw_1024_per_window_RMS_v1.h5",
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/rx-clean-20260914/RadioML2018A_RX_raw_1024_per_window_RMS_v1.h5",
+        "bytes": 21526064941,
+        "sha256": "4d2dd1bf76d828913a85c2283b5c2a2373f2a5a726e3e85f65c1cafbc227c8bd",
+        "manifest_sha256": "40aa0dc32648335821c031d5060198d6c2e2a6dee134ef38683aac4af1be57f3"
+      },
+      {
+        "source": "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914/derived/RadioML2018A_RX_guard_1024_per_window_RMS_v1.h5",
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/rx-clean-20260914/RadioML2018A_RX_guard_1024_per_window_RMS_v1.h5",
+        "bytes": 21526064941,
+        "sha256": "1ce26483e9b14f549a139986e8c8a532290f773d9c2fcad3897f52d9ac29c794",
+        "manifest_sha256": "98dd2d16b1eefe79aca61ad7a15b285ecd0484411e6d2d127b7e955719d2cb06"
+      }
+    ],
+    "bytes": 43052129882,
+    "elapsed_seconds": 656.9031483349972,
+    "verification": "source streaming SHA-256 matches provided manifest and independent SSD readback",
+    "source_preserved": true
+  },
+  "original_reused": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+    "bytes": 21449148312,
+    "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+    "elapsed_seconds": 43.078930474002846
+  },
+  "dataset_retention": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/rx-clean-20260914/retention.json",
+    "bytes": 1868,
+    "sha256": "f5a6025cd9e47ca1b6a9ff204fcfabfac2d09c237c5f6c47bcfe5163f96fd5c9"
+  },
+  "audit_retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-clean-import-20260914/retention.json",
+    "bytes": 1242,
+    "sha256": "2d1b5bccd2ab37a4534b54c65ef5fbd85a50f1581f64d5bb61014e94ced07c2e"
+  },
+  "partial_files_remaining": 0,
+  "copy_service_exited": true,
+  "rf_calls": 0
+}

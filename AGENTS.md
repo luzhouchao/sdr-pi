@@ -59,11 +59,15 @@ Cargo 包/库名 `sdr-agent-controller` 无需改名；不要另建重复实现�
 该任务允许冻结模型的工程推理及全量源X/Y/Z读取（包含历史train/validation/test成员）；训练/微调仍暂停。
 全量结果单列为工程对照，不用于调参后再作为独立locked-test准入成绩；原冻结划分/审计不改写。
 该例外仅适用于当前明确授权的全量RF任务，普通“继续”或部署不扩大为其他模型实验。
+用户于2026-09-14另行明确授权：将外接盘两份逐窗RMS清洗HDF5复制到AGX SSD，
+用已导入的12份权重分别识别原始RML2018A及清洗raw/guard的全部样本，按单1024点窗记录。
+用户随后要求raw/guard只识别usable且strict_quality_pass行，原始source仍全量；记录跳过数量及共同通过校验的源行对照，完成后绘制36组混淆矩阵。
+此36组工程对照允许新模型的严格加载/有限数值验证与后台推理；不恢复epoch-010、训练或生产准入。
 
 - 历史 RF 工程结果使用 epoch-10、FP16 autocast + FP32 权重和 RF-v1。用户于2026-09-14
   明确删除 AGX 四窗微调 epoch-010 权重；不得自动恢复或将旧冻结配置指向其他模型。
-  新导入的4090模型见[权重集合](docs/reference/RML2018A_MODEL_COLLECTION.md)，仅完成传输与CPU参数检查，
-  不代表推理适配或生产准入。不自行训练、不重跑完整精度实验或独立 locked-test 准入；
+  新导入的4090模型见[权重集合](docs/reference/RML2018A_MODEL_COLLECTION.md)，传输、推理适配和批次完成状态以checklist为准，
+  不因导入或工程推理通过而视为生产准入。不自行训练、不重跑完整精度实验或独立 locked-test 准入；
   当前全量RF工程源访问按本节明确授权例外执行。
 - 保持 `recognizer_available=false`。未来能力必须来自负责的 Adapter/Worker
   实测健康与已准入制品，不能由配置、测试替身或接口存在推定为 true。

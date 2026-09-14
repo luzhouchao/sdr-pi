@@ -23,7 +23,9 @@
 全部权重已通过源/本地哈希及CPU `torch.load(..., map_location="cpu", weights_only=True)`检查，
 参数字典键为`model_state`。原评估输入为float32、1024点，`[N,1024,2]`转置为`[N,2,1024]`，
 无额外外部归一化、去DC、滤波或去噪。不得直接套用旧RF-v1单位/四窗共享RMS作为原始模型基线。
-模型结构strict load、前向及AGX GPU运行尚未验证；下载不代表识别适配或准入。
+导入时仅做CPU参数检查；随后用户授权的12模型strict load与GPU先导已通过，
+全量识别已启动，操作与边界见[三数据集识别](RML2018A_MODEL_COLLECTION_EVALUATION.md)。
+工程推理不代表生产准入。
 
 用户已明确删除`local-assets/amc-eval/checkpoints/rml2018a/rf-v1-ft-batched-seed44/epoch-010.pt`。
 旧RF-v1配置仍保留历史身份，但依赖该文件的入口当前不可用，不自动恢复、回退或改绑新权重。

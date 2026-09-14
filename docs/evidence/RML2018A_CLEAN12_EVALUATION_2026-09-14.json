@@ -1,0 +1,786 @@
+{
+  "schema": "rml2018a-clean12-strict-launch-v1",
+  "plan": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/clean12-single-20260914/plan.json",
+    "bytes": 37535,
+    "sha256": "08bf570c74305a069ec51446ccf1b663836ca7350e98d2982d89fbbf36df1213"
+  },
+  "probe": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/clean12-single-20260914/probe.json",
+    "bytes": 6301,
+    "sha256": "d9d08933b2cbb7b4b6761785ba62c90081368ca956dd05703540c7ee0e516161"
+  },
+  "models": [
+    {
+      "variant": "baseline_cnn2_stable",
+      "seed": 42,
+      "strict_load": true,
+      "backend": "pytorch_cnn2_stable",
+      "precision": "fp32",
+      "fp16_probability_error": 0.0048151711135541175,
+      "fp16_failure": null,
+      "fp16_batch_failure": {
+        "probability_error": 0.007547494292485635,
+        "top1_changes": 0
+      },
+      "fp16_top1_changes": 0,
+      "batch_probability_error": 2.154161609535521e-06,
+      "batch_top1_changes": 0,
+      "full_batch_seconds": 1.3807916810037568,
+      "pilot_rows": 192,
+      "passed": true
+    },
+    {
+      "variant": "baseline_resnet",
+      "seed": 42,
+      "strict_load": true,
+      "backend": "pytorch_resnet2d",
+      "precision": "fp32",
+      "fp16_probability_error": 0.01160143674459957,
+      "fp16_failure": null,
+      "fp16_batch_failure": null,
+      "fp16_top1_changes": 0,
+      "batch_probability_error": 2.3470586262286375e-06,
+      "batch_top1_changes": 0,
+      "full_batch_seconds": 9.40567225497216,
+      "pilot_rows": 192,
+      "passed": true
+    },
+    {
+      "variant": "baseline_gru",
+      "seed": 42,
+      "strict_load": true,
+      "backend": "pytorch_gru",
+      "precision": "fp32",
+      "fp16_probability_error": 0.1647369715402044,
+      "fp16_failure": null,
+      "fp16_batch_failure": null,
+      "fp16_top1_changes": 4,
+      "batch_probability_error": 4.891994545563882e-07,
+      "batch_top1_changes": 0,
+      "full_batch_seconds": 2.5780696619767696,
+      "pilot_rows": 192,
+      "passed": true
+    },
+    {
+      "variant": "baseline_cldnn",
+      "seed": 42,
+      "strict_load": true,
+      "backend": "pytorch_cldnn",
+      "precision": "fp32",
+      "fp16_probability_error": 0.01056338694234682,
+      "fp16_failure": null,
+      "fp16_batch_failure": null,
+      "fp16_top1_changes": 0,
+      "batch_probability_error": 2.3069854238055854e-07,
+      "batch_top1_changes": 0,
+      "full_batch_seconds": 0.6857501960475929,
+      "pilot_rows": 192,
+      "passed": true
+    },
+    {
+      "variant": "baseline_mcldnn",
+      "seed": 42,
+      "strict_load": true,
+      "backend": "pytorch_mcldnn",
+      "precision": "fp32",
+      "fp16_probability_error": 0.008399800880138919,
+      "fp16_failure": null,
+      "fp16_batch_failure": null,
+      "fp16_top1_changes": 2,
+      "batch_probability_error": 7.676840952930419e-07,
+      "batch_top1_changes": 0,
+      "full_batch_seconds": 4.321379631990567,
+      "pilot_rows": 192,
+      "passed": true
+    },
+    {
+      "variant": "baseline_mcformer",
+      "seed": 42,
+      "strict_load": true,
+      "backend": "pytorch_mcformer",
+      "precision": "fp32",
+      "fp16_probability_error": 0.0071084119983779726,
+      "fp16_failure": null,
+      "fp16_batch_failure": null,
+      "fp16_top1_changes": 1,
+      "batch_probability_error": 7.143663604547434e-07,
+      "batch_top1_changes": 0,
+      "full_batch_seconds": 6.968312348995823,
+      "pilot_rows": 192,
+      "passed": true
+    },
+    {
+      "variant": "baseline_mamc",
+      "seed": 42,
+      "strict_load": true,
+      "backend": "real_mamba1_mamc",
+      "precision": "fp32",
+      "fp16_probability_error": null,
+      "fp16_failure": "nonfinite FP16 pilot logits; use verified FP32",
+      "fp16_batch_failure": null,
+      "fp16_top1_changes": null,
+      "batch_probability_error": 4.963671990099172e-07,
+      "batch_top1_changes": 0,
+      "full_batch_seconds": 0.2733799390261993,
+      "pilot_rows": 192,
+      "passed": true
+    },
+    {
+      "variant": "amc_mamba_d8",
+      "seed": 42,
+      "strict_load": true,
+      "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+      "precision": "fp32",
+      "fp16_probability_error": 0.009290265214780546,
+      "fp16_failure": null,
+      "fp16_batch_failure": null,
+      "fp16_top1_changes": 0,
+      "batch_probability_error": 2.3522510765872084e-06,
+      "batch_top1_changes": 0,
+      "full_batch_seconds": 0.7484405629802495,
+      "pilot_rows": 192,
+      "passed": true
+    },
+    {
+      "variant": "amc_mamba_d8",
+      "seed": 43,
+      "strict_load": true,
+      "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+      "precision": "fp32",
+      "fp16_probability_error": 0.007110106069672745,
+      "fp16_failure": null,
+      "fp16_batch_failure": null,
+      "fp16_top1_changes": 0,
+      "batch_probability_error": 1.1261460348688246e-06,
+      "batch_top1_changes": 0,
+      "full_batch_seconds": 0.6656209510401823,
+      "pilot_rows": 192,
+      "passed": true
+    },
+    {
+      "variant": "amc_mamba_d8",
+      "seed": 44,
+      "strict_load": true,
+      "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+      "precision": "fp32",
+      "fp16_probability_error": 0.005969273991300539,
+      "fp16_failure": null,
+      "fp16_batch_failure": null,
+      "fp16_top1_changes": 0,
+      "batch_probability_error": 4.081645959191915e-06,
+      "batch_top1_changes": 0,
+      "full_batch_seconds": 0.6439370170119219,
+      "pilot_rows": 192,
+      "passed": true
+    },
+    {
+      "variant": "amc_mamba_d8",
+      "seed": 45,
+      "strict_load": true,
+      "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+      "precision": "fp32",
+      "fp16_probability_error": 0.005908697098291227,
+      "fp16_failure": null,
+      "fp16_batch_failure": null,
+      "fp16_top1_changes": 0,
+      "batch_probability_error": 2.9162420654982313e-06,
+      "batch_top1_changes": 0,
+      "full_batch_seconds": 0.6357719369698316,
+      "pilot_rows": 192,
+      "passed": true
+    },
+    {
+      "variant": "amc_mamba_d8",
+      "seed": 46,
+      "strict_load": true,
+      "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+      "precision": "fp32",
+      "fp16_probability_error": 0.013070307064926512,
+      "fp16_failure": null,
+      "fp16_batch_failure": null,
+      "fp16_top1_changes": 0,
+      "batch_probability_error": 2.4062888618892053e-06,
+      "batch_top1_changes": 0,
+      "full_batch_seconds": 0.652365738991648,
+      "pilot_rows": 192,
+      "passed": true
+    }
+  ],
+  "datasets": [
+    {
+      "plane": "source",
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+      "bytes": 21449148312,
+      "mtime_ns": 1627354882000000000,
+      "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+      "metadata_sha256": "2a28afcd23cc070f81a6ed3fda241bc36dbc1bff2390a041a6611d9b5c271ef1",
+      "selected_rows": 2555904,
+      "skipped_rows": 0,
+      "common_rows": 2462264,
+      "eligibility_by_snr": [
+        {
+          "source_snr_db": -20,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": -18,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": -16,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": -14,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": -12,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": -10,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": -8,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": -6,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": -4,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": -2,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 0,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 2,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 4,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 6,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 8,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 10,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 12,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 14,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 16,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 18,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 20,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 22,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 24,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 26,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 28,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        },
+        {
+          "source_snr_db": 30,
+          "file_rows": 98304,
+          "selected_rows": 98304,
+          "skipped_rows": 0
+        }
+      ]
+    },
+    {
+      "plane": "raw",
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/rx-clean-20260914/RadioML2018A_RX_raw_1024_per_window_RMS_v1.h5",
+      "bytes": 21526064941,
+      "mtime_ns": 1789393290693380188,
+      "sha256": "4d2dd1bf76d828913a85c2283b5c2a2373f2a5a726e3e85f65c1cafbc227c8bd",
+      "metadata_sha256": "ddf527e0157f2a90db8eb631e1ba0cc15d659b09905edc9e79da75fc073865bd",
+      "selected_rows": 2530590,
+      "skipped_rows": 25314,
+      "common_rows": 2462264,
+      "skip_reasons_overlapping": {
+        "archived valid/raw is true": 0,
+        "quality_json sync.status is synchronized": 0,
+        "raw rx_sinr_status is estimated": 25314,
+        "raw rx_sinr_db is finite": 25314,
+        "saved raw offsets match frame payload offsets": 0
+      },
+      "eligibility_by_snr": [
+        {
+          "source_snr_db": -20,
+          "file_rows": 98304,
+          "selected_rows": 98293,
+          "skipped_rows": 11
+        },
+        {
+          "source_snr_db": -18,
+          "file_rows": 98304,
+          "selected_rows": 98278,
+          "skipped_rows": 26
+        },
+        {
+          "source_snr_db": -16,
+          "file_rows": 98304,
+          "selected_rows": 98285,
+          "skipped_rows": 19
+        },
+        {
+          "source_snr_db": -14,
+          "file_rows": 98304,
+          "selected_rows": 98295,
+          "skipped_rows": 9
+        },
+        {
+          "source_snr_db": -12,
+          "file_rows": 98304,
+          "selected_rows": 98285,
+          "skipped_rows": 19
+        },
+        {
+          "source_snr_db": -10,
+          "file_rows": 98304,
+          "selected_rows": 98295,
+          "skipped_rows": 9
+        },
+        {
+          "source_snr_db": -8,
+          "file_rows": 98304,
+          "selected_rows": 98292,
+          "skipped_rows": 12
+        },
+        {
+          "source_snr_db": -6,
+          "file_rows": 98304,
+          "selected_rows": 98297,
+          "skipped_rows": 7
+        },
+        {
+          "source_snr_db": -4,
+          "file_rows": 98304,
+          "selected_rows": 98301,
+          "skipped_rows": 3
+        },
+        {
+          "source_snr_db": -2,
+          "file_rows": 98304,
+          "selected_rows": 98300,
+          "skipped_rows": 4
+        },
+        {
+          "source_snr_db": 0,
+          "file_rows": 98304,
+          "selected_rows": 98299,
+          "skipped_rows": 5
+        },
+        {
+          "source_snr_db": 2,
+          "file_rows": 98304,
+          "selected_rows": 98290,
+          "skipped_rows": 14
+        },
+        {
+          "source_snr_db": 4,
+          "file_rows": 98304,
+          "selected_rows": 98261,
+          "skipped_rows": 43
+        },
+        {
+          "source_snr_db": 6,
+          "file_rows": 98304,
+          "selected_rows": 98153,
+          "skipped_rows": 151
+        },
+        {
+          "source_snr_db": 8,
+          "file_rows": 98304,
+          "selected_rows": 97594,
+          "skipped_rows": 710
+        },
+        {
+          "source_snr_db": 10,
+          "file_rows": 98304,
+          "selected_rows": 96714,
+          "skipped_rows": 1590
+        },
+        {
+          "source_snr_db": 12,
+          "file_rows": 98304,
+          "selected_rows": 96026,
+          "skipped_rows": 2278
+        },
+        {
+          "source_snr_db": 14,
+          "file_rows": 98304,
+          "selected_rows": 95582,
+          "skipped_rows": 2722
+        },
+        {
+          "source_snr_db": 16,
+          "file_rows": 98304,
+          "selected_rows": 95846,
+          "skipped_rows": 2458
+        },
+        {
+          "source_snr_db": 18,
+          "file_rows": 98304,
+          "selected_rows": 95962,
+          "skipped_rows": 2342
+        },
+        {
+          "source_snr_db": 20,
+          "file_rows": 98304,
+          "selected_rows": 96245,
+          "skipped_rows": 2059
+        },
+        {
+          "source_snr_db": 22,
+          "file_rows": 98304,
+          "selected_rows": 96148,
+          "skipped_rows": 2156
+        },
+        {
+          "source_snr_db": 24,
+          "file_rows": 98304,
+          "selected_rows": 96435,
+          "skipped_rows": 1869
+        },
+        {
+          "source_snr_db": 26,
+          "file_rows": 98304,
+          "selected_rows": 96327,
+          "skipped_rows": 1977
+        },
+        {
+          "source_snr_db": 28,
+          "file_rows": 98304,
+          "selected_rows": 96458,
+          "skipped_rows": 1846
+        },
+        {
+          "source_snr_db": 30,
+          "file_rows": 98304,
+          "selected_rows": 95329,
+          "skipped_rows": 2975
+        }
+      ]
+    },
+    {
+      "plane": "guard",
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/rx-clean-20260914/RadioML2018A_RX_guard_1024_per_window_RMS_v1.h5",
+      "bytes": 21526064941,
+      "mtime_ns": 1789393620408112571,
+      "sha256": "1ce26483e9b14f549a139986e8c8a532290f773d9c2fcad3897f52d9ac29c794",
+      "metadata_sha256": "5cc58fff91a921006b053d4d844cae30f68a6a7fb0732e44e633890018e1636d",
+      "selected_rows": 2473498,
+      "skipped_rows": 82406,
+      "common_rows": 2462264,
+      "skip_reasons_overlapping": {
+        "archived valid/guard is true": 0,
+        "quality_json sync.status is synchronized": 0,
+        "saved frame guard correction was applied": 41392,
+        "guard rx_sinr_status is estimated": 42846,
+        "guard rx_sinr_db is finite": 42846,
+        "saved raw offsets match frame payload offsets": 0
+      },
+      "eligibility_by_snr": [
+        {
+          "source_snr_db": -20,
+          "file_rows": 98304,
+          "selected_rows": 97880,
+          "skipped_rows": 424
+        },
+        {
+          "source_snr_db": -18,
+          "file_rows": 98304,
+          "selected_rows": 98089,
+          "skipped_rows": 215
+        },
+        {
+          "source_snr_db": -16,
+          "file_rows": 98304,
+          "selected_rows": 97707,
+          "skipped_rows": 597
+        },
+        {
+          "source_snr_db": -14,
+          "file_rows": 98304,
+          "selected_rows": 97693,
+          "skipped_rows": 611
+        },
+        {
+          "source_snr_db": -12,
+          "file_rows": 98304,
+          "selected_rows": 97490,
+          "skipped_rows": 814
+        },
+        {
+          "source_snr_db": -10,
+          "file_rows": 98304,
+          "selected_rows": 97616,
+          "skipped_rows": 688
+        },
+        {
+          "source_snr_db": -8,
+          "file_rows": 98304,
+          "selected_rows": 97528,
+          "skipped_rows": 776
+        },
+        {
+          "source_snr_db": -6,
+          "file_rows": 98304,
+          "selected_rows": 96867,
+          "skipped_rows": 1437
+        },
+        {
+          "source_snr_db": -4,
+          "file_rows": 98304,
+          "selected_rows": 97297,
+          "skipped_rows": 1007
+        },
+        {
+          "source_snr_db": -2,
+          "file_rows": 98304,
+          "selected_rows": 97071,
+          "skipped_rows": 1233
+        },
+        {
+          "source_snr_db": 0,
+          "file_rows": 98304,
+          "selected_rows": 97210,
+          "skipped_rows": 1094
+        },
+        {
+          "source_snr_db": 2,
+          "file_rows": 98304,
+          "selected_rows": 97857,
+          "skipped_rows": 447
+        },
+        {
+          "source_snr_db": 4,
+          "file_rows": 98304,
+          "selected_rows": 97409,
+          "skipped_rows": 895
+        },
+        {
+          "source_snr_db": 6,
+          "file_rows": 98304,
+          "selected_rows": 97552,
+          "skipped_rows": 752
+        },
+        {
+          "source_snr_db": 8,
+          "file_rows": 98304,
+          "selected_rows": 97590,
+          "skipped_rows": 714
+        },
+        {
+          "source_snr_db": 10,
+          "file_rows": 98304,
+          "selected_rows": 97220,
+          "skipped_rows": 1084
+        },
+        {
+          "source_snr_db": 12,
+          "file_rows": 98304,
+          "selected_rows": 96435,
+          "skipped_rows": 1869
+        },
+        {
+          "source_snr_db": 14,
+          "file_rows": 98304,
+          "selected_rows": 95834,
+          "skipped_rows": 2470
+        },
+        {
+          "source_snr_db": 16,
+          "file_rows": 98304,
+          "selected_rows": 95127,
+          "skipped_rows": 3177
+        },
+        {
+          "source_snr_db": 18,
+          "file_rows": 98304,
+          "selected_rows": 94663,
+          "skipped_rows": 3641
+        },
+        {
+          "source_snr_db": 20,
+          "file_rows": 98304,
+          "selected_rows": 94179,
+          "skipped_rows": 4125
+        },
+        {
+          "source_snr_db": 22,
+          "file_rows": 98304,
+          "selected_rows": 94232,
+          "skipped_rows": 4072
+        },
+        {
+          "source_snr_db": 24,
+          "file_rows": 98304,
+          "selected_rows": 92630,
+          "skipped_rows": 5674
+        },
+        {
+          "source_snr_db": 26,
+          "file_rows": 98304,
+          "selected_rows": 90855,
+          "skipped_rows": 7449
+        },
+        {
+          "source_snr_db": 28,
+          "file_rows": 98304,
+          "selected_rows": 86633,
+          "skipped_rows": 11671
+        },
+        {
+          "source_snr_db": 30,
+          "file_rows": 98304,
+          "selected_rows": 72834,
+          "skipped_rows": 25470
+        }
+      ]
+    }
+  ],
+  "selected_predictions": 90719904,
+  "gpu_batch_size": 1024,
+  "precision": "FP32 all models, TF32 disabled",
+  "deadline_seconds": 345600,
+  "pilot_estimated_hours": 59.3895201950074,
+  "service": "sdr-rml2018a-clean12-eval-20260914.service",
+  "launch_state": {
+    "stage": "inference",
+    "model": "baseline_cnn2_stable-seed42",
+    "dataset": "source",
+    "dataset_rows": 147456,
+    "completed_predictions": 147456,
+    "committed_predictions": 147456,
+    "total_predictions": 90719904,
+    "elapsed_seconds": 183.11525242601056,
+    "updated_ns": 1789394991219192933
+  },
+  "full_run_complete": false,
+  "metadata_files": [
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/clean12-single-20260914/source-metadata.npz",
+      "bytes": 35783984,
+      "sha256": "2a28afcd23cc070f81a6ed3fda241bc36dbc1bff2390a041a6611d9b5c271ef1"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/clean12-single-20260914/raw-metadata.npz",
+      "bytes": 69012278,
+      "sha256": "ddf527e0157f2a90db8eb631e1ba0cc15d659b09905edc9e79da75fc073865bd"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/clean12-single-20260914/guard-metadata.npz",
+      "bytes": 69012278,
+      "sha256": "5cc58fff91a921006b053d4d844cae30f68a6a7fb0732e44e633890018e1636d"
+    }
+  ],
+  "audit_retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-clean12-eval-20260914/retention.json",
+    "bytes": 2785,
+    "sha256": "af7f96ad1951a8805e5bc38d25df460cdb31797f1dad1b419d0459461e22d229"
+  },
+  "tests_passed": 7,
+  "progress_new_and_legacy_verified": true,
+  "renderer_synthetic_png_svg_csv_checked": true,
+  "renderer_uses_existing_system_matplotlib": true,
+  "cleanup": {
+    "removed_files": 8,
+    "removed_bytes": 312868
+  },
+  "rf_calls": 0,
+  "training_calls": 0,
+  "production_replacement": false,
+  "recognizer_available": false
+}

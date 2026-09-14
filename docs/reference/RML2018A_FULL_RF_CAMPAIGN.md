@@ -1,5 +1,10 @@
 # RadioML2018A 全量RF工程对照
 
+2026-09-14后续模型识别已切到[12模型×三数据集工程入口](RML2018A_MODEL_COLLECTION_EVALUATION.md)。
+`rml2018a-progress.sh`默认显示该任务；下文单窗/四窗记录为历史，查看旧任务需显式`--root`。
+原四窗微调epoch-010权重已按用户要求删除，不照旧命令加载。
+
+
 [文档入口](../README.md) · [实机验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md) · [当前配置与论文范围](RML2018A_RF_REPRODUCTION.md)
 
 入口为 [AGX runner](../../jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py)，
