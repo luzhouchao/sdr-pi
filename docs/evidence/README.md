@@ -240,6 +240,8 @@
 
 - [9月8—14日HTML报告来源、交互/打印检查与清理](SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14.json)
 
+- [HTML报告：四窗标记为探索方式的定位修订](SDR_REPORT_FOUR_WINDOW_EXPLORATION_2026-09-14.json)
+
 ## 冻结路径例外
 
 下面三份原始审计由冻结配置按固定路径引用，保留在 docs 根目录且不复制：
