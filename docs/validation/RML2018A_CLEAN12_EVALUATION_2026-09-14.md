@@ -325,3 +325,40 @@ guard比raw提高4.7313个百分点，比source低8.8475个百分点。与原8�
 没有新推理、RF或IQ副本。新完成审计目录只保留脚本、JSON和CSV，无运行缓存或临时文件残留，
 原模型/数据/结果保留。[完成证据](../evidence/RML2018A_MAMBA_ALLQUALITY_COMPLETE_2026-09-15.json)
 登记路径、SHA、字节、血缘与精确人工删除命令。
+
+
+## 原始Mamba三个完整数据集启动（2026-09-15）
+
+用户明确选择同一个Mamba D8 seed42识别source/raw/guard三个完整数据集，不再只取15%validation，
+并沿用包含质量失败样本要求。三组各2,555,904条，共7,667,712次全新预测；
+raw25,314条、guard82,406条质量失败均纳入，质量跳过0，原质量标志保持。
+全三组严格共同合格2,462,264源行另报；主ACC分母始终各2,555,904。
+原始D8 seed42权重、FP32/关闭TF32、单窗1024、batch1024、CPU按16,384文件行预取保持。
+source原值、RX已有逐窗RMS不改；新结果不复用任何旧validation预测，不新增IQ/权重副本。
+本轮包含历史train/validation/test成员，属于用户授权的全量RF工程对照，不改写独立test或validation结果。
+
+现有入口新增prepare-full，与prepare-validation共用元数据/模型接入；不指定split，
+显式传split时拒绝，移除继承split及validation_member/rank，重新生成全量mask。
+11项测试通过，覆盖一个模型三个完整输入、全量分母/零split排除、无validation字段、
+显式split冲突拒绝，并保持旧validation/质量/续跑测试。之后仅CLI说明及进度默认根变更，
+Bash语法与真实进度显示通过，没有为这些展示修改重复整组推理探针。
+
+实际全量元数据独立核对：三份source_row均唯一完整覆盖0至2,555,903，
+24类×26档每格均4,096条，选中mask全部为true，plan不含split，未写validation成员/rank，
+质量失败纳入数、源标签/SNR、输入/模型/代码身份和预测预算一致。
+新根`/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-full-allquality-20260915`，
+服务`sdr-mamba-full-allquality-20260915.service`已active/running；首2个完整块32,768条
+source新预测SHA、模型/输入绑定、连续全行号、有限logits与argmax独立读回通过。
+raw/guard此时尚未开始；首块成功不等于三组全量通过。
+
+继承先导估计5604.32秒（约1.56小时），早期吞吐包含启动开销，实际时长以进度为准。
+内部14400秒期限、systemd最大15300秒、停止宽限60秒，2GiB输出预算与3GiB可用空间门；
+启动SSD可用约676GB。直接停止`systemctl --user stop sdr-mamba-full-allquality-20260915.service`，
+或在新根创建STOP。原进度脚本默认显示完整数据集、三组各2,555,904、质量跳过0、
+失败纳入数、计算/落盘区别及三张矩阵预算；Ctrl+C只退出查看。
+
+后台按用户既有要求自行执行，结束后自动全部读回核验、三张混淆矩阵PNG/SVG与CSV、
+最终retention/COMPLETE。此单元交付入口、实际启动与初始读回，未宣称全量完成。
+测试临时目录自动清空并移除，保留最小日志/有限计划核对/首块证据；活动GPU缓存留给runner
+退出finally清理，旧结果与模型/数据保持。[全量启动证据](../evidence/RML2018A_MAMBA_FULL_START_2026-09-15.json)
+登记精确路径、SHA、字节、停止及人工删除命令。本次没有RF、训练或生产配置变更。

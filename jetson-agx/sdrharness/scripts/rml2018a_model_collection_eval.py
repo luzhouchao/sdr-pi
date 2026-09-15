@@ -123,6 +123,9 @@ def select_metadata(root, datasets, validation_indices=None, include_quality_fai
         if rank is not None:
             m["validation_member"] = member
             m["validation_rank"] = rank[m["source_row"]]
+        else:
+            m.pop("validation_member",None)
+            m.pop("validation_rank",None)
         m["selected_for_inference"] = selected
         canonical = np.zeros(ROWS, bool)
         canonical[m["source_row"]] = qualified & member
@@ -215,15 +218,19 @@ def load_validation_split(path, expected_sha):
 
 
 def prepare_validation(root, parent_root, split_path, fresh=False, variants=None,
-                       planes=None, include_quality_failed=False):
-    """派生只读validation计划，沿用已校验输入与FP32数值依据，不重切数据集。"""
+                       planes=None, include_quality_failed=False, all_rows=False):
+    """派生原validation或全数据工程计划，沿用已校验输入与FP32数值依据。"""
     require(not root.exists(), "use a new output root")
     parent_root = parent_root.resolve(strict=True)
     parent = json.loads((parent_root/"plan.json").read_text())
     require((parent_root/"STOP").exists() or (parent_root/"COMPLETE.json").exists(),
             "parent campaign must be stopped or complete")
     require(shutil.disk_usage(root.parent).free > 5*1024**3, "5 GiB free required")
-    val, split = load_validation_split(split_path, SEED42_SPLIT_SHA)
+    if all_rows:
+        require(split_path is None, "full-data plan must not select a split")
+        val,split = None,None
+    else:
+        val, split = load_validation_split(split_path, SEED42_SPLIT_SHA)
     require(digest(COLLECTION/"manifest.json")==parent["collection_manifest"]["sha256"], "collection changed")
     manifest = json.loads((COLLECTION/"manifest.json").read_text())
     models = [m for m in manifest["models"] if m["seed"]==42]
@@ -272,19 +279,23 @@ def prepare_validation(root, parent_root, split_path, fresh=False, variants=None
                 parent_plan=identity(parent_root/"plan.json"),split=split,models=models,datasets=datasets,
                 probe_sha256=digest(root/"probe.json"),model_dataset_pairs=len(models)*len(datasets),deadline_seconds=86400,
                 total_predictions=sum(d["selected_rows"] for d in datasets)*len(models),
-                sample_scope="original server seed42 validation only; " +
+                sample_scope=("all original rows including historical train/validation/test; engineering only; " if all_rows else
+                    "original server seed42 validation only; ") +
                     ("includes RX quality failures" if include_quality_failed else "RX strict quality intersection"),
                 include_quality_failed=bool(include_quality_failed),
-                quality_policy="all validation members; quality flags preserved; common subset remains strict" if include_quality_failed else
+                quality_policy="all scope members; quality flags preserved; common subset remains strict" if include_quality_failed else
                     "RX usable AND strict_quality_pass only; common source-ID subset additionally reported",
                 service="sdr-rml2018a-seed42-val-20260914.service",
                 reused_predictions=0,fresh_predictions=bool(fresh))
     for key in ("initial_pilot_estimate_seconds","supersedes_plan_sha256","probe_parent_plan_sha256"):
         plan.pop(key,None)
+    if all_rows:
+        plan.pop("split",None)
+        plan["schema"]="rml2018a-collection-seed42-full-v1"
     plan["initial_pilot_estimate_seconds"]=sum(m["full_batch_seconds"] for m in tested)*sum(d["selected_rows"] for d in datasets)/plan["batch_size"]
     atomic(root/"plan.json",plan)
-    atomic(root/"progress.json",dict(stage="prepared_validation",completed_predictions=0,total_predictions=plan["total_predictions"]))
-    print(json.dumps(dict(prepared=True,models=len(models),validation_rows=len(val),predictions=plan["total_predictions"])),flush=True)
+    atomic(root/"progress.json",dict(stage="prepared_full" if all_rows else "prepared_validation",completed_predictions=0,total_predictions=plan["total_predictions"]))
+    print(json.dumps(dict(prepared=True,models=len(models),scope_rows=ROWS if all_rows else len(val),predictions=plan["total_predictions"])),flush=True)
 
 
 def setup(root):
@@ -626,22 +637,23 @@ def finalize_retention(root, plan):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("prepare", "prepare-validation", "probe", "run", "verify", "render", "status"))
+    parser.add_argument("action", choices=("prepare", "prepare-validation", "prepare-full", "probe", "run", "verify", "render", "status"))
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--parent-root", type=Path)
     parser.add_argument("--split", type=Path)
     parser.add_argument("--fresh", action="store_true", help="重新从HDF5生成元数据，不导入任何旧预测")
-    parser.add_argument("--variants", nargs="+", help="prepare-validation: 指定原始seed42模型variant")
+    parser.add_argument("--variants", nargs="+", help="prepare-validation/prepare-full: 指定原始seed42模型variant")
     parser.add_argument("--planes", nargs="+", choices=("source","raw","guard"))
     parser.add_argument("--include-quality-failed", action="store_true",
-                        help="prepare-validation: 保留验证集内未通过RX质量标志的行，仍校验数据完整性")
+                        help="prepare-validation/prepare-full: 保留范围内未通过RX质量标志的行，仍校验数据完整性")
     args = parser.parse_args(); root = args.root.resolve()
     if args.action == "prepare":
         prepare(root); return
-    if args.action == "prepare-validation":
-        require(args.parent_root is not None and args.split is not None, "parent root and split required")
+    if args.action in ("prepare-validation","prepare-full"):
+        require(args.parent_root is not None, "parent root required")
+        require(args.action=="prepare-full" or args.split is not None, "validation split required")
         prepare_validation(root,args.parent_root,args.split,args.fresh,args.variants,
-                           args.planes,args.include_quality_failed); return
+                           args.planes,args.include_quality_failed,args.action=="prepare-full"); return
     if args.action == "status":
         print((root / "progress.json").read_text()); return
     lock = (root / "RUN.lock").open("a")

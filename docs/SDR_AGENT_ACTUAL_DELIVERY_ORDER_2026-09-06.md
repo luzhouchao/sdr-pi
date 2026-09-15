@@ -7,13 +7,19 @@
 
 ## 当前执行选择
 
-最新选择：2026-09-15用户要求Mamba重跑时包含质量未通过行，随后补充guard。
+最新选择：2026-09-15用户确认同一原始Mamba D8 seed42识别source/raw/guard三个完整数据集，
+不作15%筛选，继续包含质量失败；各2,555,904条，总7,667,712次全新预测、跳过0。
+当前根`local-assets/amc-eval/results/mamba-full-allquality-20260915`，后台有限脚本已启动，
+进度默认指向全量；自动完成读回/三图/保留清单，不持续对话轮询。FP32/单窗1024保持。
+旧validation结果、模型/IQ及split保留，全量结果单列工程对照。见[当前操作](reference/RML2018A_MODEL_COLLECTION_EVALUATION.md)。
+
+已完成的上一轮：用户要求Mamba validation包含质量未通过行，随后补充guard。
 source/raw各383,385条已完成，ACC63.3082%/49.7294%、两图/读回/缓存清理通过，结果保留。
 guard补跑也已完成383,385条、ACC54.4607%，含全部12,277条质量失败；三组主统计源行完全一致。
-当前根`local-assets/amc-eval/results/mamba-guard-val-allquality-20260915`，核验/一张矩阵/缓存清理通过，
-进度默认查看guard完成结果。原始D8 seed42、FP32/单窗1024、原validation不变；目前无活动推理任务。
+该轮guard根`local-assets/amc-eval/results/mamba-guard-val-allquality-20260915`，核验/一张矩阵/缓存清理通过，
+可显式指定根查看完成结果。原始D8 seed42、FP32/单窗1024、原validation保持。
 同371,108合格行预测与旧轮一致，纳入失败只增加0.2805个百分点；后续评估模型/幅度适配问题，未自动启动新实验。
-不重新计算source/raw、不删除既有结果、不恢复epoch-10。见[当前操作](reference/RML2018A_MODEL_COLLECTION_EVALUATION.md)。
+不删除既有结果、不恢复epoch-10。见[当前操作](reference/RML2018A_MODEL_COLLECTION_EVALUATION.md)。
 
 上一轮：用户明确使用服务器原seed42 validation运行8个模型，并要求删除之前结果、从零开始。
 旧全量与首次复用validation两根已停止并删除；新根为`local-assets/amc-eval/results/seed42-val-fresh-20260914`，

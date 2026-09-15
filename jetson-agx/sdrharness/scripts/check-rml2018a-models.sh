@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)
-result_root=${1:-"$repo_root/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915"}
+result_root=${1:-"$repo_root/local-assets/amc-eval/results/mamba-full-allquality-20260915"}
 python3 - "$result_root" <<'PY'
 import json, sys, subprocess
 from pathlib import Path
@@ -15,7 +15,8 @@ if paused:
     print('后续选择: 仅 seed42 的 8 个模型；其他 Mamba seeds 不再安排。')
 if (r/'plan.json').exists():
     plan=json.loads((r/'plan.json').read_text())
-    print('计数规则: 服务器 seed42 原validation；包含未通过RX质量校验的行；单窗1024点' if plan.get('include_quality_failed') else
+    print(('计数规则: 服务器 seed42 原validation' if 'split' in plan else '计数规则: 完整数据集，不作15%划分')+
+          '；包含未通过RX质量校验的行；单窗1024点' if plan.get('include_quality_failed') else
           '计数规则: 服务器 seed42 原validation；RX再取严格质量合格行；单窗1024点' if 'split' in plan else
           '计数规则: 原始数据全量；RX 仅 usable 且 strict_quality_pass；单窗1024点')
     for d in plan['datasets']:

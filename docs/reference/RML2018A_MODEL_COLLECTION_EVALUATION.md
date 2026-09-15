@@ -1,6 +1,24 @@
 # seed42原验证集：8模型与三数据集识别
 
-## 当前追加：Mamba三组包含质量失败行重跑
+## 当前运行：原始Mamba D8 seed42与三个完整数据集
+
+2026-09-15用户明确“同一个Mamba D8 seed42跑source、raw、guard三个完整数据集”。
+各2,555,904条，总7,667,712次全新预测，不使用15% validation筛选，包含质量失败行。
+raw纳入25,314条质量失败，guard纳入82,406条，三组质量跳过0；共同严格合格2,462,264源行另报。
+模型仍原始D8 seed42、FP32/关闭TF32、单窗1024、batch1024，source原值及RX已有RMS保持。
+本轮含历史train/validation/test全部成员，单列工程对照；原split、历史validation成绩不改写。
+
+结果根`local-assets/amc-eval/results/mamba-full-allquality-20260915`，
+服务`sdr-mamba-full-allquality-20260915.service`，原进度脚本默认查看此根。
+准备命令为现有runner的`prepare-full --parent-root <已完成8模型根> --fresh --variants amc_mamba_d8 --planes source raw guard --include-quality-failed --root <新根>`，
+`prepare-full`拒绝`--split`；去除继承的split和validation筛选字段，不加载或改写原划分文件。
+模型/源码/输入身份和有限IQ/logits校验保持。新预测不复用之前15%识别块，既有结果保留。
+先导估计5604秒（约1.56小时）；内部14400秒期限、systemd最大15300秒、停止宽限60秒、3GiB空间门。
+停止：`systemctl --user stop sdr-mamba-full-allquality-20260915.service`，也可创建新根STOP。
+由后台自动完成全部读回核验、三张PNG/SVG混淆矩阵与CSV、retention/COMPLETE，当前启动不等于完成。
+见[全量启动验证](../validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#原始mamba三个完整数据集启动2026-09-15)。
+
+## 已完成：Mamba三组包含质量失败行的validation对照
 
 用户随后补充guard。source/raw已完成766,770次预测、两张矩阵和独立读回核验，
 两组各383,385条，ACC为63.3082%/49.7294%，raw的3,723条质量失败均已有预测。
@@ -14,7 +32,7 @@ guard耗时295.629秒，156块与325保留文件独立核验通过，服务正�
 见[最终结果及三图链接](../validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#包含质量失败行的三组最终结果2026-09-15)。
 
 当前guard根`local-assets/amc-eval/results/mamba-guard-val-allquality-20260915`，
-服务`sdr-mamba-guard-val-allquality-20260915.service`，进度默认指向guard。
+服务`sdr-mamba-guard-val-allquality-20260915.service`已退出，进度可通过`--root`指定此根。
 `prepare-validation --variants amc_mamba_d8 --planes guard --include-quality-failed --fresh`
 支持单独补跑；source仅用于只读核验标签/行号，不进入这次预测。
 guard已完成核验并生成自己的混淆矩阵与保留清单；source/raw图表留在下面原根。

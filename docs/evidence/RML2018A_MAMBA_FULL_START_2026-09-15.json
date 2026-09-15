@@ -1,0 +1,857 @@
+{
+  "date": "2026-09-15",
+  "plan": {
+    "schema": "rml2018a-collection-seed42-full-v1",
+    "created_ns": 1789439954926981668,
+    "script": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_model_collection_eval.py",
+      "bytes": 40217,
+      "mtime_ns": 1789439826749141912,
+      "sha256": "6251e0578369b59fa8ed0a3e27eaec174591cb2bc7afe42a3f2bfb82b9cfda0c"
+    },
+    "collection_manifest": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/checkpoints/rml2018a/server-models-20260914/manifest.json",
+      "bytes": 81937,
+      "mtime_ns": 1789391430474590353,
+      "sha256": "031605026b5fb1e3ba9968daf009d6cacc9d2b6b30d3d4ac194b060914361a25"
+    },
+    "datasets": [
+      {
+        "plane": "source",
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+        "bytes": 21449148312,
+        "mtime_ns": 1627354882000000000,
+        "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+        "metadata_sha256": "e58398957c86cc25a3974b06c12b0f067835f84e8c950b10bc17fda7cc8a24f1",
+        "selected_rows": 2555904,
+        "skipped_rows": 0,
+        "common_rows": 2462264,
+        "eligibility_by_snr": [
+          {
+            "source_snr_db": -20,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -18,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -16,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -14,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -12,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -10,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -8,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -6,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -4,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -2,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 0,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 2,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 4,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 6,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 8,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 10,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 12,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 14,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 16,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 18,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 20,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 22,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 24,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 26,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 28,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 30,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          }
+        ],
+        "scope_rows": 2555904,
+        "excluded_by_split": 0,
+        "quality_failed_rows": 0,
+        "quality_failed_included_rows": 0
+      },
+      {
+        "plane": "raw",
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/rx-clean-20260914/RadioML2018A_RX_raw_1024_per_window_RMS_v1.h5",
+        "bytes": 21526064941,
+        "mtime_ns": 1789393290693380188,
+        "sha256": "4d2dd1bf76d828913a85c2283b5c2a2373f2a5a726e3e85f65c1cafbc227c8bd",
+        "metadata_sha256": "b36ed3cdcc74970706447eb52b55668cb2c1ddd8915d7b8acf09f21f5a5a5f4b",
+        "selected_rows": 2555904,
+        "skipped_rows": 0,
+        "common_rows": 2462264,
+        "skip_reasons_overlapping": {
+          "archived valid/raw is true": 0,
+          "quality_json sync.status is synchronized": 0,
+          "raw rx_sinr_status is estimated": 0,
+          "raw rx_sinr_db is finite": 0,
+          "saved raw offsets match frame payload offsets": 0
+        },
+        "eligibility_by_snr": [
+          {
+            "source_snr_db": -20,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -18,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -16,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -14,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -12,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -10,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -8,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -6,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -4,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -2,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 0,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 2,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 4,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 6,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 8,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 10,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 12,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 14,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 16,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 18,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 20,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 22,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 24,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 26,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 28,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 30,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          }
+        ],
+        "scope_rows": 2555904,
+        "excluded_by_split": 0,
+        "quality_failed_rows": 25314,
+        "quality_failed_included_rows": 25314,
+        "quality_failure_reasons_overlapping": {
+          "archived valid/raw is true": 0,
+          "quality_json sync.status is synchronized": 0,
+          "raw rx_sinr_status is estimated": 25314,
+          "raw rx_sinr_db is finite": 25314,
+          "saved raw offsets match frame payload offsets": 0
+        }
+      },
+      {
+        "plane": "guard",
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/rx-clean-20260914/RadioML2018A_RX_guard_1024_per_window_RMS_v1.h5",
+        "bytes": 21526064941,
+        "mtime_ns": 1789393620408112571,
+        "sha256": "1ce26483e9b14f549a139986e8c8a532290f773d9c2fcad3897f52d9ac29c794",
+        "metadata_sha256": "d048359a23fd2e0541da50bd707760183ec802081c0040d9c946855b0d5de673",
+        "selected_rows": 2555904,
+        "skipped_rows": 0,
+        "common_rows": 2462264,
+        "skip_reasons_overlapping": {
+          "archived valid/guard is true": 0,
+          "quality_json sync.status is synchronized": 0,
+          "saved frame guard correction was applied": 0,
+          "guard rx_sinr_status is estimated": 0,
+          "guard rx_sinr_db is finite": 0,
+          "saved raw offsets match frame payload offsets": 0
+        },
+        "eligibility_by_snr": [
+          {
+            "source_snr_db": -20,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -18,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -16,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -14,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -12,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -10,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -8,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -6,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -4,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -2,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 0,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 2,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 4,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 6,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 8,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 10,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 12,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 14,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 16,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 18,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 20,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 22,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 24,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 26,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 28,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 30,
+            "file_rows": 98304,
+            "selected_rows": 98304,
+            "skipped_rows": 0
+          }
+        ],
+        "scope_rows": 2555904,
+        "excluded_by_split": 0,
+        "quality_failed_rows": 82406,
+        "quality_failed_included_rows": 82406,
+        "quality_failure_reasons_overlapping": {
+          "archived valid/guard is true": 0,
+          "quality_json sync.status is synchronized": 0,
+          "saved frame guard correction was applied": 41392,
+          "guard rx_sinr_status is estimated": 42846,
+          "guard rx_sinr_db is finite": 42846,
+          "saved raw offsets match frame payload offsets": 0
+        }
+      }
+    ],
+    "models": [
+      {
+        "display_name": "Shared-Bi / original Mamba D8",
+        "variant": "amc_mamba_d8",
+        "seed": 42,
+        "checkpoint": {
+          "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed42_nw8/checkpoints/best.pt",
+          "relative": "amc_mamba_d8/seed42/best.pt",
+          "bytes": 1691293,
+          "mtime_ns": 1784544418697035906,
+          "sha256": "6f984a78639a8e8e15403a1257b264839c6057165b3ae9ac8640ecc056f78143"
+        },
+        "config_relative": "amc_mamba_d8/seed42/config.json",
+        "training_git": {
+          "commit": "82cfbc2b6a9d7072b5ab56c218478e351f355ac1",
+          "dirty": true
+        },
+        "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+        "num_classes": 24,
+        "input_length": 1024,
+        "class_order": [
+          "OOK",
+          "4ASK",
+          "8ASK",
+          "BPSK",
+          "QPSK",
+          "8PSK",
+          "16PSK",
+          "32PSK",
+          "16APSK",
+          "32APSK",
+          "64APSK",
+          "128APSK",
+          "16QAM",
+          "32QAM",
+          "64QAM",
+          "128QAM",
+          "256QAM",
+          "AM-SSB-WC",
+          "AM-SSB-SC",
+          "AM-DSB-WC",
+          "AM-DSB-SC",
+          "FM",
+          "GMSK",
+          "OQPSK"
+        ],
+        "original_preprocessing": {
+          "axis_adapter": "[N,1024,2] transpose to [N,2,1024]",
+          "dc_removal": false,
+          "denoise": false,
+          "denoise_method": "none",
+          "dtype": "float32",
+          "filtering": false,
+          "normalization": "none",
+          "windowing": false
+        },
+        "archived_test_acc": 0.6332087420804565,
+        "archived_test_samples": 383387,
+        "source_run": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed42_nw8"
+      }
+    ],
+    "classes": [
+      "OOK",
+      "4ASK",
+      "8ASK",
+      "BPSK",
+      "QPSK",
+      "8PSK",
+      "16PSK",
+      "32PSK",
+      "16APSK",
+      "32APSK",
+      "64APSK",
+      "128APSK",
+      "16QAM",
+      "32QAM",
+      "64QAM",
+      "128QAM",
+      "256QAM",
+      "AM-SSB-WC",
+      "AM-SSB-SC",
+      "AM-DSB-WC",
+      "AM-DSB-SC",
+      "FM",
+      "GMSK",
+      "OQPSK"
+    ],
+    "rows_per_dataset": 2555904,
+    "model_dataset_pairs": 3,
+    "total_predictions": 7667712,
+    "batch_size": 1024,
+    "block_rows": 16384,
+    "deadline_seconds": 14400,
+    "normalization": "none added; RX files already per-window complex RMS; original unchanged",
+    "sample_scope": "all original rows including historical train/validation/test; engineering only; includes RX quality failures",
+    "quality_policy": "all scope members; quality flags preserved; common subset remains strict",
+    "precision_policy": "FP32 weights; FP16 only if finite and both pilot/batch max probability error <=0.005 and no top1 changes; otherwise FP32; failure never changes row selection",
+    "recognizer_available": false,
+    "training": false,
+    "rf": false,
+    "render_policy": "24 validation confusion matrices PNG/SVG plus counts/percent/common-counts CSV",
+    "plot_script": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_collection_plots.py",
+      "bytes": 4254,
+      "mtime_ns": 1789396289314067281,
+      "sha256": "095bfa3fecb707c99dd3389946da01408a780c5cc7b5d9f52ddfb21028ef388f"
+    },
+    "probe_sha256": "fa40197840d63bd21eece695eeff4cffd5fe00492a6b069d4974a7d6635bf711",
+    "precision": "FP32 for all 12 models; TF32 disabled",
+    "plot_python": "/usr/bin/python3",
+    "execution_python": "/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python",
+    "parent_plan": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/seed42-val-fresh-20260914/plan.json",
+      "bytes": 31232,
+      "mtime_ns": 1789397030092826809,
+      "sha256": "e6e92a060f0e6576464be28aaf7177de78bd8dff8d7dfda29122c050c9526504"
+    },
+    "service": "sdr-mamba-full-allquality-20260915.service",
+    "reused_predictions": 0,
+    "fresh_predictions": true,
+    "fresh_start_verified": true,
+    "reuse_policy": "zero predictions imported; all eligible validation rows freshly inferred",
+    "include_quality_failed": true,
+    "initial_pilot_estimate_seconds": 5604.322935596108,
+    "launch_free_bytes": 676035280896,
+    "maximum_output_budget_bytes": 2147483648,
+    "stop_command": "systemctl --user stop sdr-mamba-full-allquality-20260915.service"
+  },
+  "prelaunch": {
+    "plan_sha256": "ad7bc62ffc702490b4155cec7036a7b4dedeedba311e1cb00c8efd28b5c80e5f",
+    "datasets": [
+      {
+        "plane": "source",
+        "selected_rows": 2555904,
+        "quality_failed_included": 0,
+        "common_rows": 2462264,
+        "source_ids_complete": true,
+        "rows_per_class_snr_cell": 4096,
+        "split_filter_absent": true
+      },
+      {
+        "plane": "raw",
+        "selected_rows": 2555904,
+        "quality_failed_included": 25314,
+        "common_rows": 2462264,
+        "source_ids_complete": true,
+        "rows_per_class_snr_cell": 4096,
+        "split_filter_absent": true
+      },
+      {
+        "plane": "guard",
+        "selected_rows": 2555904,
+        "quality_failed_included": 82406,
+        "common_rows": 2462264,
+        "source_ids_complete": true,
+        "rows_per_class_snr_cell": 4096,
+        "split_filter_absent": true
+      }
+    ],
+    "prepared_ns": 1789440006907589123,
+    "tests_passed": 11,
+    "source_commit": "aa241b173b55414167d8caaaea9e5f9cf621ab4d",
+    "prior_results_preserved": true,
+    "IQ_unchanged": true
+  },
+  "startup": {
+    "service": "MainPID=309973\nExecMainStatus=0\nActiveState=active\n",
+    "verified_blocks": [
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-full-allquality-20260915/amc_mamba_d8-seed42/source/0000000.npz",
+        "bytes": 1737984,
+        "sha256": "6ef476029f3a5af2cdcf65bf86c4a4f97ab3dab628b1a72a5727c009ff119bc0",
+        "rows": 16384
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-full-allquality-20260915/amc_mamba_d8-seed42/source/0016384.npz",
+        "bytes": 1737984,
+        "sha256": "3d897f965e3f93f7cbaaebff2ecb8bd063f9e1102c2489a6a83e114dbffbd2ac",
+        "rows": 16384
+      }
+    ],
+    "verified_rows": 32768,
+    "complete": false,
+    "progress": {
+      "stage": "inference",
+      "model": "amc_mamba_d8-seed42",
+      "dataset": "source",
+      "dataset_rows": 47104,
+      "completed_predictions": 47104,
+      "total_predictions": 7667712,
+      "committed_predictions": 32768,
+      "elapsed_seconds": 101.46761809202144,
+      "updated_ns": 1789440111235917787
+    }
+  },
+  "audit_retention": {
+    "purpose": "Start full source/raw/guard original Mamba D8 seed42 inference including quality failures",
+    "files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-full-allquality-20260915/prelaunch.json",
+        "bytes": 1026,
+        "sha256": "e592e965606b5092235e75f01f673b2e7a74532414db38489548460b25a45186"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-full-allquality-20260915/register.py",
+        "bytes": 2446,
+        "sha256": "25a34a67063ba834ba540899dfe75da9ec9edbcee600a172113c4970ddda1450"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-full-allquality-20260915/started.json",
+        "bytes": 1034,
+        "sha256": "0d7b090715b8c9107b7c5510ed58e4d54c3b3a4f0727765ec11c53918cd5a291"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-full-allquality-20260915/tests.log",
+        "bytes": 1516,
+        "sha256": "d94263721ada254cb0d2f7eb080fa820c3573728cb3fc23527dd164727c24491"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-full-allquality-20260915/verify_start.py",
+        "bytes": 1497,
+        "sha256": "17bd2cefbd0e69e5e637828622cc454a8ec67932c2a50219186b3c87d1f873bb"
+      }
+    ],
+    "bytes": 7519,
+    "temporary_test_directory_absent": true,
+    "removed_residual_files": 0,
+    "removed_residual_bytes": 0,
+    "manual_delete_argv": [
+      "rm",
+      "-rf",
+      "--",
+      "/var/tmp/sdrharness-dev/mamba-full-allquality-20260915"
+    ],
+    "self_excluded": true
+  },
+  "audit_retention_file": {
+    "path": "/var/tmp/sdrharness-dev/mamba-full-allquality-20260915/retention.json",
+    "bytes": 1407,
+    "sha256": "bc65bba0d000eb4bdd74f10f2296aac39ea8556766646382e12550848e781771"
+  },
+  "active_result": {
+    "root": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-full-allquality-20260915",
+    "static_files": [
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-full-allquality-20260915/plan.json",
+        "bytes": 19525,
+        "sha256": "ad7bc62ffc702490b4155cec7036a7b4dedeedba311e1cb00c8efd28b5c80e5f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-full-allquality-20260915/probe.json",
+        "bytes": 1011,
+        "sha256": "fa40197840d63bd21eece695eeff4cffd5fe00492a6b069d4974a7d6635bf711"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-full-allquality-20260915/source-metadata.npz",
+        "bytes": 38340154,
+        "sha256": "e58398957c86cc25a3974b06c12b0f067835f84e8c950b10bc17fda7cc8a24f1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-full-allquality-20260915/raw-metadata.npz",
+        "bytes": 71568448,
+        "sha256": "b36ed3cdcc74970706447eb52b55668cb2c1ddd8915d7b8acf09f21f5a5a5f4b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-full-allquality-20260915/guard-metadata.npz",
+        "bytes": 71568448,
+        "sha256": "d048359a23fd2e0541da50bd707760183ec802081c0040d9c946855b0d5de673"
+      }
+    ],
+    "final_retention": "Generated automatically after all predictions, verification and rendering",
+    "stop_first": "systemctl --user stop sdr-mamba-full-allquality-20260915.service",
+    "manual_delete_argv": [
+      "rm",
+      "-rf",
+      "--",
+      "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-full-allquality-20260915"
+    ]
+  },
+  "runtime_cache": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-collection-cache-7f13587e8fb8dad3",
+    "status": "active; cleaned by runner finally on exit"
+  },
+  "limits": [
+    "Only initial source blocks verified; raw/guard and full completion pending",
+    "All-data engineering result includes historical train/validation/test; not independent locked-test admission",
+    "No RF/training/weights/IQ changes; old validation results preserved"
+  ]
+}

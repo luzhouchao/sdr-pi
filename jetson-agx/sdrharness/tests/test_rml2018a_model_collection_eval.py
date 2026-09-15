@@ -225,6 +225,24 @@ class Contracts(unittest.TestCase):
         with np.load(guard_only/'guard-metadata.npz') as f:
             np.testing.assert_array_equal(np.sort(f['source_row'][f['selected_for_inference']]),[8,9])
             self.assertEqual(f['common_source_subset'].sum(),1)
+        full=self.root/'full-three-inputs'
+        with patch.object(ev,'COLLECTION',collection):
+            ev.prepare_validation(full,parent,None,fresh=True,variants=['m0'],
+                                  include_quality_failed=True,all_rows=True)
+            with self.assertRaisesRegex(ValueError,'must not select a split'):
+                ev.prepare_validation(self.root/'full-wrong-split',parent,split,all_rows=True)
+        full_plan=json.loads((full/'plan.json').read_text())
+        self.assertNotIn('split',full_plan)
+        self.assertEqual(full_plan['total_predictions'],36)
+        self.assertEqual(full_plan['model_dataset_pairs'],3)
+        for d in full_plan['datasets']:
+            self.assertEqual(d['selected_rows'],12)
+            self.assertEqual(d['excluded_by_split'],0)
+            self.assertEqual(d['skipped_rows'],0)
+            with np.load(full/(d['plane']+'-metadata.npz')) as f:
+                self.assertNotIn('validation_member',f.files)
+                self.assertNotIn('validation_rank',f.files)
+                np.testing.assert_array_equal(np.sort(f['source_row'][f['selected_for_inference']]),np.arange(12))
         with patch.object(ev,'COLLECTION',collection),patch.object(ev,'SEED42_SPLIT_SHA',ev.digest(split)):
             with self.assertRaisesRegex(ValueError,'variant selection'):
                 ev.prepare_validation(self.root/'bad-subset',parent,split,variants=['missing'])
