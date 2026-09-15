@@ -290,3 +290,38 @@ prepare-validation允许guard-only等已知输入子集，fresh的source标签�
 测试临时目录自动清空并移除；本单元只保留核对脚本、测试日志和启动证据。活动GPU缓存由所属runner
 结束时清理，不能此时删除；无RF/训练/权重或IQ改动。保留路径、哈希及精确人工删除方法见
 [完成与补跑证据](../evidence/RML2018A_MAMBA_GUARD_START_2026-09-15.json)。
+
+
+## 包含质量失败行的三组最终结果（2026-09-15）
+
+guard已完成383,385次预测，正确208,794、ACC54.4606597%，质量跳过0，耗时295.629秒。
+服务inactive、MainPID=0、ExecMainStatus=0，运行缓存不存在。一张真实PNG/SVG及三类CSV完整。
+本次独立读取325保留文件126,078,643字节SHA，156块模型/输入身份、选中行、有限logits、argmax，
+并重新计算全量/严格子集混淆矩阵；全部通过。实际查看guard图，24类标签、轴向和分母显示正确。
+12,277条质量失败全部有预测，其中7,727条正确；质量估计失败不等于调制识别必错。
+
+三组源行按source_row核对，均为完全相同383,385个原seed42 validation成员；
+原始Mamba D8 seed42、FP32/关闭TF32、1024点单窗，训练/test成员不进入结果：
+
+| 输入 | 样本数 | 正确数 | ACC | 质量跳过 |
+| --- | ---: | ---: | ---: | ---: |
+| source | 383,385 | 242,714 | 63.3082% | 0 |
+| raw | 383,385 | 190,655 | 49.7294% | 0 |
+| guard | 383,385 | 208,794 | 54.4607% | 0 |
+
+guard比raw提高4.7313个百分点，比source低8.8475个百分点。与原8模型严格质量轮的371,108
+合格guard行逐预测比较，类别变化0；这部分ACC仍54.1802%，补入质量失败后整体只提高0.2805个百分点。
+因此排除质量失败行不是与历史59.07%差距的主要解释；历史成绩采用epoch-10微调权重和全量工程范围，
+本轮采用原始seed42及validation，不能当成相同模型/范围下的清洗前后变化。
+此前RMS-only诊断说明输入幅度适配值得研究，尚未证明剩余差距的全部机制；本次不训练或重新采集。
+
+三张完整矩阵（PNG，旁边另存SVG/计数和百分比CSV）：
+
+- [source](/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915/confusion-matrices/amc_mamba_d8-seed42/source.png)
+- [raw](/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915/confusion-matrices/amc_mamba_d8-seed42/raw.png)
+- [guard](/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915/confusion-matrices/amc_mamba_d8-seed42/guard.png)
+
+全三组共1,150,155次预测；source/raw的完成核验保留在上一节。本次只读回guard并核对三组汇总，
+没有新推理、RF或IQ副本。新完成审计目录只保留脚本、JSON和CSV，无运行缓存或临时文件残留，
+原模型/数据/结果保留。[完成证据](../evidence/RML2018A_MAMBA_ALLQUALITY_COMPLETE_2026-09-15.json)
+登记路径、SHA、字节、血缘与精确人工删除命令。

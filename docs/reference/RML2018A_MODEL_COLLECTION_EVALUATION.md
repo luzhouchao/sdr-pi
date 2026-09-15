@@ -7,11 +7,17 @@
 guard单独补跑383,385条，包含12,277条质量失败，跳过0；同一原始D8 seed42、FP32、
 单窗1024、同一原validation。全三组共同的主要分母均383,385，不重新计算已完成source/raw。
 
+三组现已全部完成：source **63.3082%**、raw **49.7294%**、guard **54.4607%**。
+guard耗时295.629秒，156块与325保留文件独立核验通过，服务正常退出、运行缓存清理。
+旧371,108合格guard行预测变化0；12,277条质量失败中7,727条正确，纳入后整体提升0.2805个百分点。
+这无法解释历史epoch-10的59.07%与当前原始seed42成绩的主要差距，模型/范围不同仍须区分。
+见[最终结果及三图链接](../validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#包含质量失败行的三组最终结果2026-09-15)。
+
 当前guard根`local-assets/amc-eval/results/mamba-guard-val-allquality-20260915`，
 服务`sdr-mamba-guard-val-allquality-20260915.service`，进度默认指向guard。
 `prepare-validation --variants amc_mamba_d8 --planes guard --include-quality-failed --fresh`
 支持单独补跑；source仅用于只读核验标签/行号，不进入这次预测。
-guard完成后自动核验并生成自己的混淆矩阵与保留清单；source/raw图表留在下面原根。
+guard已完成核验并生成自己的混淆矩阵与保留清单；source/raw图表留在下面原根。
 停止：`systemctl --user stop sdr-mamba-guard-val-allquality-20260915.service`。
 预计280秒，内部3600秒期限和systemd最大4500秒保持。见[补跑验证](../validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#source和raw完成及guard补跑2026-09-15)。
 

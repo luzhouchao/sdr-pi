@@ -1,0 +1,172 @@
+{
+  "date": "2026-09-15",
+  "parent_plan": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915/plan.json",
+    "bytes": 10758,
+    "sha256": "acc02bb2f0cdcbeddd3a2e0c95e757468a5ec06d7c7c3a0c5dd4363aa09997dc"
+  },
+  "checkpoint": {
+    "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed42_nw8/checkpoints/best.pt",
+    "relative": "amc_mamba_d8/seed42/best.pt",
+    "bytes": 1691293,
+    "mtime_ns": 1784544418697035906,
+    "sha256": "6f984a78639a8e8e15403a1257b264839c6057165b3ae9ac8640ecc056f78143"
+  },
+  "split": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/splits/server-seed42-20260914/RML2018a_split_seed42_tr700_val150_te150.npz",
+    "bytes": 3906318,
+    "mtime_ns": 1789395491153582339,
+    "sha256": "0a7cbd3b8a4b921b7dc3d0c37473322207c6bd9fb362ea58498c851fad9dc5a3",
+    "partition": "val",
+    "seed": 42,
+    "counts": {
+      "train": 1789132,
+      "val": 383385,
+      "test": 383387
+    },
+    "validation_indices_sha256": "789f71e82178e5deffe2d78d7cf59540b43c0630c90707da60f63563654f2754"
+  },
+  "guard_completion": {
+    "complete": {
+      "complete": true,
+      "predictions": 383385,
+      "model_dataset_pairs": 1,
+      "elapsed_seconds": 295.6290154479793,
+      "summary_sha256": "605a51b9c1582f240d003372bdd9bc5344d4441a1422fbf24dc237c651f757ba"
+    },
+    "all_retained_hashes_verified": 325,
+    "retained_bytes": 126078643,
+    "models": [
+      {
+        "plane": "guard",
+        "rows": 383385,
+        "accuracy": 0.5446065965022105,
+        "blocks": 156,
+        "quality_failed_predicted": 12277,
+        "quality_failed_correct": 7727
+      }
+    ],
+    "cache_absent": "/var/tmp/sdrharness-dev/rml2018a-collection-cache-3f607e4b4a8b6c1c",
+    "root": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915",
+    "new_inference": 0
+  },
+  "comparison": {
+    "complete": true,
+    "original_model": "Mamba D8 seed42 FP32 TF32 off, single 1024-point window",
+    "same_validation_source_ids": true,
+    "models": [
+      {
+        "plane": "source",
+        "rows": 383385,
+        "correct": 242714,
+        "accuracy": 0.6330816281283826,
+        "skipped": 0,
+        "summary_path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915/amc_mamba_d8-seed42/source-summary.json",
+        "summary_sha256": "210eda2944bebda6dc663024d34e07d5b1655f4bd80550c6efefa8720b6f0ec5"
+      },
+      {
+        "plane": "raw",
+        "rows": 383385,
+        "correct": 190655,
+        "accuracy": 0.49729384300376905,
+        "skipped": 0,
+        "summary_path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915/amc_mamba_d8-seed42/raw-summary.json",
+        "summary_sha256": "b4607419b22f87275fc43864e9430effc53f00dacd07b5d8b9e7b7009fe79e8b"
+      },
+      {
+        "plane": "guard",
+        "rows": 383385,
+        "correct": 208794,
+        "accuracy": 0.5446065965022105,
+        "skipped": 0,
+        "summary_path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915/amc_mamba_d8-seed42/guard-summary.json",
+        "summary_sha256": "7b4bfadc7ed9d279bcc6b7c109d5152cda8e3d7312cbfa8393b300b215f881cc"
+      }
+    ],
+    "previous_guard_qualified_rows": 371108,
+    "previous_guard_qualified_prediction_changes": 0,
+    "guard_minus_raw_pp": 4.731275349844149,
+    "guard_minus_source_pp": -8.84750316261721
+  },
+  "plots": {
+    "matrices": 1,
+    "formats": [
+      "png",
+      "svg",
+      "counts.csv",
+      "percent.csv",
+      "common-counts.csv"
+    ],
+    "files": [
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915/confusion-matrices/amc_mamba_d8-seed42/guard.png",
+        "bytes": 294503,
+        "sha256": "68c77da683576176691bfa6cb5cd0a36424c3cecae5885aeb5aea7a17b4820d7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915/confusion-matrices/amc_mamba_d8-seed42/guard.svg",
+        "bytes": 154486,
+        "sha256": "52767d8b7a28bbbdb06ee9c19a3f08a14cb92ef2bf49d3c63953f6c0e31205ee"
+      }
+    ]
+  },
+  "guard_result_retention": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915/retention.json",
+    "bytes": 85865,
+    "sha256": "3723aa371caf5188337a5a2ad888c7423c55f51ae8cd369f0701663e8978ae6b"
+  },
+  "audit_retention": {
+    "purpose": "Final all-quality Mamba source/raw/guard same-validation comparison, guard completion verification",
+    "files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-allquality-complete-20260915/compare.py",
+        "bytes": 2196,
+        "sha256": "08391c3618a22a8543b0b04119daac988580945637d5305a1e61d192112ae405"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-allquality-complete-20260915/comparison.json",
+        "bytes": 1512,
+        "sha256": "5d6f96ca4f43cc15f8335b0a9b10bce8bb8a23c08aafc2fffc449568c465cdda"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-allquality-complete-20260915/guard-completion.json",
+        "bytes": 731,
+        "sha256": "a0700717e51f6bc1839b80030c363ab87758ddfc57bddd5958ea78976d2cc120"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-allquality-complete-20260915/summary.csv",
+        "bytes": 170,
+        "sha256": "da7d9e11a801ca9c921a57aa17561ad19e74ecef24233124c97b1cc737e90c80"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-allquality-complete-20260915/verify_guard.py",
+        "bytes": 2449,
+        "sha256": "8aed4c7994017127db769e2526f27e42ae0acc925222f6f64947330682ef9bfe"
+      }
+    ],
+    "bytes": 7058,
+    "manual_delete_argv": [
+      "rm",
+      "-rf",
+      "--",
+      "/var/tmp/sdrharness-dev/mamba-allquality-complete-20260915"
+    ],
+    "removed_files": 0,
+    "removed_bytes": 0,
+    "temporary_artifacts_created": false,
+    "self_excluded": true
+  },
+  "audit_retention_file": {
+    "path": "/var/tmp/sdrharness-dev/mamba-allquality-complete-20260915/retention.json",
+    "bytes": 1428,
+    "sha256": "2b86d34dbb23de8af4d0596b3d3710fac9f2cf2c4660baf728a9afff71016a38"
+  },
+  "service": {
+    "name": "sdr-mamba-guard-val-allquality-20260915.service",
+    "ActiveState": "inactive",
+    "MainPID": 0,
+    "ExecMainStatus": 0
+  },
+  "new_inference": 0,
+  "limits": "Engineering validation comparison of original seed42; not an epoch10 reproduction or independent locked-test admission"
+}

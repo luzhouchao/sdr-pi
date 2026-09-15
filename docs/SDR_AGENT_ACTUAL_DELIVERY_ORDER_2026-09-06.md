@@ -9,9 +9,10 @@
 
 最新选择：2026-09-15用户要求Mamba重跑时包含质量未通过行，随后补充guard。
 source/raw各383,385条已完成，ACC63.3082%/49.7294%、两图/读回/缓存清理通过，结果保留。
-单独补跑guard383,385条，包含12,277条质量失败，原始D8 seed42、FP32/单窗1024、原validation不变。
-当前根`local-assets/amc-eval/results/mamba-guard-val-allquality-20260915`，后台有限脚本运行，
-进度默认查看guard；让脚本自动完成核验/一张矩阵，不持续对话轮询。
+guard补跑也已完成383,385条、ACC54.4607%，含全部12,277条质量失败；三组主统计源行完全一致。
+当前根`local-assets/amc-eval/results/mamba-guard-val-allquality-20260915`，核验/一张矩阵/缓存清理通过，
+进度默认查看guard完成结果。原始D8 seed42、FP32/单窗1024、原validation不变；目前无活动推理任务。
+同371,108合格行预测与旧轮一致，纳入失败只增加0.2805个百分点；后续评估模型/幅度适配问题，未自动启动新实验。
 不重新计算source/raw、不删除既有结果、不恢复epoch-10。见[当前操作](reference/RML2018A_MODEL_COLLECTION_EVALUATION.md)。
 
 上一轮：用户明确使用服务器原seed42 validation运行8个模型，并要求删除之前结果、从零开始。
