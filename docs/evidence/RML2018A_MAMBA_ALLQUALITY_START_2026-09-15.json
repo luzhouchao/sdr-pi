@@ -1,0 +1,669 @@
+{
+  "date": "2026-09-15",
+  "plan": {
+    "schema": "rml2018a-collection-seed42-validation-v1",
+    "created_ns": 1789437569821226712,
+    "script": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_model_collection_eval.py",
+      "bytes": 39570,
+      "mtime_ns": 1789437401237614079,
+      "sha256": "82e5baaa2016ef6ab5d2289539be75df7297148b6bc9aeb5707ccad70d98a90f"
+    },
+    "collection_manifest": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/checkpoints/rml2018a/server-models-20260914/manifest.json",
+      "bytes": 81937,
+      "mtime_ns": 1789391430474590353,
+      "sha256": "031605026b5fb1e3ba9968daf009d6cacc9d2b6b30d3d4ac194b060914361a25"
+    },
+    "datasets": [
+      {
+        "plane": "source",
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+        "bytes": 21449148312,
+        "mtime_ns": 1627354882000000000,
+        "sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+        "metadata_sha256": "72d8313a0c9d38f93c9b5e691eb8a2fece7194022ed1e5408cdd18871b2842cb",
+        "selected_rows": 383385,
+        "skipped_rows": 0,
+        "common_rows": 379662,
+        "eligibility_by_snr": [
+          {
+            "source_snr_db": -20,
+            "file_rows": 14642,
+            "selected_rows": 14642,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -18,
+            "file_rows": 14702,
+            "selected_rows": 14702,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -16,
+            "file_rows": 14791,
+            "selected_rows": 14791,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -14,
+            "file_rows": 14889,
+            "selected_rows": 14889,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -12,
+            "file_rows": 14738,
+            "selected_rows": 14738,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -10,
+            "file_rows": 14733,
+            "selected_rows": 14733,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -8,
+            "file_rows": 14646,
+            "selected_rows": 14646,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -6,
+            "file_rows": 14886,
+            "selected_rows": 14886,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -4,
+            "file_rows": 14728,
+            "selected_rows": 14728,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -2,
+            "file_rows": 14717,
+            "selected_rows": 14717,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 0,
+            "file_rows": 14712,
+            "selected_rows": 14712,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 2,
+            "file_rows": 14616,
+            "selected_rows": 14616,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 4,
+            "file_rows": 14779,
+            "selected_rows": 14779,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 6,
+            "file_rows": 14765,
+            "selected_rows": 14765,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 8,
+            "file_rows": 14686,
+            "selected_rows": 14686,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 10,
+            "file_rows": 14729,
+            "selected_rows": 14729,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 12,
+            "file_rows": 14884,
+            "selected_rows": 14884,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 14,
+            "file_rows": 14645,
+            "selected_rows": 14645,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 16,
+            "file_rows": 14818,
+            "selected_rows": 14818,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 18,
+            "file_rows": 14851,
+            "selected_rows": 14851,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 20,
+            "file_rows": 14718,
+            "selected_rows": 14718,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 22,
+            "file_rows": 14901,
+            "selected_rows": 14901,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 24,
+            "file_rows": 14759,
+            "selected_rows": 14759,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 26,
+            "file_rows": 14806,
+            "selected_rows": 14806,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 28,
+            "file_rows": 14807,
+            "selected_rows": 14807,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 30,
+            "file_rows": 14437,
+            "selected_rows": 14437,
+            "skipped_rows": 0
+          }
+        ],
+        "scope_rows": 383385,
+        "excluded_by_split": 2172519,
+        "quality_failed_rows": 0,
+        "quality_failed_included_rows": 0
+      },
+      {
+        "plane": "raw",
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/rx-clean-20260914/RadioML2018A_RX_raw_1024_per_window_RMS_v1.h5",
+        "bytes": 21526064941,
+        "mtime_ns": 1789393290693380188,
+        "sha256": "4d2dd1bf76d828913a85c2283b5c2a2373f2a5a726e3e85f65c1cafbc227c8bd",
+        "metadata_sha256": "406b08acf45b10382c625db299ac9ca88cb744a2d211671d46c98d6a9ea38a73",
+        "selected_rows": 383385,
+        "skipped_rows": 0,
+        "common_rows": 379662,
+        "skip_reasons_overlapping": {
+          "archived valid/raw is true": 0,
+          "quality_json sync.status is synchronized": 0,
+          "raw rx_sinr_status is estimated": 0,
+          "raw rx_sinr_db is finite": 0,
+          "saved raw offsets match frame payload offsets": 0
+        },
+        "eligibility_by_snr": [
+          {
+            "source_snr_db": -20,
+            "file_rows": 14642,
+            "selected_rows": 14642,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -18,
+            "file_rows": 14702,
+            "selected_rows": 14702,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -16,
+            "file_rows": 14791,
+            "selected_rows": 14791,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -14,
+            "file_rows": 14889,
+            "selected_rows": 14889,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -12,
+            "file_rows": 14738,
+            "selected_rows": 14738,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -10,
+            "file_rows": 14733,
+            "selected_rows": 14733,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -8,
+            "file_rows": 14646,
+            "selected_rows": 14646,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -6,
+            "file_rows": 14886,
+            "selected_rows": 14886,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -4,
+            "file_rows": 14728,
+            "selected_rows": 14728,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -2,
+            "file_rows": 14717,
+            "selected_rows": 14717,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 0,
+            "file_rows": 14712,
+            "selected_rows": 14712,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 2,
+            "file_rows": 14616,
+            "selected_rows": 14616,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 4,
+            "file_rows": 14779,
+            "selected_rows": 14779,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 6,
+            "file_rows": 14765,
+            "selected_rows": 14765,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 8,
+            "file_rows": 14686,
+            "selected_rows": 14686,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 10,
+            "file_rows": 14729,
+            "selected_rows": 14729,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 12,
+            "file_rows": 14884,
+            "selected_rows": 14884,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 14,
+            "file_rows": 14645,
+            "selected_rows": 14645,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 16,
+            "file_rows": 14818,
+            "selected_rows": 14818,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 18,
+            "file_rows": 14851,
+            "selected_rows": 14851,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 20,
+            "file_rows": 14718,
+            "selected_rows": 14718,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 22,
+            "file_rows": 14901,
+            "selected_rows": 14901,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 24,
+            "file_rows": 14759,
+            "selected_rows": 14759,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 26,
+            "file_rows": 14806,
+            "selected_rows": 14806,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 28,
+            "file_rows": 14807,
+            "selected_rows": 14807,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 30,
+            "file_rows": 14437,
+            "selected_rows": 14437,
+            "skipped_rows": 0
+          }
+        ],
+        "scope_rows": 383385,
+        "excluded_by_split": 2172519,
+        "quality_failed_rows": 3723,
+        "quality_failed_included_rows": 3723,
+        "quality_failure_reasons_overlapping": {
+          "archived valid/raw is true": 0,
+          "quality_json sync.status is synchronized": 0,
+          "raw rx_sinr_status is estimated": 3723,
+          "raw rx_sinr_db is finite": 3723,
+          "saved raw offsets match frame payload offsets": 0
+        }
+      }
+    ],
+    "models": [
+      {
+        "display_name": "Shared-Bi / original Mamba D8",
+        "variant": "amc_mamba_d8",
+        "seed": 42,
+        "checkpoint": {
+          "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed42_nw8/checkpoints/best.pt",
+          "relative": "amc_mamba_d8/seed42/best.pt",
+          "bytes": 1691293,
+          "mtime_ns": 1784544418697035906,
+          "sha256": "6f984a78639a8e8e15403a1257b264839c6057165b3ae9ac8640ecc056f78143"
+        },
+        "config_relative": "amc_mamba_d8/seed42/config.json",
+        "training_git": {
+          "commit": "82cfbc2b6a9d7072b5ab56c218478e351f355ac1",
+          "dirty": true
+        },
+        "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+        "num_classes": 24,
+        "input_length": 1024,
+        "class_order": [
+          "OOK",
+          "4ASK",
+          "8ASK",
+          "BPSK",
+          "QPSK",
+          "8PSK",
+          "16PSK",
+          "32PSK",
+          "16APSK",
+          "32APSK",
+          "64APSK",
+          "128APSK",
+          "16QAM",
+          "32QAM",
+          "64QAM",
+          "128QAM",
+          "256QAM",
+          "AM-SSB-WC",
+          "AM-SSB-SC",
+          "AM-DSB-WC",
+          "AM-DSB-SC",
+          "FM",
+          "GMSK",
+          "OQPSK"
+        ],
+        "original_preprocessing": {
+          "axis_adapter": "[N,1024,2] transpose to [N,2,1024]",
+          "dc_removal": false,
+          "denoise": false,
+          "denoise_method": "none",
+          "dtype": "float32",
+          "filtering": false,
+          "normalization": "none",
+          "windowing": false
+        },
+        "archived_test_acc": 0.6332087420804565,
+        "archived_test_samples": 383387,
+        "source_run": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed42_nw8"
+      }
+    ],
+    "classes": [
+      "OOK",
+      "4ASK",
+      "8ASK",
+      "BPSK",
+      "QPSK",
+      "8PSK",
+      "16PSK",
+      "32PSK",
+      "16APSK",
+      "32APSK",
+      "64APSK",
+      "128APSK",
+      "16QAM",
+      "32QAM",
+      "64QAM",
+      "128QAM",
+      "256QAM",
+      "AM-SSB-WC",
+      "AM-SSB-SC",
+      "AM-DSB-WC",
+      "AM-DSB-SC",
+      "FM",
+      "GMSK",
+      "OQPSK"
+    ],
+    "rows_per_dataset": 2555904,
+    "model_dataset_pairs": 2,
+    "total_predictions": 766770,
+    "batch_size": 1024,
+    "block_rows": 16384,
+    "deadline_seconds": 3600,
+    "normalization": "none added; RX files already per-window complex RMS; original unchanged",
+    "sample_scope": "original server seed42 validation only; includes RX quality failures",
+    "quality_policy": "all validation members; quality flags preserved; common subset remains strict",
+    "precision_policy": "FP32 weights; FP16 only if finite and both pilot/batch max probability error <=0.005 and no top1 changes; otherwise FP32; failure never changes row selection",
+    "recognizer_available": false,
+    "training": false,
+    "rf": false,
+    "render_policy": "24 validation confusion matrices PNG/SVG plus counts/percent/common-counts CSV",
+    "plot_script": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_collection_plots.py",
+      "bytes": 4254,
+      "mtime_ns": 1789396289314067281,
+      "sha256": "095bfa3fecb707c99dd3389946da01408a780c5cc7b5d9f52ddfb21028ef388f"
+    },
+    "probe_sha256": "fa40197840d63bd21eece695eeff4cffd5fe00492a6b069d4974a7d6635bf711",
+    "precision": "FP32 for all 12 models; TF32 disabled",
+    "plot_python": "/usr/bin/python3",
+    "execution_python": "/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python",
+    "parent_plan": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/seed42-val-fresh-20260914/plan.json",
+      "bytes": 31232,
+      "mtime_ns": 1789397030092826809,
+      "sha256": "e6e92a060f0e6576464be28aaf7177de78bd8dff8d7dfda29122c050c9526504"
+    },
+    "split": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/splits/server-seed42-20260914/RML2018a_split_seed42_tr700_val150_te150.npz",
+      "bytes": 3906318,
+      "mtime_ns": 1789395491153582339,
+      "sha256": "0a7cbd3b8a4b921b7dc3d0c37473322207c6bd9fb362ea58498c851fad9dc5a3",
+      "partition": "val",
+      "seed": 42,
+      "counts": {
+        "train": 1789132,
+        "val": 383385,
+        "test": 383387
+      },
+      "validation_indices_sha256": "789f71e82178e5deffe2d78d7cf59540b43c0630c90707da60f63563654f2754"
+    },
+    "service": "sdr-mamba-source-raw-val-allquality-20260915.service",
+    "reused_predictions": 0,
+    "fresh_predictions": true,
+    "fresh_start_verified": true,
+    "reuse_policy": "zero predictions imported; all eligible validation rows freshly inferred",
+    "include_quality_failed": true,
+    "initial_pilot_estimate_seconds": 560.4314164808261,
+    "launch_free_bytes": 676426776576,
+    "maximum_output_budget_bytes": 1073741824,
+    "stop_command": "systemctl --user stop sdr-mamba-source-raw-val-allquality-20260915.service"
+  },
+  "prelaunch": {
+    "plan_sha256": "9c3a04aaed6b54a1a3aee5d216f7ec07c9b0e4f23c4620ded6442b989ab55a08",
+    "datasets": [
+      {
+        "plane": "source",
+        "rows": 383385,
+        "quality_failed_included": 0,
+        "common_rows": 379662,
+        "train_selected": 0,
+        "test_selected": 0,
+        "ids_sha256": "789f71e82178e5deffe2d78d7cf59540b43c0630c90707da60f63563654f2754"
+      },
+      {
+        "plane": "raw",
+        "rows": 383385,
+        "quality_failed_included": 3723,
+        "common_rows": 379662,
+        "train_selected": 0,
+        "test_selected": 0,
+        "ids_sha256": "789f71e82178e5deffe2d78d7cf59540b43c0630c90707da60f63563654f2754"
+      }
+    ],
+    "source_commit": "1d278c5fa4dc69b1465158024fafbefd6b06ab68",
+    "test_cases_passed": 11,
+    "model_input": "source original values; raw existing per-window RMS; no new transformations",
+    "previous_results_preserved": true,
+    "prepared_ns": 1789437682167468892
+  },
+  "started": {
+    "service": "MainPID=306011\nExecMainStatus=0\nActiveState=active\n",
+    "blocks": [
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915/amc_mamba_d8-seed42/source/0000000.npz",
+        "bytes": 273488,
+        "sha256": "ce4ab8d210bcedc7bd8ddd035ef71e1d100f3acfca4c7941322db5e066c9cc26",
+        "rows": 2568
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915/amc_mamba_d8-seed42/source/0016384.npz",
+        "bytes": 263100,
+        "sha256": "84655cda1473e9fad8fddd450bc8b92301bfc33d18d7b4ee1e4c12eebfd9285e",
+        "rows": 2470
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915/amc_mamba_d8-seed42/source/0032768.npz",
+        "bytes": 259496,
+        "sha256": "1b9093be5365e70f319ede21313b7471d04849b2ab213be43d552402f6918444",
+        "rows": 2436
+      }
+    ],
+    "rows": 7474,
+    "stage": {
+      "stage": "inference",
+      "model": "amc_mamba_d8-seed42",
+      "dataset": "source",
+      "dataset_rows": 122678,
+      "completed_predictions": 122678,
+      "committed_predictions": 122678,
+      "total_predictions": 766770,
+      "elapsed_seconds": 163.08013366599334,
+      "updated_ns": 1789437848487011505
+    },
+    "complete": false
+  },
+  "retention": {
+    "purpose": "Mamba original seed42 source/raw full-validation quality-failure inclusion startup audit",
+    "files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-allquality-20260915/prelaunch.json",
+        "bytes": 900,
+        "sha256": "c0cdef8fe72bfd7b2588cd1f33314cc940145b5e05c373160a9c29f6dc66b70e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-allquality-20260915/register.py",
+        "bytes": 2210,
+        "sha256": "9b82767221066d1990e3f3e56c59f7263d56deeb42fa5e6a6dba14c3b097fb02"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-allquality-20260915/started.json",
+        "bytes": 1320,
+        "sha256": "3a3a5de444c061b97f5dac6d37c4b3937b5bd5b002774a56daa61ff4b6f16018"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-allquality-20260915/verify_start.py",
+        "bytes": 1449,
+        "sha256": "67c91f6ff3e8d91e9484a0cc2d46354f45777aeb607c549a5f312ac05f66b858"
+      }
+    ],
+    "bytes": 5879,
+    "manual_delete_argv": [
+      "rm",
+      "-rf",
+      "--",
+      "/var/tmp/sdrharness-dev/mamba-allquality-20260915"
+    ],
+    "temporary_test_directory_absent": true,
+    "removed_residual_files": 0,
+    "removed_residual_bytes": 0,
+    "self_excluded": true
+  },
+  "retention_file": {
+    "path": "/var/tmp/sdrharness-dev/mamba-allquality-20260915/retention.json",
+    "bytes": 1181,
+    "sha256": "d2a1cf5d857584cb8f5e991557f537a6c0bec9fab0adfadb495c61e86351dfd2"
+  },
+  "active_results": {
+    "root": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915",
+    "initial_static_files": [
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915/plan.json",
+        "bytes": 14888,
+        "sha256": "9c3a04aaed6b54a1a3aee5d216f7ec07c9b0e4f23c4620ded6442b989ab55a08"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915/probe.json",
+        "bytes": 1011,
+        "sha256": "fa40197840d63bd21eece695eeff4cffd5fe00492a6b069d4974a7d6635bf711"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915/source-metadata.npz",
+        "bytes": 51120202,
+        "sha256": "72d8313a0c9d38f93c9b5e691eb8a2fece7194022ed1e5408cdd18871b2842cb"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915/raw-metadata.npz",
+        "bytes": 84348496,
+        "sha256": "406b08acf45b10382c625db299ac9ca88cb744a2d211671d46c98d6a9ea38a73"
+      }
+    ],
+    "final_retention": "runner generates retention.json after verification and rendering",
+    "manual_delete_argv": [
+      "rm",
+      "-rf",
+      "--",
+      "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915"
+    ],
+    "stop_first": "systemctl --user stop sdr-mamba-source-raw-val-allquality-20260915.service"
+  },
+  "runtime_cache": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-collection-cache-5c92211fb773e3f0",
+    "state": "active task; owner finally cleans after exit"
+  },
+  "limits": [
+    "Only initial source blocks read back; full source/raw result and two matrices still pending",
+    "No change to archived quality flags, IQ, checkpoints, prior completed results or production admission",
+    "Previous 59.07% guard used deleted epoch10 checkpoint, not current original seed42"
+  ]
+}

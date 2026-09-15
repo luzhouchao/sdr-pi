@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Finite single-window engineering evaluation of imported models and HDF5s.
 
-Preserves source IDs and skip masks; infers only eligible RX rows. No RF, training,
+Preserves source IDs and quality flags; supports explicit inclusion of quality failures. No RF, training,
 normalization, model fallback, production binding, or four-window aggregation.
 """
 import argparse
@@ -102,8 +102,8 @@ def metadata(path, plane, original_y=None, original_z=None, classes=None):
         return dict(source_row=ids, class_id=y, source_snr_db=z.astype(np.int16), **extra)
 
 
-def select_metadata(root, datasets, validation_indices=None):
-    """User-selected strict RX masks; common source IDs for fair paired reports."""
+def select_metadata(root, datasets, validation_indices=None, include_quality_failed=False):
+    """Keep quality evidence even when all scope members are requested for inference."""
     values = {}
     common = np.ones(ROWS, bool)
     membership = np.ones(ROWS, bool)
@@ -116,17 +116,17 @@ def select_metadata(root, datasets, validation_indices=None):
     for ds in datasets:
         with np.load(root / f"{ds['plane']}-metadata.npz", allow_pickle=False) as f:
             m = {k: f[k] for k in f.files}
-        selected = np.ones(ROWS, bool) if ds["plane"] == "source" else m["usable"] & m["strict_quality_pass"]
+        qualified = np.ones(ROWS, bool) if ds["plane"] == "source" else m["usable"] & m["strict_quality_pass"]
         member = membership[m["source_row"]]
-        selected &= member
+        selected = member.copy() if include_quality_failed else qualified & member
+        m["quality_qualified"] = qualified
         if rank is not None:
             m["validation_member"] = member
             m["validation_rank"] = rank[m["source_row"]]
         m["selected_for_inference"] = selected
-        if ds["plane"] != "source":
-            canonical = np.zeros(ROWS, bool)
-            canonical[m["source_row"]] = selected
-            common &= canonical
+        canonical = np.zeros(ROWS, bool)
+        canonical[m["source_row"]] = qualified & member
+        common &= canonical
         values[ds["plane"]] = m
     for ds in datasets:
         m = values[ds["plane"]]
@@ -137,6 +137,8 @@ def select_metadata(root, datasets, validation_indices=None):
                   selected_rows=int(m["selected_for_inference"].sum()),
                   skipped_rows=int((membership[m["source_row"]]&~m["selected_for_inference"]).sum()),
                   scope_rows=int(membership.sum()), excluded_by_split=ROWS-int(membership.sum()),
+                  quality_failed_rows=int((membership[m["source_row"]]&~m["quality_qualified"]).sum()),
+                  quality_failed_included_rows=int((m["selected_for_inference"]&~m["quality_qualified"]).sum()),
                   common_rows=int(common.sum()))
         ds["eligibility_by_snr"] = [dict(source_snr_db=z,
             file_rows=int(((m["source_snr_db"]==z)&membership[m["source_row"]]).sum()),
@@ -147,9 +149,12 @@ def select_metadata(root, datasets, validation_indices=None):
             with h5py.File(ds["path"],"r") as f:
                 required = int(f.attrs["strict_quality_required_mask"]) | int(f.attrs["usable_required_mask"])
                 definitions = json.loads(f.attrs["quality_flag_definitions_json"])
-            ds["skip_reasons_overlapping"] = {
+            ds["quality_failure_reasons_overlapping"] = {
                 definitions[str(bit)]: int((((m["quality_flags"] & bit)==0)&membership[m["source_row"]]).sum())
                 for bit in (1,2,4,8,16,32) if required & bit}
+            ds["skip_reasons_overlapping"] = {
+                reason: 0 if include_quality_failed else count
+                for reason,count in ds["quality_failure_reasons_overlapping"].items()}
 
 
 def prepare(root):
@@ -209,12 +214,14 @@ def load_validation_split(path, expected_sha):
     return val, record
 
 
-def prepare_validation(root, parent_root, split_path, fresh=False):
+def prepare_validation(root, parent_root, split_path, fresh=False, variants=None,
+                       planes=None, include_quality_failed=False):
     """派生只读validation计划，沿用已校验输入与FP32数值依据，不重切数据集。"""
     require(not root.exists(), "use a new output root")
     parent_root = parent_root.resolve(strict=True)
     parent = json.loads((parent_root/"plan.json").read_text())
-    require((parent_root/"STOP").exists(), "prior full-data campaign must stay stopped")
+    require((parent_root/"STOP").exists() or (parent_root/"COMPLETE.json").exists(),
+            "parent campaign must be stopped or complete")
     require(shutil.disk_usage(root.parent).free > 5*1024**3, "5 GiB free required")
     val, split = load_validation_split(split_path, SEED42_SPLIT_SHA)
     require(digest(COLLECTION/"manifest.json")==parent["collection_manifest"]["sha256"], "collection changed")
@@ -226,10 +233,21 @@ def prepare_validation(root, parent_root, split_path, fresh=False):
     tested = [m for m in prior_probe["models"] if m["seed"]==42]
     require(len(tested)==8 and all(m["passed"] and m["precision"]=="fp32" for m in tested), "FP32 evidence missing")
     require([(m["variant"],m["seed"]) for m in models]==[(m["variant"],m["seed"]) for m in tested], "probe model order")
+    if variants is not None:
+        require(variants and len(set(variants))==len(variants) and
+                set(variants)<=set(m["variant"] for m in models), "unknown or duplicate variant selection")
+        models = [m for m in models if m["variant"] in variants]
+        tested = [m for m in tested if m["variant"] in variants]
+    if planes is not None:
+        require(planes and len(set(planes))==len(planes) and
+                set(planes)<=set(d["plane"] for d in parent["datasets"]) and "source" in planes,
+                "dataset selection must include source and known unique planes")
     for f in manifest["transferred_files"]:
         require(digest(COLLECTION/f["relative"])==f["sha256"], "model source/weights changed")
     root.mkdir(mode=0o700)
     datasets = json.loads(json.dumps(parent["datasets"]))
+    if planes is not None:
+        datasets = [d for d in datasets if d["plane"] in planes]
     source_meta = None
     if fresh:
         source_ds = next(ds for ds in datasets if ds["plane"]=="source")
@@ -245,16 +263,20 @@ def prepare_validation(root, parent_root, split_path, fresh=False):
             path = parent_root/f"{ds['plane']}-metadata.npz"
             require(digest(path)==ds["metadata_sha256"], "parent metadata changed")
             shutil.copyfile(path,root/path.name)
-    select_metadata(root,datasets,val)
+    select_metadata(root,datasets,val,include_quality_failed)
     probe_result = dict(prior_probe,models=tested,parent_probe=identity(parent_root/"probe.json"),
                         scope="inherited same-model same-input FP32 numerical evidence; no new precision selection")
     atomic(root/"probe.json",probe_result)
     plan = dict(parent,schema="rml2018a-collection-seed42-validation-v1",created_ns=time.time_ns(),
                 script=identity(__file__),plot_script=identity(Path(__file__).with_name("rml2018a_collection_plots.py")),
                 parent_plan=identity(parent_root/"plan.json"),split=split,models=models,datasets=datasets,
-                probe_sha256=digest(root/"probe.json"),model_dataset_pairs=24,deadline_seconds=86400,
-                total_predictions=sum(d["selected_rows"] for d in datasets)*8,
-                sample_scope="original server seed42 validation only; RX strict quality intersection",
+                probe_sha256=digest(root/"probe.json"),model_dataset_pairs=len(models)*len(datasets),deadline_seconds=86400,
+                total_predictions=sum(d["selected_rows"] for d in datasets)*len(models),
+                sample_scope="original server seed42 validation only; " +
+                    ("includes RX quality failures" if include_quality_failed else "RX strict quality intersection"),
+                include_quality_failed=bool(include_quality_failed),
+                quality_policy="all validation members; quality flags preserved; common subset remains strict" if include_quality_failed else
+                    "RX usable AND strict_quality_pass only; common source-ID subset additionally reported",
                 service="sdr-rml2018a-seed42-val-20260914.service",
                 reused_predictions=0,fresh_predictions=bool(fresh))
     for key in ("initial_pilot_estimate_seconds","supersedes_plan_sha256","probe_parent_plan_sha256"):
@@ -262,7 +284,7 @@ def prepare_validation(root, parent_root, split_path, fresh=False):
     plan["initial_pilot_estimate_seconds"]=sum(m["full_batch_seconds"] for m in tested)*sum(d["selected_rows"] for d in datasets)/plan["batch_size"]
     atomic(root/"plan.json",plan)
     atomic(root/"progress.json",dict(stage="prepared_validation",completed_predictions=0,total_predictions=plan["total_predictions"]))
-    print(json.dumps(dict(prepared=True,models=8,validation_rows=len(val),predictions=plan["total_predictions"])),flush=True)
+    print(json.dumps(dict(prepared=True,models=len(models),validation_rows=len(val),predictions=plan["total_predictions"])),flush=True)
 
 
 def setup(root):
@@ -420,6 +442,8 @@ def report(root, name, ds, counts, common, done):
     s = int(common.sum())
     out = dict(model=name, dataset=ds["plane"], complete=done, rows=total,
                eligible_rows=ds["selected_rows"], skipped_rows=ds["skipped_rows"],
+               quality_failed_rows=ds.get("quality_failed_rows",ds["skipped_rows"]),
+               quality_failed_included_rows=ds.get("quality_failed_included_rows",0),
                correct=correct, accuracy=correct/total if total else None,
                common_rows=s, common_accuracy=int(np.trace(common.sum(0)))/s if s else None,
                per_snr=per_snr, confusion_by_snr=counts.tolist(), common_confusion_by_snr=common.tolist())
@@ -607,12 +631,17 @@ def main():
     parser.add_argument("--parent-root", type=Path)
     parser.add_argument("--split", type=Path)
     parser.add_argument("--fresh", action="store_true", help="重新从HDF5生成元数据，不导入任何旧预测")
+    parser.add_argument("--variants", nargs="+", help="prepare-validation: 指定原始seed42模型variant")
+    parser.add_argument("--planes", nargs="+", choices=("source","raw","guard"))
+    parser.add_argument("--include-quality-failed", action="store_true",
+                        help="prepare-validation: 保留验证集内未通过RX质量标志的行，仍校验数据完整性")
     args = parser.parse_args(); root = args.root.resolve()
     if args.action == "prepare":
         prepare(root); return
     if args.action == "prepare-validation":
         require(args.parent_root is not None and args.split is not None, "parent root and split required")
-        prepare_validation(root,args.parent_root,args.split,args.fresh); return
+        prepare_validation(root,args.parent_root,args.split,args.fresh,args.variants,
+                           args.planes,args.include_quality_failed); return
     if args.action == "status":
         print((root / "progress.json").read_text()); return
     lock = (root / "RUN.lock").open("a")

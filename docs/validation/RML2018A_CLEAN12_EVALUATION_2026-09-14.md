@@ -224,3 +224,36 @@ class_id/source_snr_db逐条与原数据集行结构一致。此为全量元数�
 [本次证据和保留清单](../evidence/RML2018A_SOURCE_GUARD_REVIEW_2026-09-15.json)记录逐文件哈希、
 source/model/profile血缘、有限计划、实际清理与精确人工删除命令；归一化探针保留logits和行号，不保留IQ。
 本次只清理自己的Matplotlib与模型运行缓存，原完整结果、数据集和权重保留。
+
+
+## Mamba的source/raw包含质量失败行重跑（2026-09-15）
+
+用户追加要求“不忽略没通过校验的”，在Mamba上重跑source/raw。当前范围继承原服务器
+seed42 validation；采用原始D8 seed42、FP32/关闭TF32、单窗1024，与历史epoch-10权重分开。
+source/raw均383,385条，raw包含此前被质量标志排除的3,723条，质量跳过0；总766,770次新预测。
+从HDF5重新生成元数据，无旧预测复用。保留三组8模型结果，不重跑guard、不训练、不发射、不复制IQ。
+
+现有collection入口增加显式variants/planes/include-quality-failed选项，默认仍严格质量筛选。
+包含失败行时仅改变推理选择mask，原usable/strict/quality_flags不改写；共同严格合格379,662
+源行的矩阵与ACC另报，不能误称全部383,385都通过质量校验。质量失败原因和实际跳过计数分列。
+原始行号、标签、数据哈希、split、输入形状/有限值/RMS和logits校验继续执行，不用伪造预测填补失败。
+
+11项合同测试通过，覆盖RX重排后的原validation映射、质量失败纳入且train/test排除、
+质量标志不被覆盖、共同合格子集、未知模型拒绝、一个模型两输入计划、fresh与动态收口/续跑。
+本轮实际全量metadata逐条核对val成员相同、train/test选中0，模型/源码哈希与继承的FP32数值依据相符。
+GPU沿用相同权重/计算精度验证，不再用真实ACC选择精度。首3块7,474条source新预测实际SHA、
+选中行、有限logits/argmax独立读回通过；此时raw质量失败行尚未处理，未冒充已完成。
+
+新根`/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915`，
+服务`sdr-mamba-source-raw-val-allquality-20260915.service`已active/running。
+原进度脚本实际显示两组、各383,385条、质量跳过0、raw包含3,723条失败及真实计算/落盘进度；
+只查看进度不会停止任务。继承数值探针粗估560.43秒，未当作完成时长。
+计划内部3600秒期限、systemd最大4500秒、停止宽限60秒、1GiB输出预算、3GiB可用空间门。
+启动可用空间约676GB；超时/STOP/信号退出finally清理该根专用运行缓存。
+
+后台按用户既有要求自行执行，结束后自动全部读回核验、生成两张PNG/SVG矩阵及CSV、最终retention/COMPLETE。
+此单元交付入口和实际启动，不等待所有预测，不提前勾选完整识别。服务停止路径为
+`systemctl --user stop sdr-mamba-source-raw-val-allquality-20260915.service`，也可创建该结果根的STOP。
+运行缓存属于仍活动任务，不在此刻删除或宣称清理。临时测试目录已自动清空并移除；
+诊断脚本/元数据核对/首块证据精确保留，数据集、权重、旧结果保持。
+[启动证据](../evidence/RML2018A_MAMBA_ALLQUALITY_START_2026-09-15.json)登记哈希、预算、保留/清理与精确删除路径。

@@ -150,6 +150,27 @@ class Contracts(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'seed'):
             ev.load_validation_split(p,ev.digest(p))
 
+    def test_include_quality_failures_keeps_split_and_strict_comparison(self):
+        p=self.cleaned()
+        m=ev.metadata(p,"raw",self.labels,self.snr,self.classes)
+        source=dict(source_row=np.arange(12),class_id=self.labels,source_snr_db=self.snr)
+        datasets=[]
+        for plane,values in (("source",source),("raw",m)):
+            np.savez(self.root/f"{plane}-metadata.npz",**values)
+            datasets.append(dict(plane=plane,path=str(p)))
+        val=np.array([0,1,4,7],np.int64)
+        ev.select_metadata(self.root,datasets,val,include_quality_failed=True)
+        self.assertEqual([d['selected_rows'] for d in datasets],[4,4])
+        self.assertEqual([d['skipped_rows'] for d in datasets],[0,0])
+        self.assertEqual([d['common_rows'] for d in datasets],[2,2])
+        self.assertEqual(datasets[1]['quality_failed_included_rows'],2)
+        self.assertTrue(all(v==0 for v in datasets[1]['skip_reasons_overlapping'].values()))
+        with np.load(self.root/'raw-metadata.npz') as f:
+            np.testing.assert_array_equal(np.sort(f['source_row'][f['selected_for_inference']]),val)
+            np.testing.assert_array_equal(f['quality_flags'],m['quality_flags'])
+            self.assertEqual(int((f['selected_for_inference']&~f['strict_quality_pass']).sum()),2)
+            self.assertFalse((f['selected_for_inference']&~f['validation_member']).any())
+
     def test_fresh_prepare_needs_no_old_metadata_or_predictions(self):
         source=self.root/'source.h5'
         with h5py.File(source,'w') as f:
@@ -179,6 +200,22 @@ class Contracts(unittest.TestCase):
         self.assertFalse(list(target.glob('*-seed*')))
         with np.load(target/'source-metadata.npz') as f:
             np.testing.assert_array_equal(f['source_row'][f['selected_for_inference']],[8,9])
+        subset=self.root/'subset-all-quality'
+        with patch.object(ev,'COLLECTION',collection),patch.object(ev,'SEED42_SPLIT_SHA',ev.digest(split)):
+            ev.prepare_validation(subset,parent,split,fresh=True,variants=['m0'],
+                                  planes=['source','raw'],include_quality_failed=True)
+        selected=json.loads((subset/'plan.json').read_text())
+        self.assertEqual(selected['model_dataset_pairs'],2)
+        self.assertEqual(selected['total_predictions'],4)
+        self.assertEqual([m['variant'] for m in selected['models']],['m0'])
+        self.assertEqual([d['plane'] for d in selected['datasets']],['source','raw'])
+        self.assertEqual(selected['datasets'][1]['quality_failed_included_rows'],1)
+        self.assertTrue(selected['include_quality_failed'])
+        self.assertEqual(len(json.loads((subset/'probe.json').read_text())['models']),1)
+        self.assertFalse((subset/'guard-metadata.npz').exists())
+        with patch.object(ev,'COLLECTION',collection),patch.object(ev,'SEED42_SPLIT_SHA',ev.digest(split)):
+            with self.assertRaisesRegex(ValueError,'variant selection'):
+                ev.prepare_validation(self.root/'bad-subset',parent,split,variants=['missing'])
 
     def test_stream_resume_and_identity_rejection(self):
         models=[dict(variant=f"m{i}",seed=42,checkpoint=dict(sha256=str(i))) for i in range(8)]

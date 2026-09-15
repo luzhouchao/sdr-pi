@@ -7,13 +7,19 @@
 
 ## 当前执行选择
 
-最新状态：用户明确使用服务器原seed42 validation运行8个模型，并要求删除之前结果、从零开始。
+最新选择：2026-09-15用户要求source/raw在Mamba上重跑且包含质量未通过行。
+原始D8 seed42、FP32/单窗1024、原validation不变；两组各383,385行，raw包含3,723条质量失败，
+总766,770次新预测、跳过0。新根`local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915`，
+后台有限脚本运行，进度默认指向新根；让脚本自动完成核验/两张混淆矩阵，不持续对话轮询。
+不重跑guard、不删除既有结果、不恢复epoch-10。见[当前操作](reference/RML2018A_MODEL_COLLECTION_EVALUATION.md)。
+
+上一轮：用户明确使用服务器原seed42 validation运行8个模型，并要求删除之前结果、从零开始。
 旧全量与首次复用validation两根已停止并删除；新根为`local-assets/amc-eval/results/seed42-val-fresh-20260914`，
 24组、9,073,240次预测，复用预测数0。source/raw/guard分别383,385/379,662/371,108，共同369,497源行。
 原始源值、RX已逐窗RMS、FP32/关闭TF32保持，现已完成核验和24张矩阵，服务/缓存已收口。
 当前问题为source到guard准确率下降；固定2,496条对照已证明仅source的RMS归一化就明显降分。
 清洗前后raw/guard各2,496条抽查IQ完全一致，构建脚本仅复制已有归一化输入；历史59.07%使用epoch-10，不能直接当作本轮清洗前基线。
-下一独立单元应审计幅度标度/训练预处理的一致性，再决定新的对照范围；不凭当前差值取消LO相消，
+幅度标度/训练预处理的一致性仍待独立审计；不凭当前差值取消LO相消，
 不按真实类别或源窗RMS给接收窗补回幅度，不自动训练或重跑整套模型。见[差距复核](validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#完成核验与source到guard差距复核2026-09-15)。
 旧删除审计保留，不恢复旧结果或seeds43–46。见[当前操作](reference/RML2018A_MODEL_COLLECTION_EVALUATION.md)
 及[validation从零启动验证](validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#seed42原验证集8模型启动)。

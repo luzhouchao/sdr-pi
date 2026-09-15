@@ -1,6 +1,27 @@
 # seed42原验证集：8模型与三数据集识别
 
-用户最新授权为8种模型各自的seed42权重，使用4090原70/15/15划分中的validation，
+## 当前追加：Mamba的source/raw包含质量失败行重跑
+
+2026-09-15用户要求不忽略未通过质量校验的行，重新识别source和raw。
+沿用原始Mamba D8 seed42、单窗1024、FP32/关闭TF32及服务器原validation成员，
+source/raw各383,385条，共766,770次新预测；raw包含此前排除的3,723条，质量跳过0。
+未改IQ或归一化，质量标志原样保留；共同严格合格379,662源行另报对照。
+本次仅这一个模型和两种输入，既有8模型三组结果保留。历史59.07%来自已删除的epoch-10微调模型。
+
+新根`local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915`，
+服务`sdr-mamba-source-raw-val-allquality-20260915.service`；原进度脚本默认查看这一轮。
+有限计划内部期限3600秒、systemd最大4500秒，磁盘3GiB余量门保持；先导约560秒，实际以进度为准。
+完成后自动独立核验并生成两张混淆矩阵及CSV、保留清单；启动不等于完成。
+停止命令：`systemctl --user stop sdr-mamba-source-raw-val-allquality-20260915.service`。
+
+现有`prepare-validation`增加`--variants amc_mamba_d8 --planes source raw --include-quality-failed`，
+配合`--fresh`从HDF5生成元数据、在全新结果根从零运行；父级为已停止或已完成计划。
+不指定这些选项时保持既有8模型/三组/严格质量策略。包含质量失败是采样范围选择，
+并不忽略行号、标签、原划分、哈希、有限IQ和输出校验。见[启动验证](../validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#mamba的sourceraw包含质量失败行重跑2026-09-15)。
+
+## 已完成的8模型三组对照
+
+上一轮授权为8种模型各自的seed42权重，使用4090原70/15/15划分中的validation，
 逐1024点窗识别source/raw/guard。用户已要求删除前两轮结果并从零运行；fresh任务已完成，9,073,240次预测及24张混淆矩阵已独立读回核验，运行缓存已清理。
 实际状态见[checklist](../SDR_AGENT_PROJECT_CHECKLIST.md)，启动依据见
 [验证](../validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#seed42原验证集8模型启动)。
@@ -46,18 +67,18 @@ raw已同步并校正CFO/相位，guard包含保护间隔LO相消；其区别不
 
 ## 执行、进度和停止
 
-新结果根：`/home/jetson/sdrharness/local-assets/amc-eval/results/seed42-val-fresh-20260914`。
+上一轮8模型结果根：`/home/jetson/sdrharness/local-assets/amc-eval/results/seed42-val-fresh-20260914`。
 服务：`sdr-rml2018a-seed42-val-fresh-20260914.service`。已正常退出，实际总耗时14,778.58秒（约4小时6分19秒），单次内部期限24小时；
 运行时磁盘保持至少3GiB余量。GPU每批1024条、CPU按16,384个文件行预取并筛选。
 各模型驻留处理完三组后再加载下一个。
 
-查看进度仍运行原脚本，默认已切到本轮：
+查看进度仍运行原脚本，默认已切到上方Mamba追加重跑：
 
 ```bash
 /home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-progress.sh
 ```
 
-加`--once`只显示一次；加`--root <历史根>`可查看旧任务。进度区分计算/落盘、验证集大小、
+加`--once`只显示一次；加`--root <历史根>`可查看已完成8模型任务。进度区分计算/落盘、验证集大小、
 质量跳过、共同子集、24组完成数和绘图。Ctrl+C只退出查看。
 直接停止：`systemctl --user stop sdr-rml2018a-seed42-val-fresh-20260914.service`，
 或在新结果根创建`STOP`。旧`clean12-single-20260914`和`seed42-val-single-20260914`根已删除，不恢复旧范围。

@@ -13,7 +13,7 @@ import subprocess
 
 parser = argparse.ArgumentParser(description="查看 RadioML 全量识别进度；Ctrl+C 只退出查看。")
 parser.add_argument("--root", type=Path, default=Path(
-    "/home/jetson/sdrharness/local-assets/amc-eval/results/seed42-val-fresh-20260914"))
+    "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915"))
 parser.add_argument("--interval", type=float, default=5, help="刷新间隔秒数，默认 5")
 parser.add_argument("--once", action="store_true", help="只显示一次")
 args = parser.parse_args()

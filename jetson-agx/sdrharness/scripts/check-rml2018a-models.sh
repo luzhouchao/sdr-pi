@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)
-result_root=${1:-"$repo_root/local-assets/amc-eval/results/seed42-val-fresh-20260914"}
+result_root=${1:-"$repo_root/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915"}
 python3 - "$result_root" <<'PY'
 import json, sys, subprocess
 from pathlib import Path
@@ -15,11 +15,14 @@ if paused:
     print('后续选择: 仅 seed42 的 8 个模型；其他 Mamba seeds 不再安排。')
 if (r/'plan.json').exists():
     plan=json.loads((r/'plan.json').read_text())
-    print('计数规则: 服务器 seed42 原validation；RX再取严格质量合格行；单窗1024点' if 'split' in plan else
+    print('计数规则: 服务器 seed42 原validation；包含未通过RX质量校验的行；单窗1024点' if plan.get('include_quality_failed') else
+          '计数规则: 服务器 seed42 原validation；RX再取严格质量合格行；单窗1024点' if 'split' in plan else
           '计数规则: 原始数据全量；RX 仅 usable 且 strict_quality_pass；单窗1024点')
     for d in plan['datasets']:
         scope=d.get('scope_rows',plan['rows_per_dataset'])
         print(f"  {d['plane']:6} 待识别 {d['selected_rows']:,} / {scope:,}；质量跳过 {d['skipped_rows']:,}")
+        if plan.get('include_quality_failed'):
+            print(f"         包含质量未通过 {d['quality_failed_included_rows']:,} 条；质量标志保留")
     print(f"共同通过校验的源行: {plan['datasets'][0]['common_rows']:,}")
 if (r/'progress.json').exists():
     p=json.loads((r/'progress.json').read_text())
