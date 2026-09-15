@@ -1,6 +1,6 @@
 # SDR Agent 实际推进顺序
 
-更新：2026-09-14。本文只维护施工顺序，不复制完成状态。
+更新：2026-09-15。本文只维护施工顺序，不复制完成状态。
 完成条件和证据以[权威 checklist](SDR_AGENT_PROJECT_CHECKLIST.md)为准；
 范围以[第1—6章规划](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)为准。
 历史实验结果按[验证索引](validation/README.md)查询，不再在本文件逐次追加旧排期。
@@ -10,7 +10,11 @@
 最新状态：用户明确使用服务器原seed42 validation运行8个模型，并要求删除之前结果、从零开始。
 旧全量与首次复用validation两根已停止并删除；新根为`local-assets/amc-eval/results/seed42-val-fresh-20260914`，
 24组、9,073,240次预测，复用预测数0。source/raw/guard分别383,385/379,662/371,108，共同369,497源行。
-原始源值、RX已逐窗RMS、FP32/关闭TF32保持，完成后自动核验和生成24张矩阵。
+原始源值、RX已逐窗RMS、FP32/关闭TF32保持，现已完成核验和24张矩阵，服务/缓存已收口。
+当前问题为source到guard准确率下降；固定2,496条对照已证明仅source的RMS归一化就明显降分。
+清洗前后raw/guard各2,496条抽查IQ完全一致，构建脚本仅复制已有归一化输入；历史59.07%使用epoch-10，不能直接当作本轮清洗前基线。
+下一独立单元应审计幅度标度/训练预处理的一致性，再决定新的对照范围；不凭当前差值取消LO相消，
+不按真实类别或源窗RMS给接收窗补回幅度，不自动训练或重跑整套模型。见[差距复核](validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#完成核验与source到guard差距复核2026-09-15)。
 旧删除审计保留，不恢复旧结果或seeds43–46。见[当前操作](reference/RML2018A_MODEL_COLLECTION_EVALUATION.md)
 及[validation从零启动验证](validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#seed42原验证集8模型启动)。
 

@@ -134,3 +134,93 @@ source/raw/guard分别383,385/379,662/371,108，共同369,497，总预算9,073,2
 保留清单扩展到预测、metadata、报告和图表，控制文件单列；退出finally清理该根的运行缓存。
 临时测试目录自动清理，源数据没有新增IQ副本。活动结果/缓存保留至后台结束。
 路径、字节、哈希、人工删除依据及实际启动快照见[验证集从零启动证据](../evidence/RML2018A_SEED42_VALIDATION_2026-09-14.json)。
+
+## 完成核验与source到guard差距复核（2026-09-15）
+
+用户关注guard相对source明显下降，随后要求核对是否清洗出错。本节区分完整验证集结果、
+固定样本的归一化诊断和历史模型差别，原启动记录与结果字节不改写。
+
+fresh全程完成9,073,240次预测、24模型/数据组、24张PNG/SVG矩阵及计数/比例/共同成员CSV，
+耗时14,778.5777秒（约4小时6分19秒）。服务inactive/dead、MainPID=0、ExecMainStatus=0。
+独立重新读取3,744预测块，检查全部logits有限/argmax、checkpoint与input绑定、24组统计和共同矩阵；
+7,640保留文件、1,199,867,640字节的清单SHA全部通过。运行缓存不存在。控制文件/清单自身不计入上述保留数。
+
+### 完整验证集的共同成员
+
+严格共同369,497源行，以下均为同一分母，避免各组质量剔除数量不同造成误判。
+
+| 模型 | source ACC % | raw ACC % | guard ACC % | guard−source 百分点 |
+| --- | ---: | ---: | ---: | ---: |
+| CNN2-stable | 54.26 | 35.23 | 46.04 | -8.22 |
+| ResNet | 58.96 | 13.51 | 43.82 | -15.15 |
+| GRU | 63.59 | 49.00 | 49.39 | -14.20 |
+| CLDNN | 50.80 | 34.01 | 44.65 | -6.15 |
+| MCLDNN | 62.88 | 49.64 | 49.35 | -13.53 |
+| MCformer | 61.57 | 53.97 | 55.66 | -5.92 |
+| MAMC | 47.88 | 27.32 | 37.87 | -10.00 |
+| Shared-Bi / original Mamba D8 | 62.56 | 49.29 | 54.27 | -8.29 |
+
+guard相对raw在7/8模型整体改善，MCLDNN微降0.286个百分点；这不否认guard相对source的下降。
+部分模型在源Z为−8至0 dB时guard比raw下降，不能用总体平均掩盖。条件SINR改善也不等于分类ACC改善，
+其估计不是独立标定的物理SINR。逐SNR、类别、翻转计数见保留analysis.json。
+
+### 固定样本的RMS-only对照
+
+冻结选择为24类×26源SNR×每格4条共同validation成员，共2,496条，按源行均匀取点，未按ACC选样。
+8原始seed42模型分别识别原source与仅逐窗复数RMS=1的source，总39,936次新预测；
+FP32、关闭TF32、batch1024、1800秒上限，实际203.016秒。IQ仅在内存，未复制或修改数据/权重。
+归一化公式为sqrt(mean(I²+Q²))，float64计算标量后输出float32，未去DC、滤波、移位或I/Q交换。
+同ID的raw/guard预测来自已完成全量结果。8模型原source复算与原保存top-1差异均0。
+
+| 模型 | 原source % | 仅source RMS归一化 % | 实收guard % |
+| --- | ---: | ---: | ---: |
+| CNN2-stable | 54.73 | 46.43 | 46.15 |
+| ResNet | 58.97 | 48.68 | 44.55 |
+| GRU | 64.86 | 52.68 | 48.08 |
+| CLDNN | 51.32 | 44.39 | 43.79 |
+| MCLDNN | 63.78 | 52.40 | 48.68 |
+| MCformer | 62.30 | 58.53 | 55.81 |
+| MAMC | 48.12 | 38.82 | 37.86 |
+| Shared-Bi / original Mamba D8 | 63.22 | 57.09 | 53.73 |
+
+仅source归一化已导致3.77–12.18个百分点下降，证明这些模型对幅度预处理敏感。
+固定样本中4ASK RMS中位数1.591、8ASK 1.742、AM-SSB-WC 3.122、AM-SSB-SC 2.835，
+多数PSK/QAM约1；类别间幅度分布不是统一单位RMS。D8的4ASK正确数69→15/104、
+AM-SSB-WC 66→33/104；BPSK为79→79、QPSK为67→67。
+这些结果支持训练/推理幅度分布差异是重要因素，但不证明模型只依赖幅度或全部下降均由归一化造成。
+归一化source与guard仍有差距；同步、残余LO、相位/频率、幅频响应等需独立对照后才能归因。
+不能把小样本归一化下降量直接套到完整validation或拆成严格相加的物理损失。
+
+[对照PNG](/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/source-rms-guard-control.png) ·
+[可导出PDF](/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/source-rms-guard-control.pdf)。
+
+### 历史成绩的模型边界
+
+历史全量单窗source/raw/guard为62.3691/52.4792/59.0692%，采用epoch-10微调权重、
+FP16 autocast；本轮为原始seed42模型、FP32，并限原validation且剔除严格质量失败行。
+历史单窗profile SHA为6c1dac991b45e3738e19a6a55a9f3a1b6d3db8510ceef35ee77cdd34e2982dab，
+与四窗历史记录同属已删除的epoch-10制品，不能把59.07%与当前D8的54.27%直接解释成清洗损失。
+历史依据：[单窗](../evidence/RML2018A_FULL_INFERENCE_2026-09-14.json)、
+[模型身份及四窗对照](../evidence/RML2018A_FOUR_WINDOW_COMPLETE_2026-09-14.json)。
+
+### 清洗前后IQ与构建脚本复核
+
+对本地保留的26份旧processed.h5，按source_h5_index/source_block_index/source_row定位同一批2,496条，
+分别比对旧inputs/raw、inputs/guard与清洗iq；两组逐元素完全相同，变化行0、最大绝对差0。
+对应原始采样起点/长度、类别、SNR一致；两份清洗文件的全2,555,904条source_row均唯一完整，
+class_id/source_snr_db逐条与原数据集行结构一致。此为全量元数据检查加分层IQ抽查，不宣称全部IQ逐字节比对。
+
+用户接回外接盘后，读取tools/build_raw_1024_h5.py与build_guard_1024_h5.py，
+两份脚本SHA均与各自completed manifest一致。实现直接读取旧inputs/raw或inputs/guard，
+检查已有RMS、质量和血缘后将原iq写入合并文件；没有新增归一化、去DC、I/Q交换或LO处理。
+因此RMS-only诊断揭示的是已有RX输入与原始模型的适配问题，不能称为本次清洗新增归一化所致。
+结合样本字节对照，当前没有发现清洗改坏波形的证据；旧模型与当前模型差异需要与数据处理区别看待。
+本次没有从ADC重新推导同步/LO处理，也没有重新执行外接盘构建脚本；这一边界见cleaning-audit.json。
+
+后续应审计训练/推理输入标度；若建立部署模型，应明确一致的幅度预处理并单独验证。
+本次未取消LO处理、未改输入接入、未训练或恢复已删除权重，也未发起新的全量推理。
+不要按真实类别、原始source窗的RMS或其他部署时不可得的信息补回接收幅度以提高成绩。
+
+[本次证据和保留清单](../evidence/RML2018A_SOURCE_GUARD_REVIEW_2026-09-15.json)记录逐文件哈希、
+source/model/profile血缘、有限计划、实际清理与精确人工删除命令；归一化探针保留logits和行号，不保留IQ。
+本次只清理自己的Matplotlib与模型运行缓存，原完整结果、数据集和权重保留。

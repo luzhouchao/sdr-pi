@@ -1,7 +1,7 @@
 # seed42原验证集：8模型与三数据集识别
 
 用户最新授权为8种模型各自的seed42权重，使用4090原70/15/15划分中的validation，
-逐1024点窗识别source/raw/guard。用户已要求删除前两轮结果并从零运行；fresh任务已启动，完成后自动核验并生成24张混淆矩阵。
+逐1024点窗识别source/raw/guard。用户已要求删除前两轮结果并从零运行；fresh任务已完成，9,073,240次预测及24张混淆矩阵已独立读回核验，运行缓存已清理。
 实际状态见[checklist](../SDR_AGENT_PROJECT_CHECKLIST.md)，启动依据见
 [验证](../validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#seed42原验证集8模型启动)。
 
@@ -34,6 +34,11 @@ raw已同步并校正CFO/相位，guard包含保护间隔LO相消；其区别不
 三组幅度预处理不同，差值不能全部归因于RF链路；这是已有模型的validation工程对照，
 不训练、不改test划分、不作为独立生产准入。
 
+2026-09-15固定2,496条共同validation样本的有界对照已证明：仅将source逐窗归一化到RMS=1，
+8模型ACC下降3.77–12.18个百分点；不能将source与guard差距全部解释为LO或硬件损失。
+这是幅度预处理敏感性的诊断，不是全验证集归一化后的成绩，也没有改写现有结果或模型输入。
+完整共同成员与固定样本三方对照见[复核](../validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#完成核验与source到guard差距复核2026-09-15)。
+
 模型是CNN2-stable、ResNet、GRU、CLDNN、MCLDNN、MCformer、MAMC和Shared-Bi/D8，均seed42。
 权重/结构见[集合](RML2018A_MODEL_COLLECTION.md)。沿用先前通过的8模型FP32数值依据，关闭TF32，
 不重新挑精度。所有9,073,240次预测重新计算，旧预测复用数0。用户指定的旧全量与首次复用validation结果均已删除，
@@ -42,8 +47,8 @@ raw已同步并校正CFO/相位，guard包含保护间隔LO相消；其区别不
 ## 执行、进度和停止
 
 新结果根：`/home/jetson/sdrharness/local-assets/amc-eval/results/seed42-val-fresh-20260914`。
-服务：`sdr-rml2018a-seed42-val-fresh-20260914.service`。先导速度粗估约8.1小时，单次内部期限24小时；
-实际吞吐会变化，磁盘保持至少3GiB余量。GPU每批1024条、CPU按16,384个文件行预取并筛选。
+服务：`sdr-rml2018a-seed42-val-fresh-20260914.service`。已正常退出，实际总耗时14,778.58秒（约4小时6分19秒），单次内部期限24小时；
+运行时磁盘保持至少3GiB余量。GPU每批1024条、CPU按16,384个文件行预取并筛选。
 各模型驻留处理完三组后再加载下一个。
 
 查看进度仍运行原脚本，默认已切到本轮：

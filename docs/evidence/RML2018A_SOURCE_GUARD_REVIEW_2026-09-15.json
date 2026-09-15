@@ -1,0 +1,751 @@
+{
+  "date": "2026-09-15",
+  "purpose": "Review source to guard validation accuracy loss; fixed RMS-only control, no IQ retained",
+  "campaign_root": "/home/jetson/sdrharness/local-assets/amc-eval/results/seed42-val-fresh-20260914",
+  "complete": {
+    "complete": true,
+    "predictions": 9073240,
+    "model_dataset_pairs": 24,
+    "elapsed_seconds": 14778.57770576101,
+    "summary_sha256": "6c3ab5485a76ec47dae6b6c53f6bdb38628b2b82653e4ddfff9c79e11cb72b94"
+  },
+  "independent_review": {
+    "common_source_rows": 369497,
+    "verified_prediction_files": 3744,
+    "verified_predictions": 9073240,
+    "retained_files_verified": 7640,
+    "retained_bytes": 1199867640,
+    "input_hash_bindings_verified": 3744
+  },
+  "service": {
+    "MainPID": 0,
+    "ActiveState": "inactive",
+    "SubState": "dead",
+    "ExecMainStatus": 0
+  },
+  "diagnostic_root": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915",
+  "retention_sha256": "af85f0e111e5ff2c75f8170fced55dcc758698838e0a13bb2e356fb20be33113",
+  "retention": {
+    "purpose": "Review source to guard validation accuracy loss; fixed RMS-only control, no IQ retained; compare cleaned IQ with pre-clean archived inputs and audit external builders",
+    "parent_result": "/home/jetson/sdrharness/local-assets/amc-eval/results/seed42-val-fresh-20260914",
+    "source_commit": "c2421cd9d4c2cafc957b4b92807d29f01d2619bd",
+    "model_profile": "8 original seed42 models, FP32 TF32 off, 1024 single window; normalization-control-plan.json binds checkpoints and rows",
+    "files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/amc_mamba_d8-seed42-normalization.npz",
+        "bytes": 530706,
+        "sha256": "fdb007892371d0aa7b63ea947d535f47fd138f64a38bddc0e79ea0c690b81512"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/analysis.json",
+        "bytes": 230761,
+        "sha256": "22144efa16cee06adb749934bf445b052ddd399aa7d804cc66cbf4b0b5680351"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/analyze.py",
+        "bytes": 4398,
+        "sha256": "684a6fc6c042dcb138649c2a840d9c22074be9aa452352ddc33d5cafacee7521"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/baseline_cldnn-seed42-normalization.npz",
+        "bytes": 530706,
+        "sha256": "6788ea4479fff65e36bb941f1bcee59fce3969de13992b05a067125f688d6f8a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/baseline_cnn2_stable-seed42-normalization.npz",
+        "bytes": 530706,
+        "sha256": "b229841f8569d0f8a6eca3b30a83c8d04928dc3365cedfd203ae654a3d573f81"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/baseline_gru-seed42-normalization.npz",
+        "bytes": 530706,
+        "sha256": "9b69f6d47d9fe3948164ad182ef852ac9b4e22bc0b052b20ac04ffc68fca9ad2"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/baseline_mamc-seed42-normalization.npz",
+        "bytes": 530706,
+        "sha256": "fb4636ca0a6157a4457fba109275def77cc8a6ed6414a5ad66f05cc594f90b8d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/baseline_mcformer-seed42-normalization.npz",
+        "bytes": 530706,
+        "sha256": "db53d4d54e29ccd029db6e1158194a98f926031d584113ee8faa34aa0d84006c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/baseline_mcldnn-seed42-normalization.npz",
+        "bytes": 530706,
+        "sha256": "ccfdf861213cfe106db30d3b1857ce44a72af6ca2ba2096b1c39e84850151641"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/baseline_resnet-seed42-normalization.npz",
+        "bytes": 530706,
+        "sha256": "faa55dcfb984504e8c33441145948e21d25ce696b6fb8385c21f98edecf0963c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/cleaning-audit.json",
+        "bytes": 2546845,
+        "sha256": "056515b5680ef5ba3d61b98bd66252cb1b18cac60dbb6f0ed4c012badb4547e0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/cleaning_audit.py",
+        "bytes": 3545,
+        "sha256": "c5d47af86cf310b6e57034cc273fc47dc5833b06f41e022a3fca663409639a33"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/comparison.csv",
+        "bytes": 873,
+        "sha256": "16e84023397c5d5dd04e8566f304365bd7785f8632013db250546f14d67bd0cd"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/external-cleaning-builders.json",
+        "bytes": 3200,
+        "sha256": "dbac26d0ccfb4bcd1d728ef68ef41e412e703cc7595f93e701dde94575775d50"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/matched-snr-accuracy.pdf",
+        "bytes": 26356,
+        "sha256": "5af9bd9cdb625e140e6a2f44f90727477d756f49707ebb8812d5776deb42aed8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/matched-snr-accuracy.png",
+        "bytes": 276217,
+        "sha256": "41a345289e3789bf4dfb80aff9f274cd435730d397d314620f8a30b19feb1d50"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/normalization-control-plan.json",
+        "bytes": 1676,
+        "sha256": "727b0cc2ab3cca185f0f5aa198185951291625f37aa9be440ccfebfb185c98b5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/normalization-control-results.json",
+        "bytes": 32350,
+        "sha256": "97b2bf4c90a6f8d1ce41fb9b0a12c457cb02bf5e93a2696e5d52acd989e6a70a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/normalization-source-rows.npy",
+        "bytes": 20096,
+        "sha256": "b147faa6910d6bd72ad40a5a1b28f14c8709e4fbed84b430cb9fcb357e2d86ad"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/normalization_control.py",
+        "bytes": 3902,
+        "sha256": "1c62ac6333f69db859de0a319a87fc679be015caf0d8b2c244f420f229c0a85e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/pair_control.py",
+        "bytes": 2412,
+        "sha256": "77b007b7f5479a26eed9c52895cdfcc6a48dd4aeb6867c87c7ccadca0196d5f1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/paired-normalization.csv",
+        "bytes": 894,
+        "sha256": "cbfd5d644758c980f5733c0d2ba7993ba5250b410df3bd54a5dd956435914bd7"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/paired-normalization.json",
+        "bytes": 81322,
+        "sha256": "864e982eac39bfd7782811509b01434e5b6998fbf074a068f20f435822124275"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/plot_control.py",
+        "bytes": 1328,
+        "sha256": "cc16d85b4578c9286ebb4a6a64abe4b6a0b6b433a2894d568eaf6b8dee932142"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/source-rms-check.json",
+        "bytes": 451,
+        "sha256": "bbeb8b6dce6197b7856f314f176ae993335a969bd08a63e5a4ac71a93340a962"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/source-rms-guard-control.pdf",
+        "bytes": 29983,
+        "sha256": "f842d032ad3fe0c9f77ebc81b3bfebe37294e24644d97687908d584731ab7058"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915/source-rms-guard-control.png",
+        "bytes": 102102,
+        "sha256": "4db1c412fd627ec3007d66112f866c90554b786a74d65a93fbd8914b8419568d"
+      }
+    ],
+    "bytes": 7614359,
+    "cleanup": {
+      "files": 2,
+      "bytes": 246864
+    },
+    "absent_runtime_caches": [
+      "/var/tmp/sdrharness-dev/rml2018a-collection-cache-0d8a3c8df2e1edd5",
+      "/var/tmp/sdrharness-dev/rml2018a-collection-cache-10c07a89c6980851"
+    ],
+    "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-lo-effect-20260915",
+    "self_excluded": true
+  },
+  "common_validation": [
+    {
+      "model": "baseline_cnn2_stable-seed42",
+      "source_to_guard": {
+        "source_acc": 0.5425916854534678,
+        "guard_acc": 0.46041510485876747,
+        "change_pp": -8.217658059470034,
+        "bands": [
+          {
+            "band": "Z<=-10",
+            "rows": 88009,
+            "source_acc": 0.0706291402015703,
+            "guard_acc": 0.06030065106977695,
+            "change_pp": -1.032848913179334
+          },
+          {
+            "band": "-8<=Z<=0",
+            "rows": 72850,
+            "source_acc": 0.32649279341111875,
+            "guard_acc": 0.2971997254632807,
+            "change_pp": -2.9293067947838023
+          },
+          {
+            "band": "Z>=2",
+            "rows": 208638,
+            "source_acc": 0.8171330246647303,
+            "guard_acc": 0.686183724920676,
+            "change_pp": -13.09492997440543
+          }
+        ]
+      },
+      "raw_guard": {
+        "rows": 369497,
+        "raw_correct": 130190,
+        "guard_correct": 170122,
+        "raw_acc": 0.35234386206112633,
+        "guard_acc": 0.46041510485876747,
+        "change_pp": 10.807124279764112,
+        "improved": 59786,
+        "regressed": 19854
+      }
+    },
+    {
+      "model": "baseline_resnet-seed42",
+      "source_to_guard": {
+        "source_acc": 0.5896394287369044,
+        "guard_acc": 0.43817135186483247,
+        "change_pp": -15.146807687207197,
+        "bands": [
+          {
+            "band": "Z<=-10",
+            "rows": 88009,
+            "source_acc": 0.0587780795145951,
+            "guard_acc": 0.04782465429671966,
+            "change_pp": -1.0953425217875445
+          },
+          {
+            "band": "-8<=Z<=0",
+            "rows": 72850,
+            "source_acc": 0.33374056280027453,
+            "guard_acc": 0.2256280027453672,
+            "change_pp": -10.811256005490735
+          },
+          {
+            "band": "Z>=2",
+            "rows": 208638,
+            "source_acc": 0.9029227657473711,
+            "guard_acc": 0.6770434915978872,
+            "change_pp": -22.58792741494838
+          }
+        ]
+      },
+      "raw_guard": {
+        "rows": 369497,
+        "raw_correct": 49904,
+        "guard_correct": 161903,
+        "raw_acc": 0.13505928329594016,
+        "guard_acc": 0.43817135186483247,
+        "change_pp": 30.31120685688923,
+        "improved": 131182,
+        "regressed": 19183
+      }
+    },
+    {
+      "model": "baseline_gru-seed42",
+      "source_to_guard": {
+        "source_acc": 0.6358617255349841,
+        "guard_acc": 0.49386057261628646,
+        "change_pp": -14.200115291869764,
+        "bands": [
+          {
+            "band": "Z<=-10",
+            "rows": 88009,
+            "source_acc": 0.0801281687100183,
+            "guard_acc": 0.0463134452158302,
+            "change_pp": -3.3814723494188095
+          },
+          {
+            "band": "-8<=Z<=0",
+            "rows": 72850,
+            "source_acc": 0.3891008922443377,
+            "guard_acc": 0.25279341111873715,
+            "change_pp": -13.630748112560054
+          },
+          {
+            "band": "Z>=2",
+            "rows": 208638,
+            "source_acc": 0.9564460932332557,
+            "guard_acc": 0.7668210009681842,
+            "change_pp": -18.962509226507155
+          }
+        ]
+      },
+      "raw_guard": {
+        "rows": 369497,
+        "raw_correct": 181053,
+        "guard_correct": 182480,
+        "raw_acc": 0.4899985656175828,
+        "guard_acc": 0.49386057261628646,
+        "change_pp": 0.3862006998703643,
+        "improved": 27337,
+        "regressed": 25910
+      }
+    },
+    {
+      "model": "baseline_cldnn-seed42",
+      "source_to_guard": {
+        "source_acc": 0.5080014181441257,
+        "guard_acc": 0.446523246467495,
+        "change_pp": -6.147817167663066,
+        "bands": [
+          {
+            "band": "Z<=-10",
+            "rows": 88009,
+            "source_acc": 0.05588064857003261,
+            "guard_acc": 0.05135838380165665,
+            "change_pp": -0.45222647683759615
+          },
+          {
+            "band": "-8<=Z<=0",
+            "rows": 72850,
+            "source_acc": 0.30532601235415235,
+            "guard_acc": 0.3005490734385724,
+            "change_pp": -0.4776938915579959
+          },
+          {
+            "band": "Z>=2",
+            "rows": 208638,
+            "source_acc": 0.7694859038142621,
+            "guard_acc": 0.6641838974683423,
+            "change_pp": -10.530200634591973
+          }
+        ]
+      },
+      "raw_guard": {
+        "rows": 369497,
+        "raw_correct": 125664,
+        "guard_correct": 164989,
+        "raw_acc": 0.3400947774948105,
+        "guard_acc": 0.446523246467495,
+        "change_pp": 10.642846897268448,
+        "improved": 61420,
+        "regressed": 22095
+      }
+    },
+    {
+      "model": "baseline_mcldnn-seed42",
+      "source_to_guard": {
+        "source_acc": 0.6287737112885896,
+        "guard_acc": 0.4935006238210324,
+        "change_pp": -13.527308746755724,
+        "bands": [
+          {
+            "band": "Z<=-10",
+            "rows": 88009,
+            "source_acc": 0.06794759626856345,
+            "guard_acc": 0.04635889511299981,
+            "change_pp": -2.1588701155563634
+          },
+          {
+            "band": "-8<=Z<=0",
+            "rows": 72850,
+            "source_acc": 0.3771310912834592,
+            "guard_acc": 0.2534797529169526,
+            "change_pp": -12.365133836650653
+          },
+          {
+            "band": "Z>=2",
+            "rows": 208638,
+            "source_acc": 0.9532108244902654,
+            "guard_acc": 0.7659247117016076,
+            "change_pp": -18.728611278865788
+          }
+        ]
+      },
+      "raw_guard": {
+        "rows": 369497,
+        "raw_correct": 183404,
+        "guard_correct": 182347,
+        "raw_acc": 0.49636126950963066,
+        "guard_acc": 0.4935006238210324,
+        "change_pp": -0.28606456885982834,
+        "improved": 27036,
+        "regressed": 28093
+      }
+    },
+    {
+      "model": "baseline_mcformer-seed42",
+      "source_to_guard": {
+        "source_acc": 0.6157045930007551,
+        "guard_acc": 0.5565512033927204,
+        "change_pp": -5.915338960803473,
+        "bands": [
+          {
+            "band": "Z<=-10",
+            "rows": 88009,
+            "source_acc": 0.07411741980933768,
+            "guard_acc": 0.04552943448965447,
+            "change_pp": -2.8587985319683216
+          },
+          {
+            "band": "-8<=Z<=0",
+            "rows": 72850,
+            "source_acc": 0.37175017158544954,
+            "guard_acc": 0.29699382292381604,
+            "change_pp": -7.475634866163349
+          },
+          {
+            "band": "Z>=2",
+            "rows": 208638,
+            "source_acc": 0.9293417306530929,
+            "guard_acc": 0.8627431244547973,
+            "change_pp": -6.659860619829561
+          }
+        ]
+      },
+      "raw_guard": {
+        "rows": 369497,
+        "raw_correct": 199412,
+        "guard_correct": 205644,
+        "raw_acc": 0.5396850312722431,
+        "guard_acc": 0.5565512033927204,
+        "change_pp": 1.6866172120477296,
+        "improved": 25588,
+        "regressed": 19356
+      }
+    },
+    {
+      "model": "baseline_mamc-seed42",
+      "source_to_guard": {
+        "source_acc": 0.47875084236137233,
+        "guard_acc": 0.37870131557225095,
+        "change_pp": -10.004952678912138,
+        "bands": [
+          {
+            "band": "Z<=-10",
+            "rows": 88009,
+            "source_acc": 0.05696008362781079,
+            "guard_acc": 0.044404549534706676,
+            "change_pp": -1.2555534093104115
+          },
+          {
+            "band": "-8<=Z<=0",
+            "rows": 72850,
+            "source_acc": 0.2672889498970487,
+            "guard_acc": 0.1948798901853123,
+            "change_pp": -7.240905971173644
+          },
+          {
+            "band": "Z>=2",
+            "rows": 208638,
+            "source_acc": 0.7305093031950076,
+            "guard_acc": 0.5839013027348805,
+            "change_pp": -14.66080004601271
+          }
+        ]
+      },
+      "raw_guard": {
+        "rows": 369497,
+        "raw_correct": 100938,
+        "guard_correct": 139929,
+        "raw_acc": 0.27317677816058045,
+        "guard_acc": 0.37870131557225095,
+        "change_pp": 10.552453741167046,
+        "improved": 68364,
+        "regressed": 29373
+      }
+    },
+    {
+      "model": "amc_mamba_d8-seed42",
+      "source_to_guard": {
+        "source_acc": 0.6256045380612021,
+        "guard_acc": 0.5426566386195287,
+        "change_pp": -8.294789944167336,
+        "bands": [
+          {
+            "band": "Z<=-10",
+            "rows": 88009,
+            "source_acc": 0.07298117238009749,
+            "guard_acc": 0.045313547478098834,
+            "change_pp": -2.766762490199866
+          },
+          {
+            "band": "-8<=Z<=0",
+            "rows": 72850,
+            "source_acc": 0.378805765271105,
+            "guard_acc": 0.2607000686341798,
+            "change_pp": -11.810569663692519
+          },
+          {
+            "band": "Z>=2",
+            "rows": 208638,
+            "source_acc": 0.9448901925823675,
+            "guard_acc": 0.8508996443600878,
+            "change_pp": -9.399054822227974
+          }
+        ]
+      },
+      "raw_guard": {
+        "rows": 369497,
+        "raw_correct": 182137,
+        "guard_correct": 200510,
+        "raw_acc": 0.4929322836179996,
+        "guard_acc": 0.5426566386195287,
+        "change_pp": 4.972435500152911,
+        "improved": 49827,
+        "regressed": 31454
+      }
+    }
+  ],
+  "normalization_control": {
+    "plan": {
+      "rows": 2496,
+      "source_ids_sha256": "7ec78a1aea29bf9ed718ef098253dfe4a5f5bc3547a97c024dd11c73c0dd4899",
+      "selection": "four evenly spaced common validation rows per class/source-SNR cell; no accuracy-based selection",
+      "new_predictions": 39936,
+      "deadline_seconds": 1800,
+      "batch_size": 1024,
+      "precision": "FP32; TF32 disabled",
+      "normalization": "per-window complex RMS computed in float64; resulting IQ float32",
+      "weights": [
+        {
+          "variant": "baseline_cnn2_stable",
+          "seed": 42,
+          "sha256": "be0a2705ef720e577491b99b9d574308e97ddd6f0c2c9b9f812dc6d123b5fe4e"
+        },
+        {
+          "variant": "baseline_resnet",
+          "seed": 42,
+          "sha256": "a713257be65d757f52aaa74b54768bb6b1ef59315eaf27593189e854d98da1fb"
+        },
+        {
+          "variant": "baseline_gru",
+          "seed": 42,
+          "sha256": "445f9fa6ebcf562ebd5d3bc58f085324238c5789f94ab2087297c9e232f4e1ac"
+        },
+        {
+          "variant": "baseline_cldnn",
+          "seed": 42,
+          "sha256": "5740940ea2a3e6bfb97c25543a2a12555fef3295e322cbc58144b225a801302d"
+        },
+        {
+          "variant": "baseline_mcldnn",
+          "seed": 42,
+          "sha256": "1ad99acc72f475051eb2032c173d86429a7380faf392786fc478842a62662ae3"
+        },
+        {
+          "variant": "baseline_mcformer",
+          "seed": 42,
+          "sha256": "d3881b822b917f4fb2b6ac3f65efac60bd7ff581198a6986c0aba66038a93475"
+        },
+        {
+          "variant": "baseline_mamc",
+          "seed": 42,
+          "sha256": "b81433ac32903b83dfac17858c2b36963c7383f121126d852586f87a85024b85"
+        },
+        {
+          "variant": "amc_mamba_d8",
+          "seed": 42,
+          "sha256": "6f984a78639a8e8e15403a1257b264839c6057165b3ae9ac8640ecc056f78143"
+        }
+      ],
+      "source_iq_not_saved": true
+    },
+    "complete": true,
+    "elapsed_seconds": 203.01595672400435,
+    "models": [
+      {
+        "model": "baseline_cnn2_stable-seed42",
+        "display": "CNN2-stable",
+        "rows": 2496,
+        "source_correct": 1366,
+        "source_rms_correct": 1159,
+        "raw_correct": 870,
+        "guard_correct": 1152,
+        "original_vs_saved_prediction_differences": 0
+      },
+      {
+        "model": "baseline_resnet-seed42",
+        "display": "ResNet",
+        "rows": 2496,
+        "source_correct": 1472,
+        "source_rms_correct": 1215,
+        "raw_correct": 327,
+        "guard_correct": 1112,
+        "original_vs_saved_prediction_differences": 0
+      },
+      {
+        "model": "baseline_gru-seed42",
+        "display": "GRU",
+        "rows": 2496,
+        "source_correct": 1619,
+        "source_rms_correct": 1315,
+        "raw_correct": 1217,
+        "guard_correct": 1200,
+        "original_vs_saved_prediction_differences": 0
+      },
+      {
+        "model": "baseline_cldnn-seed42",
+        "display": "CLDNN",
+        "rows": 2496,
+        "source_correct": 1281,
+        "source_rms_correct": 1108,
+        "raw_correct": 831,
+        "guard_correct": 1093,
+        "original_vs_saved_prediction_differences": 0
+      },
+      {
+        "model": "baseline_mcldnn-seed42",
+        "display": "MCLDNN",
+        "rows": 2496,
+        "source_correct": 1592,
+        "source_rms_correct": 1308,
+        "raw_correct": 1239,
+        "guard_correct": 1215,
+        "original_vs_saved_prediction_differences": 0
+      },
+      {
+        "model": "baseline_mcformer-seed42",
+        "display": "MCformer",
+        "rows": 2496,
+        "source_correct": 1555,
+        "source_rms_correct": 1461,
+        "raw_correct": 1351,
+        "guard_correct": 1393,
+        "original_vs_saved_prediction_differences": 0
+      },
+      {
+        "model": "baseline_mamc-seed42",
+        "display": "MAMC",
+        "rows": 2496,
+        "source_correct": 1201,
+        "source_rms_correct": 969,
+        "raw_correct": 687,
+        "guard_correct": 945,
+        "original_vs_saved_prediction_differences": 0
+      },
+      {
+        "model": "amc_mamba_d8-seed42",
+        "display": "Shared-Bi / original Mamba D8",
+        "rows": 2496,
+        "source_correct": 1578,
+        "source_rms_correct": 1425,
+        "raw_correct": 1232,
+        "guard_correct": 1341,
+        "original_vs_saved_prediction_differences": 0
+      }
+    ]
+  },
+  "limits": [
+    "Fixed 2496-row diagnostic, not full validation normalization accuracy",
+    "Preprocessing sensitivity demonstrated; physical cause of remaining loss not identified",
+    "No new RF, training, model replacement or full campaign rerun",
+    "Original full campaign and IQ unchanged; source normalization is a separate diagnostic",
+    "Validation engineering comparison, not independent locked-test admission"
+  ],
+  "cleaning_audit": {
+    "selection": "same fixed 2496 common validation IDs used in normalization control",
+    "no_new_inference": true,
+    "complete": true,
+    "elapsed_seconds": 40.05781047802884,
+    "limits": "Checks existing archived model inputs against clean IQ; does not independently re-run synchronization/LO cancellation from ADC or audit unseen rows",
+    "planes": [
+      {
+        "plane": "raw",
+        "all_metadata_rows": 2555904,
+        "source_id_class_snr_mapping_verified": true,
+        "rows": 2496,
+        "parent_offsets_verified": true,
+        "changed_rows_bitwise": 0,
+        "max_absolute_difference": 0.0,
+        "max_absolute_difference_after_normalizing_archive": 0.0,
+        "max_clean_rms_error": 4.265741093689712e-09
+      },
+      {
+        "plane": "guard",
+        "all_metadata_rows": 2555904,
+        "source_id_class_snr_mapping_verified": true,
+        "rows": 2496,
+        "parent_offsets_verified": true,
+        "changed_rows_bitwise": 0,
+        "max_absolute_difference": 0.0,
+        "max_absolute_difference_after_normalizing_archive": 0.0,
+        "max_clean_rms_error": 3.5577711887668784e-09
+      }
+    ]
+  },
+  "external_builders": {
+    "builders": [
+      {
+        "plane": "raw",
+        "builder_path": "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914/tools/build_raw_1024_h5.py",
+        "builder_sha256": "88d33fe5d3bbf3e452129440ef9e665f093c5424501f01c3aae419e48b0cc59e",
+        "builder_matches_manifest": true,
+        "manifest": {
+          "builder": "F:\\RadioML2018A_RX_IQ_20260914\\tools\\build_raw_1024_h5.py",
+          "builder_sha256": "88d33fe5d3bbf3e452129440ef9e665f093c5424501f01c3aae419e48b0cc59e",
+          "bytes": 21526064941,
+          "complete": true,
+          "output": "RadioML2018A_RX_raw_1024_per_window_RMS_v1.h5",
+          "schema": "radioml2018a-rx-raw-1024-clean-manifest-v1",
+          "sha256": "4d2dd1bf76d828913a85c2283b5c2a2373f2a5a726e3e85f65c1cafbc227c8bd",
+          "source_copy_complete": {
+            "bytes": 82136084528,
+            "complete": true,
+            "completed_ns": 1789365010938413711,
+            "elapsed_seconds": 2206.3039284669794,
+            "files": 2802,
+            "source_preserved": true,
+            "verified": "source streaming SHA-256 and full destination readback per file"
+          },
+          "source_dataset_map_sha256": "ec13556d12a447e6623f3df22466c8fed4232c7f46d951f934acc3b678fe374a"
+        },
+        "manifest_sha256": "40aa0dc32648335821c031d5060198d6c2e2a6dee134ef38683aac4af1be57f3",
+        "iq_assignment": "iq = block[inputs/raw][:]; output[iq][selection] = iq",
+        "rms_operation": "validates existing per-window RMS; does not divide or transform IQ"
+      },
+      {
+        "plane": "guard",
+        "builder_path": "/media/jetson/陆周超的移动硬盘/RadioML2018A_RX_IQ_20260914/tools/build_guard_1024_h5.py",
+        "builder_sha256": "6be03367a685d8d05e9a2da7a0a940c0aa55a08de64085d8f851afcb362e573c",
+        "builder_matches_manifest": true,
+        "manifest": {
+          "builder": "F:\\RadioML2018A_RX_IQ_20260914\\tools\\build_guard_1024_h5.py",
+          "builder_sha256": "6be03367a685d8d05e9a2da7a0a940c0aa55a08de64085d8f851afcb362e573c",
+          "bytes": 21526064941,
+          "complete": true,
+          "output": "RadioML2018A_RX_guard_1024_per_window_RMS_v1.h5",
+          "schema": "radioml2018a-rx-guard-1024-clean-manifest-v1",
+          "sha256": "1ce26483e9b14f549a139986e8c8a532290f773d9c2fcad3897f52d9ac29c794",
+          "source_copy_complete": {
+            "bytes": 82136084528,
+            "complete": true,
+            "completed_ns": 1789365010938413711,
+            "elapsed_seconds": 2206.3039284669794,
+            "files": 2802,
+            "source_preserved": true,
+            "verified": "source streaming SHA-256 and full destination readback per file"
+          },
+          "source_dataset_map_sha256": "ec13556d12a447e6623f3df22466c8fed4232c7f46d951f934acc3b678fe374a"
+        },
+        "manifest_sha256": "98dd2d16b1eefe79aca61ad7a15b285ecd0484411e6d2d127b7e955719d2cb06",
+        "iq_assignment": "iq = block[inputs/guard][:]; output[iq][selection] = iq",
+        "rms_operation": "validates existing per-window RMS; does not divide or transform IQ"
+      }
+    ],
+    "review": "Read only; builder implementation and manifest identity checked; full IQ pair check in cleaning-audit.json is sampled, not exhaustive"
+  },
+  "historical_model_difference": "Earlier 59.0692% guard used epoch10 fine-tuned weights over all rows; current D8 uses original seed42 weights, FP32 and quality-filtered validation."
+}
