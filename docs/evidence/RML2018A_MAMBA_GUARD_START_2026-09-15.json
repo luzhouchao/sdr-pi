@@ -1,0 +1,500 @@
+{
+  "date": "2026-09-15",
+  "plan": {
+    "schema": "rml2018a-collection-seed42-validation-v1",
+    "created_ns": 1789438710398044202,
+    "script": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_model_collection_eval.py",
+      "bytes": 39546,
+      "mtime_ns": 1789438624949787475,
+      "sha256": "2a3f779adb85030cb27c2ed072a0f93263dc0b1566c70842bdc21d076f35595a"
+    },
+    "collection_manifest": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/checkpoints/rml2018a/server-models-20260914/manifest.json",
+      "bytes": 81937,
+      "mtime_ns": 1789391430474590353,
+      "sha256": "031605026b5fb1e3ba9968daf009d6cacc9d2b6b30d3d4ac194b060914361a25"
+    },
+    "datasets": [
+      {
+        "plane": "guard",
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/rx-clean-20260914/RadioML2018A_RX_guard_1024_per_window_RMS_v1.h5",
+        "bytes": 21526064941,
+        "mtime_ns": 1789393620408112571,
+        "sha256": "1ce26483e9b14f549a139986e8c8a532290f773d9c2fcad3897f52d9ac29c794",
+        "metadata_sha256": "baa4c2632b64bd401da19324b70c45cd59b91c551c78ba0adcc57299bd3c1c5d",
+        "selected_rows": 383385,
+        "skipped_rows": 0,
+        "common_rows": 371108,
+        "skip_reasons_overlapping": {
+          "archived valid/guard is true": 0,
+          "quality_json sync.status is synchronized": 0,
+          "saved frame guard correction was applied": 0,
+          "guard rx_sinr_status is estimated": 0,
+          "guard rx_sinr_db is finite": 0,
+          "saved raw offsets match frame payload offsets": 0
+        },
+        "eligibility_by_snr": [
+          {
+            "source_snr_db": -20,
+            "file_rows": 14642,
+            "selected_rows": 14642,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -18,
+            "file_rows": 14702,
+            "selected_rows": 14702,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -16,
+            "file_rows": 14791,
+            "selected_rows": 14791,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -14,
+            "file_rows": 14889,
+            "selected_rows": 14889,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -12,
+            "file_rows": 14738,
+            "selected_rows": 14738,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -10,
+            "file_rows": 14733,
+            "selected_rows": 14733,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -8,
+            "file_rows": 14646,
+            "selected_rows": 14646,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -6,
+            "file_rows": 14886,
+            "selected_rows": 14886,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -4,
+            "file_rows": 14728,
+            "selected_rows": 14728,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": -2,
+            "file_rows": 14717,
+            "selected_rows": 14717,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 0,
+            "file_rows": 14712,
+            "selected_rows": 14712,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 2,
+            "file_rows": 14616,
+            "selected_rows": 14616,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 4,
+            "file_rows": 14779,
+            "selected_rows": 14779,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 6,
+            "file_rows": 14765,
+            "selected_rows": 14765,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 8,
+            "file_rows": 14686,
+            "selected_rows": 14686,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 10,
+            "file_rows": 14729,
+            "selected_rows": 14729,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 12,
+            "file_rows": 14884,
+            "selected_rows": 14884,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 14,
+            "file_rows": 14645,
+            "selected_rows": 14645,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 16,
+            "file_rows": 14818,
+            "selected_rows": 14818,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 18,
+            "file_rows": 14851,
+            "selected_rows": 14851,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 20,
+            "file_rows": 14718,
+            "selected_rows": 14718,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 22,
+            "file_rows": 14901,
+            "selected_rows": 14901,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 24,
+            "file_rows": 14759,
+            "selected_rows": 14759,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 26,
+            "file_rows": 14806,
+            "selected_rows": 14806,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 28,
+            "file_rows": 14807,
+            "selected_rows": 14807,
+            "skipped_rows": 0
+          },
+          {
+            "source_snr_db": 30,
+            "file_rows": 14437,
+            "selected_rows": 14437,
+            "skipped_rows": 0
+          }
+        ],
+        "scope_rows": 383385,
+        "excluded_by_split": 2172519,
+        "quality_failed_rows": 12277,
+        "quality_failed_included_rows": 12277,
+        "quality_failure_reasons_overlapping": {
+          "archived valid/guard is true": 0,
+          "quality_json sync.status is synchronized": 0,
+          "saved frame guard correction was applied": 6101,
+          "guard rx_sinr_status is estimated": 6428,
+          "guard rx_sinr_db is finite": 6428,
+          "saved raw offsets match frame payload offsets": 0
+        }
+      }
+    ],
+    "models": [
+      {
+        "display_name": "Shared-Bi / original Mamba D8",
+        "variant": "amc_mamba_d8",
+        "seed": 42,
+        "checkpoint": {
+          "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed42_nw8/checkpoints/best.pt",
+          "relative": "amc_mamba_d8/seed42/best.pt",
+          "bytes": 1691293,
+          "mtime_ns": 1784544418697035906,
+          "sha256": "6f984a78639a8e8e15403a1257b264839c6057165b3ae9ac8640ecc056f78143"
+        },
+        "config_relative": "amc_mamba_d8/seed42/config.json",
+        "training_git": {
+          "commit": "82cfbc2b6a9d7072b5ab56c218478e351f355ac1",
+          "dirty": true
+        },
+        "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+        "num_classes": 24,
+        "input_length": 1024,
+        "class_order": [
+          "OOK",
+          "4ASK",
+          "8ASK",
+          "BPSK",
+          "QPSK",
+          "8PSK",
+          "16PSK",
+          "32PSK",
+          "16APSK",
+          "32APSK",
+          "64APSK",
+          "128APSK",
+          "16QAM",
+          "32QAM",
+          "64QAM",
+          "128QAM",
+          "256QAM",
+          "AM-SSB-WC",
+          "AM-SSB-SC",
+          "AM-DSB-WC",
+          "AM-DSB-SC",
+          "FM",
+          "GMSK",
+          "OQPSK"
+        ],
+        "original_preprocessing": {
+          "axis_adapter": "[N,1024,2] transpose to [N,2,1024]",
+          "dc_removal": false,
+          "denoise": false,
+          "denoise_method": "none",
+          "dtype": "float32",
+          "filtering": false,
+          "normalization": "none",
+          "windowing": false
+        },
+        "archived_test_acc": 0.6332087420804565,
+        "archived_test_samples": 383387,
+        "source_run": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed42_nw8"
+      }
+    ],
+    "classes": [
+      "OOK",
+      "4ASK",
+      "8ASK",
+      "BPSK",
+      "QPSK",
+      "8PSK",
+      "16PSK",
+      "32PSK",
+      "16APSK",
+      "32APSK",
+      "64APSK",
+      "128APSK",
+      "16QAM",
+      "32QAM",
+      "64QAM",
+      "128QAM",
+      "256QAM",
+      "AM-SSB-WC",
+      "AM-SSB-SC",
+      "AM-DSB-WC",
+      "AM-DSB-SC",
+      "FM",
+      "GMSK",
+      "OQPSK"
+    ],
+    "rows_per_dataset": 2555904,
+    "model_dataset_pairs": 1,
+    "total_predictions": 383385,
+    "batch_size": 1024,
+    "block_rows": 16384,
+    "deadline_seconds": 3600,
+    "normalization": "none added; RX files already per-window complex RMS; original unchanged",
+    "sample_scope": "original server seed42 validation only; includes RX quality failures",
+    "quality_policy": "all validation members; quality flags preserved; common subset remains strict",
+    "precision_policy": "FP32 weights; FP16 only if finite and both pilot/batch max probability error <=0.005 and no top1 changes; otherwise FP32; failure never changes row selection",
+    "recognizer_available": false,
+    "training": false,
+    "rf": false,
+    "render_policy": "24 validation confusion matrices PNG/SVG plus counts/percent/common-counts CSV",
+    "plot_script": {
+      "path": "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_collection_plots.py",
+      "bytes": 4254,
+      "mtime_ns": 1789396289314067281,
+      "sha256": "095bfa3fecb707c99dd3389946da01408a780c5cc7b5d9f52ddfb21028ef388f"
+    },
+    "probe_sha256": "fa40197840d63bd21eece695eeff4cffd5fe00492a6b069d4974a7d6635bf711",
+    "precision": "FP32 for all 12 models; TF32 disabled",
+    "plot_python": "/usr/bin/python3",
+    "execution_python": "/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python",
+    "parent_plan": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/seed42-val-fresh-20260914/plan.json",
+      "bytes": 31232,
+      "mtime_ns": 1789397030092826809,
+      "sha256": "e6e92a060f0e6576464be28aaf7177de78bd8dff8d7dfda29122c050c9526504"
+    },
+    "split": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/splits/server-seed42-20260914/RML2018a_split_seed42_tr700_val150_te150.npz",
+      "bytes": 3906318,
+      "mtime_ns": 1789395491153582339,
+      "sha256": "0a7cbd3b8a4b921b7dc3d0c37473322207c6bd9fb362ea58498c851fad9dc5a3",
+      "partition": "val",
+      "seed": 42,
+      "counts": {
+        "train": 1789132,
+        "val": 383385,
+        "test": 383387
+      },
+      "validation_indices_sha256": "789f71e82178e5deffe2d78d7cf59540b43c0630c90707da60f63563654f2754"
+    },
+    "service": "sdr-mamba-guard-val-allquality-20260915.service",
+    "reused_predictions": 0,
+    "fresh_predictions": true,
+    "fresh_start_verified": true,
+    "reuse_policy": "zero predictions imported; all eligible validation rows freshly inferred",
+    "include_quality_failed": true,
+    "initial_pilot_estimate_seconds": 280.21570824041305,
+    "launch_free_bytes": 676260503552,
+    "source_raw_completed_root": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915",
+    "maximum_output_budget_bytes": 1073741824,
+    "stop_command": "systemctl --user stop sdr-mamba-guard-val-allquality-20260915.service"
+  },
+  "source_raw_completion": {
+    "complete": {
+      "complete": true,
+      "predictions": 766770,
+      "model_dataset_pairs": 2,
+      "elapsed_seconds": 533.2539915450034,
+      "summary_sha256": "e2cb7608120fe8b5a82bc89053c4bff6aa2c158a7256aee353f1da7efb676105"
+    },
+    "all_retained_hashes_verified": 644,
+    "retained_bytes": 218907624,
+    "models": [
+      {
+        "plane": "source",
+        "rows": 383385,
+        "accuracy": 0.6330816281283826,
+        "blocks": 156,
+        "quality_failed_predicted": 0,
+        "quality_failed_correct": 0
+      },
+      {
+        "plane": "raw",
+        "rows": 383385,
+        "accuracy": 0.49729384300376905,
+        "blocks": 156,
+        "quality_failed_predicted": 3723,
+        "quality_failed_correct": 1923
+      }
+    ],
+    "cache_absent": "/var/tmp/sdrharness-dev/rml2018a-collection-cache-5c92211fb773e3f0",
+    "root": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915",
+    "new_inference": 0
+  },
+  "guard_start": {
+    "service": "MainPID=307872\nExecMainStatus=0\nActiveState=active\n",
+    "blocks": [
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915/amc_mamba_d8-seed42/guard/0000000.npz",
+        "bytes": 246564,
+        "sha256": "a0835a319c2965bc2b3ec833f17ffea7a3ed818cf922a5ee548f577cf42b8f86",
+        "rows": 2314,
+        "quality_failed_rows": 581
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915/amc_mamba_d8-seed42/guard/0016384.npz",
+        "bytes": 255150,
+        "sha256": "9821517af3babfb3d779dc5b1fb94f22df9a050c2388ad24f7bcfb087d4c2e7b",
+        "rows": 2395,
+        "quality_failed_rows": 543
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915/amc_mamba_d8-seed42/guard/0032768.npz",
+        "bytes": 254726,
+        "sha256": "5f9c0c950b365c1a148b0d1ec97fb99dc363c3f375033f33851199cfca3a4d1e",
+        "rows": 2391,
+        "quality_failed_rows": 458
+      }
+    ],
+    "verified_rows": 7100,
+    "guard_scope_rows": 383385,
+    "guard_failed_included": 12277,
+    "original_validation_only": true,
+    "complete": false
+  },
+  "tests_passed": 11,
+  "source_commit": "bd13374dacd704f655b53c5abaf7f8b434be5925",
+  "retention": {
+    "purpose": "Verify completed source/raw and start guard-only Mamba validation including quality failures",
+    "files": [
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-guard-allquality-20260915/check_previous.py",
+        "bytes": 2459,
+        "sha256": "ba907905e91b0f74446260f24096ae8b12f7ea98d69af9a77edad8ae814459b5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-guard-allquality-20260915/guard-started.json",
+        "bytes": 1192,
+        "sha256": "afc4f2a09d9dc3521e375d89a7b45ba88c19623f482c525e131ed8307d27d0b8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-guard-allquality-20260915/source-raw-completion.json",
+        "bytes": 924,
+        "sha256": "657ae1ce809dddfa5d0391d0143f7003871e143471b14b63991ae0ceaf7c3763"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-guard-allquality-20260915/tests.log",
+        "bytes": 1462,
+        "sha256": "670857a0f3680e267d1e3622787d6e0a498c65a1c03470ef87c396491178ef55"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/mamba-guard-allquality-20260915/verify_start.py",
+        "bytes": 1861,
+        "sha256": "f6e4c107dac07b17bfe37f538c0fedd78a3514878c1bff26009a8b08c6bba0e8"
+      }
+    ],
+    "bytes": 7898,
+    "temporary_test_directory_absent": true,
+    "removed_residual_files": 0,
+    "removed_residual_bytes": 0,
+    "manual_delete_argv": [
+      "rm",
+      "-rf",
+      "--",
+      "/var/tmp/sdrharness-dev/mamba-guard-allquality-20260915"
+    ],
+    "self_excluded": true
+  },
+  "retention_file": {
+    "path": "/var/tmp/sdrharness-dev/mamba-guard-allquality-20260915/retention.json",
+    "bytes": 1439,
+    "sha256": "78bc485da41a3cec37882e5fec70177f6b9207a61959071072c3ab3c01cbd714"
+  },
+  "active_result": {
+    "root": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915",
+    "static_files": [
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915/plan.json",
+        "bytes": 10758,
+        "sha256": "acc02bb2f0cdcbeddd3a2e0c95e757468a5ec06d7c7c3a0c5dd4363aa09997dc"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915/probe.json",
+        "bytes": 1011,
+        "sha256": "fa40197840d63bd21eece695eeff4cffd5fe00492a6b069d4974a7d6635bf711"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915/guard-metadata.npz",
+        "bytes": 84348496,
+        "sha256": "baa4c2632b64bd401da19324b70c45cd59b91c551c78ba0adcc57299bd3c1c5d"
+      }
+    ],
+    "final_retention": "generated by runner after complete verification and plotting",
+    "stop_first": "systemctl --user stop sdr-mamba-guard-val-allquality-20260915.service",
+    "manual_delete_argv": [
+      "rm",
+      "-rf",
+      "--",
+      "/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915"
+    ]
+  },
+  "runtime_cache": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-collection-cache-3f607e4b4a8b6c1c",
+    "state": "active task; finally cleanup after exit"
+  },
+  "limits": [
+    "Guard full completion pending; only initial blocks independently checked",
+    "Source/raw complete and preserved; no repeat inference",
+    "Original D8 seed42, not deleted epoch10; no RF/training/IQ or weight changes"
+  ]
+}

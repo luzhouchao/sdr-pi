@@ -240,8 +240,8 @@ def prepare_validation(root, parent_root, split_path, fresh=False, variants=None
         tested = [m for m in tested if m["variant"] in variants]
     if planes is not None:
         require(planes and len(set(planes))==len(planes) and
-                set(planes)<=set(d["plane"] for d in parent["datasets"]) and "source" in planes,
-                "dataset selection must include source and known unique planes")
+                set(planes)<=set(d["plane"] for d in parent["datasets"]),
+                "dataset selection must contain known unique planes")
     for f in manifest["transferred_files"]:
         require(digest(COLLECTION/f["relative"])==f["sha256"], "model source/weights changed")
     root.mkdir(mode=0o700)
@@ -250,7 +250,7 @@ def prepare_validation(root, parent_root, split_path, fresh=False, variants=None
         datasets = [d for d in datasets if d["plane"] in planes]
     source_meta = None
     if fresh:
-        source_ds = next(ds for ds in datasets if ds["plane"]=="source")
+        source_ds = next(ds for ds in parent["datasets"] if ds["plane"]=="source")
         unchanged(source_ds)
         source_meta = metadata(source_ds["path"],"source")
     for ds in datasets:

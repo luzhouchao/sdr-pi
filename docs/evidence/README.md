@@ -19,6 +19,7 @@
 - [seed42原validation的8模型启动](RML2018A_SEED42_VALIDATION_2026-09-14.json)：精确成员、质量选择、前两轮结果删除、零复用fresh启动及动态24组；描述当时启动状态。
 - [完成核验与source/guard差距复核](RML2018A_SOURCE_GUARD_REVIEW_2026-09-15.json)：24组完成、共同成员比较、固定2,496条RMS-only对照、保留哈希与清理。
 - [Mamba source/raw包含质量失败行启动](RML2018A_MAMBA_ALLQUALITY_START_2026-09-15.json)：原validation各383,385，raw纳入3,723条质量失败，766,770次新预测、两矩阵自动收口；本证据仅为启动。
+- [Mamba source/raw完成与guard补跑](RML2018A_MAMBA_GUARD_START_2026-09-15.json)：两组完成/哈希与统计核验、guard单独383,385条包含12,277条失败、真实首块与保留边界。
 - [识别暂停与seed42原始验证划分](RML2018A_SEED42_PAUSE_2026-09-14.json)：已落盘保留、STOP、原NPZ身份及合格val源行数量；无新推理。
 - [清洗数据SSD复制审计](RML2018A_CLEAN_SSD_IMPORT_2026-09-14.json) · [12模型筛选接入与启动](RML2018A_CLEAN12_EVALUATION_2026-09-14.json)
 - [4090模型导入与旧epoch-010删除审计](RML2018A_MODEL_IMPORT_2026-09-14.json)：8种/12份权重身份、源端与AGX核验及保留清单。

@@ -213,6 +213,18 @@ class Contracts(unittest.TestCase):
         self.assertTrue(selected['include_quality_failed'])
         self.assertEqual(len(json.loads((subset/'probe.json').read_text())['models']),1)
         self.assertFalse((subset/'guard-metadata.npz').exists())
+        guard_only=self.root/'guard-only'
+        with patch.object(ev,'COLLECTION',collection),patch.object(ev,'SEED42_SPLIT_SHA',ev.digest(split)):
+            ev.prepare_validation(guard_only,parent,split,fresh=True,variants=['m0'],
+                                  planes=['guard'],include_quality_failed=True)
+        guard_plan=json.loads((guard_only/'plan.json').read_text())
+        self.assertEqual(guard_plan['model_dataset_pairs'],1)
+        self.assertEqual(guard_plan['total_predictions'],2)
+        self.assertEqual([d['plane'] for d in guard_plan['datasets']],['guard'])
+        self.assertFalse((guard_only/'source-metadata.npz').exists())
+        with np.load(guard_only/'guard-metadata.npz') as f:
+            np.testing.assert_array_equal(np.sort(f['source_row'][f['selected_for_inference']]),[8,9])
+            self.assertEqual(f['common_source_subset'].sum(),1)
         with patch.object(ev,'COLLECTION',collection),patch.object(ev,'SEED42_SPLIT_SHA',ev.digest(split)):
             with self.assertRaisesRegex(ValueError,'variant selection'):
                 ev.prepare_validation(self.root/'bad-subset',parent,split,variants=['missing'])

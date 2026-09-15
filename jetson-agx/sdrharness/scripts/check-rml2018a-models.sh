@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)
-result_root=${1:-"$repo_root/local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915"}
+result_root=${1:-"$repo_root/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915"}
 python3 - "$result_root" <<'PY'
 import json, sys, subprocess
 from pathlib import Path

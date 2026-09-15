@@ -257,3 +257,36 @@ GPU沿用相同权重/计算精度验证，不再用真实ACC选择精度。首3
 运行缓存属于仍活动任务，不在此刻删除或宣称清理。临时测试目录已自动清空并移除；
 诊断脚本/元数据核对/首块证据精确保留，数据集、权重、旧结果保持。
 [启动证据](../evidence/RML2018A_MAMBA_ALLQUALITY_START_2026-09-15.json)登记哈希、预算、保留/清理与精确删除路径。
+
+
+## source和raw完成及guard补跑（2026-09-15）
+
+source/raw后台已正常退出，766,770次预测、两图、完整读回与保留清单完成，实际533.254秒。
+本次独立读取644保留文件218,907,624字节的SHA，312块logits/argmax、输入/模型绑定、
+全量与共同质量子集矩阵重算一致；原运行缓存不存在。两组各383,385行：
+source ACC63.3081628%，raw49.7293843%；raw3,723条质量失败全部预测，其中1,923条分类正确。
+这与上一轮只识别合格raw的49.71%接近，不将质量失败等同于分类必错。已完成结果原样保留。
+
+用户补充“guard忘记了”。单独准备原始Mamba D8 seed42的guard计划，沿用原validation、
+FP32/关闭TF32、batch1024及单窗1024点；383,385次全新预测，包含12,277条质量失败，跳过0。
+source只读用于从HDF5重新校验原标签/行号，不写source推理元数据、不重新计算source/raw。
+三组主统计分母最终均383,385；guard附加合格子集371,108，与source/raw的共同合格379,662
+不是同一子集，不能把这两个附加分母直接当作三组配对比较。
+
+prepare-validation允许guard-only等已知输入子集，fresh的source标签依据从父计划中读取；
+父级仍为已完成8模型三组计划，继承相同模型/输入FP32数值依据，未知或重复输入拒绝。
+11项测试通过，增加单独guard计划只含原val、总次数正确、无source预测元数据、质量子集保留的检查。
+全量实际元数据证明383,385个val成员全部选中、质量失败12,277纳入、train/test选中0。
+
+新根`/home/jetson/sdrharness/local-assets/amc-eval/results/mamba-guard-val-allquality-20260915`，
+服务`sdr-mamba-guard-val-allquality-20260915.service`已实际active/running。
+首3块7,100条新guard预测SHA/输入模型身份/源行/有限logits/argmax读回通过，
+其中1,582条质量失败已实际进入模型并落盘，证明未被第二处mask排除。
+原进度脚本默认切guard，实测显示383,385、质量跳过0、失败纳入12,277与1张矩阵预算。
+
+先导估计280.22秒；内部3600秒期限、systemd最大4500秒、停止宽限60秒、1GiB输出预算与3GiB余量门。
+精确停止：`systemctl --user stop sdr-mamba-guard-val-allquality-20260915.service`，或创建新根STOP。
+后台自行完成核验、一张guard矩阵与CSV、保留清单/COMPLETE；本节记录启动，不提前宣称全部完成。
+测试临时目录自动清空并移除；本单元只保留核对脚本、测试日志和启动证据。活动GPU缓存由所属runner
+结束时清理，不能此时删除；无RF/训练/权重或IQ改动。保留路径、哈希及精确人工删除方法见
+[完成与补跑证据](../evidence/RML2018A_MAMBA_GUARD_START_2026-09-15.json)。

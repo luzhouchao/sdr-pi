@@ -7,11 +7,12 @@
 
 ## 当前执行选择
 
-最新选择：2026-09-15用户要求source/raw在Mamba上重跑且包含质量未通过行。
-原始D8 seed42、FP32/单窗1024、原validation不变；两组各383,385行，raw包含3,723条质量失败，
-总766,770次新预测、跳过0。新根`local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915`，
-后台有限脚本运行，进度默认指向新根；让脚本自动完成核验/两张混淆矩阵，不持续对话轮询。
-不重跑guard、不删除既有结果、不恢复epoch-10。见[当前操作](reference/RML2018A_MODEL_COLLECTION_EVALUATION.md)。
+最新选择：2026-09-15用户要求Mamba重跑时包含质量未通过行，随后补充guard。
+source/raw各383,385条已完成，ACC63.3082%/49.7294%、两图/读回/缓存清理通过，结果保留。
+单独补跑guard383,385条，包含12,277条质量失败，原始D8 seed42、FP32/单窗1024、原validation不变。
+当前根`local-assets/amc-eval/results/mamba-guard-val-allquality-20260915`，后台有限脚本运行，
+进度默认查看guard；让脚本自动完成核验/一张矩阵，不持续对话轮询。
+不重新计算source/raw、不删除既有结果、不恢复epoch-10。见[当前操作](reference/RML2018A_MODEL_COLLECTION_EVALUATION.md)。
 
 上一轮：用户明确使用服务器原seed42 validation运行8个模型，并要求删除之前结果、从零开始。
 旧全量与首次复用validation两根已停止并删除；新根为`local-assets/amc-eval/results/seed42-val-fresh-20260914`，

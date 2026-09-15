@@ -1,17 +1,32 @@
 # seed42原验证集：8模型与三数据集识别
 
-## 当前追加：Mamba的source/raw包含质量失败行重跑
+## 当前追加：Mamba三组包含质量失败行重跑
+
+用户随后补充guard。source/raw已完成766,770次预测、两张矩阵和独立读回核验，
+两组各383,385条，ACC为63.3082%/49.7294%，raw的3,723条质量失败均已有预测。
+guard单独补跑383,385条，包含12,277条质量失败，跳过0；同一原始D8 seed42、FP32、
+单窗1024、同一原validation。全三组共同的主要分母均383,385，不重新计算已完成source/raw。
+
+当前guard根`local-assets/amc-eval/results/mamba-guard-val-allquality-20260915`，
+服务`sdr-mamba-guard-val-allquality-20260915.service`，进度默认指向guard。
+`prepare-validation --variants amc_mamba_d8 --planes guard --include-quality-failed --fresh`
+支持单独补跑；source仅用于只读核验标签/行号，不进入这次预测。
+guard完成后自动核验并生成自己的混淆矩阵与保留清单；source/raw图表留在下面原根。
+停止：`systemctl --user stop sdr-mamba-guard-val-allquality-20260915.service`。
+预计280秒，内部3600秒期限和systemd最大4500秒保持。见[补跑验证](../validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md#source和raw完成及guard补跑2026-09-15)。
+
+### 已完成的source/raw
 
 2026-09-15用户要求不忽略未通过质量校验的行，重新识别source和raw。
 沿用原始Mamba D8 seed42、单窗1024、FP32/关闭TF32及服务器原validation成员，
 source/raw各383,385条，共766,770次新预测；raw包含此前排除的3,723条，质量跳过0。
 未改IQ或归一化，质量标志原样保留；共同严格合格379,662源行另报对照。
-本次仅这一个模型和两种输入，既有8模型三组结果保留。历史59.07%来自已删除的epoch-10微调模型。
+本阶段仅这一个模型和两种输入，随后guard补跑见上方；既有8模型三组结果保留。历史59.07%来自已删除的epoch-10微调模型。
 
 新根`local-assets/amc-eval/results/mamba-source-raw-val-allquality-20260915`，
-服务`sdr-mamba-source-raw-val-allquality-20260915.service`；原进度脚本默认查看这一轮。
+服务`sdr-mamba-source-raw-val-allquality-20260915.service`已退出；可通过进度脚本`--root`查看此根。
 有限计划内部期限3600秒、systemd最大4500秒，磁盘3GiB余量门保持；先导约560秒，实际以进度为准。
-完成后自动独立核验并生成两张混淆矩阵及CSV、保留清单；启动不等于完成。
+已完成独立核验、两张混淆矩阵及CSV、保留清单，实际533.254秒。
 停止命令：`systemctl --user stop sdr-mamba-source-raw-val-allquality-20260915.service`。
 
 现有`prepare-validation`增加`--variants amc_mamba_d8 --planes source raw --include-quality-failed`，
