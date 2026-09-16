@@ -19,6 +19,7 @@ this file retains the detailed delivery and evidence ledger.
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
+- [x] 既有ADC离线基线与幅度诊断：原D8 seed42/2496固定val，从13主流重放，2603父文件SHA通过；raw逐元素一致、guard最大差2.38e-7，logits通过预登记容差、历史top-1一致100%。source RMS-only净退153，raw→guard纠正331/回退222（AM净退17）；导频幅度候选大幅降分、不启用。675组独立复核和最大误差样本历史64帧批量定位通过，删353缓存文件24,425,794字节、保留27文件12,649,116字节。无RF/训练/生产变更；有前序状态的同步重放，不代表整段流独立重捕获或失败成员覆盖。见[报告](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md)。
 - [x] 4090模型导入与旧四窗微调权重删除：8种模型/12份权重及配置、标签/源码身份已下载，154文件逐一SHA-256一致，12份CPU安全读取/有限值检查通过；epoch-010已按用户要求精确删除，原始seed44和实收IQ/结果保留。临时2文件36,868,214字节已删除，模型及最小审计登记保留。见[验证](validation/RML2018A_MODEL_IMPORT_2026-09-14.md)。历史epoch-10验证仍为当时事实，其权重当前已不可用。
 - [x] 新导入12份权重的AGX工程接入：strict load/参数/后端匹配与三域合格样本GPU先导通过，FP16数值失败保留，最终12模型采用FP32；7项筛选/行号/续跑/统计测试、原进度脚本新旧入口和独立PNG/SVG/CSV绘图验证通过。36组后台服务已实写预测块，旧Worker/profile不改绑，生产能力仍false。见[验证](validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md)。
 - [x] 外接盘清洗raw/guard复制SSD：2份HDF5共43,052,129,882字节及清单，源清单/传输SHA-256/SSD读回一致，服务退出、partial无残留；原始本地RML2018A哈希复核后复用。文件保留清单及人工删除边界已登记。见[复制审计](evidence/RML2018A_CLEAN_SSD_IMPORT_2026-09-14.json)。

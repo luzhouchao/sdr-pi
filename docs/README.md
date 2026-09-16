@@ -19,7 +19,7 @@
 | [evidence/](evidence/README.md) | 原始审计 JSON、保留证据清单、预登记计划和图表 |
 
 当前实验选择：频段保持 **2455 MHz**；用户2026-09-13最新确认已接回 **B210 RF A TX/RX→20dB衰减器及15cm同轴→P201 RX1**，当前B210停发。参考参数见
-[后续实验选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。当前仅恢复用户明确要求的RadioML2018A全量RF工程推理，训练/微调仍暂停。
+[后续实验选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。当前选择为既有ADC离线基线与预处理诊断，暂不重新收发或微调；完成结果见[离线报告](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md)。
 实验历史仅提供[索引链接](validation/README.md#近期射频排查2026-09-09至10)，需要时再读。
 
 其他资料入口（按需）：
@@ -27,6 +27,7 @@
 - [9月8—14日实验阶段报告（离线HTML）](reports/SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14.html)
 
 - [AGX设备工作区：B210 USB / P201网口 / 共享数据集](../devices/README.md)
+- [既有ADC离线基线与幅度处理诊断](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md)
 - [seed42验证集8模型识别、筛选与进度/混淆矩阵](reference/RML2018A_MODEL_COLLECTION_EVALUATION.md)
 - [4090模型集合与四窗微调权重删除后的使用边界](reference/RML2018A_MODEL_COLLECTION.md)
 - [RadioML2018A全量RF脚本操作](reference/RML2018A_FULL_RF_CAMPAIGN.md)

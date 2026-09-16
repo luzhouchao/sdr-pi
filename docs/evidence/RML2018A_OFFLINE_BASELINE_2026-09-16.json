@@ -1,0 +1,102 @@
+{
+  "schema": "rml2018a-offline-baseline-evidence-v1",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-offline-baseline-20260916",
+  "retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-offline-baseline-20260916/retention.json",
+    "bytes": 10379,
+    "sha256": "80a598bbc3eaf698b58acc33bb43382294faca86137f31f14e1e259fab64db94"
+  },
+  "retained_files": 27,
+  "retained_bytes": 12649116,
+  "deleted_files": 353,
+  "deleted_bytes": 24425794,
+  "baseline": {
+    "rows": 2496,
+    "planes": {
+      "raw": {
+        "max_abs": 0.0,
+        "max_rmse": 0.0
+      },
+      "guard": {
+        "max_abs": 2.384185791015625e-07,
+        "max_rmse": 1.0014208081571819e-07
+      }
+    },
+    "discrete_metadata_exact": true,
+    "sync_conditioned_on_archived_predecessor": true,
+    "model": {
+      "raw": {
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "passed": true,
+        "changed_values": 0,
+        "top1_agreement": 1.0
+      },
+      "guard": {
+        "max_abs": 0.00010347366333007812,
+        "rmse": 2.45307190500569e-06,
+        "passed": true,
+        "changed_values": 3053,
+        "top1_agreement": 1.0
+      }
+    },
+    "prior_predictions": {
+      "source": {
+        "max_abs": 5.2191317081451416e-05,
+        "rmse": 1.177749357890192e-06,
+        "passed": true,
+        "changed_values": 16039,
+        "top1_agreement": 1.0
+      },
+      "raw": {
+        "max_abs": 4.303455352783203e-05,
+        "rmse": 1.0618117417292685e-06,
+        "passed": true,
+        "changed_values": 15264,
+        "top1_agreement": 1.0
+      },
+      "guard": {
+        "max_abs": 0.00010347366333007812,
+        "rmse": 2.715852254358452e-06,
+        "passed": true,
+        "changed_values": 17589,
+        "top1_agreement": 1.0
+      }
+    }
+  },
+  "verification": {
+    "passed": true,
+    "summary_groups_checked": 675,
+    "rows": 2496,
+    "source_previous_top1_agreement": {
+      "source": 1.0,
+      "source_rms": 1.0
+    },
+    "amplitude_only_papr_preserved": true,
+    "raw_guard_source_ids_identical": true,
+    "no_denominator_drop": true
+  },
+  "roundoff": {
+    "source_row": 114687,
+    "frame": 511,
+    "context": "same ADC, same archived CFO/phase, only guard GPU fitting batch dimension changes",
+    "results": {
+      "historical_batch64": {
+        "frequency_hz": 253847.64603587217,
+        "frequency_error_hz": 0.0,
+        "iq_max_abs": 0.0,
+        "bitwise_equal": true
+      },
+      "singleton": {
+        "frequency_hz": 253847.64603379654,
+        "frequency_error_hz": -2.0756269805133343e-06,
+        "iq_max_abs": 2.384185791015625e-07,
+        "bitwise_equal": false
+      }
+    }
+  },
+  "new_predictions": 19968,
+  "rf": false,
+  "training": false,
+  "production_changes": false
+}

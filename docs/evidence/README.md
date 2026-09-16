@@ -16,6 +16,7 @@
 以及其哈希未改动；开发清理不能删除这些用户数据。修改读取脚本的定位路径不
 会追溯改写旧审计记录的脚本哈希。
 
+- [ADC离线基线/幅度诊断](RML2018A_OFFLINE_BASELINE_2026-09-16.json)：2496固定validation的ADC重放、原D8配对预测、预登记误差/批量舍入定位、保留血缘与精确清理。
 - [seed42原validation的8模型启动](RML2018A_SEED42_VALIDATION_2026-09-14.json)：精确成员、质量选择、前两轮结果删除、零复用fresh启动及动态24组；描述当时启动状态。
 - [完成核验与source/guard差距复核](RML2018A_SOURCE_GUARD_REVIEW_2026-09-15.json)：24组完成、共同成员比较、固定2,496条RMS-only对照、保留哈希与清理。
 - [Mamba source/raw包含质量失败行启动](RML2018A_MAMBA_ALLQUALITY_START_2026-09-15.json)：原validation各383,385，raw纳入3,723条质量失败，766,770次新预测、两矩阵自动收口；本证据仅为启动。

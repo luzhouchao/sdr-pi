@@ -1,13 +1,20 @@
 # SDR Agent 实际推进顺序
 
-更新：2026-09-15。本文只维护施工顺序，不复制完成状态。
+更新：2026-09-16。本文只维护施工顺序，不复制完成状态。
 完成条件和证据以[权威 checklist](SDR_AGENT_PROJECT_CHECKLIST.md)为准；
 范围以[第1—6章规划](CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)为准。
 历史实验结果按[验证索引](validation/README.md)查询，不再在本文件逐次追加旧排期。
 
 ## 当前执行选择
 
-最新选择：2026-09-15用户确认同一原始Mamba D8 seed42识别source/raw/guard三个完整数据集，
+2026-09-16用户选择先做既有ADC离线基线重现与预处理诊断，暂不微调、不重新收发、不改现有任务。
+同原D8 seed42与2496条既有validation成员已完成基线与单一导频幅度候选对照；
+raw逐元素一致、guard误差在预登记容差内，top-1与历史100%一致。
+幅度敏感性及AM相消局部回退已记录，候选不启用，无同步参数调整。
+唯一下一实验建议是同源成员按历史TX峰值缩放公式做source端对照，尚未自动执行；
+不扩大到全量、RF或训练。见[离线报告](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md)。
+
+此前选择：2026-09-15用户确认同一原始Mamba D8 seed42识别source/raw/guard三个完整数据集，
 不作15%筛选，继续包含质量失败；各2,555,904条，总7,667,712次全新预测、跳过0。
 当前根`local-assets/amc-eval/results/mamba-full-allquality-20260915`，后台有限脚本已启动，
 进度默认指向全量；自动完成读回/三图/保留清单，不持续对话轮询。FP32/单窗1024保持。
