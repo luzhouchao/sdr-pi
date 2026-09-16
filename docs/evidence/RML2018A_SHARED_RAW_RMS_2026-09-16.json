@@ -1,0 +1,108 @@
+{
+  "schema": "shared-raw-rms-evidence-v1",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-shared-raw-rms-20260916-a2",
+  "retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-shared-raw-rms-20260916-a2/retention.json",
+    "bytes": 5702,
+    "sha256": "846d61983421090ccec9e012201764eac176c4bab27e37c0c85188441959abb7"
+  },
+  "retained_files": 19,
+  "retained_bytes": 1431486,
+  "deleted_files": 353,
+  "deleted_bytes": 24425794,
+  "results": {
+    "rows": 2496,
+    "correct": {
+      "raw": 1232,
+      "guard": 1341,
+      "guard_shared_raw_rms": 1203
+    },
+    "pairs": [
+      {
+        "before": "raw",
+        "after": "guard",
+        "corrected": 331,
+        "regressed": 222,
+        "top1_agreement": 1297
+      },
+      {
+        "before": "raw",
+        "after": "guard_shared_raw_rms",
+        "corrected": 311,
+        "regressed": 340,
+        "top1_agreement": 1152
+      },
+      {
+        "before": "guard",
+        "after": "guard_shared_raw_rms",
+        "corrected": 86,
+        "regressed": 224,
+        "top1_agreement": 1621
+      }
+    ],
+    "rms_ratio_p05_p50_p95": [
+      0.8130398288494403,
+      0.9169678847926231,
+      0.9707588677911911
+    ],
+    "old_raw_to_guard_regressions_rescued": 16,
+    "old_raw_to_guard_corrections_lost": 90
+  },
+  "am": {
+    "rows": 416,
+    "correct": {
+      "raw": 171,
+      "guard": 154,
+      "guard_shared_raw_rms": 142
+    },
+    "pairs": [
+      {
+        "before": "raw",
+        "after": "guard",
+        "corrected": 47,
+        "regressed": 64,
+        "top1_agreement": 207
+      },
+      {
+        "before": "raw",
+        "after": "guard_shared_raw_rms",
+        "corrected": 73,
+        "regressed": 102,
+        "top1_agreement": 138
+      },
+      {
+        "before": "guard",
+        "after": "guard_shared_raw_rms",
+        "corrected": 40,
+        "regressed": 52,
+        "top1_agreement": 227
+      }
+    ],
+    "rms_ratio_p05_p50_p95": [
+      0.8139221782264403,
+      0.9366205785272714,
+      0.9761646936881647
+    ],
+    "old_raw_to_guard_regressions_rescued": 7,
+    "old_raw_to_guard_corrections_lost": 7
+  },
+  "verification": {
+    "passed": true,
+    "summary_groups": 676,
+    "rows": 2496,
+    "new_predictions": 2496,
+    "dropped": 0,
+    "rx_rms_lineage_verified": true,
+    "labels_quality_exact": true
+  },
+  "preflight_interruption": {
+    "stage": "input SHA verification",
+    "new_predictions": 0,
+    "reason": "review found duplicate source_snr_db keyword in future NPZ write; own process stopped before inference, duplicate removed; acceptance/numerics/member scope unchanged",
+    "pid": 370044,
+    "exit_status": 1
+  },
+  "rf": false,
+  "training": false,
+  "production_changes": false
+}
