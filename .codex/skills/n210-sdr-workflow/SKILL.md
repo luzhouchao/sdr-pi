@@ -20,9 +20,19 @@ This verifies runtime hashes and reports USB identity, but **does not establish
 USB ownership or perform an RF test**. Use `device.idle()` / the existing
 `Transport('agx', ...).preflight()` for ownership before hardware initialization.
 
+After power-up, this board may enumerate at **480 Mbps with boot serial
+`0000000004BE`** before its volatile FX3/FPGA images are loaded. That observation
+alone is not a USB3/cable failure. When runtime loading is authorized, use the
+existing bounded `b210.py probe --output /var/tmp/sdrharness-dev/b210-agx-<unique-id>`
+workflow; verify serial `2508504`, speed at least5000Mbps, both register loopback
+passes and no USB holder afterward. Do not repeatedly initialize a healthy board.
+Image loading/probing initializes hardware and can run internal calibrations;
+it is not a read-only status query, and does not authorize TX/RX streams.
+
 Before initializing or transmitting, read
 [references/finite-tx.md](references/finite-tx.md). It covers the known image,
-plan/GO protocol, stop paths and event interpretation. For coordinated P201 RX,
+plan/GO protocol, stop paths and event interpretation. Read its calibration
+section when diagnosing LO leakage or choosing correction APIs. For coordinated P201 RX,
 also use [p201-sdr-workflow](../p201-sdr-workflow/SKILL.md); only the Controller
 owns the P201 session. This skill does not add P201 TX capability.
 

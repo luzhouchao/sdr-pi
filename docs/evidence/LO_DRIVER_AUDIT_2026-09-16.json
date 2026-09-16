@@ -1,0 +1,131 @@
+{
+  "date": "2026-09-16",
+  "code_head": "0b618c340cb3081d799ff2c95dc41c6e464cb66e",
+  "scope": "Read-only driver/history audit, subsequently user-authorized volatile runtime load; no TX/RX streams, model inference/training or P201 operation",
+  "historical_campaigns": 13,
+  "source_rows_read": 0,
+  "model_loaded": false,
+  "retained": [
+    {
+      "root": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916",
+      "purpose": "Calibration source/identity audit",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/ad9361_ctrl.cpp",
+          "bytes": 11833,
+          "sha256": "dba0c302c2eeed3d224c02c497385276a2893f56a94b3031551968676e395b23"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/ad9361_device.cpp",
+          "bytes": 106175,
+          "sha256": "470bba08de55c84336b7320b58836a36d84e06a052b827cc21092ed4920d8b7c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/ad936x_manager.cpp",
+          "bytes": 14632,
+          "sha256": "37a5df8127c21273bf91e53e710b88f786af8be8db4f3a18e75f59da4590290d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/b200_impl.cpp",
+          "bytes": 64297,
+          "sha256": "a19a17f19786b4f39c94e16419ed63faa58d35aad3923ea0b63d091c4b7c6b9a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/b200_io_impl.cpp",
+          "bytes": 24804,
+          "sha256": "b510f8135260f7d11e19d1de4c01b25f6ebf1d0ea457ba4c2dc22d08e9661ca0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/b200_radio_ctrl_core.cpp",
+          "bytes": 13361,
+          "sha256": "ba1426d0c7b4516cfeabf141f2828fdb90071008bae9d2bce43f58b508707c5f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/cleanup.json",
+          "bytes": 205,
+          "sha256": "b54195d1c5932ba3d2a2611fdc6bfa90ba385e61e46e164301be8fb83a12bc21"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/distribution-patch-review.json",
+          "bytes": 854,
+          "sha256": "c700da825e080b52e207c5ba172f6f358d2f5c752a05d125e8057902c1103abb"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/historical-configurations.json",
+          "bytes": 17355,
+          "sha256": "997b0e630e25b00e1c3852aad17431a6c8a53a8c517d72737f63fa4b5f383d7d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/installed-identity.json",
+          "bytes": 3201,
+          "sha256": "9c91a9aa12c0472b54c68ac0dc4d72bbdfc3f95f2f5b351638359ed3ffa9e338"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/multi_usrp.cpp",
+          "bytes": 114862,
+          "sha256": "7638d0fb3218ba03c46f28adfbeff4ded6630234c37d3ab42fc45e3286e57ed0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/runtime-status.json",
+          "bytes": 438,
+          "sha256": "3ce55465a6ebff13b20a69be30b6c2202dfd3ac65f4e7d1056256ecb9dbccc69"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/sources.json",
+          "bytes": 2041,
+          "sha256": "575f167991820738f32a9c4476604b2a73a3f60ffe1a69a59e622b7dde2ad7a8"
+        }
+      ],
+      "count": 13,
+      "bytes": 374058,
+      "manual_delete": "rm -r -- /var/tmp/sdrharness-dev/lo-driver-audit-20260916"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-agx-lo-audit-20260916",
+      "purpose": "User-authorized volatile image load and USB3 verification",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-agx-lo-audit-20260916/discover.log",
+          "bytes": 415,
+          "sha256": "ed22aa13da3f224599adabea2323a84437b3aa3907a29257b1c11d064a36fa63"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-agx-lo-audit-20260916/probe.log",
+          "bytes": 4366,
+          "sha256": "da66f779044d0b2341a446795108bf179bf08f5d4553116cba9cc328d57d6f46"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-agx-lo-audit-20260916/result.json",
+          "bytes": 569,
+          "sha256": "9bee5c12a72d2451f18a994d210178dd584f6cf0b5a6f2c36e8e3426e69035cd"
+        }
+      ],
+      "count": 3,
+      "bytes": 5350,
+      "manual_delete": "rm -r -- /var/tmp/sdrharness-dev/b210-agx-lo-audit-20260916"
+    }
+  ],
+  "cleanup": [
+    {
+      "path": "/var/tmp/sdrharness-dev/lo-driver-audit-20260916/uhd_4.1.0.5-3.debian.tar.xz",
+      "bytes": 53428,
+      "sha256": "506e60c1b71f703d96a434ee6d827d28016e10e0cf04baf1a8ff69e81cf08951"
+    }
+  ],
+  "hardware_budget": {
+    "commands_seconds": [
+      35,
+      70
+    ],
+    "free_bytes_before": 675095818240,
+    "iq_bytes": 0,
+    "stop": "Per-command timeout; helper reaps child. Completed and USB owner check empty."
+  },
+  "findings": [
+    "Distribution libuhd hash matches installed package and runtime manifest",
+    "get_tx_stream activates chains and invokes TX quadrature calibration after bandwidth setup in matching source",
+    "Generic TX DC/IQ frontend properties absent",
+    "Historical logs omit actual RF/DSP split and residual calibration metrics",
+    "Probe restored serial2508504 at5000Mbps, two loopback passes and no USB holder"
+  ]
+}

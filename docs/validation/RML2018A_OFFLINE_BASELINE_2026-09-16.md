@@ -489,3 +489,83 @@ TX与RX均做整窗归一化并非原则性错误；训练与推理输入约定�
 本轮保留5文件14,117字节（资料来源/哈希摘要、历史完整性核对、两份草稿、清理清单），
 删除24个下载/解析暂存文件4,634,714字节；无新IQ、权重、socket或常驻任务。
 URL、下载身份、父血缘及精确人工删除命令见[审计](../evidence/LO_HISTORY_LITERATURE_REVIEW_2026-09-16.json)。
+
+## UHD校准路径只读审计与获准镜像重载（2026-09-16）
+
+用户同意只读审计，随后明确要求重新加载设备镜像恢复USB3，并将启动/校准知识写入N210技能。
+前半段未初始化设备；后半段只执行获准的现有`b210.py probe`，没有TX/RX数据流、P201操作、
+模型加载/训练、源IQ读取或生产配置修改。镜像加载会初始化硬件并可能触发内部校准，不能把整个单元称为纯只读。
+
+### 身份与历史配置
+
+- 工作起点`0b618c3`、`codex/sdr-improvements`，工作树干净；专用runtime manifest全部文件及系统库SHA通过。
+- 系统`libuhd4.1.0`、`uhd-host`为Ubuntu `4.1.0.5-3`；`dpkg -V libuhd4.1.0`无差异。
+  库SHA为`357273c6059cc81d02585a79635e82d8a5bf1db46c07288e9fad0c7746ad9dc1`，
+  包MD5也相同。专用A7-100T/FX3镜像与主机库是不同身份，不能因目录名将整个主机驱动说成改版。
+- 从dataset-map的original_root定位13批plan/tx-events/tx.log，全部配置一致：
+  Fs=2100000.0074797985、综合RF=2455000000.0020895、TX60、BW1500000、
+  MCR=33600000.119676776、internal clock/time、LO locked。
+- 13批均指向`/var/tmp/sdrharness-dev/rml2018a-full-snr-20260913/tx-events`，
+  本体SHA与计划`b609f5cf741fc2780f275364151ae504dccc583cfe5f97961d37551549d8cae3`一致。
+  `ldd`解析到上述系统libuhd。历史日志不是当前硬件状态；当前probe默认MCR16MHz不应冒充历史33.6MHz。
+
+### 完整调用链与修正后的结论
+
+查看UHD上游v4.1.0.5的7份相关源文件和Ubuntu4.1.0.5-3打包补丁，补丁未触及这7个路径。
+这提供版本对应的源码证据，未进行可重复二进制构建、寄存器追踪或残余LO测量。
+
+现有helper顺序为set_tx_rate → set_tx_freq → gain/antenna → set_tx_bandwidth → get_tx_stream。
+底层关键路径为：
+
+`b200_impl::get_tx_stream`（b200_io_impl.cpp:605）
+→ `update_enables`（b200_impl.cpp:1471）
+→ `ad9361_ctrl::set_active_chains`
+→ `ad9361_device_t::set_active_chains`（ad9361_device.cpp:2058）
+→ `_calibrate_tx_quadrature`。
+
+TX启用时该路径执行TX校准；函数分别处理TX_A/TX_B并恢复选择，轮询完成位，超时会抛异常。
+因此不能因为应用没有显式校准调用，就断言历史发送没校准。
+最初观察到set_bw_filter不调用TX正交校准，曾把调频/带宽顺序列为疑点；追到后续创建流后，
+这个“带宽之后漏校准”的解释不成立，不建议仅为此交换设置顺序。
+校准完成位通过也不等于本征LO达到某个dBc指标，历史日志没有记录残余LO验收值。
+
+另一个入口`tune`对同请求频率直接返回；只有距离上次校准频点超过100MHz才触发相应重校准。
+重复set_tx_freq同频不构成强制校准，不自行绕到其他频点制造触发。
+
+B200前端树只创建RX的自动DC/IQ属性；通用multi_usrp的TX DC/IQ API缺少目标属性时会警告并返回。
+驱动也明确不支持TX DC/IQ自动tracking。不能把“API存在”当作“本机支持手动TX补偿”，
+不能套用通用校准工具或手写寄存器。自动TX quadrature校准与RX自动DC跟踪是不同机制。
+
+### RF/DSP及滤波仍缺什么
+
+综合RF频率由硬件LO与DSP平移共同决定。helper请求2455MHz、LO offset +250kHz，
+但没有保存`tune_result_t.actual_rf_freq/actual_dsp_freq`；日志只有综合频率、BW和MCR。
+因此名义2455.25MHz LO及相应DSP平移是请求/源码推导，不冒充逐批独立硬件读回。
+同样未保存完整AD9361 FIR系数/插值状态和校准内部NCO状态。
+此次没有测定RML占用带宽，不据此指定更大LO偏移或直接改滤波；+250kHz位于配置接收通带内，
+是否及多大程度与有用谱重叠仍需有限离线测量。
+
+唯一下一实验建议：复用已有2496条validation的source及配对raw/guard，固定窗长和频谱定义，
+检查+250kHz泄漏附近的有用信号占用与拟议移频所需通带余量；只做频谱统计，不新增预测、
+不按真实类别选择处理、不改波形、不扫RF参数。完成后再决定是否值得提出有限LO偏移A/B收发计划。
+
+### 获准镜像重载与技能维护
+
+初始sysfs为480Mbps、启动序列号`0000000004BE`。用户指出本板需加载镜像才能进入USB3，
+授权后使用现有probe，先校验无人占用及manifest，再加载专用FX3和A7-100T镜像。
+命令预算35+70秒，执行前SSD可用675,095,818,240字节；新增IQ预算0。
+实际discover/probe均退出0；恢复serial2508504、5000Mbps，两个寄存器回环通过，
+最后USB节点`/dev/bus/usb/002/009`无占用。节点号不是后续固定配置。
+未写EEPROM/flash、未替换系统镜像/库。无数据流不表示测得零射频能量。
+
+按用户要求更新[n210技能](../../.codex/skills/n210-sdr-workflow/SKILL.md)及其finite-tx参考：
+启动阶段身份、加载后验收、避免重复初始化、镜像加载与TX/RX授权边界，以及版本限定的校准/API事实。
+`skill-creator` quick_validate通过；文档/链接及diff检查完成，不新增与本次文字修改无关的测试。
+
+### 保留与清理
+
+审计根保留13文件374,058字节，镜像重载根保留3文件5,350字节，共16文件379,408字节；
+包含相关上游开源源码、下载身份、发行包补丁摘要、13批元数据血缘及probe日志。
+删除发行源码补丁下载暂存1文件53,428字节；无新IQ副本、模型、构建缓存或socket。
+本单元命令均已退出，未改现有后台任务。逐文件SHA/精确路径/人工删除命令见
+[审计](../evidence/LO_DRIVER_AUDIT_2026-09-16.json)。本单元完成审计和USB3恢复，不宣称LO已进一步降低。
