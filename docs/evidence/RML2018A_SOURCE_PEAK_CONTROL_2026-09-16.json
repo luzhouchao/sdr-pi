@@ -1,0 +1,77 @@
+{
+  "schema": "source-peak-control-evidence-v1",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-source-peak-control-20260916-a2",
+  "retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-source-peak-control-20260916-a2/retention.json",
+    "bytes": 5709,
+    "sha256": "cc849fff8e9d2bd95eb1b8ff159683bedfd5f2bc5a59ab957008e4b5934964a0"
+  },
+  "retained_files": 19,
+  "retained_bytes": 1384032,
+  "deleted_files": 353,
+  "deleted_bytes": 24425794,
+  "results": {
+    "rows": 2496,
+    "correct": {
+      "source": 1578,
+      "source_rms": 1425,
+      "raw": 1232,
+      "guard": 1341,
+      "raw_pilot": 163,
+      "guard_pilot": 142,
+      "source_tx_peak": 150
+    },
+    "pairs": [
+      {
+        "before": "source",
+        "after": "source_tx_peak",
+        "corrected": 55,
+        "regressed": 1483,
+        "top1_agreement": 134
+      },
+      {
+        "before": "source_rms",
+        "after": "source_tx_peak",
+        "corrected": 83,
+        "regressed": 1358,
+        "top1_agreement": 102
+      },
+      {
+        "before": "source_tx_peak",
+        "after": "guard_pilot",
+        "corrected": 47,
+        "regressed": 55,
+        "top1_agreement": 1546
+      },
+      {
+        "before": "source_tx_peak",
+        "after": "raw_pilot",
+        "corrected": 39,
+        "regressed": 26,
+        "top1_agreement": 1924
+      }
+    ]
+  },
+  "verification": {
+    "statistics_verification_passed": true,
+    "summary_groups": 675,
+    "members": 2496,
+    "dropped": 0,
+    "additional_predictions": 2496,
+    "theoretical_peak_diagnostic_passed": false,
+    "flagged_rows_retained": 6
+  },
+  "initial_failure": {
+    "stage": "pre-inference numerical check",
+    "new_predictions": 0,
+    "peak_max_error": 1.1021743651085103e-07,
+    "peak_failed_rows": 6,
+    "papr_max_error_db": 4.2613815764980245e-07,
+    "papr_failed_rows": 0,
+    "worst_peak_source_row": 775656,
+    "historical_packet_bitwise_gate_passed": true
+  },
+  "rf": false,
+  "training": false,
+  "deployment": false
+}
