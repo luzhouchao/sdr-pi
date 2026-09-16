@@ -1,0 +1,159 @@
+{
+  "date": "2026-09-16",
+  "code_head": "ab6b44c6ac707369eed93691d1cbccf1f7fff503",
+  "scope": "One added preceding guard, original2496 val/ADC/model/RMS fixed; rejected candidate retained for audit",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916",
+  "purpose": "Reproduce rejected single-factor LO cancellation comparison and paired AM outcomes",
+  "model": {
+    "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed42_nw8/checkpoints/best.pt",
+    "relative": "amc_mamba_d8/seed42/best.pt",
+    "bytes": 1691293,
+    "mtime_ns": 1784544418697035906,
+    "sha256": "6f984a78639a8e8e15403a1257b264839c6057165b3ae9ac8640ecc056f78143"
+  },
+  "split": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/splits/server-seed42-20260914/RML2018a_split_seed42_tr700_val150_te150.npz",
+    "bytes": 3906318,
+    "mtime_ns": 1789395491153582339,
+    "sha256": "0a7cbd3b8a4b921b7dc3d0c37473322207c6bd9fb362ea58498c851fad9dc5a3",
+    "partition": "val",
+    "seed": 42,
+    "counts": {
+      "train": 1789132,
+      "val": 383385,
+      "test": 383387
+    },
+    "validation_indices_sha256": "789f71e82178e5deffe2d78d7cf59540b43c0630c90707da60f63563654f2754"
+  },
+  "source_row_lineage": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/rows.json",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/baseline-model-check.json",
+      "bytes": 141,
+      "sha256": "9d870856f29a4b98af40c7d1b1457f411fa6c055e056276864bf33ece8e239d5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/cache-cleanup.json",
+      "bytes": 120,
+      "sha256": "e02a6675b226304afa025b61045571dd9c27a38501d112e6f6531bb144f5e90f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/changed-top1.csv",
+      "bytes": 3057,
+      "sha256": "85baa9823dabded65455e146b98796f239995e494e34abbc6da12a4c97d65d8a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/executed-rml2018a_guard_leading.py",
+      "bytes": 1540,
+      "sha256": "2c1406575c3d82542737015332f4e07458790b3e0ce8cf7c66fb21a568afc85d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/executed-rml2018a_leading_guard_diagnostic.py",
+      "bytes": 16616,
+      "sha256": "8636ba5a4ab4ed7b66d0490bb052bd5ef022c57fed374cf51513a12fc05b76b6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/executed-test_rml2018a_guard_leading.py",
+      "bytes": 2825,
+      "sha256": "95212dfc0ce5aed1c68df70de1ef46055af94f8bb00b83f2d9e7ed05d222152a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/execution-notes.json",
+      "bytes": 929,
+      "sha256": "641b0e3440e3d9d831c596148d822607135c58fa1d79ef321c70b60468aff329"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/final-cleanup.json",
+      "bytes": 475,
+      "sha256": "f6aa75581ae99e56c98798877121588a4483f857103a92e2029ef9227f54a620"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/frame-identities.json",
+      "bytes": 594839,
+      "sha256": "757f99078c79d1a1f34cac86a17dbfbfb5aca2d77bc18a80111362b451dc8ede"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/independent-verification.json",
+      "bytes": 1363,
+      "sha256": "7ad99286cd99dfb86aeb5b4041930d0e6e8cc330a9cbbaf885ae648df48cb9c9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/input-audit.json",
+      "bytes": 448,
+      "sha256": "2a71dbfbeb24eb5c1b7095f6a13500bf149169fe708c497c5bd251b18a037652"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/paired-results.png",
+      "bytes": 198534,
+      "sha256": "6acfb8732bc23588f2b302482f68433573dba7f39eb930c06b49402ad64e9094"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/per_cell.csv",
+      "bytes": 15472,
+      "sha256": "05120b1f0b5cdae6341367028b7b03f93ac7fc0ed20f4f0e5b5193023f745782"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/per_class.csv",
+      "bytes": 928,
+      "sha256": "1acf8c22f72aeb0a6e8c6ffbf0c4683a2b66a16fb7e08a86d022be4a05eda915"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/per_source_snr.csv",
+      "bytes": 780,
+      "sha256": "3aac2c151906ab31fe9cb1630fe4c61ad1a24880fd253e2fa9e9eca802c21937"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/plan.json",
+      "bytes": 44715,
+      "sha256": "4b9ab34d922c8efb73f8bcfb775561dd2607ad2674347e88da3a2bf9bf790d0e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/plot_results.py",
+      "bytes": 1947,
+      "sha256": "1c7e54fb083f728e965bc5d5f7d6abd2662251635385694a000f6f5a9f8b23fe"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/predictions.npz",
+      "bytes": 718957,
+      "sha256": "40205eccd3ff553bafaa407e2eb34932fd5a5f9bc860b2309d075cc97f34d4fc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/results.json",
+      "bytes": 673641,
+      "sha256": "8bdf24e030b0625cb68efe1578c7f111137d58e9ea060ebddf493eac347b4700"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/rows.json",
+      "bytes": 26215642,
+      "sha256": "07889058215cd90b49f5c1de9a77930013addbd2e8a605edd70ccd5c1fe8730f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/run.log",
+      "bytes": 3638,
+      "sha256": "e4d02f868ceed0272a31245f605e539efc742266cde94b60123fd892e19b771b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/started.json",
+      "bytes": 37,
+      "sha256": "3f5575fd2397cf13a3d50a75717e3aa4780bc476be5cb2d3dec0faca6f558a5c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/tests.log",
+      "bytes": 104,
+      "sha256": "1b7731e29731a22b0708f002fe6c4f5d87f45be282b01aadaef14ee38f971eec"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916/verify_results.py",
+      "bytes": 3986,
+      "sha256": "ad0568dc9f2ddedf739cde1fe92a6819b5913dd240a6a0e4f1fc9a75d1eb9da8"
+    }
+  ],
+  "retained_count": 24,
+  "retained_bytes": 28500734,
+  "cleanup_count": 354,
+  "cleanup_bytes": 24465207,
+  "manual_delete": "rm -r -- /var/tmp/sdrharness-dev/rml2018a-leading-guard-20260916",
+  "rf": false,
+  "training": false,
+  "production_enabled": false
+}
