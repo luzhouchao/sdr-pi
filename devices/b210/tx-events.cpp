@@ -108,7 +108,8 @@ int main(int argc,char** argv) {
         log<<std::setprecision(17);
         auto usrp=uhd::usrp::multi_usrp::make(uhd::device_addr_t("type=b200,serial=2508504"));
         usrp->set_tx_subdev_spec(uhd::usrp::subdev_spec_t("A:A"));
-        usrp->set_tx_rate(2100000);usrp->set_tx_freq(uhd::tune_request_t(2455000000.,250000.));
+        usrp->set_tx_rate(2100000);
+        const auto tuning=usrp->set_tx_freq(uhd::tune_request_t(2455000000.,250000.));
         usrp->set_tx_gain(60);usrp->set_tx_antenna("TX/RX");usrp->set_tx_bandwidth(1500000);
         check(std::abs(usrp->get_tx_rate()-2100000)<1 && std::abs(usrp->get_tx_freq()-2455000000)<1 &&
               std::abs(usrp->get_tx_gain()-60)<.01 && std::abs(usrp->get_tx_bandwidth()-1500000)<1,"RF readback mismatch");
@@ -116,6 +117,7 @@ int main(int argc,char** argv) {
         uhd::stream_args_t args("fc32","sc16");args.channels={0};stream=usrp->get_tx_stream(args);
         log<<"{\"kind\":\"configuration\",\"rate_sps\":"<<usrp->get_tx_rate()<<",\"frequency_hz\":"<<usrp->get_tx_freq()
            <<",\"gain_db\":"<<usrp->get_tx_gain()<<",\"bandwidth_hz\":"<<usrp->get_tx_bandwidth()
+           <<",\"actual_rf_freq_hz\":"<<tuning.actual_rf_freq<<",\"actual_dsp_freq_hz\":"<<tuning.actual_dsp_freq
            <<",\"clock_source\":"<<quote(usrp->get_clock_source(0))<<",\"time_source\":"<<quote(usrp->get_time_source(0))
            <<",\"master_clock_hz\":"<<usrp->get_master_clock_rate()<<",\"lo_locked\":true}\n";log.flush();
         std::cout<<"{\"event\":\"ready\",\"pid\":"<<getpid()<<"}"<<std::endl;
@@ -145,7 +147,10 @@ int main(int argc,char** argv) {
         started=true;
         sent=feed([&](size_t offset,size_t count,bool first){uhd::tx_metadata_t m;m.start_of_burst=first;m.end_of_burst=false;m.has_time_spec=first;m.time_spec=uhd::time_spec_t(scheduled);
             return stream->send(&packet[offset%frame_samples],count,m,.25);},[&]{return interrupted || event_failed;},sends,snr_stream ? 115 : 6,frame_samples,total_samples,snr_stream);
-        uhd::tx_metadata_t end;end.end_of_burst=true;Sample empty{};stream->send(&empty,0,end,.25);started=false;
+        uhd::tx_metadata_t end;end.end_of_burst=true;Sample empty{};
+        const auto eob_before=mono_ns();stream->send(&empty,0,end,.25);const auto eob_after=mono_ns();started=false;
+        log<<"{\"kind\":\"eob\",\"host_before_ns\":"<<eob_before<<",\"host_after_ns\":"<<eob_after
+           <<",\"nominal_end_device_seconds\":"<<scheduled+double(sent)/usrp->get_tx_rate()<<"}\n";
         auto deadline=Clock::now()+std::chrono::milliseconds(1000);
         while(Clock::now()<deadline && !interrupted && !event_failed)std::this_thread::sleep_for(std::chrono::milliseconds(10));
         check(!interrupted && !event_failed,"async drain interrupted/failed");query("after_tx");status=0;

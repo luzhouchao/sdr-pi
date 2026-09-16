@@ -922,6 +922,12 @@ run-plan保存源文件、软件和模型/profile/标签身份；TX包在成功�
 
 ## 有限B210事件记录与控制源
 
+2026-09-16新增固定单音入口`validate-b210-tone-events.py plan/acquire/analyze --root <feature>`，
+使用同一事件发送器，固定TX60/幅度0.316227766/98437.5Hz和RX40，两次单音加前后停流共4点，
+最多8秒TX、1,048,560字节RX，不读取RadioML或模型。新增RF/DSP读回与EOB时间，仍须先构建、
+登记新计划和检查设备身份；使用`b210-event-controls-`独立根。历史7动作入口不变。
+实测范围及原恢复失败见[时间复测](../validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#固定tx60单音的发送事件时间复测2026-09-16)。
+
 2026-09-13新增[tx-events.cpp](../../devices/b210/tx-events.cpp)与
 [validate-b210-event-controls.py](../../jetson-agx/sdrharness/scripts/validate-b210-event-controls.py)。
 它们是独立实验入口，不替换普通campaign helper、系统UHD或生产Controller。

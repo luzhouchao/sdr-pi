@@ -1,0 +1,273 @@
+{
+  "date": "2026-09-16",
+  "code_head": "5536ce5a77bb2c8ff5f392c7fc244e379acfd7f7",
+  "scope": "Two fixed TX60 timestamped tone transmissions and bracketing stopped captures; no model/dataset access",
+  "source": "Synthetic98437.5Hz prior1024-point tone tiled to26112 points",
+  "profile": "2455MHz Fs2.1MS/s BW1.5MHz TX60 RX40 LO+250kHz peak0.316227766",
+  "model": null,
+  "root": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/acquire.log",
+      "bytes": 1137,
+      "sha256": "eaf683346be5d463cdf0220dd7e016e22c70c98a41fad21c2610a76311efe910"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/analysis.json",
+      "bytes": 5935,
+      "sha256": "d8ca0acfdf6191e805afefae8e1469f34fc4a333dedb85e7718198a70f4c295c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/build-identity.json",
+      "bytes": 528,
+      "sha256": "106c2d95f80d196088ba68104965189f480a7bc3263ab291be259cf2e9a3f395"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/cleanup.json",
+      "bytes": 32654,
+      "sha256": "7acc6c2152dbdc47471ab62413ed94825ed512ee05afa4a1f48bd14faa83858e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/cpp-self-test.log",
+      "bytes": 54,
+      "sha256": "ba8c1619b2d0c9b5ec6e39ba7032a64cb43ccc187b2a2eaae210c1c14628abe0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/event-tests.log",
+      "bytes": 104,
+      "sha256": "8e83c9e30711d3808140522c0a784c32a4a16bd2d9a482bfdc79f43bb50d7c5e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/headers-download.json",
+      "bytes": 203,
+      "sha256": "0b88e86912c8b4d4d26f323c51bac8f8cd194cc12c2582b39316b1f2105b10f5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/independent-check.json",
+      "bytes": 1108,
+      "sha256": "1338699aaf5e1c8c1ddf06f3ba927d5bb878019a91d5b95598ef8a9c03ea8893"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/independent-verify.log",
+      "bytes": 1108,
+      "sha256": "1338699aaf5e1c8c1ddf06f3ba927d5bb878019a91d5b95598ef8a9c03ea8893"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/independent-verify.py",
+      "bytes": 3152,
+      "sha256": "e9dbfe62ad72250f1fb2950c3cb0cd068cfd538c468a5b32d8cdb3d0e2bbf8c0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/off-after/audit.json",
+      "bytes": 2982,
+      "sha256": "b248de6829aa788dd233d62577194b025743ebae8fcdaec1eabcefe8e35d927b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/off-after/report.json",
+      "bytes": 2286,
+      "sha256": "8af60a64831e40a74179c564c1eb34056e9dd8f0917ac59a94802343e0f72f9c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/off-after/rx/tone-events-off-after-1789562415562-1789562415562-1789562471498627325.sigmf-data",
+      "bytes": 262140,
+      "sha256": "d25f14e3586458d5c9c68f8406abb52e9ba20d0af1d4007104c9c7d31e659b92"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/off-after/rx/tone-events-off-after-1789562415562-1789562415562-1789562471498627325.sigmf-meta",
+      "bytes": 487,
+      "sha256": "41ed88347e0ad6928e3a31489c4ef9f4b9e27a7e843f7905ce2a113b6b0f379b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/off-after/rx-plan.json",
+      "bytes": 394,
+      "sha256": "094570917658bf4896055cc47a312709273ffde912b264ac28d9fb0a5495c5b0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/off-after/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/off-before/audit.json",
+      "bytes": 2986,
+      "sha256": "db2165f0929bce0aeb83710aa3ef26b9a215ea42f7898171c69e4574f118b028"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/off-before/report.json",
+      "bytes": 2291,
+      "sha256": "b043a02ff2e71422c2424dfda662a21db2ef6488f845e794279d1fbb3b1ef708"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/off-before/rx/tone-events-off-before-1789562415559-1789562415559-1789562448893349699.sigmf-data",
+      "bytes": 262140,
+      "sha256": "f72c2b6f577ea247788708a2945ae31618234b0e4d276f623bd431f6be66a0cd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/off-before/rx/tone-events-off-before-1789562415559-1789562415559-1789562448893349699.sigmf-meta",
+      "bytes": 487,
+      "sha256": "57b794538814a9d3569c09975e59ddd19f67fbcf54d17615bcd34634bd1496c6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/off-before/rx-plan.json",
+      "bytes": 395,
+      "sha256": "f9461422990f2306994a78f34acf4a48290fdf44c2728fc88f77753537da007e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/off-before/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/plan.json",
+      "bytes": 6699,
+      "sha256": "46e00a887075b9aeebaddc2692666d95db01f4b477c22a648473e787cbdd699a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/postflight.json",
+      "bytes": 2336,
+      "sha256": "33bafd508f3e0705dd83ecf6951bebabe8c570d3eaacac91f58f0ab69da641d4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/preflight.json",
+      "bytes": 2167,
+      "sha256": "e0866572e5ebe5a91e66c09dd29a36b4b8eb882b1fde598683d16153bcee3eb6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/restoration-bounded-polls.json",
+      "bytes": 5009,
+      "sha256": "1a8e48bae8d6f98632dfc9cc2663fd4debc89f52f943cfe8e7a8165b08b0d9f9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/restoration-followup.json",
+      "bytes": 2383,
+      "sha256": "7aedc2a41a8025fc5ecba27241aad99aabfd3ac332758ac818fb81c797879231"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/source-test_b210_tone_events.py",
+      "bytes": 2671,
+      "sha256": "a61f33a08816f34ad17f4564e50a6bfdb3b32223b09abdf1a4655a702ec8d63d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/source-tx-events.cpp",
+      "bytes": 11868,
+      "sha256": "a14ef07eda89a191aa8de4eada11319f00bac37f75f3962f166969509acfa7bf"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/source-validate-b210-event-controls.py",
+      "bytes": 17449,
+      "sha256": "2b9a720ab895fadab938a337f8724dc270b8860f9a5f124260708b1a2de180c9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/source-validate-b210-tone-events.py",
+      "bytes": 7524,
+      "sha256": "17a58caf28b7a166e82ad02c330f139c694a071ff0161a738c78b0b5c8a33527"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/started.json",
+      "bytes": 133,
+      "sha256": "0e9f930498a48d92678341841bea2032a5639780fe9d7abfa3fb46d010749714"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone-tests.log",
+      "bytes": 101,
+      "sha256": "e5a4dc77fcb6a74897f674c2f33613f1c454a037b32838eec45a8576fcd91681"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone1/audit.json",
+      "bytes": 4730,
+      "sha256": "561268b151f23bc57ee4f9be59e7378322ac2f844fb230c9c8af1846e0989cee"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone1/report.json",
+      "bytes": 2265,
+      "sha256": "422864d4beabbedf189fde9c673aa73697caee8f23f97358f2aa81842ea74009"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone1/rx/tone-events-tone1-1789562415560-1789562415560-1789562456014730924.sigmf-data",
+      "bytes": 262140,
+      "sha256": "26827608423cd3dd16900f7b891d3f2cda8733e00388dd80898af059132e9613"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone1/rx/tone-events-tone1-1789562415560-1789562415560-1789562456014730924.sigmf-meta",
+      "bytes": 487,
+      "sha256": "b7ce2c8f65c095f5d21a79b2242fa01b2f76b3574aa6a67a717f78c6ed4546fb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone1/rx-plan.json",
+      "bytes": 390,
+      "sha256": "b3b2ff8f25e4c67399af0adeabdb1f53ff98eb3e9734af746b8dde29a01bf23b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone1/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone1/tx-events.jsonl",
+      "bytes": 1351556,
+      "sha256": "23e0e9e7be26b1aa28422cfaddbeae4e9926083caf8699eeda58a4099caaba66"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone1/tx-uhd.log",
+      "bytes": 842,
+      "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone2/audit.json",
+      "bytes": 4730,
+      "sha256": "eb5079f71c9cf52ed0de622644f82a4c365bc6266147a9ed29e73be19669f7a9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone2/report.json",
+      "bytes": 2263,
+      "sha256": "2d96efb887ee84a084b4be2408af0cc4843336bf68f8addc6f8398a0b5b96be2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone2/rx/tone-events-tone2-1789562415561-1789562415561-1789562464527229987.sigmf-data",
+      "bytes": 262140,
+      "sha256": "2bcc0d746f7c64c7c2b90298a2d82a5db889dd189aa93c08dce23514e938ec29"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone2/rx/tone-events-tone2-1789562415561-1789562415561-1789562464527229987.sigmf-meta",
+      "bytes": 487,
+      "sha256": "44b8b97fea227ed7186d5d4f8f52aa6fb3550bf0c9e9716ad8a7686b6aed1d0b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone2/rx-plan.json",
+      "bytes": 390,
+      "sha256": "02e82ca7b8a802f7b0fd906c9f12d167bdd711a817f6ebb91f4eb4affc13e448"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone2/rx-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone2/tx-events.jsonl",
+      "bytes": 1351557,
+      "sha256": "b2b98f0d177dae8e63439e5c9ce9be09bc0db2052ee615469d7d5184fabee8e1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/b210-event-controls-tone-20260916/tone2/tx-uhd.log",
+      "bytes": 842,
+      "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+    }
+  ],
+  "retained_count": 50,
+  "retained_bytes": 3885730,
+  "cleanup_count": 179,
+  "cleanup_bytes": 1596141,
+  "manual_delete": "rm -r -- /var/tmp/sdrharness-dev/b210-event-controls-tone-20260916",
+  "necessary": "Four ADC records, timestamped send/event records, failed restoration snapshot and exact followup, build/source identities",
+  "result": "Two ACK only, no U/S reported; LO persists; original postflight false from AGC instantaneous gain drift preserved, subsequent exact check passed",
+  "limitations": [
+    "Different sender cannot retrospectively locate prior FIFO U/S",
+    "No P201 ADC start mapping to UHD device clock",
+    "No new LO calibration optimization or model results"
+  ]
+}

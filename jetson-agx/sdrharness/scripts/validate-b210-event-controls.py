@@ -123,7 +123,8 @@ def acquire_validated(root,p,packet_bytes):
     """Internal executor: callers must validate their own fixed finite plan first."""
     bg=campaign.module('event_bg','validate-p201-termination-background.py');tr=campaign.transport_module().Transport('agx',bg)
     with (root/'started.json').open('x') as f:json.dump(dict(pid=os.getpid(),started_ns=time.time_ns(),plan_sha256=c.file_hash(root/'plan.json')),f)
-    baseline=lo.preflight(bg,tr);c.save(root/'preflight.json',baseline)
+    daemon_sha256=lo.expected_daemon(p)
+    baseline=lo.preflight(bg,tr,daemon_sha256);c.save(root/'preflight.json',baseline)
     result=dict(status='failed',source_rows=p['source_rows'],model_windows=0)
     c.require(p['deadline_seconds'] in (400,900),'registered acquisition deadline')
     signal.alarm(p['deadline_seconds'])
@@ -186,7 +187,7 @@ def acquire_validated(root,p,packet_bytes):
     finally:
         signal.alarm(0)
         for s in (signal.SIGINT,signal.SIGTERM):signal.signal(s,signal.SIG_IGN)
-        result['after']=lo.preflight(bg,tr);result['restored']=result['after']==baseline;c.save(root/'postflight.json',result)
+        result['after']=lo.preflight(bg,tr,daemon_sha256);result['restored']=result['after']==baseline;c.save(root/'postflight.json',result)
         c.require(result['restored'],'complete restoration')
 
 
