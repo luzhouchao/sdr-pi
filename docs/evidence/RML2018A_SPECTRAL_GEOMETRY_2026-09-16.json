@@ -1,0 +1,159 @@
+{
+  "date": "2026-09-16",
+  "code_head": "531039d0fe67fbd6d32ce34d7b149a6637217c06",
+  "scope": "Fixed2496 original seed42 validation members, CPU spectral geometry only",
+  "model": "Original D8 identity reference only; no model loaded",
+  "rf_operations": 0,
+  "new_predictions": 0,
+  "source_row_lineage": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/lineage.json",
+  "parent_retention": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-offline-baseline-20260916/retention.json",
+    "bytes": 10379,
+    "sha256": "80a598bbc3eaf698b58acc33bb43382294faca86137f31f14e1e259fab64db94"
+  },
+  "retained": [
+    {
+      "root": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916/executed-first-attempt.py",
+          "bytes": 10959,
+          "sha256": "5b769798713f2d9d5782fd99457af5572c6b782327612a59a1e2e377d29081e5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916/plan-preflight-lineage-order-failure.log",
+          "bytes": 851,
+          "sha256": "7c8d1d339b50c89e3ba79d3f7199a3ceeae41524b21adba921ba4da5e6c7de4a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916/plan.json",
+          "bytes": 10360,
+          "sha256": "02abcb1e1742311278ad2e7abfaf7a7ac59dfe2d93293f188d6e20441d05dc66"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916/run.log",
+          "bytes": 637,
+          "sha256": "763211cc7fb2d24b6a66c05c4456741608181b724793ae0feecfb22cdfc23a78"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916/started.json",
+          "bytes": 40,
+          "sha256": "18e9022ea342e18f34ac040d25bd5230d66bede155be9d6e58232df9626c0ba9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916/tests.log",
+          "bytes": 102,
+          "sha256": "08cfe753dea342833ec59beb905243853f9c393973961852ed25ee316be39537"
+        }
+      ],
+      "count": 6,
+      "bytes": 22949,
+      "purpose": "Retain identity preflight failure and source-normalization mismatch",
+      "manual_delete": "rm -r -- /var/tmp/sdrharness-dev/rml2018a-spectrum-20260916"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/cleanup.json",
+          "bytes": 427,
+          "sha256": "afbb3d6588a7e652a39cd21060554f4a0c3e89158305388b254bd4f23c830c9a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/execution-notes.json",
+          "bytes": 857,
+          "sha256": "f895d774713e6b621dfaf231ab5fcd4b97bc75277c7057e519d197ba03763bf4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/independent-verification.json",
+          "bytes": 185,
+          "sha256": "870e1e302bb3cdc2efe2717608448c16a5859c8489a97b1e201e0cd468d87e37"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/lineage.json",
+          "bytes": 5121091,
+          "sha256": "41db9e6d92ca834c76dced951f0b0c41d8752da1c2b5da56726fca6e474c1bdb"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/lo-region-by-source-snr.png",
+          "bytes": 78082,
+          "sha256": "7abec275be79aedc7ecd1d1a8209bb52c00599b744b6c80c06271ed303be9516"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/mean_spectra.npz",
+          "bytes": 293112,
+          "sha256": "27677de356b63396b11358e9d751733b12e76fad1002c79c23f4b87677d452c8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/per_class_high_snr.csv",
+          "bytes": 56728,
+          "sha256": "8d37c1c34013579697f7774bde2b04a49c3406094cd92123dd2b49fddac2ac4c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/per_row.csv",
+          "bytes": 1583457,
+          "sha256": "09453e935d518fd10abc0f60af60f73d14c7346c095076b7a45889decc1e44a8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/per_source_snr.csv",
+          "bytes": 60577,
+          "sha256": "d48270b84f09559536e3464f0965d560600b14e71eebc1ea918661b0e6d5fb29"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/plan.json",
+          "bytes": 10360,
+          "sha256": "861e828b11d53189396810fbeb1e85aca33313ff364d21f134424e3fb71d1390"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/rml2018a_spectrum_diagnostic.py",
+          "bytes": 11158,
+          "sha256": "83f930fcef99496bf9e2cfcbb748115ddd9699e33118d2643df24e2885658f35"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/run.log",
+          "bytes": 15314,
+          "sha256": "abf2187fe6e40c846f2fea7f7cfd36668416ed828c9dec6df0f0976542862d7d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/spectral-geometry.png",
+          "bytes": 243245,
+          "sha256": "49bc44bd174c790c6aa9068cec4cf55b55f062d921d33ca7cdad7e6102a3bb54"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/started.json",
+          "bytes": 40,
+          "sha256": "f356c9d808aaa9ce56c1946fe40622871bd184ac0ac2d40e7c9d030668d13945"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/summary.json",
+          "bytes": 13916,
+          "sha256": "8c05a23f49f4965babe9fb0cbca4d1f0dc4ce2c845ec4b7dd23c82741809d264"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/test_rml2018a_spectrum.py",
+          "bytes": 1787,
+          "sha256": "1701207748719fa6c8c7a034505bcf7194187b6feb44b7e2545cfc0d8909e316"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2/verify-and-plot.py",
+          "bytes": 4115,
+          "sha256": "79534abfebf42646ebb9898c69a11537057efb5cc3bcd3744166260cb54e0f2e"
+        }
+      ],
+      "count": 17,
+      "bytes": 7494451,
+      "purpose": "Validation spectral metrics, row lineage, selected input hashes and verification/plots",
+      "manual_delete": "rm -r -- /var/tmp/sdrharness-dev/rml2018a-spectrum-20260916-a2"
+    }
+  ],
+  "retained_count": 23,
+  "retained_bytes": 7517400,
+  "cleanup_count": 3,
+  "cleanup_bytes": 141572,
+  "limits": [
+    "Parent HDF5 full hashes inherited; size/mtime checked, selected row hashes newly recorded",
+    "High source SNR>=20 is not measured receiving SINR",
+    "Nominal rectangular bandwidth mask, not hardware response or measured attenuation",
+    "Diagnostic validation only; no new final-test claim"
+  ]
+}
