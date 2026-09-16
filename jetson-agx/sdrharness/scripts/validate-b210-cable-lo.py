@@ -27,6 +27,14 @@ spec.loader.exec_module(campaign)
 TAGS = ('before', 'positive', 'negative', 'half-amplitude', 'positive-repeat', 'after')
 GAIN_PAIR_TAGS = ('before', 'baseline1', 'paired1', 'baseline2', 'paired2', 'after')
 EXPERIMENTS = {'lo-offset': c.LO_REFERENCE_SCHEMA, 'gain-pair': c.LO_GAIN_PAIR_SCHEMA}
+LEGACY_DAEMON_SHA256 = '83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f'
+FULL_SNR_DAEMON_SHA256 = 'dae7c32fd63fc4542fd5eadce37c272160eba92193accdb983919ad1a4fce74e'
+
+
+def expected_daemon(plan):
+    value = plan.get('daemon_sha256', LEGACY_DAEMON_SHA256)
+    c.require(value in (LEGACY_DAEMON_SHA256, FULL_SNR_DAEMON_SHA256), 'registered daemon release')
+    return value
 
 
 def gain_pair_criteria():
@@ -72,6 +80,7 @@ def create_plan(root, experiment='lo-offset'):
             result_path=str(root/tag), agx_staging=str(root.parent/f'{root.name}-tx{index}'),
             p201_staging=f'/tmp/sdr-agent-dev/agx-sweep-{gen}-0'))
     plan = dict(schema=schema, run_id=run_id, software=software(),
+        daemon_sha256=FULL_SNR_DAEMON_SHA256,
         tx_identity=campaign.transport_module().identity('agx'),
         connection='User confirmed B210 RF A TX/RX ->20dB50ohm attenuator +15cm SMA ->P201 RX1',
         points=points, maximum_tx_seconds=16, maximum_tx_samples=sum(p['tx']['tx_samples'] for p in points if p['tx']),
@@ -88,7 +97,8 @@ def create_plan(root, experiment='lo-offset'):
     print(json.dumps(plan), flush=True)
 
 
-def preflight(bg, transport):
+def preflight(bg, transport, daemon_sha256=LEGACY_DAEMON_SHA256):
+    expected_daemon({'daemon_sha256': daemon_sha256})
     password = Path('/home/jetson/.config/sdrharness/p201-root.password')
     c.require(password.is_file() and not password.is_symlink() and password.stat().st_mode & 0o777 == 0o600,
         'protected password file')
@@ -101,7 +111,7 @@ def preflight(bg, transport):
     c.require(sum(':43110 ' in line for line in bg.ssh('netstat -lnt').splitlines())==1, 'single listener')
     bg.ssh('test -f /sd/sdr-agent/current/sdrd.conf && test -f /sd/sdr-agent/current/S60sdrd')
     daemon_hash=bg.ssh('sha256sum /sd/sdr-agent/current/sdrd').split()[0]
-    c.require(daemon_hash=='83a661a892b8ab71de3f4e7d64064c9c65030623dc7245eb3d3a1420a696ba4f', 'daemon hash')
+    c.require(daemon_hash==daemon_sha256, 'daemon hash')
     c.require(c.file_hash(bg.BINARY)=='24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f', 'Controller hash')
     before=bg.ssh(bg.STATE)
     state=dict(zip(before.splitlines()[::2],before.splitlines()[1::2]))
@@ -212,6 +222,7 @@ def capture(root, point, bg, transport, baseline):
 def acquire(root):
     check_root(root)
     plan=campaign.document(root/'plan.json')
+    daemon_sha256=expected_daemon(plan)
     c.require(plan['schema'] in EXPERIMENTS.values() and plan['software']==software() and
         plan['tx_identity']==campaign.transport_module().identity('agx'), 'sealed software/runtime')
     c.require([p['tag'] for p in plan['points']]==list(tags_for(plan['schema'])), 'fixed point order')
@@ -231,7 +242,7 @@ def acquire(root):
         json.dump(dict(pid=os.getpid(),plan_sha256=c.file_hash(root/'plan.json'),time_ns=time.time_ns()),stream)
     bg=campaign.module('lo_bg','validate-p201-termination-background.py')
     transport=campaign.transport_module().Transport('agx',bg)
-    baseline=preflight(bg,transport); c.save(root/'preflight.json',baseline)
+    baseline=preflight(bg,transport,daemon_sha256); c.save(root/'preflight.json',baseline)
     receipt=dict(status='failed',model_windows=0,dataset_rows=0)
     signal.alarm(360)
     try:
@@ -241,7 +252,7 @@ def acquire(root):
         signal.alarm(0)
         for sig in (signal.SIGINT,signal.SIGTERM,signal.SIGALRM):signal.signal(sig,signal.SIG_IGN)
         receipt['radio_restored']=bg.restoration(baseline['radio'])==baseline['radio']
-        receipt['after']=preflight(bg,transport)
+        receipt['after']=preflight(bg,transport,daemon_sha256)
         c.require(receipt['after']==baseline, 'complete device restoration')
         receipt['temporary_paths_absent']=all(not Path(p['agx_staging']).exists() for p in plan['points'])
         for point in plan['points']:bg.ssh('test ! -e '+shlex.quote(point['p201_staging']))

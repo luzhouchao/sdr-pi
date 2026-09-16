@@ -24,36 +24,6 @@ move hardware or silently switch hosts when AGX fails.
 
 ## Plan and execute
 
-### LO calibration and API boundaries
-
-- Distinguish the dedicated A7-100T/FX3 images from the host library. The audited
-  AGX `libuhd` is Ubuntu package4.1.0.5-3 with the manifest SHA; do not describe it
-  as a custom host driver solely because the runtime directory says A7-100T.
-- In the audited UHD4.1.0.5 path, B200 `get_tx_stream()` calls `update_enables()`
-  → AD9361 `set_active_chains()` → TX quadrature calibration when TX is enabled.
-  The existing helper creates the stream after setting rate/frequency/gain/BW;
-  absence of an explicit application calibration call does not mean calibration
-  was skipped. Same-frequency tuning returns early; a retune more than100MHz
-  from the last calibration point can trigger calibration. Do not use a frequency
-  excursion as an unplanned refresh operation.
-- Generic `set_tx_dc_offset` / `set_tx_iq_balance` API existence does not establish
-  B200 support: the audited frontend does not expose their correction properties.
-  Generic calibration utilities and ADI no-OS functions are not interchangeable
-  with this UHD path. Do not manually poke registers or inject host-IQ DC as a
-  substitute; with LO offset, host DC may alter the wanted AM carrier.
-- Calibration completion is not a measured residual-LO specification. Keep
-  RF LO, DSP shift and wanted RF frequency distinct; save `tune_result_t` and
-  applicable filter state in a future authorized experiment. Existing historical
-  configuration logs report combined frequency/BW, not the full RF/DSP split.
-- Preserve original RML modulation and distinguish coherent TX LO from background
-  transients. Before moving the LO further, assess occupied bandwidth and filter
-  headroom; offset tuning relocates leakage rather than reducing its emission.
-
-Version-specific source evidence, USB reload verification and remaining limits:
-[2026-09-16 driver audit](../../../../docs/validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#uhd校准路径只读审计与获准镜像重载2026-09-16).
-
-### Finite transmission
-
 1. Resolve the actual helper binary and verify its SHA, supported mode and
    source/runtime identity. Source tests, isolated executable and installed
    executable are different states. Keep B210 artifacts outside P201 paths.

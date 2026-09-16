@@ -31,8 +31,7 @@ it is not a read-only status query, and does not authorize TX/RX streams.
 
 Before initializing or transmitting, read
 [references/finite-tx.md](references/finite-tx.md). It covers the known image,
-plan/GO protocol, stop paths and event interpretation. Read its calibration
-section when diagnosing LO leakage or choosing correction APIs. For coordinated P201 RX,
+plan/GO protocol, stop paths and event interpretation. For coordinated P201 RX,
 also use [p201-sdr-workflow](../p201-sdr-workflow/SKILL.md); only the Controller
 owns the P201 session. This skill does not add P201 TX capability.
 

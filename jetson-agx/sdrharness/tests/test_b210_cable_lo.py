@@ -21,6 +21,16 @@ def load(name,filename):
 
 
 class CableLoTests(unittest.TestCase):
+    def test_daemon_identity_is_pinned_per_plan_and_unknown_release_refused(self):
+        diagnostic=load('lo_deployment','validate-b210-cable-lo.py')
+        self.assertEqual(diagnostic.expected_daemon({}), diagnostic.LEGACY_DAEMON_SHA256)
+        self.assertEqual(diagnostic.expected_daemon({'daemon_sha256':diagnostic.FULL_SNR_DAEMON_SHA256}),
+                         diagnostic.FULL_SNR_DAEMON_SHA256)
+        with patch.object(diagnostic.socket,'create_connection') as connect:
+            for value in ('0'*64, None, '', ['invalid']):
+                with self.assertRaises(ValueError):diagnostic.preflight(None,None,value)
+            connect.assert_not_called()
+
     def test_gain_pair_compensates_nominal_level_without_unregistered_overrides(self):
         nominal=[]
         for index in range(4):

@@ -1,0 +1,347 @@
+{
+  "date": "2026-09-16",
+  "scope": "User-authorized finite device debugging; reload baseline repeat, no new mitigation claim",
+  "code_head": "9c53aed",
+  "profile": "2455MHz Fs2.1MS/s BW1.5MHz RX40 LO+250kHz; A0.1/TX70 B0.316227766/TX60",
+  "model": null,
+  "source": "Synthetic98437.5Hz tone; no dataset rows",
+  "plan_sha256": "49585c625e7d6214ff185ba0982cb4c0dc64ceec920b11cb3ac20dba166993e5",
+  "retained": [
+    {
+      "root": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/after/audit.json",
+          "bytes": 2917,
+          "sha256": "c477866918e7cfba59556e645d22b71cd22d0d46313619d9a13a03b19cab3342"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/after/report.json",
+          "bytes": 2243,
+          "sha256": "369bbf5eb74b5c12a4ea95f82477c84d2efe92af9d1093daa4a0302598bf477f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/after/rx/cablelo-after-1789561299247-1789561299247-1789561366526184288.sigmf-data",
+          "bytes": 262140,
+          "sha256": "18fa9c6b989c30288b90ced6d06a0d1b17aec5c3220ba16ab16fdac6f2bca345"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/after/rx/cablelo-after-1789561299247-1789561299247-1789561366526184288.sigmf-meta",
+          "bytes": 487,
+          "sha256": "46e2b336d874fb1f78b3cea040eb208837388a0a220f2a4fe3b05aa93875c0e0"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/after/rx-plan.json",
+          "bytes": 386,
+          "sha256": "8d5c778fb3c7fba5c4bb170d994b4ed7a99fe503d06497b6ca523e7aee4cac31"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/after/rx-stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/analysis.json",
+          "bytes": 3733,
+          "sha256": "7bdd28485b0ff98c9e9c4144f51436efc405e61a9a435175aed33cc0a3ce379a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline-spectrum.png",
+          "bytes": 291105,
+          "sha256": "83e89462c0891dcc030b5dc0253a07a473514dde58cb5c99f2b258d4eef4e05b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline1/audit.json",
+          "bytes": 5460,
+          "sha256": "70e36652c4dc09542a06942d6b9db055404fe2bb772d1ed1a218170ed1f0735c"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline1/report.json",
+          "bytes": 2263,
+          "sha256": "3ff938de95a4e7b21eaf7df8cddccb63d2f45ced08d8b0cd9c232b9a252f44a2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline1/rx/cablelo-baseline1-1789561299243-1789561299243-1789561332665428167.sigmf-data",
+          "bytes": 262140,
+          "sha256": "e8f806b2568fb69612998dda53935bd9188bc9502594075418fc799d7b7c519f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline1/rx/cablelo-baseline1-1789561299243-1789561299243-1789561332665428167.sigmf-meta",
+          "bytes": 487,
+          "sha256": "006adf9e83355e9f7d51cf21db572dcbb6851c3180227d5ca42e61f482dce61a"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline1/rx-plan.json",
+          "bytes": 390,
+          "sha256": "5a663c088f0d44eac1454a06428330fb81ed28cc8e797a5258d4f3747791cc80"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline1/rx-stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline1/tx-plan.json",
+          "bytes": 592,
+          "sha256": "858316b60797975a4fcf075d0fc820043da07a82d352ac8c594d371c19457c37"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline1/tx-summary.json",
+          "bytes": 929,
+          "sha256": "4d14dc5d9250a0521c8e9553fa129773dea1b88ca5ebf53a654de63a4f469f2f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline1/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "98d02c95265ab5ce6f5d5c389c30280251766ad2c624d275bc927c6c1bbf9388"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline2/audit.json",
+          "bytes": 5461,
+          "sha256": "3d2abfc8e949a54930ca8023daa657131ff006e4463b110f164443864a3de7a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline2/report.json",
+          "bytes": 2263,
+          "sha256": "e6b06eb63a5e25d88377f2b2b75956883a0d6fb9473be33893819b2cc0a1506b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline2/rx/cablelo-baseline2-1789561299245-1789561299245-1789561351662736633.sigmf-data",
+          "bytes": 262140,
+          "sha256": "d0e70120bd8e886a075871e47920bf2fa417e2a08946a45995755ac29eeb4fe8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline2/rx/cablelo-baseline2-1789561299245-1789561299245-1789561351662736633.sigmf-meta",
+          "bytes": 487,
+          "sha256": "16176c1818183db73ad89c37df4ab7835089908138b658a68a3ebc652b72b1d5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline2/rx-plan.json",
+          "bytes": 390,
+          "sha256": "d158e1038c7e1038d0978892dc04290df47f165a560bfaf5c1dba32f87f8373d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline2/rx-stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline2/tx-plan.json",
+          "bytes": 592,
+          "sha256": "6f8f91d2cfbc5f352dd64ad1d90e60defc34df8257d8bea0900fee72c4044b01"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline2/tx-summary.json",
+          "bytes": 929,
+          "sha256": "a007bee0563c3c6a7662d45222f20341979f7aa3a4ce0b08f33eab3a036410ee"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/baseline2/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "98d02c95265ab5ce6f5d5c389c30280251766ad2c624d275bc927c6c1bbf9388"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/before/audit.json",
+          "bytes": 2920,
+          "sha256": "ebc2bed44e359d40a83de630d5c2406f5abf40207acaed8c673d2c0a9cd7a80e"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/before/report.json",
+          "bytes": 2247,
+          "sha256": "f562ded74713b5c2210e632b9c7aa370e3d5ccfc0c243a81ee0535c287d3c1b2"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/before/rx/cablelo-before-1789561299242-1789561299242-1789561323650399130.sigmf-data",
+          "bytes": 262140,
+          "sha256": "8241bda85ee02522cb18cf6d50e42fe40ca0da99cb3d901578460e11cbda6e84"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/before/rx/cablelo-before-1789561299242-1789561299242-1789561323650399130.sigmf-meta",
+          "bytes": 487,
+          "sha256": "f4d95e80b681ab85d70bb318efeff9dbf231f25570e3c1acc607c113cd2bdd42"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/before/rx-plan.json",
+          "bytes": 387,
+          "sha256": "57c26e4b286cb341e36ddeae9e00af897528cbaa55d26c715b5ba74e21bdbf5f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/before/rx-stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/independent-check.json",
+          "bytes": 2631,
+          "sha256": "8fe8e527f98433b25337b99ebb6e890e4384931132be721d65fc44daf6fecbbc"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired1/audit.json",
+          "bytes": 5464,
+          "sha256": "f81eac51a9d1d51468dfd379f7604b7b8a83e7e3cb1dc21058dc1afcf8881de8"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired1/report.json",
+          "bytes": 2253,
+          "sha256": "916a44be19be076e0a5194f4e527b0b8ef45173f70b74c6a134045987703e944"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired1/rx/cablelo-paired1-1789561299244-1789561299244-1789561342340104456.sigmf-data",
+          "bytes": 262140,
+          "sha256": "270a7e44e32369249cebad02e61396d8d1314ba118443775d82096ff4691c065"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired1/rx/cablelo-paired1-1789561299244-1789561299244-1789561342340104456.sigmf-meta",
+          "bytes": 487,
+          "sha256": "b712eac63a66c14f61abc5babb17964e3e955fc857eb54c6b0ccff2aa32b6aa6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired1/rx-plan.json",
+          "bytes": 388,
+          "sha256": "7bfc4464553eed5d8df42644a9b30d3f893a5664fd40b36b3a1e4851cad4f117"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired1/rx-stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired1/tx-plan.json",
+          "bytes": 606,
+          "sha256": "1db0a0b18e83722b621ead7df9751b04dce979c2bc4b384559ef3c9438287621"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired1/tx-summary.json",
+          "bytes": 929,
+          "sha256": "d2eb419841f91153f0f1afa3d11a54296bc10dddec9bc28a28a33c2022ed372b"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired1/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "3fcdd23d959f643e06b971973076d8a4cb568a699d75f2e69bbfdfdde59f5035"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired2/audit.json",
+          "bytes": 5464,
+          "sha256": "d7653d5d82fc8431c3cb0973ee505242761137fd9aba3d68082c76e014e17e41"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired2/report.json",
+          "bytes": 2252,
+          "sha256": "cf323dd94ae89512bbdd7fcad6864498ce3ff1d7fe7de0aa43883670311bfb4d"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired2/rx/cablelo-paired2-1789561299246-1789561299246-1789561360688474702.sigmf-data",
+          "bytes": 262140,
+          "sha256": "584ab29b8f288db19c31439ecbb99ed400edf1eab08bfa00c8ea6090782c36e9"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired2/rx/cablelo-paired2-1789561299246-1789561299246-1789561360688474702.sigmf-meta",
+          "bytes": 487,
+          "sha256": "604d180f591a035b7a75425514386bd44ac555504785b1f9b01ddffcf3aae7fa"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired2/rx-plan.json",
+          "bytes": 388,
+          "sha256": "d3253024c12f3a9d4975d943ce42da71042171a4d0c3fbc657ecb50fdccfb037"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired2/rx-stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired2/tx-plan.json",
+          "bytes": 606,
+          "sha256": "222a305421321bba11ca3ca418f9122bde49a00fd7622280eeae6829c48406a6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired2/tx-summary.json",
+          "bytes": 929,
+          "sha256": "43ea43e5603f9025cead5a5e5c9e7b92498159c1ba49889e8d079d1f4ca76b94"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/paired2/tx-uhd.log",
+          "bytes": 1537,
+          "sha256": "00116cb088ee98cbb582cb09a1d25278c23160d2328e0230ccc89553b18ba2a4"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/plan.json",
+          "bytes": 9853,
+          "sha256": "49585c625e7d6214ff185ba0982cb4c0dc64ceec920b11cb3ac20dba166993e5"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/postflight.json",
+          "bytes": 2376,
+          "sha256": "c67a773174365e013c04da03a1d9db5a3a24df93838ff0020ba8201cbddbbb06"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/preflight.json",
+          "bytes": 2167,
+          "sha256": "e0866572e5ebe5a91e66c09dd29a36b4b8eb882b1fde598683d16153bcee3eb6"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/b210-cablelo-reload-20260916/started.json",
+          "bytes": 130,
+          "sha256": "a320e922ebd0b8fc6625c171974066a53e40176fc1c0f5e086617bfc57d6e433"
+        }
+      ],
+      "count": 55,
+      "bytes": 1943553,
+      "purpose": "RF reload baseline and finite acquisition lineage",
+      "manual_delete": "rm -r -- /var/tmp/sdrharness-dev/b210-cablelo-reload-20260916"
+    },
+    {
+      "root": "/var/tmp/sdrharness-dev/lo-live-check-20260916",
+      "files": [
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-live-check-20260916/acquire.log",
+          "bytes": 431,
+          "sha256": "0ab98b667a56f4bc74c3c640cfe86cb5fbdbb64ca01f9b1675baf740a307659f"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-live-check-20260916/cleanup.json",
+          "bytes": 5407,
+          "sha256": "a0a2099d4a49bc54f31aebd214431e61d60047624499e0610e834bd291280dbd"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-live-check-20260916/diagnostic-source.py",
+          "bytes": 20916,
+          "sha256": "0be66ced761c1feb1009b809aba54bcdb3f79692c54cfdc0b4fc14022ae7c555"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-live-check-20260916/diagnostic-tests.py",
+          "bytes": 7042,
+          "sha256": "cd24c27ce015f9bb82c6e19f2b408252d62bd913d72ba1503eab41482e2f6010"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-live-check-20260916/validation-notes.json",
+          "bytes": 438,
+          "sha256": "215a2b9deb83c22cb69edf2a5e8f2336c9ad1cd6d0feac159a2dfe7634490326"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-live-check-20260916/verify-and-plot.py",
+          "bytes": 3265,
+          "sha256": "4f631efdc86c8401e959125044be3d4d06ecd38fb0749d5d2aa5b916635b4000"
+        },
+        {
+          "path": "/var/tmp/sdrharness-dev/lo-live-check-20260916/verify.log",
+          "bytes": 2631,
+          "sha256": "8fe8e527f98433b25337b99ebb6e890e4384931132be721d65fc44daf6fecbbc"
+        }
+      ],
+      "count": 7,
+      "bytes": 40130,
+      "purpose": "Execution/verification source and minimal logs",
+      "manual_delete": "rm -r -- /var/tmp/sdrharness-dev/lo-live-check-20260916"
+    }
+  ],
+  "cleanup_count": 35,
+  "cleanup_bytes": 328330,
+  "limitations": [
+    "All four TX logs have U/S tail markers without device timestamps",
+    "No proof of TX sample continuity or association with captured transient",
+    "No model accuracy or calibrated physical SINR claim"
+  ],
+  "next_experiment": "Timestamped event observer at fixed TX60 single-tone, before changing LO/calibration parameters"
+}

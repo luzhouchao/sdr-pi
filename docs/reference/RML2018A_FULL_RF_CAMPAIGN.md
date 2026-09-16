@@ -570,6 +570,8 @@ Z仅为原始数据集的标称SNR，不是当前空口接收SNR/SINR。
 提供`plan/acquire/analyze --root /var/tmp/sdrharness-dev/b210-cablelo-<唯一标识>`，使用AGX模型venv的Python运行。
 它复用既有B210有限TX helper、AGX USB运行时和P201 Controller，不读取数据集或运行模型。
 新根先生成计划，核对当前接法、软件和预算后才能`acquire`；`started.json`阻止同根重复发射，失败须保留记录。
+2026-09-16起新LO计划显式锁定已验收的整档流daemon SHA；无该字段的旧调用仍要求原daemon，
+不自动接受其他部署。当前已执行复测及发送尾部事件限制见[设备调试](../validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#获准设备调试镜像重载后的lo功率基线2026-09-16)。
 
 独立schema为`b210-cable-lo-reference-v1`：固定2455MHz、2.1MS/s、BW1.5MHz、TX70/RX40、
 98437.5Hz复数单音（1024点第48个FFT频点），按顺序执行`(+250kHz,0.1)`、`(-250kHz,0.1)`、
