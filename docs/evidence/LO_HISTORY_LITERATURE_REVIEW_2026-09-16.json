@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-16",
+  "code_head": "70dfcd41a3ebd618b57119e30937084beed07b03",
+  "scope": "Historical identity and official literature review only; no RF, calibration writes, inference or training",
+  "historical_verified_files": 360,
+  "historical_verified_bytes": 19907060,
+  "prototype": "Paused leading-guard draft; six synthetic tests passed; no real IQ replay or production use",
+  "model": "Original D8 seed42 unchanged; not loaded",
+  "profile": "Historical Fs 2.1 MS/s, BW 1.5 MHz, MCR 33.6 MHz, TX60/RX50, LO offset +250 kHz; no configuration changes",
+  "source_lineage": "See historical-identity-check.json parent evidence; no new sample rows",
+  "retained_files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/lo-literature-review-20260916/cleanup.json",
+      "bytes": 5027,
+      "sha256": "ba7f96ff58255bddbecfa4577b8aa0ff51bb633f48eb0b2c84ab9f68339e8e23"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/lo-literature-review-20260916/historical-identity-check.json",
+      "bytes": 1933,
+      "sha256": "f278354dd9d1b4ffd144c10e5cd3e24e68dad05b0bb730c04449c9a5340f009b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/lo-literature-review-20260916/rml2018a_guard_leading.py",
+      "bytes": 1492,
+      "sha256": "c7fd74a2513166881afa9d4fcb93d23e266b7632076b8fda4cc3b2adaa453a0b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/lo-literature-review-20260916/source-notes.json",
+      "bytes": 2840,
+      "sha256": "fd452dad18b4a4cb3be74eadc4b1d8ad91955385fe958d41119eb47baf06a3a8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/lo-literature-review-20260916/test_rml2018a_guard_leading.py",
+      "bytes": 2825,
+      "sha256": "95212dfc0ce5aed1c68df70de1ef46055af94f8bb00b83f2d9e7ed05d222152a"
+    }
+  ],
+  "retained_count": 5,
+  "retained_bytes": 14117,
+  "cleanup_count": 24,
+  "cleanup_bytes": 4634714,
+  "manual_delete": "rm -r -- /var/tmp/sdrharness-dev/lo-literature-review-20260916",
+  "purpose": "Minimal source provenance, historical integrity check and unexecuted draft retained for reproducibility"
+}

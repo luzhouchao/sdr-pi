@@ -19,7 +19,7 @@
 | [evidence/](evidence/README.md) | 原始审计 JSON、保留证据清单、预登记计划和图表 |
 
 当前实验选择：频段保持 **2455 MHz**；用户2026-09-13最新确认已接回 **B210 RF A TX/RX→20dB衰减器及15cm同轴→P201 RX1**，当前B210停发。参考参数见
-[后续实验选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。当前选择为既有ADC离线基线与预处理诊断，暂不重新收发或微调；完成结果见[离线报告](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md)。
+[后续实验选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。既有ADC离线诊断后，当前选择为LO历史/资料复核及TX校准路径只读审计，暂不重新收发或微调；完成结果见[离线报告](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md)。
 实验历史仅提供[索引链接](validation/README.md#近期射频排查2026-09-09至10)，需要时再读。
 
 其他资料入口（按需）：
