@@ -1,0 +1,194 @@
+{
+  "date": "2026-09-17",
+  "code_parent_head": "9d74fba7bfbd2560bb27cb18add827e7930c000a",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917",
+  "purpose": "Posthoc association of106 low-source-SNR guard regressions with class, fixed-frequency phase, residual power and RMS; retain failure and reproducibility",
+  "lineage": "rows.csv includes source_row, validation_rank, original capture/frame/window/context SHA; plan pins parent evidence, predictions, metadata and frame JSON; no IQ copies",
+  "model": {
+    "display_name": "Shared-Bi / original Mamba D8",
+    "variant": "amc_mamba_d8",
+    "seed": 42,
+    "checkpoint": {
+      "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed42_nw8/checkpoints/best.pt",
+      "relative": "amc_mamba_d8/seed42/best.pt",
+      "bytes": 1691293,
+      "mtime_ns": 1784544418697035906,
+      "sha256": "6f984a78639a8e8e15403a1257b264839c6057165b3ae9ac8640ecc056f78143"
+    },
+    "config_relative": "amc_mamba_d8/seed42/config.json",
+    "training_git": {
+      "commit": "82cfbc2b6a9d7072b5ab56c218478e351f355ac1",
+      "dirty": true
+    },
+    "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse",
+    "num_classes": 24,
+    "input_length": 1024,
+    "class_order": [
+      "OOK",
+      "4ASK",
+      "8ASK",
+      "BPSK",
+      "QPSK",
+      "8PSK",
+      "16PSK",
+      "32PSK",
+      "16APSK",
+      "32APSK",
+      "64APSK",
+      "128APSK",
+      "16QAM",
+      "32QAM",
+      "64QAM",
+      "128QAM",
+      "256QAM",
+      "AM-SSB-WC",
+      "AM-SSB-SC",
+      "AM-DSB-WC",
+      "AM-DSB-SC",
+      "FM",
+      "GMSK",
+      "OQPSK"
+    ],
+    "original_preprocessing": {
+      "axis_adapter": "[N,1024,2] transpose to [N,2,1024]",
+      "dc_removal": false,
+      "denoise": false,
+      "denoise_method": "none",
+      "dtype": "float32",
+      "filtering": false,
+      "normalization": "none",
+      "windowing": false
+    },
+    "archived_test_acc": 0.6332087420804565,
+    "archived_test_samples": 383387,
+    "source_run": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d8/d8_weight_tied_2018a_b128_seed42_nw8"
+  },
+  "split": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/splits/server-seed42-20260914/RML2018a_split_seed42_tr700_val150_te150.npz",
+    "bytes": 3906318,
+    "mtime_ns": 1789395491153582339,
+    "sha256": "0a7cbd3b8a4b921b7dc3d0c37473322207c6bd9fb362ea58498c851fad9dc5a3",
+    "partition": "val",
+    "seed": 42,
+    "counts": {
+      "train": 1789132,
+      "val": 383385,
+      "test": 383387
+    },
+    "validation_indices_sha256": "789f71e82178e5deffe2d78d7cf59540b43c0630c90707da60f63563654f2754"
+  },
+  "profile": "Existing original D8 seed42 FP32 single-window1024 predictions; historical guard and independent RMS; no model loaded",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/attempt1-memory-failure/executed.py",
+      "bytes": 12319,
+      "sha256": "ccdc83b6a9982ea96e1eb408ab7eaee6f42053718246fa1e5c9af71896069644"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/attempt1-memory-failure/plan.json",
+      "bytes": 628843,
+      "sha256": "8b43f6c3e396386bd6241abbc4564d11de1c87f6301b7d58bdc5d873f8e367d5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/attempt1-memory-failure/results.json",
+      "bytes": 113924,
+      "sha256": "8f54d83edd42418e49667a32bd9b742a7f2ba8ade4d205b9db07c54d270f21bd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/attempt1-memory-failure/run.log",
+      "bytes": 561,
+      "sha256": "76b67b0b23b54e527eb40ba7233e3c74aaa88dce06c446b8d9132e276769714f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/attempt1-memory-failure/started.json",
+      "bytes": 37,
+      "sha256": "fbc2932d7b0db864a88170e9185a980698174e0702a3ead852bb33722e15ff53"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/cleanup.json",
+      "bytes": 1298,
+      "sha256": "b8a03accbf4395dfeecd13945bc0d120f4487a7a4e78e7b9ef6b6525d561c8b8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/executed-rml2018a_low_snr_association.py",
+      "bytes": 12409,
+      "sha256": "2598150d75884297574a08d3fc636792882fd1c5ee63a9ac0c2e9c7b6cdc347d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/executed-test_rml2018a_low_snr_association.py",
+      "bytes": 1793,
+      "sha256": "f77eee9a3183b5d52ac10337f9f336b3816df013113008d7285e9b9f90ba0c93"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/execution-notes.json",
+      "bytes": 379,
+      "sha256": "c89b3cd4d2f8fc73b63070a7ac81094be872be8b3f5bc793df2cc5ce40e64ad3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/independent-verification.json",
+      "bytes": 556,
+      "sha256": "dcdf39956dd8279efa6a6c7521d95133c08b95ed0165605f388f04930b5338ca"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/low-snr-association.png",
+      "bytes": 231661,
+      "sha256": "bd9241c8a939da3e86e65df70d1788d71bde37cce03ecd732d0bd74d784e049f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/low-snr-regressions.csv",
+      "bytes": 43833,
+      "sha256": "25e71f3429357d8041b10c9b66275fd6bc0f5b49b37dae69e71ab8e9dead2186"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/plan.json",
+      "bytes": 628843,
+      "sha256": "4b325832ccb1f86474d137fdaade6955a00dc977b9d93d932f121dd4e9705ae1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/regression-confusions.csv",
+      "bytes": 1170,
+      "sha256": "72fb6dae65a8965dc63bc7a65357f9446eea7fab666d0e449c24d1127900cb54"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/results.json",
+      "bytes": 113923,
+      "sha256": "76912ecbce0086e41e05c20facc1447e98dc4fe749cf7e0191e9eda934ec189f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/rows.csv",
+      "bytes": 1028241,
+      "sha256": "3fc89e10ea2c0cad8080ac45dec1f4299d4133f1a8bf0a2d1546b2ee4d50836c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/run.log",
+      "bytes": 989,
+      "sha256": "23fe8de8da56ca3019e815ce612ae57394713e6219bee8e9b60bfaac2b875e4a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/started.json",
+      "bytes": 37,
+      "sha256": "11410f7468830585367f4993e6a275009e64c923f45f9fd09a4e35ce4e49b1b9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/tests.log",
+      "bytes": 484,
+      "sha256": "7ab999ee002f39229e30c3297228b297119afdfa24fe6ad533d229d1d8f68316"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/verify_plot.py",
+      "bytes": 6109,
+      "sha256": "69100a9942b9accb2466b126af4fee9007b08bc9d9cbeab60ead6ed942a4eaa0"
+    }
+  ],
+  "retained_count": 20,
+  "retained_bytes": 2827409,
+  "cleanup_count": 4,
+  "cleanup_bytes": 1196676,
+  "manual_delete": "rm -r -- /var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917",
+  "first_attempt_failed": "RSS1990369280 exceeds original1073741824 byte budget; failure log/plan/results/executed code retained",
+  "fixed_attempt": "Single frame JSON cache; RSS156372992; same statistics, original resource gate passed",
+  "rf": false,
+  "training": false,
+  "new_predictions": 0,
+  "production_enabled": false
+}
