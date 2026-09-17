@@ -1,0 +1,86 @@
+{
+  "date": "2026-09-17",
+  "code_parent_head": "2f8a68995562797d956430c2a30bd2102d343625",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917",
+  "purpose": "Distinguish coherent guard phase curvature from amplitude change and empirical estimation uncertainty at archived fixed frequency",
+  "source_lineage": "rows.json links original source_row/raw_path/frame/marker_offset and context SHA; parent rows include validation_rank ancestry, model/preprocess identity and full input manifests",
+  "parent_audit": "docs/evidence/RML2018A_LEADING_GUARD_2026-09-16.json",
+  "preprocess": "Historical original guard tone frequency; no new cancellation, RMS or model evaluation",
+  "model": "Not loaded; parent original D8 seed42 lineage retained",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/cleanup.json",
+      "bytes": 280,
+      "sha256": "84717a4853b4e69433157e5c553b57f6e4ced41538aa4eb3373e433dc9fa4eb9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/executed-rml2018a_lo_temporal_diagnostic.py",
+      "bytes": 10599,
+      "sha256": "ed2f69bf6b2fe7042bd44b5622a577994e2783aa4d9d4d4d3d11f10c1ad7d191"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/executed-test_rml2018a_lo_temporal_diagnostic.py",
+      "bytes": 2192,
+      "sha256": "bf1d436517cc657ecd5a63c6368ec01430cad52ddbd36a72d7eb60de174eb99e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/independent-verification.json",
+      "bytes": 3432,
+      "sha256": "87247cbc7c5f1e63e6ba2fd423357548277ad99ae4b996e0ebf482d5f5f99898"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/per_capture.csv",
+      "bytes": 1302,
+      "sha256": "356ae777b58962c645c6f874402539dca2ac3f1067d90572839c2f0b2559a70b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/plan.json",
+      "bytes": 13536,
+      "sha256": "ed269df657d4476fbbc979f49d136e52895bf8bc46e4b5461442008be91614b4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/rows.json",
+      "bytes": 11024747,
+      "sha256": "bf01b6e2df5cd2a8538bca7da954ac85eb3a2c919fd294d1eac056c69727c4ad"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/run.log",
+      "bytes": 1008,
+      "sha256": "de158643521c5a74bf07dc3950d1e739e0b6ea6700715a9879d4e755105aef24"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/started.json",
+      "bytes": 37,
+      "sha256": "0e142b15e142cf47176180255524db6db888420bcff93f361f53af51168a48c1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/summary.json",
+      "bytes": 1330,
+      "sha256": "09b147aabcdc50b276aa18652740bc51d24991f4170516781cff7e918ee08c59"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/temporal-diagnostic.png",
+      "bytes": 216369,
+      "sha256": "b2a3f35ad774c753117edddeed704218d9175b430c3abae3cf6da30183b7a57d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/tests.log",
+      "bytes": 612,
+      "sha256": "0099126502ff76d54848e97bfa5329a49d49f61d5d3fc94d0a001f70099cd2d6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917/verify_plot.py",
+      "bytes": 4738,
+      "sha256": "5239e059a1fa3bd56ef682d29f3db0e695a1ec27de7c587454fd69282890a571"
+    }
+  ],
+  "retained_count": 13,
+  "retained_bytes": 11280182,
+  "cleanup_count": 1,
+  "cleanup_bytes": 123432,
+  "manual_delete": "rm -r -- /var/tmp/sdrharness-dev/rml2018a-lo-temporal-20260917",
+  "rf": false,
+  "training": false,
+  "predictions": 0,
+  "production_enabled": false
+}
