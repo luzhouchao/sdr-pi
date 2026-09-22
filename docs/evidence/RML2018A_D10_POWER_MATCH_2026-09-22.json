@@ -1,0 +1,90 @@
+{
+  "purpose": "D10 final total-input-power matched scale/tone/white-noise diagnostic, fixed2496 primary576",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922",
+  "lineage": "plan pins source model split and D10/baseline parents; predictions retain IDs ranks truth Z and raw/guard RMS; input and noise hashes preserve generation identity",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/baseline.json",
+      "bytes": 129,
+      "sha256": "589c36c71d15da710aa55e1297d307433f3a61db726ac80655af4298c9ddd6fd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/cleanup.json",
+      "bytes": 117,
+      "sha256": "f6a8034723d2058339ca3a7de7cd7465b29175d46fdeb75db8e5f49008c70e10"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/executed.py",
+      "bytes": 13022,
+      "sha256": "a43fb2ee3e49ea43ddb4f9f574c90972a9ae8471d82591f253cf2624b45ccb3a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/execution.json",
+      "bytes": 823,
+      "sha256": "04b457ea9570265aee6fbe1eabac4f063aac74dbc170dc6c13395c6e0f42e3f4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/inputs.json",
+      "bytes": 2197,
+      "sha256": "e770c0565729f9f0c10bea0574fb3866b53b3ea0c30e8d5f5d9b27bb8b44c66f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/load.json",
+      "bytes": 242,
+      "sha256": "ec8e7b6bf35542e725c2979eda709eb8191c4240f70db46fbf9ba52de0365bd8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/noise.json",
+      "bytes": 825,
+      "sha256": "02a75b1529fbeb6882381654c107a8f542f57b616c71a938ad3b94ccb38ae211"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/numerical.json",
+      "bytes": 651,
+      "sha256": "cc839c4a577cf348b8844e3b5ef6cb860960b9338c8c49f8dbb1b9a8daa24b5b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/plan.json",
+      "bytes": 38594,
+      "sha256": "82621809643e379a09f13125949b3e959a276e09fe87480ddb4f81d2febe4297"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/plot.py",
+      "bytes": 974,
+      "sha256": "8f7e1545f2855787ec7cdbec0c5d2f377f0c0989e48d4b30d3dfc21aefaf5e3f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/power-match.png",
+      "bytes": 64276,
+      "sha256": "72db0795153240336336168d434fe6e52b2e91430124f1217e13c0ebcbdb99a3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/predictions.npz",
+      "bytes": 1820674,
+      "sha256": "6b0f3f4f5e175c56679469673a31b571d4b2e735bf96a84dcd6efd7c684401fc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/results.json",
+      "bytes": 42120,
+      "sha256": "5fd42da1d3c0c09ed7a0b39f4dbee9d6bd5bdb16779fabc6df3f0f5c82c7fcf1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/verification.json",
+      "bytes": 613,
+      "sha256": "b3a3ad9d67c2879e1d45cc303062501d914f606561690ad58c50d73986421422"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/verify.py",
+      "bytes": 3724,
+      "sha256": "6e52c91d88c7b09180e455f3697adc199e7d73d6968c07e4da60cfc55a91d40b"
+    }
+  ],
+  "file_count": 15,
+  "total_bytes": 1988981,
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922/cache",
+    "files": 376,
+    "bytes": 25841351
+  },
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-d10-power-match-20260922"
+}
