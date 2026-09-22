@@ -1027,3 +1027,32 @@ AM-DSB-WC的18条回退在source RMS上全部正确，FM的10条回退在两种s
 [类别和指标图](/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/low-snr-association.png) ·
 [106条回退血缘](/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/low-snr-regressions.csv) ·
 [混淆转移](/var/tmp/sdrharness-dev/rml2018a-low-snr-association-20260917/regression-confusions.csv)。
+
+## D10替换重跑预检（2026-09-22）
+
+用户指定 `/home/jetson/models/d10/rml2018a/d10_2018a_seed42_nw8/best.pt`
+替换当前D8离线对照；本轮按同2496条成员（低源SNR主576条）、单1024点FP32、
+source/source RMS/raw/guard口径准备，旧证据保持。不是全库任务或生产服务切换。
+
+预检基于仓库 `dfb4e5a1a99a5e2f5ab76bce92eafd8eb14d465f`：
+
+- 权重1,603,050字节，SHA256
+  `5d217592cabab54be4352d8ebddcc47eb9cf9b7ea81d1010027e8dd213546b81`，与同目录manifest一致。
+- 使用既有模型venv、`-B`、CPU `torch.load(weights_only=True)`成功，
+  `model_state`有70个张量，含`_d10_schema`、gated stem、segment/evidence pool等。
+  这只证明文件可读，未完成计算图严格加载或AGX数值兼容性验证。
+- 配置声明AMCMambaD10、126958参数、24类；manifest的标签为数字0–23。
+  后续须核对对应源码、原划分成员及标签语义，不能从D8键名重建/猜测forward。
+- 附带README明确要求D10计算图。其来源是shapan4090上的
+  `/home/luzhouchao/projects/mamba`，训练提交声明
+  `76657c78a9c0681b88753487b842a1263d328c27`且dirty，故仅提交号不足以重建源码。
+- 按connect-4090-server技能只读检查既有`4090-via-aliyun`：实际目录为
+  `/data/lzc/mamba`、HEAD `daecb2f24e143fdac0912c2fb3bd436a343ea974`，
+  models及results_package内未找到D10。远端没有rg，改用有界路径find核对。
+  本地权重目录仅含README、checkpoint、config、manifest与metrics，没有模型源码。
+
+已向用户询问对应D10源码位置或shapan4090连接；新推理尚未启动，结果不得标为完成。
+未创建开发产物、缓存目录或IQ副本：本单元新增保留/删除均0文件0字节；
+用户权重保持原处，不纳入开发清理。CPU预检与SSH命令均已退出，无RF、训练或部署变更。
+下一步取得训练对应的源码及依赖后，登记有限预算/输入与模型身份，再严格加载、
+做有限数值检查并执行同成员对照；保持recognizer_available=false。
