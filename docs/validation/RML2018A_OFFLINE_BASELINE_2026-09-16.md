@@ -1384,3 +1384,42 @@ CNN2-stable、ResNet、GRU、CLDNN、MCLDNN、MCformer、MAMC、D10。
 - [现用8模型raw/guard曲线](/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/own-sinr-curves.png)
 - [现用8模型同成员相消变化](/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/shared2496-paired.png)
 - [其余7模型大样本配对](/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/common369497-paired.png)
+
+## D10补齐369497共同验证成员（2026-09-22）
+
+用户明确授权补跑D10。沿用SINR重分层封存的369497共同seed42 validation成员，
+raw/guard均为usable且strict_quality_pass，源行与validation_rank逐条核对；未追加source。
+使用本地D10 best.pt（SHA `5d217592cabab54be4352d8ebddcc47eb9cf9b7ea81d1010027e8dd213546b81`）、
+source_03fa833、严格加载126958参数、真实Mamba2、FP32/TF32关闭、batch128，直接读取既有单窗RMS HDF5。
+每路369497条，共738994预测；没有RF、训练或生产切换，recognizer_available=false。
+
+运行636.15秒，峰值RSS1,432,268,800字节、CUDA394,199,040字节，均在预登记预算内。
+每路48条singleton/batch门通过，最大logits误差raw2.09e−5、guard1.45e−5；
+两路与此前2496成员全部logits逐值相等、top1一致。原验证划分重建相等；
+HDF5依据既有SHA身份以大小/mtime核对，未重新完整哈希42GB输入。
+独立区间掩码重新验证88配对分层、176自身SINR分层、逐行身份/argmax及总体统计；
+其余7模型所有保留统计与封存父结果逐项一致。三图检查通过，调整长标题布局后重新绘图，未重复推理。
+
+| 相消前条件估计SINR | 样本 | raw准确率 | guard准确率 | 变化百分点 |
+| --- | ---: | ---: | ---: | ---: |
+| 总体 | 369497 | 50.45% | 55.09% | +4.65 |
+| <−20 | 30836 | 4.38% | 4.23% | −0.15 |
+| [−20,−15) | 35756 | 6.78% | 4.41% | −2.37 |
+| [−15,−10) | 39797 | 16.97% | 8.89% | −8.08 |
+| [−10,−5) | 33724 | 34.70% | 25.40% | −9.30 |
+| [−5,0) | 36127 | 52.56% | 50.63% | −1.93 |
+| [0,5) | 43657 | 67.95% | 80.69% | +12.74 |
+| [5,10) | 134015 | 76.66% | 91.30% | +14.64 |
+| [10,15) | 15585 | 81.94% | 81.51% | −0.44 |
+
+总体正确186393→203566，净增17173；低SINR退化在大样本仍存在，不能据此确定内部机制或自动设切换阈值。
+相消收益使用同成员及raw参考分箱；自身SINR曲线各格成员不同。SINR仍是条件估计，未独立标定。
+此为既有同轴工程语料验证对照，未升级为独立locked-test或生产准入。
+
+- [8模型自身SINR曲线](/var/tmp/sdrharness-dev/rml2018a-d10-common-20260922/own-sinr-curves.png)
+- [8模型统一raw参考配对曲线](/var/tmp/sdrharness-dev/rml2018a-d10-common-20260922/raw-reference-sinr-curves.png)
+- [8模型相消收益](/var/tmp/sdrharness-dev/rml2018a-d10-common-20260922/paired-gain.png)
+
+本单元进程正常退出；清理377缓存文件25,836,886字节，cache目录不存在。
+保留19文件87,923,648字节，包括两路逐行预测、脚本、表图和核验记录，无IQ副本；
+精确路径、SHA、父血缘与人工删除见[保留审计](../evidence/RML2018A_D10_COMMON_2026-09-22.json)。
