@@ -1,0 +1,85 @@
+{
+  "purpose": "Receive conditional SINR rebinning: existing8-model common369497 and shared9-model2496; raw-reference paired and own-SINR reporting",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922",
+  "lineage": "plan pins parent model-plan/retention and selected metadata/prediction SHA; joined-predictions retains source_row validation_rank source tag raw/guard SINR and class predictions; no new inference or IQ",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/cleanup.json",
+      "bytes": 117,
+      "sha256": "4f73f2085e7e2954d5a0f4b95a674fe1db317864bda13dc713660c37dc3f9803"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/common369497-paired.png",
+      "bytes": 126359,
+      "sha256": "e18c33fccafffe481410fa5de96d6e538b378ede9afca2edc1948be6f47e4863"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/executed.py",
+      "bytes": 8926,
+      "sha256": "9a81b6e83e496924cf529e71e26d6ea0d5682a6ff52ccf1ae6a689c9d72ffa7f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/execution.json",
+      "bytes": 729,
+      "sha256": "b253cda03a464d3c022f7ecc31326fc9e4666633637be0588154acc3caab4d43"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/joined-predictions.npz",
+      "bytes": 5461106,
+      "sha256": "26fec04bd752d54543164fc4b173b590cd69d50fbdf0d66656b29493763a29ec"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/own-sinr-bins.csv",
+      "bytes": 26934,
+      "sha256": "9deea9a27c53ad9d83f2fbfeb07ac2dadf5549e7ff35f0f2932851333d4dcadf"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/own-sinr-curves.png",
+      "bytes": 270148,
+      "sha256": "753805250cd8431c01e35c78476fce0fd122c16d54b59d910a00634a4911a5ed"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/paired-bins.csv",
+      "bytes": 20520,
+      "sha256": "068337e6379ed145364a770c62b434636fef1d4f646c257fa1671ef12d9980d7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/plan.json",
+      "bytes": 641014,
+      "sha256": "9eab56e92b37932b7cc1fafe30750ed5206188bd493e55baecfc4ea73ea72141"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/plot.py",
+      "bytes": 2604,
+      "sha256": "19e7b5731fa9250f4b1e746dafe4be448337b623fe9871eec3a44ec994cce0a8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/results.json",
+      "bytes": 154502,
+      "sha256": "2a1b6e4f8cd0b9960a6dc696f8221a02bc76f6e5d41a207071fe30b4d0b848be"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/shared2496-paired.png",
+      "bytes": 129941,
+      "sha256": "3df9bdf4add8be325acace8e138faab3bc907ec47415dcd9ffa0fe0c16be34f0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/verification.json",
+      "bytes": 302,
+      "sha256": "fc5703281be09858b0ad1c0189d733adf735a53ef0710f23f8ffe9ddb38c0836"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/verify_plot.py",
+      "bytes": 5335,
+      "sha256": "2d3e82fed16f01bf41d0f191c76f87b77a3a37c24f4f797085204e007b2170a9"
+    }
+  ],
+  "file_count": 14,
+  "total_bytes": 6848537,
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/cache",
+    "files": 1,
+    "bytes": 123432
+  },
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922"
+}

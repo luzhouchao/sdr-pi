@@ -83,6 +83,7 @@ Cargo 包/库名 `sdr-agent-controller` 无需改名；不要另建重复实现�
   不使用另一套 common12 canonical_index）；
   不自行改回旧 classes.txt 顺序，也不追溯改写冻结映射/归档。用户指定不等同于
   独立 RF 标签或生产 name_status=verified，未准入运行结果仍保持 provisional。
+- 用户2026-09-22明确要求：实测接收结果统一按接收端SINR分层/展示，源数据SNR只保留为溯源标签，不能替代接收SINR。现有条件估计值须标注“条件估计SINR”，不称独立标定实测真值；缺失/无效值单列。相消前后配对收益用相同成员及统一参考SINR（默认raw相消前）分组；各处理结果自己的SINR曲线另列，不能将不同成员的同名区间直接相减。旧封存证据不改字节，新报告派生并登记血缘。
 - 未标注实收只证明链路/质量。模型 top-1、置信度、unknown 理由或已用于诊断的
   train 波形不能充当独立标签；保持 source/session/day 与派生血缘的集合隔离。
 - Planner 只接收有界摘要；IQ 路径、张量、完整 logits 和内部完整记录不进入 Planner。
