@@ -1,0 +1,67 @@
+{
+  "purpose": "D10 low-source-SNR payload features and independent verification, preserve failed lineage gate; no IQ copies",
+  "roots": [
+    "/var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922-a2",
+    "/var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922"
+  ],
+  "lineage": "plan pins parent model predictions, input identities and baseline per-row ADC RMS; rows.csv carries source/validation/class/Z/raw capture/frame/window",
+  "model": "D10 seed42 archived FP32 single1024 predictions",
+  "profile": "historical source/raw/guard; per-window RMS undone using archived received_rms",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922-a2/executed.py",
+      "bytes": 7533,
+      "sha256": "f44b576a89b21e7e6f054c5c0a022e217e8a60d1f7dce6fd77038f8b6d0befe6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922-a2/execution.json",
+      "bytes": 697,
+      "sha256": "c13d3ffa4823582807f9ea49fae2b2bbe34c76e6ee67c9f67d5d918923c02610"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922-a2/plan.json",
+      "bytes": 2003,
+      "sha256": "7f5b6f26df12620435bd532c88d562034c3181430c3fbc0aa6c0cc103b37a425"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922-a2/results.json",
+      "bytes": 62455,
+      "sha256": "6548285839d6d22024e88585ac5e1008f71b34071504424b142ee679dd8219d9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922-a2/rows.csv",
+      "bytes": 1400125,
+      "sha256": "37b4a5992f40e4837998cb8849f03262907e1034f23dc82a14e5b80165ee67a4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922-a2/verification.json",
+      "bytes": 251,
+      "sha256": "dc11b54f66ea1063e08b48c5cf8bcf35ab2c9eedd927fdd698b521fbb6c1f127"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922-a2/verify.py",
+      "bytes": 4067,
+      "sha256": "48ab85671601f9d4a973a8a761998d848652f295383d27381828ed8d26b180c6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922/failed-executed.py",
+      "bytes": 7449,
+      "sha256": "440f3a8295d76be9fb24078a6b20744fca173c21c720f6f46745d95354984634"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922/failure.json",
+      "bytes": 590,
+      "sha256": "540828919b1f28e68c55f3ea02fbbd834d840262bc927b601e9e1b8912112dc8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922/plan.json",
+      "bytes": 2003,
+      "sha256": "0bf64534d1f5d2f0d305cccf2e3895cea0a2f0c9850bac55441c9832da7b4d47"
+    }
+  ],
+  "file_count": 10,
+  "total_bytes": 1487173,
+  "deleted_files": 0,
+  "deleted_bytes": 0,
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922-a2 /var/tmp/sdrharness-dev/rml2018a-d10-payload-20260922"
+}
