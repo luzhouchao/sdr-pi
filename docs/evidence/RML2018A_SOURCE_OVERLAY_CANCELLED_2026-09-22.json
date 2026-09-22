@@ -1,0 +1,27 @@
+{
+  "purpose": "Keep minimal preregistration/executed source/cancellation audit; derived source comparison outputs deleted, historical data unchanged",
+  "status": "cancelled_by_user",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-sinr-source-comparison-20260922",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-source-comparison-20260922/cancellation.json",
+      "bytes": 1382,
+      "sha256": "d525d6801f0093b44ce0b593a3ab92e48e338d0fa07c413315353f28a7e7bf86"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-source-comparison-20260922/cancelled-executed.py",
+      "bytes": 5419,
+      "sha256": "ba69a3916be1173467f866f6e31e1798fd3d2f496d7f26348129bbbbc261f646"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-sinr-source-comparison-20260922/plan.json",
+      "bytes": 324201,
+      "sha256": "f864fedcd21eb60c571ff39d1428a84da4ae6d438436a1ffac60761ef7005e71"
+    }
+  ],
+  "file_count": 3,
+  "total_bytes": 331002,
+  "deleted_files": 4,
+  "deleted_bytes": 6320881,
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-sinr-source-comparison-20260922"
+}

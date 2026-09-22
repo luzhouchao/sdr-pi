@@ -1351,3 +1351,17 @@ RF、训练或生产服务变更。保持recognizer_available=false。
 [9模型同2496配对图](/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/shared2496-paired.png)；
 [8模型369497配对图](/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/common369497-paired.png)；
 [各自SINR曲线](/var/tmp/sdrharness-dev/rml2018a-sinr-stratification-20260922/own-sinr-curves.png)。
+
+## source曲线追加取消（2026-09-22）
+
+用户先要求解释raw/guard并加入未经过RF的source曲线，随后明确“不要加source了”。
+只读source预测关联在处理取消前已正常退出（9.58秒，RSS141,807,616字节）；
+未生成新图、未新推理、未读取IQ或进行RF/训练。按最新指令不交付source曲线，
+既有raw/guard SINR图表保持。raw是同步/CFO及相位校正后、不作保护区LO相消的
+归一化载荷；guard是保护区参考LO相消后、按自身RMS归一化的载荷，不是保护区样本本身。
+
+清理精确根`/var/tmp/sdrharness-dev/rml2018a-sinr-source-comparison-20260922`内
+三份派生输出及未跟踪的临时仓库脚本，共4文件6,320,881字节；逐路径确认不存在。
+仅保留预登记、执行脚本快照和取消/删除SHA清单，共3文件331,002字节，以复核取消事实；
+不保留source新比较结果，不改历史预测/IQ/图或生产服务，进程已退出。
+[取消与精确清理审计](../evidence/RML2018A_SOURCE_OVERLAY_CANCELLED_2026-09-22.json)。
