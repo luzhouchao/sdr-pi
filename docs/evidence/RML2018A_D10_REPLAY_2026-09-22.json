@@ -1,0 +1,77 @@
+{
+  "purpose": "D10 vs archived D8 fixed 2496-member replay, low-source-SNR 576 comparison; no IQ copies",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922",
+  "parent": "/var/tmp/sdrharness-dev/rml2018a-offline-baseline-20260916",
+  "lineage": "plan.json pins source, model, split and parent; inputs.json pins original source/clean RX files; predictions retain source_row and validation_rank",
+  "model": "D10 seed42 FP32 single 1024, historical clean raw/guard per-window RMS",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/cleanup.json",
+      "bytes": 112,
+      "sha256": "dab45cb856db77574dd89eb80482a8352ab9b16a7a9a9f8098f2c228d204f183"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/comparison.png",
+      "bytes": 106195,
+      "sha256": "9fd05fed129148ff822e0a195d2827abd78a81a95d1f67dbe54f7f5f936b2140"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/executed.py",
+      "bytes": 8719,
+      "sha256": "750aed2ad3a153254656efc02a8634da1f3ec1dc1949c1a32087da16f83e7009"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/execution.json",
+      "bytes": 980,
+      "sha256": "9105b0ae3928c40b7f010de2921cb027f110c9a9f99c1037d841368dd719b2a2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/independent-verification.json",
+      "bytes": 27107,
+      "sha256": "9c1fd040b4f5376811c1aec212eb10d30577578333a3b8bed3fa0004f07a0ded"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/inputs.json",
+      "bytes": 1365,
+      "sha256": "983ce7efb0068c66b01af60394d76603e035b346fb45eb2398744167421e0fd4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/load.json",
+      "bytes": 242,
+      "sha256": "ec8e7b6bf35542e725c2979eda709eb8191c4240f70db46fbf9ba52de0365bd8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/numerical.json",
+      "bytes": 371,
+      "sha256": "5b6d652230309425a806d248c52e56033269a1b8e228bf8f410144fa0313503b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/plan.json",
+      "bytes": 37356,
+      "sha256": "d0cd17535d617341f0f0dfa6397813fac797fc5e0d423a44198cb73e1875d87d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/predictions.npz",
+      "bytes": 1040404,
+      "sha256": "55783229baee110aac821b6d07ab8f78d328fb003c5a4363213df30d12ff5ee4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/results.json",
+      "bytes": 10695,
+      "sha256": "1c170fa0b6dbad2c6fbf1a0ab089f7a2c6a4295bb53673de8eaac75f741c1b08"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/verify_plot.py",
+      "bytes": 2366,
+      "sha256": "f2b2d0751aee89221dfbd40aba7086d233d979ac84a7570d59b2ff57098dc572"
+    }
+  ],
+  "total_bytes": 1235912,
+  "file_count": 12,
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/cache",
+    "files": 376,
+    "bytes": 25711366
+  },
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922"
+}

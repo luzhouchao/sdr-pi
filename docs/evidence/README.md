@@ -274,3 +274,5 @@
 - [RF-aligned checkpoint 审计](../RF_ALIGNED_CHECKPOINT_AGX_VALIDATION_AUDIT_2026-09-05.json)
 
 整理不能为了目录整齐改变这些引用或重新冻结模型配置。
+
+- [2026-09-22 D10同成员离线重跑](RML2018A_D10_REPLAY_2026-09-22.json)：模型/源码/输入血缘、预测与独立核验、图及精确清理清单。
