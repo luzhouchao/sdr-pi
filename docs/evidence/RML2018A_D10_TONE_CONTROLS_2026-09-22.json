@@ -1,0 +1,85 @@
+{
+  "purpose": "D10 fixed-scale removed-tone addback/phase/frequency controls on original2496 diagnostic validation members, primary576",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922",
+  "lineage": "plan pins D10 source/model/split, factorial predictions and ADC RMS; source IDs validation ranks and gains in predictions; inputs contain hashes",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/baseline.json",
+      "bytes": 136,
+      "sha256": "6f6253d64014c228369ced344795c5349616a3b8be7224a1d2be90f2559ff3dc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/cleanup.json",
+      "bytes": 119,
+      "sha256": "46071169fc2bceeff5c64272e4b46a1fd89eedbe869c2275c30c5fe21013917b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/executed.py",
+      "bytes": 12675,
+      "sha256": "5acc342993823c9c83342bedb6e7d46578b18f49f236896399e20a3820075437"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/execution.json",
+      "bytes": 725,
+      "sha256": "da87c4937969dd5a1844c5791c34d1870f9ee4e0f0ce06ded0dbb669440f7c2a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/inputs.json",
+      "bytes": 3107,
+      "sha256": "b09d8619499ac24fbf5e10513ed4f45cc8635dfcef08d1616307d0d5dd560474"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/load.json",
+      "bytes": 242,
+      "sha256": "ec8e7b6bf35542e725c2979eda709eb8191c4240f70db46fbf9ba52de0365bd8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/numerical.json",
+      "bytes": 750,
+      "sha256": "1de8b402fd509877e14b15e6e4d8c5c9f3c7c7548af0427a9f32933b655cc798"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/plan.json",
+      "bytes": 38643,
+      "sha256": "ebf57e22f13c24701506b5718421881fd35fdb1e7a498af4dead0bf9ccb0e57a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/plot.py",
+      "bytes": 946,
+      "sha256": "431f2e8c13a450772a9df133f6581369986ff7ddf7b61f7b920400f8266b603b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/predictions.npz",
+      "bytes": 2060558,
+      "sha256": "b0f00404f6f288958161ee757bd7eaff5e4caaec492b4e226a8bd37a70440129"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/results.json",
+      "bytes": 97688,
+      "sha256": "5ff5e1e7a50f8cfdb804981f5459e4f7266198b6ce4b7a40cae7cdbdfd7b76be"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/tone-controls.png",
+      "bytes": 67036,
+      "sha256": "d2073c631b6d11f3d7544a7e473739ca8080fa207e59508f7da6ebe05b6a0e55"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/verification.json",
+      "bytes": 608,
+      "sha256": "25fb4c1705434353fcb7b385722692648fc3de6ddbe542109a97162fb9e9495d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/verify.py",
+      "bytes": 3099,
+      "sha256": "b59cc233b9a48533f8f41d2674bc1b0e25051606f4621a763d97a4848df1aac5"
+    }
+  ],
+  "file_count": 14,
+  "total_bytes": 2286332,
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922/cache",
+    "files": 376,
+    "bytes": 25713620
+  },
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-d10-tone-controls-20260922"
+}
