@@ -1365,3 +1365,22 @@ RF、训练或生产服务变更。保持recognizer_available=false。
 仅保留预登记、执行脚本快照和取消/删除SHA清单，共3文件331,002字节，以复核取消事实；
 不保留source新比较结果，不改历史预测/IQ/图或生产服务，进程已退出。
 [取消与精确清理审计](../evidence/RML2018A_SOURCE_OVERLAY_CANCELLED_2026-09-22.json)。
+
+## 当前图表以D10替代D8（2026-09-22）
+
+用户要求移除D8，D10为当前模型。由封存SINR结果派生现用报告，当前8模型为
+CNN2-stable、ResNet、GRU、CLDNN、MCLDNN、MCformer、MAMC、D10。
+2496共同诊断成员的自身SINR曲线调整为2×4子图，配对热图与CSV也去除D8；仅raw/guard，无source。
+369497共同验证成员图表只有其余7模型，未给D10补造该范围数据。
+历史D8预测/权重/封存图留作历史证据，本次删除范围为当前对比展示，不进行权重或生产配置替换。
+
+父results/plan SHA核验、所有保留记录与父过滤D8后的结果逐项相同、当前模型8/大样本7、
+无D8/无source及无D10大样本数据检查通过。自身SINR各格成员不同，配对图仍统一raw参考SINR。
+三图已检查，未改变数值门、分组或预测。系统Python绘图正常退出，无新推理、IQ读取、RF、训练或部署。
+保留`/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922`的10文件678,296字节，
+删绘图cache1文件123,432字节，目录不存在，进程退出。
+[保留审计及人工删除](../evidence/RML2018A_CURRENT_MODELS_2026-09-22.json)。
+
+- [现用8模型raw/guard曲线](/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/own-sinr-curves.png)
+- [现用8模型同成员相消变化](/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/shared2496-paired.png)
+- [其余7模型大样本配对](/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/common369497-paired.png)

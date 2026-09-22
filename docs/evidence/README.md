@@ -288,3 +288,5 @@
 - [2026-09-22 接收SINR重分层](RML2018A_SINR_STRATIFICATION_2026-09-22.json)：8/9模型共同成员配对及自身SINR表/图、只读预测血缘与清理。
 
 - [2026-09-22 source叠加取消](RML2018A_SOURCE_OVERLAY_CANCELLED_2026-09-22.json)：用户取消后精确删除派生结果，仅保留最小预登记/执行/取消清单。
+
+- [2026-09-22 当前8模型图表](RML2018A_CURRENT_MODELS_2026-09-22.json)：D10替代D8，raw/guard SINR当前展示、父值一致检查与清理。

@@ -1,0 +1,65 @@
+{
+  "purpose": "Current SINR raw/guard charts and summaries with D10 replacing D8; archived source statistics unchanged",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922",
+  "lineage": "plan pins sealed SINR result SHA; all retained model values exact, only D8 omitted; no D10 full-population result fabricated",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/cleanup.json",
+      "bytes": 117,
+      "sha256": "b27a573f61749a8203fe769c4817161da99462a220b433881c91b47de9322f61"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/common369497-paired.png",
+      "bytes": 117101,
+      "sha256": "789ec26f1f1a2c4a3ac91115f1f52aa44a8faa8f765709437965878be0af22a6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/executed.py",
+      "bytes": 4803,
+      "sha256": "c0c95ed522bb218836fb933f5ab9e4c087d923426f1957f139438e0c0661e41a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/own-sinr-bins.csv",
+      "bytes": 23871,
+      "sha256": "0276ec45aea89bb0c3f58e02b917724fadc1a545f4d1fe81389fa330c2a3c384"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/own-sinr-curves.png",
+      "bytes": 257090,
+      "sha256": "a7a6af01f27bb809a196746cc8b2cad26dc2fff1b6080b455640cba35f64a882"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/paired-bins.csv",
+      "bytes": 17706,
+      "sha256": "5641c9a6c58d6eb3f8447cee1345cc1e31b3934a7ea175fd2e8b91c93d4c02ae"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/plan.json",
+      "bytes": 989,
+      "sha256": "0ea9f19220f960c5cee590290b474b3ac346f939f29f48ff45bb46d6e349f222"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/results.json",
+      "bytes": 135646,
+      "sha256": "f2c29b8e911b39d59e31ad65acbd08650b3efa14508b4d402b40afa6f01199e2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/shared2496-paired.png",
+      "bytes": 120779,
+      "sha256": "e0bd81fa310bacb0516ba62e8844afb005b0fa4b3a31f0088b84d09885444577"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/verification.json",
+      "bytes": 194,
+      "sha256": "119bb5d868c59e5b8be9cbcb90a3fc05a59ca90bab5bb291efc11805b389b015"
+    }
+  ],
+  "file_count": 10,
+  "total_bytes": 678296,
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922/cache",
+    "files": 1,
+    "bytes": 123432
+  },
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-current-model-plots-20260922"
+}
