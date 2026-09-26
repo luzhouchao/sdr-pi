@@ -41,6 +41,38 @@ def block(valid=True, start=0):
 
 
 class StoreTests(unittest.TestCase):
+    def test_explicit_mapping_preserves_repeats_classes_and_failed_rows(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            rows = [int((i % 24)*106496+25*4096+i//24) for i in range(1024)]
+            config = dict(configuration(), source_rows=rows+rows[::-1])
+            with s.SnrStore(root, configuration=config) as store:
+                store.append_processed(*block(False))
+            with s.SnrStore(root) as store:
+                store.append_processed(*block(False))
+                store.verify()
+                with self.assertRaisesRegex(ValueError, 'block budget'):
+                    store.append_processed(*block(False))
+                with self.assertRaisesRegex(ValueError, 'explicit pilot'):
+                    store.finish()
+            with h5py.File(root/'processed.h5', 'r+') as f:
+                for i, expected in enumerate((rows, rows[::-1])):
+                    np.testing.assert_array_equal(f[f'blocks/{i:03d}/source_row'][:], expected)
+                    np.testing.assert_array_equal(f[f'blocks/{i:03d}/class_id'][:], np.asarray(expected)//106496)
+                f['blocks/000/source_row'][0] += 1
+            with self.assertRaisesRegex(ValueError, 'stored source mapping'):
+                s.SnrStore(root)
+
+    def test_invalid_explicit_mapping_rejected_before_corpus_creation(self):
+        valid = [102400]*1024
+        for rows in ([], valid[:-1], [True]*1024, [102400.0]*1024,
+                     [-1]*1024, [2555904]*1024, [0]*1024, valid*97):
+            with self.subTest(first=rows[:1], size=len(rows)), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                with self.assertRaisesRegex(ValueError, 'explicit source mapping'):
+                    s.SnrStore(root, configuration=dict(configuration(), source_rows=rows))
+                self.assertEqual({p.name for p in root.iterdir()}, {'writer.lock'})
+
     def test_roundtrip_resume_after_raw_before_gpu_and_failed_denominator(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); raw = np.arange(2*1024**2, dtype='<i2').reshape(-1,2)

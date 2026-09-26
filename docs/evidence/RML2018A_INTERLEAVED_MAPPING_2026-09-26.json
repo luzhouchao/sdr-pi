@@ -1,0 +1,41 @@
+{
+  "schema": "rml2018a-interleaved-mapping-audit-v1",
+  "date": "2026-09-26",
+  "parent_commit": "94bc7e5efe81e7484b9569157e180de1c2dce02c",
+  "purpose": "Validate explicit observation/source mapping and preregister paired payload amplitude schedule before RF integration",
+  "session": "offline-preparation-no-capture",
+  "source": "RadioML2018A original seed42 validation only; source Z30",
+  "model": "D10 frozen selector; no inference",
+  "preprocess": "existing 16-window frame; fixed pilot and guards; payload-only amplitude",
+  "tests": {
+    "store": 10,
+    "stream_and_snr_stream": 17,
+    "interleaved_schedule": 3,
+    "total_passed": 30,
+    "failed": 0
+  },
+  "actual_source_check": "672 distinct validation source rows; 24 classes x28; original HDF5 Y/Z verified; 2016 primary observations plus32 excluded tail controls; train/test0",
+  "radio_executed": false,
+  "inference_executed": false,
+  "production_changed": false,
+  "retained": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-interleaved-mapping-20260926/schedule.json",
+      "bytes": 81428,
+      "sha256": "0331b0a61cdc55029f4585482784add3fde7fe7f410930e2d4e697b336e14a87"
+    }
+  ],
+  "retained_files": 1,
+  "retained_bytes": 81428,
+  "cleanup": {
+    "remaining_processes": 0,
+    "temporary_files_after_test_teardown": 0,
+    "removed_empty_directories": [
+      "/var/tmp/sdrharness-dev/rml2018a-interleaved-mapping-20260926/scratch"
+    ],
+    "scratch_absent": true,
+    "iq_copies": 0
+  },
+  "manual_delete": "rm -- /var/tmp/sdrharness-dev/rml2018a-interleaved-mapping-20260926/schedule.json && rmdir -- /var/tmp/sdrharness-dev/rml2018a-interleaved-mapping-20260926",
+  "remaining": "Wire schedule into finite acquisition runner and complete live RF plan, then new RF and post-restoration D10 inference; no new accuracy evidence yet"
+}

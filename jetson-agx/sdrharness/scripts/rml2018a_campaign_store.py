@@ -23,6 +23,26 @@ QUALITY_LIMIT = 16384
 N = ROWS_PER_BLOCK
 
 
+def source_rows(config, block):
+    """Map observation order, preserving intentional repeats in finite pilots.
+
+    Explicit mappings do not turn a pilot into a complete 96-block SNR corpus.
+    The pinned configuration carries the mapping, including failed observations.
+    """
+    snr_block_rows(config['source_snr_db'], 0)
+    if 'source_rows' not in config:
+        return snr_block_rows(config['source_snr_db'], block)
+    rows = config['source_rows']
+    c.require(isinstance(rows, list) and 0 < len(rows) <= N*BLOCKS_PER_SNR and
+              len(rows) % N == 0 and all(type(row) is int and 0 <= row < 2555904 for row in rows),
+              'explicit source mapping type/size/range')
+    rows = np.asarray(rows, dtype='<i8')
+    c.require(np.all(2*((rows % 106496)//4096)-20 == config['source_snr_db']),
+              'explicit source mapping SNR')
+    c.require(type(block) is int and 0 <= block < len(rows)//N, 'explicit source mapping block budget')
+    return rows[block*N:(block+1)*N]
+
+
 def encoded(value):
     return (json.dumps(value, ensure_ascii=False, sort_keys=True, allow_nan=False)+'\n').encode()
 
@@ -99,7 +119,7 @@ class SnrStore:
             os.close(self.lock); self.lock = None; raise
 
     def _create(self, config):
-        snr_block_rows(config['source_snr_db'], 0)
+        source_rows(config, 0)
         c.require(type(config['max_raw_samples']) is int and 0 < config['max_raw_samples'] < 2**61,
                   'finite raw sample budget')
         for key in ('session_id', 'source_sha256', 'preprocess_id', 'profile_sha256', 'label_map_sha256'):
@@ -188,7 +208,7 @@ class SnrStore:
         offsets to be durable. Invalid inputs contain NaNs plus a false mask.
         """
         self._writable(); block = len(self.index['processed'])
-        rows = snr_block_rows(self.config['source_snr_db'], block)
+        rows = source_rows(self.config, block)
         c.require(set(inputs) == set(masks) == set(TAGS), 'source/raw/guard datasets')
         for tag in TAGS:
             c.require(inputs[tag].shape == (N,2,1024) and inputs[tag].dtype == np.dtype('<f4') and
@@ -227,6 +247,7 @@ class SnrStore:
         return receipt
 
     def verify(self):
+        source_rows(self.config, 0)
         c.require(self.index['schema'] == 'rml2018a-snr-corpus-v1' and
                   len(self.index['processed']) <= BLOCKS_PER_SNR and len(self.index['raw']) <= 4096 and
                   type(self.index['complete']) is bool, 'corpus schema/bounds')
@@ -245,7 +266,7 @@ class SnrStore:
                       set(f['blocks']) == {f'{i:03d}' for i in range(len(self.index['processed']))}, 'HDF5 identity/uncommitted tail')
             for i, receipt in enumerate(self.index['processed']):
                 b = f['blocks'][f'{i:03d}']
-                rows = snr_block_rows(self.config['source_snr_db'], i)
+                rows = source_rows(self.config, i)
                 c.require(receipt['block'] == i and np.array_equal(b['source_row'][:], rows) and
                           np.array_equal(b['class_id'][:], rows//106496) and
                           (b['source_snr_db'][:] == self.config['source_snr_db']).all(), 'stored source mapping')
@@ -253,6 +274,7 @@ class SnrStore:
                     b['raw_sample_start'][:], b['raw_sample_count'][:], [json.loads(s) for s in b['quality_json'].asstr()[:]])
                 c.require(sha == receipt['payload_sha256'] == b.attrs['payload_sha256'], 'processed payload SHA')
         if self.index['complete']:
+            c.require('source_rows' not in self.config, 'explicit pilot cannot seal as complete SNR')
             c.require(len(self.index['processed']) == BLOCKS_PER_SNR and
                       c.file_hash(raw) == self.index['raw_sha256'] and
                       c.file_hash(self.root/'processed.h5') == self.index['processed_sha256'] and
@@ -279,6 +301,7 @@ class SnrStore:
 
     def finish(self):
         self._writable(); self.verify()
+        c.require('source_rows' not in self.config, 'explicit pilot cannot seal as complete SNR')
         c.require(self.raw_parent is None or self.raw_parent.index['complete'],'seal shared raw owner first')
         c.require(len(self.index['processed']) == BLOCKS_PER_SNR, 'complete SNR requires96 blocks including failures')
         self._meta()
