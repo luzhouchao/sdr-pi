@@ -1,0 +1,114 @@
+{
+  "purpose": "Receiver-only D10 selector screening and frozen primary RMS-rule extension; preserve initial NumPy compatibility failure",
+  "roots": [
+    "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926",
+    "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2"
+  ],
+  "lineage": "plan pins metrics/predictions, captures, design protocol; rules derived only from 7 design captures; extension-plan pins frozen rule and large prediction/RMS lineage; no RF or new inference",
+  "limitations": "Prior diagnostic members and same campaign reused, feature/SINR/time confounding, four of six evaluation captures lose accuracy; not independent test or production admission",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926/executed-failed.py",
+      "bytes": 9174,
+      "sha256": "354dfcdad589d4a32da3b5ad44694e3c2e18432d3faeaec45e0ebbaff753206d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926/failure.json",
+      "bytes": 226,
+      "sha256": "870f8f060b9e395fb4d707e3dd84c8d058e2a78c6f87acffdd0c9c8f7feba80b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926/plan.json",
+      "bytes": 2826,
+      "sha256": "32799a0d82804cd40e6252237cbcc036b7e775adc84faa7f5db9778a85793dfc"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/cleanup.json",
+      "bytes": 116,
+      "sha256": "990a82a40dd6d9febf1563a503180b1e6e7e19efe8efea9f73f21e29280fd0ea"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/extension-joined.npz",
+      "bytes": 5049066,
+      "sha256": "1e5f657bf019f20d89f39e584279cb85e005ba4fe2f90702485280eba8857263"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/extension-plan.json",
+      "bytes": 2099,
+      "sha256": "0e0e0737865dab8e33e90bbd543cbab4e01693b3e3cc17915fc8d76cd4fd1064"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/extension-results.json",
+      "bytes": 25367,
+      "sha256": "46c69cf1d93cfe60c799648bb1e9255b8c3b0394db8a11aa4427d73b52ffc544"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/extension-verification.json",
+      "bytes": 195,
+      "sha256": "4f8d7e1fc8ce432a410dabc4e65cea3299f14c1f119522336e44f68fe8cb1247"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/joined.npz",
+      "bytes": 468492,
+      "sha256": "bf5c79399f5f3d0853700c4699e2926848e6b149a3cc09ee36eeb0e5903546ed"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/plan.json",
+      "bytes": 2826,
+      "sha256": "0c61ddb2e527750dd33db623af5f889d319eeb8447020d15e55d4fd7229460c4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/plot_extension.py",
+      "bytes": 1325,
+      "sha256": "f12fdf78ffb4b961a2a86ccda784095d2fd390684ad12d888cfd342988180bff"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/receiver-routing-extension.png",
+      "bytes": 178422,
+      "sha256": "ef785175f30d8b96a265b6ba3bfc45dfd0e87af1d4d5a58b364cecdedccaab90"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/receiver-routing.png",
+      "bytes": 174409,
+      "sha256": "abe0cb02c832449719de17cda864c135865adca45e48bc0610117de53453f69c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/results.json",
+      "bytes": 37542,
+      "sha256": "49d063b7700e5a2ac8f3e461b6e9f0039d5c3b85ee48d553bdd39ef9409fc845"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/rml2018a_d10_rx_selector.py",
+      "bytes": 9184,
+      "sha256": "5ebb25e6ea40204c9390d55f330c65610088e60d14bcf287f6a5729da79ce3fd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/rml2018a_d10_rx_selector_extend.py",
+      "bytes": 5929,
+      "sha256": "a8ff8e6c98e2d4aa7f90c28ff7950da5a6b3bad4f9c27e965d2574a9e0f572b6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/rules.json",
+      "bytes": 2396,
+      "sha256": "3cd93a396e81c712a7ca09414ad4708518a57fb871d21a18682d4d1fa69784fb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/sinr-table.csv",
+      "bytes": 3598,
+      "sha256": "a765d1ff50f1e9839fac28a71836fb0cd9f35514f184d852f3595030694353e3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/verification.json",
+      "bytes": 272,
+      "sha256": "66f46790f8f53df36e80a08322b40c0ed0ffdbf1004901dd6f5d8727bf7a42b7"
+    }
+  ],
+  "file_count": 19,
+  "total_bytes": 5973464,
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2/cache",
+    "files": 1,
+    "bytes": 123432
+  },
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926 /var/tmp/sdrharness-dev/rml2018a-d10-rx-selector-20260926-a2"
+}
