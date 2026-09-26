@@ -1,0 +1,121 @@
+{
+  "schema": "synthetic-cnn2-reference-audit-v1",
+  "purpose": "One frozen CNN2 on same3200 D10 synthetic inputs; distinguish model-specific from shared failure",
+  "session": "synthetic-cnn2-reference-20260926",
+  "source": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-randomized-20260926",
+  "model": {
+    "display_name": "CNN2-stable",
+    "variant": "baseline_cnn2_stable",
+    "seed": 42,
+    "checkpoint": {
+      "source": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/baseline_cnn2_stable/cnn2_stable_rml2018a_b128_seed42_nw8/checkpoints/best.pt",
+      "relative": "baseline_cnn2_stable/seed42/best.pt",
+      "bytes": 10348274,
+      "mtime_ns": 1786125684152737332,
+      "sha256": "be0a2705ef720e577491b99b9d574308e97ddd6f0c2c9b9f812dc6d123b5fe4e"
+    },
+    "config_relative": "baseline_cnn2_stable/seed42/config.json",
+    "training_git": {
+      "commit": "07019f10e2a686ca2e904c7dce7b2b20c0c6caf4",
+      "dirty": true
+    },
+    "backend": "pytorch_cnn2_stable",
+    "num_classes": 24,
+    "input_length": 1024,
+    "class_order": [
+      "OOK",
+      "4ASK",
+      "8ASK",
+      "BPSK",
+      "QPSK",
+      "8PSK",
+      "16PSK",
+      "32PSK",
+      "16APSK",
+      "32APSK",
+      "64APSK",
+      "128APSK",
+      "16QAM",
+      "32QAM",
+      "64QAM",
+      "128QAM",
+      "256QAM",
+      "AM-SSB-WC",
+      "AM-SSB-SC",
+      "AM-DSB-WC",
+      "AM-DSB-SC",
+      "FM",
+      "GMSK",
+      "OQPSK"
+    ],
+    "original_preprocessing": {
+      "axis_adapter": "[N,1024,2] transpose to [N,2,1024]",
+      "dc_removal": false,
+      "denoise": false,
+      "denoise_method": "none",
+      "dtype": "float32",
+      "filtering": false,
+      "normalization": "none",
+      "windowing": false
+    },
+    "archived_test_acc": 0.5488109925479998,
+    "archived_test_samples": 383387,
+    "source_run": "/data/lzc/mamba/results_package/d_series_after_b90/runs/rml2018a/baseline_cnn2_stable/cnn2_stable_rml2018a_b128_seed42_nw8"
+  },
+  "preprocess": "Exact D10 synthetic tensor SHA; unit complex RMS; no additional transform",
+  "predictions": 3200,
+  "strict_load": true,
+  "numerical_probe_rows": 50,
+  "verified_groups": 56,
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-cnn2-reference-20260926/inputs.json",
+      "bytes": 384,
+      "sha256": "7138c234804d28120cba8415044cf46f6bcf80f7705226c6d60600a820e808df"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-cnn2-reference-20260926/plan.json",
+      "bytes": 32224,
+      "sha256": "7a088121060ac1a8b89014cb533b4cdf59ef10c848f5fa762b448cc6c6f1b01d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-cnn2-reference-20260926/predictions.npz",
+      "bytes": 333308,
+      "sha256": "932ff32c0d9a472eceb74b1eb3bd6aeda9a4f9682cab4f6fa953d87d4d5ea42c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-cnn2-reference-20260926/results.json",
+      "bytes": 29962,
+      "sha256": "0c003159d2659a8f254c70e7ddc1169940a1cd14058ad8c9ea6f3a78aef84184"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-cnn2-reference-20260926/verification.json",
+      "bytes": 185,
+      "sha256": "eb8b735ba7881dbcbf3b59380c0be1b25e0ccaa9250839b7968086440fa23f09"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-cnn2-reference-20260926/verify.py",
+      "bytes": 1965,
+      "sha256": "61cd7cb909b11e0e4c4c5d31cbaf323d48c0573bec2c4da26246fae8f07ed2dc"
+    }
+  ],
+  "retained_files": 6,
+  "retained_bytes": 398028,
+  "removed_cache": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-collection-cache-b8c99256275722c4",
+    "files": 0,
+    "bytes": 0
+  },
+  "cache_absent": true,
+  "processes_exited": true,
+  "raw_iq_copies": 0,
+  "no_rf": true,
+  "no_training": true,
+  "no_deployment": true,
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-synthetic-cnn2-reference-20260926",
+  "limits": [
+    "Synthetic diagnostic is not accuracy benchmark or RF admission",
+    "Only one reference model; no universal model claim",
+    "Four conditions reuse underlying symbols; no independent-observation significance claim"
+  ]
+}
