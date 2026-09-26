@@ -1,0 +1,53 @@
+{
+  "dataset": "rml2016a",
+  "status": "complete",
+  "rows": 33000,
+  "dataset_seal_sha256": "d1c55e07d8da075e65106a17573b6e2133260851ce432dfac19eab81f2e2cd57",
+  "dataset_seal": {
+    "batch_receipts": [
+      {
+        "batch": 0,
+        "sha256": "d110ea8fa5adf239786dfc1283c02e8577c854d9d7472824a0f314be3caf92fb"
+      },
+      {
+        "batch": 1,
+        "sha256": "e2e2c45b8794807191e16e1fd407a221b20ea5693a750975ad2b4cc668b12071"
+      },
+      {
+        "batch": 2,
+        "sha256": "e76501453237104604836cb019275ed6c12f565363a045a6e383be24fac9a168"
+      },
+      {
+        "batch": 3,
+        "sha256": "9d1945a3f4added2c5306848090be5ec8b536f8de0899db9e82003c4c8deb860"
+      },
+      {
+        "batch": 4,
+        "sha256": "b0bc1849586e7138c543fa9e8f0226a1da3aa8f1a8370c87ed1dd78d9dc0f81b"
+      }
+    ],
+    "batches": 5,
+    "completed_ns": 1790439990163143741,
+    "dataset": "rml2016a",
+    "raw_samples": 62914560,
+    "rows": 33000,
+    "status": "complete",
+    "total_adc_bytes": 293601280,
+    "validation_rows_sha256": "86bc658ef0df7866ddc6495466f10d49d18be6234a0c71383509082eca238775",
+    "virtual_dataset_sha256": "3c42a65535422e05568c7264ca9f0988419dd851063e3cd251351ff0d930efbd"
+  },
+  "transition": {
+    "next_dataset": "rml2016b",
+    "progress_ns": 1790439990188674583,
+    "after_completion": true
+  },
+  "retained_batch_files": 125,
+  "retained_batch_bytes": 411670269,
+  "removed_tx_files": 5,
+  "removed_tx_bytes": 236606344,
+  "active_remainder": [
+    "rml2016b",
+    "rml2018a",
+    "hisarmod2019"
+  ]
+}

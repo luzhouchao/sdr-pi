@@ -66,3 +66,5 @@ RRC9测试通过；原生窗9测试中8通过、1 CUDA跳过；存储10测试通
 结果根：`/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/`。`campaign.json`为冻结预算/身份，`progress.json`为运行状态；手工停止：在该根创建`STOP`文件，活动批次执行精确TX终止/RX generation取消及状态恢复。整体收发期间Spark停止，不加载识别模型。完整结果尚须以各数据集`dataset-complete.json`和最终`complete.json`为准，不能将后台启动记为四套完成。
 
 启动验证已完成：第一批2016A的8192/8192行同步、512/512帧相消通过、SnrStore及批次SHA封存，进入下一批。独立STOP探针覆盖首次RX/GO之前的启动撤销，已确认子进程结束与射频恢复，尚不称发射中断连验证。用户级`amc-validation-seed42-20260927.service`已启动，`Linger=yes`，不依赖当前终端保持打开。启动证据见[预算、软件SHA及首批封存](../evidence/AMC_VALIDATION_CAMPAIGN_2026-09-27.json)。停止探针保留20文件4844277字节，删除可再生TX暂存58721256字节；运行任务TMPDIR明确保留到消费者结束，不能宣称整轮清理完成。
+
+9月27日00:26首套2016A全部33000行/5批完成，原始IQ与raw/guard经SHA、源行顺序及虚拟索引读回封存；`dataset-complete.json`写入后才进入2016B。5份可再生TX共236606344字节已删除，原始接收证据保留；详见[首套完成及顺序切换](../evidence/AMC_VALIDATION_RML2016A_COMPLETE_2026-09-27.json)。2016B、2018A、Hisar继续后台顺序推进，不把首套完成当作整轮完成；本轮尚无全验证集模型推理。
