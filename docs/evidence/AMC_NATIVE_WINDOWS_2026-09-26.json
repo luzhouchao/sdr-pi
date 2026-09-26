@@ -1,0 +1,59 @@
+{
+  "status": "offline-native-DSP-verified",
+  "parent_commit": "a75d7b7",
+  "window_samples": [
+    128,
+    1024
+  ],
+  "tests": 44,
+  "skipped": 0,
+  "cuda": true,
+  "test_log": "{\"gpu_lease\": {\"event\": \"acquire\", \"owner\": \"mamba\", \"instance\": \"b19a51eb810c12882cf7c123adb340b2\", \"serial\": 1, \"request\": \"startup\", \"monotonic_ns\": 1316178022293653}}\ntest_cuda_native_quality_and_initial_search (test_amc_native_windows.NativeWindowTests) ... ok\ntest_legacy_packet_byte_identity (test_amc_native_windows.NativeWindowTests) ... ok\ntest_missing_pilot_stops_instead_of_shifting_row_ids (test_amc_native_windows.NativeWindowTests) ... ok\ntest_native_offsets_tail_and_carrier_preserved (test_amc_native_windows.NativeWindowTests) ... ok\ntest_reject_bad_windows_and_zero_sources (test_amc_native_windows.NativeWindowTests) ... ok\ntest_short_guard_fits_only_guards_and_preserves_payload_tone (test_amc_native_windows.NativeWindowTests) ... ok\ntest_short_sinr_identity_and_invariance (test_amc_native_windows.NativeWindowTests) ... ok\ntest_stream_chunks_short_windows_partial_final_block (test_amc_native_windows.NativeWindowTests) ... ok\ntest_stream_native1024_partial_final_block (test_amc_native_windows.NativeWindowTests) ... ok\ntest_binary_newlines_and_bounded_truncation (test_rml2018a_stream.StreamTests) ... ok\ntest_local_pilot_fir_preserves_full_convolution_including_edges (test_rml2018a_stream.StreamTests) ... ok\ntest_packet_contains128_distinct_pilots_and2048_original_rows_once (test_rml2018a_stream.StreamTests) ... ok\ntest_tracking_uses_pilots_and_recovers_cfo_and_sample_offsets (test_rml2018a_stream.StreamTests) ... ok\ntest_cancels_known_tone_across_noise_seeds (test_rml2018a_lo_cancellation.CancellationTests) ... ok\ntest_does_not_fit_or_remove_legitimate_payload_at_lo_frequency (test_rml2018a_lo_cancellation.CancellationTests) ... ok\ntest_invalid_shapes_and_coordinates (test_rml2018a_lo_cancellation.CancellationTests) ... ok\ntest_no_leak_is_unchanged (test_rml2018a_lo_cancellation.CancellationTests) ... ok\ntest_outside_frequency_prior_or_unstable_guards_skip (test_rml2018a_lo_cancellation.CancellationTests) ... ok\ntest_payload_change_cannot_change_fitted_parameters (test_rml2018a_lo_cancellation.CancellationTests) ... ok\ntest_quality_has_separate_plane_and_source_ceiling (test_rml2018a_lo_cancellation.CancellationTests) ... ok\ntest_wrong_sparse_alias_prior_is_rejected_by_pilot (test_rml2018a_lo_cancellation.CancellationTests) ... ok\ntest_broad_guard_burst_retained_while_stable_tone_is_removed (test_rml2018a_guard_tone.GuardToneTests) ... ok\ntest_changed_lo_and_wrong_alias_rejected (test_rml2018a_guard_tone.GuardToneTests) ... ok\ntest_finite_qam_profile (test_rml2018a_guard_tone.GuardToneTests) ... ok\ntest_large_correlated_guard_uncertainty_rejected (test_rml2018a_guard_tone.GuardToneTests) ... ok\ntest_payload_cannot_control_fit_or_gate (test_rml2018a_guard_tone.GuardToneTests) ... ok\ntest_boundary_and_out_of_prior_proposals_do_not_apply (test_rml2018a_guard_gpu.GuardFitTests) ... ok\ntest_cuda_known_tone_wrong_prior_drift_and_payload_tone (test_rml2018a_guard_gpu.GuardFitTests) ... ok\ntest_cuda_search_finds_known_pilot_through_zero_preamble (test_rml2018a_guard_gpu.GuardFitTests) ... ok\ntest_heldout_and_pilot_gates_remain_required (test_rml2018a_guard_gpu.GuardFitTests) ... ok\ntest_proposal_cannot_be_reused_on_different_guards_or_prior (test_rml2018a_guard_gpu.GuardFitTests) ... ok\ntest_all_snr_groups_cover_original_dataset_once (test_rml2018a_gpu.BatchTests) ... ok\ntest_batch_validation_does_not_silently_drop_bad_rows (test_rml2018a_gpu.BatchTests) ... ok\ntest_cuda_rejections_and_numeric_contract (test_rml2018a_gpu.BatchTests) ... ok\ntest_quality_preserves_zero_unidentifiable_and_unstable_rows (test_rml2018a_gpu.BatchTests) ... ok\ntest_snr_ranges_reject_invalid_and_cross_group (test_rml2018a_gpu.BatchTests) ... ok\ntest_vector_cpu_normalization_preserves_scalar_bytes (test_rml2018a_gpu.BatchTests) ... ok\ntest_dc_interference_is_counted_without_removing_legitimate_source_dc (test_rml2018a_sinr.SinrTests) ... ok\ntest_gain_changes_bursts_and_constant_reference_are_invalid (test_rml2018a_sinr.SinrTests) ... ok\ntest_invalid_input_and_tampered_power_accounting (test_rml2018a_sinr.SinrTests) ... ok\ntest_known_source_noise_plus_awgn_and_tone (test_rml2018a_sinr.SinrTests) ... ok\ntest_no_added_error_returns_nominal_source_ceiling_not_infinity (test_rml2018a_sinr.SinrTests) ... ok\ntest_scale_phase_invariance_and_no_input_mutation (test_rml2018a_sinr.SinrTests) ... ok\ntest_weak_link_retains_rejections_and_reports_conditional_error (test_rml2018a_sinr.SinrTests) ... ok\n\n----------------------------------------------------------------------\nRan 44 tests in 19.869s\n\nOK\n{\"simulation_trials\": 240, \"mean_error_db\": 0.0085439398201414, \"p95_absolute_error_db\": 0.31012756138893843, \"maximum_absolute_error_db\": 0.5788952216418558}\n{\"gpu_lease\": {\"event\": \"release\", \"owner\": \"mamba\", \"instance\": \"b19a51eb810c12882cf7c123adb340b2\", \"serial\": 1, \"request\": \"\", \"monotonic_ns\": 1316198060896217}}\n",
+  "code": [
+    {
+      "path": "jetson-agx/sdrharness/scripts/rml2018a_campaign.py",
+      "sha256": "589fd37c7e47bfbc376080663b90506d3633a8b148a8252c13b7ab03a51749ad"
+    },
+    {
+      "path": "jetson-agx/sdrharness/scripts/rml2018a_campaign_gpu.py",
+      "sha256": "080454e24eac07e794f3b28c2e5e6bc1b8496efee004509bfddb1cbff63a8fd5"
+    },
+    {
+      "path": "jetson-agx/sdrharness/scripts/rml2018a_guard_gpu.py",
+      "sha256": "14f189f2e4be1ab50b3d531c132c46e8de15bf2c5d3ea558ee755f91e8149dfa"
+    },
+    {
+      "path": "jetson-agx/sdrharness/scripts/rml2018a_guard_tone.py",
+      "sha256": "93856137bb8fc44415e8e7ccbe3ffc6360ff46a9a33984ce5e3f28246838ee2d"
+    },
+    {
+      "path": "jetson-agx/sdrharness/scripts/rml2018a_lo_cancellation.py",
+      "sha256": "fe5cdc7e9374d41498ea0372d7c6c89dc3ac1b945a38eb4686777ff213e8a569"
+    },
+    {
+      "path": "jetson-agx/sdrharness/scripts/rml2018a_stream_dsp.py",
+      "sha256": "026bec636bcce20a21ae0b7b7c5143bc23d9e5777428d0969e8b746c267e9971"
+    },
+    {
+      "path": "jetson-agx/sdrharness/tests/test_amc_native_windows.py",
+      "sha256": "873a0a9f6bc6b7231f35d46d5a8d70f2efbe4e1ebcf5be5c30879cfabcf9cf31"
+    }
+  ],
+  "failures_fixed": [
+    "首次短窗跨块测试发现RAM界限误随窗长缩小，已恢复原16*1024**2样点界限；最终44测试全部通过"
+  ],
+  "boundaries": [
+    "无RF、无模型推理、无生产部署",
+    "native有限Decoder仅CPU guard；独立CUDA短窗guard比较通过，但有限尾部batch未接入",
+    "跨数据集source/store adapter、源FFT门、跨seed成员交集及24新模型CUDA前向待完成",
+    "短窗条件SINR为实验方法；Z假设仍须逐数据集核对"
+  ],
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/amc-native-windows-20260926",
+    "files": 4,
+    "bytes": 10566,
+    "absent": true
+  },
+  "retained_external_files": 0,
+  "source_data_read": false
+}

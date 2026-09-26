@@ -29,10 +29,11 @@ def contract():
             'not independently validated across24 classes or low source SNR'])
 
 
-def guard_intervals(marker_offset, row_count, samples=c.RX_SAMPLES):
+def guard_intervals(marker_offset, row_count, samples=c.RX_SAMPLES, *, window_samples=1024):
     c.require(type(marker_offset) is int and 0 <= marker_offset < samples, 'marker offset')
     c.require(type(row_count) is int and 1 <= row_count <= c.ROWS_PER_BATCH, 'row count')
-    frame = 2*c.GUARD+c.MARKER+row_count*1024
+    c.require(type(window_samples) is int and window_samples in (128,1024), 'native window length')
+    frame = 2*c.GUARD+c.MARKER+row_count*window_samples
     # Two256-sample guards join across a repeated-frame boundary.
     return [[at-448, at-64] for at in range(marker_offset % frame, samples+449, frame)
             if at-448 >= 0 and at-64 <= samples]
@@ -46,7 +47,7 @@ def filtered_pilot(z, fir, at, hz):
     return np.convolve(segment,fir,mode='valid')*np.exp(-2j*np.pi*hz*np.arange(at,at+c.MARKER)/c.RATE)
 
 
-def cancel(raw, sync, row_count=24, *, pilot_only=False, frequency_fit=None):
+def cancel(raw, sync, row_count=24, *, pilot_only=False, frequency_fit=None, window_samples=1024, guard_samples=None):
     """Fit first half of guard interiors; validate later halves; subtract one tone.
 
     No source samples, modulation IDs, source Z, or model outputs are accepted.
@@ -57,10 +58,16 @@ def cancel(raw, sync, row_count=24, *, pilot_only=False, frequency_fit=None):
     at = sync['payload_marker_offset']; hz = sync['estimated_cfo_hz']
     c.require(isinstance(hz, (int, float)) and np.isfinite(hz) and abs(hz) <= c.CFO_LIMIT_HZ,
               'finite registered pilot CFO')
-    intervals = guard_intervals(at, row_count)
-    c.require(at+c.MARKER+row_count*1024 <= len(z), 'complete payload')
+    if guard_samples is None: guard_samples = len(z)
+    c.require(type(guard_samples) is int and at+c.MARKER+row_count*window_samples <= guard_samples <= len(z), 'finite guard extent')
+    intervals = guard_intervals(at, row_count, samples=guard_samples, window_samples=window_samples)
+    c.require(at+c.MARKER+row_count*window_samples <= len(z), 'complete payload')
     info = dict(method=METHOD, status='skipped', reason=None, guard_intervals=intervals,
                 corrected_samples_sha256=None, parameters=contract())
+
+    if window_samples != 1024:
+        info['method'] = METHOD + '/native128-experimental'
+        info['window_samples'] = window_samples
 
     def skip(reason):
         info['reason'] = reason
@@ -145,11 +152,12 @@ def cancel(raw, sync, row_count=24, *, pilot_only=False, frequency_fit=None):
     return corrected,info
 
 
-def payload(raw, sync, row_count=24):
+def payload(raw, sync, row_count=24, *, window_samples=1024):
     """Use exactly the original synchronization, with no timing or source refit."""
+    c.require(type(window_samples) is int and window_samples in (128,1024), 'native window length')
     n = np.arange(len(raw)); start = sync['payload_marker_offset']+c.MARKER
     rotated = raw*np.exp(-2j*np.pi*sync['estimated_cfo_hz']*n/c.RATE+1j*sync['phase_rotation_rad'])
-    return rotated[start:start+row_count*1024].reshape(row_count,1024)
+    return rotated[start:start+row_count*window_samples].reshape(row_count,window_samples)
 
 
 def quality(reference, received, source_snr_db, cancellation):

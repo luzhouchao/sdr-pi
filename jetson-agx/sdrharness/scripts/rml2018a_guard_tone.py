@@ -28,11 +28,15 @@ def contract():
             'does not remove broadband noise, source noise, or payload distortion'])
 
 
-def cancel(raw, sync, row_count=24, *, pilot_only=False, frequency_fit=None):
+def cancel(raw, sync, row_count=24, *, pilot_only=False, frequency_fit=None, window_samples=1024, guard_samples=None):
     z = np.asarray(raw, dtype=np.complex128)
-    prior_corrected, old = v1.cancel(z, sync, row_count, pilot_only=pilot_only,frequency_fit=frequency_fit)
+    prior_corrected, old = v1.cancel(z, sync, row_count, pilot_only=pilot_only,frequency_fit=frequency_fit,window_samples=window_samples,guard_samples=guard_samples)
     info = dict(method=METHOD, status='skipped', reason=None, contract=contract(),
                 v1=old, halves=[], corrected_samples_sha256=None)
+
+    if window_samples != 1024:
+        info['method'] = METHOD + '/native128-experimental'
+        info['window_samples'] = window_samples
 
     def skip(reason):
         info['reason'] = reason

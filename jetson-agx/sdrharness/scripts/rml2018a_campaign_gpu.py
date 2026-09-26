@@ -28,17 +28,20 @@ def snr_rows(snr_db, start=0, count=SNR_ROWS):
     return q//4096*106496 + (snr_db+20)//2*4096 + q%4096
 
 
-def windows(value):
+def windows(value, window_samples=1024):
+    c.require(type(window_samples) is int and window_samples in (128,1024), 'native window length')
     value = np.asarray(value)
-    c.require(value.ndim == 2 and value.shape[1] == 1024 and
+    c.require(value.ndim == 2 and value.shape[1] == window_samples and
               0 < len(value) <= MAX_BATCH and np.iscomplexobj(value), 'bounded complex windows')
     c.require(np.isfinite(value).all(), 'finite windows')
     return np.ascontiguousarray(value, dtype=np.complex128)
 
 
 class PayloadBatch:
-    def __init__(self, device='cuda'):
+    def __init__(self, device='cuda', *, window_samples=1024):
         c.require(device in ('cpu', 'cuda'), 'payload device')
+        c.require(type(window_samples) is int and window_samples in (128,1024), 'native window length')
+        self.window_samples = window_samples
         self.device = device
         if device == 'cuda':
             import torch
@@ -46,8 +49,8 @@ class PayloadBatch:
             self.torch = torch
 
     def normalize(self, value):
-        """Host complex[N,1024] to host float32[N,2,1024], transfer included."""
-        z = windows(value)
+        """复数[N,L]转float32[N,2,L]；L显式固定为128或1024，保留载波。"""
+        z = windows(value, self.window_samples)
         if self.device == 'cpu':
             rms = np.sqrt(np.mean(abs(z)**2, axis=1))
             c.require(np.isfinite(rms).all() and (rms > 0).all(), 'model zero/nonfinite RMS')
@@ -67,12 +70,12 @@ class PayloadBatch:
         receive_quality. Numerical agreement must be checked before admitting
         a new backend; near-threshold rounding is not a reason to loosen gates.
         """
-        x, y = windows(reference), windows(received)
+        x, y = windows(reference, self.window_samples), windows(received, self.window_samples)
         snr = np.asarray(source_snr_db, dtype=np.float64)
         c.require(x.shape == y.shape and snr.shape == (len(x),) and
                   np.isfinite(snr).all() and ((snr >= -20) & (snr <= 30)).all(), 'batch quality inputs/Z')
         if self.device == 'cpu':
-            return [c.receive_quality('synchronized', a, b, float(z)) for a, b, z in zip(x, y, snr)]
+            return [c.receive_quality('synchronized', a, b, float(z), window_samples=self.window_samples) for a, b, z in zip(x, y, snr)]
         t = self.torch
         with t.inference_mode():
             x, y = t.from_numpy(x).to('cuda'), t.from_numpy(y).to('cuda')
@@ -80,7 +83,7 @@ class PayloadBatch:
             # Substitutions only prevent NaNs on rejected rows, not acceptance.
             x = x/t.where(xp > 0, xp, 1.).sqrt()[:, None]
             y = y/t.where(yp > 0, yp, 1.).sqrt()[:, None]
-            x, y = x.reshape(-1, 2, 512), y.reshape(-1, 2, 512)
+            x, y = x.reshape(-1, 2, self.window_samples//2), y.reshape(-1, 2, self.window_samples//2)
             xc, yc = x-x.mean(2, keepdim=True), y-y.mean(2, keepdim=True)
             energy = (xc.conj()*xc).real.sum(2)
             original = (x.conj()*x).real.sum(2)
@@ -97,7 +100,7 @@ class PayloadBatch:
         rows = []
         for values, z in zip(packed, snr):
             xp, yp, identifiable, signal, error, disagreement, ratio, p0, p1, e0, e1 = map(float, values)
-            out = c.receive_quality('synchronized')
+            out = c.receive_quality('synchronized', window_samples=self.window_samples)
             reason = ('zero_reference_or_receive_power' if xp <= 0 or yp <= 0 else
                       'reference_not_identifiable' if not identifiable else
                       'reference_not_detectable' if signal <= 1e-12 else None)

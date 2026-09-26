@@ -325,7 +325,7 @@ def sinr_contract():
         analog_rf_bandwidth_hz=BW, confidence_interval=None)
 
 
-def receive_quality(receive_status, reference=None, received=None, source_snr_db=None):
+def receive_quality(receive_status, reference=None, received=None, source_snr_db=None, *, window_samples=1024):
     """Conditional effective SINR, never a direct measurement of clean power.
 
     X is already noisy. Cross-fitted gain predicts the *whole* transmitted X;
@@ -334,6 +334,8 @@ def receive_quality(receive_status, reference=None, received=None, source_snr_db
     Centering is used only for gain fitting; DC remains in signal and residual.
     No timing/filter/label search and no mutation of model inputs.
     """
+    # 短窗使用独立方法身份；仅拟合时中心化，不删除载荷载波。
+    require(type(window_samples) is int and window_samples in (128, 1024), 'native window length')
     require(receive_status in ('synchronized', 'sync_failed'), 'receive quality status')
     out = dict(rx_sinr_db=None, rx_sinr_status='not_measured', rx_sinr_reason='missing_reference_or_payload',
         rx_sinr_method=SINR_METHOD, rx_sinr_measurement_bandwidth_hz=RATE,
@@ -341,6 +343,8 @@ def receive_quality(receive_status, reference=None, received=None, source_snr_db
         rx_sinr_reference_plane='received_payload_before_rms',
         rx_payload_filter='none', rx_sample_rate_hz=RATE, rx_rf_bandwidth_hz=BW,
         rx_sinr_diagnostics=None)
+    if window_samples != 1024:
+        out['rx_sinr_method'] = SINR_METHOD + '/native128-experimental'
     if receive_status == 'sync_failed':
         out['rx_sinr_reason'] = 'payload_not_synchronized'
         return out
@@ -348,7 +352,7 @@ def receive_quality(receive_status, reference=None, received=None, source_snr_db
         return out
     x = np.asarray(reference, dtype=np.complex128)
     y = np.asarray(received, dtype=np.complex128)
-    require(x.shape == y.shape == (1024,), 'SINR window shape')
+    require(x.shape == y.shape == (window_samples,), 'SINR window shape')
     require(np.isfinite(x).all() and np.isfinite(y).all() and
             np.isfinite(source_snr_db) and -20 <= source_snr_db <= 30, 'SINR finite inputs/source Z')
 
@@ -362,7 +366,8 @@ def receive_quality(receive_status, reference=None, received=None, source_snr_db
     if xp <= 0 or yp <= 0:
         return reject('zero_reference_or_receive_power')
     x = x / np.sqrt(xp); y = y / np.sqrt(yp)
-    halves = (slice(0,512), slice(512,1024))
+    half = window_samples // 2
+    halves = (slice(0,half), slice(half,window_samples))
     gains = []; predicted = []; residual = []
     for train, test in (halves, halves[::-1]):
         xc = x[train] - x[train].mean(); yc = y[train] - y[train].mean()
@@ -399,9 +404,9 @@ def receive_quality(receive_status, reference=None, received=None, source_snr_db
     return out
 
 
-def validate_receive_quality(value, source_snr_db):
+def validate_receive_quality(value, source_snr_db, *, window_samples=1024):
     """Verify recorded semantics/powers before aggregation; raw IQ seals remain upstream."""
-    base = receive_quality('synchronized')
+    base = receive_quality('synchronized', window_samples=window_samples)
     for key in ('rx_sinr_method','rx_sinr_measurement_bandwidth_hz','rx_sinr_target',
                 'rx_sinr_reference_plane','rx_payload_filter','rx_sample_rate_hz','rx_rf_bandwidth_hz'):
         require(value.get(key) == base[key], 'SINR contract identity')

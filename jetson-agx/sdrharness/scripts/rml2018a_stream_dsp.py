@@ -14,23 +14,52 @@ FRAME_SAMPLES = 2*c.GUARD+c.MARKER+FRAME_ROWS*1024
 FRAMES_PER_BLOCK = 64
 
 
-def packet(source, run_id):
-    c.require(source.shape == (2048,1024) and np.isfinite(source).all(), 'finite2048 source windows')
+def packet(source, run_id, *, window_samples=1024, total_rows=2048):
+    """原生窗组帧；默认保持2018A字节，显式小先导允许不足16行的尾帧。"""
+    c.require(type(window_samples) is int and window_samples in (128,1024), 'native window length')
+    c.require(type(total_rows) is int and 1 <= total_rows <= g.MAX_BATCH, 'finite source count')
+    source = np.asarray(source)
+    c.require(source.shape == (total_rows,window_samples) and np.iscomplexobj(source)
+              and np.isfinite(source).all(), 'finite native source windows')
     peak = .2*np.sqrt(10.)
-    scales = peak/np.max(abs(source),axis=1)
+    peaks = np.max(abs(source),axis=1)
+    c.require((peaks > 0).all(), 'zero source row')
+    scales = peak/peaks
     parts = []
-    for frame in range(128):
-        x = source[frame*16:(frame+1)*16]*scales[frame*16:(frame+1)*16,None]
+    for frame in range((total_rows+15)//16):
+        start=frame*16; stop=min(start+16,total_rows)
+        # 尾帧空位仅为传输padding；有效行数由total_rows限定，不生成源行ID。
+        x=np.zeros((16,window_samples),dtype=np.complex128)
+        x[:stop-start]=source[start:stop]*scales[start:stop,None]
         parts.extend((np.zeros(256), c.marker(run_id,frame)*np.sqrt(10.), x.ravel(), np.zeros(256)))
     return np.concatenate(parts).astype('<c8'), scales
 
 
 class Decoder:
-    def __init__(self, run_id, source, gpu, guard_backend='cpu', *, source_loader=None, total_blocks=2):
-        c.require(type(total_blocks) is int and total_blocks in (2,96,192),'finite stream block count')
-        c.require((source_loader is None and source.shape==(2048,1024) and total_blocks==2) or
-                  (source is None and callable(source_loader)),'finite stream decoder source')
-        self.source_loader=source_loader;self.total_frames=total_blocks*64
+    def __init__(self, run_id, source, gpu, guard_backend='cpu', *, source_loader=None, total_blocks=2, window_samples=1024, native_rows=None, source_snr_db=None):
+        c.require(type(window_samples) is int and window_samples in (128,1024), 'native window length')
+        self.window_samples=window_samples
+        self.frame_samples=1536+16*window_samples
+        self.native_rows=native_rows
+        if native_rows is None:
+            c.require(window_samples==1024 and source_snr_db is None, 'legacy source contract')
+            c.require(type(total_blocks) is int and total_blocks in (2,96,192),'finite stream block count')
+            c.require((source_loader is None and source.shape==(2048,1024) and total_blocks==2) or
+                      (source is None and callable(source_loader)),'finite stream decoder source')
+            self.total_frames=total_blocks*64
+        else:
+            # 新先导显式绑定源行及逐行Z；不借用2018A行号公式，也不接受训练标签作同步输入。
+            c.require(type(native_rows) is int and 1<=native_rows<=g.MAX_BATCH and source_loader is None,
+                      'bounded native source rows')
+            c.require(source.shape==(native_rows,window_samples) and np.iscomplexobj(source)
+                      and np.isfinite(source).all() and (np.max(abs(source),axis=1)>0).all(), 'native source shape')
+            self.native_snr=np.asarray(source_snr_db,dtype=float)
+            c.require(self.native_snr.shape==(native_rows,) and np.isfinite(self.native_snr).all()
+                      and ((self.native_snr>=-20)&(self.native_snr<=30)).all(), 'native source Z contract')
+            c.require(guard_backend=='cpu', 'finite-tail native guard currently CPU only')
+            self.total_frames=(native_rows+15)//16
+        c.require(gpu is None or getattr(gpu,'window_samples',1024)==window_samples, 'DSP window identity')
+        self.source_loader=source_loader
         self.sample_base=0;self.peak_samples=0
         c.require(guard_backend in ('cpu','cuda-batch'),'stream guard backend')
         self.guard_batch=None
@@ -115,26 +144,27 @@ class Decoder:
             self.find_first()
         outputs=[]
         while self.frame<self.total_frames:
-            predicted=self.marker if self.frame==0 else self.marker+FRAME_SAMPLES
+            predicted=self.marker if self.frame==0 else self.marker+self.frame_samples
             if predicted+65535+128>len(self.samples):break
             started=time.time_ns();at,hz,phase,score=self.track(predicted)
             origin=at-256;c.require(origin>=0,'complete leading guard')
             raw=self.samples[origin:origin+65535]
             sync=dict(marker_offset=256,payload_marker_offset=256,estimated_cfo_hz=hz)
             if self.guard_batch is None:
-                corrected,info=guard.cancel(raw,sync,16,pilot_only=True)
+                corrected,info=guard.cancel(raw,sync,16,pilot_only=True,window_samples=self.window_samples,
+                    guard_samples=None if self.native_rows is None else min(65535,(self.total_frames-self.frame)*self.frame_samples))
             else:
                 corrected=info=None
-            positions=np.arange(at+1024,at+1024+16*1024)
+            positions=np.arange(at+1024,at+1024+16*self.window_samples)
             rotation=np.exp(-2j*np.pi*hz*positions/c.RATE+1j*phase)
             received=self.samples[positions]*rotation
-            guarded=None if corrected is None else (corrected[1280:1280+16*1024]*rotation).reshape(16,1024)
-            self.parts.append((received.reshape(16,1024),guarded,positions[::1024]+self.sample_base,origin))
+            guarded=None if corrected is None else (corrected[1280:1280+16*self.window_samples]*rotation).reshape(16,self.window_samples)
+            self.parts.append((received.reshape(16,self.window_samples),guarded,positions[::self.window_samples]+self.sample_base,origin))
             global_phase=phase if self.sample_base==0 else phase+2*np.pi*hz*self.sample_base/c.RATE
             self.records.append(dict(frame=self.frame,marker_offset=at+self.sample_base,cfo_hz=hz,phase_rotation_rad=global_phase,
                 marker_score=score,guard=info,started_ns=started,finished_ns=time.time_ns()))
             self.marker=at;self.hz=hz;self.frame+=1
-            if self.frame%64==0:
+            if self.frame%64==0 or self.frame==self.total_frames:
                 if self.guard_batch is not None:
                     # Track pilots sequentially, then fit64 independent training
                     # guard sets together. CPU validation gates remain per frame.
@@ -144,38 +174,45 @@ class Decoder:
                     for k,(raw,sync,fit) in enumerate(zip(raws,syncs,fits)):
                         corrected,info=guard.cancel(raw,sync,16,pilot_only=True,frequency_fit=fit)
                         r=self.records[k];received,_,starts,origin=self.parts[k]
-                        positions=np.arange(starts[0],starts[0]+16*1024)
+                        positions=np.arange(starts[0],starts[0]+16*self.window_samples)
                         rotation=np.exp(-2j*np.pi*r['cfo_hz']*positions/c.RATE+1j*r['phase_rotation_rad'])
-                        guarded=(corrected[1280:1280+16*1024]*rotation).reshape(16,1024)
+                        guarded=(corrected[1280:1280+16*self.window_samples]*rotation).reshape(16,self.window_samples)
                         self.parts[k]=(received,guarded,starts,origin)
                         r['guard']=info;r['finished_ns']=time.time_ns()
-                block=self.frame//64-1
-                if self.source_loader is None:reference,snr=self.source[block*1024:(block+1)*1024],30
-                else:reference,snr=self.source_loader(block)
-                c.require(reference.shape==(1024,1024) and snr in range(-20,31,2),'source block shape/Z')
-                received=np.concatenate([p[0] for p in self.parts]);guarded=np.concatenate([p[1] for p in self.parts])
-                starts=np.concatenate([p[2] for p in self.parts]).astype('<i8')
+                block=(self.frame-1)//64
+                if self.native_rows is not None:
+                    begin=block*1024; count=min(1024,self.native_rows-begin)
+                    reference=self.source[begin:begin+count];snrs=self.native_snr[begin:begin+count]
+                else:
+                    count=1024
+                    if self.source_loader is None:reference,snr=self.source[block*1024:(block+1)*1024],30
+                    else:reference,snr=self.source_loader(block)
+                    c.require(reference.shape==(1024,1024) and snr in range(-20,31,2),'source block shape/Z')
+                    snrs=np.full(count,snr)
+                received=np.concatenate([p[0] for p in self.parts])[:count]
+                guarded=np.concatenate([p[1] for p in self.parts])[:count]
+                starts=np.concatenate([p[2] for p in self.parts]).astype('<i8')[:count]
                 inputs={tag:self.gpu.normalize(value) for tag,value in dict(source=reference,raw=received,guard=guarded).items()}
-                raw_q=self.gpu.quality(reference,received,np.full(1024,snr))
-                guard_q=self.gpu.quality(reference,guarded,np.full(1024,snr))
+                raw_q=self.gpu.quality(reference,received,snrs)
+                guard_q=self.gpu.quality(reference,guarded,snrs)
                 quality=[]
                 guard_hashes=[c.digest(__import__('json').dumps(r['guard'],sort_keys=True).encode()) for r in self.records]
-                for k in range(1024):
+                for k in range(count):
                     r=self.records[k//16]
                     guard_q[k].update(rx_sinr_reference_plane=guard.PLANE,
-                        rx_interference_cancellation=guard.METHOD if r['guard']['status']=='applied' else 'none_skipped')
+                        rx_interference_cancellation=r['guard']['method'] if r['guard']['status']=='applied' else 'none_skipped')
                     quality.append(dict(raw=raw_q[k],guard=guard_q[k],sync=dict(status='synchronized',frame=r['frame'],
                         marker_score=r['marker_score'],cfo_hz=r['cfo_hz'],phase_rotation_rad=r['phase_rotation_rad']),
                         guard_diagnostics_sha256=guard_hashes[k//16]))
-                outputs.append(dict(block=block,inputs=inputs,masks={t:np.ones(1024,bool) for t in inputs},
-                    sample_starts=starts,sample_counts=np.full(1024,1024,dtype='<i8'),quality=quality,
+                outputs.append(dict(block=block,inputs=inputs,masks={t:np.ones(count,bool) for t in inputs},
+                    sample_starts=starts,sample_counts=np.full(count,self.window_samples,dtype='<i8'),quality=quality,
                     frames=self.records,finished_ns=time.time_ns(),
-                    release_before=None if self.frame==self.total_frames else self.sample_base+max(0,at+FRAME_SAMPLES-384)))
+                    release_before=None if self.frame==self.total_frames else self.sample_base+max(0,at+self.frame_samples-384)))
                 self.parts=[];self.records=[]
                 if self.source_loader is not None:
                     # Keep the next pilot/guard halo. Returned tensors and the
                     # caller's immutable RX arena retain all uncommitted data.
-                    trim=max(0,at+FRAME_SAMPLES-384)
+                    trim=max(0,at+self.frame_samples-384)
                     self.samples=self.samples[trim:].copy();self.marker-=trim;self.sample_base+=trim
                 break  # Publish this block before tracking a later possibly bad frame.
         return outputs

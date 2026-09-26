@@ -29,13 +29,13 @@ class GuardBatch:
         # Reused small search grids, no per-frame GPU/context initialization.
         self.offsets=torch.arange(-30,31,device='cuda',dtype=torch.float64)
 
-    def fit(self,raws,syncs,row_count=16):
+    def fit(self,raws,syncs,row_count=16, *, window_samples=1024):
         c.require(len(raws)==len(syncs) and 0<len(raws)<=128,'bounded guard batch')
         values=[];indices=[];priors=[]
         for raw,sync in zip(raws,syncs):
             z=np.asarray(raw,dtype=np.complex128)
             c.require(z.shape==(c.RX_SAMPLES,) and np.isfinite(z).all(),'guard batch native IQ')
-            intervals=lo.guard_intervals(sync['payload_marker_offset'],row_count)
+            intervals=lo.guard_intervals(sync['payload_marker_offset'],row_count,window_samples=window_samples)
             c.require(len(intervals)>=2,'complete guard batch')
             n=np.concatenate([np.arange(a,a+192) for a,b in intervals])
             hz=sync['estimated_cfo_hz']

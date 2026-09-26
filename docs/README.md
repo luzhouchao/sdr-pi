@@ -22,7 +22,7 @@
 
 四数据集×八模型32份权重已统一导入并通过CPU严格加载；入口为`/home/jetson/models/amc`，见[模型库](reference/RML2018A_MODEL_COLLECTION.md#当前统一库2026-09-26)。新三套CUDA前向及RF尚未执行。
 
-三套新增数据集的帧、载波、raw/guard处理与有限先导方案已完成，见[三数据集收发设计](reference/RML2018A_RF_REPRODUCTION.md#6-三套新增数据集的收发设计2026-09-26尚未执行)；尚未实施或发射。
+三套收发设计的[原生窗口DSP](reference/RML2018A_RF_REPRODUCTION.md#68-原生窗口dsp接入2026-09-26)已实现：44项CPU/CUDA检查通过，原2018A组帧逐字节保持；source/store及新模型前向仍待接入，尚未发射。
 
 当前目标为RML2016A、RML2016B、HisarMod2019三套D10的发射→接收→处理→识别，沿用原RML2018A流程原则；尚未开始新收发。用户已确认四数据集×source/接收原始IQ/raw/guard共16套数据，模型单独管理；新增要求统一四数据集×八种模型共32份权重。新RF任务样本范围尚待明确。
 
