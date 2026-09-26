@@ -18,6 +18,8 @@
 | [validation/](validation/README.md) | 按主题索引的已执行验证、部署和回滚记录 |
 | [evidence/](evidence/README.md) | 原始审计 JSON、保留证据清单、预登记计划和图表 |
 
+最新实测分解：低raw条件估计SINR176240共同成员，D10相消净−7942、16类退化；CNN2净−47来自大量类别收益抵消。已定位主要损失类别，尚非因果根因；见[全类别配对统计](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#实测类别与raw条件sinr配对分解2026-09-26)。只读，无新推理/RF。
+
 最新固定QPSK相消：两模型低合成SINR总体均改善，未复现实测总体退化；精确相消仍有局部回退。旧RMS规则在D10退化，合成探索收束，下一步回到实测类别×SINR配对统计；见[结果](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#固定qpsk两模型配对相消2026-09-26)。无RF/训练/部署。
 
 最新冻结参考对照：同3200合成输入，16QAM D10/CNN2为5/198正确，两种AM均失败；支持模型差异与共同失败并存，不能推广为CNN2总体更好。见[结果及边界](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#同合成输入cnn2冻结参考对照2026-09-26)。无RF/训练/部署。

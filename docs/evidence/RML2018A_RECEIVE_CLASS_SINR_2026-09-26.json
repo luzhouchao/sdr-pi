@@ -1,0 +1,62 @@
+{
+  "purpose": "Paired D10/CNN2 measured receive class x raw conditional SINR decomposition",
+  "session": "offline-readback-20260926",
+  "source": "369497 common seed42 validation receive members; frozen D10/CNN2 predictions",
+  "model": "frozen D10 and CNN2 only; no inference",
+  "preprocess": "existing raw/guard; no reprocessing",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-receive-class-sinr-20260926/class-overall-low.csv",
+      "bytes": 9977,
+      "sha256": "94a9767c056c9dd3d47755e1da959bc1831992d80cd68d3e50f71516fe4ba196"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-receive-class-sinr-20260926/class-sinr.csv",
+      "bytes": 39766,
+      "sha256": "77d505482b16e7190ae1a8cb444bd7a0ae9fcdf1af16ad3ce40f14ffef170beb"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-receive-class-sinr-20260926/low-regression-transitions.csv",
+      "bytes": 10833,
+      "sha256": "637ce16e92081c011542fa9f4cad5a2edadf394fce82691d03c038ad1090e212"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-receive-class-sinr-20260926/low-sinr-class-net.png",
+      "bytes": 122482,
+      "sha256": "9b07d5483b474d8615c0f483d5e556154de4749df114335391f79f52989525ac"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-receive-class-sinr-20260926/plan.json",
+      "bytes": 1579,
+      "sha256": "4e74279a21edb5a96d22e6e93c4faf142102c9b9da747e48545d1ccd996b3674"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-receive-class-sinr-20260926/results.json",
+      "bytes": 287296,
+      "sha256": "deec06e42054a8d773433f260df6733e22c5cbd2a356c479f09d7f409ab0a271"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-receive-class-sinr-20260926/verification.json",
+      "bytes": 187,
+      "sha256": "8fb0eb8ab36d3f77e4532b5d76141f55cbfcfaf534d2722950ea3f40ec8d70cf"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-receive-class-sinr-20260926/verify_plot.py",
+      "bytes": 2688,
+      "sha256": "e17efc80cd9a40f8efa214e2b42af456b9ef469a5db73988ad1cdac96330b773"
+    }
+  ],
+  "retained_files": 8,
+  "retained_bytes": 474808,
+  "deleted_cache": {
+    "files": 1,
+    "bytes": 123432
+  },
+  "cache_absent": true,
+  "processes_exited": true,
+  "no_rf": true,
+  "no_inference": true,
+  "no_training": true,
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-receive-class-sinr-20260926",
+  "limits": "Inspected engineering corpus; conditional SINR not calibrated truth; class/capture/SNR correlations, not causal attribution"
+}

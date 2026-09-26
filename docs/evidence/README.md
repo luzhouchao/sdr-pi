@@ -312,3 +312,5 @@
 - [2026-09-26 同合成输入CNN2参考](RML2018A_SYNTHETIC_CNN2_REFERENCE_2026-09-26.json)：冻结单模型新增3200预测、D10配对、逐组分布和独立核验，不作整体精度结论。
 
 - [2026-09-26 固定QPSK两模型相消](RML2018A_QPSK_CANCELLATION_PAIR_2026-09-26.json)：新seed、7808预测、oracle/简化guard、同raw合成SINR配对及收束。
+
+- [2026-09-26 实测类别×SINR配对分解](RML2018A_RECEIVE_CLASS_SINR_2026-09-26.json)：两模型共同成员、528单元、低SINR类别贡献及回退去向，只读。
