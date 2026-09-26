@@ -130,4 +130,26 @@ class TransportTests(unittest.TestCase):
                 self.assertEqual(sum(len(b['source_row']) for b in batches),16)
                 self.assertTrue((batches[0]['raw_sample_count']==637).all())
 
+class UniformFrameTests(unittest.TestCase):
+    def test_same_physical_frame_native_windows_and_tail(self):
+        for capacity, length, rows in [(16384,128,259),(16384,1024,35),(2048,128,33),(2048,1024,5)]:
+            x=source(length,rows);tx,_=r.transmit(x,'rrc-test',frame_payload_samples=capacity)
+            frame_samples=4*(1536+capacity)
+            self.assertEqual(len(tx),3*frame_samples+125)
+            d=r.Decoder('rrc-test',length,rows,frame_payload_samples=capacity)
+            z=channel(tx)
+            for start in range(0,len(z),131099):d.feed(z[start:start+131099])
+            d.feed(np.empty(0,complex),final=True);got=d.result()
+            self.assertTrue(got['masks']['guard'].all(),got['frames'])
+            self.assertLess(max(error(x,got['inputs']['guard'])),.02)
+            per_frame=capacity//length
+            expected=np.array([317+(i//per_frame)*frame_samples+5120+(i%per_frame)*4*length for i in range(rows)])
+            np.testing.assert_array_equal(got['sample_starts'],expected)
+            for q in got['quality']:r.validate_quality(q['raw'],capacity)
+            self.assertEqual(got['transport']['frame_rf_samples'],frame_samples)
+
+    def test_uniform_contract_rejects_unregistered_capacity(self):
+        for capacity in (True,1024,16384.0,32768):
+            with self.assertRaises(ValueError):r.contract(capacity)
+
 if __name__=='__main__':unittest.main()

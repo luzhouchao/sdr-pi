@@ -20,7 +20,8 @@ this file retains the detailed delivery and evidence ledger.
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
 - [x] 用户四数据集统一主实验选择已记录：2018A纳入新统一流程，旧结果作历史基线；共用RF/物理帧/处理/SINR口径，保留128/1024原生模型窗，通带候选按四套工程门选取。纯文档，链接/diff核对，无临时文件或设备操作，见[统一合同](reference/RML2018A_RF_REPRODUCTION.md#612-四数据集统一主实验要求用户最新选择2026-09-26)。
-- [ ] 四套统一profile前置：共同16384点载荷帧、Z18固定成员新预登记、统一通带保真及条件SINR验证；旧RRC固定16窗原型不能替代完成。原生宽带/RRC尚未由实机工程门选定。
+- [x] 四套统一RRC短帧实收：缓冲65536后2272/2272同步，840/842帧相消通过；32模型36352预测及输入SHA/argmax读回通过，D10四套guard89.32%～95.43%，2016训练尺度适配修正；27测试通过/1跳过，清理424文件29013557字节，AGX保留334文件808482323字节。原始失败/修正证据保留，见[夜间统一RF实测](validation/AMC_UNIFORM_RF_2026-09-26.md)。
+- [ ] 更长会话、低SINR多档及新入口STOP/断连故障注入仍待实机；本轮不作全量/生产准入。
 - [x] 四套D10统一seed42：沙盘正式权重/配置SHA、四份strict load通过，新三套CUDA全批/逐条logits容差与top-1一致通过；2018A权重未变。当前库仍32份且全部seed42；旧3非42包归档并保留旧seed路径身份。保留1020文件16757038字节，清理505文件26656872字节；无RF/生产切换，见[审计](evidence/D10_ALL_SEED42_IMPORT_2026-09-26.json)。
 - [x] 沙盘4090连接技能：个人技能`connect-shapan4090`安装并通过quick_validate，shapan4090/shapan4090-wsl两别名严格SSH读取身份通过；四D10源SHA与AGX匹配，明确D10/七baseline的不同训练服务器。未改远端配置/作业、无临时文件，见[审计](evidence/SHAPAN4090_CONNECTION_SKILL_2026-09-26.json)。
 - [x] 原生128/1024点DSP基础接入：packet/Decoder、保护区位置/有限尾界、载荷裁剪、CPU/CUDA RMS与两半SINR参数化；44项测试含真实CUDA全部通过，旧2048行2018A组帧逐字节一致，载波保留/缺导频拒绝/1041行跨块及尾帧不造样通过。短窗RAM界限误替换在测试中发现并恢复原门；清理4文件10566字节，无外部数据保留，无RF/模型/部署。见[原生窗口DSP](reference/RML2018A_RF_REPRODUCTION.md#68-原生窗口dsp接入2026-09-26)及[审计](evidence/AMC_NATIVE_WINDOWS_2026-09-26.json)。

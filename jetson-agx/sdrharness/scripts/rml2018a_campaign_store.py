@@ -32,7 +32,7 @@ def source_rows(config, block):
     The pinned configuration carries the mapping, including failed observations.
     """
     if 'sample_transport' in config:
-        c.require('native_source' in config and config['sample_transport'] == rrc.contract(), 'sample transport identity')
+        c.require('native_source' in config and config['sample_transport'] == rrc.contract(config['sample_transport'].get('frame_payload_samples')), 'sample transport identity')
     if 'native_source' in config:
         contract = native.validate(config['native_source'])
         c.require(contract['source_sha256'] == config['source_sha256'] and
@@ -273,7 +273,8 @@ class SnrStore:
             c.require(isinstance(q, dict) and 'raw' in q and 'sync' in q, 'raw SINR/sync quality required')
             if 'sample_transport' in self.config:
                 c.require('guard' in q, 'RRC guard quality required')
-                rrc.validate_quality(q['raw']); rrc.validate_quality(q['guard'])
+                frame_payload = self.config['sample_transport'].get('frame_payload_samples')
+                rrc.validate_quality(q['raw'], frame_payload); rrc.validate_quality(q['guard'], frame_payload)
             else:
                 c.validate_receive_quality(q['raw'], float(source_z), window_samples=length)
         self._space(len(self.tags)*n*2*length*4+n*QUALITY_LIMIT+2*1024**2)

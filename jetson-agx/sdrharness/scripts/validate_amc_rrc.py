@@ -16,6 +16,8 @@ PARENT = REPO/'docs/evidence/AMC_SOURCE_STORE_2026-09-26.json'
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--uniform', action='store_true', help='common payload selected by --payload and sourceZ18 for all four')
+    parser.add_argument('--payload',type=int,choices=[2048,16384],default=16384)
     args = parser.parse_args()
     root = args.output
     r.c.require(root.is_absolute() and root.resolve() == root and
@@ -25,16 +27,17 @@ def main():
     parent = json.loads(PARENT.read_text())
     selection = parent['source_selection']
     old = parent['rml2018a_comparison']
-    value = old['results']['30']['contract']
+    value = old['results']['18' if args.uniform else '30']['contract']
     split = REPO/'local-assets/amc-eval/splits/server-seed42-20260914/RML2018a_split_seed42_tr700_val150_te150.npz'
     r.c.require(hashlib.sha256(split.read_bytes()).hexdigest() == old['split_sha256'], '2018 split SHA')
     with np.load(split) as f:
         r.c.require(set(value['source_rows']) <= set(f['val']), '2018 fixed validation membership')
     selection['rml2018a'] = dict(contract=value, source_path=old['source_path'],
         source_bytes=old['source_bytes'], splits=[dict(path=str(split), seed=42, sha256=old['split_sha256'])],
-        selection_reason='user approved unified profile; reuse 32/class Z30 seed42 rows from prior FFT screen')
+        selection_reason='fixed32/class seed42 rows from prior FFT screen', source_z=18 if args.uniform else 30)
+    frame_payload = args.payload if args.uniform else None
     plan = dict(scope='offline channel simulation; no radio/model/training', selection_seed=20260926,
-                source_selection=selection, transport=r.contract(),
+                source_selection=selection, transport=r.contract(frame_payload),
                 cfo_hz=1373., phase_rad=.41, lo_relative_amplitude=.08,
                 lo_frequency_delta_from_nominal_hz=1.37, noise_component_std=.0002,
                 adc_counts_per_unit=2000, initial_rf_samples=317, trailing_rf_samples=700,
@@ -54,7 +57,7 @@ def main():
         if 'selected_iq_sha256' in entry:
             r.c.require(digest == entry['selected_iq_sha256'], 'selected original IQ hash')
         run_id = 'rrc-four-dataset-'+dataset+'-20260926'
-        tx, txinfo = r.transmit(x, run_id)
+        tx, txinfo = r.transmit(x, run_id, frame_payload_samples=frame_payload)
         frequency = np.fft.fftfreq(len(tx), 1/r.c.RATE)
         power = abs(np.fft.fft(tx))**2
         inside = (abs(frequency)<=700000)&(abs(frequency-250000)<=700000)
@@ -68,7 +71,7 @@ def main():
         adc = np.rint(2000*np.stack((z.real, z.imag), axis=1))
         r.c.require(max(abs(adc).ravel())<32767, 'simulated ADC clipping')
         adc = adc.astype('<i2')
-        decoder = r.Decoder(run_id, x.shape[1], len(x))
+        decoder = r.Decoder(run_id, x.shape[1], len(x), frame_payload_samples=frame_payload)
         for start in range(0, len(adc), 131099):
             decoder.feed(adc[start:start+131099])
         decoder.feed(np.empty(0, complex), final=True)
@@ -84,10 +87,11 @@ def main():
                 row_relative_rms_error=[float(v) if np.isfinite(v) else None for v in errors],
                 inputs_sha256=hashlib.sha256(decoded['inputs'][tag].tobytes()).hexdigest())
         applied = sum(f.get('guard',{}).get('status')=='applied' for f in decoded['frames'])
-        expected_starts = np.array([317+(i//16)*4*(1536+16*x.shape[1])+5120+(i%16)*4*x.shape[1] for i in range(len(x))])
+        per_frame = frame_payload//x.shape[1] if args.uniform else 16
+        expected_starts = np.array([317+(i//per_frame)*4*(1536+per_frame*x.shape[1])+5120+(i%per_frame)*4*x.shape[1] for i in range(len(x))])
         correct_offsets = bool(np.array_equal(expected_starts, decoded['sample_starts']))
         passed = (metrics['guard']['valid']==len(x) and metrics['guard']['max_relative_rms_error']<=.02
-                  and applied==(len(x)+15)//16 and correct_offsets and outside<.01)
+                  and applied==(len(x)+per_frame-1)//per_frame and correct_offsets and outside<.01)
         record = dict(rows=len(x), native_samples=x.shape[1], selected_iq_sha256=digest,
             tx=txinfo, whole_tx_outside_fraction=outside, simulated_adc_sha256=hashlib.sha256(adc.tobytes()).hexdigest(),
             adc_samples=len(adc), metrics=metrics, applied_frames=applied, exact_adc_lineage=correct_offsets,

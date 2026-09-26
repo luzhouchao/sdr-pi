@@ -1,0 +1,1773 @@
+{
+  "schema": "amc-uniform-rf-night-v1",
+  "date": "2026-09-26 capture; 2026-09-27 archive",
+  "engineering_only": true,
+  "retained": [
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2",
+      "purpose": "failure and comparison evidence",
+      "files": [
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/background-after/audit.json",
+          "bytes": 471,
+          "sha256": "20fb3d432cce05a7bc59e6171b9134d3ca0e938453b13b8efc5d6415eefeb7af"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/background-after/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/background-after/plan.json",
+          "bytes": 277,
+          "sha256": "1dff3889044f85ee89634b61c4822c6e942514418086b8140459442879cf42a8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/background-after/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "24fe466361a5173ae2a205f85810819e8292567a99d368ff09930eaa14581c77"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/background-after/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/background-before/audit.json",
+          "bytes": 471,
+          "sha256": "b2d52d719ff07f21ec93f5ac1a8bc6ba2f279bf27bc7ffdefc8bb70ee097a12f"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/background-before/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/background-before/plan.json",
+          "bytes": 278,
+          "sha256": "249b6d0d4ba99d86148ba4cca506e8e19ad9c54f17d02ceb04153cb138351375"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/background-before/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "87c0c4766597c6154ec52c263b3908e1771d0b17df40984cbed05482bc026b91"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/background-before/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/corpus/configuration.json",
+          "bytes": 17309,
+          "sha256": "6810bee5a3733ff3906e988008efb6f1f57235f76607d871ddfd00f07e5cd465"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/corpus/index.json",
+          "bytes": 14399,
+          "sha256": "eec7924a20e05bd3becb1cee73a2884e4f8fae0fad81011cdb33db3396cf781a"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/corpus/processed.h5",
+          "bytes": 15463880,
+          "sha256": "c554f55c16918955aab738977d978f586300c9ca13b5614c67c100d36118d05a"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/corpus/raw.sigmf-data",
+          "bytes": 50331648,
+          "sha256": "7d1ca88ed59855db846a4eeb443f2e9eebb4e244cbecec3f4036a5051f4e0b61"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/corpus/raw.sigmf-meta",
+          "bytes": 13714,
+          "sha256": "8e0faca477ecd1e14d3a5d6dd3b6e58d663295095eb1f2323ce0e05eed31b51a"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/corpus/writer.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/execution.json",
+          "bytes": 2548,
+          "sha256": "15876a618587844b46e9a28343ff00dd7cfa40bba75d5a362d828c6b33ccc7ae"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/frames.json",
+          "bytes": 87559,
+          "sha256": "ebb5e9c171f64f84d1721b22026c9ed40e2f464e12ccd0f92206d4486bd24aac"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/plan.json",
+          "bytes": 63797,
+          "sha256": "34cb7c594f9300d36803c54ada76a73882a14595a130abdedff1c2844c625a22"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/rx-events.jsonl",
+          "bytes": 632539,
+          "sha256": "fe9a68b6b13672a46b49c407d853bf2497922f8ff1a892bf2290454b81dc38a9"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/rx-plan.json",
+          "bytes": 269,
+          "sha256": "b7605549fdf80b7c3321ffc16988fce895b00b3bb693cfe1308815a61e0c7709"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/tx-events.jsonl",
+          "bytes": 955265,
+          "sha256": "9cf83c5eb93626219d901ed533853ab5da6a56828255963f2c3028a06fb5c0d6"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/tx.fc32",
+          "bytes": 47711208,
+          "sha256": "8a1749a9e50b3f1405fe5c27dde2b55f5a5961c172631e996af1e4213d2b2cf3"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2/tx.log",
+          "bytes": 842,
+          "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+        }
+      ],
+      "total_bytes": 123685738,
+      "delete_command": "rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a2"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3",
+      "purpose": "final RF evidence and inference",
+      "files": [
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/background-after/audit.json",
+          "bytes": 470,
+          "sha256": "9e4413dac43aab5de0acd45745c77cf9b97cf9d7ea18cc6f9c290f04521d3de5"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/background-after/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/background-after/plan.json",
+          "bytes": 277,
+          "sha256": "0d317f89c1b4848f0af4feb22cda982bf29f95bf37c971d34f05c6b6cf266b40"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/background-after/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "dc01943d904079012ef38677fb8c327b6c3f28b438aa02b3ac68be385b5ebc89"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/background-after/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/background-before/audit.json",
+          "bytes": 470,
+          "sha256": "b31399ccf8bb7f049c61d510a0d7966ca0e8934347a2a948c4d53cec3f11ed05"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/background-before/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/background-before/plan.json",
+          "bytes": 278,
+          "sha256": "b2c2084d92f57c2150c616c07953a25bc2705d2c7f86d189f27bab0e48e590ef"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/background-before/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "0ca429954159c818fee8ac421e2dd7746d5e5bd44a9c184b46fb6d01a6657da2"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/background-before/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/conditional-report.json",
+          "bytes": 2943039,
+          "sha256": "d0ea134b999c7d9023ef5f635e1c029d296cd87969bd148be6f21a1f5a190028"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/corpus/configuration.json",
+          "bytes": 17309,
+          "sha256": "77e4f135628bda85d240c026bd3809815915c3b0413d0c0f6bba8ce9828bbbfa"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/corpus/index.json",
+          "bytes": 14398,
+          "sha256": "d369755cf64a2705a077c1b1a7376e1aeac3878c71228a3986255a18624f16ca"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/corpus/processed.h5",
+          "bytes": 15693256,
+          "sha256": "f0c6bca6738281d8c870ffd46e37f74ef962f54f6cd926ab4e32294ea419165c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/corpus/raw.sigmf-data",
+          "bytes": 50331648,
+          "sha256": "518ccd8a1cb0e9326d4e28cad4fc8f4236deb876742eb795a10c383cd2a0fcbc"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/corpus/raw.sigmf-meta",
+          "bytes": 13713,
+          "sha256": "9381160cdb2d5506fd1ba1820e5f95e676ffacf2aa7b0539c8b2186d15dec665"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/corpus/writer.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/execution.json",
+          "bytes": 2549,
+          "sha256": "9ef877e7e02829efe99baf23a1791aef6f25057f87b11684bd4b8c80d4931915"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/frames.json",
+          "bytes": 504462,
+          "sha256": "41fb19d9862f880eca9dc37ac7608d838ccca268534f4319dad8ab087a23c03e"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/amc_mamba_d10/predictions.npz",
+          "bytes": 166174,
+          "sha256": "b130c87fe059967d83729c01020227501c6d835e88b0c018cfc93e7ea16e7e76"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/amc_mamba_d10/result.json",
+          "bytes": 1713,
+          "sha256": "1a4ff2ec2ca31b7b6f336611abe7a4d34d3e41e799f6dd1051e0b621c62b240f"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_cldnn/predictions.npz",
+          "bytes": 163830,
+          "sha256": "4b703b23e91a64d08d604c802fd6c1c65a079fe113bc29d7e81ba54b61dd91fc"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_cldnn/result.json",
+          "bytes": 1634,
+          "sha256": "b724670a8dcb6b5bedacbbafa51b0da12f2978e508ccaefe7093c5be966eba6d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_cnn2_stable/predictions.npz",
+          "bytes": 165524,
+          "sha256": "b4a9e659a4afa2d52411c2b0bc0c7c945e304f3cd0e546466e81f473885e4d1d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_cnn2_stable/result.json",
+          "bytes": 1648,
+          "sha256": "7f61c5510794c62a9d9aee41b0c69d3b337b2ced469cce863dbacf7181bd1aa1"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_gru/predictions.npz",
+          "bytes": 166046,
+          "sha256": "6eacd0f74165ec18458d68e65881a50ba6fa5f9f1c0426dd56cb99d4bee3a0fa"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_gru/result.json",
+          "bytes": 1604,
+          "sha256": "5990e2d07c4c7776ee5d7bf5a67690557baedccbdde58128b79d13a3b923b983"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_mamc/predictions.npz",
+          "bytes": 165831,
+          "sha256": "848142c8dbc8572e189891c29357abbbf4f00e90cb59375dbac7cd0753dff9d4"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_mamc/result.json",
+          "bytes": 1682,
+          "sha256": "8e9c4ae62b04a6998b975f523c4a65d6615592f6870cab6bcd979d10153d52f2"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_mcformer/predictions.npz",
+          "bytes": 165591,
+          "sha256": "e00adb6be0940529873278078a152f74e314ca86288ad10932067b3216fd9691"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_mcformer/result.json",
+          "bytes": 1662,
+          "sha256": "e8e8d9f12d6332ed4c465600d6e383070b975716b03c243c56a48a8a01062b05"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_mcldnn/predictions.npz",
+          "bytes": 166017,
+          "sha256": "196b6f5364dfbd6867bc2fd5d624cd92f82d28a63fad25f362e362b3e2c10a1b"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_mcldnn/result.json",
+          "bytes": 1680,
+          "sha256": "d2e6102978b7ae3ee839d9ef54c8095b882f9a7fdfbc0994133fd63779c21049"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_resnet/predictions.npz",
+          "bytes": 164999,
+          "sha256": "9685848a6dc035a5bbab5f5c71c8aa4a3c0eca22f2dee640a1d242819c491a67"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/inference/baseline_resnet/result.json",
+          "bytes": 1638,
+          "sha256": "1c0da7685799b53cf980fb587825006cef004f6bd08261df1137593838e6215c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/plan.json",
+          "bytes": 63891,
+          "sha256": "2b37f674e085f01c0b652e141507ce387ed389dfc7fa56683cbf01ea65d374c8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/rx-events.jsonl",
+          "bytes": 39921,
+          "sha256": "fa7a31aed27c4460fe08487ee8122446aeae046f024a295ac8997172da206524"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/rx-plan.json",
+          "bytes": 269,
+          "sha256": "3d804c6b109efb921feda17092d2f044166ad3060d483cde09ac2ed113c15594"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/tx-events.jsonl",
+          "bytes": 955265,
+          "sha256": "6818831641f875341fc0500574c2660e225b6ad97eb9c11e2229624fbe126cff"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/tx.fc32",
+          "bytes": 47711208,
+          "sha256": "60b87d561d1855eb74b7946099a0c398072f92e136539fa8a8e378050e4557ca"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3/tx.log",
+          "bytes": 842,
+          "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+        }
+      ],
+      "total_bytes": 128019802,
+      "delete_command": "rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-hisarmod2019-a3"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1",
+      "purpose": "failure and comparison evidence",
+      "files": [
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/background-after/audit.json",
+          "bytes": 471,
+          "sha256": "9ce628b9a075a5c047da1d539785ea74403fb81668973a79230217707335f2e9"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/background-after/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/background-after/plan.json",
+          "bytes": 273,
+          "sha256": "4e5ec91bd9f032d69d6b7c835e0793946e3cfba64fb930f743280daffba1fc11"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/background-after/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "6177d035a2d8d020b2d6a34c593fb5d2e9126365d3438a4c2780ca44eb32651c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/background-after/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/background-before/audit.json",
+          "bytes": 471,
+          "sha256": "8ff5dd144a01246adf1e89d2e9e7ed1705274de0ef0585181dd135dd70391519"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/background-before/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/background-before/plan.json",
+          "bytes": 274,
+          "sha256": "629be4339c4dd1cd70d788f6b1896877933ede8a335c20e17e20df6cb56c2e3b"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/background-before/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "59dc9260e8283a987409e074cc2ad57cc6b97212c1d5d4f10efa262f2d8a329d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/background-before/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/corpus/configuration.json",
+          "bytes": 7631,
+          "sha256": "3b89a8811ea16c08e52a6d8e6f735291809b7b4ac69cd238c520ea537e9a14df"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/corpus/index.json",
+          "bytes": 14352,
+          "sha256": "0bcb221ab03aceecb2b439315cbdc347bd12e04ef253260d24b8f503f0f1074c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/corpus/processed.h5",
+          "bytes": 1251664,
+          "sha256": "52c6852a75ebf7ddb19aaa1354ea95943e439c261eaa40e46b8e110d8d69c877"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/corpus/raw.sigmf-data",
+          "bytes": 50331648,
+          "sha256": "04cd585e944eae2adb530d11b4e3b051afcd87adb87249c3944b103f99c9f934"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/corpus/raw.sigmf-meta",
+          "bytes": 13659,
+          "sha256": "b846c4f455da0eea3bf11d087cb668ba2cea02febbd231b3d77d9ff833470a56"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/corpus/writer.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/execution.json",
+          "bytes": 2537,
+          "sha256": "1fc3fe325d71a095d000e3fd48a66fb0e8d206b0900e400c8c3195db58246bf4"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/frames.json",
+          "bytes": 2523,
+          "sha256": "8c4890163aed1e8511d7d650c8025f2fe2060d0b88cf267a3a4d939284c9ad38"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/plan.json",
+          "bytes": 29000,
+          "sha256": "18eb3528165c87567d53338f2d8691bce9a7295e41cb5eefd1f5ec84f2ef057d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/rx-events.jsonl",
+          "bytes": 632539,
+          "sha256": "d7dd2e50a4fa1b4c0a38c6d3b810de3fc8d9bd67fef52b5073b7074dba79907f"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/rx-plan.json",
+          "bytes": 265,
+          "sha256": "3883bfb606bb2d462e88710ce9464cbb36b45f0696434a7694e360ea6e0ec2fb"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/tx-events.jsonl",
+          "bytes": 35331,
+          "sha256": "70f98bb625d44eab89c99327a1805303a6409f61824e1b20b9cedf065ea62e4c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/tx.fc32",
+          "bytes": 1721320,
+          "sha256": "6365fa34f7647670f919bbcabd3d2e9ff19e5d51994127b0731356dd05862524"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1/tx.log",
+          "bytes": 842,
+          "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+        }
+      ],
+      "total_bytes": 62434064,
+      "delete_command": "rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a1"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2",
+      "purpose": "failure and comparison evidence",
+      "files": [
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/background-after/audit.json",
+          "bytes": 471,
+          "sha256": "b06629f21b42159642d70ad481838c1ab1e8fdf58330c098313989c699224226"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/background-after/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/background-after/plan.json",
+          "bytes": 273,
+          "sha256": "9cc0aee67afdbd95c0444c8db1b3e9bbc06a9b7e7bd8ebb632a5947976cd1b75"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/background-after/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "0c060b33c3dadc71967c361d17b82abbf60f062f7f297717a96524f44305e0d2"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/background-after/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/background-before/audit.json",
+          "bytes": 471,
+          "sha256": "4b2e98ba8a021bd59a415a72cedbd4379a3099f6c53088c14d06d5b85e908112"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/background-before/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/background-before/plan.json",
+          "bytes": 274,
+          "sha256": "83bd39407184a6bfe21003798e030038fc3fadb691b6aa4081704aa274e0983f"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/background-before/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "75ed16a04e5aee649cab6f0217c89a5d1c8aa57513623c1bce3c20155a7b7fb8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/background-before/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/corpus/configuration.json",
+          "bytes": 7627,
+          "sha256": "e2da898f87fcb51b2c75c38ceb030201bd6dd73467ce61e3c9e63970f4f1cea3"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/corpus/index.json",
+          "bytes": 14343,
+          "sha256": "f71bcca14b871c90c7a23982d3f4528ae5d75a537449d641e3c890bf5371bb82"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/corpus/processed.h5",
+          "bytes": 1227088,
+          "sha256": "dfb1a303a4023b2b79d3d08e10bee922839a1fa477eb24bc8143ec3760a391aa"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/corpus/raw.sigmf-data",
+          "bytes": 50331648,
+          "sha256": "58740ce15fce661c0ab96af65479097e2b1b544e4e362c0de479bb53a47c0549"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/corpus/raw.sigmf-meta",
+          "bytes": 13650,
+          "sha256": "3180920c7bdbfc61968c82c16de9e58dc171b33a837b2c733fba143499afbae2"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/corpus/writer.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/execution.json",
+          "bytes": 2537,
+          "sha256": "a400ac8becaebe52ce3ec73ab1b642ddf6665a100d61376d7cdcf58b0bfb607a"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/frames.json",
+          "bytes": 26579,
+          "sha256": "ae7609b95cefc33917148f3dc702bf731271c59e31d74ba84e3827c687658879"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/plan.json",
+          "bytes": 28998,
+          "sha256": "cf9103b570517adf429dc9b343115c2a832c136a2d61d672f1b079fd791eea46"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/rx-events.jsonl",
+          "bytes": 632539,
+          "sha256": "f97d1e86f6eca923cfe5962475ed89eefef300a911d260a4eb819f608cd5991e"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/rx-plan.json",
+          "bytes": 265,
+          "sha256": "162e3fb3d4a3369d1857da0d53b2a45f096ccc457ce69d8a227f51dcdd7344f9"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/tx-events.jsonl",
+          "bytes": 51306,
+          "sha256": "79db043ec57e94342a2edd38392a58ca1154c005cd8d9d4a9b16ac6e7b027273"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/tx.fc32",
+          "bytes": 2524136,
+          "sha256": "5e97eab89d6c464c7d2efe3c99c90f8a39b7bfc1d0951044b913f8233e325192"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2/tx.log",
+          "bytes": 842,
+          "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+        }
+      ],
+      "total_bytes": 63252311,
+      "delete_command": "rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a2"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3",
+      "purpose": "final RF evidence and inference",
+      "files": [
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/background-after/audit.json",
+          "bytes": 470,
+          "sha256": "c30d5b7d42bc897afa998ab837cf6f7722fad4b88550d3d76fe8f18f92dcca90"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/background-after/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/background-after/plan.json",
+          "bytes": 273,
+          "sha256": "22cd787de4f8ce6773d75dd78c85cb29361dbf26a5a9a0f31f6f339d05c4489a"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/background-after/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "dd00668b9efd33bef595f47a961cf01f93ca28f08660f1fd756d8ac62756d965"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/background-after/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/background-before/audit.json",
+          "bytes": 470,
+          "sha256": "f10dad088ba75c3412187d4faa298483a698e578bd060035dba71550b2d44ac4"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/background-before/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/background-before/plan.json",
+          "bytes": 274,
+          "sha256": "70545ee2f399839c753cf34c04ad047dbc2055ef33ca38f3349f90b20ced09b3"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/background-before/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "e74767647f38c8e85a2799e39b1cfad7ffe43b24e45b38be3573be89b3a2562f"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/background-before/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/conditional-report.json",
+          "bytes": 1192248,
+          "sha256": "d8c6f9f9ddfa4cff6b0b77bfc8d368b4bf681aed1e81c5a5b9f53090da7adf41"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/corpus/configuration.json",
+          "bytes": 7627,
+          "sha256": "5e2c9bcaf85f0c07fcebc18252efdc6da5e635e9a6a0692b7e38ef54899ea9d9"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/corpus/index.json",
+          "bytes": 14355,
+          "sha256": "3c0397cbea268f75bb4bf1e0da1944e9ab4fd36f11f89624550bc3f00b1e0527"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/corpus/processed.h5",
+          "bytes": 1227088,
+          "sha256": "e40828ce03cd0d1c12484d4e218ee2e44855570131743e4cac457876138e02ca"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/corpus/raw.sigmf-data",
+          "bytes": 50331648,
+          "sha256": "fa6bc95b97fa3eb7cc5f89785cb9cc83708dded9c4cf97e1ea5db2cc006fca6d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/corpus/raw.sigmf-meta",
+          "bytes": 13662,
+          "sha256": "61984743ecfdcf93bd80896ee108cdcec7e8b8ffe87a0eaf2d1320446ac6a8cd"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/corpus/writer.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/execution.json",
+          "bytes": 2538,
+          "sha256": "41c4c50f9bd38e4ba52fd8299be5f208cbe34133ca4ef1a4c2fb70dbc5a1d739"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/frames.json",
+          "bytes": 26590,
+          "sha256": "1d155875ba346a3474a84af196435b5a0a9aead87bfff846f887bd7af4484535"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference/amc_mamba_d10/predictions.npz",
+          "bytes": 32017,
+          "sha256": "0b3ef305418689bf004cf2a6c97d6e960f68f00c1923fb4719c53d742492e66d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference/amc_mamba_d10/result.json",
+          "bytes": 1547,
+          "sha256": "d1e7a4a82d7cf0232fd4292730af276eb728aa6b1cbe6d00991c7562df414c80"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference/baseline_cldnn/predictions.npz",
+          "bytes": 31109,
+          "sha256": "660a9779c1d13e421f80ea5383b128b8470be998cddfe882f53b6b8db028d408"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference/baseline_cldnn/result.json",
+          "bytes": 1440,
+          "sha256": "35d5fbf30a1819ecd62dbe000e45b695c1ee3a6056e1d8805f1a26eda7031d40"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference/baseline_cnn2_stable/predictions.npz",
+          "bytes": 31771,
+          "sha256": "c80bd76899ac30a9229d530aef1584c748c9c7ddbc8757c8e61f83cd95e18528"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference/baseline_cnn2_stable/result.json",
+          "bytes": 1453,
+          "sha256": "36d4b44ed18eeef81d9c3ac49796cad401d5748f3dc4b1003100ac87fcc98913"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference/baseline_gru/predictions.npz",
+          "bytes": 31852,
+          "sha256": "c9261ac5c7016d4269ad5068ea8b57f4170b70688b01d266e332caf5a6a71e95"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference/baseline_gru/result.json",
+          "bytes": 1436,
+          "sha256": "93f9b5f915e76dfa48419cef3f9b7c8a44a6d5d6755e65eb0d576b947279638b"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference/baseline_resnet/predictions.npz",
+          "bytes": 31032,
+          "sha256": "b7eb9d76b47ce9d6be262454825047370f8bec12e264a6409f266d2a2884ac82"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference/baseline_resnet/result.json",
+          "bytes": 1440,
+          "sha256": "5ee579daecf11e8fa6452044980202602aa2af4f27c7a37f34bb5688793f1f27"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/amc_mamba_d10/predictions.npz",
+          "bytes": 31848,
+          "sha256": "5ab0b193efd2a1d81521d5951177d97c03dd9d41eb421a08fdff7d51ef8c2eea"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/amc_mamba_d10/result.json",
+          "bytes": 1586,
+          "sha256": "dc0cad9b9c045c726af4b062a4a975fa7cb9915497f94254a962d46be18d4ac5"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_cldnn/predictions.npz",
+          "bytes": 31264,
+          "sha256": "44df70ace9af63ed0382f8e58fc3f7f5fd63c937120b62fd444c76e24e0b13e0"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_cldnn/result.json",
+          "bytes": 1459,
+          "sha256": "7fa8674a8879d728542f854ce409fae8a44f2527923406157f44cb5d758f276e"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_cnn2_stable/predictions.npz",
+          "bytes": 31341,
+          "sha256": "62177fa89d8f1ff7adfd282e9e12c7b29174cab7248cbe724db3d3945a0dba07"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_cnn2_stable/result.json",
+          "bytes": 1493,
+          "sha256": "cafa436530f59917a86858b3842cfe6a30d3ec7653ddc30b565e1d747aba10df"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_gru/predictions.npz",
+          "bytes": 31507,
+          "sha256": "cbd481c82737e9cd79fa89c1033c9e6d6357db8acca810460ecaa44b7f835dba"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_gru/result.json",
+          "bytes": 1477,
+          "sha256": "3a20748091fa05db8a3cb858a181645eb5855d916cf503f9c29d7b4bb47012e5"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_mamc/predictions.npz",
+          "bytes": 31633,
+          "sha256": "b2c3dbbb8d54d6bf979f39bc5c15f9d71f11bf465394a5dfd493ff041bf64ef5"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_mamc/result.json",
+          "bytes": 1483,
+          "sha256": "4976fda860ac2f4fb254f73e0ada4094208dfa6647b1b2c895742925a85d674c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_mcformer/predictions.npz",
+          "bytes": 31752,
+          "sha256": "88b5a4498649f2c90c8ebb1b5c000a21b38be6fdd9e9bd47a13deaf5dbd22e92"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_mcformer/result.json",
+          "bytes": 1487,
+          "sha256": "d81dd1d5cd7aec3c6c877c53e1dc01ea5fe8c6ea3377887f0665490c42116231"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_mcldnn/predictions.npz",
+          "bytes": 31716,
+          "sha256": "7ceb7ada98617275c6c4702bae73a26366b8b6833b98234bea1aaef45760279a"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_mcldnn/result.json",
+          "bytes": 1483,
+          "sha256": "1734052c1acf9fe4bb3c446034a233987fb27f8fe1c442380c5eac25f4f3be5d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_resnet/predictions.npz",
+          "bytes": 31635,
+          "sha256": "f2e7483d2bf757e38950a375a9015734cc32d68f998bd20e4fe086b94b02fb36"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/inference-native/baseline_resnet/result.json",
+          "bytes": 1485,
+          "sha256": "b8576a5e2152f60a1b233504fdf4ee18b39f2a03275832ac459a030a83372a0c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/plan.json",
+          "bytes": 29091,
+          "sha256": "6506e5a5513fde36cb2b4a1d87997174744d20a48a4e7ee7b39a8db188499d4a"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/rx-events.jsonl",
+          "bytes": 39921,
+          "sha256": "7071c96db99a708b4967126d0e0f778203f1371b5fbd20b0f65fbca2b9464f28"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/rx-plan.json",
+          "bytes": 265,
+          "sha256": "746ef129e4a6f898fba2f4a2b112150870306828aa55386ba03b3585c12e3514"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/tx-events.jsonl",
+          "bytes": 51306,
+          "sha256": "ce2639164abad3b16862cc8d196b72dec69a29399560da6db3ce07c7f3f2dfef"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/tx.fc32",
+          "bytes": 2524136,
+          "sha256": "34a68344f5a5b752e92ed255a58fb19950b9fbc2147c0a45d73fb16e95ab0f9c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3/tx.log",
+          "bytes": 842,
+          "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+        }
+      ],
+      "total_bytes": 64281814,
+      "delete_command": "rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016a-a3"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2",
+      "purpose": "failure and comparison evidence",
+      "files": [
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/background-after/audit.json",
+          "bytes": 471,
+          "sha256": "774c2a19808679106abe1367bbf382c8c1b5188c45cfc5610134436050e384d5"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/background-after/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/background-after/plan.json",
+          "bytes": 273,
+          "sha256": "5753555c0a81af84f5294fcecb705ff7f4083999ee2dcf767bf90980b9738150"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/background-after/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "47c4eb49ec986ba93b69e9b3b047eaa6981fd2862457af74142299989557d0dd"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/background-after/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/background-before/audit.json",
+          "bytes": 471,
+          "sha256": "7bafaf9d951ec48880968aa039518e0469a3a29f7b3eabe03b10790af77786f4"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/background-before/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/background-before/plan.json",
+          "bytes": 274,
+          "sha256": "abcc2d807b6e34e5ce4907ab9fb42872cb54450950405898f6fbece9ee961c3c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/background-before/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "1fb4e8d7b0c3461691978e519559e5a49d7f072a9bb1c70fc9686dc8996f71c3"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/background-before/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/corpus/configuration.json",
+          "bytes": 7358,
+          "sha256": "d9a495d34aafbb987663a8b4958cb2cccbcb456d699e05d59e7d7230b0a80891"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/corpus/index.json",
+          "bytes": 14354,
+          "sha256": "219dc834e1dbe9dcad49b2f10f7d1d243c32254664b1fcd4f2d0824c147547dd"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/corpus/processed.h5",
+          "bytes": 1217360,
+          "sha256": "c8d9590d758ec1639000738e04da9d674db7d3ebb4396a9582f79cc0a063ccdd"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/corpus/raw.sigmf-data",
+          "bytes": 50331648,
+          "sha256": "593fa5adbad9d906cafc35ce1f0a56e7f9b7bb100d9fb73aad48cbeda37c07f7"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/corpus/raw.sigmf-meta",
+          "bytes": 13661,
+          "sha256": "32d57246147f5b9673e2cbab735f92f0d7701baefdecc2d074a4088061f49649"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/corpus/writer.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/execution.json",
+          "bytes": 2540,
+          "sha256": "494be82af4118086002b54874f20a7fc7fd924c9849fde93031eaf4321972e2c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/frames.json",
+          "bytes": 24155,
+          "sha256": "772a1ce790e96cfd50cd30a3dad704ddfaee7a46519a8d00302f1b57fee5c027"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/plan.json",
+          "bytes": 27069,
+          "sha256": "b6ef50e3ca8159d0791e3ecaddb381b5e1492b216c6a8e02fc3699f624c737f2"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/rx-events.jsonl",
+          "bytes": 632539,
+          "sha256": "d269b930dbafe8a04b75b57139cb1807caa5124fc0cd9a39d8b93c2679f1d635"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/rx-plan.json",
+          "bytes": 265,
+          "sha256": "37f6d61073d7eed075dc735ae071d7dd6320bd76423e7f53a2940bc128cd989f"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/tx-events.jsonl",
+          "bytes": 46742,
+          "sha256": "731e7eb8a5ab8ea439b24a30637de209367c2c079f2190cbc3aa72c02ff9c47b"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/tx.fc32",
+          "bytes": 2294760,
+          "sha256": "873e2da60d894996caf7f68aab97491fa580fd69bf908bef54e8e24ea5914b71"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2/tx.log",
+          "bytes": 842,
+          "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+        }
+      ],
+      "total_bytes": 63004046,
+      "delete_command": "rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a2"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3",
+      "purpose": "final RF evidence and inference",
+      "files": [
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/background-after/audit.json",
+          "bytes": 470,
+          "sha256": "9eb18a087a52ca2263b6b584a3d51a061317614a872c3a6d0e515a6064a7b767"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/background-after/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/background-after/plan.json",
+          "bytes": 273,
+          "sha256": "63f2b2b2d0c15c220559ead8a2591780f6e6d1ce5954df7eafc7ed119b2b028c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/background-after/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "8b365e64587d1aaeccef3cf1b8c7b76e4fee2745c67b6eaf86a895d6c7d0c20b"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/background-after/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/background-before/audit.json",
+          "bytes": 470,
+          "sha256": "eaa3a8f6ee287c5847b0ce92f3ef60eb760fe744e4620719278ec07008fa8be9"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/background-before/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/background-before/plan.json",
+          "bytes": 274,
+          "sha256": "bc355994a20d318b7c4902d42f0dec010abb7c0f823700223b4b9094b28e8c75"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/background-before/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "ae4f15485b669ebaadafb652cb93bf7051a6d3176334d70227bd2c55bd1fabad"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/background-before/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/conditional-report.json",
+          "bytes": 1073029,
+          "sha256": "f6d9a966c1b239316e33a5dbeb46d7a964518315d9ec5baed1519485dadfc006"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/corpus/configuration.json",
+          "bytes": 7358,
+          "sha256": "52f2c2108d12c856fb298dc450e41babf8dc8d664979a1bc768d036674c9c54d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/corpus/index.json",
+          "bytes": 14351,
+          "sha256": "aca60829ffea623923dd6c3b529bcd9cebf7e6b549312d8fca9d4197c3160e17"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/corpus/processed.h5",
+          "bytes": 1217360,
+          "sha256": "1a6a1db2abf00ef97acce74b8788630aa2c2d52232a81cef63bacf719c643b16"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/corpus/raw.sigmf-data",
+          "bytes": 50331648,
+          "sha256": "7d42bbc690544c162d209b4c788da7ea1eca2476ff417f1c0d6031b7671476aa"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/corpus/raw.sigmf-meta",
+          "bytes": 13658,
+          "sha256": "389721de9051538705bd56970f5e21b810830a40bdc3c1378924c0f46d3671b3"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/corpus/writer.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/execution.json",
+          "bytes": 2538,
+          "sha256": "b9156d4ce241becd5dd4e235318038119ef068081f4d92916e1d1efd0cafb071"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/frames.json",
+          "bytes": 24144,
+          "sha256": "9db7c3086c6324f42d8e22f3bf22eff5ba1908ce1ac7104eeff1f5c8dfe8bc21"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference/amc_mamba_d10/predictions.npz",
+          "bytes": 26705,
+          "sha256": "547a4def5d209f73d6a80a24fb6c315949231de60752977049dd3298f0dd8e83"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference/amc_mamba_d10/result.json",
+          "bytes": 1485,
+          "sha256": "738ea172a35443c56bf89a6489a85f0fffe29138fee51bb35e8466267cc6f616"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference/baseline_cldnn/predictions.npz",
+          "bytes": 25483,
+          "sha256": "05e2d62b0dc8f707d66f77fe601bb2c143fd9df2d3efb0763a73c5a185e6df48"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference/baseline_cldnn/result.json",
+          "bytes": 1372,
+          "sha256": "a4cc6fc243c3d8c5fd538beec7e46abced0d501185e63bb1117fd0139ab0c663"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference/baseline_cnn2_stable/predictions.npz",
+          "bytes": 26303,
+          "sha256": "f9b8236a3fcce17f8141679de9c4660e0edf8c1fa3a1658156011e45322333d9"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference/baseline_cnn2_stable/result.json",
+          "bytes": 1394,
+          "sha256": "03bb58214bccdb8c6ce8c5b1483946c2deddb1349626afb91d64ad713ce44657"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference/baseline_gru/predictions.npz",
+          "bytes": 26913,
+          "sha256": "855e4aaf93be0c5f477b2d64b090cf7256418a3c67ad523280140280180175e7"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference/baseline_gru/result.json",
+          "bytes": 1378,
+          "sha256": "dd7b407e864dd8f253cbbecd2af958ae15211b148799755804316eba081a1d46"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference/baseline_resnet/predictions.npz",
+          "bytes": 25879,
+          "sha256": "59c0659b93f23a65d98a4f2f2a11194efe38304daf826f78ce1b44c92c375dcb"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference/baseline_resnet/result.json",
+          "bytes": 1366,
+          "sha256": "4faa9913d9b8e211fc9aa20bf88f00c60c896d4963323eae1826b5a6d6d9b565"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/amc_mamba_d10/predictions.npz",
+          "bytes": 26709,
+          "sha256": "0318d9b8eb209f4ce6b1898f74d6f2a9bdc88b496f6f5454f77b2513de6e17f1"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/amc_mamba_d10/result.json",
+          "bytes": 1530,
+          "sha256": "1ab585021f2fa2f9e17dd091b38adb87e7381031a7e52f102a060c6dddb1e473"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_cldnn/predictions.npz",
+          "bytes": 26097,
+          "sha256": "fdb528e98a7f89a91f2bea95bcfe363b35efab07c8ecee2b0af20fcaeab75627"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_cldnn/result.json",
+          "bytes": 1419,
+          "sha256": "a4052758455426d1bcd8d962bcf05e4a1b04b3c0148028fab93a570c5d5cc885"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_cnn2_stable/predictions.npz",
+          "bytes": 26259,
+          "sha256": "75d1d07f5e56a45b185cf5b8ae3fe98580f5b1e4af43a3bd6e0fa3a426d49205"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_cnn2_stable/result.json",
+          "bytes": 1435,
+          "sha256": "26b4d14b12dd7164fbba42aacd559e82a536fd6d4a606f6c52366159420fcc7d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_gru/predictions.npz",
+          "bytes": 26482,
+          "sha256": "790c0cf0fcb6930c12558468ec956ddfc73ed3b9b04960ea2f409ee10c4e5a02"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_gru/result.json",
+          "bytes": 1421,
+          "sha256": "798b57be3ff35d01773435b46bf78be686a2c20608387531a634d859909d1898"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_mamc/predictions.npz",
+          "bytes": 26646,
+          "sha256": "4912a5b9abaaa6f0622d7352c180ec3588c226bbe7efe36502bd74fcd8868554"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_mamc/result.json",
+          "bytes": 1427,
+          "sha256": "caff5776c058319dedc66fa96bb730beabcc3fe93ea051eb1696e25b183fe80d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_mcformer/predictions.npz",
+          "bytes": 26388,
+          "sha256": "85ce9190c9914c9db65a9d4152c22d183d713c5e0d206dfdc681c3c161b6bf46"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_mcformer/result.json",
+          "bytes": 1431,
+          "sha256": "36ac0c77d05daf93641829744474a0986d81156590b83bdeab0bb677359d57bd"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_mcldnn/predictions.npz",
+          "bytes": 26780,
+          "sha256": "db0fbf1a2bb2473eb93e1dce0723f3a5466d8d6106bdd76d8ec10ff09a4e51af"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_mcldnn/result.json",
+          "bytes": 1427,
+          "sha256": "a708b72ad786a05127311774e4c734173a2c1a1f058ac0b13bb4bea405915414"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_resnet/predictions.npz",
+          "bytes": 26495,
+          "sha256": "f684f7b661ed9634fc7e9d82ecdbd06288aec974f142d21d4f18d4c117066240"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/inference-native/baseline_resnet/result.json",
+          "bytes": 1423,
+          "sha256": "1113dcf81865cfe8d8735d589927b8714bf50d47abea6a708c607a084225786b"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/plan.json",
+          "bytes": 27163,
+          "sha256": "5548a3f066051418d97d76b1412630f7b8eb2f5c4e7df61f3952eabde086a84f"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/rx-events.jsonl",
+          "bytes": 39921,
+          "sha256": "d175b3d8eaded65c2e95db9c1657feebd962e1cd31bf4b2c5b8701af96b93198"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/rx-plan.json",
+          "bytes": 265,
+          "sha256": "7e4c9a33daf2f18111dc5b7eb26b46ce45ef32497f0a479fd0d2ff8853bca83c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/tx-events.jsonl",
+          "bytes": 46740,
+          "sha256": "8a7e715d9542327747ca6190204269c0403f50dfb37907269f3d15db22261e22"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/tx.fc32",
+          "bytes": 2294760,
+          "sha256": "d9e807b7c1dc539fa4a4f162e15cd800045f656763878f98ca15560c91559d5d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3/tx.log",
+          "bytes": 842,
+          "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+        }
+      ],
+      "total_bytes": 63846175,
+      "delete_command": "rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2016b-a3"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2",
+      "purpose": "failure and comparison evidence",
+      "files": [
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/background-after/audit.json",
+          "bytes": 471,
+          "sha256": "28fa40d2b347b8d97cea0246f3e687ee94ff95ec885d4d49bebfccbb0d9ebdbd"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/background-after/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/background-after/plan.json",
+          "bytes": 273,
+          "sha256": "80cd022fe4c6be89fa220b0faf9d8a98f16dc41b9bc0fad9927824f7d9e41e5a"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/background-after/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "01f6b62573bab6cebe8a2ed463596d95c8e253972ad3daac9faab297548778c7"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/background-after/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/background-before/audit.json",
+          "bytes": 471,
+          "sha256": "308f56a5787daf3f87d13bcf40eea40c770d0f5edc70e3cce7ed1f64601e2e25"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/background-before/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/background-before/plan.json",
+          "bytes": 274,
+          "sha256": "6194cdff2d0783ff6568c859b2978da39c6f4304b8e56fdf23c86422e0025208"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/background-before/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "e9353bcff12a5300922bd58a199f8e0c5731e09fc894c32b8b4331418db4144a"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/background-before/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/corpus/configuration.json",
+          "bytes": 14952,
+          "sha256": "1ab57baa707fadc712e341610765ec8669c33c54e94e5397ecb91e8f019ffd67"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/corpus/index.json",
+          "bytes": 14351,
+          "sha256": "9a29fd96cb905343b5d67b0efcf179308e71dfa92a81a84083d41d396639a8a5"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/corpus/processed.h5",
+          "bytes": 13306312,
+          "sha256": "25794e99524b7b49d416a66a9cb4d62515385f3a1c35a57eca03f7e76ea8de39"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/corpus/raw.sigmf-data",
+          "bytes": 50331648,
+          "sha256": "fb436dbb4a9c9d7e16291368a61a86764db22089e25fa594a6b77ff52dc98698"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/corpus/raw.sigmf-meta",
+          "bytes": 13658,
+          "sha256": "0d9f0af71b88f847aa03d60e5d5e0cbd1906d236cfe0ca9bacf3a961b6b1364d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/corpus/writer.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/execution.json",
+          "bytes": 2541,
+          "sha256": "436820c77c284d3a07c9ccfdd3c206316d3a2157e8e3c6d1eaddebba2a129327"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/frames.json",
+          "bytes": 84796,
+          "sha256": "ab9e38fbb0dce69f29fa727aad25ae74ffcdceb303c7b6c8f652abd2bcbd5e5f"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/plan.json",
+          "bytes": 57458,
+          "sha256": "515753cc5d182a985458fe4e2eb31ab3537f60256ac342e927a084d5b65b6087"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/rx-events.jsonl",
+          "bytes": 632539,
+          "sha256": "72eaf5e1c3b661dc0a7d6d25e89eaeee4ec4a8869a3a4da6b4b41aa4583f6cc8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/rx-plan.json",
+          "bytes": 265,
+          "sha256": "9d15940674889ca8ab561abf81fdf3d09306437f1abaea89d3e1b3c4266c397b"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/tx-events.jsonl",
+          "bytes": 881793,
+          "sha256": "694f89338608fb237defffb52242abbd8ee78af6887dd949e8945514b43ec5d1"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/tx.fc32",
+          "bytes": 44041192,
+          "sha256": "7e4a6ee3d8f089fed70b989587f4c4082cdc070ef1c551f4dc4ee004de45da91"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2/tx.log",
+          "bytes": 842,
+          "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+        }
+      ],
+      "total_bytes": 117773100,
+      "delete_command": "rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a2"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3",
+      "purpose": "final RF evidence and inference",
+      "files": [
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/background-after/audit.json",
+          "bytes": 470,
+          "sha256": "50f7b223032bce2cb1e76c87615b7334031825402ff6ff6a77c0d300bdccf025"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/background-after/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/background-after/plan.json",
+          "bytes": 273,
+          "sha256": "dec843274b487b5c72b678bf5460a8fa4ddd06fa86d845df98ffd6d896671d86"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/background-after/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "08cb1b1075a0a8691e4eb2053e1e4c79b7194f95acc27a4cb1a37a737471cd80"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/background-after/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/background-before/audit.json",
+          "bytes": 470,
+          "sha256": "617a578015da40a20144cbccc60676717fca811aeb3e6022fc940b56328cade7"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/background-before/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/background-before/plan.json",
+          "bytes": 274,
+          "sha256": "fd8ca752bf1083471b303061d716bf3f5f47094e03eec120fd4b919cdc31a7ef"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/background-before/raw.sigmf-data",
+          "bytes": 4194304,
+          "sha256": "746c72eef6448f46ec2d52f4057a3232a5a5c2ae3ba83bf4f623782bf58a1c39"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/background-before/raw.sigmf-meta",
+          "bytes": 328,
+          "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/conditional-report.json",
+          "bytes": 2720151,
+          "sha256": "6bf8c33f5bf64c7d02f1fdca9ba54be7cbc2da439c09b57301eb03495f928d76"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/controller.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/corpus/configuration.json",
+          "bytes": 14952,
+          "sha256": "f81d3cbb6e6623471ed040741136f84b9d8621d1ab371b5b0fc004a8614040ee"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/corpus/index.json",
+          "bytes": 14351,
+          "sha256": "cb330fe70401edea1ec1e3ce15833409a77996760c62406dc7d6107cbda1041c"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/corpus/processed.h5",
+          "bytes": 13527496,
+          "sha256": "b06be28031c49252c406cd1c437660b96f2957a8b96309c559338630ff0834d5"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/corpus/raw.sigmf-data",
+          "bytes": 50331648,
+          "sha256": "3badc57bd52da012101cf76a0bcff050fc3470b1295735b134f3d073f9805440"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/corpus/raw.sigmf-meta",
+          "bytes": 13658,
+          "sha256": "8801a71d575dc2fcdd01b48e22f9b73cff867e9484dd8389a73b5deec35afcb3"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/corpus/writer.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/execution.json",
+          "bytes": 2540,
+          "sha256": "a6b15775fa92c9576006a3dbc5e1b9f81f6a7d209b7be1a279ea15674b6274c4"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/frames.json",
+          "bytes": 465627,
+          "sha256": "dc97976a94ffc6450abb5ed84cfbe15adc93c224add81b847cf81ca613a3987b"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/amc_mamba_d10/predictions.npz",
+          "bytes": 141680,
+          "sha256": "ba1166a7d3b2e23b952bfb8e596cddd31aecf5e91b0e7b6ac271161b1cf2dbf0"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/amc_mamba_d10/result.json",
+          "bytes": 1634,
+          "sha256": "88789b6a2c2c0ece67c027ea608121d55ecf30776779cbe2c6f5c051c9b6271f"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_cldnn/predictions.npz",
+          "bytes": 138356,
+          "sha256": "03e8a8ab699fd140a9a34a30146dcde9175eef0ac2aee8a9c7eaaac19f4f67df"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_cldnn/result.json",
+          "bytes": 1529,
+          "sha256": "3daec29dac425ad2f0716b517544d96150008d5c6d038a27dd273bea2499808e"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_cnn2_stable/predictions.npz",
+          "bytes": 139729,
+          "sha256": "cad49e830c6cf7e5eba15710f283864e90eadc7de9e0352c4cfb1fd7c407e62f"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_cnn2_stable/result.json",
+          "bytes": 1525,
+          "sha256": "6fbe699226f103ae0c708c420df1f4bcd596a19103203c5cbdc5fedbbad2e2d7"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_gru/predictions.npz",
+          "bytes": 141664,
+          "sha256": "04070e22c8b0ebc65aae3fe546e99c40f03f7253b91dc75317660ff8468d5c32"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_gru/result.json",
+          "bytes": 1507,
+          "sha256": "13bce65b2cd8b6ad59cd946b6bbd903563287a6951222878317f67fe831d5568"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_mamc/predictions.npz",
+          "bytes": 142529,
+          "sha256": "fe9c62288cc54b3453a7294bcde72322701a608db3e88e3a58dfe49380d8e7ee"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_mamc/result.json",
+          "bytes": 1541,
+          "sha256": "11381618a5870991453dbf1be1b018c72488fee5b148475b2b30544dc4c02b01"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_mcformer/predictions.npz",
+          "bytes": 141494,
+          "sha256": "af7553c79af25fddb6dc25e85df930bc9655c0584951dfeccbf0f86649d89c51"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_mcformer/result.json",
+          "bytes": 1563,
+          "sha256": "8e2601bcec056bc9ca3c2782fe08dd87af5467a67919c57d7ec4a2ccdf719934"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_mcldnn/predictions.npz",
+          "bytes": 142169,
+          "sha256": "79806a640eec3182424588b0f82bb64348f9e4e550c3d3ff08ee737dd67e31f7"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_mcldnn/result.json",
+          "bytes": 1553,
+          "sha256": "1996f9e32a84977f01e2527c1810f2823891dfbd46a28c9abb91713cbeaa8f33"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_resnet/predictions.npz",
+          "bytes": 140605,
+          "sha256": "de14f266ef8e58858318271c75a4811496fdc72c45c9039e952e1254e2bec222"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/inference/baseline_resnet/result.json",
+          "bytes": 1533,
+          "sha256": "765fbece89a048bf167c6624e9c22eeb5b861b1b3f4ffeb6297184f40c6af3e0"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/plan.json",
+          "bytes": 57552,
+          "sha256": "07cf6db731cde157f49414fb33ef448aa909429ff8632e74665a665e85a33a46"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/rx-events.jsonl",
+          "bytes": 39921,
+          "sha256": "7fa73d2fac50fbc963ba68d9f4ce72d89a4fc3b110a4b297e48d5e279f8aed9f"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/rx-plan.json",
+          "bytes": 265,
+          "sha256": "0120e21e0242bdd9b149e07bd71eafce1c4dc2eed7c7ce819c9ced15053da0ed"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/tx-events.jsonl",
+          "bytes": 881792,
+          "sha256": "b5e91cf45794fe2551206565c1ae8ea44f10de0b4b7f397574c1cc453cbdcc18"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/tx.fc32",
+          "bytes": 44041192,
+          "sha256": "edfd8121a5ba4c798619bbdfe84b05f978e0baa97d2f5ef41b5d950b9f6ab92a"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3/tx.log",
+          "bytes": 842,
+          "sha256": "a796443f826b61242f1961d5f0faf5eb827567873612d3d08363e918efa1278c"
+        }
+      ],
+      "total_bytes": 121643349,
+      "delete_command": "rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-rml2018a-a3"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary",
+      "purpose": "retention summary, controls and figures",
+      "files": [
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/accuracy.png",
+          "bytes": 106073,
+          "sha256": "30bb3d182b57adc93bf2fc9466634cc8eb3929560e4744553d7b754a93445623"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/buffer-change.log",
+          "bytes": 652,
+          "sha256": "11f9a29177304e0fc2cab748d8c9174eb2e0a56c6dc871929a39f999c2f3cc0b"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/d10-sinr.png",
+          "bytes": 165303,
+          "sha256": "c91f6e480cf2e68d9b0d1fe9478411f97a0d2f83da21e181be6101796c6823d2"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/eval-rms-first.py",
+          "bytes": 6325,
+          "sha256": "95685846736e4b6b31b06c34fd877ada85cc03f0a07522f97903fc5c3edb5d34"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/final-state.json",
+          "bytes": 936,
+          "sha256": "d5de1680c46e767f972a7cf375ec41d1d7979639ed9dac7f06299e8509516779"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/inference-rest.log",
+          "bytes": 15301,
+          "sha256": "2e52d4697552b4f853b62cebe88565878fe42320d972b6b57cd2e0fb2c5d8911"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/inference.log",
+          "bytes": 53030,
+          "sha256": "8b2a675022323b11024d0924a6ae3553c1245dea98ae90156d2ca14ec26c730e"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/input-contract.json",
+          "bytes": 1426,
+          "sha256": "57f5a8bcb4bc1ad0e5f9d403fd7f53e68b4873fd8972a525bee674e96e5199ce"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/live-a1.log",
+          "bytes": 2211,
+          "sha256": "0c12619eac7ce355f0f873030b457d3aa6bb0a60f82c98047fc62ba5ed7aaed7"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/live-a2.log",
+          "bytes": 2211,
+          "sha256": "3b5e0a4e09607dd89d7367b94691a1372657adf5d73cd13403a3be5bfe99af4b"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/live-a3.log",
+          "bytes": 9849,
+          "sha256": "34d67ac25cf780468980ce0a580843e22c7067a6ec06e93148db7c47f5a7c6d4"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/live-rest.log",
+          "bytes": 7394,
+          "sha256": "0d26b8fbed2addeb70ba176dc78030697465063cba3e73637ad453a8726f8b19"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/native-inference.log",
+          "bytes": 40246,
+          "sha256": "354eb82c0015c0b46542b416ed172569488b4fcb7c74b98efd2e4a802d0b5241"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/native-tests.log",
+          "bytes": 119,
+          "sha256": "0c8844f04a2a2327c1a68669ecbb793f3a56b337547f2454734a8f0bb8d2375e"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/offline-summary.json",
+          "bytes": 1723,
+          "sha256": "2dc2add646068cca24eb3df8873c806bfc46d34d66d342f34ea81aeedd3756c9"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/reports-final.log",
+          "bytes": 4739,
+          "sha256": "9326dca8c0919cdf858758e320170bb8c0f8d6efc2f7599f75145bdb6c120a36"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/results.json",
+          "bytes": 6850,
+          "sha256": "8b9b6733511b4a43a4782ed15a1b496f7db6e3a32ce6a512cdb9f42533df69e1"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/selection-plan.json",
+          "bytes": 114499,
+          "sha256": "c7102b880d1991fe0c674dfdc3328f752bf2ad1a41bd33439ecb195846a7a5f2"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/short-tests.log",
+          "bytes": 108,
+          "sha256": "fb9b820320113792c5076508339a628f1a9c6f78fb9be5825ca8c725b0a73a8d"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/sinr-controls.json",
+          "bytes": 2820,
+          "sha256": "ac725bac0b53bdf6e5f846c20768fc44a64ec54bddd6f1d85815cf33dbb3c172"
+        },
+        {
+          "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/store-tests.log",
+          "bytes": 109,
+          "sha256": "279c2fad923176999b55d163cec483caf9f1b57c6a95429f4b984f8b3812fa85"
+        }
+      ],
+      "total_bytes": 541924,
+      "delete_command": "rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary"
+    }
+  ],
+  "retained_files": 334,
+  "retained_bytes": 808482323,
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/amc-uniform-frame-20260926",
+    "files": 424,
+    "bytes": 29013557,
+    "verified_absent": true
+  },
+  "remote_rollback": {
+    "path": "/sd/sdr-agent/releases/20260926-rrc-buffer-rollback",
+    "files": 3,
+    "bytes": 54178,
+    "inventory_reference": "/home/jetson/sdrharness/local-assets/amc-eval/rf/rrc4-uniform-20260926-summary/final-state.json",
+    "delete_command": "rm -rf -- /sd/sdr-agent/releases/20260926-rrc-buffer-rollback"
+  },
+  "temporary_p201_files": 0
+}

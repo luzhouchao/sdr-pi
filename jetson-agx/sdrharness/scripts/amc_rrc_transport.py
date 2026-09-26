@@ -41,23 +41,31 @@ def interpolate(x):
     return np.convolve(z, taps())
 
 
-def contract():
-    return dict(method=METHOD, factor=4, rolloff=.25, taps=129,
+def contract(frame_payload_samples=None):
+    c.require(frame_payload_samples is None or type(frame_payload_samples) is int and frame_payload_samples in (2048, 16384),
+              'registered common RRC payload')
+    value = dict(method=METHOD, factor=4, rolloff=.25, taps=129,
                 taps_sha256=hashlib.sha256(taps().tobytes()).hexdigest(),
                 tx_group_delay_rf_samples=64, rx_group_delay_rf_samples=64,
                 adc_support_count_formula='4*(L-1)+129', rate_hz=c.RATE,
                 guard_edge_exclusion_rf_samples=128, sinr='not_validated')
+    if frame_payload_samples is not None:
+        value.update(method=METHOD+('/payload16384-v2' if frame_payload_samples == 16384 else '/payload2048-v3'),
+                     frame_payload_samples=frame_payload_samples, rows_per_frame_formula=str(frame_payload_samples)+'/L',
+                     frame_rf_samples=4*(1536+frame_payload_samples))
+    return value
 
 
-def transmit(source, run_id):
+def transmit(source, run_id, *, frame_payload_samples=None):
+    profile = contract(frame_payload_samples)
     source = np.asarray(source)
     c.require(source.ndim == 2 and source.shape[1] in (128, 1024), 'native shape')
     original, scales = native_packet(source, run_id, window_samples=source.shape[1],
-                                    total_rows=len(source))
+                                    total_rows=len(source), frame_payload_samples=frame_payload_samples)
     z = interpolate(original)
     gain = .2*np.sqrt(10)/max(abs(z))
     z = (z*gain).astype('<c8')
-    return z, dict(contract=contract(), row_scales=scales.tolist(), global_gain=float(gain),
+    return z, dict(contract=profile, row_scales=scales.tolist(), global_gain=float(gain),
                    native_packet_samples=len(original), tx_samples=len(z),
                    tx_sha256=hashlib.sha256(z.tobytes()).hexdigest())
 
@@ -109,16 +117,18 @@ def track(z, run_id, frame, predicted, hz):
     return at, hz, phase, score
 
 
-def cancel(z, marker, length, hz):
+def cancel(z, marker, length, hz, *, frame_payload_samples=None):
     """Fit RF-domain guards, validate heldout halves and independent pilot.
 
     Both true quiet intervals exclude full TX tails plus a 128-point margin.
     The signal is not notched and payload samples are not fitting inputs.
     """
+    profile = contract(frame_payload_samples)
+    payload_samples = 16*length if frame_payload_samples is None else frame_payload_samples
     origin = marker-1088
-    payload_end = origin+4*(1280+16*length)
+    payload_end = origin+4*(1280+payload_samples)
     intervals = [(origin+128, origin+896), (payload_end+128, payload_end+896)]
-    info = dict(method=METHOD+'/guard-tone', status='skipped', reason=None,
+    info = dict(method=profile['method']+'/guard-tone', status='skipped', reason=None,
                 guard_intervals=[list(v) for v in intervals], source_payload_used=False)
 
     def skip(reason):
@@ -212,17 +222,18 @@ def cancel(z, marker, length, hz):
     return (f, amplitude), info
 
 
-def quality(status):
+def quality(status, frame_payload_samples=None):
     # RRC noise correlation and dataset Z semantics need a separate calibration.
+    method = contract(frame_payload_samples)['method']
     return dict(rx_sinr_db=None, rx_sinr_status='not_measured',
                 rx_sinr_reason='rrc_noise_and_source_z_contract_not_validated' if status == 'synchronized'
-                else 'payload_not_synchronized', rx_sinr_method=METHOD+'/conditional-pending',
+                else 'payload_not_synchronized', rx_sinr_method=method+'/conditional-pending',
                 rx_sample_rate_hz=c.RATE/4, rx_adc_sample_rate_hz=c.RATE,
-                rx_payload_filter=METHOD, rx_sinr_reference_plane='matched_decimated_before_rms')
+                rx_payload_filter=method, rx_sinr_reference_plane='matched_decimated_before_rms')
 
 
-def validate_quality(q):
-    expected = quality('synchronized')
+def validate_quality(q, frame_payload_samples=None):
+    expected = quality('synchronized', frame_payload_samples)
     c.require(isinstance(q, dict) and all(q.get(k) == v for k, v in expected.items() if k != 'rx_sinr_reason')
               and q.get('rx_sinr_reason') in (expected['rx_sinr_reason'], 'payload_not_synchronized'),
               'RRC pending SINR contract')
@@ -234,20 +245,23 @@ class Decoder:
     No convolution state is reset at input chunk boundaries: each decoded
     payload reads its full 129-tap halo from the immutable buffered RF stream.
     """
-    def __init__(self, run_id, window_samples, rows):
+    def __init__(self, run_id, window_samples, rows, *, frame_payload_samples=None):
         c.require(isinstance(run_id, str) and 0 < len(run_id) <= 128, 'run ID')
         c.require(window_samples in (128, 1024) and type(rows) is int and 1 <= rows <= 8192,
                   'finite native decoder shape')
         self.run_id = run_id; self.length = window_samples; self.rows = rows
-        self.frame_samples = 4*(1536+16*window_samples)
-        self.total_frames = (rows+15)//16
+        self.profile = contract(frame_payload_samples)
+        self.frame_payload_samples = frame_payload_samples
+        self.rows_per_frame = 16 if frame_payload_samples is None else frame_payload_samples//window_samples
+        self.frame_samples = 4*(1536+self.rows_per_frame*window_samples)
+        self.total_frames = (rows+self.rows_per_frame-1)//self.rows_per_frame
         self.samples = np.empty(0, np.complex128)
         self.frame = 0; self.marker = None; self.hz = None; self.search = 0
         self.frames = []; self.closed = False
         self.inputs = {t:np.full((rows, 2, window_samples), np.nan, '<f4') for t in ('raw', 'guard')}
         self.masks = {t:np.zeros(rows, bool) for t in self.inputs}
         self.starts = np.full(rows, -1, '<i8'); self.counts = np.zeros(rows, '<i8')
-        self.quality = [dict(raw=quality('missing'), guard=quality('missing'),
+        self.quality = [dict(raw=quality('missing', self.frame_payload_samples), guard=quality('missing', self.frame_payload_samples),
                              sync=dict(status='missing')) for _ in range(rows)]
 
     def feed(self, values, *, final=False):
@@ -285,7 +299,7 @@ class Decoder:
             try:
                 at, hz, phase, score = track(self.samples, self.run_id, self.frame, predicted, self.hz)
                 c.require(at >= 1088, 'complete leading RF guard')
-                tone, info = cancel(self.samples, at, self.length, hz)
+                tone, info = cancel(self.samples, at, self.length, hz, frame_payload_samples=self.frame_payload_samples)
                 coarse_hz = hz
                 if tone is not None:
                     # The validated guard prediction removes LO bias from the
@@ -300,7 +314,7 @@ class Decoder:
                     p = clean*np.exp(-2j*np.pi*hz*pn/c.RATE)
                     phase = float(-np.angle(np.vdot(ref[128:-128], p[128:-128])))
                 first = at+4096
-                count = 16*self.length
+                count = self.rows_per_frame*self.length
                 support_start = first-64
                 support_count = 4*(count-1)+129
                 c.require(support_start+support_count <= len(self.samples), 'complete matched-filter halo')
@@ -308,10 +322,10 @@ class Decoder:
                 rotation = np.exp(-2j*np.pi*hz*n/c.RATE+1j*phase)
                 raw = self.samples[n]
                 guard = raw if tone is None else raw-tone[1]*np.exp(2j*np.pi*tone[0]*n/c.RATE)
-                begin = self.frame*16; end = min(begin+16, self.rows)
+                begin = self.frame*self.rows_per_frame; end = min(begin+self.rows_per_frame, self.rows)
                 pending = {}
                 for tag, samples in [('raw', raw), ('guard', guard)]:
-                    recovered = np.convolve(samples*rotation, taps(), mode='valid')[::4].reshape(16, self.length)[:end-begin]
+                    recovered = np.convolve(samples*rotation, taps(), mode='valid')[::4].reshape(self.rows_per_frame, self.length)[:end-begin]
                     rms = np.sqrt(np.mean(abs(recovered)**2, axis=1))
                     c.require(np.all(rms > 0) and np.isfinite(rms).all(), 'nonzero recovered rows')
                     normalized = recovered/rms[:, None]
@@ -325,8 +339,8 @@ class Decoder:
                 record.update(status='synchronized', marker_rf_sample=at, cfo_hz=hz,
                               phase_rotation_rad=phase, marker_score=score, pilot_cfo_before_guard_hz=coarse_hz, guard=info)
                 for row in range(begin, end):
-                    raw_quality = dict(quality('synchronized'), normalization_rms=float(pending['raw'][1][row-begin]))
-                    guard_quality = dict(quality('synchronized'), normalization_rms=float(pending['guard'][1][row-begin]))
+                    raw_quality = dict(quality('synchronized', self.frame_payload_samples), normalization_rms=float(pending['raw'][1][row-begin]))
+                    guard_quality = dict(quality('synchronized', self.frame_payload_samples), normalization_rms=float(pending['guard'][1][row-begin]))
                     self.quality[row] = dict(raw=raw_quality, guard=guard_quality,
                         sync=dict(status='synchronized', frame=self.frame, marker_score=score, cfo_hz=hz),
                         guard_status=info['status'], guard_reason=info['reason'],
@@ -345,4 +359,4 @@ class Decoder:
         return dict(inputs=self.inputs, masks=self.masks, sample_starts=self.starts,
                     sample_counts=self.counts, quality=self.quality, frames=self.frames,
                     missing_frames=list(range(self.frame, self.total_frames)),
-                    transport=contract(), adc_samples=len(self.samples))
+                    transport=self.profile, adc_samples=len(self.samples))

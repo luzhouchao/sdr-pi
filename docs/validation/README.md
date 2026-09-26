@@ -150,3 +150,5 @@
 
 - [CodeGraph本地初始化与CLI/MCP验收](CODEGRAPH_INITIALIZATION_2026-09-10.md)
 - [文档删并、迁移和链接验证](DOCS_CONSOLIDATION_2026-09-07.md)
+
+- [2026-09-26夜间四数据集统一RF先导](../validation/AMC_UNIFORM_RF_2026-09-26.md)：真实收发、缓冲修正、模型尺度适配及条件SINR。

@@ -14,10 +14,13 @@ FRAME_SAMPLES = 2*c.GUARD+c.MARKER+FRAME_ROWS*1024
 FRAMES_PER_BLOCK = 64
 
 
-def packet(source, run_id, *, window_samples=1024, total_rows=2048):
+def packet(source, run_id, *, window_samples=1024, total_rows=2048, frame_payload_samples=None):
     """原生窗组帧；默认保持2018A字节，显式小先导允许不足16行的尾帧。"""
     c.require(type(window_samples) is int and window_samples in (128,1024), 'native window length')
     c.require(type(total_rows) is int and 1 <= total_rows <= g.MAX_BATCH, 'finite source count')
+    c.require(frame_payload_samples is None or type(frame_payload_samples) is int and frame_payload_samples in (2048, 16384),
+              'registered common frame payload')
+    rows_per_frame = 16 if frame_payload_samples is None else frame_payload_samples//window_samples
     source = np.asarray(source)
     c.require(source.shape == (total_rows,window_samples) and np.iscomplexobj(source)
               and np.isfinite(source).all(), 'finite native source windows')
@@ -26,10 +29,10 @@ def packet(source, run_id, *, window_samples=1024, total_rows=2048):
     c.require((peaks > 0).all(), 'zero source row')
     scales = peak/peaks
     parts = []
-    for frame in range((total_rows+15)//16):
-        start=frame*16; stop=min(start+16,total_rows)
+    for frame in range((total_rows+rows_per_frame-1)//rows_per_frame):
+        start=frame*rows_per_frame; stop=min(start+rows_per_frame,total_rows)
         # 尾帧空位仅为传输padding；有效行数由total_rows限定，不生成源行ID。
-        x=np.zeros((16,window_samples),dtype=np.complex128)
+        x=np.zeros((rows_per_frame,window_samples),dtype=np.complex128)
         x[:stop-start]=source[start:stop]*scales[start:stop,None]
         parts.extend((np.zeros(256), c.marker(run_id,frame)*np.sqrt(10.), x.ravel(), np.zeros(256)))
     return np.concatenate(parts).astype('<c8'), scales
