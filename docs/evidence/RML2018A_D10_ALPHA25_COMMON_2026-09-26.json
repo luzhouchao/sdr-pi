@@ -1,0 +1,96 @@
+{
+  "purpose": "Pre-fixed D10 25 percent cancellation, primary remaining367001 validation members; prior2496 numerical control kept separate",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926",
+  "lineage": "plan pins model/source/split/common member and prior predictions; power-lineage pins 26 historical processing files and hashes selected quality records; results pins raw/guard prediction parents; no IQ copies",
+  "scope": "same campaign engineering follow-up, not independent locked-test or production admission; fixed alpha, no tuning or RF",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/alpha25-predictions.npz",
+      "bytes": 43601930,
+      "sha256": "c2bbbd8d9a0b86f668d68b5de4b568a1c306cba5b62173b34a632f4713715f0a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/cleanup.json",
+      "bytes": 120,
+      "sha256": "b8745610f7b90d37754bc69e2350054b4706d6f77827ae80a97ee8974efc37af"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/complete.json",
+      "bytes": 399,
+      "sha256": "91079b11a6e3a540f75fc5008d1a2d74e21b6eb11f8d958199c58b7aed505dd0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/independent-verification.json",
+      "bytes": 265,
+      "sha256": "d88efb7afa86175d19149c8507874e2af25fd3bc3ebef9e92aa6d64adc541571"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/load.json",
+      "bytes": 242,
+      "sha256": "ec8e7b6bf35542e725c2979eda709eb8191c4240f70db46fbf9ba52de0365bd8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/members.npz",
+      "bytes": 14802152,
+      "sha256": "4569071dd673f1566de49ef3ede1bed68f085b0a251b60bf9f0bd77b86af48b8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/plan.json",
+      "bytes": 37855,
+      "sha256": "99cf4c6af1853c72021b5a5ab2e5e72ca333c1a5653b117338feaa715824f765"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/power-lineage.json",
+      "bytes": 7033,
+      "sha256": "b461e6a7e128cd901dee7f02ddcc7ea8c76e31d6e99b3837ad82e85bc6dcda5e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/progress.json",
+      "bytes": 80,
+      "sha256": "e3eb0830cd4f2ca46619b03ab20f9c5cce18b412985405247a927b9b1ed942b6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/remaining-comparison.png",
+      "bytes": 185317,
+      "sha256": "2e9e900b98ae5ebeac6681e4b212f7e171ee0266e4993cb25c948b60784d5d6a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/results.json",
+      "bytes": 23120,
+      "sha256": "d57ad01f39776254409e6d18656fba468d1a2d9423d6727cafff8eae019b9a57"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/rml2018a_d10_alpha25_common.py",
+      "bytes": 11124,
+      "sha256": "8eb87d4773db10f778980cd3ed541952d8fa3ac7d1eecc1b5d365cdbba1afa77"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/rml2018a_d10_alpha25_report.py",
+      "bytes": 5775,
+      "sha256": "62a61d0eb9d07ac84f601075e15a308268424affe924d91cb6be22d72c03e7b5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/sinr-observability.json",
+      "bytes": 574,
+      "sha256": "d101fdfdf5e901b7dfb9499a6dce6e9ddcee647451e44f1a86a4a83a4e23b2e9"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/sinr-table.csv",
+      "bytes": 5063,
+      "sha256": "79a9817dd6d69213de082c2ab7ae256a827adafa75d2e36c7ab111938ad26ca5"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/verification.json",
+      "bytes": 281,
+      "sha256": "2b70a146d3c89b79b9de2214c7e0006fc99c48fed3c4e0a2a1fd5674d4939d26"
+    }
+  ],
+  "file_count": 16,
+  "total_bytes": 58681330,
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926/cache",
+    "files": 376,
+    "bytes": 25748886
+  },
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-d10-alpha25-common-20260926"
+}
