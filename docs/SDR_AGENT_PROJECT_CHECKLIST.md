@@ -19,6 +19,7 @@ this file retains the detailed delivery and evidence ledger.
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
+- [x] 三数据集收发设计完成：原生128/1024点、16窗帧/导频/保护区、2455MHz目标与+250kHz LO偏移、频谱前置门、raw/guard分支、16版本血缘及有限先导预算已明确；三会话载荷199827456字节的算术和现有源码硬编码核对通过。仅设计，无RF/模型/临时制品；见[三数据集收发设计](reference/RML2018A_RF_REPRODUCTION.md#6-三套新增数据集的收发设计2026-09-26尚未执行)。实施、CUDA门、实际先导尚未完成。
 - [x] 四数据集×八模型统一32份权重：三数据集21份baseline seed42从4090经用户允许的阿里云SSH导入，源/本地SHA一致；原2018A七份及四份D10迁入`/home/jetson/models/amc`，11旧入口链接及原哈希通过。32份CPU严格加载、参数/后端/有限值通过，七baseline及common源码SHA与服务器一致。保留811文件119775357字节，清理38文件82043360字节，临时根不存在；新CUDA前向/RF未执行，生产能力仍false。见[完整清单](evidence/AMC_32_MODEL_COLLECTION_2026-09-26.json)及[使用边界](reference/RML2018A_MODEL_COLLECTION.md#当前统一库2026-09-26)。用户已明确16套指四数据集各source/接收原始IQ/raw/guard，不是16份模型。
 - [x] 2026-09-26用户取消近期自生成及后续诊断，确认删除8个结果目录，并退役AGX独立D8。已删除20个目录、2061个文件、1,369,327,545字节，路径缺失复核通过；原RML2018A源数据、实收IQ、raw/guard及D10结果保留。D10依赖的d8命名源码与混合模型历史审计保留。删除前逐文件大小/SHA及精确路径见[删除清单](evidence/EXPERIMENT_CLEANUP_D8_RETIREMENT_2026-09-26.json)。历史记录中的“保留”是当时状态，清单所列外部结果现已删除，不能再宣称可读回。
 - [ ] 新三套D10端到端：RML2016A seed46、RML2016B seed45、HisarMod2019 seed46；权重已导入，原生长度数值验证、源数据/划分、有限收发、raw/guard识别和接收SINR报告尚未完成。
