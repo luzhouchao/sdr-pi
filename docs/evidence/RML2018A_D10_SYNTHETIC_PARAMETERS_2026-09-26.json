@@ -1,0 +1,60 @@
+{
+  "schema": "synthetic-parameters-audit-v1",
+  "purpose": "Audit clean synthetic failures with fixed sps/phase grid and training input contract",
+  "session": "offline-synthetic-parameters-20260926",
+  "source": "synthetic seeds same as previous session;20 archived original RMS metadata only",
+  "model": "/home/jetson/models/d10/rml2018a/d10_2018a_seed42_nw8/best.pt",
+  "model_sha256": "5d217592cabab54be4352d8ebddcc47eb9cf9b7ea81d1010027e8dd213546b81",
+  "preprocess": "per-window unit complex RMS; no additional noise/DC removal",
+  "predictions": 1792,
+  "checks": "5 generator baseline identities;20 power/phase checks;28 singleton/batch probes;320 parent logits reproduction;1792 regenerated input SHA;28 independently counted groups",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-parameters-20260926/contract-audit.json",
+      "bytes": 2210,
+      "sha256": "57ba9580e498bef0d08bdf6874099de5b2ba246925e9b5982b2bf410ade8048d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-parameters-20260926/inputs.json",
+      "bytes": 244683,
+      "sha256": "2165922317717ac20d522d3da80088f9c93ca6c845b46e1fc56a3a06eba3d775"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-parameters-20260926/plan.json",
+      "bytes": 37056,
+      "sha256": "b46221f3929f255a8adca7bb00e3a20e32b2af327c563eff3b510568ab7a35c4"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-parameters-20260926/predictions.npz",
+      "bytes": 186876,
+      "sha256": "fed369cf26b81f4b2a99304360ad92b3b162b68b1e8c6a40e815670d61e38521"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-parameters-20260926/results.json",
+      "bytes": 11713,
+      "sha256": "b21b20889c0a091fe40c5d3e5528258a65baec16f5a1f55d3ac410813576e1ec"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-parameters-20260926/verification.json",
+      "bytes": 109,
+      "sha256": "881d8081059fb62db81a456e83a7b1508e03c952f6d7499f48800ca7781b3c5e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-parameters-20260926/verify.py",
+      "bytes": 1468,
+      "sha256": "9b22270a7bdaee95e2da53056013524605eb2852425102243f5ccb5a1d9ce6b4"
+    }
+  ],
+  "retained_files": 7,
+  "retained_bytes": 484115,
+  "deleted_cache": {
+    "files": 375,
+    "bytes": 25592442
+  },
+  "cache_absent": true,
+  "rf": false,
+  "training": false,
+  "production_changes": false,
+  "processes_exited": true,
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-d10-synthetic-parameters-20260926"
+}
