@@ -15,6 +15,7 @@ import h5py
 import numpy as np
 
 import rml2018a_campaign as c
+import amc_dataset_contract as native
 from rml2018a_campaign_gpu import snr_block_rows, BLOCKS_PER_SNR, ROWS_PER_BLOCK
 
 TAGS = ('source', 'raw', 'guard')
@@ -29,6 +30,13 @@ def source_rows(config, block):
     Explicit mappings do not turn a pilot into a complete 96-block SNR corpus.
     The pinned configuration carries the mapping, including failed observations.
     """
+    if 'native_source' in config:
+        contract = native.validate(config['native_source'])
+        c.require(contract['source_sha256'] == config['source_sha256'] and
+                  native.label_hash(contract['class_names']) == config['label_map_sha256'], 'native source identity')
+        rows = contract['source_rows']
+        c.require(type(block) is int and 0 <= block < (len(rows)+N-1)//N, 'native block budget')
+        return np.asarray(rows[block*N:(block+1)*N], dtype='<i8')
     snr_block_rows(config['source_snr_db'], 0)
     if 'source_rows' not in config:
         return snr_block_rows(config['source_snr_db'], block)
@@ -41,6 +49,22 @@ def source_rows(config, block):
               'explicit source mapping SNR')
     c.require(type(block) is int and 0 <= block < len(rows)//N, 'explicit source mapping block budget')
     return rows[block*N:(block+1)*N]
+
+
+def source_metadata(config, block):
+    """原生数据集使用显式标签/Z；旧2018A保留原行号公式。"""
+    rows = source_rows(config, block)
+    if 'native_source' in config:
+        value = config['native_source']; selection = slice(block*N, block*N+len(rows))
+        return (np.asarray(value['class_ids'][selection], dtype='<i2'),
+                np.asarray(value['source_snr_db'][selection], dtype='<f8'))
+    return (rows//106496).astype('<i2'), np.full(len(rows), config['source_snr_db'], dtype='<i2')
+
+
+def block_count(config):
+    if 'native_source' in config:
+        return (len(config['native_source']['source_rows'])+N-1)//N
+    return BLOCKS_PER_SNR
 
 
 def encoded(value):
@@ -77,10 +101,10 @@ def background(value):
     c.require(len(encoded(value)) <= QUALITY_LIMIT, 'background metadata bound')
 
 
-def block_hash(inputs, masks, starts, counts, quality):
+def block_hash(inputs, masks, starts, counts, quality, tags=TAGS):
     import hashlib
     h = hashlib.sha256()
-    for tag in TAGS:
+    for tag in tags:
         h.update(inputs[tag].tobytes()); h.update(masks[tag].tobytes())
     h.update(starts.tobytes()); h.update(counts.tobytes()); h.update(encoded(quality))
     return h.hexdigest()
@@ -118,7 +142,21 @@ class SnrStore:
         except BaseException:
             os.close(self.lock); self.lock = None; raise
 
+    @property
+    def tags(self):
+        # source仅引用原数据，不复制成第三路模型输入。
+        return ('raw', 'guard') if 'native_source' in self.config else TAGS
+
+    @property
+    def window_samples(self):
+        return self.config.get('native_source', {}).get('window_samples', 1024)
+
+    @property
+    def schema(self):
+        return 'amc-native-corpus-v1' if 'native_source' in self.config else 'rml2018a-snr-corpus-v1'
+
     def _create(self, config):
+        self.config = config
         source_rows(config, 0)
         c.require(type(config['max_raw_samples']) is int and 0 < config['max_raw_samples'] < 2**61,
                   'finite raw sample budget')
@@ -132,11 +170,11 @@ class SnrStore:
         if self.raw_parent is None:
             with (self.root/'raw.sigmf-data').open('xb') as f: f.flush(); os.fsync(f.fileno())
         with h5py.File(self.root/'processed.h5', 'x') as f:
-            f.attrs['schema'] = 'rml2018a-snr-processed-v1'
+            f.attrs['schema'] = 'amc-native-processed-v1' if 'native_source' in config else 'rml2018a-snr-processed-v1'
             f.attrs['configuration_sha256'] = c.file_hash(self.root/'configuration.json')
             f.create_group('blocks')
         self._sync_h5()
-        atomic_json(self.root/'index.json', dict(schema='rml2018a-snr-corpus-v1',
+        atomic_json(self.root/'index.json', dict(schema=self.schema,
             configuration_sha256=c.file_hash(self.root/'configuration.json'), raw=[], processed=[], complete=False))
         self.config = config; self.index = json.loads((self.root/'index.json').read_text())
         self._meta()
@@ -202,54 +240,58 @@ class SnrStore:
         return receipt
 
     def append_processed(self, inputs, masks, sample_starts, sample_counts, quality):
-        """Commit exactly1024 original source rows; failed rows remain explicit.
+        """旧合同每块1024行；原生先导允许末块不足，失败行仍显式保存。
 
         GPU work need not wait for raw fsync, but this commit requires its raw
         offsets to be durable. Invalid inputs contain NaNs plus a false mask.
         """
         self._writable(); block = len(self.index['processed'])
         rows = source_rows(self.config, block)
-        c.require(set(inputs) == set(masks) == set(TAGS), 'source/raw/guard datasets')
-        for tag in TAGS:
-            c.require(inputs[tag].shape == (N,2,1024) and inputs[tag].dtype == np.dtype('<f4') and
-                      masks[tag].shape == (N,) and masks[tag].dtype == np.bool_, 'processed shape/dtype')
+        n = len(rows); length = self.window_samples
+        labels, snrs = source_metadata(self.config, block)
+        c.require(set(inputs) == set(masks) == set(self.tags), 'processed dataset tags')
+        for tag in self.tags:
+            c.require(inputs[tag].shape == (n,2,length) and inputs[tag].dtype == np.dtype('<f4') and
+                      masks[tag].shape == (n,) and masks[tag].dtype == np.bool_, 'processed shape/dtype')
             c.require(np.isfinite(inputs[tag][masks[tag]]).all() and
                       np.isnan(inputs[tag][~masks[tag]]).all(), 'processed finite/missing masks')
         starts = np.asarray(sample_starts); counts = np.asarray(sample_counts)
-        c.require(starts.shape == counts.shape == (N,) and starts.dtype == counts.dtype == np.dtype('<i8'), 'raw offset arrays')
+        c.require(starts.shape == counts.shape == (n,) and starts.dtype == counts.dtype == np.dtype('<i8'), 'raw offset arrays')
         mapped = masks['raw'] | masks['guard']
+        if 'native_source' in self.config:
+            c.require((counts[mapped] == length).all(), 'native raw window length')
         raw_count = sum(v['sample_count'] for v in self.raw_receipts())
         c.require(((starts[mapped] >= 0) & (counts[mapped] > 0) & (starts[mapped] <= raw_count) &
                    (counts[mapped] <= raw_count-starts[mapped])).all() and
                   (starts[~mapped] == -1).all() and (counts[~mapped] == 0).all(), 'processed raw lineage bounds')
-        c.require(len(quality) == N and all(len(encoded(q)) <= QUALITY_LIMIT for q in quality), 'per-row quality bound')
-        for q in quality:
+        c.require(len(quality) == n and all(len(encoded(q)) <= QUALITY_LIMIT for q in quality), 'per-row quality bound')
+        for q, source_z in zip(quality, snrs):
             c.require(isinstance(q, dict) and 'raw' in q and 'sync' in q, 'raw SINR/sync quality required')
-            c.validate_receive_quality(q['raw'], self.config['source_snr_db'])
-        self._space(3*N*2*1024*4+N*QUALITY_LIMIT+2*1024**2)
+            c.validate_receive_quality(q['raw'], float(source_z), window_samples=length)
+        self._space(len(self.tags)*n*2*length*4+n*QUALITY_LIMIT+2*1024**2)
         name = f'{block:03d}'
-        sha = block_hash(inputs, masks, starts, counts, quality)
+        sha = block_hash(inputs, masks, starts, counts, quality, self.tags)
         with h5py.File(self.root/'processed.h5', 'r+') as f:
             c.require(set(f['blocks']) == {f'{i:03d}' for i in range(block)}, 'uncommitted HDF5 tail retained')
             b = f['blocks'].create_group(name)
             b.create_dataset('source_row', data=rows)
-            b.create_dataset('class_id', data=(rows//106496).astype('<i2'))
-            b.create_dataset('source_snr_db', data=np.full(N, self.config['source_snr_db'], dtype='<i2'))
+            b.create_dataset('class_id', data=labels)
+            b.create_dataset('source_snr_db', data=snrs)
             b.create_dataset('raw_sample_start', data=starts); b.create_dataset('raw_sample_count', data=counts)
-            for tag in TAGS:
-                b.create_dataset('inputs/'+tag, data=inputs[tag], chunks=(128,2,1024), compression=None)
+            for tag in self.tags:
+                b.create_dataset('inputs/'+tag, data=inputs[tag], chunks=(min(128,n),2,length), compression=None)
                 b.create_dataset('valid/'+tag, data=masks[tag])
             b.create_dataset('quality_json', data=[encoded(q).decode() for q in quality], dtype=h5py.string_dtype('utf-8'))
             b.attrs['payload_sha256'] = sha
         self._sync_h5()
-        receipt = dict(block=block, source_rows=N, payload_sha256=sha)
+        receipt = dict(block=block, source_rows=n, payload_sha256=sha)
         self._commit(dict(self.index, processed=self.index['processed']+[receipt]))
         return receipt
 
     def verify(self):
         source_rows(self.config, 0)
-        c.require(self.index['schema'] == 'rml2018a-snr-corpus-v1' and
-                  len(self.index['processed']) <= BLOCKS_PER_SNR and len(self.index['raw']) <= 4096 and
+        c.require(self.index['schema'] == self.schema and
+                  len(self.index['processed']) <= block_count(self.config) and len(self.index['raw']) <= 4096 and
                   type(self.index['complete']) is bool, 'corpus schema/bounds')
         c.require(self.raw_parent is None or not self.index['raw'],'shared child has no independent raw receipts')
         raw = self.raw_path(); offset = 0
@@ -267,15 +309,16 @@ class SnrStore:
             for i, receipt in enumerate(self.index['processed']):
                 b = f['blocks'][f'{i:03d}']
                 rows = source_rows(self.config, i)
+                labels, snrs = source_metadata(self.config, i)
                 c.require(receipt['block'] == i and np.array_equal(b['source_row'][:], rows) and
-                          np.array_equal(b['class_id'][:], rows//106496) and
-                          (b['source_snr_db'][:] == self.config['source_snr_db']).all(), 'stored source mapping')
-                sha = block_hash({t:b['inputs/'+t][:] for t in TAGS}, {t:b['valid/'+t][:] for t in TAGS},
-                    b['raw_sample_start'][:], b['raw_sample_count'][:], [json.loads(s) for s in b['quality_json'].asstr()[:]])
+                          np.array_equal(b['class_id'][:], labels) and
+                          np.array_equal(b['source_snr_db'][:], snrs), 'stored source mapping')
+                sha = block_hash({t:b['inputs/'+t][:] for t in self.tags}, {t:b['valid/'+t][:] for t in self.tags},
+                    b['raw_sample_start'][:], b['raw_sample_count'][:], [json.loads(s) for s in b['quality_json'].asstr()[:]], self.tags)
                 c.require(sha == receipt['payload_sha256'] == b.attrs['payload_sha256'], 'processed payload SHA')
         if self.index['complete']:
             c.require('source_rows' not in self.config, 'explicit pilot cannot seal as complete SNR')
-            c.require(len(self.index['processed']) == BLOCKS_PER_SNR and
+            c.require(len(self.index['processed']) == block_count(self.config) and
                       c.file_hash(raw) == self.index['raw_sha256'] and
                       c.file_hash(self.root/'processed.h5') == self.index['processed_sha256'] and
                       c.file_hash(self.root/'raw.sigmf-meta') == self.index['metadata_sha256'], 'completed corpus seal')
@@ -286,13 +329,13 @@ class SnrStore:
         Includes invalid rows/masks/quality instead of shrinking the denominator.
         No model or GPU is loaded. Consumers must honor the validity mask.
         """
-        c.require(self.lock is not None and self.index['complete'] and tag in TAGS and
+        c.require(self.lock is not None and self.index['complete'] and tag in self.tags and
                   type(batch_rows) is int and 0 < batch_rows <= N, 'sealed SNR reader')
         with h5py.File(self.root/'processed.h5', 'r') as f:
-            for i in range(BLOCKS_PER_SNR):
+            for i in range(block_count(self.config)):
                 b = f['blocks'][f'{i:03d}']
-                for start in range(0, N, batch_rows):
-                    selection = slice(start, min(N, start+batch_rows))
+                for start in range(0, len(b['source_row']), batch_rows):
+                    selection = slice(start, min(len(b['source_row']), start+batch_rows))
                     yield dict(source_row=b['source_row'][selection], class_id=b['class_id'][selection],
                         source_snr_db=b['source_snr_db'][selection], inputs=b['inputs/'+tag][selection],
                         valid=b['valid/'+tag][selection], raw_sample_start=b['raw_sample_start'][selection],
@@ -303,7 +346,7 @@ class SnrStore:
         self._writable(); self.verify()
         c.require('source_rows' not in self.config, 'explicit pilot cannot seal as complete SNR')
         c.require(self.raw_parent is None or self.raw_parent.index['complete'],'seal shared raw owner first')
-        c.require(len(self.index['processed']) == BLOCKS_PER_SNR, 'complete SNR requires96 blocks including failures')
+        c.require(len(self.index['processed']) == block_count(self.config), 'complete native pilot requires all planned blocks including failures' if 'native_source' in self.config else 'complete SNR requires96 blocks including failures')
         self._meta()
         self._commit(dict(self.index, complete=True, raw_sha256=c.file_hash(self.raw_path()),
                           processed_sha256=c.file_hash(self.root/'processed.h5'),

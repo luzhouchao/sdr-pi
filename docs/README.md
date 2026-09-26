@@ -20,11 +20,11 @@
 
 2026-09-26用户取消近期自生成及后续诊断，确认删除8个结果目录，并退役AGX独立D8。已删除20个目录、2061个文件、1,369,327,545字节，路径缺失复核通过；原RML2018A源数据、实收IQ、raw/guard及D10结果保留。D10依赖的d8命名源码与混合模型历史审计保留。删除前逐文件大小/SHA及精确路径见[删除清单](evidence/EXPERIMENT_CLEANUP_D8_RETIREMENT_2026-09-26.json)。历史记录中的“保留”是当时状态，清单所列外部结果现已删除，不能再宣称可读回。
 
-四数据集×八模型32份权重已统一导入并通过CPU严格加载；入口为`/home/jetson/models/amc`，见[模型库](reference/RML2018A_MODEL_COLLECTION.md#当前统一库2026-09-26)。新三套CUDA前向及RF尚未执行。
+四数据集×八模型32份权重已统一导入并通过CPU严格加载；入口为`/home/jetson/models/amc`，见[模型库](reference/RML2018A_MODEL_COLLECTION.md#当前统一库2026-09-26)。新三套24模型CUDA数值检查已通过，RF尚未执行。
 
-三套收发设计的[原生窗口DSP](reference/RML2018A_RF_REPRODUCTION.md#68-原生窗口dsp接入2026-09-26)已实现：44项CPU/CUDA检查通过，原2018A组帧逐字节保持；source/store及新模型前向仍待接入，尚未发射。
+三套收发设计的[原生窗口DSP](reference/RML2018A_RF_REPRODUCTION.md#68-原生窗口dsp接入2026-09-26)已实现：44项CPU/CUDA检查通过，原2018A组帧逐字节保持；source/store及新模型前向已通过；原生频谱门失败，4倍RRC理想离线往返通过，尚需同步/保护区与有限预算接入，尚未发射。见[源数据与传输候选](reference/RML2018A_RF_REPRODUCTION.md#69-源数据存储与频谱前置检查2026-09-26)。
 
-当前目标为RML2016A、RML2016B、HisarMod2019三套D10的发射→接收→处理→识别，沿用原RML2018A流程原则；尚未开始新收发。用户已确认四数据集×source/接收原始IQ/raw/guard共16套数据，模型单独管理；新增要求统一四数据集×八种模型共32份权重。新RF任务样本范围尚待明确。
+当前目标为RML2016A、RML2016B、HisarMod2019三套D10的发射→接收→处理→识别，沿用原RML2018A流程原则；尚未开始新收发。用户已确认四数据集×source/接收原始IQ/raw/guard共16套数据，模型单独管理；新增要求统一四数据集×八种模型共32份权重。新RF先导固定352/320/832个seed42验证成员；扩大范围尚未冻结。
 
 当前实测报告：D10已补齐369497共同验证成员，当前8模型仅raw/guard；按接收端条件估计SINR分层。
 D10总体50.45%→55.09%，低SINR相消退化仍存在；见[大样本结果](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#d10补齐369497共同验证成员2026-09-22)。
