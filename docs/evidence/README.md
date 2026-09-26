@@ -310,3 +310,5 @@
 - [2026-09-26 新seed随机滚降/时间偏移](RML2018A_SYNTHETIC_RANDOMIZED_2026-09-26.json)：统一四组3200 D10输入、物理门及完整配对统计，无最佳类别参数选择。
 
 - [2026-09-26 同合成输入CNN2参考](RML2018A_SYNTHETIC_CNN2_REFERENCE_2026-09-26.json)：冻结单模型新增3200预测、D10配对、逐组分布和独立核验，不作整体精度结论。
+
+- [2026-09-26 固定QPSK两模型相消](RML2018A_QPSK_CANCELLATION_PAIR_2026-09-26.json)：新seed、7808预测、oracle/简化guard、同raw合成SINR配对及收束。

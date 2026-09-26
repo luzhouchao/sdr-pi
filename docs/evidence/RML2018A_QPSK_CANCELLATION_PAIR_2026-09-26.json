@@ -1,0 +1,95 @@
+{
+  "schema": "qpsk-cancellation-pair-audit-v1",
+  "purpose": "New-seed fixed QPSK known-tone cancellation with D10 and CNN2",
+  "session": "synthetic-qpsk-pair-20260926",
+  "source": "64 synthetic new-seed QPSK sps8; no original dataset IQ",
+  "model_identities": "plan.json D10 and CNN2 SHA-pinned weights/config/source",
+  "preprocess": "Each plane independently unit complex RMS; exact tone oracle vs simplified known-frequency guard LS",
+  "predictions": 7808,
+  "tests_passed": 2,
+  "physical_symbols": 7424,
+  "physical_symbol_errors": 0,
+  "numerical_planes": 12,
+  "verified_summary_groups": 16,
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926/cnn2/numerical.json",
+      "bytes": 570,
+      "sha256": "dba84bf843194e16bc61332153798ec211e5802394b5c947b3df06cedd8fb3b3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926/cnn2/predictions.npz",
+      "bytes": 376278,
+      "sha256": "de0f089285e7e2f5d629caef96b174609260e1ffb58a0410af790e2cac29f8e8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926/d10/numerical.json",
+      "bytes": 691,
+      "sha256": "86ac9d02babe008df9a2c060f17cb5214fa1c8c2e5f4ad3e987b16f103d445a1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926/d10/predictions.npz",
+      "bytes": 376278,
+      "sha256": "368e7579c7b9fbb66b4200ec685e8e190d5b4677c3f577751befb9d3456f787c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926/inputs.json",
+      "bytes": 924,
+      "sha256": "8053410959249558e61d69de22bc360b4c29dff1a7c561b372c6f7bc36084609"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926/physical.json",
+      "bytes": 8748,
+      "sha256": "75116b96ff9fe7ab951a2adab6124767d7741e92837717f1c52065b743e5fdcd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926/plan.json",
+      "bytes": 67839,
+      "sha256": "f7cd03bcb6f8500e6de39e4265a7c57b1e0a3f0cd8cc9ca0c96745b4ea31e998"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926/results.json",
+      "bytes": 8799,
+      "sha256": "e08e93b8e886a46d76c1900d9f426cf6d109183d7dcac6418344c946b7ade1b8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926/rows.json",
+      "bytes": 324417,
+      "sha256": "02512a3b3a8cb66baaacb1bc9343dbf98c892bc0948d890553191d4bbd670644"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926/verification.json",
+      "bytes": 332,
+      "sha256": "bdb185d8bc471ddd9bad15100193baa774802eece5c62ddb10531d8464b4943a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926/verify.py",
+      "bytes": 2165,
+      "sha256": "11254071c9f0dd3a21a825dca88a73368c03f7a89b7aadafcee0fc1e1ad45de0"
+    }
+  ],
+  "retained_files": 11,
+  "retained_bytes": 1167041,
+  "deleted": {
+    "files": 376,
+    "bytes": 25570924
+  },
+  "removed_cache_paths": [
+    "/var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926/d10/cache",
+    "/var/tmp/sdrharness-dev/rml2018a-collection-cache-bc8014bd8048fd1a"
+  ],
+  "cache_paths_absent": true,
+  "processes_exited": true,
+  "no_rf": true,
+  "no_training": true,
+  "no_deployment": true,
+  "iq_copies": 0,
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-qpsk-cancellation-pair-20260926",
+  "limitations": [
+    "Single-class mechanism diagnostic; clean accuracy62/64 and44/64",
+    "64 base waveforms repeated across12 conditions, not768 independent examples",
+    "Known-component synthetic SINR, not measured RF conditional estimate",
+    "Guard fit is not production cancellation implementation",
+    "No threshold or model tuning"
+  ]
+}
