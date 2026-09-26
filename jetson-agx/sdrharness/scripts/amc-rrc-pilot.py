@@ -50,7 +50,7 @@ def load(entry):
     return x
 
 
-def prepare(root, selection, dataset):
+def prepare(root, selection, dataset, *, verified_source=None):
     c.require(root.is_absolute() and root.resolve()==root and not root.exists() and
               root.is_relative_to(REPO/'local-assets/amc-eval/rf'),'fresh application-owned RF root')
     old,bg,device=helpers();old.spark_off();bg.idle();device.preflight()
@@ -59,11 +59,16 @@ def prepare(root, selection, dataset):
     c.require(bg.ssh('sha256sum /sd/sdr-agent/current/sdrd').split()[0]==DAEMON_SHA,'verified deployed daemon')
     c.require(len(bg.ssh('pidof sdrd').split())==1,'one daemon')
     entry=json.loads(selection.read_text())['source_selection'][dataset]
-    c.require(set(entry['contract']['source_snr_db'])=={18.},'uniform sourceZ18')
-    c.require(c.file_hash(Path(entry['source_path']))==entry['contract']['source_sha256'],'full original source SHA')
-    x=load(entry);run_id=root.name+'-'+dataset
+    if verified_source is None:
+        c.require(set(entry['contract']['source_snr_db'])=={18.},'uniform sourceZ18')
+        c.require(c.file_hash(Path(entry['source_path']))==entry['contract']['source_sha256'],'full original source SHA')
+    else:
+        from amc_validation_campaign import fingerprint
+        c.require(entry.get('validation_campaign') and fingerprint(Path(entry['source_path']))==verified_source,
+                  'campaign verified source unchanged')
+    x=load(entry);run_id=entry.get('run_id',root.name+'-'+dataset)
     tx,info=r.transmit(x,run_id,frame_payload_samples=2048)
-    c.require(info['tx_samples']+CHUNK<12*CHUNK,'finite TX fits RX with startup margin')
+    c.require(info['tx_samples']<=26112*321 and info['tx_samples']+CHUNK<12*CHUNK,'finite TX helper and RX limits')
     free=shutil.disk_usage(root.parent).free;c.require(free>1024**3,'one GiB reserve')
     daemon_config_sha=bg.ssh('sha256sum /sd/sdr-agent/current/sdrd.conf').split()[0]
     baseline=bg.ssh(bg.STATE)
@@ -203,6 +208,7 @@ def run(root):
         except BaseException as e:audit['restoration_error']=repr(e)
         c.save(root/'execution.json',audit)
         for sig,handler in previous.items():signal.signal(sig,handler)
+    c.require(audit['restored'] and audit['cpu_stopped'],'final restoration and CPU termination')
     print(json.dumps(audit,ensure_ascii=False),flush=True)
 
 

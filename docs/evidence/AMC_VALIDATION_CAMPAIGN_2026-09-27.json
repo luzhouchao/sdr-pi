@@ -1,0 +1,348 @@
+{
+  "schema": "amc-sequential-validation-start-v1",
+  "scope": "user-authorized all four seed42 validation sets; active acquisition, not complete",
+  "campaign_root": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927",
+  "plan_sha256": "a4a689a585a47bc0f36acad102103c2faa69d94091544954e26c6f9d3bcb97ee",
+  "software": {
+    "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc-rrc-pilot.py": "be5f684692df9b7a27881b16326b822f75dcaab09df22834db40c851624e4930",
+    "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc_dataset_contract.py": "4f1ac13f527e6a439077351e9d855a295f7d825eb5faac2717d73e7c418220f8",
+    "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc_rrc_transport.py": "5a87590d3518933b2668bc0a2cbdc93cf717083cf23224532c6935ae363b640c",
+    "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc_validation_campaign.py": "5b8a2ed9b68454f7dcb4b3f9876eabf51b59735a2b3e80eff46bd16a4bceb57e",
+    "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-continuous-pilot.py": "3a3cca99be2688c5f408cf4cdbf95ef7a95b133f3e0bed990a73e7ebb146ffdf",
+    "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_campaign_store.py": "caedefc9fccbe451bdb8dbcd7f3bd38b621f3b02f7f0fe30d793d5e1400c9b9a",
+    "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_stream_dsp.py": "b4345c3a61be321953fcf67c283a8c70d78d82397a79dfb42ef71d8c5bbbadee",
+    "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a_stream_frames.py": "9f1d0b0552543422cfbb24693216c7a40318a8a9523b88e22a1487d24b3e36ab",
+    "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/validate-p201-termination-background.py": "007fce5064507803b6d75f178e7f3619f14aaec089ce9083900e40601b27975b"
+  },
+  "datasets": [
+    {
+      "batch_rows": 8192,
+      "batches": 5,
+      "class_names": [
+        "8PSK",
+        "AM-DSB",
+        "AM-SSB",
+        "BPSK",
+        "CPFSK",
+        "GFSK",
+        "PAM4",
+        "QAM16",
+        "QAM64",
+        "QPSK",
+        "WBFM"
+      ],
+      "dataset": "rml2016a",
+      "rows": 33000,
+      "source_fingerprint": {
+        "bytes": 227926488,
+        "ctime_ns": 1790431434804235848,
+        "device": 66305,
+        "inode": 48393487,
+        "mtime_ns": 1790431434396223066,
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2016a/RML2016.10a_dict.h5"
+      },
+      "source_path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2016a/RML2016.10a_dict.h5",
+      "source_sha256": "8200825ef3b45137d021bcd42fe19f8c24c9048e4c6c44e7b71d1225fc722235",
+      "split": {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/splits/RML2016.10a_dict_split_seed42_tr700_val150_te150.npz",
+        "seed": 42,
+        "sha256": "1f2dee991482b5aa8b13245dfdf52f9398af3784e8d2e7a9afdbf9880bf55944"
+      },
+      "validation_rows_sha256": "86bc658ef0df7866ddc6495466f10d49d18be6234a0c71383509082eca238775",
+      "window_samples": 128
+    },
+    {
+      "batch_rows": 8192,
+      "batches": 22,
+      "class_names": [
+        "8PSK",
+        "AM-DSB",
+        "BPSK",
+        "CPFSK",
+        "GFSK",
+        "PAM4",
+        "QAM16",
+        "QAM64",
+        "QPSK",
+        "WBFM"
+      ],
+      "dataset": "rml2016b",
+      "rows": 180000,
+      "source_fingerprint": {
+        "bytes": 1238404156,
+        "ctime_ns": 1790431532147046528,
+        "device": 66305,
+        "inode": 48393489,
+        "mtime_ns": 1790431530475002009,
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2016b/RML2016.10b.h5"
+      },
+      "source_path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2016b/RML2016.10b.h5",
+      "source_sha256": "1d40a25114776b883e84dadbe9c848d8e5bf921dfdd65fe1f13599e4231ac034",
+      "split": {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/splits/RML2016.10b_split_seed42_tr700_val150_te150.npz",
+        "seed": 42,
+        "sha256": "2734a01886914c7070125fabd3b86b44f8bf74f2c75abb957211268f17dfaaf2"
+      },
+      "validation_rows_sha256": "dc0d4c58e8510aaa93fe000f9af102f3381fe8d5c3829889fd1a2691d93f56b2",
+      "window_samples": 128
+    },
+    {
+      "batch_rows": 1024,
+      "batches": 375,
+      "class_names": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23"
+      ],
+      "dataset": "rml2018a",
+      "rows": 383385,
+      "source_fingerprint": {
+        "bytes": 21449148312,
+        "ctime_ns": 1788511356624300758,
+        "device": 66305,
+        "inode": 47739861,
+        "mtime_ns": 1627354882000000000,
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5"
+      },
+      "source_path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/rml2018a/RML2018a.hdf5",
+      "source_sha256": "e3dd0bef66a3426959ee66a1709a8c0a95d4f8395d18aaf6f1214bdbc763bd38",
+      "split": {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/splits/server-seed42-20260914/RML2018a_split_seed42_tr700_val150_te150.npz",
+        "seed": 42,
+        "sha256": "0a7cbd3b8a4b921b7dc3d0c37473322207c6bd9fb362ea58498c851fad9dc5a3"
+      },
+      "validation_rows_sha256": "c0acfd1c02b71652d3bc0382dadd1fd25f3506c206526f9a3fe80b5aaf4715f4",
+      "window_samples": 1024
+    },
+    {
+      "batch_rows": 1024,
+      "batches": 115,
+      "class_names": [
+        "BPSK",
+        "QPSK",
+        "8PSK",
+        "16PSK",
+        "32PSK",
+        "64PSK",
+        "4QAM",
+        "8QAM",
+        "16QAM",
+        "32QAM",
+        "64QAM",
+        "128QAM",
+        "256QAM",
+        "2FSK",
+        "4FSK",
+        "8FSK",
+        "16FSK",
+        "4PAM",
+        "8PAM",
+        "16PAM",
+        "AM-DSB",
+        "AM-DSB-SC",
+        "AM-USB",
+        "AM-LSB",
+        "FM",
+        "PM"
+      ],
+      "dataset": "hisarmod2019",
+      "rows": 117000,
+      "source_fingerprint": {
+        "bytes": 6399126728,
+        "ctime_ns": 1788511356624300758,
+        "device": 66305,
+        "inode": 47739872,
+        "mtime_ns": 1765272504160873300,
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/hisarmod2019/HisarMod2019.01.h5"
+      },
+      "source_path": "/home/jetson/sdrharness/local-assets/amc-eval/datasets/hisarmod2019/HisarMod2019.01.h5",
+      "source_sha256": "b4b2d2dcde17691b09e3d6b1aa91a9fbadd096980d5103a47af18f93ae1b596f",
+      "split": {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/splits/HisarMod2019.01_split_seed42_tr700_val150_te150.npz",
+        "seed": 42,
+        "sha256": "4c2e0ef08a0bdbda2d6a75fc78ab4914986e70342d419afc6e0c2ba87505c6e5"
+      },
+      "validation_rows_sha256": "5b0af68068aefc12707c23d0bae625cc9f8020bf1a268cffe34b591623a1c0d9",
+      "window_samples": 1024
+    }
+  ],
+  "budget": {
+    "total_rows": 713385,
+    "total_batches": 517,
+    "maximum_adc_bytes": 30358372352,
+    "maximum_retained_bytes": 86738206720,
+    "maximum_batch_tx_samples": 7340157,
+    "deadline_seconds": 86400
+  },
+  "unit": "amc-validation-seed42-20260927.service",
+  "linger": true,
+  "tests": {
+    "passed": 4,
+    "cases": [
+      "previous seal required",
+      "SHA corruption rejects transition",
+      "native VDS shape/order readback",
+      "source mutation fingerprint"
+    ]
+  },
+  "stop_probe": {
+    "passed": true,
+    "phase": "before first RX/GO; not a mid-TX interruption proof",
+    "execution_sha256": "20ddaa843607bab4d06647a105553e3f68d1d37f5c132aa75c397cbe46471fe5",
+    "retained_files": [
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/STOP",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/background-before/audit.json",
+        "bytes": 470,
+        "sha256": "28e1ea5f205fa373051c9b4ea9ad12440c475117a44f798ebeabcfd22035a6a1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/background-before/controller.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/background-before/plan.json",
+        "bytes": 278,
+        "sha256": "8fbbc9825dc5028468ed483705fb26336ea08155874642c968023c34e7daa1a5"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/background-before/raw.sigmf-data",
+        "bytes": 4194304,
+        "sha256": "b4c225857bb65cb686b11b1b47707768269b6ed20ecc88bf9c4a9d0a78ad37d4"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/background-before/raw.sigmf-meta",
+        "bytes": 328,
+        "sha256": "da8a8143f670a4a8bcb8780b82074c38d88cb10ae85c1fc7da2b1171e7a8d6f8"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/controller.log",
+        "bytes": 77,
+        "sha256": "a98ba72bbb026fb2ce6b3db7861c040638da1c6b09d8a4f133fcd0cf40d83efe"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/corpus/configuration.json",
+        "bytes": 115839,
+        "sha256": "1d40687ca2eb0b578014f7ae04e1559e1ddac907fe7e6e877dfad99651b0c0b6"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/corpus/index.json",
+        "bytes": 174,
+        "sha256": "21391a407e5750dfe20514cb15e52142ae44b2a0d8424c3a9f8f3c5cd7027935"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/corpus/processed.h5",
+        "bytes": 6144,
+        "sha256": "58a0b5265a639cb613dfb74809727c96fd55b8f6396bb44aab4fda70312d52f3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/corpus/raw.sigmf-data",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/corpus/raw.sigmf-meta",
+        "bytes": 423,
+        "sha256": "9e4dbeed3f3363ac20aaf851f401a84aae2bc1e08c0a53af74ca24d22bd01e78"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/corpus/writer.lock",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/driver.log",
+        "bytes": 754,
+        "sha256": "f81f0dd36d44c54180c93bb98b44259a3bcda529cff2a2dd619f983e42970b1e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/execution.json",
+        "bytes": 1012,
+        "sha256": "20ddaa843607bab4d06647a105553e3f68d1d37f5c132aa75c397cbe46471fe5"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/plan.json",
+        "bytes": 523006,
+        "sha256": "f512219cac25d0d23c25d07c83204d44b82f967b8ec33d9d730b0214a02bd3ae"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/rx-events.jsonl",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/rx-plan.json",
+        "bytes": 269,
+        "sha256": "c7e945e944133403211bc5d374cce48188fc736874ec410d2270d4713a75bb93"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/tx-events.jsonl",
+        "bytes": 345,
+        "sha256": "151d49b067d29e391197a37778e053e4076da9204756fdc089d5a8ee546726f8"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/tx.log",
+        "bytes": 854,
+        "sha256": "3309b7de49c3de8db3b6cb465326822dc334aa278a060670b3b6756bd41760df"
+      }
+    ],
+    "delete_command": "rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe"
+  },
+  "first_full_batch": {
+    "rows": 8192,
+    "guard_applied_frames": 512,
+    "restored": true,
+    "receipt_sha256": "d110ea8fa5adf239786dfc1283c02e8577c854d9d7472824a0f314be3caf92fb"
+  },
+  "cleanup": [
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927-stop-probe/tx.fc32",
+      "bytes": 58721256,
+      "sha256": "416bd3654a9aaff846d741b61ab640d12f2d4593a8449d21f58b1c8fc2b9d0e1"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/amc-validation-20260927/prepare.log",
+      "action": "moved_to_retained",
+      "destination": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/setup-prepare.log",
+      "bytes": 154,
+      "sha256": "5db46820a1ee022840c0cba313ada55b3631db5ebee0c682ee96362eea4388d2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/amc-validation-20260927/stop-probe.log",
+      "action": "moved_to_retained",
+      "destination": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/setup-stop-probe.log",
+      "bytes": 263,
+      "sha256": "b8dd3fd8f23da8b944f761eccee7e0077fd825165b8f78f1abfe90c89fce37c5"
+    }
+  ],
+  "active_temporary_directory": "/var/tmp/sdrharness-dev/amc-validation-20260927",
+  "active_temporary_reason": "TMPDIR for running user-authorized campaign; remove after all consumers stop",
+  "retention": "Each batch-complete.json inventories files with bytes/SHA; dataset-complete.json commits all batch receipts. Active files are not sealed evidence yet.",
+  "manual_campaign_delete": "Stop unit and verify TX/RX idle/restoration first; rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927"
+}
