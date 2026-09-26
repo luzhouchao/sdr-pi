@@ -2,12 +2,10 @@
 import argparse,json,sys,hashlib
 from pathlib import Path
 import numpy as np
-def upfirdn(h, x, up=1):
- z=np.zeros((len(x)-1)*up+1,dtype=np.complex128);z[::up]=x
- return np.convolve(z,h)
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from rml2018a_stream_dsp import packet
 from amc_dataset_contract import read_selected
+from amc_rrc_transport import taps, interpolate
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--selection',type=Path,required=True)
@@ -19,13 +17,7 @@ def main():
               maximum_row_relative_rms_error=.01,maximum_outside_fraction=.01,
               max_mean_error_over_source_rms=.01,scope='offline fixed candidate; no noise/channel/synchronization test')
     (root/'transport-plan.json').write_text(json.dumps(plan,indent=2)+'\n')
-    q=4; beta=.25;t=np.arange(-64,65)/q
-    h=np.empty_like(t)
-    for i,v in enumerate(t):
-     if v==0:h[i]=1+beta*(4/np.pi-1)
-     elif abs(v)==1/(4*beta):h[i]=beta/np.sqrt(2)*((1+2/np.pi)*np.sin(np.pi/(4*beta))+(1-2/np.pi)*np.cos(np.pi/(4*beta)))
-     else:h[i]=(np.sin(np.pi*v*(1-beta))+4*beta*v*np.cos(np.pi*v*(1+beta)))/(np.pi*v*(1-(4*beta*v)**2))
-    h/=np.linalg.norm(h)
+    q=4; h=taps()
     combined=np.convolve(h,h);sampled=combined[::q];center=len(sampled)//2
     assert abs(sampled[center]-1)<1e-12
     out={'plan':plan,'taps':h.tolist(),'taps_sha256':hashlib.sha256(h.tobytes()).hexdigest(),
@@ -39,8 +31,8 @@ def main():
       assert hashlib.sha256(x.tobytes()).hexdigest()==entry['selected_iq_sha256']
       n,L=x.shape;frame,scales=packet(x,'amc-rrc-offline-20260926',window_samples=L,total_rows=n)
       # Full sequence convolution retains filter tails; receive has full context.
-      tx=upfirdn(h,frame,up=q);gain=.632455532033676/max(abs(tx));tx=(tx*gain).astype("<c8")
-      rx=upfirdn(h,tx)[128:128+q*len(frame):q]/gain
+      tx=interpolate(frame);gain=.632455532033676/max(abs(tx));tx=(tx*gain).astype("<c8")
+      rx=np.convolve(tx,h)[128:128+q*len(frame):q]/gain
       assert len(rx)==len(frame)
       indices=np.array([i//16*(1536+16*L)+1280+(i%16)*L for i in range(n)])
       got=np.stack([rx[i:i+L] for i in indices])/scales[:,None]

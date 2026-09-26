@@ -16,6 +16,7 @@ import numpy as np
 
 import rml2018a_campaign as c
 import amc_dataset_contract as native
+import amc_rrc_transport as rrc
 from rml2018a_campaign_gpu import snr_block_rows, BLOCKS_PER_SNR, ROWS_PER_BLOCK
 
 TAGS = ('source', 'raw', 'guard')
@@ -30,6 +31,8 @@ def source_rows(config, block):
     Explicit mappings do not turn a pilot into a complete 96-block SNR corpus.
     The pinned configuration carries the mapping, including failed observations.
     """
+    if 'sample_transport' in config:
+        c.require('native_source' in config and config['sample_transport'] == rrc.contract(), 'sample transport identity')
     if 'native_source' in config:
         contract = native.validate(config['native_source'])
         c.require(contract['source_sha256'] == config['source_sha256'] and
@@ -259,7 +262,8 @@ class SnrStore:
         c.require(starts.shape == counts.shape == (n,) and starts.dtype == counts.dtype == np.dtype('<i8'), 'raw offset arrays')
         mapped = masks['raw'] | masks['guard']
         if 'native_source' in self.config:
-            c.require((counts[mapped] == length).all(), 'native raw window length')
+            support = 4*(length-1)+129 if 'sample_transport' in self.config else length
+            c.require((counts[mapped] == support).all(), 'native raw window length')
         raw_count = sum(v['sample_count'] for v in self.raw_receipts())
         c.require(((starts[mapped] >= 0) & (counts[mapped] > 0) & (starts[mapped] <= raw_count) &
                    (counts[mapped] <= raw_count-starts[mapped])).all() and
@@ -267,7 +271,11 @@ class SnrStore:
         c.require(len(quality) == n and all(len(encoded(q)) <= QUALITY_LIMIT for q in quality), 'per-row quality bound')
         for q, source_z in zip(quality, snrs):
             c.require(isinstance(q, dict) and 'raw' in q and 'sync' in q, 'raw SINR/sync quality required')
-            c.validate_receive_quality(q['raw'], float(source_z), window_samples=length)
+            if 'sample_transport' in self.config:
+                c.require('guard' in q, 'RRC guard quality required')
+                rrc.validate_quality(q['raw']); rrc.validate_quality(q['guard'])
+            else:
+                c.validate_receive_quality(q['raw'], float(source_z), window_samples=length)
         self._space(len(self.tags)*n*2*length*4+n*QUALITY_LIMIT+2*1024**2)
         name = f'{block:03d}'
         sha = block_hash(inputs, masks, starts, counts, quality, self.tags)
