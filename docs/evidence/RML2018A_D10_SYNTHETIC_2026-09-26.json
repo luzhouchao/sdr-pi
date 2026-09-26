@@ -1,0 +1,93 @@
+{
+  "schema": "d10-synthetic-audit-v1",
+  "date": "2026-09-26",
+  "purpose": "Known-component synthetic1024-point cancellation diagnostic",
+  "source": "deterministic synthetic generator; no RadioML IQ accessed",
+  "session": "synthetic-20260926-no-RF",
+  "model": "/home/jetson/models/d10/rml2018a/d10_2018a_seed42_nw8/best.pt",
+  "model_sha256": "5d217592cabab54be4352d8ebddcc47eb9cf9b7ea81d1010027e8dd213546b81",
+  "preprocess": "per-window unit complex RMS after each subtraction; known-frequency512-guard LS and exact oracle separate",
+  "tests_passed": 2,
+  "numerical_planes_passed": 7,
+  "independent_verification": "verification.json; deterministic inputs and independent aggregate readback",
+  "predictions": 20800,
+  "rf": false,
+  "training": false,
+  "deployed": false,
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-20260926/channel.json",
+      "bytes": 1460037,
+      "sha256": "0b8fb97ec0f982c1592c4ee626515551eb794df1b463d25919435b6a11a6dab2"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-20260926/inputs.json",
+      "bytes": 1088,
+      "sha256": "60e36ac6823353dd167688a738781c13a54af6fdca60fcaa5b2a66ce41c8e935"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-20260926/load.json",
+      "bytes": 201,
+      "sha256": "d93f2b0e61fb007048c38bdccb38c617a6f5d6d620330646b87f6e0ce034d710"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-20260926/numerical.json",
+      "bytes": 569,
+      "sha256": "e9dd7929bc09fcb240751b8d24e9aeb1f4ba1eaf0c89266681d3f44550692750"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-20260926/plan.json",
+      "bytes": 37069,
+      "sha256": "7ce6886829faff9a5f15f08813714a1b39cbfbd335d75e5b20b7f064fa32c6d6"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-20260926/predictions.npz",
+      "bytes": 2063386,
+      "sha256": "99ba6034b5d4c91cf2be9330c5fcf4b21d2b39c0c6a06021b6272f7b6896adf7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-20260926/report.py",
+      "bytes": 1361,
+      "sha256": "936fc14aa2b9c3f9dd7b791c9c435dd0c18d095ad6bbf7d063ff4e4edaf5eeb0"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-20260926/results.json",
+      "bytes": 9115,
+      "sha256": "54049aa491485f476edc610002000729eb6054b5882fe22405cd0fc7a160c497"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-20260926/synthetic-comparison.png",
+      "bytes": 162501,
+      "sha256": "f0cdc432a05c73f270c7ff84d873e1b758225f8e0e97a37ca301e27da5bf2b26"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-20260926/verification.json",
+      "bytes": 233,
+      "sha256": "df467fed67da72981a6917b0e4add45f04de9d6067105fd7bee73dd00cd4f88b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-20260926/verify.py",
+      "bytes": 2953,
+      "sha256": "1e3266c28300f20273e390a4982fefad562b10fe0663b658e2536eb4a54dd5b8"
+    }
+  ],
+  "retained_files": 11,
+  "retained_bytes": 3738513,
+  "deleted_cache": {
+    "files": 376,
+    "bytes": 25821384
+  },
+  "cache_absent": true,
+  "test_root_absent": true,
+  "raw_iq_copies": 0,
+  "processes_exited": true,
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-d10-synthetic-20260926",
+  "limitations": [
+    "Clean synthetic baseline fails4/5 classes; not an accuracy benchmark",
+    "Synthetic SINR is known-component ratio, not RF conditional estimate",
+    "Simplified guard estimator, not production algorithm",
+    "Repeated conditions share320 base waveforms; not3840 independent samples",
+    "No source-distribution matching or statistical generalization"
+  ],
+  "next": "Audit generation parameters and model input distribution before RF; keep this failed baseline and fixed rule; no training or threshold tuning"
+}
