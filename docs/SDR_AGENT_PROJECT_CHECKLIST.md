@@ -19,6 +19,9 @@ this file retains the detailed delivery and evidence ledger.
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
+- [x] 2026-09-26用户取消近期自生成及后续诊断，确认删除8个结果目录，并退役AGX独立D8。已删除20个目录、2061个文件、1,369,327,545字节，路径缺失复核通过；原RML2018A源数据、实收IQ、raw/guard及D10结果保留。D10依赖的d8命名源码与混合模型历史审计保留。删除前逐文件大小/SHA及精确路径见[删除清单](evidence/EXPERIMENT_CLEANUP_D8_RETIREMENT_2026-09-26.json)。历史记录中的“保留”是当时状态，清单所列外部结果现已删除，不能再宣称可读回。
+- [ ] 新三套D10端到端：RML2016A seed46、RML2016B seed45、HisarMod2019 seed46；权重已导入，原生长度数值验证、源数据/划分、有限收发、raw/guard识别和接收SINR报告尚未完成。
+
 - [x] 实测类别×raw条件SINR分解：369497共同成员，低SINR176240条D10净−7942（16类退化）、CNN2净−47但类别收益抵消；528单元/回退去向独立复核及守恒通过。删1缓存123432字节，留8文件474808字节；只读无新推理/RF，见[结果](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#实测类别与raw条件sinr配对分解2026-09-26)。
 - [x] 固定QPSK新seed两模型相消：7808预测，低raw合成SINR全相消D10正确232→389、CNN2 224→415，未复现总体退化；oracle仍局部回退23/30。旧RMS规则D10退化，不部署。物理7424符号零错、2测试、12路数值门及16组读回通过；删376文件25,570,924字节，留11文件1,167,041字节，无RF/训练；见[结果与收束](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#固定qpsk两模型配对相消2026-09-26)。
 - [x] 同3200合成输入冻结CNN2参考：新增3200预测，D10/CNN2正确533/688；16QAM5/198、两种AM均0，既有模型差异又有共同失败，不作通用精度结论。strict load、50数值探针、输入SHA及56组独立读回通过；留6文件398028字节，空专属缓存已移除，无RF/训练/部署。见[完整比较](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#同合成输入cnn2冻结参考对照2026-09-26)。
