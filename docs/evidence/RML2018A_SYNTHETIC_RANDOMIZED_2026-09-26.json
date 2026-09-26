@@ -1,0 +1,73 @@
+{
+  "schema": "synthetic-randomized-audit-v1",
+  "purpose": "New-seed paired fixed/random rolloff/timing diagnostic without best-class parameter selection",
+  "session": "synthetic-randomized-20260926",
+  "source": "new deterministic synthetic seeds; no original dataset IQ",
+  "model": "/home/jetson/models/d10/rml2018a/d10_2018a_seed42_nw8/best.pt",
+  "model_sha256": "5d217592cabab54be4352d8ebddcc47eb9cf9b7ea81d1010027e8dd213546b81",
+  "preprocess": "unit complex RMS; no noise or channel impairments",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-randomized-20260926/inputs.json",
+      "bytes": 945231,
+      "sha256": "893dde19ad0a5ef1b47aa95875f82ced2c2fd666f2ae307336f6aff3ba8468c7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-randomized-20260926/paired.json",
+      "bytes": 5191,
+      "sha256": "756e48715584354a10e21c45730c7d3cc2f46f9bc70b28bef121dd322d62a35c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-randomized-20260926/physical.json",
+      "bytes": 92,
+      "sha256": "1cf2317b89784e98493050d66d51fd1ab818d66b23ebdd4a28a34471bdfe549e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-randomized-20260926/plan.json",
+      "bytes": 36878,
+      "sha256": "fb6805f802fab61cb75ae75708aff78a65c0acfe4e385bc158016b0eda186640"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-randomized-20260926/predictions.npz",
+      "bytes": 333308,
+      "sha256": "417d3b478f0992479a93004c743292f45cf3342b473e43d78da5aafcbf22818c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-randomized-20260926/results.json",
+      "bytes": 20709,
+      "sha256": "ee8c66b2486cf2480b42f2f7ecc3c42f44aed26a1f54af9d070f881f9958792a"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-randomized-20260926/verification.json",
+      "bytes": 109,
+      "sha256": "e97dec329149d4c318d21b01fd1084c64ff12d3903a1634d6bc39fbb0f441e3e"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-synthetic-randomized-20260926/verify.py",
+      "bytes": 1734,
+      "sha256": "091751700ef98e1760c7e2b799cd24143cc119402a01ae758fda5967e7c50f82"
+    }
+  ],
+  "retained_files": 8,
+  "retained_bytes": 1343252,
+  "deleted_cache": {
+    "files": 375,
+    "bytes": 25639580
+  },
+  "cache_absent": true,
+  "processes_exited": true,
+  "tests_passed": 2,
+  "manual_pair_checks": 12,
+  "pulse_identity_checks": 4,
+  "predictions": 3200,
+  "numerical_probe_rows": 50,
+  "verified_groups": 50,
+  "paired_groups": 48,
+  "physical_symbols": 700416,
+  "physical_errors": 0,
+  "no_rf": true,
+  "no_training": true,
+  "no_deployment": true,
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-d10-synthetic-randomized-20260926",
+  "limits": "Known-symbol physical recovery and fresh-seed diagnostic; not original RadioML distribution match, locked-test or blind RF synchronization. Timing in sample units is registered engineering convention. AM unchanged control."
+}
