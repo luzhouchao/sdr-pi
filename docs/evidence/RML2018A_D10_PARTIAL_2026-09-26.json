@@ -1,0 +1,100 @@
+{
+  "purpose": "D10 five cancellation strengths with own RMS and same diagnostic members; reuse guard-quality evidence for D10 association",
+  "root": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926",
+  "lineage": "plan identities pin model/source/split/ADC RMS; inputs pins selected receive IQ; guard-association pins source CSV with capture/frame/context lineage; no source inference or IQ copies",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/baseline.json",
+      "bytes": 129,
+      "sha256": "589c36c71d15da710aa55e1297d307433f3a61db726ac80655af4298c9ddd6fd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/cleanup.json",
+      "bytes": 113,
+      "sha256": "b4943bcb17fb5c5979acc4d64285d0aa9e185385c74b0a139eace7a88f3c5dbd"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/guard-association.json",
+      "bytes": 1320,
+      "sha256": "d14b25e822c48b2198b6f05d70e88dd59abd23ee89460783b1eae84ef75107e8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/independent-verification.json",
+      "bytes": 99,
+      "sha256": "96325f652b04834004a92a99772d703ee031afd18951a4956fbfc96927bcef58"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/input-verification.json",
+      "bytes": 474,
+      "sha256": "ef64ffb2e231cc6f18892ea01250141637111e7e3940714daf93e007f3b7f3ee"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/inputs.json",
+      "bytes": 1553,
+      "sha256": "b0e8f3acdea7fae24cedd0aeaf7e19adce22f33914319f895d0a19f391dd06ab"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/load.json",
+      "bytes": 242,
+      "sha256": "ec8e7b6bf35542e725c2979eda709eb8191c4240f70db46fbf9ba52de0365bd8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/numerical.json",
+      "bytes": 462,
+      "sha256": "38e9e5f94cff763a2056195968ae295b4059f97eb47ff33686dac4750baa42d3"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/partial-cancellation.png",
+      "bytes": 161328,
+      "sha256": "7ab5e44dc3c9bbb262b765d9c8ff513e32a5e385cad335522a8dc7f7fe7c523f"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/plan.json",
+      "bytes": 38363,
+      "sha256": "27eca526e5444c2cdbaeb20d529fbe1358048ef460ad13c62367c0529eba4e8d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/predictions.npz",
+      "bytes": 1340916,
+      "sha256": "767bb6e7675117bc0b38ce12d0420b05cfa65851cafceb8ab31ba3d5871dbbf8"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/results.json",
+      "bytes": 7360,
+      "sha256": "0791a4f805205a8a60b1d6a6c3f75519b83c78047627eebed96ff8c91a9c898d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/rml2018a_d10_partial.py",
+      "bytes": 11641,
+      "sha256": "4fe78063ff53da768b46d97a17b1bdecfbb75ee2db7458a7b3513b402e25bf68"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/rml2018a_d10_partial_report.py",
+      "bytes": 5049,
+      "sha256": "781091c0fb3154e033a6ed46c427afc109298978e624c7a8f64e964d3edc1b5c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/sinr-table.csv",
+      "bytes": 2385,
+      "sha256": "24c7835635245580ce64df849dcd8fb9df8e9158ccbd982552bac692a95eb61c"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/sinr.json",
+      "bytes": 90976,
+      "sha256": "f42ede5c4d06843d7b76d4bbae6e7bbe28c490b1e7b0c7d8940df4423be9b67b"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/verify_inputs.py",
+      "bytes": 1230,
+      "sha256": "b5069b80af863fdfd1fa18f62ba4463aa1b4e9b255a0d702298384ea5e5c26ab"
+    }
+  ],
+  "file_count": 17,
+  "total_bytes": 1663640,
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926/cache",
+    "files": 376,
+    "bytes": 25711688
+  },
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-d10-partial-20260926"
+}

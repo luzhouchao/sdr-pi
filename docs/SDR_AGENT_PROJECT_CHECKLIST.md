@@ -19,6 +19,7 @@ this file retains the detailed delivery and evidence ledger.
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
+- [x] D10五档部分相消/保护区关联：2496同成员独立RMS，raw/guard逐值重现，三候选输入SHA及65组统计独立核验；低SINR正确276/272/233/215/207，25%未优于不相消。留17文件1,663,640字节、删376缓存25,711,688字节；见[结果](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#d10部分相消与保护区关联2026-09-26)。
 - [x] D10补齐369497共同验证成员raw/guard：738994预测完成，旧2496两路logits逐值一致；88配对/176自身SINR分层独立核验，8模型3图完成。留19文件87,923,648字节、删377缓存25,836,886字节，无RF/训练/部署；见[大样本结果](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#d10补齐369497共同验证成员2026-09-22)。
 - [x] 当前图表以D10替代D8：2496共同成员8模型、369497共同成员其余7模型的raw/guard SINR图/CSV更新，保留统计逐项与父一致，3图/无D8/无source核对；留10文件678,296字节、删1缓存123,432字节，无推理/RF/部署。见[现用图表](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#当前图表以d10替代d82026-09-22)。
 - 用户取消source曲线追加：未绘图/推理/RF；只读关联结束后删4文件6,320,881字节，保留最小取消证据3文件331,002字节，既有raw/guard图保持。见[取消记录](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#source曲线追加取消2026-09-22)。
