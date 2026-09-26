@@ -1,5 +1,18 @@
 # RadioML2018A 模型权重集合
 
+## 当前统一库（2026-09-26）
+
+用户确认数据保留范围为四个开源数据集各自的source、接收原始IQ、raw、guard，共16套数据版本；模型独立管理。
+四数据集×八模型的32份权重统一放在`/home/jetson/models/amc/<dataset>/<variant>/best.pt`。
+数据集为rml2016a、rml2016b、rml2018a、hisarmod2019；模型为CNN2-stable、ResNet、GRU、CLDNN、MCLDNN、MCformer、MAMC、D10。
+三套新数据集补入21份baseline seed42；原2018A七份及四份D10迁入，原路径保留符号链接，不复制权重。
+D10种子依次为2016A46、2016B45、2018A42、Hisar46；与baseline的seed42划分不同，后续共同成员不能直接称所有模型独立验证集。
+2016A/B保留128点，2018A/Hisar保留1024点。各数据集标签顺序见统一库class-order.json。
+独立D8包已经按用户要求删除，下面导入表仅是2026-09-14历史事实，不代表D8仍可用；D10内部d8命名依赖不能删除。
+本次统一库验证和保留清单见[导入审计](../evidence/AMC_32_MODEL_COLLECTION_2026-09-26.json)。新三套CUDA前向、实收识别尚未验证，生产recognizer_available=false。
+
+## 历史导入（2026-09-14）
+
 2026-09-14按用户要求从4090导入AGX，共8种模型、12份正式`best.pt`。
 权重根为`/home/jetson/sdrharness/local-assets/amc-eval/checkpoints/rml2018a/server-models-20260914`，
 各权重路径为`<根>/<variant>/seed<seed>/best.pt`，模型文件不入Git。
