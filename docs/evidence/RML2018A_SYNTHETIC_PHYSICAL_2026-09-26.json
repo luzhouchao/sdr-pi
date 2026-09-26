@@ -1,0 +1,73 @@
+{
+  "schema": "synthetic-physical-audit-v1",
+  "purpose": "Independent known-symbol and AM physical checks plus original generation literature review",
+  "session": "offline-physical-20260926",
+  "source": "same deterministic synthetic seeds and registered sps grid; no original IQ read",
+  "model": "D10 parent diagnostics only; no inference",
+  "preprocess": "known phase/gain/timing matched receiver; crop boundary excluded; no blind recovery claim",
+  "files": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-physical-20260926/constellations.json",
+      "bytes": 30072,
+      "sha256": "75cc0f2376e8e4d5ed2a3df7803e83896302272af88b78980f5fefdbc9695d3d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-physical-20260926/matched-symbols.png",
+      "bytes": 66157,
+      "sha256": "ff027b889e11f3b703fed654d77c38fb1afc49ca0cae1c86408d81ce3f7b5b57"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-physical-20260926/paper-review.json",
+      "bytes": 1081,
+      "sha256": "111e480dfea0e204962747fd122ff6e4d3c564a6a84e1feee6c102c6ed4f799d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-physical-20260926/plan.json",
+      "bytes": 1276,
+      "sha256": "f08a3aba2514bf89aae573ed32d19a06a9274a6b4f3c66c9484b316b84706ae7"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-physical-20260926/plot.py",
+      "bytes": 791,
+      "sha256": "cdbbca48ee8e5f52b294673d7e9064f0d05ce3391b8964353a19fb21dea59838"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-physical-20260926/results.json",
+      "bytes": 352,
+      "sha256": "a803e37269a5c041704af0ba621bf8b892e53c41abd3f6212c353e1d8c161b61"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-physical-20260926/rows.json",
+      "bytes": 170594,
+      "sha256": "e322409af2aa2a8f8352c72000c1d69d94f2ac299a5768e7c2cc1dcd11a0b4ab"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-physical-20260926/source-review.json",
+      "bytes": 4027,
+      "sha256": "d2ccd71ec795545d2b8bd8bdd96c3242f7324d465127bf2390b7fd48ed3a7106"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-synthetic-physical-20260926/verification.json",
+      "bytes": 175,
+      "sha256": "db8bce66eb148dd629ced44baea14786e12081e98cdddf52cb449fbdfc84d4a5"
+    }
+  ],
+  "retained_files": 9,
+  "retained_bytes": 274525,
+  "deleted": {
+    "files": 3,
+    "bytes": 1789402
+  },
+  "temporary_paths_absent": true,
+  "processes_exited": true,
+  "no_rf": true,
+  "no_training": true,
+  "no_deployment": true,
+  "manual_delete": "rm -rf -- /var/tmp/sdrharness-dev/rml2018a-synthetic-physical-20260926",
+  "limitations": [
+    "No independent RF synchronization test",
+    "Correct waveform construction does not establish training distribution match",
+    "Original2018 per-class nominal sps and AM parameters remain unknown"
+  ],
+  "retrieval_failure": "radioML/dataset/master/README.md returned404; no2016 defaults substituted"
+}
