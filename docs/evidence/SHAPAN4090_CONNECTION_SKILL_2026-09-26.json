@@ -1,0 +1,41 @@
+{
+  "host": "shapan4090",
+  "user": "luzhouchao",
+  "hostname": "192.168.50.46",
+  "port": 2222,
+  "system": "Linux 6.6.87.2-microsoft-standard-WSL2",
+  "aliases_verified": [
+    "shapan4090",
+    "shapan4090-wsl"
+  ],
+  "strict_host_key_checking": true,
+  "skill_path": "/home/jetson/.codex/skills/connect-shapan4090/SKILL.md",
+  "skill_sha256": "f9fd034fdd33d3492243c7faffb3652339a4338b3ccce288cedd9074a025d4f8",
+  "skill_bytes": 2510,
+  "skill_validation": "quick_validate passed",
+  "D10_source_checks": [
+    {
+      "dataset": "hisarmod2019",
+      "source_path": "/home/luzhouchao/projects/mamba/results_package/d_series_after_b90/runs/hisarmod2019/amc_mamba_d10/d10_hisarmod2019_seed46_nw8/checkpoints/best.pt",
+      "sha256": "8b4ff8e5e99208b0424435bca3f3516af46b7abd919be2836d949304f5838236"
+    },
+    {
+      "dataset": "rml2016a",
+      "source_path": "/home/luzhouchao/projects/mamba/results_package/d_series_after_b90/runs/rml2016a/amc_mamba_d10/d10_2016a_seed46_nw8/checkpoints/best.pt",
+      "sha256": "6c1260455ba2f3c53551a11ae834212900a92419116dac503faf98200ff1b950"
+    },
+    {
+      "dataset": "rml2016b",
+      "source_path": "/home/luzhouchao/projects/mamba/results_package/d_series_after_b90/runs/rml2016b/amc_mamba_d10/d10_2016b_seed45_nw8/checkpoints/best.pt",
+      "sha256": "cf9fd118898be469ba70f35d686d25e0a55575b7a1cba113dbb6fda99b0177d3"
+    },
+    {
+      "dataset": "rml2018a",
+      "source_path": "/home/luzhouchao/projects/mamba/results_package/d_series_after_b90/runs/rml2018a/amc_mamba_d10/d10_2018a_seed42_nw8/checkpoints/best.pt",
+      "sha256": "5d217592cabab54be4352d8ebddcc47eb9cf9b7ea81d1010027e8dd213546b81"
+    }
+  ],
+  "training_provenance": "用户明确四套D10在沙盘4090训练，七baseline在原4090训练；核对当前沙盘源best.pt与AGX清单SHA一致，不以SHA独立证明历史训练执行",
+  "remote_mutations": false,
+  "temporary_files": 0
+}

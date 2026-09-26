@@ -19,6 +19,7 @@ this file retains the detailed delivery and evidence ledger.
 [`SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md`](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md)。
 S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理完成。2026-09-07 已单独部署统一 `sdr-agent` CLI，当前 Controller/交互代码因此在已安装制品中；本轮 Web 后台也已单独升级并实测会话恢复/回滚，归档界面进入安装制品，但 Worker、profile/准入配置未部署，不能将此计为 A1 或生产识别闭环完成。S4b 的 GPU 温度缺失由用户明确豁免，保持未测。
 
+- [x] 沙盘4090连接技能：个人技能`connect-shapan4090`安装并通过quick_validate，shapan4090/shapan4090-wsl两别名严格SSH读取身份通过；四D10源SHA与AGX匹配，明确D10/七baseline的不同训练服务器。未改远端配置/作业、无临时文件，见[审计](evidence/SHAPAN4090_CONNECTION_SKILL_2026-09-26.json)。
 - [x] 原生128/1024点DSP基础接入：packet/Decoder、保护区位置/有限尾界、载荷裁剪、CPU/CUDA RMS与两半SINR参数化；44项测试含真实CUDA全部通过，旧2048行2018A组帧逐字节一致，载波保留/缺导频拒绝/1041行跨块及尾帧不造样通过。短窗RAM界限误替换在测试中发现并恢复原门；清理4文件10566字节，无外部数据保留，无RF/模型/部署。见[原生窗口DSP](reference/RML2018A_RF_REPRODUCTION.md#68-原生窗口dsp接入2026-09-26)及[审计](evidence/AMC_NATIVE_WINDOWS_2026-09-26.json)。
 - [ ] 三数据集source/store接入与实机前置：源行/标签/Z、冻结交集、频谱余量、存储血缘、24模型CUDA门及有限TX/RX恢复验证；不能由DSP程序测试勾选。
 - [x] 三数据集收发设计完成：原生128/1024点、16窗帧/导频/保护区、2455MHz目标与+250kHz LO偏移、频谱前置门、raw/guard分支、16版本血缘及有限先导预算已明确；三会话载荷199827456字节的算术和现有源码硬编码核对通过。仅设计，无RF/模型/临时制品；见[三数据集收发设计](reference/RML2018A_RF_REPRODUCTION.md#6-三套新增数据集的收发设计2026-09-26尚未执行)。实施、CUDA门、实际先导尚未完成。

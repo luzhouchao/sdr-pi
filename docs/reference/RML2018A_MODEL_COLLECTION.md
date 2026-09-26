@@ -5,6 +5,8 @@
 用户确认数据保留范围为四个开源数据集各自的source、接收原始IQ、raw、guard，共16套数据版本；模型独立管理。
 四数据集×八模型的32份权重统一放在`/home/jetson/models/amc/<dataset>/<variant>/best.pt`。
 数据集为rml2016a、rml2016b、rml2018a、hisarmod2019；模型为CNN2-stable、ResNet、GRU、CLDNN、MCLDNN、MCformer、MAMC、D10。
+用户2026-09-26明确训练来源：四套D10来自**沙盘4090 WSL**（`ssh shapan4090`，luzhouchao@192.168.50.46:2222）；七种baseline来自**原4090 Linux**（既有4090-via-aliyun路由）。AGX库位置及转存位置不能代替训练来源。
+沙盘连接技能已安装至`/home/jetson/.codex/skills/connect-shapan4090/SKILL.md`；两别名免密/严格主机检查及四份D10源权重SHA核对通过，见[连接与身份审计](../evidence/SHAPAN4090_CONNECTION_SKILL_2026-09-26.json)。
 三套新数据集补入21份baseline seed42；原2018A七份及四份D10迁入，原路径保留符号链接，不复制权重。
 D10种子依次为2016A46、2016B45、2018A42、Hisar46；与baseline的seed42划分不同，后续共同成员不能直接称所有模型独立验证集。
 2016A/B保留128点，2018A/Hisar保留1024点。各数据集标签顺序见统一库class-order.json。
