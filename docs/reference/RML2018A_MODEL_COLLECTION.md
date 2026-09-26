@@ -8,10 +8,10 @@
 用户2026-09-26明确训练来源：四套D10来自**沙盘4090 WSL**（`ssh shapan4090`，luzhouchao@192.168.50.46:2222）；七种baseline来自**原4090 Linux**（既有4090-via-aliyun路由）。AGX库位置及转存位置不能代替训练来源。
 沙盘连接技能已安装至`/home/jetson/.codex/skills/connect-shapan4090/SKILL.md`；两别名免密/严格主机检查及四份D10源权重SHA核对通过，见[连接与身份审计](../evidence/SHAPAN4090_CONNECTION_SKILL_2026-09-26.json)。
 三套新数据集补入21份baseline seed42；原2018A七份及四份D10迁入，原路径保留符号链接，不复制权重。
-D10种子依次为2016A46、2016B45、2018A42、Hisar46；与baseline的seed42划分不同，后续共同成员不能直接称所有模型独立验证集。
+用户2026-09-26随后明确四套D10全部固定seed42：已从沙盘4090取回正式best.pt，四份严格加载通过，新三套CUDA批量/逐条数值门及top-1一致通过；2018A权重SHA未变。当前32模型全部seed42，旧非42三包移至`/home/jetson/models/archive/d10-before-seed42-20260926`作替换回滚，旧seed别名指向旧包，不冒充seed42。见[seed42导入审计](../evidence/D10_ALL_SEED42_IMPORT_2026-09-26.json)。此前不同seed的选样与D10数值记录已被本次选择覆盖。
 2016A/B保留128点，2018A/Hisar保留1024点。各数据集标签顺序见统一库class-order.json。
 独立D8包已经按用户要求删除，下面导入表仅是2026-09-14历史事实，不代表D8仍可用；D10内部d8命名依赖不能删除。
-本次统一库验证和保留清单见[导入审计](../evidence/AMC_32_MODEL_COLLECTION_2026-09-26.json)。新三套CUDA前向、实收识别尚未验证，生产recognizer_available=false。
+本次统一库验证和保留清单见[导入审计](../evidence/AMC_32_MODEL_COLLECTION_2026-09-26.json)。新三套D10 CUDA数值门通过，实收识别尚未验证，生产recognizer_available=false。
 
 ## 历史导入（2026-09-14）
 
