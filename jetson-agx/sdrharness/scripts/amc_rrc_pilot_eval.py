@@ -22,6 +22,28 @@ def digest(p):
         while b:=f.read(8388608):h.update(b)
     return h.hexdigest()
 
+def load_frozen_model(package,cfg,d10,classes):
+    variant=package.name
+    source=package/('source_03fa833' if d10 else 'source')
+    for name in ('models','utils'):
+        if name in sys.modules:raise ValueError('namespace already loaded')
+        m=types.ModuleType(name);m.__path__=[str(source/name)];sys.modules[name]=m
+    import torch
+    torch.set_num_threads(2);torch.set_num_interop_threads(1);torch.manual_seed(0)
+    torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
+    torch.backends.cudnn.benchmark=False
+    if not torch.cuda.is_available():raise ValueError('CUDA required')
+    cls=getattr(importlib.import_module('models.d10' if d10 else 'models.baselines.'+variant.removeprefix('baseline_')),cfg['selected_model_class'])
+    kwargs={k:cfg['resolved_config']['model'][k] for k in FIELDS}
+    if not d10:kwargs['model_variant']=variant
+    model=cls(num_classes=len(classes),**kwargs)
+    state=torch.load(package/'best.pt',map_location='cpu',weights_only=True)
+    model.load_state_dict(state['model_state'],strict=True)
+    if sum(p.numel() for p in model.parameters())!=cfg['model_parameters'] or model.encoder.backend!=cfg['model_backend']:
+        raise ValueError('parameters/backend mismatch')
+    return model.eval().cuda(),torch
+
+
 def run(root,variant,scratch,normalization="rms"):
     if normalization not in ("rms","native"):raise ValueError("normalization contract")
     plan=json.loads((root/'plan.json').read_text())
@@ -45,26 +67,9 @@ def run(root,variant,scratch,normalization="rms"):
     scratch.mkdir(parents=True,exist_ok=True)
     for name in ('TRITON_CACHE_DIR','CUDA_CACHE_PATH','TORCHINDUCTOR_CACHE_DIR','TMPDIR'):
         p=scratch/name;p.mkdir(exist_ok=True);os.environ[name]=str(p)
-    source=package/('source_03fa833' if d10 else 'source')
-    for name in ('models','utils'):
-        if name in sys.modules:raise ValueError('namespace already loaded')
-        m=types.ModuleType(name);m.__path__=[str(source/name)];sys.modules[name]=m
     lease=GpuLease(scratch/'gpu-gate','mamba');token=asyncio.run(lease.acquire(time.monotonic()+10,request=dataset+'/'+variant))
     try:
-        import torch
-        torch.set_num_threads(2);torch.set_num_interop_threads(1);torch.manual_seed(0)
-        torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
-        torch.backends.cudnn.benchmark=False
-        if not torch.cuda.is_available():raise ValueError('CUDA required')
-        cls=getattr(importlib.import_module('models.d10' if d10 else 'models.baselines.'+variant.removeprefix('baseline_')),cfg['selected_model_class'])
-        kwargs={k:cfg['resolved_config']['model'][k] for k in FIELDS}
-        if not d10:kwargs['model_variant']=variant
-        model=cls(num_classes=len(classes),**kwargs)
-        state=torch.load(package/'best.pt',map_location='cpu',weights_only=True)
-        model.load_state_dict(state['model_state'],strict=True)
-        if sum(p.numel() for p in model.parameters())!=cfg['model_parameters'] or model.encoder.backend!=cfg['model_backend']:
-            raise ValueError('parameters/backend mismatch')
-        model=model.eval().cuda();result={};saved={}
+        model,torch=load_frozen_model(package,cfg,d10,classes);result={};saved={}
         with h5py.File(root/'corpus/processed.h5','r') as f:
             blocks=list(f['blocks'].values())
             y=np.concatenate([b['class_id'][:] for b in blocks]);ids=np.concatenate([b['source_row'][:] for b in blocks]);saved.update(class_id=y,source_row=ids)

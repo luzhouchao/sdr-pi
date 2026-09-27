@@ -338,3 +338,5 @@
 - [完整seed42验证集2018A封存及Hisar切换](AMC_VALIDATION_RML2018A_COMPLETE_2026-09-27.json)：383385行/375批、receipt/VDS/成员独立复核及严格顺序切换；尚未全验证集推理。
 
 - [四套完整seed42验证集收发与处理完成](AMC_VALIDATION_COMPLETE_2026-09-27.json)：713385行/517批、严格顺序封存、raw/guard与相消回退计数、最终设备恢复和临时清理、精确保留清单；尚无完整验证集识别或SINR成绩。
+
+- [完整验证集三路八模型识别启动](AMC_VALIDATION_INFERENCE_START_2026-09-27.json)：用户追加source、单套内存驻留、32份seed42、初次温度读取失败、6测试和2016A三路首套读回；整轮仍运行。

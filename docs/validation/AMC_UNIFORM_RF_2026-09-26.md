@@ -103,3 +103,17 @@ Hisar首批实际开始比2018A完成标记晚7.794502096秒，满足先整套�
 本轮结果根保留13998文件40941869862字节，包含原始IQ、raw/guard、失败/修复及最终清单。`final-retention-v1.json`记录13997个其他文件的精确相对路径/大小/SHA及来源，其自身大小/SHA由[最终审计](../evidence/AMC_VALIDATION_COMPLETE_2026-09-27.json)固定；各模型/源/会话/处理身份沿campaign、revision和逐批plan/index引用。精确人工删除方式亦记录其中，不自动删除结果。既有STOP探针另按原启动审计保留。
 
 本次完成的是收发和预处理，尚未对这些完整验证集运行模型识别、精度对比或最终条件SINR报告。原源Z仍只是溯源字段，不作为接收SINR；后续raw/guard配对评价须按同成员及统一raw参考条件SINR分层。无训练、无生产识别切换，recognizer_available仍false。
+
+## 完整验证集三路八模型识别启动（2026-09-27）
+
+用户在收发完成后授权识别，追加原始未过链路source，并要求内存允许时逐套完整加载后跑完全部对应模型。范围为4套×8个seed42模型×source/raw/guard，共96组、17121240次预测；每路沿用同一原seed42验证成员，相消回退行全部保留。source只转换FP32和[2,T]布局，32份配置均关闭数据去噪，不套用接收端RMS/Σ|IQ|适配；raw/guard仍2016A/B为Σ|IQ|=1、2018A/Hisar复RMS=1。源Z仅保存为溯源标签，尚未生成条件SINR报告或分层曲线。
+
+入口`amc_validation_eval.py`复用先导严格加载/真实后端，FP32/关闭TF32，GPU batch128，每2048源行落一块预测。源文件/权重/配置/源码/处理HDF5均固定SHA；准备阶段复核完整封存，运行逐套检查输入。原结果根`validation-seed42-20260927-inference`在模型加载前因休眠GPU/CV温度sysfs读取返回TypeError停止，未产生预测，失败证据保留。修正保留CPU/TJ/三SOC温度<80℃和可用内存≥4GiB门，GPU不可读按既有豁免标未测，CV未测单列。
+
+当前根`/home/jetson/sdrharness/local-assets/amc-eval/results/validation-seed42-20260927-inference-a2/`，原plan不可变，`resident-source-revision-v1.json`登记用户追加source、驻留方式及新软件SHA。初始raw/guard阶段完成的119块和7份报告逐字节保持；source另写每模型source子目录，三路汇总另写result-three-planes.json。暂停按STOP在分块边界结束，未提交块可重算，提交块必须SHA/源行/argmax校验。
+
+父进程逐套一次加载source/raw/guard，使用只读数组由顺序fork的独立模型进程共享；父进程不初始化CUDA，加载完成关闭HDF5后才fork。每套结束释放数组；预算为三路输入1.25倍加12GiB模型/CUDA余量，不满足才分块。最大2018A输入9435104850字节（约8.79GiB），预计所需可用内存24678782951字节；首套实际驻留102498000字节。模型仍按128条GPU小批推理，驻留不等于把完整验证集一次送入GPU。
+
+6项测试通过，覆盖内存预算、驻留/分块输入相同、source原值及顺序、归一化、损坏/错行/错argmax拒绝、缺GPU记录而缺CPU拒绝。实机2016A八模型三路全部完成，792000次预测的成员、argmax/混淆计数读回通过；D10原source输入逐块重建SHA一致，source/raw/guard总体62.3515%/58.2212%/62.1485%。各模型三路在首/中/尾实际成员上通过batch/single数值门，source、raw/guard并列但不将整体精度当低SINR结论。
+
+后台单元`amc-validation-inference-20260927-resident.service`已进入2016B，48h内部期限、49h服务上限、120s停止宽限、单GPU租约。停止可创建结果根STOP或systemctl --user stop该单元。运行缓存`/var/tmp/sdrharness-dev/amc-validation-inference-20260927/`仍被使用，测试/准备日志已移入结果根startup-evidence；不得提前清缓存/租约或宣称整轮完成。无新RF、训练或生产切换。SHA、失败、启动及保留依据见[启动审计](../evidence/AMC_VALIDATION_INFERENCE_START_2026-09-27.json)。
