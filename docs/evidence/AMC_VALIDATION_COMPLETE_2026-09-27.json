@@ -1,0 +1,2701 @@
+{
+  "schema": "amc-validation-campaign-complete-v1",
+  "root": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927",
+  "checked_ns": 1790499506521690797,
+  "total_rows": 713385,
+  "total_batches": 517,
+  "datasets": [
+    {
+      "dataset": "rml2016a",
+      "rows": 33000,
+      "batches": 5,
+      "frames": 2063,
+      "guard_applied_frames": 2060,
+      "raw_fallback_frames": 3,
+      "seal_sha256": "d1c55e07d8da075e65106a17573b6e2133260851ce432dfac19eab81f2e2cd57",
+      "validation_rows_sha256": "86bc658ef0df7866ddc6495466f10d49d18be6234a0c71383509082eca238775",
+      "virtual_dataset_sha256": "3c42a65535422e05568c7264ca9f0988419dd851063e3cd251351ff0d930efbd",
+      "first_started_ns": 1790439542976278281,
+      "completed_ns": 1790439990163143741,
+      "adc_bytes": 293601280
+    },
+    {
+      "dataset": "rml2016b",
+      "rows": 180000,
+      "batches": 22,
+      "frames": 11250,
+      "guard_applied_frames": 11212,
+      "raw_fallback_frames": 38,
+      "seal_sha256": "6790c4a2f4e999f7f2737852707775864b023dd81d61424adaba8866637a9366",
+      "validation_rows_sha256": "dc0d4c58e8510aaa93fe000f9af102f3381fe8d5c3829889fd1a2691d93f56b2",
+      "virtual_dataset_sha256": "645ff25793cff7576fd2d69446315fb581bc4f4d5e5f76f04cdac4f7c3afb6ad",
+      "first_started_ns": 1790440022501882038,
+      "completed_ns": 1790442388129988715,
+      "adc_bytes": 1291845632
+    },
+    {
+      "dataset": "rml2018a",
+      "rows": 383385,
+      "batches": 375,
+      "frames": 191693,
+      "guard_applied_frames": 190997,
+      "raw_fallback_frames": 696,
+      "seal_sha256": "98f45e3d394f1e4cf656d883fd0427bb041c6facc755d91e2d5c2bb01c540a86",
+      "validation_rows_sha256": "c0acfd1c02b71652d3bc0382dadd1fd25f3506c206526f9a3fe80b5aaf4715f4",
+      "virtual_dataset_sha256": "ba8d71f0a39be1dc56a8d7e4b1269647c82f18e024d6a22f0de9c3cf196b955e",
+      "first_started_ns": 1790442395147228560,
+      "completed_ns": 1790491547648111963,
+      "adc_bytes": 22020096000
+    },
+    {
+      "dataset": "hisarmod2019",
+      "rows": 117000,
+      "batches": 115,
+      "frames": 58500,
+      "guard_applied_frames": 58262,
+      "raw_fallback_frames": 238,
+      "seal_sha256": "57996fcade60d943c84926865fed9f5b346aefaf7ed4b669f21c780dcf3b6538",
+      "validation_rows_sha256": "5b0af68068aefc12707c23d0bae625cc9f8020bf1a268cffe34b591623a1c0d9",
+      "virtual_dataset_sha256": "01a9fe7955b9702e0e9dc2c60d46b55d35b482550803e721815c65d58ff5295d",
+      "first_started_ns": 1790491555442614059,
+      "completed_ns": 1790498539253404079,
+      "adc_bytes": 6752829440
+    }
+  ],
+  "final_status": {
+    "active": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00114",
+    "batch": 114,
+    "batches": 115,
+    "completed_datasets": [
+      "rml2016a",
+      "rml2016b",
+      "rml2018a",
+      "hisarmod2019"
+    ],
+    "completed_ns": 1790498539297644945,
+    "completed_rows": 713385,
+    "dataset": "hisarmod2019",
+    "dataset_committed_rows": 117000,
+    "restored": true,
+    "status": "complete",
+    "updated_ns": 1790498539855135859
+  },
+  "complete_sha256": "6523e576e2d34e70a1a0903834b536ea7f5a0a73df46553767d5919a97c9656e",
+  "plan_sha256": "a4a689a585a47bc0f36acad102103c2faa69d94091544954e26c6f9d3bcb97ee",
+  "revision_sha256": "c7ddacdb46f5bd74d5f0694633f500a88846067b83639e331feb62b9d6b16b8c",
+  "retention_manifest": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/final-retention-v1.json",
+  "retention_manifest_sha256": "14c158777011e8f66cdffca8b43b8d3f5e8a481d8ee7f555a7cb22e883a042b3",
+  "retained_files": 13998,
+  "retained_bytes": 40941869862,
+  "validation": "All source rows/ranks, raw/guard validity/shapes, 517 receipt hashes, VDS hashes, execution synchronization/restoration and strict dataset handoffs independently checked. Raw/processed file SHA values reused from successful dataset seal checks; sizes rechecked, no duplicate full ADC hash scan.",
+  "device_final": {
+    "usb_idle": true,
+    "p201_baseline_restored": true,
+    "sdrd_pid": 8287,
+    "sdrd_config_sha256": "070401363f1624013dd1442aba737c68824ed8561f6dbd26980f7181c3a517a0",
+    "unit_main_pid": 0,
+    "unit_result": "success",
+    "unit_exit_status": 0
+  },
+  "cleanup": {
+    "empty_directories_removed": [
+      "/var/tmp/sdrharness-dev/amc-validation-20260927/tmp",
+      "/var/tmp/sdrharness-dev/amc-validation-20260927"
+    ],
+    "deleted_files_now": 0,
+    "deleted_bytes_now": 0,
+    "regenerable_tx_files_removed_by_batch_sealer": 517,
+    "regenerable_tx_bytes": 30221493128,
+    "tx_inventory": [
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016a/batch-00000/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "703bef8d77eb75b8df855d94aa8c6ee840381460e00c20586e53533269894a79"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016a/batch-00001/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "82c4e8166a849db3856a286b945081ba1c1de600dadb5d591f9fe03d12b3569b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016a/batch-00002/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d8f98b2998e531142b4c115f861ae476fcdd3d071026561ec6c68f1427c93b6a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016a/batch-00003/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3beb34b91cb88c229fac5f7a877fdc843682277be644030b5c0beaf0e7622756"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016a/batch-00004/tx.fc32",
+        "bytes": 1721320,
+        "sha256": "b88ec768c17bc3bdaff5301463c348ab00399232789c08b52c8974aef232f3da"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00000/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b8f516eb207e43f88410f0a43d717e056cd46b51970c4c654ded90e6aa6f1631"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00001/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d5e0038d1fccdf2448c88d742aec84d6c054153be6f29fdd98886d7d50388bf0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00002/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "165718b342368353ab2202d5828202495419e5f8257134f294f15006e431a73b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00003/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "919a32b7d1bbe134e3eac968e8214730107338c134098665c54f8062f926164a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00004/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e32e9b9321963a689db9bf8ca214fcc219718d1a13a829920f6cabddda0fbf31"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00005/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9a75a59bc5593137e506b9ba1bee3a41fbae63a2ab345e613ad7a1ed60f6bc9a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00006/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "4b5ba26a9f0a7d175a8ee44902f126194a220e5a1e1cc3617bfc9b18dfe91c6c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00007/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0087c4bab374bf9ac0895c7450286a17ec0954d357902278d8fe2a534f19e331"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00008/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "be873094fb2c4f7fb31cf4dbe967f52c4e8fc8fd32ce684bfade5e9fe4b166fa"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00009/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "7d3287dc8547f29fcef0bad46a66421323fd9b7c71bd3b94f9a9d934579d44e3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00010/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8c5d6629355fb160c0f0693c1a244b37e6de975388627ad2851b8e0a9954c2b7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00011/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3e31acc214e76563e661d305b25ed83f72110aca7c4493b35978cf8646903d6b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00012/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "39101cb9fe1e9da1238c28331b0263df1dc9cdcde7c4af235a8e73e2bc2b215e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00013/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2ad7b415ad9df6e387142c02a0cb1c64537acdb2833352251312981b7eb20dbc"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00014/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "93b4f403ff058b5560d25d4497a39cde46c39fb9e5cb40d7eb416c2dc0ec9616"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00015/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "061c5ef1f726d842af04aadd6ffa38b48d22abcaf0a0ddf6f1c1c5730d66c861"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00016/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "651c1ab2355024b896caa9109c8af85bb7e2a0ee4da8366bc670b090db09b95d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00017/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8ffbe0aa18e3cc6bdb7ca222bd9b47c664825ac876becde6773c144fdb7ac521"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00018/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "27003a6cc7a6fed0ddc7470df59871fba7925585c505127ec560765b5b84365d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00019/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a1577b88f5b1069cb7e9a528e2afb0f4806a761c4a3f61d33304c1b4036e3b01"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00020/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "14e1d956279dac9ba7f4d87099eba7d81246ec9fa0d2c6d18f65c978035e8057"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2016b/batch-00021/tx.fc32",
+        "bytes": 57115624,
+        "sha256": "7224f64eba2f35e2c38e716df66c22698d1d4e52015cc1f56ed003fb2361a3fc"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00000/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f2da070a7ce56a93f30de183016a366817cfa0545fbaeb402da64519c693dd0f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00001/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b18018420a12a2dd2ae7b4f4fe32ad5806445a610184c2ff30900cc64bf7eca0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00002/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6dae1abd3be6bc1b707eaa253d0cf7929bac24a3a0df491766a09b8eeb1774f1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00003/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0d80ef5ddf7d52c6491418ccbac6b32e66e4f03eccc0925b4c7ebf666c470bc9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00004/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a4f134d239e6b2cb9460f41142ea8d826603ed352684f04d1c0aec2d4ec7a97a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00005/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d49d285b9c4b5d5de51a6f1909f9c173a91377c3b5111c8e4d7e253cc852deae"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00006/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "17dc98fda0e07296ba8657049faeb1d7e504065aa7b0a4857817ff42657f6dd0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00007/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5dfc49cafb61f2b4bf1ab1ebfbef1540a9ff4c5e0e4147f3b1de42d24e01908a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00008/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3ae3c43fc8e0d61b1ae146c2fbb5ba4fd4428165551747b396392cc2b9cf90a7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00009/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "47431808839d2f0309de8cfa4d6615f770a22f86009865082958bb9241ef2f4a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00010/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e6a729dd0ce0dc4d21f739e200e0d8cb325a988cbb8dcde900bf14a0eeea36c9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00011/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b5e39cc146191a3b86539c97a4e132d662f9d9205b7a57522a8c6cb137dce5b9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00012/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ed8b919e9ff3e4b2dd72f631ebfec18929b8b9e45e8b2d89906dca05f6994439"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00013/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "51c70f051e481dd7dfc9df30bcfbc1f114306c1d2d4b023721c3a5eba636a8f7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00014/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a549c534851adbfb502afdb8076696214cd097b5c5bea56210b108eedcabd6fa"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00015/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1f9e684b220027cb1dace587e210cc9c73026fafa50d6565f36faed37d84a16c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00016/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6e5d8d0f4d3c93b22d727842e7ac1513e9780d6086383f4c2d586072c4053fc4"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00017/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "04db9ed26932d0c590170b6dcbbadd713df42c2de698f5ee2e502981b2194e18"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00018/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a506206a37ca2abc2e5750715228d415a2c11118d6793642eb315e5e2baa412e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00019/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "4bcf77f945b3f3948ba9872d06f04d7ac22832311c82e5abded6a0deea3e90e3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00020/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5da2a8bdddd170f06fcf0fbfcf535582639c4c06bd085b4457306f34b80ffb54"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00021/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ee2d08d4fcfecc323217f1cc58b1c37eee40afb7acfad0d4f13a59b88e1cd9c0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00022/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "56b5f15bc24904d30c51d68dbead51927f4363449a97649680f32f5d4e48c620"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00023/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d3178470d197dab036d91a09bbd0f6f881132068934ac95ae4ab94f648381a39"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00024/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9aed9763ab0c7fd411bce6fd1745b2ca1b0bb2c75d2c7d00e0e983c96ad5ab3a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00025/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "322242a25688349f5a9fa2c24635f7617ba39d757fbcd2bc81951b3f722d2797"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00026/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "198206894f47c1179f8bdffea7682e556c5aa18290a130e5a2dd861ab608f45e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00027/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9ffab1d3d53187525b114e72c6e8cfa6158eaf0128743bce5e70fb821d59136b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00028/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6eaebd0b56cc6951435754199cf1da7cc64416cfa7393c29ab80fbd108cc9b79"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00029/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "bb0939c33238ff363485e1cb8c29632e2cada5dbbcbb8e709bc27f7181329a48"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00030/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "75969da779412b3b90effacef628a195e8db019df08ee69527323e45a9a622b3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00031/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "aca29d7de088e195d6f59db1ce727fdb2c03b53db89649a4ddcde78dcab530bb"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00032/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fccb3622eaa4f9514a940eef2c0c3c4e8e0b76384f51141ada42ff2972e74e03"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00033/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6fa9cd2507f6155c0762caf6be7c21084dad6ae29d9b5ac7f3514dd668ccc746"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00034/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "60ca3ac7a436af608b803408e2be50eddb8b1c41bb391ebaf6de624df4456392"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00035/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e9287111efdd75d84fb7ca2fedc5fc5281b712d1034335390d8f9bd4be1d565b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00036/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "cdc1f7203c4fd017823ca83e1f7af45e965ad0d83bd7accef082cd2003e4a88b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00037/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2b26aa7ef9e0e2e587685596de5f8df8e9d6cac498556824e5ffc52168ebe2c0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00038/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8eb4dd31d30cf35636e839b63a13c8655cc7337a3214cc4a4071b7ecbec57707"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00039/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6195b2fb227252e77022ac6bfe957d0dcd732bb945b870b6ae70d4752a899fde"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00040/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "37ac0d462f9cd8f1d6e467745e8d4b7ed062d92de5b68166e9006531b7d2099a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00041/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ca0ac20266e74e33ba48c0788598e58c92f402c6f5e2f65aef7fc9cbd2687c97"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00042/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "29f16ea5113bbe038b59f9754ff31fd9dfd733f5c01b57934435734ff406088f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00043/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fad1a975f2540c18311f45d23634ba2c0c1b2bf765a46f7157185774c3624cff"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00044/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f552cf4d5479bc7e982f2e5f7b9ed64e451fa2f96e5157390785e22c6c25fe5e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00045/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "eb42476fbdec3db600b5d68ec578f3fac46bd10c8f4dffb21a1683d77acb94be"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00046/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9e37493ae51768f888c6df08d2426feb52d0da258265a56b4aff5fcda060da17"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00047/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ccdd9805360d70ab4c81aff108afe2412d389c9ae1c168496bf11d73ebe4f25e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00048/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2e3ceba557af0096a9b95a2f14ad13ada2341abe7fb6fa4f0d3682dafc99e03b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00049/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ff46a4d29d07757ac922d2606f399cbcbb2d59d8827842e4be2757cb674d68ca"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00050/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "dec0b6918c0e22d18ece538788d809ec2f0963e9f5ef0149ea524c407e624621"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00051/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b92a6764a9973a1f54ce84697ad58ba7cb8d1b0953622219c94bb61a342b53f1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00052/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "612b1d6343e796633d19b30be893c16ff1be2bef020e28953ddd2f183cbfeb9b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00053/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ca191aa9cf6691f6edff7abece68738fbc68ab5675f09d17ec80b7b2ecd4de08"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00054/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "deb2c4aec52b15c1eaf8bba3318cec38aeacf5f598277bc391a40e2851e77326"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00055/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a6d44c5635300a0eb95f8b10a46310ea38a58acd2a7e44a75e1563d87d112a25"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00056/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "c01ddad17d562ea876b3526232df1bcbc14092474a4538268cba38066dea57b9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00057/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f08e5f661398fad55948b593cbb921dca0a79bc3765dbc083b77f812fe8ce2c2"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00058/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e137c4bd9cf9b4f5a6a63dab0f401812854fe964ed6e48a75d5458f963e8523e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00059/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f78034479f1481f55f57b1460d7f79d3240fdcc8c1ce7cd408d45b5d7a66987c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00060/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d9705318ed4d291a34c37e3b5f97ddd52bf4c44ea603e9024832b9a32d588164"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00061/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f9fd03b00b0a7aa84b409ca5f50401a88ca5bee5ffc17b9354b97b1447e1e426"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00062/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ece0dcc58abc0baeda4b566aff5c6448e81085b2fc46aa32ea85cd785592ca1e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00063/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b1e384db32a6915b5a5ae5df1a2e1e3678aae60874ba4c1a9fc2aa3c67a0147c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00064/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9d564f9cefb083cb91de93a60084010e852e98c4aedbe3eba8916a369de441f0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00065/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a5e04fa99548a19366f314e3e4a42c35ff447736a6384777d0173ad5f07f4f2d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00066/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "67824cf896d583f885168088b6b650d9489ea10acfae1531e65e2aadd668d0da"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00067/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d853f1cead81f5f562262a00c2e3565609ce988f239bcf1b26d31078ed638393"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00068/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "75cb457c9f642f1925c1f6dc1daa1976c9a65119a531bf5b327dc6acf2fe82de"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00069/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5cc7cec0252c0167d18408a9c7e825155a2ffac61a96e92128d9aa75b58ac81a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00070/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1025462dc274d67e0c06c028702ec23eac78cd49b59134b7f48c96cb2d1de529"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00071/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "28d47244c24d7caf657a696a6fd5af5b336a941397d1106ac85e04e482f4415f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00072/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b38de721ee371a619bd2fc1cbbf5f0050dadabfc0b38926d5bf97c710347486f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00073/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b80ef05d178b1e47b8294cb88bdbccad67e0e24f88dd979f2aa68504d1507504"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00074/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3ed5e53fcb326143aef3127f8b77d13801b75e265e715dbe0269d188088c9112"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00075/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e8677f4b26a3ea1aec9e0d97dcb2a2ae1e27b7a2c583e4bd02c652673a8ddf25"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00076/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "74b1ab85acfffd9fb7b88b14e99fd3e89be9ed4f01c0f979df1b98e24f83337f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00077/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "22f10fba26d358c4959df0195d01dac6871c93a54bd11721504d868ec195b6f5"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00078/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e475dd1a089ca2cc26abbc037b124bfbdbdd55b5245a21ef6552170b806a27cd"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00079/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d4490b3a07b63539376a5c3fdd453b0aefdeac8ec6e89d4a4d88c54a25233f9b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00080/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "24579ddea0ddf6ca28d391f5746c746ff29b18ee4c9d2978d8ed2d28653c3874"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00081/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2f56039daccf4cfa7fa896c01cb091ae419f69ed41b7222bd774c378408c2e41"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00082/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8a31c234225ac0c7dd8e9e89ad533bc24cf08a5123dceb22ebb473868f0f3397"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00083/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6001913445046c1ad1bddb75a2b79d16113fdd6c4563a0f50c160941e56cb04e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00084/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "62b1f7c41453e43b78946d5abd61e24febf882f6ed3027f3f46b00bdf25151a1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00085/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "30906d38136c04f0e506bf342a353b5040c81077328496e7726a41784ce5edda"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00086/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6de6e3330a7455829992f360dcea2bf6d22a9301960fcf7439cf3fb0fe77b771"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00087/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ca340d6f9e36b166f614b5baead560ae020dad02a13ddde34ea922c12c6ced8a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00088/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fe2b847247e987ab7ce4548ed5d91d69c0e4803ff15790ac879a32f933699f75"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00089/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1852b3007016f63eb1a2487ffa62a3703c6fc40ac3626cd80642989aefda3648"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00090/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "65b3e7f58c703cf99c78e067e6a0d54eaeb52f4074ad5ece289f6df76ca96f10"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00091/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "69e4526bc6559d29a4bb68b6a09bddd47fbf3374968f5eb725fb0d6bd3f23143"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00092/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "bf3e2a90caa27b881657b6ff7c22270350cb9f86226abeb176f8d404bbfa86fa"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00093/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9f0bc83505cf2643eca4a1568ea0893e76d7cc4a6ec10fd5a1712a395459ba66"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00094/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "11bb316dc0b7f267b6b4f38bd22a94eb51741d6b1a1ea0d2bbc367865aa69ec5"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00095/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e4998dcddce3beb05568784e7eb68c7329d4d5c8bfc40e8c3ce6e6febcba132a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00096/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8a7f94844ef0001a560b20184dbe2de04801137e7cc0fbb35e53049ceaf4d705"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00097/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8c1ba78b4c58db851e92721d37c5f46085d0739cf094bd0e22e14870a59aa78d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00098/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a960eff4732dbbf93b09deb49ef6ee8e1eabac33d1c57080efe6e2fe861ea252"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00099/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "04b8511dba7ccb4c1bc519d065a9d26ebc1cefb1ddef353a741240d165cf210f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00100/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "aed51176c2eb38349fda23bdd5670b0b7c3ab728ceab50ef05638f0c55a720f2"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00101/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "74f630be857f49cee0c11fa67e975703fddcbf38e16b1b2138535e2c27810596"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00102/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2dd9996be74afc6813484b481b3f55b1e5c7862990a60fc5a787b9b0ad029809"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00103/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e5d281e5b90273ab026f78af02f1171cea975e976c5f963328d5f91aaf269667"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00104/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "c3aab953995c1540c0b3b5907d17fa8f3ec144838cf17350abb2c8eb13ace371"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00105/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9f50337fd9286a77b77559ebf2f93355950f44a0d7ff72f27a2842a44f9d6340"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00106/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0e39b6696057212bef593b8c6adfa7550508c830f74a89a53d6be7237f6e250b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00107/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "332b7171cee3c918ddc501846bc3493af2d9735bb2f7de47614e00aa1c32f8dc"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00108/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6297f6f62b432532c088fd61d1b42d84c588ffdcfc23280f7ee46983a4738ffa"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00109/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5959f1cba0599165d127ba3e7fcd9c3c32a58af2fa1a6639baed997a01058df7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00110/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fb541ff04ab8f3b83c83222866e766d18c3f3387bb96eb646fcdf844908f8e6e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00111/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fa24206d3d2c0e1ad98e85c0d93f2e89b4845b57f42048c96711d484b3d08f48"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00112/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f91c86d55b7fa539bf0e9456f9536e029f78a402d8764f727f8bbb9d87d15c71"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00113/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "cf545b077e0a722f894c58bd2edcea18ca3c4942710ece8e636287632368db35"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00114/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "bc19ce6a850d56c2e48c834e12d10792c5c6c6dbc60978c25a51f4e60f1a1943"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00115/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e5fdb6537d41353b79757c119cb217783de6931760a720bfd5fb5887aad5ad81"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00116/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d2a00e76ba0e0b44b0e390d1186e52c08b417404bb9731a6a2811750d1e441ab"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00117/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "76654d4ea1741a665d648e2f75e840760a2a6faa99ef8c3690c7e3deb0654575"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00118/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d896bf5a50f3875d44d4290ae8c9ad3940f5d94ed05f11bde294d1fb045e9794"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00119/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b2747f7d42d2d10024c769fad46c938355b3cd43606410837adb0ba8a6476603"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00120/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8a3002807689c39455b004fb39de1c80eb5f3fd4fefe8297ecf5046a1e87078e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00121/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6c338c4dcb7054c90c30f27da9922eb44fd08123c849309a00f0e1b859e9a4f7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00122/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2d126d7bb55cb4305e8311b9f502f7322f4301d91e7d856549b5755ec1c7ae8f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00123/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6ec0a4ea929cc4da8030f2376094186b99d00abc644fbaa8803e6baa887561a0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00124/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "7155c4cbe49e4f0c20f1e15a0f1b649f88bbf1212217173d1f7080ddc0b0c51b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00125/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "cab9da115b07f3bd282887f238b3216044a4693cef82a3ed7b9a3cd92649ead3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00126/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d8fc44b424965b8c376bafa019897f4bbb77869f6e00dcecbec5aa52124135c6"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00127/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6de1a3cfa0402f9455c491b61aa0c49294b8f6a52e545eb99a96d9100bb2cd33"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00128/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6864fe130039724e9e25a17a2347b21f9f43dfbfa350bc228f20953a99a8d1a1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00129/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6a220115acf06872415ea0597c89027a513725ee320c3f7aa113b72da6e47a81"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00130/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3bb026518b6935604be04bf3ee7c50b525a722a2598b593f7e3ff2e2fbef008e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00131/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1dd30890e54d270944e8f1be42f336338f58e9f9e6cb23e0b286644a212218b1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00132/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f97b0e7f09b809dfa619e9946ff11c82ba2bd0fa6e6527cb6f3a8889a2e6f3db"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00133/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "61748629c841ad4f3c913ab41f7891da85058b1f048e284477d4158a59cb20f5"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00134/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b36e13e6354ae04bc4853bf47c8bdd41aed0c3b23fae8a48d792d4fce8184ecc"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00135/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "37cf26df07b783c37c0f5da16bb5d89d48f4c3c21fc5d96eb021d33744bae4ac"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00136/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e37b0c746e43fb2e60a3dce66e33f8950a290967ef8602b46697ba39b8d19bbc"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00137/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "95aad0d06e1c90f3e45a115a9bc49de5cba0719aa591a4af11e989228bcd494b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00138/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d7e53d79098d8aa7e7c2119ffdd3e90ed0d2f73fe51257c0ece00da625796540"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00139/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "4f6d473f7d6df5ffa0d7666289cfde9904ca45466377f0e490bc74207d01ebf5"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00140/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6c2795f79f4777fa3db7c22fba5b12714d58cfd4326827625b767396b10c1b71"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00141/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "014127b6350a2f8907767db0f5869478f640d3954605424182a2d1851b3c00d7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00142/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "de4aaa2fe51f57884493e6247e5baae76fe66dc51919bb68d909ba9e1ed766e5"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00143/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9458a74c08c578f17bc108c2ad93a33d940ff61da93777ac10d063a4752ebf65"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00144/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e793c9283787cf5090262a410b88b37b65076258790a18858d6dd96ef2105218"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00145/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d33430df17a61d09be8a292237e2f450e8b6d7517e5e761647725a9dd6ccc4ea"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00146/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e7e40eb9da0846ecf76c787ea6f943d4c71b614ba0e193ca8f8c4ed26dbc5aad"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00147/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ed8acf89c9feb9ed36eeb7c9713f85ec367bc5e61b940f0779f066010a6eaedc"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00148/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a5fcb9d888bc2ae3d459a5d2f8b03e2e7dbd5b8945a09536d88827c98c1f9b3f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00149/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0b9746dd700786dd5c8fc78dea8a1a3803ca097b2473183127b84cd73f05fc21"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00150/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "511dbb2095e571b6ba6ddaae9bda5c6332af140205458492cf632ead726abb3e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00151/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "bbc30251a0bc94ff411c0dd79918167d4c7d1e37fc0edb695a5f51aae7c13e00"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00152/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9b912dc514a0466ec4bb3a130ad12dca9b25190515d5f4810b27b5fbd92fce9d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00153/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1124a9e8cbd534b4c3ff8616b3e31db432e20638ec43693bd5bdf8d7dbf0a332"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00154/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "aaff5372564eb638c6b6e68be8e59bdd7d7101d2b93b9b3a4da52e229afef031"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00155/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0deda9175bd39f85380395338bc3d36bd8c3923adff2635bc230829eab02a081"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00156/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "c36f8b1dad6ac137006de9b2901198c64ef0756bb7dd864cfee695362fbe223a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00157/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e47e5d85ae043dab79a3551f482d1e496192de9a7072a40e5a2d786e5c5c5af6"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00158/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ee3a54a5892bca985fd0678573107241fb537d0c712f3505fb6f4f3cf308d389"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00159/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3efd90edc2cad7c051f29321521a00e474ca587a62b93550f22b0e17af16f36f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00160/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1ae31f1c630bbc1daa292be77ee332f0121f7d0237fc0578baefe11ca21301f9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00161/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e83b956ab65a3e703dac7e4187dc3e43e936a7fa79a674b6a5967d74b4243450"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00162/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ed1e5f7bbb50e1a17b38583e925ae9260e23f2ce1cce0e4c93ac552a5c1367c0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00163/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "541f1e01b005a66e27816e85366a52b71d68dc72364bf1f561c9230c68465612"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00164/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8a948a3f32b207c52b81b06460406363e5f21e43aa5e765b4f252fea6f8385f4"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00165/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3ed734715e07aee6c33f8c6e3aad084b3794ff64b96fbdbf657ac45e093b911e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00166/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "72c8f1f430852aeb9d92fdf5b96f1597326927c102302ffb7d6aa2dfdfa71523"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00167/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "094b9c59d28923d67868b1a585f6a0f42f12b4d9e60cf8305e1efd89dd6b7682"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00168/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3788492b1c25365de62f92f1e18e244bfc5b7833f881d95b7faa797298579902"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00169/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "96fe9fab1c3f9bbcd609348195b0d582a57cd2ead8f3bb555ed22d1d43fceea8"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00170/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "57ef1380a9f1f2e1675ffb73f4f553d2468d850c9f233a24e1d2447e6584dc99"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00171/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "da0c818f6051d7f5f7649221a7f41e3d1e635eac0606ce5f8566861623ef0699"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00172/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2e391d83a4b6d6ec4bfb8dd3ee2c8aa21ffb95530231919df7c7777f7bf1b20b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00173/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "55a3ea5918bc5d362cb4639098bc12dca0efb64c8782e39b99241b791160f273"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00174/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f67ea7357d575b5c5687dce673ea39fb6ff190e5d69bb76e5816616b78dc5d66"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00175/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "207c80c8cb3fc7867ec279ace4f553cf03f17ba823978b6f4bf84ea38ac11ec7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00176/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "079b795b0fe3fc79bb4e310d236d1e085552175e2e30494c247bb1aa87836a15"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00177/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "7b44536938286e2f0b72dd33b1c192398279383b942a30e6327a5a45934ad34c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00178/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9ab65faf5ff4cf8a51e916a5335ed9640182fb0b3931b5032d066678307a3599"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00179/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "22aa4c5b2ec2f39a04a1f7bdf9ff44394f1365716f45aeccb56198f7ccf95bb3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00180/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "497f940f5f818cbdee1a1656a03b7a1f897c896a532874da4b3c83894f95fd22"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00181/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "68f025375a88a616c1a5d9170d953441cd0e0ee8cf44a256e093f1aa42f55165"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00182/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9621d2ad1a14063922da9aa3e22b4d1cef48d40acf47eee7e75c5743553b140b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00183/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "4c8ef7827b96b3a020e5f8a1d821d7cdbee7c5995733cc26b74562705cc56898"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00184/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "32ec6a705899be0ab6da31e3ac55306ee126369dcb51439d6a05161a594fd9a0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00185/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "62b37f32d7821ac752aaad5d77b50876fb1920b0baebc22d41450b518052424f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00186/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "611a9111da2270c3ed9735ddb434eb37ef7abf6489105caded9e56cc72e055fd"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00187/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a98fdef5bf8d99741c43d2657ea947420574e68334ec1afaf5f25c7a6740913a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00188/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "721a805bc2340be0fe739481b8b6b0f45e21f6b03710a6b875c73ebc53c9b06f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00189/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "cbbcd798f6e1065ace0209feeb4350ebc22a966d4c3397490a2c29f0b71eb345"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00190/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "45fa3cf0c797a3b0e42a4f7c8e18111dfd5ad8729812dd5ba04c03a1c64c4bd7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00191/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b0e3fa1dbf7f0f840829340b6791650784479bb709172f22bf1f652608795cb2"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00192/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "eef843ec3951b600b2005e9fb283c6ddfa6d588317cc3fa32a759411278c077b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00193/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e8e3d709ae257bca3ec8446c516b712393b043f732835fbaafb70cf0534e0d1f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00194/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "50372d1b5f9b23104026272ffde37781a34fa6747e8e7ef42df152f27bd7394f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00195/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e01f897b3750c83125265728774e3c5c5ff40706743212508cce89261c30aac9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00196/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "063602eca1badd0218763d67f6edb1af7eda9422c58a2248afa730f2b8cc0364"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00197/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "62ea36e35ff7e0ee51b5867963c3668d1c13bb9d5efe2bce4c69892e50a70574"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00198/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e328761b32131369e3340e1d6fceba59de3742eb09550af1d9855f925d13c436"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00199/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f22309736abe72fb1f6cf77512189caa2ab5968abd211b2ee75f08d517c1c2ce"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00200/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "27ab9be5445e3f2cda3527a0ea5ffdf2a0171cd69f4dbcbb438044c81007372a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00201/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "86440203039a1277d0f0a98c2d9dbe174881fd6e25fb934610231c4b17d4daeb"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00202/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "c170ee617898cf406c1a0df838801bf29f34268d47e5fef072ea724fe4755c37"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00203/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "015b2ce668db495df248328251bdee565af19e8336fd370306cfb3023d3f1416"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00204/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a98c06e77d6c36560af15d0f30c6868b8ee0e2b1c7f8f341fd3259d707d1789e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00205/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b403d983916a8afb4f2e03f89b152993ee21da8d10e4dd8116aa3d57897f7f6e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00206/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5dcb747721d293ac169fb28c38a9070e97080702bf22e4400c1c9118f8659991"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00207/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fc2589a25a6f8e2d8e7bb352754b3e7935bf6237013aeee9a655d525f324a0ed"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00208/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "60d81192df092733df53adad1cdf7a5ca6d1b4b4dea6349b87ac413f51af2e6f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00209/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ab56f687626694d5d0751027806db60e420e29bfd374f2048372a0cdc5c670ce"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00210/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "813289e5e04fea37afe80a757249a12e71d22625f33d169589a4dffc39071501"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00211/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e41be7f21d8c24df4663702f98e0d41cc8d60504b69b907f9855711e8758c448"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00212/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a4054949e4a367334a5865f4768412c87d84ca245aeef41b009637be98390836"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00213/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "316d2b8a6a329fdd228be8737b0fa5486b148e00beabef937896790784c543cb"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00214/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "72e399b5d57fe0bb1cd8362804877f8bcf27595e121db17e329473752bacf6c3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00215/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e678ef302f350d995336339c8c07505b7119935982462c30abe556952c8d396f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00216/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6e9c42e57f7fe7b2398ee6b26442b869c25fdca7a219d678cf0b28ef5a3c4c0f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00217/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "022f8dcbf2a325779362d0ce5f2261765954691705b682b0da0cd36f7eac5db1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00218/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6272fd844a5285db14cccab23cc6c01b4838cd31805f40f566c3dc6cdabc82ed"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00219/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8962520c9e80f88bf90adef7253bb6e888e090f8c72da3ff9008001cf93b5824"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00220/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "781af50faa201df5ac99abba230462ebf576668ef9d51c96fd9c73dda2a25f4d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00221/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fbe6504dbb589ade9ee3d0042a56d1c92fb91bec0f8d73bf75b0234298371128"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00222/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "92dbb6664127c8e7c9a349093fa0d1310e4e227b3ca2f388393332fb7f873338"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00223/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e133df5f15e126e6feb07cb0329d947357fe890b981be9cd590f5961acf48357"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00224/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "17f7789a65ad15778530e7db79675ea024a7572a12157720850a28bc84a6b575"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00225/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "09ceb7b1cbd9bec7c7115b1487bedee7be7a791640f005f013c7665a6cfee5a7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00226/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "030d3dfd4cdad7d91c920f7f17571753df217f3f665828b41e18aa5d0d116403"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00227/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2262a2c5a129d78c4e0320ada808cc919e693af05ecc68d2940e8e957f443569"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00228/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "31cf27fd95563d17f4751e593f6930cef17b2e774452016dff441db5163a3172"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00229/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "01e46b90614e625a361f11dd4f56e9450ccc380fee2fd838847fbd60eede0e88"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00230/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0b917937470b3583dec2e10f320e16765536ac80453f192cf1e2a63b11185a87"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00231/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e8657e989ca0bb0394c0ac4620631ce35338f369a90e5b2635df2caa43d08310"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00232/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "97092fc6580f29ac3694691c9797feb8e50bc22dacc81e66dc0db3e5acee6b45"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00233/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f5bc86ef423ab6ba692d056db1fc7c1ef284ff24ea8330d3a0919d9af36a5d01"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00234/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "43ddd1292a77bd07ea853f6459c46eb2a5b0b12e8fab941311b2f8aead5b65d0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00235/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5c39d9e435475a3b4c2936a4d7bd3fe5f40617644ec6fed98d789edf7e70e00a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00236/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "77ef64c4a335ee94c26be61e9d20c9c9f1014ba9c7e8ff06acb2d464321789b3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00237/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3b6f8a085489d88c1db39e178a70a88e373bdbf866cb49aed4740663ebac9715"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00238/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d3a694a9c8fc1a9f42ad271e4bff427ae1bd628483aa2ab8d8abcfe491c9de10"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00239/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "7601be34a6a8812d933f0e2428b0ce35059ae5eb2cda3944a465bcacb9fd2a41"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00240/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "bdc876234cb51e81d7081cfd51685ad64a78a1f21a94a90c4758068fd9b7fa3c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00241/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5e5b4a22765c2767913d5b692d836694bf556deba5a99bfbbd41226b48a810ce"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00242/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0aa472818fe92e070ad75377599135a3a12636d7462f596b152b1ebf1ab5195b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00243/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8cb1010465a5da418737636fa72af4f0531b5ea0d447eba1beefda2f9ed185af"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00244/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d5fc4749fb74b94592f97b70f5474adcb87bc340050525db42b0059350a8737c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00245/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "37e6e1f170a5d6f454e3da3bb01565798449ef2660be16c69518b747c43e74d1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00246/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2c71106fd245b15cbef389de2f68d433823583ee341fb407d1866285db8e72c6"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00247/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5acb7650dc2cedcbed892ab4dc3050b052eb90423cbe4e94b39140c15e478f9a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00248/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e70c67bbab523efd1cd5a6dd3435ee28b86b5c2d0ff67fba2130af0049bed271"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00249/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1435b6839ab822aaad9376b75a86c419a3e0914d57563b9b56ea083ded62b604"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00250/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "99a80edac608aa0499c30f4f15fc51295a20eeae0eadaec4672f3eea10a20a47"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00251/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d8212f9ff80a7531a7d2dc9a4def7826e44c98a1e1d8e10bace3f444dcb9bade"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00252/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2912a9f3884b562aa6384a6187e0e5e88bb427498461e774e6d8c63f1d4f0caf"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00253/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "dae71ba7c9eaf7c5f90005cba4e2b4fef12b9c49b4978b3e6f5d908b9aebcfa6"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00254/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "44069889e260155f0dc58f7867ef4c344381edf4418c19f7f4e2e29f5ce84aa6"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00255/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "cac50c3f0c0eeb7b19a4989a5e98b1c6f3925c7057397b2398f31dbf164262d9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00256/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2af13ba49a4f3934e791a47aec33f59a928b61e8b18b598af5e656ce60acaf20"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00257/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9c3eab31c8137577c2102fb774521de11482c006c7f03fe6dffd4b8c3866e7b8"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00258/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "279d06f2f31e836ce6532bac689d7709f99cffb0a2d52deb684ad1994ad1ea79"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00259/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d1013413bcaf72964c8479675b596f102416c977b48cb4324cc3e4f2b238c387"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00260/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "58b38f2cf9eb56a4d9cd0a5e4071dc9f8133c7687f094bcb2357e0567e4219bf"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00261/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "adeaf24ba2ed5029f236966c801ddb5e416971c9a4d4d17673a802e572a938e2"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00262/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0ce4171467d1f847e7cf5aa6a033f4e95b695d59d1c28277d7288be464c02358"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00263/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "23336e5e59c4e36bdc58a859cbcc887abe3b082e413d97007a3d6547c8b393d5"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00264/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "402bd3c851c4e3e28ba1e44013a50342f8c047ef5f6064acc82c5b0291f0102f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00265/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "7b9ba812c4fb276d87178e7d1021818be768562794f1f7f90e0e558eef7cecb4"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00266/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2db04ecca1c247a42c5ac015462cd44858edaecca3025ffdee01c859f2b80bf4"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00267/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5e5d50a529773f35f903cf4f438e03f7f4399ae622a4d4e96f5f7cec65e2ef43"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00268/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "19f2b522e31bffb017a85894a0cf8535ac13976fa5258d4ef6b9aea929a3441f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00269/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a9634b0dbf5f3fc36c41b7b3da3c84862806a50f0caaa711c44aa07ce700140a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00270/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "016bc8ef18b81a5cd53051751a7cf65a4b9fba786845df90ab679ba11c8a69ec"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00271/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "7ae1f8515536313a1bb8fe0a866f597399ac235916cdfed48a88dde1eb03b47a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00272/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "53890c1f95bd5e7f16a79f39de11f81a944fc2be41b7415b20fee17e85ced13a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00273/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "bb52522d0500c9120fe3cf75ccf2050dd1b38ff11946393b210fb45ec7dc0968"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00274/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d92ec644e770706eba90d16970460c14669b2f468ed640a0c6a97962ca768018"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00275/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "22fe16e11d4de0307c7caa9f89807780548efa3f32ddc9d3856f69b6301eef6b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00276/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fcf45b7b33f79942a533650261d62a724bcd0205710e7006ae2c155379577cdd"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00277/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0ff65bbba320e9e35ff49a0a449d7a0d39d6cefba527101fb4b79b69c368d1a0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00278/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "4f45f19e5b73f09047ffb10254b9e703cee2d9418f843d507a3d08efad7f7d68"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00279/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6d196791069cd500a3a2a819929d6bf0befcebdbfaca898c63b9c811ba6b759c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00280/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "656c4b35376a46a31910916540acf4ffd7baa44c92ed0d986bfe4f31ece16e16"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00281/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9b276450d1d05717dbcd2922ed80c86de45c567a7ab218b43647bbd7856b873b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00282/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0b766d437dd92827c70f0a5bcf329c29c02b0d00410b875a8ab68c4620766456"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00283/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "25aef0a9014eaedae6f5d536ee80dac4377627470358901fdf0631f798a638f7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00284/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8ba3c1c8a00378ff088c1735801659ed5f023b0efe43ce0321eb0973cb9818e1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00285/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fc6b003f89c179be68c02ce52851bd1d7ec5910b775ece1b2ca0709abc57bba0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00286/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fd227150fa4d8f892e3caf395502a77625b882dbdc71f6b0a516fd6f9b2fd5b2"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00287/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "83b0f9a5b9ae9eb9fc29be4729b3549f593d923d17c986fe227cab936252630d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00288/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f36feb53aa87f668e2391676db71297cadfb3932069592a41a057ab1dfdd3b3a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00289/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0e8fa3da8b6562a6526a81546bf08788178b74ed846c15561433cfa87038c25d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00290/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6ead87869e40cbfe41ad4b01478e2cae50b0b68e4a38add34530c33b9a806525"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00291/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b48897f3a1fa7035248befda2c2d4f2118665a7434f0080537d9e121de89f913"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00292/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5572539c282f87e53f458c66b2542a227083653d4b0fab41de63cb3b35eb1cbd"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00293/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "c4333d6e082c4ace90cb7035a6a1a74a42bf86c97547035d1492172438bfcc90"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00294/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ff6aeea13a693ed85ab1dbf6c44a5308c423967b24a23cd29aba6e14d505e71e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00295/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d62460e48ce836bb9c741b22a460cffbee336459fb5fa100cef43bbfa3c8d7ed"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00296/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a8b8f90e3ecd79538db633fb3aee0e965081b5fc35dc9f7bbcd0c9fdb55ceb9c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00297/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "bd383bebc6bff50692681c204718ecd90f44cb35824122d29ab321a1d426fc5e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00298/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "41c3a1b48f5433f0193ba2a2813b7f78d66a977f63eee8894499e50624490098"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00299/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "48f2526facd3d64be2eab17bddde9591375b612a4e9a2b1750a61dcbb78eefe5"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00300/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5509e84f2ce16eb3c758777a7b6d9ec1b20f936f0c7014bdc37ef30925ced920"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00301/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "aa10829a2f011b0bb36093d546d4c7ad22fae98c61db9aea4478eea56cb1304b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00302/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "bcf689749cf4b88a223ecb417646a46b9c79bcbd8f9eede650e226df52b299eb"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00303/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1375de0661d8ddb33945f4e6a1b8268fb1d4529b900f77e2d2e4553b456ac712"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00304/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8b0ea7d3eeb54b1370d02f566e1e155c8355b3587eea009dd8f74e983bf9e550"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00305/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2e38810106fcb138e420cfbf1fa1680a1f6cf5c592352a4d4dbf8b621b267e1e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00306/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "75363ab7fcadcfa0e0b916b6b435b90e62f4b1ec69f3c78d55d78231a4bc4a5c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00307/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3bf2e27b6a64d1d5d50cd1c333bd90d7583d2c1e24a2bbfaae29757b5edb5f94"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00308/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "c920f0c0ffb63332cbb787ed085178297ae4db8ad8277e0409080077fcc21349"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00309/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5570dcd7ecb571a405a64f4f83787708a3dcc1eafbaf2d6f49b7017cdbcc4706"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00310/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5d1d420803cbefa5e91fe41c3a43e9cea9c0d420535e550c5ed1f7df555e41d2"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00311/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "aef39c690566d5e0520602cb1c17371259543ebd69fafba76cb3573285870cad"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00312/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1137d790877544d749b6e9000c80fd7d7278ce2b5915d0c34a973ab83db7f96b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00313/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f8618528979c4d6aeddc661229f6672b9b4cb5b66e65565dd3632a45277766a0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00314/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ffd9691df11fedaa583a08c1b26cde4c44a5e71f3150bdd73a5bbfdd187b5bc1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00315/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ca9148393bda0b4afb1580051a3426e59cc22c1cd29450b9b849f59402b40ce2"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00316/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b3d8d1d64ff15b603f5738245d6629147ca7df1d50660efb82b6c8fd003220ad"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00317/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "16624a5c7f79ae9e94fe4fd0be2eb745206c7497e4155c6660619dd91655f4a4"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00318/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a0e8b52b5b1f947b8d5d82791db66985e42e9f4fe407bcc981ef9d051098efae"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00319/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ae00be48c0e9932dfccee9ad9247ca4ba1e8324c10c859bb704db3c01e4072f4"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00320/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f5f72df4a66c964d30455c321260b89a5a6023f45eb3981bd201c94e3c5d75f7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00321/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6c914b12b71e940ddda3442490cb9f860286ee134a04da1966cc3061df934691"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00322/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5b036533299a9d95bdab249c7e635ecea573d4ac038fd7b7ee64e800740a4217"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00323/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "151069c97c6de623ea47138365bc7335a3a72e9ea1a96a201b28dfd30bd12eab"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00324/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f4cb29610fe02e6f5997c95dd442a5aa50cc798035bdd5103f1a91271915acad"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00325/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "06a782fb1e893c3baf0112047f29f820d2b17e2879945e84eaa4dfdef53851e5"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00326/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1bda648adeb3c85696c2d2e343040af806497100ac2406eb73bc2a690b7fd580"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00327/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5e197ee82ec4ca54460fbd36466fb39afb3e3e84475917a1bcab03b2f7c3a19c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00328/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8e5c85624341dac107c3214b82b02897c3f609b84b41cd55719e0f0a8637d92b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00329/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "68981c818a427cfc7ec8bf39bbe5a8b0df14e0c77be320f121b0a55e9785444b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00330/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b99291ec2bf8730dbd5a1b560f514c23642e1121ebf7bb752bed7375c40907af"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00331/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1510f7518edbaebd96d19b09436c65f74fa6131f726dc54c41330fac0a6556d1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00332/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b5fa935e0edf3e67759ce2623053ebb3c41f8b5ec2e4d2c79c5fb3e1342a9b58"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00333/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8120ea32e418ae1aab018c613ad7c71ada1e988744e1940b486504089f5144ab"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00334/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "49e029d27ca62bda769073a3daaa0d27bc7384f09d4501669f046328090f3bf6"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00335/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "239668c8485aa4b9f2bc74846a27c58949b2565e8b2b15e7df435dd5d2f8f03e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00336/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b9bbf4375adbf2b19057af24ca4617508f09bfa7a0839c6cfa7adccf49e07ecd"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00337/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ebb0a00f25df4dfa29ac2f2f751d45ace3f69b31580baf8520a39fc16c05e27f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00338/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "74acdde931d76bb4b59e3b0013c2c415373c6b7a706c7f63c24ade0a31260a92"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00339/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d73f776c9fa1fc57e4186218b9f251c32df4d654f6a3c520f4bdb5d40c60c100"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00340/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "cb3ca2db0cb9f0b501ebbd8e04a1facb44206bb1ce9e6ea1e550235dc2cdfb10"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00341/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "01731b8c0fdafae007c46f7351e9c2c756643b633f591b4b3cc02913d9718688"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00342/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "bac3c5bb572499ba95c1e3c614f6a82e6ba1807a93ee62bc80048142bd9d2a9b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00343/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "eb487a1a50cfeb8e6964c85b00b92754c4a1589e3f4282f3ed15dd226da058f1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00344/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2fa5350157fdcaa2b9b3586939ec879b395cbb45c3ede5260087e85e5c78add9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00345/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e9bfc4261246923e97c9ef875307eb67da9bb8c317598ae8f742a14ab6df5f6b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00346/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0797566d2a8fb3072bde735a118aa750279e2ff78be127cb36e07c54fbe61654"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00347/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2585437b0babf7344212c3c38a2691291a11018bd2d8731d26242d4baa0933cd"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00348/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "df5f67fb6247e68ccee676b25b42342afcd05dbdd57b255d25a0eb1dea5a23f1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00349/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "871ad5d2b359d74826858ba93a67352130e4665d7685eb4cf8ef37def5528608"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00350/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9b5357a471ff2d4829cbab96ad0615598a0603e5daa179d3509c36db80b3dda1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00351/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "76f3b061469908a30cbc3f172630b00ba8d08cc3f8065fe358292251a9f3827a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00352/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "f3593202d9d2160f6fb996b1be024c8266a17ff2a64eb1c58a167d9635dfd2e0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00353/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6ec08307ea8663b68607f24c833407a8eb98154d815646df5d845ec177515734"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00354/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "31550be2e675252e372af51c884d78e99c29ca2f9e00997ad8fb6d99ffc3556d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00355/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ea78755a15bb6274b0eae778a58579766610fa9857976d3f446cf2c00ef9179f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00356/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "444e1599e71e2741d5e63eb8c0a0cbd497deee94268e3384d4c484072b298929"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00357/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "adbd8bd9d9b88c31a8be57a4fe66a9fb7ba99aca4c266acb86dc5bd030b9465a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00358/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "10d0d94d3211721cd2d0084f3e5e95466167c5b90ba7718bd07b4488d30bea52"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00359/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "86ed7bc7f490ac569c23478e5fa39fd3431dcac65b6995544e4bec0c1a31b9ed"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00360/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3da11eaba5c29780eaf70aad77741f07d84cd594d78e72b1eee086a70c1bf162"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00361/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1e22cccc8efb6e0f3398fec64e4e119e67618f01679aee55167c37db26542ff8"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00362/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ccb1ee8f619b4bd52a05c2cbdd011c06019e531524a01721e102443dda5b1c7d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00363/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3bb322ca241c90ea94f4147fedb789fe06720910fe48d5555e0814b18487a166"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00364/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "063ad5df82bd43a314399319c162995831dd87dc4f9548afe9b09577e1969e43"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00365/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "97393a7d69e5894e919f4664f6b73637f81a7ab4929084777994d20387fa0a96"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00366/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2e82bf2af35a61282c0930388c6783563d951a7319b8ecba886465ea1d157b02"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00367/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d0baf3734ec4ffe14dcb7a45554829aff7540da4ba1481fb3a198bb30456bf7b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00368/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "9b9910cbbec1301873ae0a101ac628fde26cf24e6a9a3bdc908c020dd3645a88"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00369/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "88a45d6422c3d5ae11c07c356f0958c8877ef56ca9dd7b3bfa6c7def3403fdb7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00370/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "08c70ae376b84c34a4420f9b51e7d67e814bd09d60a2f5df327742d99a683946"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00371/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ddfdb5ee3af98743e722a9140f9078397edf80e2086947b9f4a80d1dcf185b04"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00372/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "866cd9eac3949a02fe38f95d9477a14be01a0ba7d4818396a67ec43b0f64f8d7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00373/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ae35fbef62442c70a79f12fd06e6860264dbca1b7fe868e522b7859283203654"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00374/tx.fc32",
+        "bytes": 23512040,
+        "sha256": "65707b231faa07c4090ea48ddf9a5aa052ea5c4e2818f212f1f3b996316837f8"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00000/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b41d43832d5210b71a43374c71c447ae6b23082ed839113634409b3da7d07905"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00001/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "511d90c50cbe40d4325aa0251920cfc460753d4c9f4e320fd23e075768cfe1b1"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00002/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a43f7ca533567a5f99183a83abe290d1a5366e0a45e6855612b38aac521fae56"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00003/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fd96fdee4931bea012f529800506f0acd5d9d751553989e60970fe0a5ecbf446"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00004/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "7acf9b41f9be8644c227744d5a2e9ee65876bc5d7bf2e33a672d5fef819adb39"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00005/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2fff918493d923a61a1d200370b1bf203bdf4fab184af1b09d9d908beebbfba4"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00006/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "161663a18dd4b14fec30cf8060dabc698617dcc140fa432a5fd641031b39428f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00007/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "c3a7145f9a6932586d4ab78ce11834fd5dd7d0337b4e182f8059d9e83dfa9faf"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00008/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "843e776ab7d02961d0b92c78db45bebf9edff109ff906226155dcf7b8e9aa08f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00009/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1441fcbc849dcce3e94b4f7f5077ff3dd2e4f444cc8d369f92ff93caaa2342d3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00010/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "48d8e54e92afa91db49fd97b418d5b2fcab501d65a968a9b8a1d7fc385e4fd99"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00011/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "875ea18e1b13aff43e7e505ba22b10a35842081ead5d81ef0a64755498db9cc3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00012/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fa79512d496dafef9d8956395f96af90db82772442e7d24c0acba7f2a5f98a12"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00013/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "28ac83290f850b7a563769351a43bbdbfc6d4a80e2ae03b7f1861b65e668491c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00014/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "eda4d883f278b4d74ca4255acb2f57ffc1fde974e900ad1ae0b2ff143d8a7af9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00015/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "54cda4192b4d194c57d5cfcf12b73db6242fd564482140616b9cf66e1aef26cd"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00016/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3f073a34654d8a7828c006afae171da278d9c6a8bf38bc06ec6cf8134aa2fc23"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00017/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6922fa76d8a158486a2c96f04aa735baa6581b73f5c4a2871a52b8ac76c53da7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00018/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "aeb958967f4bea3377181cd8db920221ba95e40cb1c7ddc5fe66235d401c0ef9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00019/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5737f7225491fae2a3c714c57a1fb46cd28ca620c77090922a308972a1cc43ef"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00020/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6a830498e564f96f17a282e24ee3896ae2ee30d676b722e00e78ff6b2721ead6"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00021/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6b89a40f5e6bb08fecbf6d8a2937feb128851f64a1640b8f3395e673410b2f49"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00022/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3b7f219fef1ad9ceab84eda7ba7392cf2c94da6b0e50f2c431cfe74c00ba58ef"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00023/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2ec76b39d55e9f6fc2cf4b33f44d60832b649ddb3b08eb2df553dd7804214070"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00024/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5add48ec312f251b44ffa81939d6a18f49cfcfab9a576bbfe5c03dc4aa66f5b7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00025/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "daf794b4dc711a9e394871c74f3b6ee4efd7b9d8c08bc1bcd6b1d5d9e0fc6c9e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00026/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "86d492d3899ddc0b4e4d63c5898b7fa9a3c7d82801f1a8415ba864ae4309cc3d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00027/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1b15b10c784885012fd2ee6a685c51ec525cd6c39f76c36d802a144f1fadf16d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00028/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b38f869e065dabcdece801a493bd70150ab6ce6df6ff507574fa28e55be4d754"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00029/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b21a53fc734b0e5d63c49df33f85e2283a2d82cc8071108c233403f46cc6f3f7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00030/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "7cff726f18e619fe7c5fdc23cdc16a5b6bc954ac5250f17bf88a1556aadd9c5e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00031/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1328cdf6f1481ddba08b1956a38d87b701aae57841aa423a9aaa711b5ac204b6"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00032/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "eeae1215e8ee8f2b3c942c57ad09a8bae0ba79a7a8c1f3b6f216f34c4727987e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00033/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "4a562d7667dcd5469773c5b6f2be6c7476f542f1cc5fbf9ca54cc23f2803e825"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00034/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "351dbee4365c7c9408e91dec3da347fe9b9b0e0f8d80d277f6269e4117730c05"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00035/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a51e86febdf5cd2d86f1918cd0014319fbd1db7f90d5bda2542f6f9212deee5e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00036/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3a6216efd20a3b0ad98673fedd4a09ae01bb7eb29ca389809b176a5ab79239b9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00037/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fab830dfa3127a19c89936f047d9dac041b918c630a6c46aa6f57e2267545fd9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00038/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0e7e018c06ac29d2097c585c986d0b3385fd0d12d27a424e38524f94b8f2c58c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00039/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "6101865588f8bc6f94b3abbbcb2c1833cc03dd7010c5c076fbe0358775874122"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00040/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0e377edc7eaf253156d23483dec7994d447066f4fb1a1b3574098a70dbe775c5"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00041/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "4c4e4fe8d614f36885954acc96d609c8abe5f5a8d3027e56aec2afc45eaab94a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00042/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e70b0d7947ac2c47442f38689c4832f19efdab2582a0fdede7c899454baa448e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00043/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "7ecb096917af72c20d9ac46e890410cc875927d0d9a53c953c81cc3622e71661"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00044/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "911f0058bdd9594bdb3737a4689b5c3955eb8637c961aad0a477b28d44e2a09b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00045/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "eaff8af72c02757112c2e1b4a6cef8b8c0ddc8a74431c643784bb45edd0881ce"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00046/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "931247bbe5241c03191964a2af54fe6f4b7a673ca663b02a9482f1e5c72de486"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00047/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "36fb520e5893b02d0437cc3c2da3dc6161877781b09af6b081db1f35e1c5eb60"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00048/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "437c99b4f3b8c2b41be1277df9f49056ac275f98379ce38342521d702e96bcd4"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00049/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e167b3388c144b7e3b8dc1b5940dbe2a4db5df1093c638103c73fd93a6f7593a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00050/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "bb4891a8323736acd3fb343c0f4a3fc54229008ddaf01df238eb8101eee32e9e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00051/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "daacf52e1c575fb5bd5932e5821888134dc59e4e8c879f16456624ace462af60"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00052/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5cc337809752b2a52e3bd4529431b51850359c2dbadc6248c63d5844e7ca5857"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00053/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "4e80e59192cbd7871364ded6eba0d1540c808ff61438e710b9c92f7a5ecbd8cc"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00054/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "58dafce0d253d191ae48dc562409b6e911a622f7167f1d0519e8ff68305c51a3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00055/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fc63d777d637868f5ac80830286309492bda795320977ddea093044845990963"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00056/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "340aaf9ab6af6444170ad0f0583136487b035c4aae71003d05facc804dd6e719"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00057/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "54619c9bb3afb1760488fcedc8afaa801e2f3fd3d7df4433e7ab79226b6efce9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00058/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "02e46d8d9d1b5fb3065548839a0eab45ce5d0a75c3dee51ac2f8139a5d23b7c0"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00059/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "31528d4c302c9e841b4a86bf6c7d71aa10ae5d4c2e71f22245ce109089809ba7"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00060/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "1f9ac63ebf6e0816377edfd19ef05a47d2511e857f78db1d1f33cec50863d3e9"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00061/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "95b5f016bfe55900fd4ab20d61c65da39221bd7ae1549394940ce2e9548453aa"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00062/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "d0d1f9f66ed8142b49c46e543eaeff990abc8678b28f0fe65d93728e0461b2d8"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00063/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a6ecb591c4289a18d0a48b534d994f07d2a8f963ecc9309438d392b39ac3316a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00064/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5aa51192677805eca48822a641c279a6daaf8ede50d181c54c74921c75ce08cf"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00065/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "c872be5390c226c34fa96b121f1bbac18eed9f1477e940b232a523c673fbce24"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00066/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3b556e3477f77d416d8534eaa89f44beb61c1e9d7afb03db11c060c24140342a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00067/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "74de08d259a897d978ae0181be7d7025547fd34676a35c08728a7024e7da5a5b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00068/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "342306cef2354b1cd71730836a988229061f34469db5e2517322424512fb28e8"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00069/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a9e6cad3636a83d99afdb7981fc9732ca8e0e55cfa56aef81183d73b2aa9177a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00070/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8c3ffc9701479f9e9206ec5fd25ea75aa0782575753d8435407d3374ddd377c2"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00071/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b6785c47edbbb7b38159b57222b6b5202bc4257a218b0a4bb210871f90434a64"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00072/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "108df863ac32691322565d14901f7493b69bc49e625472e27f201c2b16a1aa5d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00073/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "026042ed723d8d2b41e53b034375152cdc4cb6aa0fc297bd814725c2f475f90d"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00074/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "800de676a7ebd158c9c4f47d0f82ccfb6f01781f44e359fe25aa4ce6e05e6a2a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00075/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8933d65423ac89fe1656c4a9ae8ff9246026633ff9d800b724cf4fcb06af1dac"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00076/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "68722f905909ce619f5acb923337973c9143e7c002a4febe69f7bb462c6dc53c"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00077/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8a00618429750e19109439c895508d74772b47cda0797bf0bc578b7f42ece536"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00078/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ca14d965312285845194fb54c7f6289ff6f23d2414a9f80ba71fecb8549acc6f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00079/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "41e95bc30737e9410eee754647fd5018ec2cbb411547e5bdad7fb51b8eea5797"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00080/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "422df63d3d14ddffff39600e1bf934b3ba3e47a4f9598437e4bf8117a5ce8b6b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00081/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "28e8edf6cf4290fe4d70e458a53d4049041ae07450e9b23c0531d653467cdccd"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00082/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "7f86018d28d8ac6f8108e7b766482ff50bb037eb47226d2d6d11887a86807a11"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00083/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "25a80d8559b3c13c84c16f27ffc4fc303aa3247f44be71f418bcc066e9561d34"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00084/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "166cdb1030b80c5f80c934ccfc5b5730fb2f3e135f070f8bbdea768286463e42"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00085/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "164a1cf099fb999a29a2dac421e53870b45bd52d5972512275c25f101354c8a2"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00086/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8d10a5cac4375bcd82b5d533829fa9f9f926be3851d56c84da9180f0be09a867"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00087/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "943171352c38b59ee1a07590ff59eb9958327957049e78bb2549338fbcddf0ba"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00088/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "0af6e64fddd7e33d11f5973c24d45e71f526fbc6a506cb132bd6bd9081115699"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00089/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "7490cb6c26ab2c70e9c237611708d1694ac5d1420a03b7e240ea3aa59e5f7e78"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00090/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "bd79f9b9a55d9ca41bd34635090d5eed6be646ad3b00df9705cf25a6bf4ed587"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00091/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2733440a0a63f0cd1856dcb4fe02aa9d02bd3f782565f897aa3967d391672fa6"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00092/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "8ca5994d0c6f197de147687c2f8c6606d967f2dbb1e5b71663fcb8ff1b9e2566"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00093/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "b2865cd5fed9a126aea862a270764ccca84fef29a0e1d84354b8cb6a12ccb7af"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00094/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "2fb2e817b1ec85718e09da0a9d9eec35542575a04eeb850f2172b53442e0151f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00095/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "aec7cc561e9807f6b0fed2365b1794087f7511bec9ae550a4e5b49a79eed35f3"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00096/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "396ca1ffc2011d40ac0fe4dfcb4b07414ff30407dea8a5cbffb7dba829fe5dfa"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00097/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "7445e5888b72ced06b3e590709644ae8bcae1cea25ed8417d99fdc59b70afc17"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00098/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "fa08f7b3a02ef07309597944672c8c780a6087613c8c099fa26dcfb538c605e4"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00099/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "34ffc1824a36749a0a56efacc864d2e1e7f24fc29bd4bb490d70f5aa26468b12"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00100/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3c9b8f16bc201154da073a1417d487e703c9e77251eface8c5e26ee3ec8de59b"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00101/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "c15880193a34acdb39b82418554662439b1cfe60ed767c5917b14a1024250e0a"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00102/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "780029e2fcc919f928f760bc90081bcd08de61f8e03a37993b08a07206c73a11"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00103/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ae9cecfde251a25a0798d93d347165d1fcfb56b141660641a24c302514ed0632"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00104/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a72b306df78f393769403e28a9a532218a16291475881f82c9a6b2378984dc37"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00105/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "5ebbce1e007ff1ea0116afd4ab3a37c0ecb66dbd8c46189cff02e0e4333d09c5"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00106/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "dfb459500bd95ac919905729e20b9860f1ecb2fdedfbb46f56f7b0c28f631a59"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00107/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "3996c2a86bd5c902fc27c662753360de053af0911d6f2cd7a21494212adc0ede"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00108/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "a0c86b4b5493758eb2ecc8bb1b464dc842e41b78cb5432aeec82bd2f984d87e8"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00109/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "09c49ac82400a55e9283c6438904006bbb8f31734d85bd9dd503a3bc47a2504e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00110/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "e85c389ef91d2304983b40337068716f14e599acdc1e96d3e59de60c2cea6b9f"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00111/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "ed780d6f3ef931eb72d73013f4d551ea396e76638c31f57384b819332de329ea"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00112/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "064e5da37e0ba491cfbaa6c96067c786f64977c271554673d95c8e5b3b65617e"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00113/tx.fc32",
+        "bytes": 58721256,
+        "sha256": "83c8bac5e08335d8a7f597b1b210eef119dd74176c74e48f6ef3dece1c2d6349"
+      },
+      {
+        "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/hisarmod2019/batch-00114/tx.fc32",
+        "bytes": 15139816,
+        "sha256": "d2f99d75659f4a6b243f00cb9d16b4d13c895c7eb4bebd30152d8d60fd33bb46"
+      }
+    ],
+    "p201_temp_paths": []
+  },
+  "inference": "not run on this complete validation campaign",
+  "sinr": "no final conditional-SINR report generated; source Z is provenance only",
+  "production_recognizer_available": false
+}

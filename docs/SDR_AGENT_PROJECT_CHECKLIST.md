@@ -25,7 +25,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
 - [x] 完整验证集第一套2016A：33000/33000源行、5批原始IQ/raw/guard落盘/SHA/虚拟索引读回封存完成；封存后才转入2016B，见[完成证据](evidence/AMC_VALIDATION_RML2016A_COMPLETE_2026-09-27.json)。未做本套全验证集模型推理。
 - [x] 完整验证集2016B：180000行/22批封存；2018A第30批FFT边界半导频误锁已修复，同ADC离线恢复1024行，无重发/无IQ副本。10+5测试通过，原完成封存保持不变；见[修复记录](validation/AMC_UNIFORM_RF_2026-09-26.md#fft导频搜索边界故障修复2026-09-27)。整轮收发另项继续。
 - [x] 完整验证集2018A：383385行/375批全部封存；独立复核375份批次receipt SHA、VDS SHA、原val行号/排名及raw/guard有效性通过，Hisar首批开始晚于封存7.795秒。见[完整封存证据](evidence/AMC_VALIDATION_RML2018A_COMPLETE_2026-09-27.json)。仍未执行全验证集模型推理。
-- [ ] 用户9月27日完整seed42验证集顺序收发：2016A 33000→2016B 180000→2018A 383385→Hisar 117000；当前套全量落盘/SHA/源行封存后才启动下一套。入口、有限预算与进度见[完整验证集顺序推进](validation/AMC_UNIFORM_RF_2026-09-26.md#完整seed42验证集顺序推进用户9月27日新授权)。
+- [x] 用户9月27日完整seed42验证集顺序收发：2016A 33000→2016B 180000→2018A 383385→Hisar 117000，共713385行/517批接收、raw/guard处理和封存完成；逐套落盘后才切换，最终源行/排名/VDS/receipt复核通过，USB空闲/P201恢复/临时目录清理完成。保留13998文件40941869862字节；975帧相消门未过保留raw，不删行。见[最终证据](evidence/AMC_VALIDATION_COMPLETE_2026-09-27.json)。完整验证集模型推理与条件SINR报告尚未运行。
 - [ ] 更长会话、低SINR多档及新入口STOP/断连故障注入仍待实机；本轮不作全量/生产准入。
 - [x] 四套D10统一seed42：沙盘正式权重/配置SHA、四份strict load通过，新三套CUDA全批/逐条logits容差与top-1一致通过；2018A权重未变。当前库仍32份且全部seed42；旧3非42包归档并保留旧seed路径身份。保留1020文件16757038字节，清理505文件26656872字节；无RF/生产切换，见[审计](evidence/D10_ALL_SEED42_IMPORT_2026-09-26.json)。
 - [x] 沙盘4090连接技能：个人技能`connect-shapan4090`安装并通过quick_validate，shapan4090/shapan4090-wsl两别名严格SSH读取身份通过；四D10源SHA与AGX匹配，明确D10/七baseline的不同训练服务器。未改远端配置/作业、无临时文件，见[审计](evidence/SHAPAN4090_CONNECTION_SKILL_2026-09-26.json)。

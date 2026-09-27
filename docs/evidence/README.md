@@ -336,3 +336,5 @@
 - [完整验证集FFT边界同步修复](AMC_VALIDATION_SYNC_RECOVERY_2026-09-27.json)：同ADC恢复1024行、15项测试、显式软件修订及顺序续跑；原失败和已完成封存保留。
 
 - [完整seed42验证集2018A封存及Hisar切换](AMC_VALIDATION_RML2018A_COMPLETE_2026-09-27.json)：383385行/375批、receipt/VDS/成员独立复核及严格顺序切换；尚未全验证集推理。
+
+- [四套完整seed42验证集收发与处理完成](AMC_VALIDATION_COMPLETE_2026-09-27.json)：713385行/517批、严格顺序封存、raw/guard与相消回退计数、最终设备恢复和临时清理、精确保留清单；尚无完整验证集识别或SINR成绩。
