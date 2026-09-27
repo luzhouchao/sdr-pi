@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Sequential complete seed42 validation RX; durable dataset barrier, no models."""
 import argparse
+from contextlib import ExitStack
 import fcntl
 import importlib.util
 import json
@@ -72,8 +73,21 @@ def prepare(root,selection):
     durable(root/'campaign.json',plan)
     print(json.dumps({k:plan[k] for k in ('total_rows','total_batches','maximum_adc_bytes','maximum_retained_bytes','initial_free_bytes')}),flush=True)
 
-def read_plan(root):
+def read_plan(root,revision=None):
     p=json.loads((root/'campaign.json').read_text());c.require(p['schema']=='amc-full-validation-sequential-v1' and p['dataset_order']==list(ORDER),'campaign identity')
+    if revision is not None:
+        revision=Path(revision)
+        c.require(revision.is_absolute() and revision.parent==root, 'local explicit recovery revision')
+        update=json.loads(revision.read_text())
+        c.require(update['schema']=='amc-validation-recovery-v1' and
+                  update['parent_plan_sha256']==c.file_hash(root/'campaign.json') and
+                  update['transport']==p['transport']==r.contract(2048) and update['additional_rf_batches']==0 and
+                  set(update['software'])==set(p['software']),
+                  'recovery preserves scope and RF contract')
+        for relative,sha in update['recoveries'].items():
+            target=(root/relative).resolve()
+            c.require(target.is_relative_to(root) and c.file_hash(target)==sha,'approved recovery identity')
+        p=dict(p,software=update['software'],active_revision_sha256=c.file_hash(revision))
     for path,sha in p['software'].items():c.require(c.file_hash(path)==sha,'frozen campaign software')
     for d in p['datasets']:
         c.require(fingerprint(d['source_path'])==d['source_fingerprint'],'unchanged source fingerprint')
@@ -87,17 +101,31 @@ def barrier(root,plan,index):
         value=json.loads(path.read_text());c.require(value['rows']==d['rows'] and value['validation_rows_sha256']==d['validation_rows_sha256'] and value['status']=='complete','previous dataset seal mismatch')
         c.require(c.file_hash(root/d['dataset']/'raw-guard.h5')==value['virtual_dataset_sha256'],'previous dataset index changed')
 
+def batch_artifacts(root):
+    if not (root/'recovery.json').exists():
+        return root/'corpus',root/'execution.json',root/'frames.json'
+    repair=json.loads((root/'recovery.json').read_text())
+    c.require(repair['schema']=='amc-offline-batch-recovery-v1' and
+              repair['parent_execution_sha256']==c.file_hash(root/'execution.json') and
+              repair['parent_index_sha256']==c.file_hash(root/'corpus/index.json'), 'recovery parent identity')
+    paths=[(root/repair[k]).resolve() for k in ('corpus','execution','frames')]
+    c.require(all(p.is_relative_to(root) for p in paths), 'local derived artifacts')
+    return tuple(paths)
+
 def seal_batch(root,expected):
-    e=json.loads((root/'execution.json').read_text())
+    corpus,execution,frames_path=batch_artifacts(root)
+    e=json.loads(execution.read_text())
     c.require(e['status']=='completed' and e['restored'] and e['cpu_stopped'] and e['synchronized_rows']==len(expected) and not e['missing_frames'],'complete synchronized restored batch')
-    with store.SnrStore(root/'corpus') as s:
+    with ExitStack() as stack:
+        parent=stack.enter_context(store.SnrStore(root/'corpus')) if corpus!=root/'corpus' else None
+        s=stack.enter_context(store.SnrStore(corpus,raw_parent=parent))
         s.verify();c.require(s.index['complete'],'sealed store')
-    with h5py.File(root/'corpus/processed.h5') as f:
+    with h5py.File(corpus/'processed.h5') as f:
         rows=np.concatenate([b['source_row'][:] for b in f['blocks'].values()])
         c.require(np.array_equal(rows,expected),'exact validation row order')
         for b in f['blocks'].values():
             c.require(b['valid/raw'][:].all() and b['valid/guard'][:].all(),'no missing row hidden')
-    frames=json.loads((root/'frames.json').read_text());offset=np.diff([f['marker_rf_sample'] for f in frames])
+    frames=json.loads(frames_path.read_text());offset=np.diff([f['marker_rf_sample'] for f in frames])
     c.require(np.all(abs(offset-14336)<=4),'pilot continuity gate')
     files=[]
     for path in sorted(root.rglob('*')):
@@ -124,9 +152,10 @@ def seal_dataset(folder,d,rows):
     for i,start in enumerate(range(0,len(rows),d['batch_rows'])):
         root=folder/f'batch-{i:05d}';expected=rows[start:start+d['batch_rows']]
         receipts.append(verify_batch(root,expected))
-        with h5py.File(root/'corpus/processed.h5') as f:
+        processed=batch_artifacts(root)[0]/'processed.h5'
+        with h5py.File(processed) as f:
             for key,b in f['blocks'].items():
-                count=len(b['source_row']);block_sources.append((root/'corpus/processed.h5',key,offset,count));offset+=count
+                count=len(b['source_row']);block_sources.append((processed,key,offset,count));offset+=count
     c.require(offset==d['rows'],'whole validation count')
     temp=folder/'raw-guard.h5.tmp'
     fields={'source_row':('<i8',()),'class_id':('<i8',()),'source_snr_db':('<f8',()),'raw_sample_start':('<i8',()),'raw_sample_count':('<i8',()),
@@ -150,9 +179,24 @@ def seal_dataset(folder,d,rows):
        batch_receipts=[dict(batch=i,sha256=c.file_hash(folder/f'batch-{i:05d}'/'batch-complete.json')) for i in range(len(receipts))])
     durable(folder/'dataset-complete.json',value);return value
 
-def run(root):
+def verify_dataset(folder,d,rows):
+    # Completed evidence must be read-only on resume, never resealed/re-dated.
+    value=json.loads((folder/'dataset-complete.json').read_text())
+    c.require(value['status']=='complete' and value['rows']==len(rows) and
+              value['validation_rows_sha256']==d['validation_rows_sha256'] and
+              c.file_hash(folder/'raw-guard.h5')==value['virtual_dataset_sha256'],'completed dataset identity')
+    for receipt in value['batch_receipts']:
+        i=receipt['batch'];batch=folder/f'batch-{i:05d}'
+        c.require(c.file_hash(batch/'batch-complete.json')==receipt['sha256'],'completed batch receipt identity')
+        verify_batch(batch,rows[i*d['batch_rows']:(i+1)*d['batch_rows']])
+    c.require(len(value['batch_receipts'])==d['batches'],'complete batch count')
+    with h5py.File(folder/'raw-guard.h5') as f:
+        c.require(np.array_equal(f['source_row'][:],rows),'complete validation membership')
+    return value
+
+def run(root,revision=None):
     lock=(root/'campaign.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-    p=read_plan(root);m=pilot();old,bg,device=m.helpers();old.spark_off();bg.idle();device.preflight()
+    p=read_plan(root,revision);m=pilot();old,bg,device=m.helpers();old.spark_off();bg.idle();device.preflight()
     c.require(bg.ssh('sha256sum /sd/sdr-agent/current/sdrd.conf').split()[0]==CONFIG_SHA,'validated65536 buffer')
     # Recheck actual source contents once at each campaign start, not per batch.
     for d in p['datasets']:c.require(c.file_hash(d['source_path'])==d['source_sha256'],'campaign source SHA')
@@ -166,7 +210,7 @@ def run(root):
       for index,d in enumerate(p['datasets']):
         barrier(root,p,index);folder=root/d['dataset'];rows=np.load(folder/'validation-rows.npy',allow_pickle=False)
         if (folder/'dataset-complete.json').exists():
-            seal_dataset(folder,d,rows);status['completed_datasets'].append(d['dataset']);status['completed_rows']+=len(rows);continue
+            verify_dataset(folder,d,rows);status['completed_datasets'].append(d['dataset']);status['completed_rows']+=len(rows);continue
         for i,start in enumerate(range(0,len(rows),d['batch_rows'])):
             c.require(not stop and not (root/'STOP').exists(),'campaign stopped')
             c.require(time.monotonic()-started<p['deadline_seconds'],'campaign deadline')
@@ -178,7 +222,7 @@ def run(root):
             c.require(not active.exists(),'unsealed attempt requires explicit recovery; never overwrite')
             x,contract=native.read_selected(d['source_path'],d['dataset'],expected,d['class_names'],d['source_sha256']);del x
             selection=folder/f'selection-{i:05d}.json'
-            entry=dict(source_path=d['source_path'],contract=contract,run_id=root.name+'-'+d['dataset']+'-'+str(i),validation_campaign=dict(plan_sha256=c.file_hash(root/'campaign.json'),batch=i,validation_rank_start=start))
+            entry=dict(source_path=d['source_path'],contract=contract,run_id=root.name+'-'+d['dataset']+'-'+str(i),validation_campaign=dict(plan_sha256=c.file_hash(root/'campaign.json'),batch=i,validation_rank_start=start,revision_sha256=p.get('active_revision_sha256')))
             durable(selection,dict(source_selection={d['dataset']:entry}))
             m.prepare(active,selection,d['dataset'],verified_source=d['source_fingerprint'])
             # State checks precede one TX owner; STOP goes through the pilot's exact generation cancel.
@@ -217,6 +261,6 @@ def run(root):
         fcntl.flock(lock,fcntl.LOCK_UN);lock.close()
 
 if __name__=='__main__':
-    a=argparse.ArgumentParser();a.add_argument('command',choices=['plan','run']);a.add_argument('--root',required=True,type=Path);a.add_argument('--selection',type=Path);args=a.parse_args()
+    a=argparse.ArgumentParser();a.add_argument('command',choices=['plan','run']);a.add_argument('--root',required=True,type=Path);a.add_argument('--selection',type=Path);a.add_argument('--revision',type=Path);args=a.parse_args()
     if args.command=='plan':prepare(args.root,args.selection)
-    else:run(args.root)
+    else:run(args.root,args.revision)

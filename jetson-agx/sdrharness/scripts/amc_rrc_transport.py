@@ -279,8 +279,29 @@ class Decoder:
                 score, start, hz = locate(self.samples[:stop], ref, self.search,
                                           stop-len(ref)+1, range(-c.CFO_SEARCH_MAX_HZ, c.CFO_SEARCH_MAX_HZ+1, 250))
                 if score >= .55:
-                    self.marker = start-128; self.hz = hz
-                    break
+                    # A repeated-half pilot cut by the FFT search boundary can
+                    # produce a strong partial match one half too early. Do not
+                    # commit acquisition until the existing full-pilot gates
+                    # pass inside the same search interval. The overlapping
+                    # next interval retains the complete real pilot.
+                    try:
+                        acquired, refined_hz, _, _ = track(
+                            self.samples[:stop], self.run_id, 0, start-128, hz)
+                        c.require(acquired >= 1088, 'complete leading RF guard')
+                        # Require both known halves, not just the normalized
+                        # full correlation (a single half can score sqrt(.5)).
+                        n = np.arange(acquired, acquired+4096)
+                        observed = self.samples[n]*np.exp(-2j*np.pi*refined_hz*n/c.RATE)
+                        known = pilot(self.run_id, 0)
+                        for half in (slice(256,1792), slice(2304,3840)):
+                            similarity = abs(np.vdot(known[half], observed[half]))/max(
+                                np.linalg.norm(known[half])*np.linalg.norm(observed[half]), 1e-30)
+                            c.require(similarity >= .65, 'both pilot halves required')
+                    except ValueError:
+                        pass
+                    else:
+                        self.marker = acquired; self.hz = refined_hz
+                        break
                 self.search += SEARCH_SAMPLES-4096
             if self.marker is None:
                 if final:

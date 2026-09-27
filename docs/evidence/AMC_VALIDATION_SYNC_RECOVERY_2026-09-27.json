@@ -1,0 +1,99 @@
+{
+  "schema": "amc-sync-boundary-repair-v1",
+  "campaign_root": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927",
+  "reason": "Repeated-half pilot crossed FFT search boundary: false marker 506215, true marker 508263, search end 512000, pilot end 512359.",
+  "fix": "Require full tracked acquisition and each known pilot half similarity >=0.65; no payload/label fitting or relaxed gates.",
+  "tests": {
+    "rrc": 10,
+    "campaign": 5,
+    "initial_full_correlation_only_fix": "failed synthetic boundary regression; preserved"
+  },
+  "recovered_rows": 1024,
+  "recovered_frames": 512,
+  "guard_applied_frames": 511,
+  "new_rf_for_recovery": false,
+  "raw_iq_copied": false,
+  "revision_sha256": "c7ddacdb46f5bd74d5f0694633f500a88846067b83639e331feb62b9d6b16b8c",
+  "batch_receipt_sha256": "8a7d17706bdbd402974a7c9b5338574f5bbbb8839e7f105806979777a9be8e1c",
+  "retained_files": [
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/recovery-evidence-v1/amc_rrc_transport_before.py",
+      "bytes": 18931,
+      "sha256": "5a87590d3518933b2668bc0a2cbdc93cf717083cf23224532c6935ae363b640c"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/recovery-evidence-v1/campaign-tests-v2.log",
+      "bytes": 103,
+      "sha256": "3233c44a3f7a89eb283dacc32d6e24b397db561cee6d50b1f7239f5871a872f7"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/recovery-evidence-v1/campaign-tests.log",
+      "bytes": 102,
+      "sha256": "1d62b0bd0d17497a59577680447e891c3fb121c723f798ef4918014f10b11632"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/recovery-evidence-v1/recovery.log",
+      "bytes": 150,
+      "sha256": "3c9cc4a96cf17d03891327ba05754353e66abfef85b362f7edaeb67050571c5e"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/recovery-evidence-v1/replay.json",
+      "bytes": 1584,
+      "sha256": "574e15256ad45988cec4f6bc227c579704276e628d9794726b93ea4af69b3932"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/recovery-evidence-v1/replay.log",
+      "bytes": 1314,
+      "sha256": "3c8dcc5ff7e6cd4982807005087f30dbd7b8e1bd54c7da64db58e89a6eb04c32"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/recovery-evidence-v1/seals-before.json",
+      "bytes": 161,
+      "sha256": "2e929e5e1ef8712f32aaa1e238129742fe608c4ec983422cdcfd0f480803504e"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/recovery-evidence-v1/tests-v2.log",
+      "bytes": 110,
+      "sha256": "461d51ffbff35f187da1deb1adf2b81ac34fe8cbe6924cd7c09be1543db3c3c1"
+    },
+    {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/recovery-evidence-v1/tests.log",
+      "bytes": 665,
+      "sha256": "b9e8eae9365ff55df12f33554b4a8457a684ba0c896574bf705e1fa6edb9e6b6"
+    }
+  ],
+  "retained_bytes": 23120,
+  "cleanup": {
+    "removed_empty_temp_root": "/var/tmp/sdrharness-dev/amc-sync-boundary-20260927",
+    "regenerable_tx_deleted_bytes": 58721256,
+    "ongoing_campaign_tmp_preserved": "/var/tmp/sdrharness-dev/amc-validation-20260927/tmp"
+  },
+  "manual_delete_diagnostic_evidence": "rm -rf -- /home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/recovery-evidence-v1",
+  "active_unit": "amc-validation-seed42-20260927-recovery-v1.service",
+  "resumed_first_batch": {
+    "batch": 30,
+    "receipt_sha256": "affd39f10ca80e5c64eb043215ebc36d8aecc5c12a4dcc52a8a8c50c4ec6c2cf",
+    "synchronized_rows": 1024,
+    "guard_applied_frames": 510,
+    "restored": true
+  },
+  "progress_snapshot": {
+    "active": "/home/jetson/sdrharness/local-assets/amc-eval/rf/validation-seed42-20260927/rml2018a/batch-00031",
+    "batch": 31,
+    "batches": 375,
+    "completed_datasets": [
+      "rml2016a",
+      "rml2016b"
+    ],
+    "completed_rows": 213000,
+    "dataset": "rml2018a",
+    "dataset_committed_rows": 31744,
+    "status": "running",
+    "updated_ns": 1790470601405114143
+  },
+  "completed_seals_unchanged": {
+    "rml2016a": "d1c55e07d8da075e65106a17573b6e2133260851ce432dfac19eab81f2e2cd57",
+    "rml2016b": "6790c4a2f4e999f7f2737852707775864b023dd81d61424adaba8866637a9366"
+  },
+  "hisar_started": false
+}

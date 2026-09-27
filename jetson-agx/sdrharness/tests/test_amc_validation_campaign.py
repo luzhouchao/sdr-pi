@@ -23,7 +23,7 @@ class CampaignTests(unittest.TestCase):
 
     def test_complete_virtual_dataset_preserves_rank_and_native_shape(self):
         with tempfile.TemporaryDirectory() as t:
-            folder=Path(t);rows=np.array([9,3,7]);d=dict(dataset='test',rows=3,batch_rows=2,window_samples=128,validation_rows_sha256='abc')
+            folder=Path(t);rows=np.array([9,3,7]);d=dict(dataset='test',rows=3,batch_rows=2,window_samples=128,validation_rows_sha256='abc',batches=2)
             for i,start in enumerate((0,2)):
                 root=folder/f'batch-{i:05d}';(root/'corpus').mkdir(parents=True);n=min(2,3-start)
                 with h5py.File(root/'corpus/processed.h5','w') as f:
@@ -40,6 +40,11 @@ class CampaignTests(unittest.TestCase):
                 self.assertEqual(f['inputs/raw'][2,0,0],2)
                 np.testing.assert_array_equal(f['validation_rank'][:],np.arange(3))
             self.assertTrue((folder/'dataset-complete.json').exists())
+            sealed=(folder/'dataset-complete.json').read_bytes()
+            index=(folder/'raw-guard.h5').read_bytes()
+            with patch.object(v,'verify_batch',return_value={}):v.verify_dataset(folder,d,rows)
+            self.assertEqual((folder/'dataset-complete.json').read_bytes(),sealed)
+            self.assertEqual((folder/'raw-guard.h5').read_bytes(),index)
 
     def test_bad_batch_prevents_dataset_commit(self):
         with tempfile.TemporaryDirectory() as t:
@@ -48,6 +53,18 @@ class CampaignTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,'bad SHA'):
                     v.seal_dataset(folder,dict(rows=1,batch_rows=1),np.array([3]))
             self.assertFalse((folder/'dataset-complete.json').exists())
+
+    def test_recovery_must_pin_original_capture_and_stay_local(self):
+        with tempfile.TemporaryDirectory() as t:
+            root=Path(t);(root/'corpus').mkdir();(root/'execution.json').write_text('{}');(root/'corpus/index.json').write_text('{}')
+            repair=dict(schema='amc-offline-batch-recovery-v1',parent_execution_sha256=v.c.file_hash(root/'execution.json'),parent_index_sha256=v.c.file_hash(root/'corpus/index.json'),corpus='fixed/corpus',execution='fixed/execution.json',frames='fixed/frames.json')
+            v.durable(root/'recovery.json',repair)
+            self.assertEqual(v.batch_artifacts(root)[0],root/'fixed/corpus')
+            repair['corpus']='../outside';v.durable(root/'recovery.json',repair)
+            with self.assertRaisesRegex(ValueError,'local derived'):v.batch_artifacts(root)
+            repair['corpus']='fixed/corpus';v.durable(root/'recovery.json',repair)
+            (root/'execution.json').write_text('{"changed":true}')
+            with self.assertRaisesRegex(ValueError,'parent identity'):v.batch_artifacts(root)
 
     def test_fingerprint_detects_source_mutation(self):
         with tempfile.TemporaryDirectory() as t:

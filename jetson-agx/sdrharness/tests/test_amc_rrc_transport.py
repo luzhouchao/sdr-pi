@@ -59,6 +59,18 @@ class TransportTests(unittest.TestCase):
             for q in got['quality']:
                 self.assertIsNone(q['raw']['rx_sinr_db']); r.validate_quality(q['raw'])
 
+    def test_acquisition_rejects_half_pilot_at_search_boundary(self):
+        run_id='validation-seed42-20260927-rml2018a-29'
+        x=source(1024,6);tx,_=r.transmit(x,run_id,frame_payload_samples=2048)
+        # Full marker ends 358 points past the fourth FFT search boundary.
+        z=channel(tx,offset=507174,cfo=3700.,lo=.08)
+        d=r.Decoder(run_id,1024,len(x),frame_payload_samples=2048)
+        for start in range(0,len(z),131072):d.feed(z[start:start+131072])
+        d.feed(np.empty(0,complex),final=True);got=d.result()
+        self.assertTrue(got['masks']['raw'].all(),got['frames'])
+        self.assertEqual(got['frames'][0]['marker_rf_sample'],507174+1088)
+        self.assertLess(max(error(x,got['inputs']['guard'])),.02)
+
     def test_chunk_boundaries_do_not_reset_filter_or_shift_samples(self):
         x=source(1024); tx,_=r.transmit(x,'rrc-test'); z=channel(tx)
         full=decode(z,1024,len(x)); split=decode(z,1024,len(x),[11,997,2355,131017])

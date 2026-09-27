@@ -332,3 +332,5 @@
 - [2026-09-26夜间四数据集统一RF先导](../validation/AMC_UNIFORM_RF_2026-09-26.md)：真实收发、缓冲修正、模型尺度适配及条件SINR。
 
 - [完整seed42验证集顺序任务启动](AMC_VALIDATION_CAMPAIGN_2026-09-27.json)：冻结预算/源划分/代码SHA、STOP启动撤销、首批8192行封存；整轮状态另见应用进度，未冒充完成。
+
+- [完整验证集FFT边界同步修复](AMC_VALIDATION_SYNC_RECOVERY_2026-09-27.json)：同ADC恢复1024行、15项测试、显式软件修订及顺序续跑；原失败和已完成封存保留。
