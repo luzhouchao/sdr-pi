@@ -334,3 +334,5 @@
 - [完整seed42验证集顺序任务启动](AMC_VALIDATION_CAMPAIGN_2026-09-27.json)：冻结预算/源划分/代码SHA、STOP启动撤销、首批8192行封存；整轮状态另见应用进度，未冒充完成。
 
 - [完整验证集FFT边界同步修复](AMC_VALIDATION_SYNC_RECOVERY_2026-09-27.json)：同ADC恢复1024行、15项测试、显式软件修订及顺序续跑；原失败和已完成封存保留。
+
+- [完整seed42验证集2018A封存及Hisar切换](AMC_VALIDATION_RML2018A_COMPLETE_2026-09-27.json)：383385行/375批、receipt/VDS/成员独立复核及严格顺序切换；尚未全验证集推理。
