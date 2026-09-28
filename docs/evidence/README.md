@@ -344,3 +344,5 @@
 - [四套三路八模型识别完成](AMC_VALIDATION_INFERENCE_COMPLETE_2026-09-28.json)：96组/17121240预测全量读回、32权重身份、总体准确率CSV、驻留内存执行及最终缓存清理；条件SINR分层待生成。
 
 - [完整验证集总体与同成员分析](AMC_VALIDATION_COMPARISON_2026-09-28.json)：32组合总体收益、逐成员纠正/回退、D10类别瓶颈、2018A server-v1标签身份；无新预测或源Z分层。
+
+- [四套完整验证集条件SINR分层](AMC_VALIDATION_CONDITIONAL_SINR_2026-09-28.json)：713385行、5400模型/类/箱记录、9测试及独立读回、7图和无效组、原输入尺度线索；无新推理/RF。

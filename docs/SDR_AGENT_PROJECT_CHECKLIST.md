@@ -29,7 +29,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
 - [x] 完整验证集三路识别入口及首套：用户追加source，驻留单数据集、八模型顺序共享、内存不足分块、逐块SHA续跑；6测试及2016A八模型三路792000预测读回通过，119旧同轮RX块/7报告字节不变。温度sysfs初次失败及修正保留；见[启动记录](validation/AMC_UNIFORM_RF_2026-09-26.md#完整验证集三路八模型识别启动2026-09-27)。后台缓存仍在使用，整轮另项待完成。
 - [x] 四套完整seed42验证集×8模型×source/raw/guard共96组、17121240预测全部完成，全部预测块SHA/原val行号/argmax/混淆计数及32权重身份读回通过；四套均驻留内存，后台退出。保留11398文件1314455415字节，清理424缓存26547879字节，临时根消失；见[最终审计](evidence/AMC_VALIDATION_INFERENCE_COMPLETE_2026-09-28.json)。
 - [x] 96组总体与同成员raw/guard分析：32组合整体均提升，D10 guard排名1/3/2/1；2018A纠正49837/回退16382，4ASK贡献47.33%回退，AM-SSB-SC主要在raw已退化。类ID按server-v1解释，无新推理/RF/临时文件；见[分析审计](evidence/AMC_VALIDATION_COMPARISON_2026-09-28.json)。不据此宣称低SINR退化解决。
-- [ ] 新统一四数据集完整验证集的接收条件估计SINR分层及图表：source仅作原域基线，raw/guard按同成员及统一raw参考SINR配对；无效SINR单列，不用源Z替代。
+- [x] 新统一四数据集完整验证集的条件估计SINR分层及图表：713385行、32模型5400类/箱记录独立复核，9测试通过，7张PNG/SVG图，无效组单列。4ASK回退集中0–10dB，source/RX尺度差异待干预验证；Hisar411条8PSK无效组guard全错保留。保留38文件59088412字节、删字体缓存123432字节及临时根，无新推理/RF；见[分层审计](evidence/AMC_VALIDATION_CONDITIONAL_SINR_2026-09-28.json)。
 - [ ] 更长会话、低SINR多档及新入口STOP/断连故障注入仍待实机；本轮不作全量/生产准入。
 - [x] 四套D10统一seed42：沙盘正式权重/配置SHA、四份strict load通过，新三套CUDA全批/逐条logits容差与top-1一致通过；2018A权重未变。当前库仍32份且全部seed42；旧3非42包归档并保留旧seed路径身份。保留1020文件16757038字节，清理505文件26656872字节；无RF/生产切换，见[审计](evidence/D10_ALL_SEED42_IMPORT_2026-09-26.json)。
 - [x] 沙盘4090连接技能：个人技能`connect-shapan4090`安装并通过quick_validate，shapan4090/shapan4090-wsl两别名严格SSH读取身份通过；四D10源SHA与AGX匹配，明确D10/七baseline的不同训练服务器。未改远端配置/作业、无临时文件，见[审计](evidence/SHAPAN4090_CONNECTION_SKILL_2026-09-26.json)。
