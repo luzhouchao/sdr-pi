@@ -184,3 +184,22 @@ D10四套整体均为guard优于raw，但仍不能推出低SINR退化已解决�
 结果根`/home/jetson/sdrharness/local-assets/amc-eval/results/validation-seed42-conditional-sinr-20260928/`：四份逐行sinr.npz、全模型/类别report.json、strata.csv、findings.json，7张图各PNG/SVG（四套全模型、D10四套、重点类别、无效组）。三张主要图人工查看布局/数据一致性通过；图表不是独立生产准入。保留38文件59088412字节，删除1字体缓存123432字节并确认本轮临时根消失，验证/尺度核对脚本与日志已移入结果evidence；无新模型推理、训练或RF。精确父级身份、保留/删除清单见[分层审计](../evidence/AMC_VALIDATION_CONDITIONAL_SINR_2026-09-28.json)。
 
 下一独立诊断优先用相同原验证成员检验“source原值→仅RMS归一化”的输入干预是否足以重现4ASK/AM-SSB-SC退化，再决定需要检查载荷尺度、相位还是相消残差；保持当前封存数据/模型/预测不变，不先调阈值或启动训练。
+
+## 原source仅RMS归一化干预（2026-09-28）
+
+用户继续上一单元明确提出的输入尺度对照。运行前固定2018A原seed42验证集全部4ASK/AM-SSB-SC成员，15798+15970=31768条，不按预测/高SINR选成功子集；模型仅当前seed42 D10与MCFormer。唯一干预为原source除以自身逐窗复RMS并转FP32，保留均值、相位、样本顺序，不改变滤波、噪声或RF。此前原source/guard预测只读复用，三路相同成员；分层仍按既有raw参考条件SINR。新推理只针对RMS-source及有界数值探针，不覆盖原96组结果。
+
+每模型128条原source跨成员探针的logits逐值重现（最大绝对误差0），原top1全一致；归一化后8条batch/single探针通过，最大误差D10 5.663e−6、MCFormer 5.722e−6。严格加载、FP32/关闭TF32、真实后端及资源门保持。总新forward63808条，低于预登记65000，含63536条干预输入及272条探针；两模型顺序持有GPU租约。标量变换测试和独立原输入/RMS输入SHA、单位RMS、成员、logits argmax及全部类别/区间计数读回通过。
+
+| 模型 | 类别 | 原source | 仅RMS＝1的source | 已封存guard |
+| --- | --- | ---: | ---: | ---: |
+| amc_mamba_d10 | 4ASK | 67.12% | 16.58% | 16.88% |
+| amc_mamba_d10 | AM-SSB-SC | 61.26% | 13.30% | 13.08% |
+| baseline_mcformer | 4ASK | 67.96% | 64.43% | 64.31% |
+| baseline_mcformer | AM-SSB-SC | 57.31% | 46.07% | 46.04% |
+
+D10两类仅归一化source与guard的top1逐行一致率94.89%/95.74%；raw参考[5,10)dB组一致率99.37%/99.35%。4ASK该区间6492条原source正确6491，RMS-source仅对10（0.154%），guard对38（0.585%）；AM-SSB-SC的2752条原source对2372，RMS-source对6，guard对9。两模型、两类别的总体RMS-source与guard准确率差距均不足0.30个百分点。
+
+因此，在这两个固定类别上，不经过链路、只做RMS归一化就足以重现几乎全部source→guard总体准确率落差；输入尺度兼容性问题已有受控干预证据，D10敏感度明显高于MCFormer。该结论不等于已拆分实际raw→guard中的相消与重归一化作用，也不证明其他类别或RF误差不存在。禁止由此直接用真值source RMS回填接收输入、改写原成绩或启用未经验证的尺度补偿。下一步应核对TX/RX尺度合同，区分公平原域对照、传输误差与可部署的预处理一致性方案，训练和生产切换仍暂停。
+
+结果根`/home/jetson/sdrharness/local-assets/amc-eval/results/source-rms-control-20260928/`保留17文件6575942字节（计划/成员、两模型干预logits与预测、CSV/复核及日志），不保存IQ副本。进程退出、GPU租约空闲；删除376缓存文件25714855字节及精确临时根`/var/tmp/sdrharness-dev/amc-source-rms-20260928`，不存在复核通过。完整身份/清理/保留见[干预审计](../evidence/AMC_SOURCE_RMS_CONTROL_2026-09-28.json)。无训练、新RF或生产变更。
