@@ -340,3 +340,5 @@
 - [四套完整seed42验证集收发与处理完成](AMC_VALIDATION_COMPLETE_2026-09-27.json)：713385行/517批、严格顺序封存、raw/guard与相消回退计数、最终设备恢复和临时清理、精确保留清单；尚无完整验证集识别或SINR成绩。
 
 - [完整验证集三路八模型识别启动](AMC_VALIDATION_INFERENCE_START_2026-09-27.json)：用户追加source、单套内存驻留、32份seed42、初次温度读取失败、6测试和2016A三路首套读回；整轮仍运行。
+
+- [四套三路八模型识别完成](AMC_VALIDATION_INFERENCE_COMPLETE_2026-09-28.json)：96组/17121240预测全量读回、32权重身份、总体准确率CSV、驻留内存执行及最终缓存清理；条件SINR分层待生成。

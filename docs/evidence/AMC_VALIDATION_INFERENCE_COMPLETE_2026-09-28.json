@@ -1,0 +1,2511 @@
+{
+  "schema": "amc-validation-inference-complete-v1",
+  "checked_ns": 1790558280560593528,
+  "root": "/home/jetson/sdrharness/local-assets/amc-eval/results/validation-seed42-20260927-inference-a2",
+  "status": "complete",
+  "model_dataset_pairs": 32,
+  "plane_groups": 96,
+  "predictions": 17121240,
+  "complete_sha256": "0ef2a8f38730c63ce83a45deae161b07dfda9cff6c5e3acd835d86b5854ffd9c",
+  "plan_sha256": "99e6028823462cc195a6e14275bad9f386f0cf4d582cfd34f7ab836ff7995e96",
+  "revision_sha256": "fcfaac07f7feb6a44baf80717ccebfe1619b7f33d4b94de1117b5eca8be74f02",
+  "verification": {
+    "checked_ns": 1790558177873331255,
+    "checks": [
+      "every committed prediction shard SHA",
+      "exact validation membership and rank",
+      "finite logits and argmax",
+      "confusion matrix readback",
+      "32 frozen checkpoint identities",
+      "complete.json matches per-model reports"
+    ],
+    "complete_sha256": "0ef2a8f38730c63ce83a45deae161b07dfda9cff6c5e3acd835d86b5854ffd9c",
+    "models": 32,
+    "planes": 96,
+    "predictions": 17121240,
+    "scope": "readback only; no repeated inference or RF",
+    "status": "passed",
+    "summaries": [
+      {
+        "dataset": "rml2016a",
+        "guard_accuracy": 0.6214848484848485,
+        "guard_minus_raw_pp": 3.927272727272735,
+        "model": "amc_mamba_d10",
+        "raw_accuracy": 0.5822121212121212,
+        "rows": 33000,
+        "source_accuracy": 0.6235151515151515
+      },
+      {
+        "dataset": "rml2016a",
+        "guard_accuracy": 0.5784242424242424,
+        "guard_minus_raw_pp": 2.218181818181819,
+        "model": "baseline_cnn2_stable",
+        "raw_accuracy": 0.5562424242424242,
+        "rows": 33000,
+        "source_accuracy": 0.5786363636363636
+      },
+      {
+        "dataset": "rml2016a",
+        "guard_accuracy": 0.5681818181818182,
+        "guard_minus_raw_pp": 1.4757575757575858,
+        "model": "baseline_resnet",
+        "raw_accuracy": 0.5534242424242424,
+        "rows": 33000,
+        "source_accuracy": 0.5677878787878788
+      },
+      {
+        "dataset": "rml2016a",
+        "guard_accuracy": 0.6095757575757575,
+        "guard_minus_raw_pp": 0.7848484848484771,
+        "model": "baseline_gru",
+        "raw_accuracy": 0.6017272727272728,
+        "rows": 33000,
+        "source_accuracy": 0.6105757575757575
+      },
+      {
+        "dataset": "rml2016a",
+        "guard_accuracy": 0.5693939393939393,
+        "guard_minus_raw_pp": 1.9818181818181735,
+        "model": "baseline_cldnn",
+        "raw_accuracy": 0.5495757575757576,
+        "rows": 33000,
+        "source_accuracy": 0.568939393939394
+      },
+      {
+        "dataset": "rml2016a",
+        "guard_accuracy": 0.6158181818181818,
+        "guard_minus_raw_pp": 1.3030303030303059,
+        "model": "baseline_mcldnn",
+        "raw_accuracy": 0.6027878787878788,
+        "rows": 33000,
+        "source_accuracy": 0.6185454545454545
+      },
+      {
+        "dataset": "rml2016a",
+        "guard_accuracy": 0.553060606060606,
+        "guard_minus_raw_pp": 1.3181818181818183,
+        "model": "baseline_mcformer",
+        "raw_accuracy": 0.5398787878787878,
+        "rows": 33000,
+        "source_accuracy": 0.5547878787878788
+      },
+      {
+        "dataset": "rml2016a",
+        "guard_accuracy": 0.6032121212121212,
+        "guard_minus_raw_pp": 3.7393939393939424,
+        "model": "baseline_mamc",
+        "raw_accuracy": 0.5658181818181818,
+        "rows": 33000,
+        "source_accuracy": 0.6027575757575757
+      },
+      {
+        "dataset": "rml2016b",
+        "guard_accuracy": 0.6444222222222222,
+        "guard_minus_raw_pp": 3.093333333333337,
+        "model": "amc_mamba_d10",
+        "raw_accuracy": 0.6134888888888889,
+        "rows": 180000,
+        "source_accuracy": 0.6461777777777777
+      },
+      {
+        "dataset": "rml2016b",
+        "guard_accuracy": 0.6038,
+        "guard_minus_raw_pp": 2.7561111111111147,
+        "model": "baseline_cnn2_stable",
+        "raw_accuracy": 0.5762388888888889,
+        "rows": 180000,
+        "source_accuracy": 0.6050166666666666
+      },
+      {
+        "dataset": "rml2016b",
+        "guard_accuracy": 0.6057333333333333,
+        "guard_minus_raw_pp": 3.4488888888888902,
+        "model": "baseline_resnet",
+        "raw_accuracy": 0.5712444444444444,
+        "rows": 180000,
+        "source_accuracy": 0.6075
+      },
+      {
+        "dataset": "rml2016b",
+        "guard_accuracy": 0.6451833333333333,
+        "guard_minus_raw_pp": 2.921666666666667,
+        "model": "baseline_gru",
+        "raw_accuracy": 0.6159666666666667,
+        "rows": 180000,
+        "source_accuracy": 0.6466555555555555
+      },
+      {
+        "dataset": "rml2016b",
+        "guard_accuracy": 0.6012666666666666,
+        "guard_minus_raw_pp": 2.836111111111106,
+        "model": "baseline_cldnn",
+        "raw_accuracy": 0.5729055555555556,
+        "rows": 180000,
+        "source_accuracy": 0.6013388888888889
+      },
+      {
+        "dataset": "rml2016b",
+        "guard_accuracy": 0.6459444444444444,
+        "guard_minus_raw_pp": 1.6577777777777802,
+        "model": "baseline_mcldnn",
+        "raw_accuracy": 0.6293666666666666,
+        "rows": 180000,
+        "source_accuracy": 0.6471944444444444
+      },
+      {
+        "dataset": "rml2016b",
+        "guard_accuracy": 0.6408888888888888,
+        "guard_minus_raw_pp": 2.1649999999999947,
+        "model": "baseline_mcformer",
+        "raw_accuracy": 0.6192388888888889,
+        "rows": 180000,
+        "source_accuracy": 0.6415888888888889
+      },
+      {
+        "dataset": "rml2016b",
+        "guard_accuracy": 0.6217555555555555,
+        "guard_minus_raw_pp": 5.482222222222221,
+        "model": "baseline_mamc",
+        "raw_accuracy": 0.5669333333333333,
+        "rows": 180000,
+        "source_accuracy": 0.6223166666666666
+      },
+      {
+        "dataset": "rml2018a",
+        "guard_accuracy": 0.5825919115249684,
+        "guard_minus_raw_pp": 8.726215162304213,
+        "model": "amc_mamba_d10",
+        "raw_accuracy": 0.49532975990192624,
+        "rows": 383385,
+        "source_accuracy": 0.638616534293204
+      },
+      {
+        "dataset": "rml2018a",
+        "guard_accuracy": 0.46035186561811237,
+        "guard_minus_raw_pp": 7.694354239211237,
+        "model": "baseline_cnn2_stable",
+        "raw_accuracy": 0.383408323226,
+        "rows": 383385,
+        "source_accuracy": 0.548388695436702
+      },
+      {
+        "dataset": "rml2018a",
+        "guard_accuracy": 0.4868526416004799,
+        "guard_minus_raw_pp": 10.488151596958668,
+        "model": "baseline_resnet",
+        "raw_accuracy": 0.38197112563089325,
+        "rows": 383385,
+        "source_accuracy": 0.5992670553099365
+      },
+      {
+        "dataset": "rml2018a",
+        "guard_accuracy": 0.525604809786507,
+        "guard_minus_raw_pp": 4.771183014463265,
+        "model": "baseline_gru",
+        "raw_accuracy": 0.4778929796418744,
+        "rows": 383385,
+        "source_accuracy": 0.6436036881985472
+      },
+      {
+        "dataset": "rml2018a",
+        "guard_accuracy": 0.448731692684899,
+        "guard_minus_raw_pp": 5.939982002425759,
+        "model": "baseline_cldnn",
+        "raw_accuracy": 0.3893318726606414,
+        "rows": 383385,
+        "source_accuracy": 0.5141802626602502
+      },
+      {
+        "dataset": "rml2018a",
+        "guard_accuracy": 0.5211601914524564,
+        "guard_minus_raw_pp": 4.818915711360644,
+        "model": "baseline_mcldnn",
+        "raw_accuracy": 0.47297103433884996,
+        "rows": 383385,
+        "source_accuracy": 0.6365689841803931
+      },
+      {
+        "dataset": "rml2018a",
+        "guard_accuracy": 0.5856567158339528,
+        "guard_minus_raw_pp": 3.169138072694555,
+        "model": "baseline_mcformer",
+        "raw_accuracy": 0.5539653351070073,
+        "rows": 383385,
+        "source_accuracy": 0.622562176402311
+      },
+      {
+        "dataset": "rml2018a",
+        "guard_accuracy": 0.3850020214666719,
+        "guard_minus_raw_pp": 8.423125578726347,
+        "model": "baseline_mamc",
+        "raw_accuracy": 0.3007707656794084,
+        "rows": 383385,
+        "source_accuracy": 0.4866674491698945
+      },
+      {
+        "dataset": "hisarmod2019",
+        "guard_accuracy": 0.5968205128205128,
+        "guard_minus_raw_pp": 35.54188034188034,
+        "model": "amc_mamba_d10",
+        "raw_accuracy": 0.2414017094017094,
+        "rows": 117000,
+        "source_accuracy": 0.7024188034188035
+      },
+      {
+        "dataset": "hisarmod2019",
+        "guard_accuracy": 0.5111965811965812,
+        "guard_minus_raw_pp": 28.392307692307696,
+        "model": "baseline_cnn2_stable",
+        "raw_accuracy": 0.22727350427350426,
+        "rows": 117000,
+        "source_accuracy": 0.6482649572649573
+      },
+      {
+        "dataset": "hisarmod2019",
+        "guard_accuracy": 0.467008547008547,
+        "guard_minus_raw_pp": 30.824786324786324,
+        "model": "baseline_resnet",
+        "raw_accuracy": 0.15876068376068375,
+        "rows": 117000,
+        "source_accuracy": 0.6615042735042735
+      },
+      {
+        "dataset": "hisarmod2019",
+        "guard_accuracy": 0.5461965811965812,
+        "guard_minus_raw_pp": 33.98717948717949,
+        "model": "baseline_gru",
+        "raw_accuracy": 0.20632478632478632,
+        "rows": 117000,
+        "source_accuracy": 0.6856153846153846
+      },
+      {
+        "dataset": "hisarmod2019",
+        "guard_accuracy": 0.3612991452991453,
+        "guard_minus_raw_pp": 21.078632478632482,
+        "model": "baseline_cldnn",
+        "raw_accuracy": 0.1505128205128205,
+        "rows": 117000,
+        "source_accuracy": 0.4297948717948718
+      },
+      {
+        "dataset": "hisarmod2019",
+        "guard_accuracy": 0.5741538461538461,
+        "guard_minus_raw_pp": 36.7017094017094,
+        "model": "baseline_mcldnn",
+        "raw_accuracy": 0.20713675213675214,
+        "rows": 117000,
+        "source_accuracy": 0.7094529914529915
+      },
+      {
+        "dataset": "hisarmod2019",
+        "guard_accuracy": 0.5203675213675214,
+        "guard_minus_raw_pp": 31.262393162393167,
+        "model": "baseline_mcformer",
+        "raw_accuracy": 0.20774358974358975,
+        "rows": 117000,
+        "source_accuracy": 0.624008547008547
+      },
+      {
+        "dataset": "hisarmod2019",
+        "guard_accuracy": 0.4065641025641026,
+        "guard_minus_raw_pp": 28.45641025641026,
+        "model": "baseline_mamc",
+        "raw_accuracy": 0.122,
+        "rows": 117000,
+        "source_accuracy": 0.5586752136752137
+      }
+    ],
+    "summary_sha256": "6008ad7d962208ef5abc227b141d32a99b8a07df009ee82eed8c1db1f4cc13c0"
+  },
+  "all_current_checkpoint_sha_verified": true,
+  "source_capture_unchanged": true,
+  "retention_manifest": "/home/jetson/sdrharness/local-assets/amc-eval/results/validation-seed42-20260927-inference-a2/inference-retention-v1.json",
+  "retention_manifest_sha256": "e3b40c67f343de80d32a84f0a589a3aa2372e5bf754ea22fb69bd850f1fde331",
+  "retained_files": 11398,
+  "retained_bytes": 1314455415,
+  "cleanup": {
+    "removed_root": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927",
+    "files": 424,
+    "bytes": 26547879,
+    "inventory": [
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmp1p96ah52/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmp2p1oujub/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmp6mavbqj2/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmp87wrzudd/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmp94h7gjmi/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmp_eqtx3d4/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpaj3ajjzf/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpan0xmj6f/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpbvbjg19t/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpcgvtcch6/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpe9eh1zvn/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpenn6zat9/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpg9u6zrg0/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpgdw95jj6/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpifo9gjax/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpinufh544/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpj1uj3r7v/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpjn4uko8m/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpju0ogplz/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpn0bs94w9/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpp_rqcs80/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpsc6hew9g/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpt_086lv6/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpu3sssv11/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpv68vuxy1/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpvkht8z0l/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpw7zxwshn/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpwx_nx4cf/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpx2o7d_6d/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpxjvgkvce/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpxvc_rzg_/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TMPDIR/tmpz005e0zs/_remote_module_non_scriptable.py",
+        "bytes": 2355,
+        "sha256": "8205b16956fb264841ecd8644784a0d157f87df79b17c16825dc1163433ce5d8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/33RRNKOTVJJEJHUUNWDU475S3MQICRQOSLDI3BPZ2LUFOHDEUM4Q/__grp___chunk_scan_fwd_kernel.json",
+        "bytes": 1353,
+        "sha256": "817bed461789cdc7f9bf9f2af7efe7c9393c48573bcc0e2c4e1bb745dd4a006e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/33RRNKOTVJJEJHUUNWDU475S3MQICRQOSLDI3BPZ2LUFOHDEUM4Q/_chunk_scan_fwd_kernel.cubin",
+        "bytes": 129120,
+        "sha256": "860fba4ef78da20acce5bfc7864cd3dc226c6af3d8da3bfdf561f5c633a9671e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/33RRNKOTVJJEJHUUNWDU475S3MQICRQOSLDI3BPZ2LUFOHDEUM4Q/_chunk_scan_fwd_kernel.json",
+        "bytes": 1014,
+        "sha256": "bbcfceac120dd095cea9fc838c35ad71c836d5d3b5956b9c486c2d6ea534c060"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/33RRNKOTVJJEJHUUNWDU475S3MQICRQOSLDI3BPZ2LUFOHDEUM4Q/_chunk_scan_fwd_kernel.llir",
+        "bytes": 232021,
+        "sha256": "46d4a2c143ee61ba21970cc08d71859e31d48e538d0a7b3c98456b7da050a459"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/33RRNKOTVJJEJHUUNWDU475S3MQICRQOSLDI3BPZ2LUFOHDEUM4Q/_chunk_scan_fwd_kernel.ptx",
+        "bytes": 115541,
+        "sha256": "a1ede57b2d423095064410ee599df1d50ba54e6c5b41ad2729b4c3f6f50e95af"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/33RRNKOTVJJEJHUUNWDU475S3MQICRQOSLDI3BPZ2LUFOHDEUM4Q/_chunk_scan_fwd_kernel.source",
+        "bytes": 111873,
+        "sha256": "6696df46213bd8ffc34badab7296d40335c3b0b2d9c109b4659d18a5c1a02aac"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/33RRNKOTVJJEJHUUNWDU475S3MQICRQOSLDI3BPZ2LUFOHDEUM4Q/_chunk_scan_fwd_kernel.ttgir",
+        "bytes": 70979,
+        "sha256": "22226fe059581a36500fd05ce0f809f69167e55a6a94eeaedaedb70f20d666a3"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/33RRNKOTVJJEJHUUNWDU475S3MQICRQOSLDI3BPZ2LUFOHDEUM4Q/_chunk_scan_fwd_kernel.ttir",
+        "bytes": 45457,
+        "sha256": "730f38d98087dc4b367f93fe4494cc5e28066090e3164a8b011e33c3336dec6e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/37XAS4NNEF2BLR5NK457LD4PMYIBXWDESBXTRZV4XY2VBCBWZKCA/__grp___bmm_chunk_fwd_kernel.json",
+        "bytes": 1339,
+        "sha256": "833d85bb9c56be5f354a44d903303b98a154d07025a90b1b071d498067369806"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/37XAS4NNEF2BLR5NK457LD4PMYIBXWDESBXTRZV4XY2VBCBWZKCA/_bmm_chunk_fwd_kernel.cubin",
+        "bytes": 76128,
+        "sha256": "4d5bd2f23e853b4239c7ef5ee01748f1d94c6f9a44da163102ad711e46fcad14"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/37XAS4NNEF2BLR5NK457LD4PMYIBXWDESBXTRZV4XY2VBCBWZKCA/_bmm_chunk_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "0f4093a73d4d33e0a8f17a5675a63f7ee1c6c0453ec3f3efe77a5c18a77c3cc0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/37XAS4NNEF2BLR5NK457LD4PMYIBXWDESBXTRZV4XY2VBCBWZKCA/_bmm_chunk_fwd_kernel.llir",
+        "bytes": 134613,
+        "sha256": "d8f49caf4aaa046bff6f1d17fc956bd299fb0981aa151cf79f4af3f0b0bf993a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/37XAS4NNEF2BLR5NK457LD4PMYIBXWDESBXTRZV4XY2VBCBWZKCA/_bmm_chunk_fwd_kernel.ptx",
+        "bytes": 69530,
+        "sha256": "c7e793dae55ae37bdda61b22ddd1dae9774196f52d9acb01c458368bb55418ca"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/37XAS4NNEF2BLR5NK457LD4PMYIBXWDESBXTRZV4XY2VBCBWZKCA/_bmm_chunk_fwd_kernel.source",
+        "bytes": 57284,
+        "sha256": "00692b3b21f4541f633376836ab0e1eff6eaae61fa034254ab646ef421398fa7"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/37XAS4NNEF2BLR5NK457LD4PMYIBXWDESBXTRZV4XY2VBCBWZKCA/_bmm_chunk_fwd_kernel.ttgir",
+        "bytes": 31853,
+        "sha256": "e1349a5e2cbd9c199649033cdff46eddaa7cce707fab16c4ed3db086d0a6a428"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/37XAS4NNEF2BLR5NK457LD4PMYIBXWDESBXTRZV4XY2VBCBWZKCA/_bmm_chunk_fwd_kernel.ttir",
+        "bytes": 19290,
+        "sha256": "8c5535408e801bc3198e88e6087956fb3fadaa30b0b807b47e90916b7f92a959"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3GALC7LTPYSZG37KX4WWZZLHDNNKM2PC5KG6Z4XPGQROG7ISESFQ/__grp___bmm_chunk_fwd_kernel.json",
+        "bytes": 1339,
+        "sha256": "bdc2837489d440dded16033c830125a437bf8d1aeb770beb92c7ba8b4d300fa2"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3GALC7LTPYSZG37KX4WWZZLHDNNKM2PC5KG6Z4XPGQROG7ISESFQ/_bmm_chunk_fwd_kernel.cubin",
+        "bytes": 114016,
+        "sha256": "9deb356ba0a00a7c47a1ce804674d95fa14a95523c5dadcff1c200a9fa428420"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3GALC7LTPYSZG37KX4WWZZLHDNNKM2PC5KG6Z4XPGQROG7ISESFQ/_bmm_chunk_fwd_kernel.json",
+        "bytes": 1014,
+        "sha256": "4f34c207d93e6525398d60a7fd780b74e8b2cb360105fe55598eabd8ba9fb315"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3GALC7LTPYSZG37KX4WWZZLHDNNKM2PC5KG6Z4XPGQROG7ISESFQ/_bmm_chunk_fwd_kernel.llir",
+        "bytes": 221927,
+        "sha256": "f246a2ec148a5f1a6fffc5cc3280979db932f25d5e8a3037fd74fff8bfee703f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3GALC7LTPYSZG37KX4WWZZLHDNNKM2PC5KG6Z4XPGQROG7ISESFQ/_bmm_chunk_fwd_kernel.ptx",
+        "bytes": 102777,
+        "sha256": "734532d51592f60d0c5f6d8d5ba56d7312491cc768c629c2fa63f68ff74dd841"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3GALC7LTPYSZG37KX4WWZZLHDNNKM2PC5KG6Z4XPGQROG7ISESFQ/_bmm_chunk_fwd_kernel.source",
+        "bytes": 57432,
+        "sha256": "b847a1b495cf2234c9926fe5158ec3c545b9659b5827c9008324b688427aab38"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3GALC7LTPYSZG37KX4WWZZLHDNNKM2PC5KG6Z4XPGQROG7ISESFQ/_bmm_chunk_fwd_kernel.ttgir",
+        "bytes": 32156,
+        "sha256": "58cdc3f2cde9d803bcf44053360cf3691fe92dbfb0e9c7af22f093f8ccfdbf60"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3GALC7LTPYSZG37KX4WWZZLHDNNKM2PC5KG6Z4XPGQROG7ISESFQ/_bmm_chunk_fwd_kernel.ttir",
+        "bytes": 19623,
+        "sha256": "c3f9ff515d4eef97f73fc022cac35d80d1960bab5dbaf22220e20d0ed9078274"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3JBCLDFYCMEKJWLVPDJ3UJQF2KT6OO6FIRFPSC7A6JKYOPGTEXRA/__grp___bmm_chunk_fwd_kernel.json",
+        "bytes": 1339,
+        "sha256": "6e3bbd59443da6ba3c1bb7d5233bee9ba71f20a67568f41e8242189005777c8e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3JBCLDFYCMEKJWLVPDJ3UJQF2KT6OO6FIRFPSC7A6JKYOPGTEXRA/_bmm_chunk_fwd_kernel.cubin",
+        "bytes": 68960,
+        "sha256": "03c76ba78843b40a8440e03074b5365c2fb3980fde11e5a029a992937d31dac6"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3JBCLDFYCMEKJWLVPDJ3UJQF2KT6OO6FIRFPSC7A6JKYOPGTEXRA/_bmm_chunk_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "af38b4d0656f07f6407e77be0e085f23239f0cbc4e7ebdc7b2f12669707007a8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3JBCLDFYCMEKJWLVPDJ3UJQF2KT6OO6FIRFPSC7A6JKYOPGTEXRA/_bmm_chunk_fwd_kernel.llir",
+        "bytes": 127034,
+        "sha256": "8eff509c9b2c334a687aaba82089bca1ea10f416fa629a15b5998ca67d4f267e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3JBCLDFYCMEKJWLVPDJ3UJQF2KT6OO6FIRFPSC7A6JKYOPGTEXRA/_bmm_chunk_fwd_kernel.ptx",
+        "bytes": 64472,
+        "sha256": "ca670083c539fb8ff5f291798c8aa1458435b3e14997996849a22c6d15d0f4ea"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3JBCLDFYCMEKJWLVPDJ3UJQF2KT6OO6FIRFPSC7A6JKYOPGTEXRA/_bmm_chunk_fwd_kernel.source",
+        "bytes": 57432,
+        "sha256": "aaec4526c05eb73da06a064a241fd2d89f8ff3fcb3b70eeddfac5d5c43521a42"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3JBCLDFYCMEKJWLVPDJ3UJQF2KT6OO6FIRFPSC7A6JKYOPGTEXRA/_bmm_chunk_fwd_kernel.ttgir",
+        "bytes": 32156,
+        "sha256": "c06eba29e22be47212c44ca841271c93544ea50431b69cf4415394e5cbe3c060"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3JBCLDFYCMEKJWLVPDJ3UJQF2KT6OO6FIRFPSC7A6JKYOPGTEXRA/_bmm_chunk_fwd_kernel.ttir",
+        "bytes": 19623,
+        "sha256": "97f7aa1fbe41ee2384af6a91189d5d9d19088fc385f91494104c13636c166657"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3X37GITJD7JRJ63FDQVTA7DGVBEQDIFTMUG73VI2W3NRURTGJ7FQ/__grp___bmm_chunk_fwd_kernel.json",
+        "bytes": 1339,
+        "sha256": "6d8853d10f051e7d9ab67fac79fdcbd7abdc098afb2d665c4f224f8212a77230"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3X37GITJD7JRJ63FDQVTA7DGVBEQDIFTMUG73VI2W3NRURTGJ7FQ/_bmm_chunk_fwd_kernel.cubin",
+        "bytes": 69600,
+        "sha256": "89d042e93eb946373f840c066baa86aaf45a80aab55f764ed0dc78a48447b683"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3X37GITJD7JRJ63FDQVTA7DGVBEQDIFTMUG73VI2W3NRURTGJ7FQ/_bmm_chunk_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "3b4fcb2ca2b36d6b4518c0b438134a15ba0f436630be46623e618fb0948e5032"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3X37GITJD7JRJ63FDQVTA7DGVBEQDIFTMUG73VI2W3NRURTGJ7FQ/_bmm_chunk_fwd_kernel.llir",
+        "bytes": 125572,
+        "sha256": "a480d757158c677f4910114916863fe88456cf348ac1e06dbe49ebf5ce04504b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3X37GITJD7JRJ63FDQVTA7DGVBEQDIFTMUG73VI2W3NRURTGJ7FQ/_bmm_chunk_fwd_kernel.ptx",
+        "bytes": 64669,
+        "sha256": "d3e64bc12f562d01afbdcdec6f6a6a2300f4aa6b86a2de8fabdd6244ac8eb0f5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3X37GITJD7JRJ63FDQVTA7DGVBEQDIFTMUG73VI2W3NRURTGJ7FQ/_bmm_chunk_fwd_kernel.source",
+        "bytes": 57419,
+        "sha256": "c1e5c18c07b8eae3b6108f533664c58de23e9d53b8e7b2b3245588364713b2c6"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3X37GITJD7JRJ63FDQVTA7DGVBEQDIFTMUG73VI2W3NRURTGJ7FQ/_bmm_chunk_fwd_kernel.ttgir",
+        "bytes": 32154,
+        "sha256": "270505891bd922fc908a90f089bebb1050361ffb668324b1b19690e1519c73f5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/3X37GITJD7JRJ63FDQVTA7DGVBEQDIFTMUG73VI2W3NRURTGJ7FQ/_bmm_chunk_fwd_kernel.ttir",
+        "bytes": 19621,
+        "sha256": "e360558734a81542b9d28e3e3e6c60f4d7cb54ca851cb10da6a6c0bc026630d4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/44JJ64MOE3TRWLIGDTDU5ZW3JKCLWZNPIUEUPNVXW6IL3X5XSGIA/__grp___chunk_scan_fwd_kernel.json",
+        "bytes": 1353,
+        "sha256": "58ae3d4fbf20f471318fcf12e1f3e20adae7772ffd833391cdc9b88fad7bea51"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/44JJ64MOE3TRWLIGDTDU5ZW3JKCLWZNPIUEUPNVXW6IL3X5XSGIA/_chunk_scan_fwd_kernel.cubin",
+        "bytes": 102496,
+        "sha256": "387156e01786c76da186d585fddfac43cc64f33d27c59235a7945ae69bb714db"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/44JJ64MOE3TRWLIGDTDU5ZW3JKCLWZNPIUEUPNVXW6IL3X5XSGIA/_chunk_scan_fwd_kernel.json",
+        "bytes": 1014,
+        "sha256": "d1317cfa82cae76b60f829e04ef54f3a5490e385576db458eed4b086f19432e0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/44JJ64MOE3TRWLIGDTDU5ZW3JKCLWZNPIUEUPNVXW6IL3X5XSGIA/_chunk_scan_fwd_kernel.llir",
+        "bytes": 165991,
+        "sha256": "5699966e6e8a52b5fb355296af45362e0542a94ffa7f663846cd868cbe1b502f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/44JJ64MOE3TRWLIGDTDU5ZW3JKCLWZNPIUEUPNVXW6IL3X5XSGIA/_chunk_scan_fwd_kernel.ptx",
+        "bytes": 88153,
+        "sha256": "b8167a060968723fe0d3cd50836aed5fab22aeb30d9fe50e7b4c9db2ab366ca2"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/44JJ64MOE3TRWLIGDTDU5ZW3JKCLWZNPIUEUPNVXW6IL3X5XSGIA/_chunk_scan_fwd_kernel.source",
+        "bytes": 111889,
+        "sha256": "45f295f1a17400a83d07f30d1cac0d7c71f48864d949c043f889af9635d47b56"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/44JJ64MOE3TRWLIGDTDU5ZW3JKCLWZNPIUEUPNVXW6IL3X5XSGIA/_chunk_scan_fwd_kernel.ttgir",
+        "bytes": 69114,
+        "sha256": "29968d62bdca2ef840f6a2e7f12a95fe2d06515e2f3f139b06047850272d555a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/44JJ64MOE3TRWLIGDTDU5ZW3JKCLWZNPIUEUPNVXW6IL3X5XSGIA/_chunk_scan_fwd_kernel.ttir",
+        "bytes": 45086,
+        "sha256": "e792de873ada9ec080b3ecb791a3631c8d5341bef4cec616cb0bad8f83eb425e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/4UPEESRAJGWLTGK4PTA3UTR5PNBC2F6BTHUJWKHYO5KCO3TXH34Q/__grp___state_passing_fwd_kernel.json",
+        "bytes": 1395,
+        "sha256": "ff4894878081e020f75219c378eed0399131417d8a9c55c2340e3afea0c35214"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/4UPEESRAJGWLTGK4PTA3UTR5PNBC2F6BTHUJWKHYO5KCO3TXH34Q/_state_passing_fwd_kernel.cubin",
+        "bytes": 9192,
+        "sha256": "08f2d3ccae40f2dfcd68eb21a605f29f3e97c732fbbda64be2d468d02267159c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/4UPEESRAJGWLTGK4PTA3UTR5PNBC2F6BTHUJWKHYO5KCO3TXH34Q/_state_passing_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "57813c0c6aa8bc87b780ce01ce8524e4dba1191851ba912fb06d35a053911e91"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/4UPEESRAJGWLTGK4PTA3UTR5PNBC2F6BTHUJWKHYO5KCO3TXH34Q/_state_passing_fwd_kernel.llir",
+        "bytes": 7536,
+        "sha256": "6f9cadad541ab3911d701ad0f7d4d6fdc48a1b44d75beec6930d265493e47db0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/4UPEESRAJGWLTGK4PTA3UTR5PNBC2F6BTHUJWKHYO5KCO3TXH34Q/_state_passing_fwd_kernel.ptx",
+        "bytes": 9039,
+        "sha256": "e018010270d36018a0d920778ecde0741b2efaba05a3ce514b71022eb0201878"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/4UPEESRAJGWLTGK4PTA3UTR5PNBC2F6BTHUJWKHYO5KCO3TXH34Q/_state_passing_fwd_kernel.source",
+        "bytes": 27799,
+        "sha256": "09995d72e036a6ac82aa44fbc0a6fa2b8f86dac48e32308896a24c6102311a7b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/4UPEESRAJGWLTGK4PTA3UTR5PNBC2F6BTHUJWKHYO5KCO3TXH34Q/_state_passing_fwd_kernel.ttgir",
+        "bytes": 12613,
+        "sha256": "4269890e4339c51c3df0efb5fa73b195216580dff792d2f609c540fb685a6abb"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/4UPEESRAJGWLTGK4PTA3UTR5PNBC2F6BTHUJWKHYO5KCO3TXH34Q/_state_passing_fwd_kernel.ttir",
+        "bytes": 12187,
+        "sha256": "571786383f012f0a9fab43716696d1e41a18cc92429ac22039e75411b71f7097"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/5CQMRJYMOLU4IIIU2KSQWAESYOGY25R3Y77LKEK5ZSMCNP2SGWNQ/__grp___chunk_scan_fwd_kernel.json",
+        "bytes": 1353,
+        "sha256": "9b588cd5f7c9d9b27225aa916315db37d89588f1cb5fe9d0823912a4102d9e1d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/5CQMRJYMOLU4IIIU2KSQWAESYOGY25R3Y77LKEK5ZSMCNP2SGWNQ/_chunk_scan_fwd_kernel.cubin",
+        "bytes": 102496,
+        "sha256": "387156e01786c76da186d585fddfac43cc64f33d27c59235a7945ae69bb714db"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/5CQMRJYMOLU4IIIU2KSQWAESYOGY25R3Y77LKEK5ZSMCNP2SGWNQ/_chunk_scan_fwd_kernel.json",
+        "bytes": 1014,
+        "sha256": "e1a655d3257596088a84229ccbb4fe09bcaec7115c580f1b99f3663619be6130"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/5CQMRJYMOLU4IIIU2KSQWAESYOGY25R3Y77LKEK5ZSMCNP2SGWNQ/_chunk_scan_fwd_kernel.llir",
+        "bytes": 165991,
+        "sha256": "5699966e6e8a52b5fb355296af45362e0542a94ffa7f663846cd868cbe1b502f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/5CQMRJYMOLU4IIIU2KSQWAESYOGY25R3Y77LKEK5ZSMCNP2SGWNQ/_chunk_scan_fwd_kernel.ptx",
+        "bytes": 88153,
+        "sha256": "b8167a060968723fe0d3cd50836aed5fab22aeb30d9fe50e7b4c9db2ab366ca2"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/5CQMRJYMOLU4IIIU2KSQWAESYOGY25R3Y77LKEK5ZSMCNP2SGWNQ/_chunk_scan_fwd_kernel.source",
+        "bytes": 111918,
+        "sha256": "aa75e330e37b1d99375c221a1b0e36fbf361b71941185c6b1992796655dde687"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/5CQMRJYMOLU4IIIU2KSQWAESYOGY25R3Y77LKEK5ZSMCNP2SGWNQ/_chunk_scan_fwd_kernel.ttgir",
+        "bytes": 69143,
+        "sha256": "b49e719a3bf914a68ab6e9d1aa355906c0ecd6b38c9762a6d8721c1bf573333a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/5CQMRJYMOLU4IIIU2KSQWAESYOGY25R3Y77LKEK5ZSMCNP2SGWNQ/_chunk_scan_fwd_kernel.ttir",
+        "bytes": 45115,
+        "sha256": "b004fdb58a312fd7cbccbefd65174899ae8e38101e5cbc643ede0b0f7a2c46a6"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/7UDIZAKUDEQDFXXZNZXO3XIJHWG2D5XK6XTIWG5UX2WPJOAZCPHA/__grp___bmm_chunk_fwd_kernel.json",
+        "bytes": 1339,
+        "sha256": "e18aeff39712ca9c7106b61f6a9f8127bc042e18d19622e1765e78abc70fd873"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/7UDIZAKUDEQDFXXZNZXO3XIJHWG2D5XK6XTIWG5UX2WPJOAZCPHA/_bmm_chunk_fwd_kernel.cubin",
+        "bytes": 51168,
+        "sha256": "812284edf895b93ed53f2131cadd54e985ab57a6f38b7fc9e2f3c49d4b837332"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/7UDIZAKUDEQDFXXZNZXO3XIJHWG2D5XK6XTIWG5UX2WPJOAZCPHA/_bmm_chunk_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "c8a5438143e7dcc132d5970a47601df42142d8535d9684b66d1c362318d2f3df"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/7UDIZAKUDEQDFXXZNZXO3XIJHWG2D5XK6XTIWG5UX2WPJOAZCPHA/_bmm_chunk_fwd_kernel.llir",
+        "bytes": 81266,
+        "sha256": "ad0205fc63e11dd12b252afe0b6d52d2b53fffe298de86bd3b408945e4e5663d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/7UDIZAKUDEQDFXXZNZXO3XIJHWG2D5XK6XTIWG5UX2WPJOAZCPHA/_bmm_chunk_fwd_kernel.ptx",
+        "bytes": 46971,
+        "sha256": "026401e913ffcaa06cab0927f92aa3db185a6c7aedc1270cbe386d61beb4f8e9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/7UDIZAKUDEQDFXXZNZXO3XIJHWG2D5XK6XTIWG5UX2WPJOAZCPHA/_bmm_chunk_fwd_kernel.source",
+        "bytes": 55601,
+        "sha256": "33c5d118363836a028b8cf014c0945972bd92fa8f654b6ada1662cede03ac36b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/7UDIZAKUDEQDFXXZNZXO3XIJHWG2D5XK6XTIWG5UX2WPJOAZCPHA/_bmm_chunk_fwd_kernel.ttgir",
+        "bytes": 31360,
+        "sha256": "5e958db9d2e595843f7c697aca745f755decad4a366a457241a803e28b7837ce"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/7UDIZAKUDEQDFXXZNZXO3XIJHWG2D5XK6XTIWG5UX2WPJOAZCPHA/_bmm_chunk_fwd_kernel.ttir",
+        "bytes": 19212,
+        "sha256": "1dbb8fdd930ad1e06dccbc16ddf0ee63d9056810a174e20e6bf18e09819ece64"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/D4WI7MNM3MN7XMRRBX2FLVR6KTFWKESJNQ6MFYZPMSFCBJJYXAFA/__grp___state_passing_fwd_kernel.json",
+        "bytes": 1395,
+        "sha256": "1af184c055088345b8f494cbb05176571402384c86dccc79b8ecf73fe0920190"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/D4WI7MNM3MN7XMRRBX2FLVR6KTFWKESJNQ6MFYZPMSFCBJJYXAFA/_state_passing_fwd_kernel.cubin",
+        "bytes": 11752,
+        "sha256": "550ad69e12fffb737bfdf23871d7421539b5267fc69f0c589395c2103f0eedba"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/D4WI7MNM3MN7XMRRBX2FLVR6KTFWKESJNQ6MFYZPMSFCBJJYXAFA/_state_passing_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "b9810441cc9d8159ea1668375eaee02de997c2af8642ab862409f314eaac7466"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/D4WI7MNM3MN7XMRRBX2FLVR6KTFWKESJNQ6MFYZPMSFCBJJYXAFA/_state_passing_fwd_kernel.llir",
+        "bytes": 12797,
+        "sha256": "4c74377edf6a1b527dca39a912c4dcb3953646c07d37bde290b0d1a2cd598110"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/D4WI7MNM3MN7XMRRBX2FLVR6KTFWKESJNQ6MFYZPMSFCBJJYXAFA/_state_passing_fwd_kernel.ptx",
+        "bytes": 11188,
+        "sha256": "bf18635adc1015313bc33a017c5698ea8d48a771be337ca53f51cfa2ebf39742"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/D4WI7MNM3MN7XMRRBX2FLVR6KTFWKESJNQ6MFYZPMSFCBJJYXAFA/_state_passing_fwd_kernel.source",
+        "bytes": 27903,
+        "sha256": "4273216c9a3e338e9f5cfd2dd43b3c093bfe2e9669b6be02556584da2c558467"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/D4WI7MNM3MN7XMRRBX2FLVR6KTFWKESJNQ6MFYZPMSFCBJJYXAFA/_state_passing_fwd_kernel.ttgir",
+        "bytes": 12637,
+        "sha256": "9b2fa20e59d0aa45b81ee84219cdee8a8507c6f2bd4d6e5c2531919b5d2f8eee"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/D4WI7MNM3MN7XMRRBX2FLVR6KTFWKESJNQ6MFYZPMSFCBJJYXAFA/_state_passing_fwd_kernel.ttir",
+        "bytes": 12211,
+        "sha256": "32d0ea1a41d0702572ea59af6b8a86b58fbeb782e825a689368179c311cb1aa7"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/D5BNEEZZ5QWHRP6NGJVHWS5JXXPLMJXEY6PEE5EDYLTMDNILWLDQ/__triton_launcher.cpython-310-aarch64-linux-gnu.so",
+        "bytes": 18400,
+        "sha256": "f1e695b333333b1794b46ca13b7f0fc4b28455dccc7d4c729a4351f1e15e1b28"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EDANNMA7RDATJOHXLBKQVRLKQHNSSQV5FAK5ZBOBGJZ4EQ5I3TGQ/__grp___chunk_scan_fwd_kernel.json",
+        "bytes": 1353,
+        "sha256": "df2856575426af190a600531da1eea7c08296b19836fcf2ca999c379ab55d8a0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EDANNMA7RDATJOHXLBKQVRLKQHNSSQV5FAK5ZBOBGJZ4EQ5I3TGQ/_chunk_scan_fwd_kernel.cubin",
+        "bytes": 216416,
+        "sha256": "2509dd51ecf2da143416327a6d90ad7c211ab711641f3501a1b2e99c20425f02"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EDANNMA7RDATJOHXLBKQVRLKQHNSSQV5FAK5ZBOBGJZ4EQ5I3TGQ/_chunk_scan_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "6bb9bcd4e8060ea2a2ac2f30a83fba78dc189b06ff286c6679cd02074f8b25f0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EDANNMA7RDATJOHXLBKQVRLKQHNSSQV5FAK5ZBOBGJZ4EQ5I3TGQ/_chunk_scan_fwd_kernel.llir",
+        "bytes": 396286,
+        "sha256": "1a2fcfb45382484c5cbc066e98f6e2796781d51183037e4c09f5692f194be713"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EDANNMA7RDATJOHXLBKQVRLKQHNSSQV5FAK5ZBOBGJZ4EQ5I3TGQ/_chunk_scan_fwd_kernel.ptx",
+        "bytes": 184476,
+        "sha256": "062293d2d2f7d24a3c1d5673befec032fa636505060273a920d84167b06980b4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EDANNMA7RDATJOHXLBKQVRLKQHNSSQV5FAK5ZBOBGJZ4EQ5I3TGQ/_chunk_scan_fwd_kernel.source",
+        "bytes": 111873,
+        "sha256": "b9d2783767e8e7d7c25de4c5268e1b1ba973c2194989f45bb4466823ea4d15c0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EDANNMA7RDATJOHXLBKQVRLKQHNSSQV5FAK5ZBOBGJZ4EQ5I3TGQ/_chunk_scan_fwd_kernel.ttgir",
+        "bytes": 70979,
+        "sha256": "2f1d02eaec83888783c9355005efd4ba3d1f117c55ca54d7835dfa83527751af"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EDANNMA7RDATJOHXLBKQVRLKQHNSSQV5FAK5ZBOBGJZ4EQ5I3TGQ/_chunk_scan_fwd_kernel.ttir",
+        "bytes": 45457,
+        "sha256": "ea51c29411d5647da37bf1f24f2dd2fe6a4aed02773aefe3875e211ec30243c3"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EEECZL7WC4KDPUNVP2PM6ZCEFDW6RAXS7HDGJFIIZELPQN6CUWHQ/__grp___bmm_chunk_fwd_kernel.json",
+        "bytes": 1339,
+        "sha256": "19a018d15371dd69791c1c6160aeacee163d2ce3fa2f3f583db192656e0cf676"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EEECZL7WC4KDPUNVP2PM6ZCEFDW6RAXS7HDGJFIIZELPQN6CUWHQ/_bmm_chunk_fwd_kernel.cubin",
+        "bytes": 59104,
+        "sha256": "7e9042018e18ec6ddc0a66260627466454b48759edd165d29712c275b739e1e0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EEECZL7WC4KDPUNVP2PM6ZCEFDW6RAXS7HDGJFIIZELPQN6CUWHQ/_bmm_chunk_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "9895f64ef4729fee8389ee2451bfc433a4a965ed8704a858dc6feb93071e5b75"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EEECZL7WC4KDPUNVP2PM6ZCEFDW6RAXS7HDGJFIIZELPQN6CUWHQ/_bmm_chunk_fwd_kernel.llir",
+        "bytes": 92206,
+        "sha256": "b6a97d4b0b58f1db13bbc6b58532f265ed24336e1bccf2c33820be2a8f53fb28"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EEECZL7WC4KDPUNVP2PM6ZCEFDW6RAXS7HDGJFIIZELPQN6CUWHQ/_bmm_chunk_fwd_kernel.ptx",
+        "bytes": 53161,
+        "sha256": "22501495f7a064718f36cfc7a12dbb33a724155f5e37268a7d69468ad6b71f05"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EEECZL7WC4KDPUNVP2PM6ZCEFDW6RAXS7HDGJFIIZELPQN6CUWHQ/_bmm_chunk_fwd_kernel.source",
+        "bytes": 55461,
+        "sha256": "6de69e8ead21ad4dfd179fc3dc8dadc9ea819ea8c01d93fc761488840cf80339"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EEECZL7WC4KDPUNVP2PM6ZCEFDW6RAXS7HDGJFIIZELPQN6CUWHQ/_bmm_chunk_fwd_kernel.ttgir",
+        "bytes": 33546,
+        "sha256": "5623cefc15bac0f1dee85691d255183ebc3fe83d925a77e7c77311044bb0a39a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/EEECZL7WC4KDPUNVP2PM6ZCEFDW6RAXS7HDGJFIIZELPQN6CUWHQ/_bmm_chunk_fwd_kernel.ttir",
+        "bytes": 19161,
+        "sha256": "8471bd69f80a4fc468d8cc082c3bc327ca008bb2b12b58012ade051c65bd03d0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ETTBMWZHOH5OTWBXBTP2D6GX6F5XPFY6L3ECRDR2GQHRMO7CY4UQ/__grp___chunk_cumsum_fwd_kernel.json",
+        "bytes": 1381,
+        "sha256": "d51e8128d8c19ea2bd68207abc7db091adae7e384b6057fb635579ac83bc591c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ETTBMWZHOH5OTWBXBTP2D6GX6F5XPFY6L3ECRDR2GQHRMO7CY4UQ/_chunk_cumsum_fwd_kernel.cubin",
+        "bytes": 24496,
+        "sha256": "305980abfbc5e9e5e20ac535ee45517789b5c0ec8b5dbae85d0cf118aa4c7a0f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ETTBMWZHOH5OTWBXBTP2D6GX6F5XPFY6L3ECRDR2GQHRMO7CY4UQ/_chunk_cumsum_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "169c7c0307b19643754dc0a550a990921546b84e2bac7f54be55c23e749556e9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ETTBMWZHOH5OTWBXBTP2D6GX6F5XPFY6L3ECRDR2GQHRMO7CY4UQ/_chunk_cumsum_fwd_kernel.llir",
+        "bytes": 45249,
+        "sha256": "fd83cf2c369803fba33c884aacec498af7437ba206c036f2156d719d87a9e8f5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ETTBMWZHOH5OTWBXBTP2D6GX6F5XPFY6L3ECRDR2GQHRMO7CY4UQ/_chunk_cumsum_fwd_kernel.ptx",
+        "bytes": 28246,
+        "sha256": "d7c7224847525596a18f8c92a21ebecc5090693a2c23b8d4c3e5fdac67916ea1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ETTBMWZHOH5OTWBXBTP2D6GX6F5XPFY6L3ECRDR2GQHRMO7CY4UQ/_chunk_cumsum_fwd_kernel.source",
+        "bytes": 45865,
+        "sha256": "4a9c8d9e5e1b63c7ad16f410853efb09d7140a09d09e1839e239880e4acee3b1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ETTBMWZHOH5OTWBXBTP2D6GX6F5XPFY6L3ECRDR2GQHRMO7CY4UQ/_chunk_cumsum_fwd_kernel.ttgir",
+        "bytes": 22783,
+        "sha256": "2a7533424f56ec8158b8910da7a5d93495db9ef80cd5c3d3c7985ac9e1896c1e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ETTBMWZHOH5OTWBXBTP2D6GX6F5XPFY6L3ECRDR2GQHRMO7CY4UQ/_chunk_cumsum_fwd_kernel.ttir",
+        "bytes": 19581,
+        "sha256": "c78c45d8ec6fd455204e8af02ff9cad49545a6c06ca94f4c017dfbd605fac56c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FD3LQOYUFQQOP7JDYTX6T5Y5RHZTJMZXYPKR644YBD374GRWVPWQ/__grp___state_passing_fwd_kernel.json",
+        "bytes": 1395,
+        "sha256": "e876c43bd515ca97a27c33364a6909047881bd35f058457d15816e3736804f28"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FD3LQOYUFQQOP7JDYTX6T5Y5RHZTJMZXYPKR644YBD374GRWVPWQ/_state_passing_fwd_kernel.cubin",
+        "bytes": 9064,
+        "sha256": "4b233ec56ffb7f47fdef875ccc59eb3f77cd93e36a729dfd4b0b4dab0aa82318"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FD3LQOYUFQQOP7JDYTX6T5Y5RHZTJMZXYPKR644YBD374GRWVPWQ/_state_passing_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "00fa8c74fd79ce8d12e7d474558450fae366acf6524e9404687e66565566615f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FD3LQOYUFQQOP7JDYTX6T5Y5RHZTJMZXYPKR644YBD374GRWVPWQ/_state_passing_fwd_kernel.llir",
+        "bytes": 6760,
+        "sha256": "33501d018bf527207db95574733a5f9185ea03720d7f742117522d0e9e571e58"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FD3LQOYUFQQOP7JDYTX6T5Y5RHZTJMZXYPKR644YBD374GRWVPWQ/_state_passing_fwd_kernel.ptx",
+        "bytes": 8834,
+        "sha256": "6cc819360bad59497faccc1afea558ceee76d62e391a9e31b19e2d8b21455ccf"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FD3LQOYUFQQOP7JDYTX6T5Y5RHZTJMZXYPKR644YBD374GRWVPWQ/_state_passing_fwd_kernel.source",
+        "bytes": 27695,
+        "sha256": "011f2f86ddb195e96c689175a61e32cd24b38413163eeaffa918dafe5f4c7281"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FD3LQOYUFQQOP7JDYTX6T5Y5RHZTJMZXYPKR644YBD374GRWVPWQ/_state_passing_fwd_kernel.ttgir",
+        "bytes": 12587,
+        "sha256": "670ba43c77bc3cd2da4830b620c1e063efb90bdd1eb0df7542806e4906941aa9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FD3LQOYUFQQOP7JDYTX6T5Y5RHZTJMZXYPKR644YBD374GRWVPWQ/_state_passing_fwd_kernel.ttir",
+        "bytes": 12163,
+        "sha256": "d71f1ed4d8dd32f842fb4f705531afffb2977f5bf2eb003c2856ad88ee7e3666"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FFNMV3NLMRSMLUO3K4QBWLECBIRWTZLF2FIZC3J2WKENG463C6FA/__grp___chunk_state_fwd_kernel.json",
+        "bytes": 1367,
+        "sha256": "8dc8b7623f20faefd50c652fb0c7974cc55e87b157f3061b909d6755ca1b03e0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FFNMV3NLMRSMLUO3K4QBWLECBIRWTZLF2FIZC3J2WKENG463C6FA/_chunk_state_fwd_kernel.cubin",
+        "bytes": 101984,
+        "sha256": "f2d8dc9e1a5fad90a258c82da56113ba70ac30cac66810edf81f27f2d36b6e4b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FFNMV3NLMRSMLUO3K4QBWLECBIRWTZLF2FIZC3J2WKENG463C6FA/_chunk_state_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "63206f8914fdf705fa49b16316e65a5565d02b2c69aa4eb9de5f0bf53e4c6936"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FFNMV3NLMRSMLUO3K4QBWLECBIRWTZLF2FIZC3J2WKENG463C6FA/_chunk_state_fwd_kernel.llir",
+        "bytes": 148329,
+        "sha256": "11620b94a0ca1d77bef0f713f750e603f2cca89eb1f66ee008f51b0acbb5a128"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FFNMV3NLMRSMLUO3K4QBWLECBIRWTZLF2FIZC3J2WKENG463C6FA/_chunk_state_fwd_kernel.ptx",
+        "bytes": 88894,
+        "sha256": "34260f0ab14c16e6525dcbfdef6f0baa82084a35ad264f0139d99455962a8077"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FFNMV3NLMRSMLUO3K4QBWLECBIRWTZLF2FIZC3J2WKENG463C6FA/_chunk_state_fwd_kernel.source",
+        "bytes": 75912,
+        "sha256": "bd278018a67c2a5f4bf0630eccd4102fdd54cd2267e35e718b3f1a736bd59645"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FFNMV3NLMRSMLUO3K4QBWLECBIRWTZLF2FIZC3J2WKENG463C6FA/_chunk_state_fwd_kernel.ttgir",
+        "bytes": 54318,
+        "sha256": "f2adb7a9fdd90c3e751223e0069ef4663885f2c5c437c08b1a5bd461eb1b26a9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FFNMV3NLMRSMLUO3K4QBWLECBIRWTZLF2FIZC3J2WKENG463C6FA/_chunk_state_fwd_kernel.ttir",
+        "bytes": 30366,
+        "sha256": "0de92c963a5dfa4848517303ae696f673148c3dc9d6381394f2bcaf1d4974613"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FZEX6SOCSNDHG3JGUXPIM4CUCMTEUW4GFJXGZG3BXABW3CLL7IJA/__grp___chunk_scan_fwd_kernel.json",
+        "bytes": 1353,
+        "sha256": "d4d269eb6a2a1c9e12a60049b12e15c5c36a840ab936d977020b587a345eda05"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FZEX6SOCSNDHG3JGUXPIM4CUCMTEUW4GFJXGZG3BXABW3CLL7IJA/_chunk_scan_fwd_kernel.cubin",
+        "bytes": 139616,
+        "sha256": "ee409c004261104f5a4795c7c038c57b3d78f02de6cdce07d83486fa321c5d9d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FZEX6SOCSNDHG3JGUXPIM4CUCMTEUW4GFJXGZG3BXABW3CLL7IJA/_chunk_scan_fwd_kernel.json",
+        "bytes": 1014,
+        "sha256": "b585e56c94ebbaa9e7db6763d57f90d581d05392729a24bd6507ab73b2f30ebb"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FZEX6SOCSNDHG3JGUXPIM4CUCMTEUW4GFJXGZG3BXABW3CLL7IJA/_chunk_scan_fwd_kernel.llir",
+        "bytes": 243515,
+        "sha256": "9b824c45c42a0c5bce2a723b588b8830d59599be9afda3b14e43d497fc696ad0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FZEX6SOCSNDHG3JGUXPIM4CUCMTEUW4GFJXGZG3BXABW3CLL7IJA/_chunk_scan_fwd_kernel.ptx",
+        "bytes": 120849,
+        "sha256": "2eee27b14ce0864a03e369163e2d783deef6e8ab83fc5ab39ba91bccb463103b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FZEX6SOCSNDHG3JGUXPIM4CUCMTEUW4GFJXGZG3BXABW3CLL7IJA/_chunk_scan_fwd_kernel.source",
+        "bytes": 111910,
+        "sha256": "f7a0a85ea149a09e402f2de3ca0e0a881abd11d0f899ec1012b4855b05a64546"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FZEX6SOCSNDHG3JGUXPIM4CUCMTEUW4GFJXGZG3BXABW3CLL7IJA/_chunk_scan_fwd_kernel.ttgir",
+        "bytes": 70238,
+        "sha256": "7882d7137e1d95dd89bb304a76fe9b726990b7c6843e66ec3e660dded068569c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/FZEX6SOCSNDHG3JGUXPIM4CUCMTEUW4GFJXGZG3BXABW3CLL7IJA/_chunk_scan_fwd_kernel.ttir",
+        "bytes": 45491,
+        "sha256": "ceb1e48f0114b98184f6b1fc75e9768ae43a9927f4e9861d456a388052bb3f06"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GIMVBPVXSXMWWFZIIW4QCKEP75UUAUFUQISDIUSZHSX4CWVTAPLA/__grp___chunk_state_fwd_kernel.json",
+        "bytes": 1367,
+        "sha256": "076a46db5790649bfdebda9f0e8726aa61350ddfa30dd194d69e5234bb62cfd2"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GIMVBPVXSXMWWFZIIW4QCKEP75UUAUFUQISDIUSZHSX4CWVTAPLA/_chunk_state_fwd_kernel.cubin",
+        "bytes": 71776,
+        "sha256": "d38ced3b0c828f5719c56ac9f9adb26be834cd87025edca465c7ff6f66e341e9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GIMVBPVXSXMWWFZIIW4QCKEP75UUAUFUQISDIUSZHSX4CWVTAPLA/_chunk_state_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "b8ba30d50b97de3f6ad51344b128482de3dfcd58ccfc329070d1628e2d5dea88"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GIMVBPVXSXMWWFZIIW4QCKEP75UUAUFUQISDIUSZHSX4CWVTAPLA/_chunk_state_fwd_kernel.llir",
+        "bytes": 99402,
+        "sha256": "c2deac9dd3b8484ebe245eb44125fd1601fd848bfd3719cfddcaab2c1f3e3cd1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GIMVBPVXSXMWWFZIIW4QCKEP75UUAUFUQISDIUSZHSX4CWVTAPLA/_chunk_state_fwd_kernel.ptx",
+        "bytes": 62956,
+        "sha256": "c7b0402aceb27f05cec93ab5df9ae1e08fea9e4b36167e5cfb0a648212c73352"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GIMVBPVXSXMWWFZIIW4QCKEP75UUAUFUQISDIUSZHSX4CWVTAPLA/_chunk_state_fwd_kernel.source",
+        "bytes": 76052,
+        "sha256": "3fc0f1e7a422472fdf39578ecb60b5540c4119c31337189eeb78a312d9f3f1af"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GIMVBPVXSXMWWFZIIW4QCKEP75UUAUFUQISDIUSZHSX4CWVTAPLA/_chunk_state_fwd_kernel.ttgir",
+        "bytes": 50746,
+        "sha256": "98e40f061d0e06c51b5eee0796fed35f5dd21258897a1eb83f52bdfb727072ad"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GIMVBPVXSXMWWFZIIW4QCKEP75UUAUFUQISDIUSZHSX4CWVTAPLA/_chunk_state_fwd_kernel.ttir",
+        "bytes": 30496,
+        "sha256": "352a61d330193a33df75aaa6706bbeb043ea0c558c888d800c9b730e57bd9f89"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GYD2JXSINVVQQYBASIKSVO5PA6O6VL6HEKWGUDCPSHYTY2LHJN3Q/__grp___state_passing_fwd_kernel.json",
+        "bytes": 1395,
+        "sha256": "81493c78b1a5d190768e9db03a4e200edc88dfb52b7b5c5cb65230559c48b3c4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GYD2JXSINVVQQYBASIKSVO5PA6O6VL6HEKWGUDCPSHYTY2LHJN3Q/_state_passing_fwd_kernel.cubin",
+        "bytes": 8936,
+        "sha256": "d007181cb55ea29c025bf1987564e38cf17caa30af269b867ac7144841d4ea70"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GYD2JXSINVVQQYBASIKSVO5PA6O6VL6HEKWGUDCPSHYTY2LHJN3Q/_state_passing_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "461aa77890e1b4c8ac0b8d01bbf9e4caa7eb376df98e6408113d80226c0765b4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GYD2JXSINVVQQYBASIKSVO5PA6O6VL6HEKWGUDCPSHYTY2LHJN3Q/_state_passing_fwd_kernel.llir",
+        "bytes": 6656,
+        "sha256": "d50adb9269ffcb93b8f3d1626a8f10afd8b4c0192d744d6a5ae0c0431026d200"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GYD2JXSINVVQQYBASIKSVO5PA6O6VL6HEKWGUDCPSHYTY2LHJN3Q/_state_passing_fwd_kernel.ptx",
+        "bytes": 8755,
+        "sha256": "9f126ac7a1ed712ee77ea10cb0934134b37ac903e007c2e413d8246c61ee5bd0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GYD2JXSINVVQQYBASIKSVO5PA6O6VL6HEKWGUDCPSHYTY2LHJN3Q/_state_passing_fwd_kernel.source",
+        "bytes": 27799,
+        "sha256": "2f14a01444dc195dc1df00a1cabdcdad84fdd1c25084d9db9b96f9b994e83693"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GYD2JXSINVVQQYBASIKSVO5PA6O6VL6HEKWGUDCPSHYTY2LHJN3Q/_state_passing_fwd_kernel.ttgir",
+        "bytes": 12611,
+        "sha256": "442237849ce610978580b4177144570ec5d2f0469ffa59af964712c3af914096"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/GYD2JXSINVVQQYBASIKSVO5PA6O6VL6HEKWGUDCPSHYTY2LHJN3Q/_state_passing_fwd_kernel.ttir",
+        "bytes": 12187,
+        "sha256": "87d27ba0b6134c20afe3dc58e53c3d927bc232a2fcbc229fef3c5f2891daf262"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/HED5XPU25KNG2IXEQZBENEOEFR6AHABHWT5PICNZO3XA7IEN73MQ/__grp___chunk_state_fwd_kernel.json",
+        "bytes": 1367,
+        "sha256": "33092bea45115c738416c33a1ebc3c209f94d66c35b5ec48e5c0e7bf6828ff58"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/HED5XPU25KNG2IXEQZBENEOEFR6AHABHWT5PICNZO3XA7IEN73MQ/_chunk_state_fwd_kernel.cubin",
+        "bytes": 201696,
+        "sha256": "d889f8d0e1f92f59ccdef34cd2c1793eea9c6af25b7f4ece60dd0a819e7121f5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/HED5XPU25KNG2IXEQZBENEOEFR6AHABHWT5PICNZO3XA7IEN73MQ/_chunk_state_fwd_kernel.json",
+        "bytes": 1016,
+        "sha256": "fbd7a4d5d7b5ca48373b6b022f204cc4a5679948dcb4cd70ea1215db183751b1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/HED5XPU25KNG2IXEQZBENEOEFR6AHABHWT5PICNZO3XA7IEN73MQ/_chunk_state_fwd_kernel.llir",
+        "bytes": 315467,
+        "sha256": "32dc67b2384a6c7f7ab1982feb715a7e271c9e8b243508951978565a05d870e9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/HED5XPU25KNG2IXEQZBENEOEFR6AHABHWT5PICNZO3XA7IEN73MQ/_chunk_state_fwd_kernel.ptx",
+        "bytes": 160820,
+        "sha256": "3c66187b89eb2ad351df5c57a28634f94d87e8b6fd3f608d38d8c218e738eb35"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/HED5XPU25KNG2IXEQZBENEOEFR6AHABHWT5PICNZO3XA7IEN73MQ/_chunk_state_fwd_kernel.source",
+        "bytes": 76059,
+        "sha256": "2a96b90460ab2babb7e62b30d423955ad665e1a8cf32e61923b5cc76934053f8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/HED5XPU25KNG2IXEQZBENEOEFR6AHABHWT5PICNZO3XA7IEN73MQ/_chunk_state_fwd_kernel.ttgir",
+        "bytes": 50901,
+        "sha256": "28a94e7bdbcf013c250fd2a9960a4314cc8a2aaf1de43acd06095d0a0d38d7a5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/HED5XPU25KNG2IXEQZBENEOEFR6AHABHWT5PICNZO3XA7IEN73MQ/_chunk_state_fwd_kernel.ttir",
+        "bytes": 30873,
+        "sha256": "ef1e4ec218cc989c2b6b91a569f071385bcf60ec90b464b6ac9db426c86b744a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/I3HLB46R24G7OBWET6RGNLFMNQTEBCQAMC5C6KJX2YDFP3CP3DBA/__grp___chunk_state_fwd_kernel.json",
+        "bytes": 1367,
+        "sha256": "f83b5e7ec2d45742f59e4c4c71463a2153571b6edb8c729210160fc48141a691"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/I3HLB46R24G7OBWET6RGNLFMNQTEBCQAMC5C6KJX2YDFP3CP3DBA/_chunk_state_fwd_kernel.cubin",
+        "bytes": 101984,
+        "sha256": "f2d8dc9e1a5fad90a258c82da56113ba70ac30cac66810edf81f27f2d36b6e4b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/I3HLB46R24G7OBWET6RGNLFMNQTEBCQAMC5C6KJX2YDFP3CP3DBA/_chunk_state_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "4c0fcecf912bf844a771ca8ab036cc8e48ec5f45baadba1adc126f9f254e5e1a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/I3HLB46R24G7OBWET6RGNLFMNQTEBCQAMC5C6KJX2YDFP3CP3DBA/_chunk_state_fwd_kernel.llir",
+        "bytes": 148329,
+        "sha256": "11620b94a0ca1d77bef0f713f750e603f2cca89eb1f66ee008f51b0acbb5a128"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/I3HLB46R24G7OBWET6RGNLFMNQTEBCQAMC5C6KJX2YDFP3CP3DBA/_chunk_state_fwd_kernel.ptx",
+        "bytes": 88894,
+        "sha256": "34260f0ab14c16e6525dcbfdef6f0baa82084a35ad264f0139d99455962a8077"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/I3HLB46R24G7OBWET6RGNLFMNQTEBCQAMC5C6KJX2YDFP3CP3DBA/_chunk_state_fwd_kernel.source",
+        "bytes": 75883,
+        "sha256": "90e62eb75bc180ab0120b52a4d62fed0790c024ced502a07caf9209cb8f99d29"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/I3HLB46R24G7OBWET6RGNLFMNQTEBCQAMC5C6KJX2YDFP3CP3DBA/_chunk_state_fwd_kernel.ttgir",
+        "bytes": 54289,
+        "sha256": "371ca00e405193ac196abe619a091ad4759be961cd468d7c99c2a8439b1b6bd3"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/I3HLB46R24G7OBWET6RGNLFMNQTEBCQAMC5C6KJX2YDFP3CP3DBA/_chunk_state_fwd_kernel.ttir",
+        "bytes": 30337,
+        "sha256": "7732a72c27de9f83e4cdbcf12fe99ebceda300ed658e995cfec5d1c1b3cacd5d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/JGWVITJM3XEWHDFNNCRPX3CEIEJ7SDOQU6LZBHSABNBGK4H5FKVQ/__triton_launcher.cpython-310-aarch64-linux-gnu.so",
+        "bytes": 18400,
+        "sha256": "cc239b04d987de85fda3c2e39f90a66d51860e4f8d30cf71bb6a3e02c01e54fb"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/KPGNWUWB3VHOCGOYHZ3ZNBVWVE62G7SZGCZMQXQSDZGISVYZGSXQ/__grp___bmm_chunk_fwd_kernel.json",
+        "bytes": 1339,
+        "sha256": "3da0f1450203613f14e74776c4ee9b047cc4504a7df508574c251920ffa7f028"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/KPGNWUWB3VHOCGOYHZ3ZNBVWVE62G7SZGCZMQXQSDZGISVYZGSXQ/_bmm_chunk_fwd_kernel.cubin",
+        "bytes": 107232,
+        "sha256": "37231066c234b573947c60213af75f6a6b009ffcef095ef007cd5e8da2815077"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/KPGNWUWB3VHOCGOYHZ3ZNBVWVE62G7SZGCZMQXQSDZGISVYZGSXQ/_bmm_chunk_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "36b4c36c65fb3087fb413457dac014a65825eb7cf30ab7b9d03d03074a34aa8a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/KPGNWUWB3VHOCGOYHZ3ZNBVWVE62G7SZGCZMQXQSDZGISVYZGSXQ/_bmm_chunk_fwd_kernel.llir",
+        "bytes": 215324,
+        "sha256": "7124176ce3b1816162a3bdae4c07ae2fc829a7dd3c3bf2e3637bd73f5032316c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/KPGNWUWB3VHOCGOYHZ3ZNBVWVE62G7SZGCZMQXQSDZGISVYZGSXQ/_bmm_chunk_fwd_kernel.ptx",
+        "bytes": 97576,
+        "sha256": "ac1bde339eb265807eb7a32d01628047e7358178fdca2a13f1b211b741b7ece9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/KPGNWUWB3VHOCGOYHZ3ZNBVWVE62G7SZGCZMQXQSDZGISVYZGSXQ/_bmm_chunk_fwd_kernel.source",
+        "bytes": 57577,
+        "sha256": "8b9616462ac229cea95593bbf2559f8fadbf79bd585020359ab36bfdea20c92e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/KPGNWUWB3VHOCGOYHZ3ZNBVWVE62G7SZGCZMQXQSDZGISVYZGSXQ/_bmm_chunk_fwd_kernel.ttgir",
+        "bytes": 32121,
+        "sha256": "e85172bd6c53ccf1bc5ff8c6a6ada476a9183068270c08d8b16e6ec60abdab87"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/KPGNWUWB3VHOCGOYHZ3ZNBVWVE62G7SZGCZMQXQSDZGISVYZGSXQ/_bmm_chunk_fwd_kernel.ttir",
+        "bytes": 19392,
+        "sha256": "03c385f2c40506913b49f1c8ce608e516835c29d92118ff3c06031dc0a445d0d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/LCDEQ2R7SVBHPV5MZWXVFIC2BNFHQ5AL5UV324XIYFKNCKOK37DA/__grp___chunk_cumsum_fwd_kernel.json",
+        "bytes": 1381,
+        "sha256": "8f8fa4e915724ad547fdbfa7aa9226142a7ad63dc60825e2dd7d87a710552103"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/LCDEQ2R7SVBHPV5MZWXVFIC2BNFHQ5AL5UV324XIYFKNCKOK37DA/_chunk_cumsum_fwd_kernel.cubin",
+        "bytes": 38704,
+        "sha256": "4e5921e70830921dcb5699c852ccbea2c61f40250c778089894f522f485931ba"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/LCDEQ2R7SVBHPV5MZWXVFIC2BNFHQ5AL5UV324XIYFKNCKOK37DA/_chunk_cumsum_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "1cc2310e87696575ed5ecbcf0c9a41bfdb74038cf15e130886f784d3719cb4a0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/LCDEQ2R7SVBHPV5MZWXVFIC2BNFHQ5AL5UV324XIYFKNCKOK37DA/_chunk_cumsum_fwd_kernel.llir",
+        "bytes": 81184,
+        "sha256": "07cbd78fc9462b51121229249deb9e4e62093c168e875df534f6a319424f8241"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/LCDEQ2R7SVBHPV5MZWXVFIC2BNFHQ5AL5UV324XIYFKNCKOK37DA/_chunk_cumsum_fwd_kernel.ptx",
+        "bytes": 41921,
+        "sha256": "7aa4fe0052f0f002ae08ff7d9c4a85a4c55a2f3565199435abc05d237b9e7a9c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/LCDEQ2R7SVBHPV5MZWXVFIC2BNFHQ5AL5UV324XIYFKNCKOK37DA/_chunk_cumsum_fwd_kernel.source",
+        "bytes": 45836,
+        "sha256": "198f21c99aa4c056ba4fb3e2aae2a4672192d7734cd191e190682048dee6ec85"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/LCDEQ2R7SVBHPV5MZWXVFIC2BNFHQ5AL5UV324XIYFKNCKOK37DA/_chunk_cumsum_fwd_kernel.ttgir",
+        "bytes": 22753,
+        "sha256": "6fe4a6e789d189ebbf97bb6cd7e30162baea6c43dee8f8f2dfff8dabaafb0c5a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/LCDEQ2R7SVBHPV5MZWXVFIC2BNFHQ5AL5UV324XIYFKNCKOK37DA/_chunk_cumsum_fwd_kernel.ttir",
+        "bytes": 19552,
+        "sha256": "e2ff988089c5c0f51e46cae49dc1734e2e4ac2412333cb76b6e0321ee61b6f04"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/MSSV3N4DSDDGFABOCZA5T5PV5ETJUWIDDHHSMBFAY6FE4IDF6MGA/__grp___bmm_chunk_fwd_kernel.json",
+        "bytes": 1339,
+        "sha256": "46fdf2d9fbb259bed8b11216992944ccfeecb1ffde27674a979552e09e10db87"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/MSSV3N4DSDDGFABOCZA5T5PV5ETJUWIDDHHSMBFAY6FE4IDF6MGA/_bmm_chunk_fwd_kernel.cubin",
+        "bytes": 57184,
+        "sha256": "fa78325ef41d49a2795ab6318c0b54661052fef72718182aeb5701842514f6a7"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/MSSV3N4DSDDGFABOCZA5T5PV5ETJUWIDDHHSMBFAY6FE4IDF6MGA/_bmm_chunk_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "c8584102126bcf9a165fbdbe103c3c84a6820740ef6e48d59c402edb427e5a8a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/MSSV3N4DSDDGFABOCZA5T5PV5ETJUWIDDHHSMBFAY6FE4IDF6MGA/_bmm_chunk_fwd_kernel.llir",
+        "bytes": 91756,
+        "sha256": "5802204cc39d06eed77e6ff8dcb27a8ef4bedfc22af492cdd025149daa7e62ff"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/MSSV3N4DSDDGFABOCZA5T5PV5ETJUWIDDHHSMBFAY6FE4IDF6MGA/_bmm_chunk_fwd_kernel.ptx",
+        "bytes": 53143,
+        "sha256": "17cc3b1d833cf3d141067ba4355b12ee73f43f6b54f360ae51487c9d5d99a745"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/MSSV3N4DSDDGFABOCZA5T5PV5ETJUWIDDHHSMBFAY6FE4IDF6MGA/_bmm_chunk_fwd_kernel.source",
+        "bytes": 57283,
+        "sha256": "47eede191f6df403671e6a78ffab00d69d267725d4a9ebbda9c85e669a249201"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/MSSV3N4DSDDGFABOCZA5T5PV5ETJUWIDDHHSMBFAY6FE4IDF6MGA/_bmm_chunk_fwd_kernel.ttgir",
+        "bytes": 34334,
+        "sha256": "c359a365d1c9d33e66afae7d47f300ebf3c45df66cfbbf54a25ff39933a616da"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/MSSV3N4DSDDGFABOCZA5T5PV5ETJUWIDDHHSMBFAY6FE4IDF6MGA/_bmm_chunk_fwd_kernel.ttir",
+        "bytes": 19211,
+        "sha256": "f10693cbb4cb1e6cb9e1a488e7c6e136dab42105dd4e879f13cc528df3bb2192"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/N7DKJQHLGXDPUHJ5IECCT6EDQR7W6CBKGA76Z3WI5A3SZR6RCQAQ/__grp___chunk_state_fwd_kernel.json",
+        "bytes": 1367,
+        "sha256": "2554cb9700ae88d3a9fd5b8e24fb34b01dbd6b5bcf81877a288724d9f7781847"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/N7DKJQHLGXDPUHJ5IECCT6EDQR7W6CBKGA76Z3WI5A3SZR6RCQAQ/_chunk_state_fwd_kernel.cubin",
+        "bytes": 89056,
+        "sha256": "755657a90a63eb980e4b402b4072c3a90d0a9a8a751a067a3b6e5a7a09194e3d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/N7DKJQHLGXDPUHJ5IECCT6EDQR7W6CBKGA76Z3WI5A3SZR6RCQAQ/_chunk_state_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "03429464877f4ee38a2190cf6f70992c70f6bab1b3a484402ee9d527d3e01d18"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/N7DKJQHLGXDPUHJ5IECCT6EDQR7W6CBKGA76Z3WI5A3SZR6RCQAQ/_chunk_state_fwd_kernel.llir",
+        "bytes": 124999,
+        "sha256": "25de74d420c37cda87395ff696182257777734f46c4034f5253473a114ab1f5d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/N7DKJQHLGXDPUHJ5IECCT6EDQR7W6CBKGA76Z3WI5A3SZR6RCQAQ/_chunk_state_fwd_kernel.ptx",
+        "bytes": 77602,
+        "sha256": "26ffedf6cd84c1898e3de0deac7552a6f79ff2190b8422b96c5e02c8e2e6a02c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/N7DKJQHLGXDPUHJ5IECCT6EDQR7W6CBKGA76Z3WI5A3SZR6RCQAQ/_chunk_state_fwd_kernel.source",
+        "bytes": 75912,
+        "sha256": "37141d7f2075af5a1a954ba65a173c843555fb2d6f9ec0a76c247d55b0473281"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/N7DKJQHLGXDPUHJ5IECCT6EDQR7W6CBKGA76Z3WI5A3SZR6RCQAQ/_chunk_state_fwd_kernel.ttgir",
+        "bytes": 54649,
+        "sha256": "bb1cb628ce60c50ea3f1049f6dc62f9b25392bb7242977b6877cad2ddcee1403"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/N7DKJQHLGXDPUHJ5IECCT6EDQR7W6CBKGA76Z3WI5A3SZR6RCQAQ/_chunk_state_fwd_kernel.ttir",
+        "bytes": 30447,
+        "sha256": "d61cee2a24f040f6240d6f728c248f80605b40e1be1ae42434816981b798eea8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/NDNW7CRDFUBZOY5725G7JAGVIOQZIOKCRLLOYB6FIFR2NWKVCFQA/__grp___bmm_chunk_fwd_kernel.json",
+        "bytes": 1339,
+        "sha256": "bde405ecb94af27bda9ca008d6fe7384e89ae5d64054bcbfc0ffcb21cf9d3d7d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/NDNW7CRDFUBZOY5725G7JAGVIOQZIOKCRLLOYB6FIFR2NWKVCFQA/_bmm_chunk_fwd_kernel.cubin",
+        "bytes": 149216,
+        "sha256": "39147f760341ec715f0be3228d1b8750ba86f24e7fcbb44507aa830e2c134ce1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/NDNW7CRDFUBZOY5725G7JAGVIOQZIOKCRLLOYB6FIFR2NWKVCFQA/_bmm_chunk_fwd_kernel.json",
+        "bytes": 1014,
+        "sha256": "187e027c10044b03762268351eb7207f6ce43cb2a8fc1f233cc5b214233fb570"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/NDNW7CRDFUBZOY5725G7JAGVIOQZIOKCRLLOYB6FIFR2NWKVCFQA/_bmm_chunk_fwd_kernel.llir",
+        "bytes": 323812,
+        "sha256": "927398684c51ac23a19829d8faa339b73f875e86ef964ae77ec080ac6b2bc67b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/NDNW7CRDFUBZOY5725G7JAGVIOQZIOKCRLLOYB6FIFR2NWKVCFQA/_bmm_chunk_fwd_kernel.ptx",
+        "bytes": 137419,
+        "sha256": "3961b428ed12d2f736bd6e7fab993bc641b8d42c01a05c77bb4b537b96d5f2c9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/NDNW7CRDFUBZOY5725G7JAGVIOQZIOKCRLLOYB6FIFR2NWKVCFQA/_bmm_chunk_fwd_kernel.source",
+        "bytes": 57572,
+        "sha256": "38a75700391184bbce4b2616efd9550ed1268a868c2c42cd8488fe457a55282a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/NDNW7CRDFUBZOY5725G7JAGVIOQZIOKCRLLOYB6FIFR2NWKVCFQA/_bmm_chunk_fwd_kernel.ttgir",
+        "bytes": 29953,
+        "sha256": "d094159779af90a5112a8e8a121f98231c3cf8628cbe47701f479e705e3bdb45"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/NDNW7CRDFUBZOY5725G7JAGVIOQZIOKCRLLOYB6FIFR2NWKVCFQA/_bmm_chunk_fwd_kernel.ttir",
+        "bytes": 19675,
+        "sha256": "26c5129e2dc68ab7e09e85022d1e41e22ca936fbe21601d4a3523f5cdc4a09b9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/NZ6NGDIZP66LTPPESZ7KKLFTWJ4DIKW45KIOIEOWP7U6KNMCRKAQ/__triton_launcher.cpython-310-aarch64-linux-gnu.so",
+        "bytes": 18400,
+        "sha256": "15d25273a337e29643544240320d5d02e81933fc9a3d45749f2c687093f22960"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/OMHJZSZVFNAWBKO566WHKG7UYHVIEKKVDCDNVNVBESBCEL2LIKSQ/__grp___chunk_scan_fwd_kernel.json",
+        "bytes": 1353,
+        "sha256": "9247edc6bff710f269179727b33e965b26dd8d2b40a7a642011e343dbd0cc6dc"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/OMHJZSZVFNAWBKO566WHKG7UYHVIEKKVDCDNVNVBESBCEL2LIKSQ/_chunk_scan_fwd_kernel.cubin",
+        "bytes": 109408,
+        "sha256": "6b5c60aa208b97d647662142b291ee57f2fd05979e392d42e41a05029d995b77"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/OMHJZSZVFNAWBKO566WHKG7UYHVIEKKVDCDNVNVBESBCEL2LIKSQ/_chunk_scan_fwd_kernel.json",
+        "bytes": 1014,
+        "sha256": "70846aa47d346a1975a97b136678ed35653b5c27c7ff751f83ed7e50d3fe3800"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/OMHJZSZVFNAWBKO566WHKG7UYHVIEKKVDCDNVNVBESBCEL2LIKSQ/_chunk_scan_fwd_kernel.llir",
+        "bytes": 180518,
+        "sha256": "c1ef9a588d565dcdf7b23a10f89f9c1880c7186527e31791316cbfbd2d89e60d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/OMHJZSZVFNAWBKO566WHKG7UYHVIEKKVDCDNVNVBESBCEL2LIKSQ/_chunk_scan_fwd_kernel.ptx",
+        "bytes": 96049,
+        "sha256": "037adb59382dbbd076089982f61a5ef8f5c7f55b5ff7a673f90740d4e4e3a944"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/OMHJZSZVFNAWBKO566WHKG7UYHVIEKKVDCDNVNVBESBCEL2LIKSQ/_chunk_scan_fwd_kernel.source",
+        "bytes": 111638,
+        "sha256": "6e6616253f3d763774c82344a5f396e92197b6c568b753e92153db510652afb5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/OMHJZSZVFNAWBKO566WHKG7UYHVIEKKVDCDNVNVBESBCEL2LIKSQ/_chunk_scan_fwd_kernel.ttgir",
+        "bytes": 73055,
+        "sha256": "19a5c618ddacfb8e029696a86a9199382a26021d6652a9af0fbc267ff68b9e64"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/OMHJZSZVFNAWBKO566WHKG7UYHVIEKKVDCDNVNVBESBCEL2LIKSQ/_chunk_scan_fwd_kernel.ttir",
+        "bytes": 45004,
+        "sha256": "2396042843357bfe4456deb1bec0a01a097c627cf8ffcb350b5191bda26abdda"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PES37F65UKCTEYRDG3AKARB6N6TAWFW62GNUKXZCUROOUME5MHZQ/__grp___chunk_cumsum_fwd_kernel.json",
+        "bytes": 1381,
+        "sha256": "f94c993dd06162852b4e536c1c5592a57663cf30ae11dba89dc97704f9611f3a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PES37F65UKCTEYRDG3AKARB6N6TAWFW62GNUKXZCUROOUME5MHZQ/_chunk_cumsum_fwd_kernel.cubin",
+        "bytes": 66992,
+        "sha256": "391c655e81302c228c6e0f7069bd362ca1657cd79399365c6e1986e9794e5639"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PES37F65UKCTEYRDG3AKARB6N6TAWFW62GNUKXZCUROOUME5MHZQ/_chunk_cumsum_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "a60d3f56fb077b5e61deef6ee29a486d2f4fac9f8396c8e77f529d1c6b83ba7d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PES37F65UKCTEYRDG3AKARB6N6TAWFW62GNUKXZCUROOUME5MHZQ/_chunk_cumsum_fwd_kernel.llir",
+        "bytes": 153373,
+        "sha256": "313ec5a842c77879969c8324111139ce9481b5dc158938811f19822f02fcc54c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PES37F65UKCTEYRDG3AKARB6N6TAWFW62GNUKXZCUROOUME5MHZQ/_chunk_cumsum_fwd_kernel.ptx",
+        "bytes": 69819,
+        "sha256": "99a36862b33bec7dd4caefd54b7b4ed951828fc46153442bd15c694a62e78253"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PES37F65UKCTEYRDG3AKARB6N6TAWFW62GNUKXZCUROOUME5MHZQ/_chunk_cumsum_fwd_kernel.source",
+        "bytes": 45865,
+        "sha256": "86cb29de956d13dc3843751b78b3d3597854877939273a7fe81a38aae539f4aa"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PES37F65UKCTEYRDG3AKARB6N6TAWFW62GNUKXZCUROOUME5MHZQ/_chunk_cumsum_fwd_kernel.ttgir",
+        "bytes": 22782,
+        "sha256": "a7fbb7dedd1fd566ae89da95641588b4b6ed296ab9dcd9072b405c6668cffd54"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PES37F65UKCTEYRDG3AKARB6N6TAWFW62GNUKXZCUROOUME5MHZQ/_chunk_cumsum_fwd_kernel.ttir",
+        "bytes": 19581,
+        "sha256": "5ac929b194df18ed1d1a0f1f3ef6989e1b6e135b889a83e51b879d6d30af8693"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PHJCQ6CB3WZ3PHP76FBMCFWUFQTSWZTKA5IPEYUY6QHMSTMENO5A/__grp___layer_norm_fwd_1pass_kernel.json",
+        "bytes": 1437,
+        "sha256": "2d494ac7a909886a798df60f1494f103ef73412d0a0421116cc0258e2d451fcb"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PHJCQ6CB3WZ3PHP76FBMCFWUFQTSWZTKA5IPEYUY6QHMSTMENO5A/_layer_norm_fwd_1pass_kernel.cubin",
+        "bytes": 13568,
+        "sha256": "dc38a8f737a51f7dfa1c3f484d209b6859794d604fa9be906006e94aa4793fc4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PHJCQ6CB3WZ3PHP76FBMCFWUFQTSWZTKA5IPEYUY6QHMSTMENO5A/_layer_norm_fwd_1pass_kernel.json",
+        "bytes": 1016,
+        "sha256": "0defa84bcf376b578af8d8854323b4529270bc931cd44320d822e815fa615251"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PHJCQ6CB3WZ3PHP76FBMCFWUFQTSWZTKA5IPEYUY6QHMSTMENO5A/_layer_norm_fwd_1pass_kernel.llir",
+        "bytes": 16004,
+        "sha256": "411f6879ce1f01573400d6f303b70492e370de59c00dd67c17b0f439ea89cb05"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PHJCQ6CB3WZ3PHP76FBMCFWUFQTSWZTKA5IPEYUY6QHMSTMENO5A/_layer_norm_fwd_1pass_kernel.ptx",
+        "bytes": 16680,
+        "sha256": "c70f891d550b81357b9bb3ea3c7ff4648a0ca699eb488a95fd2989383d9d8b11"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PHJCQ6CB3WZ3PHP76FBMCFWUFQTSWZTKA5IPEYUY6QHMSTMENO5A/_layer_norm_fwd_1pass_kernel.source",
+        "bytes": 23009,
+        "sha256": "7dc2e381c530693a9c762e6523847b19ef8a834950a81f910d708ce0d6a71820"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PHJCQ6CB3WZ3PHP76FBMCFWUFQTSWZTKA5IPEYUY6QHMSTMENO5A/_layer_norm_fwd_1pass_kernel.ttgir",
+        "bytes": 13413,
+        "sha256": "1fbc3fb1c94d4de5b8bdbd0f88e5e9dc3769a97d2d38b0ce73ea3e63542a8a83"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PHJCQ6CB3WZ3PHP76FBMCFWUFQTSWZTKA5IPEYUY6QHMSTMENO5A/_layer_norm_fwd_1pass_kernel.ttir",
+        "bytes": 12849,
+        "sha256": "572abe1c69bc41cf776e458ba9b1d72cb862e43b57b6cb020268400407172eea"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PJ6VKZNBVRT65WXRKTIXPROQ4FH2YN25BW47OC7K7TOUWDQL5J3A/__grp___chunk_scan_fwd_kernel.json",
+        "bytes": 1353,
+        "sha256": "78c4025fcce484f0f1e76f71dd4b5159fc14d49a61c7af2ba17a5613c848acab"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PJ6VKZNBVRT65WXRKTIXPROQ4FH2YN25BW47OC7K7TOUWDQL5J3A/_chunk_scan_fwd_kernel.cubin",
+        "bytes": 207456,
+        "sha256": "d99c31361d2737131f5c8c046788d2a60037aa7494b0a489db94ab35e478acf1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PJ6VKZNBVRT65WXRKTIXPROQ4FH2YN25BW47OC7K7TOUWDQL5J3A/_chunk_scan_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "0d450d9a02e9071292cca989caadf36f16eb2ae992830dd2e26d88cfc68b95f5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PJ6VKZNBVRT65WXRKTIXPROQ4FH2YN25BW47OC7K7TOUWDQL5J3A/_chunk_scan_fwd_kernel.llir",
+        "bytes": 389946,
+        "sha256": "9436cb687ddbaad289623f9093fb71c54556d0370288fd19d007271ca8a61a1e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PJ6VKZNBVRT65WXRKTIXPROQ4FH2YN25BW47OC7K7TOUWDQL5J3A/_chunk_scan_fwd_kernel.ptx",
+        "bytes": 179335,
+        "sha256": "5cad14e7fdb2898e398c945f58929f9fc229ba94cff91faa86de15600e86eb3a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PJ6VKZNBVRT65WXRKTIXPROQ4FH2YN25BW47OC7K7TOUWDQL5J3A/_chunk_scan_fwd_kernel.source",
+        "bytes": 112157,
+        "sha256": "5127f64db82a0136207b68c24bd8466c6e13b0c7be0038b3393f8ac1ba0ad82e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PJ6VKZNBVRT65WXRKTIXPROQ4FH2YN25BW47OC7K7TOUWDQL5J3A/_chunk_scan_fwd_kernel.ttgir",
+        "bytes": 70221,
+        "sha256": "0b0e4483f828e9934b2d7c1a1bea093ac3ca6793f6cc052cbf85770ebfe1252b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/PJ6VKZNBVRT65WXRKTIXPROQ4FH2YN25BW47OC7K7TOUWDQL5J3A/_chunk_scan_fwd_kernel.ttir",
+        "bytes": 45274,
+        "sha256": "7d6f2c39873a6ac186fc7bd291ea5f428a6e6e9b6733125446b6a58c091243db"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Q3MJWA6FKZGGMMUDGJEGFI2NMDDT4GWN2O33X7WIDELQMIPBF3YQ/__grp___chunk_scan_fwd_kernel.json",
+        "bytes": 1353,
+        "sha256": "1aae94b16e7c8e967ac806099d74259ca843afd4f27648c93ec4195693686d2d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Q3MJWA6FKZGGMMUDGJEGFI2NMDDT4GWN2O33X7WIDELQMIPBF3YQ/_chunk_scan_fwd_kernel.cubin",
+        "bytes": 147040,
+        "sha256": "38aad8331e0d8effd5a1b62e191ab3d3a03d8b2f341d15afd0b1ba4935da3b53"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Q3MJWA6FKZGGMMUDGJEGFI2NMDDT4GWN2O33X7WIDELQMIPBF3YQ/_chunk_scan_fwd_kernel.json",
+        "bytes": 1014,
+        "sha256": "c96ce0d8449f48e30b1184c3179f3514cfa6c17ba329a176d6fd4234a389b036"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Q3MJWA6FKZGGMMUDGJEGFI2NMDDT4GWN2O33X7WIDELQMIPBF3YQ/_chunk_scan_fwd_kernel.llir",
+        "bytes": 254955,
+        "sha256": "a3d695abd5091ffa27d15560f2cc3f0375d63d1c84bd5dbb270274d3b713a40b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Q3MJWA6FKZGGMMUDGJEGFI2NMDDT4GWN2O33X7WIDELQMIPBF3YQ/_chunk_scan_fwd_kernel.ptx",
+        "bytes": 127135,
+        "sha256": "d8000eb19adee19d7b49296b06443779a1c72529b87d5f413e54399465462740"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Q3MJWA6FKZGGMMUDGJEGFI2NMDDT4GWN2O33X7WIDELQMIPBF3YQ/_chunk_scan_fwd_kernel.source",
+        "bytes": 111634,
+        "sha256": "a858bed7400e6549b25015f00f28858415b3522166d0927d235c4c18bc68caf8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Q3MJWA6FKZGGMMUDGJEGFI2NMDDT4GWN2O33X7WIDELQMIPBF3YQ/_chunk_scan_fwd_kernel.ttgir",
+        "bytes": 69833,
+        "sha256": "6509fc4c12ed0cb8896a4ec2a157c547dfd739acb16e2b8ff126524c2213c215"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Q3MJWA6FKZGGMMUDGJEGFI2NMDDT4GWN2O33X7WIDELQMIPBF3YQ/_chunk_scan_fwd_kernel.ttir",
+        "bytes": 45088,
+        "sha256": "59336d8f3517ee747ca25168ddb6d8ba58ce45f2be3128f29c8c7b8aa0cefe5c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Q5P5LMXLWP5QGA5I32TIYCSD32HLBSAXUN3N3AMOZUYEGNDLXR7Q/__triton_launcher.cpython-310-aarch64-linux-gnu.so",
+        "bytes": 22536,
+        "sha256": "aa9f736253bcfead6b79b0bd9375d606e343ad1c8bb4bd323ddb1264df0cfcd2"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QAQX23DY7SJ4GSUMIIL3OFZ4V4TUVDCEBDGELWIY3XX3ZZBF7NHQ/__grp___chunk_cumsum_fwd_kernel.json",
+        "bytes": 1381,
+        "sha256": "bb15a1345c5f214b3386137dafc9d2bb4365904582875b8096e47f6600724872"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QAQX23DY7SJ4GSUMIIL3OFZ4V4TUVDCEBDGELWIY3XX3ZZBF7NHQ/_chunk_cumsum_fwd_kernel.cubin",
+        "bytes": 38704,
+        "sha256": "4e5921e70830921dcb5699c852ccbea2c61f40250c778089894f522f485931ba"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QAQX23DY7SJ4GSUMIIL3OFZ4V4TUVDCEBDGELWIY3XX3ZZBF7NHQ/_chunk_cumsum_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "6f29f4905f516636f6ec46d1e3fff55007ed84f903ac4ea95da6b154fb86d723"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QAQX23DY7SJ4GSUMIIL3OFZ4V4TUVDCEBDGELWIY3XX3ZZBF7NHQ/_chunk_cumsum_fwd_kernel.llir",
+        "bytes": 81184,
+        "sha256": "07cbd78fc9462b51121229249deb9e4e62093c168e875df534f6a319424f8241"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QAQX23DY7SJ4GSUMIIL3OFZ4V4TUVDCEBDGELWIY3XX3ZZBF7NHQ/_chunk_cumsum_fwd_kernel.ptx",
+        "bytes": 41921,
+        "sha256": "7aa4fe0052f0f002ae08ff7d9c4a85a4c55a2f3565199435abc05d237b9e7a9c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QAQX23DY7SJ4GSUMIIL3OFZ4V4TUVDCEBDGELWIY3XX3ZZBF7NHQ/_chunk_cumsum_fwd_kernel.source",
+        "bytes": 45865,
+        "sha256": "950282288a219822f1a63f29405277191efcbb181f70db17882c131e34779d14"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QAQX23DY7SJ4GSUMIIL3OFZ4V4TUVDCEBDGELWIY3XX3ZZBF7NHQ/_chunk_cumsum_fwd_kernel.ttgir",
+        "bytes": 22782,
+        "sha256": "571aa728aab1cb0efd14670a2d3ba38e4ec3d1c43d13c80551b0d4a1fb7e4932"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QAQX23DY7SJ4GSUMIIL3OFZ4V4TUVDCEBDGELWIY3XX3ZZBF7NHQ/_chunk_cumsum_fwd_kernel.ttir",
+        "bytes": 19581,
+        "sha256": "c8d17c8a60991d0726f328d11a6eaea4a1d235d9d3a371369ed71a0263e326b4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QSNSFSHJIJRPONPJRUC3WXUSQL7PIENCJYD5IH4NCGZGKJHD6AXA/__grp___chunk_cumsum_fwd_kernel.json",
+        "bytes": 1381,
+        "sha256": "8c1adc553020c047a401245cf837395d6ba373205103a962535c95cd1c7aa864"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QSNSFSHJIJRPONPJRUC3WXUSQL7PIENCJYD5IH4NCGZGKJHD6AXA/_chunk_cumsum_fwd_kernel.cubin",
+        "bytes": 129072,
+        "sha256": "6de432078dfd0ead510c9a356a141e13cc32675ada4d6e8600378e357817412a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QSNSFSHJIJRPONPJRUC3WXUSQL7PIENCJYD5IH4NCGZGKJHD6AXA/_chunk_cumsum_fwd_kernel.json",
+        "bytes": 1016,
+        "sha256": "e5a4ebf6eed9da6adb906fccf7783c824ce352829890b9426caa8ea456ec8892"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QSNSFSHJIJRPONPJRUC3WXUSQL7PIENCJYD5IH4NCGZGKJHD6AXA/_chunk_cumsum_fwd_kernel.llir",
+        "bytes": 298722,
+        "sha256": "53228f532361def42bd8541580a6d18da4009dcc43c76470094b4972a4927c58"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QSNSFSHJIJRPONPJRUC3WXUSQL7PIENCJYD5IH4NCGZGKJHD6AXA/_chunk_cumsum_fwd_kernel.ptx",
+        "bytes": 130689,
+        "sha256": "8220e190bffbc8ae27b1c90a1ddd4576128eb77e50b32f2c861580bb5978ceea"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QSNSFSHJIJRPONPJRUC3WXUSQL7PIENCJYD5IH4NCGZGKJHD6AXA/_chunk_cumsum_fwd_kernel.source",
+        "bytes": 46097,
+        "sha256": "56329683251f25b004285929479566c57e2871ea19f8bc8a24e90ed3b2c5414f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QSNSFSHJIJRPONPJRUC3WXUSQL7PIENCJYD5IH4NCGZGKJHD6AXA/_chunk_cumsum_fwd_kernel.ttgir",
+        "bytes": 22880,
+        "sha256": "dae3e37ce78ea8ef0a257d58391956311be02dda8114f30309f22288e5e23d78"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/QSNSFSHJIJRPONPJRUC3WXUSQL7PIENCJYD5IH4NCGZGKJHD6AXA/_chunk_cumsum_fwd_kernel.ttir",
+        "bytes": 19663,
+        "sha256": "bb5672e19c1705a217eaf7e2257c62afb78777aae3740e3389ffb15311fd84cd"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/R22RO4AR4DCIAESLDKPPCW66WFCE2JAFNSR74V55I4FSQB2MQUDA/__grp___chunk_scan_fwd_kernel.json",
+        "bytes": 1353,
+        "sha256": "5479a8e04fec9786357b9e57655690dfc938eba27a537e87251644ec3bdb5383"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/R22RO4AR4DCIAESLDKPPCW66WFCE2JAFNSR74V55I4FSQB2MQUDA/_chunk_scan_fwd_kernel.cubin",
+        "bytes": 104032,
+        "sha256": "bf19866ac35242bcc6e5b348b1e7f105cfc5f22186cd615ae2e0e52583d72a8f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/R22RO4AR4DCIAESLDKPPCW66WFCE2JAFNSR74V55I4FSQB2MQUDA/_chunk_scan_fwd_kernel.json",
+        "bytes": 1014,
+        "sha256": "dce0272cec6449dffb6313155b2a9479cf843ad1ca578d0ffc4167c4dfe8851b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/R22RO4AR4DCIAESLDKPPCW66WFCE2JAFNSR74V55I4FSQB2MQUDA/_chunk_scan_fwd_kernel.llir",
+        "bytes": 168039,
+        "sha256": "a725e34a2097dd85c9e51a8b5a4ea683d36325cad5fca1aea5bc05d69f54b72c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/R22RO4AR4DCIAESLDKPPCW66WFCE2JAFNSR74V55I4FSQB2MQUDA/_chunk_scan_fwd_kernel.ptx",
+        "bytes": 91828,
+        "sha256": "90892751b15a4ea91b343a42aaf7b19015c2207f619d719523791eda12a56847"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/R22RO4AR4DCIAESLDKPPCW66WFCE2JAFNSR74V55I4FSQB2MQUDA/_chunk_scan_fwd_kernel.source",
+        "bytes": 111638,
+        "sha256": "61cb6bad23e56d250dd0eb2a837f10ad93580835659d164652641e28805244e9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/R22RO4AR4DCIAESLDKPPCW66WFCE2JAFNSR74V55I4FSQB2MQUDA/_chunk_scan_fwd_kernel.ttgir",
+        "bytes": 74141,
+        "sha256": "6bb16479877b186a499112edb9d9db4316b3034690ae222ca4fb5f83cc872069"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/R22RO4AR4DCIAESLDKPPCW66WFCE2JAFNSR74V55I4FSQB2MQUDA/_chunk_scan_fwd_kernel.ttir",
+        "bytes": 44620,
+        "sha256": "da9c50b9291849a571680e28a1ddf59be381fc4647c8060ad4f84d024e2f211b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RGC4LYNIIP324ETIKJPP2TP4LVTBY55BVRLDDMDY6GRRRLLMUUBQ/__grp___chunk_scan_fwd_kernel.json",
+        "bytes": 1353,
+        "sha256": "5a2b64dd0f839c07a765e4de3d4f78c7988956f9629c4c919557f5a20eca6e92"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RGC4LYNIIP324ETIKJPP2TP4LVTBY55BVRLDDMDY6GRRRLLMUUBQ/_chunk_scan_fwd_kernel.cubin",
+        "bytes": 252128,
+        "sha256": "66f869e4d24fc39462d9758d57cbc9f9894e389cb6424821b9e6a5e0aac3b63a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RGC4LYNIIP324ETIKJPP2TP4LVTBY55BVRLDDMDY6GRRRLLMUUBQ/_chunk_scan_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "057574e4f33bdb408a5259d363105eb104d1f960dee58612cad8b2d808c9d64d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RGC4LYNIIP324ETIKJPP2TP4LVTBY55BVRLDDMDY6GRRRLLMUUBQ/_chunk_scan_fwd_kernel.llir",
+        "bytes": 503703,
+        "sha256": "c07547360b850df975df14d43bb24fd6255624b5f4eae4c335d5ddd20186d376"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RGC4LYNIIP324ETIKJPP2TP4LVTBY55BVRLDDMDY6GRRRLLMUUBQ/_chunk_scan_fwd_kernel.ptx",
+        "bytes": 219073,
+        "sha256": "cab4cf49e347f69d2c1a050b37f658cc6d5066129aab09924520adf00684b25d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RGC4LYNIIP324ETIKJPP2TP4LVTBY55BVRLDDMDY6GRRRLLMUUBQ/_chunk_scan_fwd_kernel.source",
+        "bytes": 112153,
+        "sha256": "c5e1cdb85044aa6c1fe6edb94bf4bd51101bc2cbc937b135eb8eadcfd343e759"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RGC4LYNIIP324ETIKJPP2TP4LVTBY55BVRLDDMDY6GRRRLLMUUBQ/_chunk_scan_fwd_kernel.ttgir",
+        "bytes": 66976,
+        "sha256": "83e1b6af6f28b14df1f6396e75d261e495b90ffc229956d1bbc7c6c6365f63a8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RGC4LYNIIP324ETIKJPP2TP4LVTBY55BVRLDDMDY6GRRRLLMUUBQ/_chunk_scan_fwd_kernel.ttir",
+        "bytes": 45569,
+        "sha256": "b2c53e83522dbe6ed44e0ea2f07b1aa47f1e09ac654d19ed874c4fa7af0c555d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RNRCZEDWCQ3UWYZNALWY4RJGNXH35HL4LTCEPD4S5NAEDAPLXHXA/__grp___chunk_scan_fwd_kernel.json",
+        "bytes": 1353,
+        "sha256": "be9390f762850afedd989e64836d527e1dc46a12b00b08fbaa194553b5ec2dee"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RNRCZEDWCQ3UWYZNALWY4RJGNXH35HL4LTCEPD4S5NAEDAPLXHXA/_chunk_scan_fwd_kernel.cubin",
+        "bytes": 196192,
+        "sha256": "b2ca2f2e275b07addb5abf27473dc4d384dd16ad557c53213393674f932d7037"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RNRCZEDWCQ3UWYZNALWY4RJGNXH35HL4LTCEPD4S5NAEDAPLXHXA/_chunk_scan_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "f655b875385e9e94030e94ffa2bb60dbabdee7c21a84dfcf6f54d1dcb1fefae4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RNRCZEDWCQ3UWYZNALWY4RJGNXH35HL4LTCEPD4S5NAEDAPLXHXA/_chunk_scan_fwd_kernel.llir",
+        "bytes": 358373,
+        "sha256": "49d5f1b6343882ad937aedc13016b2c10cf1870fe6159bc664bb5eacda5411f0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RNRCZEDWCQ3UWYZNALWY4RJGNXH35HL4LTCEPD4S5NAEDAPLXHXA/_chunk_scan_fwd_kernel.ptx",
+        "bytes": 166396,
+        "sha256": "f8c76a2744f03e7a1e817657f93a1f8312123f4b9754da0019d02562edbb29b0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RNRCZEDWCQ3UWYZNALWY4RJGNXH35HL4LTCEPD4S5NAEDAPLXHXA/_chunk_scan_fwd_kernel.source",
+        "bytes": 111918,
+        "sha256": "696f139006fd815ed851ccb45529ccb9980a7852d327e31bc8efeb685a2535ec"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RNRCZEDWCQ3UWYZNALWY4RJGNXH35HL4LTCEPD4S5NAEDAPLXHXA/_chunk_scan_fwd_kernel.ttgir",
+        "bytes": 69101,
+        "sha256": "57057f81c39fc4da99aae1ae802c1b4baecb7d27c0673b945039221b0f67923e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/RNRCZEDWCQ3UWYZNALWY4RJGNXH35HL4LTCEPD4S5NAEDAPLXHXA/_chunk_scan_fwd_kernel.ttir",
+        "bytes": 45115,
+        "sha256": "1a84fb97143afcf9d3f58bd3ea1ec3458d98910fa3fd013a628bbe52fc3734a5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/STPXHOGCZYFERZ6L7DSWXE435IN52EHNWP2OPDDGA2K6R3FLARKQ/__grp___chunk_state_fwd_kernel.json",
+        "bytes": 1367,
+        "sha256": "bceb931c27f7566de84bfe210322fc2173ab1b3f67f1dc998a58c5155aeff369"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/STPXHOGCZYFERZ6L7DSWXE435IN52EHNWP2OPDDGA2K6R3FLARKQ/_chunk_state_fwd_kernel.cubin",
+        "bytes": 150496,
+        "sha256": "b53907d653a04b86c760c83d804128e02633af6bd73f60384f1bae95813cfcc0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/STPXHOGCZYFERZ6L7DSWXE435IN52EHNWP2OPDDGA2K6R3FLARKQ/_chunk_state_fwd_kernel.json",
+        "bytes": 1016,
+        "sha256": "f498262ea26ac63ecd8a4b14122521f024f4c235fdc062601f5115c18e5d86ac"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/STPXHOGCZYFERZ6L7DSWXE435IN52EHNWP2OPDDGA2K6R3FLARKQ/_chunk_state_fwd_kernel.llir",
+        "bytes": 259144,
+        "sha256": "2c0be28b0ca91f122da5f64ec8109b5ac234c565d7db9f6fe3a674d5c0a4c0a8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/STPXHOGCZYFERZ6L7DSWXE435IN52EHNWP2OPDDGA2K6R3FLARKQ/_chunk_state_fwd_kernel.ptx",
+        "bytes": 125976,
+        "sha256": "7db5a4a251aad3ae34392f0e1aa5e706c00be7f51c12e05bf1ec8debbbef8e3c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/STPXHOGCZYFERZ6L7DSWXE435IN52EHNWP2OPDDGA2K6R3FLARKQ/_chunk_state_fwd_kernel.source",
+        "bytes": 76203,
+        "sha256": "9c1a852476c3cdd5c01a7b1ba0127a1d0498eb48cb1480cba422e268a83efc46"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/STPXHOGCZYFERZ6L7DSWXE435IN52EHNWP2OPDDGA2K6R3FLARKQ/_chunk_state_fwd_kernel.ttgir",
+        "bytes": 50852,
+        "sha256": "bef6741d649273b2585d90b81ab9524c5206a6f11cea7fdc6b8bc5d6de1fa649"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/STPXHOGCZYFERZ6L7DSWXE435IN52EHNWP2OPDDGA2K6R3FLARKQ/_chunk_state_fwd_kernel.ttir",
+        "bytes": 30626,
+        "sha256": "b2d74623105756503960af80e02a6adc73d7203920c5ed219bba9fb028c166bd"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/UYNH2FXDRTEYHEZR7OPJOPKUZRIVIV6TVCU66BD6J5KXBJUOPSEA/__grp___chunk_cumsum_fwd_kernel.json",
+        "bytes": 1381,
+        "sha256": "f620e07bef48b58679ca69f3d649a8ee6441aad3ebaaf53f5bc34fc34220572d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/UYNH2FXDRTEYHEZR7OPJOPKUZRIVIV6TVCU66BD6J5KXBJUOPSEA/_chunk_cumsum_fwd_kernel.cubin",
+        "bytes": 66992,
+        "sha256": "391c655e81302c228c6e0f7069bd362ca1657cd79399365c6e1986e9794e5639"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/UYNH2FXDRTEYHEZR7OPJOPKUZRIVIV6TVCU66BD6J5KXBJUOPSEA/_chunk_cumsum_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "f78cbda5e60e270eabb1c19e060086daefcc3c1edffd6f8b83c57fee8251455e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/UYNH2FXDRTEYHEZR7OPJOPKUZRIVIV6TVCU66BD6J5KXBJUOPSEA/_chunk_cumsum_fwd_kernel.llir",
+        "bytes": 153373,
+        "sha256": "313ec5a842c77879969c8324111139ce9481b5dc158938811f19822f02fcc54c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/UYNH2FXDRTEYHEZR7OPJOPKUZRIVIV6TVCU66BD6J5KXBJUOPSEA/_chunk_cumsum_fwd_kernel.ptx",
+        "bytes": 69819,
+        "sha256": "99a36862b33bec7dd4caefd54b7b4ed951828fc46153442bd15c694a62e78253"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/UYNH2FXDRTEYHEZR7OPJOPKUZRIVIV6TVCU66BD6J5KXBJUOPSEA/_chunk_cumsum_fwd_kernel.source",
+        "bytes": 45836,
+        "sha256": "281be076334c45ca5ac81bd9b676a96873c47d401516131cb9e77e5610dc4e85"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/UYNH2FXDRTEYHEZR7OPJOPKUZRIVIV6TVCU66BD6J5KXBJUOPSEA/_chunk_cumsum_fwd_kernel.ttgir",
+        "bytes": 22753,
+        "sha256": "04ee236663925a070bb15fe5800b7cc4aa68ff6745a13e756bf7d75a00dccaee"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/UYNH2FXDRTEYHEZR7OPJOPKUZRIVIV6TVCU66BD6J5KXBJUOPSEA/_chunk_cumsum_fwd_kernel.ttir",
+        "bytes": 19552,
+        "sha256": "2ee733cc008ba71467d925cffdb7dc52598466e2dac12020dd38454bf7976f9b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VAE3TZC5TSI7H6DRZMUAMR4PZHURSRTX46GI4PAMFFFU5JXNS2EA/__grp___state_passing_fwd_kernel.json",
+        "bytes": 1395,
+        "sha256": "1e6abe709f1446314b1bb06794247b1cdbcfbc32f3f8671edc857d84e41da33c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VAE3TZC5TSI7H6DRZMUAMR4PZHURSRTX46GI4PAMFFFU5JXNS2EA/_state_passing_fwd_kernel.cubin",
+        "bytes": 9064,
+        "sha256": "ec656467ca236d23053e6105ad93305c5a7ded0681fa0417d66215d02789f716"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VAE3TZC5TSI7H6DRZMUAMR4PZHURSRTX46GI4PAMFFFU5JXNS2EA/_state_passing_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "49ace5bca8072ef80627d2bcd04c621b950e92ed18621382168c28dac51dbc96"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VAE3TZC5TSI7H6DRZMUAMR4PZHURSRTX46GI4PAMFFFU5JXNS2EA/_state_passing_fwd_kernel.llir",
+        "bytes": 7006,
+        "sha256": "07c76d178916f6a8d53b139a5c4522177bac9c78fc6a38e0861f0c30a3192db6"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VAE3TZC5TSI7H6DRZMUAMR4PZHURSRTX46GI4PAMFFFU5JXNS2EA/_state_passing_fwd_kernel.ptx",
+        "bytes": 8878,
+        "sha256": "f615ffafb63697108599a56f8ca5e2dca006fb5157c30a4c4a0d5dfbba359adf"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VAE3TZC5TSI7H6DRZMUAMR4PZHURSRTX46GI4PAMFFFU5JXNS2EA/_state_passing_fwd_kernel.source",
+        "bytes": 27799,
+        "sha256": "78c63de744341732396868eaf123eba66cf73af6eb2da8af411d4f329ca893a3"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VAE3TZC5TSI7H6DRZMUAMR4PZHURSRTX46GI4PAMFFFU5JXNS2EA/_state_passing_fwd_kernel.ttgir",
+        "bytes": 12613,
+        "sha256": "97b8a46ea317dfbd707328aee0a9e7353a4b48cd48aa7f6a96e42dee59954475"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VAE3TZC5TSI7H6DRZMUAMR4PZHURSRTX46GI4PAMFFFU5JXNS2EA/_state_passing_fwd_kernel.ttir",
+        "bytes": 12187,
+        "sha256": "c0cccc8492cf429280ac2db8776634833ec4697b98556570fc2e4a5553bf3780"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VO6TOW6DOCYNDO5PZ5OB2P3NMD6DLA6XBU7V23HSPA3BIYTGE5PA/cuda_utils.cpython-310-aarch64-linux-gnu.so",
+        "bytes": 23344,
+        "sha256": "76a6e6131d6c4d7a94b090f15f43877c381c1e5ff58c04d2553972c94fe0495a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VQO2KRD6NOVBRBWKC3QONFL36LSAS5EEBGRIR4Y7HQS67SVHNKZA/__grp___chunk_cumsum_fwd_kernel.json",
+        "bytes": 1381,
+        "sha256": "4d3d277caf6fddf66bbc365dd7f3b92fbc0c5ccadb0f5a4a30fcb9cd6f181d77"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VQO2KRD6NOVBRBWKC3QONFL36LSAS5EEBGRIR4Y7HQS67SVHNKZA/_chunk_cumsum_fwd_kernel.cubin",
+        "bytes": 18096,
+        "sha256": "48563c33f59267a4d05dadf1bad4e28420d0753c7ce9317cfae68cd877fbfd73"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VQO2KRD6NOVBRBWKC3QONFL36LSAS5EEBGRIR4Y7HQS67SVHNKZA/_chunk_cumsum_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "89bfeec98097089a9539013b2358c3f3b61ae872a0f2468a0021f789309ddd12"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VQO2KRD6NOVBRBWKC3QONFL36LSAS5EEBGRIR4Y7HQS67SVHNKZA/_chunk_cumsum_fwd_kernel.llir",
+        "bytes": 28651,
+        "sha256": "23b4bd1a3ea2b18e657505987e24b4073e6ab4752022478350a53582919762de"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VQO2KRD6NOVBRBWKC3QONFL36LSAS5EEBGRIR4Y7HQS67SVHNKZA/_chunk_cumsum_fwd_kernel.ptx",
+        "bytes": 22746,
+        "sha256": "5dd14a8820fdebd4cae3ddc2cd1e6769d40afa573aef630432b03a57f90ef77d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VQO2KRD6NOVBRBWKC3QONFL36LSAS5EEBGRIR4Y7HQS67SVHNKZA/_chunk_cumsum_fwd_kernel.source",
+        "bytes": 45302,
+        "sha256": "2c3b4276a0caad8f3e28f60c007ec43f658c3436152d92feefbbec9166a17ed4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VQO2KRD6NOVBRBWKC3QONFL36LSAS5EEBGRIR4Y7HQS67SVHNKZA/_chunk_cumsum_fwd_kernel.ttgir",
+        "bytes": 20037,
+        "sha256": "599a1fef4a87b40497cef66597b82f64b8e9e8930d61f5af3e4d2756234d2781"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/VQO2KRD6NOVBRBWKC3QONFL36LSAS5EEBGRIR4Y7HQS67SVHNKZA/_chunk_cumsum_fwd_kernel.ttir",
+        "bytes": 18173,
+        "sha256": "9774146e1afff06b8cc27bfd4bd24507f8a74c1cb3018c089dc18da47fcb24e0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/W32KINBGVQ6R6S5NY5VWDAB3HBBU5QGWTGQ2YRBAPAI6F4Z3S6LQ/__grp___chunk_cumsum_fwd_kernel.json",
+        "bytes": 1381,
+        "sha256": "3db6fca99038d00c1a3a4f96d88e1f0593fdc9211b385d742f558886f32e2c91"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/W32KINBGVQ6R6S5NY5VWDAB3HBBU5QGWTGQ2YRBAPAI6F4Z3S6LQ/_chunk_cumsum_fwd_kernel.cubin",
+        "bytes": 254896,
+        "sha256": "3c9f61ea9066c6ddd9848f064931590554c728fa4969053ce2809e39b88c19bb"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/W32KINBGVQ6R6S5NY5VWDAB3HBBU5QGWTGQ2YRBAPAI6F4Z3S6LQ/_chunk_cumsum_fwd_kernel.json",
+        "bytes": 1016,
+        "sha256": "2841b597f8c28705db69349567aff39fbfbadc565df78e93e276f47aeb915756"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/W32KINBGVQ6R6S5NY5VWDAB3HBBU5QGWTGQ2YRBAPAI6F4Z3S6LQ/_chunk_cumsum_fwd_kernel.llir",
+        "bytes": 592152,
+        "sha256": "98711cf9ea627bfa4e74149012271dce31ff78726e25a4a4f443372b2822d9b8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/W32KINBGVQ6R6S5NY5VWDAB3HBBU5QGWTGQ2YRBAPAI6F4Z3S6LQ/_chunk_cumsum_fwd_kernel.ptx",
+        "bytes": 252674,
+        "sha256": "c45b2307f8f64bd152019e2cafb8e46409e83d137304475e8648c64e8518fca9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/W32KINBGVQ6R6S5NY5VWDAB3HBBU5QGWTGQ2YRBAPAI6F4Z3S6LQ/_chunk_cumsum_fwd_kernel.source",
+        "bytes": 46097,
+        "sha256": "d1d5d17da6a009efc487e5623e3f4d22bb40878625bdfd8630c93c878158fa91"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/W32KINBGVQ6R6S5NY5VWDAB3HBBU5QGWTGQ2YRBAPAI6F4Z3S6LQ/_chunk_cumsum_fwd_kernel.ttgir",
+        "bytes": 22880,
+        "sha256": "7bc436c021845fccdbaec7055ecdf8f360d2fd908c743585477625bfa63543e4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/W32KINBGVQ6R6S5NY5VWDAB3HBBU5QGWTGQ2YRBAPAI6F4Z3S6LQ/_chunk_cumsum_fwd_kernel.ttir",
+        "bytes": 19663,
+        "sha256": "4c1d420b6502020da2bd577c1196bb369985de0f86ab6f3c942c4448adf7a747"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/WVVCIGQUWWVY7W57NBEUPLVQWFLLBPBZD3F64BLIYUGPK4VBABFA/__triton_launcher.cpython-310-aarch64-linux-gnu.so",
+        "bytes": 18400,
+        "sha256": "664b5e233c0957e53bcb112b26b377c501484fe900d177d220cb33f43ff83736"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XJLIMIWVDTLPEORGDPVD7N5MAPZ4CH3W2JU4Q7PNLEOULV3GR6AQ/__grp___chunk_state_fwd_kernel.json",
+        "bytes": 1367,
+        "sha256": "a52398e5803830d65b0fe6bbb5b0e85be29854ac92a35a5a6b69e54e97b8184b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XJLIMIWVDTLPEORGDPVD7N5MAPZ4CH3W2JU4Q7PNLEOULV3GR6AQ/_chunk_state_fwd_kernel.cubin",
+        "bytes": 350176,
+        "sha256": "1d2e69225ee4380d70042f401edc06fd33d6561201a34c6cbbadaaa5b292057f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XJLIMIWVDTLPEORGDPVD7N5MAPZ4CH3W2JU4Q7PNLEOULV3GR6AQ/_chunk_state_fwd_kernel.json",
+        "bytes": 1016,
+        "sha256": "d4fb51ee2d040279ca5f4dd28157bd14a377fc5f2248a6dc0310c98fbf56e1ee"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XJLIMIWVDTLPEORGDPVD7N5MAPZ4CH3W2JU4Q7PNLEOULV3GR6AQ/_chunk_state_fwd_kernel.llir",
+        "bytes": 395957,
+        "sha256": "a55bc2c9139ba803cbc782747a97acce380acf2201aed9309d1c3edf957f4eb7"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XJLIMIWVDTLPEORGDPVD7N5MAPZ4CH3W2JU4Q7PNLEOULV3GR6AQ/_chunk_state_fwd_kernel.ptx",
+        "bytes": 189149,
+        "sha256": "a165a8a4acc9b61794ee3112aaedb13a5d9c55397b1141e738c56c92e33980b1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XJLIMIWVDTLPEORGDPVD7N5MAPZ4CH3W2JU4Q7PNLEOULV3GR6AQ/_chunk_state_fwd_kernel.source",
+        "bytes": 76199,
+        "sha256": "8f84901bcb54e2b23f7a976bd1a34dac5d8da0e14c1e26f0ccd49ab2b73c9611"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XJLIMIWVDTLPEORGDPVD7N5MAPZ4CH3W2JU4Q7PNLEOULV3GR6AQ/_chunk_state_fwd_kernel.ttgir",
+        "bytes": 46931,
+        "sha256": "163d3aae5ceef6a974d9d91fa0a43831070e601a53ce5bb5991488d29ee2a124"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XJLIMIWVDTLPEORGDPVD7N5MAPZ4CH3W2JU4Q7PNLEOULV3GR6AQ/_chunk_state_fwd_kernel.ttir",
+        "bytes": 30923,
+        "sha256": "0badeef51f69dd144ae2a98b6e8ad954d8026662c8464736cef79d892ef009e1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XO33M4OIQR5AVASQQMHJMW2WFY5E4E22QG32JJNELL36DSC3LNTA/__grp___state_passing_fwd_kernel.json",
+        "bytes": 1395,
+        "sha256": "81d6041b8d72d8f7ea4af077cd55b606af8ec1395820b07139eaba3540216558"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XO33M4OIQR5AVASQQMHJMW2WFY5E4E22QG32JJNELL36DSC3LNTA/_state_passing_fwd_kernel.cubin",
+        "bytes": 10088,
+        "sha256": "cceb117d1eaf5f0091ff925967d971a2c365b4805feeb8d987ca9501b301b6a4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XO33M4OIQR5AVASQQMHJMW2WFY5E4E22QG32JJNELL36DSC3LNTA/_state_passing_fwd_kernel.json",
+        "bytes": 1013,
+        "sha256": "907769ea3e84ba1aa705cfdc2f7891868d281009e647d175117184d10caf89aa"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XO33M4OIQR5AVASQQMHJMW2WFY5E4E22QG32JJNELL36DSC3LNTA/_state_passing_fwd_kernel.llir",
+        "bytes": 9257,
+        "sha256": "1730913d51e6152b1a810c1abd1ce3e18c29dda48c055928bd075bfe9187741f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XO33M4OIQR5AVASQQMHJMW2WFY5E4E22QG32JJNELL36DSC3LNTA/_state_passing_fwd_kernel.ptx",
+        "bytes": 9759,
+        "sha256": "f403ecbe244bdc42b5cc6bda59f8bf93e5f896c0547fdebf3c396d93fa372b8e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XO33M4OIQR5AVASQQMHJMW2WFY5E4E22QG32JJNELL36DSC3LNTA/_state_passing_fwd_kernel.source",
+        "bytes": 27903,
+        "sha256": "90e48027618bfac0e7dd536267755d0d2259e6ba78603f3f66372c0e8c68fda6"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XO33M4OIQR5AVASQQMHJMW2WFY5E4E22QG32JJNELL36DSC3LNTA/_state_passing_fwd_kernel.ttgir",
+        "bytes": 12637,
+        "sha256": "0b622705ab2dfbb42e3aff4cf0eae75324d82205f90d84935dc4e9e65ba437bc"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XO33M4OIQR5AVASQQMHJMW2WFY5E4E22QG32JJNELL36DSC3LNTA/_state_passing_fwd_kernel.ttir",
+        "bytes": 12211,
+        "sha256": "c5474de5ed1d8e2f13f046d8dabf7fa9b9a0928a325b5fc03eeecb189c7ca9f8"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XPHPGYHBJIKB3ACOGCP3NT62ISPKUNYJTQNCVNRMO755LHYSXN2Q/__grp___chunk_state_fwd_kernel.json",
+        "bytes": 1367,
+        "sha256": "578dd3981b8c57d4c73407a061a4fd1562c1fef5c19f3e9e01969c051e201b95"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XPHPGYHBJIKB3ACOGCP3NT62ISPKUNYJTQNCVNRMO755LHYSXN2Q/_chunk_state_fwd_kernel.cubin",
+        "bytes": 102880,
+        "sha256": "c8505dda45cfdbb9a7c050970e4455413a8af64035553fe3a3b69445f859828c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XPHPGYHBJIKB3ACOGCP3NT62ISPKUNYJTQNCVNRMO755LHYSXN2Q/_chunk_state_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "3f604bc4be08980d94093361d48cd8125a843c10519b2c0d902964b9d1cb7010"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XPHPGYHBJIKB3ACOGCP3NT62ISPKUNYJTQNCVNRMO755LHYSXN2Q/_chunk_state_fwd_kernel.llir",
+        "bytes": 153893,
+        "sha256": "df6270cef4b0be7d8bc98e50851996192ee23656e9450310ecc982e6695baa82"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XPHPGYHBJIKB3ACOGCP3NT62ISPKUNYJTQNCVNRMO755LHYSXN2Q/_chunk_state_fwd_kernel.ptx",
+        "bytes": 86489,
+        "sha256": "5186944e53e7f49bcfdc1f5791a6fc53183e206794c6670d9d351663a7c14dd9"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XPHPGYHBJIKB3ACOGCP3NT62ISPKUNYJTQNCVNRMO755LHYSXN2Q/_chunk_state_fwd_kernel.source",
+        "bytes": 76044,
+        "sha256": "9c52dc1f76fe059eea8c4691251c29fd7cca3ba3ad3dd346ff9ee28492c8572a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XPHPGYHBJIKB3ACOGCP3NT62ISPKUNYJTQNCVNRMO755LHYSXN2Q/_chunk_state_fwd_kernel.ttgir",
+        "bytes": 50901,
+        "sha256": "b746f848b5b2dbcf4e5b035d3616f1ec85473638f164ae3a6af298e3bf6b7cb0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XPHPGYHBJIKB3ACOGCP3NT62ISPKUNYJTQNCVNRMO755LHYSXN2Q/_chunk_state_fwd_kernel.ttir",
+        "bytes": 30869,
+        "sha256": "b402d235a746277f90854e7ca830682ad9fd9f22f227e690af898edb7ee39801"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/XRES4XBLD7TFHTWQMKCU2ZWWKHTZT2WVULQSWT5BLQ66T7UJYNFA/__triton_launcher.cpython-310-aarch64-linux-gnu.so",
+        "bytes": 18400,
+        "sha256": "5f9f56904dcec8d8c326aef7afca43057748cf9f71abbab2508934b5fdab016e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YCPITZ6ZERZ65SC4B2WYKEEZJP6LYRTTHIFEONLVWTGF7YFHAGHQ/__grp___chunk_cumsum_fwd_kernel.json",
+        "bytes": 1381,
+        "sha256": "f6e97c4eb5eda3d07c254658af956a7eb883c5033742647ba5919a4b60350e2d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YCPITZ6ZERZ65SC4B2WYKEEZJP6LYRTTHIFEONLVWTGF7YFHAGHQ/_chunk_cumsum_fwd_kernel.cubin",
+        "bytes": 480560,
+        "sha256": "06759990c93048d6780ce1d5a6bef3a2c2517f4ac7223a47291204e2c4149247"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YCPITZ6ZERZ65SC4B2WYKEEZJP6LYRTTHIFEONLVWTGF7YFHAGHQ/_chunk_cumsum_fwd_kernel.json",
+        "bytes": 1016,
+        "sha256": "2b0e62b9a42a318aeb00cdc33b8ac9e978b56958f4e7a5da4cbcd2083442df3f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YCPITZ6ZERZ65SC4B2WYKEEZJP6LYRTTHIFEONLVWTGF7YFHAGHQ/_chunk_cumsum_fwd_kernel.llir",
+        "bytes": 1182878,
+        "sha256": "be4b6cf87f5ddce0b8763158a5d90c2f69b12924eb30c6ac2d67424d30557e04"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YCPITZ6ZERZ65SC4B2WYKEEZJP6LYRTTHIFEONLVWTGF7YFHAGHQ/_chunk_cumsum_fwd_kernel.ptx",
+        "bytes": 470816,
+        "sha256": "14442d35bbc821c648e725712976624b716aa2e52db8d8706914c8c1e45d5854"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YCPITZ6ZERZ65SC4B2WYKEEZJP6LYRTTHIFEONLVWTGF7YFHAGHQ/_chunk_cumsum_fwd_kernel.source",
+        "bytes": 46097,
+        "sha256": "1f8871bdeaeb99043cbb06a7fe3dd42dc0339c681960e02a64bf47afe367b653"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YCPITZ6ZERZ65SC4B2WYKEEZJP6LYRTTHIFEONLVWTGF7YFHAGHQ/_chunk_cumsum_fwd_kernel.ttgir",
+        "bytes": 22880,
+        "sha256": "2f79333df4087819ea7518f7f52f39db65001f02d98cc966b5f976bd72ccb10c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YCPITZ6ZERZ65SC4B2WYKEEZJP6LYRTTHIFEONLVWTGF7YFHAGHQ/_chunk_cumsum_fwd_kernel.ttir",
+        "bytes": 19663,
+        "sha256": "49a7b102c72bffa195a309db91c9190e48ce999a2d2b240fdc820533934e359e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YDYWSSKEJGKJF6P77ERMBWLM335EEWQ6DUVGDKW5ONWHCCS3ITNA/__grp___chunk_state_fwd_kernel.json",
+        "bytes": 1367,
+        "sha256": "7590c095d06a113191013c3b12f241fdfddc737c9cf12ff5ff603f927bfacfd1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YDYWSSKEJGKJF6P77ERMBWLM335EEWQ6DUVGDKW5ONWHCCS3ITNA/_chunk_state_fwd_kernel.cubin",
+        "bytes": 114144,
+        "sha256": "deebb3054b1320600f00eee69a45819cee983f9401e908ae18975706d58862d1"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YDYWSSKEJGKJF6P77ERMBWLM335EEWQ6DUVGDKW5ONWHCCS3ITNA/_chunk_state_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "47438a4f7572787f3eeebe771408035ff8ea49d7787d95419990456a27069e2d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YDYWSSKEJGKJF6P77ERMBWLM335EEWQ6DUVGDKW5ONWHCCS3ITNA/_chunk_state_fwd_kernel.llir",
+        "bytes": 182647,
+        "sha256": "b8023a880eaa1ec7d46b655dfcfdda1297163bbeef58f307331a28fad4a8fd2a"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YDYWSSKEJGKJF6P77ERMBWLM335EEWQ6DUVGDKW5ONWHCCS3ITNA/_chunk_state_fwd_kernel.ptx",
+        "bytes": 97344,
+        "sha256": "e676d8bdcd0f7073071fb41fdc0049cda2f3658b0be686388df33378e153aa13"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YDYWSSKEJGKJF6P77ERMBWLM335EEWQ6DUVGDKW5ONWHCCS3ITNA/_chunk_state_fwd_kernel.source",
+        "bytes": 75908,
+        "sha256": "d1e5bdf8ee136a0e69b8bd52694452dd816b98232d67e3ffadee4333007808e4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YDYWSSKEJGKJF6P77ERMBWLM335EEWQ6DUVGDKW5ONWHCCS3ITNA/_chunk_state_fwd_kernel.ttgir",
+        "bytes": 50590,
+        "sha256": "8976ddcb9efd778fb80d7614558343ff3ac4db0a32759d26d2cca0d06af7df40"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/YDYWSSKEJGKJF6P77ERMBWLM335EEWQ6DUVGDKW5ONWHCCS3ITNA/_chunk_state_fwd_kernel.ttir",
+        "bytes": 30526,
+        "sha256": "ed96531473db4e7da08e916362c4ef7304707736e6cd8d4afbf913edaffd813b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Z5YW335QTTUFFVHZBRRRR4GXKXEXNATEZOSMTPILVCESWPTSSXWA/__grp___chunk_scan_fwd_kernel.json",
+        "bytes": 1353,
+        "sha256": "d1248cdc35f3f57773fba718011beaf3696a86d21f5f1cafed64906c6800e02e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Z5YW335QTTUFFVHZBRRRR4GXKXEXNATEZOSMTPILVCESWPTSSXWA/_chunk_scan_fwd_kernel.cubin",
+        "bytes": 182624,
+        "sha256": "bcd6cd01aab19a7b7b697442dcc00d264e891144281d09b3607b6d0958877653"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Z5YW335QTTUFFVHZBRRRR4GXKXEXNATEZOSMTPILVCESWPTSSXWA/_chunk_scan_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "8ea76be128ac7d6ca0f84df7c9317bc7b4e3cc1c1f94f1a94a315668f71f988f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Z5YW335QTTUFFVHZBRRRR4GXKXEXNATEZOSMTPILVCESWPTSSXWA/_chunk_scan_fwd_kernel.llir",
+        "bytes": 333686,
+        "sha256": "571ea2b6b1e3106d254c0b749a1f116000decccbfbfe6239d1f3608da6ce53e5"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Z5YW335QTTUFFVHZBRRRR4GXKXEXNATEZOSMTPILVCESWPTSSXWA/_chunk_scan_fwd_kernel.ptx",
+        "bytes": 157806,
+        "sha256": "557ab4124469e9678b0a310a3fba122271db964f9e7f74d48279faa0e8fdd95d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Z5YW335QTTUFFVHZBRRRR4GXKXEXNATEZOSMTPILVCESWPTSSXWA/_chunk_scan_fwd_kernel.source",
+        "bytes": 111881,
+        "sha256": "b33156b2b85e3369ab5b79b276e89bd9bf4fa4f1731711125587cf2e133f7553"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Z5YW335QTTUFFVHZBRRRR4GXKXEXNATEZOSMTPILVCESWPTSSXWA/_chunk_scan_fwd_kernel.ttgir",
+        "bytes": 70102,
+        "sha256": "cac2d9f653f2a3af26139ed21f4dda10bdfa3a59e7ab42f99fc2259319faa8ec"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/Z5YW335QTTUFFVHZBRRRR4GXKXEXNATEZOSMTPILVCESWPTSSXWA/_chunk_scan_fwd_kernel.ttir",
+        "bytes": 44694,
+        "sha256": "363cecd72645693f8f9d06d97711c2946d15040caa999f4f7609fdd6db166e22"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZRNCXDAO5ZQYC2EWAU5JOKLNZGUMSU5V5F5DGGXOPMP7PNOZHO7Q/__grp___chunk_state_fwd_kernel.json",
+        "bytes": 1367,
+        "sha256": "ff42a77ade60c38dfeaf2e8b081f46a60ce9fc96806a6fff50de8f3b59ae9acc"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZRNCXDAO5ZQYC2EWAU5JOKLNZGUMSU5V5F5DGGXOPMP7PNOZHO7Q/_chunk_state_fwd_kernel.cubin",
+        "bytes": 114656,
+        "sha256": "1c7614bd253b435b4c70f74d90e3bce540544f337b6a22ae93759a810afb9b16"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZRNCXDAO5ZQYC2EWAU5JOKLNZGUMSU5V5F5DGGXOPMP7PNOZHO7Q/_chunk_state_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "d8f44846488556ac0a8be97f3e8076170cdcc32dfeee1ef4e39bf1600d57d967"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZRNCXDAO5ZQYC2EWAU5JOKLNZGUMSU5V5F5DGGXOPMP7PNOZHO7Q/_chunk_state_fwd_kernel.llir",
+        "bytes": 175360,
+        "sha256": "6fb769b04a88fb478469a29f09d12272409943c81a78bd2f6e7c3098cc80313b"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZRNCXDAO5ZQYC2EWAU5JOKLNZGUMSU5V5F5DGGXOPMP7PNOZHO7Q/_chunk_state_fwd_kernel.ptx",
+        "bytes": 96997,
+        "sha256": "1d7d717a213e83f84f98b8cef208117ed25d3fc183b84f629a11cb1bb2347097"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZRNCXDAO5ZQYC2EWAU5JOKLNZGUMSU5V5F5DGGXOPMP7PNOZHO7Q/_chunk_state_fwd_kernel.source",
+        "bytes": 76059,
+        "sha256": "ea3a0a73797924b9847c60547ec56d2627aaacc3d42dd69de784eedc3c63ffbc"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZRNCXDAO5ZQYC2EWAU5JOKLNZGUMSU5V5F5DGGXOPMP7PNOZHO7Q/_chunk_state_fwd_kernel.ttgir",
+        "bytes": 50901,
+        "sha256": "711e92f5639548259c8c8eb3488e408e78d4e4821e62e82b294ad50d854df2d0"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZRNCXDAO5ZQYC2EWAU5JOKLNZGUMSU5V5F5DGGXOPMP7PNOZHO7Q/_chunk_state_fwd_kernel.ttir",
+        "bytes": 30873,
+        "sha256": "aa99ab1885e3307554e7c7975ceb45b5112b6549c4e38f018438a63b1a8a5baf"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZZVUHSYM7J6ZHFGWIJB4N2DV55NHK2CYKBVZ77RVK5NK3MH23A6A/__grp___chunk_state_fwd_kernel.json",
+        "bytes": 1367,
+        "sha256": "fd03da50b49a1d548848c33628a8a4577dac397a516fc5705882f2a28ec75f4e"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZZVUHSYM7J6ZHFGWIJB4N2DV55NHK2CYKBVZ77RVK5NK3MH23A6A/_chunk_state_fwd_kernel.cubin",
+        "bytes": 89056,
+        "sha256": "755657a90a63eb980e4b402b4072c3a90d0a9a8a751a067a3b6e5a7a09194e3d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZZVUHSYM7J6ZHFGWIJB4N2DV55NHK2CYKBVZ77RVK5NK3MH23A6A/_chunk_state_fwd_kernel.json",
+        "bytes": 1015,
+        "sha256": "9af49c81e31d37857bf2ac1901cd449f97d360a5e163def501aa1fce09a1a55f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZZVUHSYM7J6ZHFGWIJB4N2DV55NHK2CYKBVZ77RVK5NK3MH23A6A/_chunk_state_fwd_kernel.llir",
+        "bytes": 124999,
+        "sha256": "25de74d420c37cda87395ff696182257777734f46c4034f5253473a114ab1f5d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZZVUHSYM7J6ZHFGWIJB4N2DV55NHK2CYKBVZ77RVK5NK3MH23A6A/_chunk_state_fwd_kernel.ptx",
+        "bytes": 77602,
+        "sha256": "26ffedf6cd84c1898e3de0deac7552a6f79ff2190b8422b96c5e02c8e2e6a02c"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZZVUHSYM7J6ZHFGWIJB4N2DV55NHK2CYKBVZ77RVK5NK3MH23A6A/_chunk_state_fwd_kernel.source",
+        "bytes": 75883,
+        "sha256": "6ac00bc5facb081f938283020ffe9716ab61ff1ee39c11494b378947b1b59745"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZZVUHSYM7J6ZHFGWIJB4N2DV55NHK2CYKBVZ77RVK5NK3MH23A6A/_chunk_state_fwd_kernel.ttgir",
+        "bytes": 54620,
+        "sha256": "35ffca8c5659eb24afd5bc3eb63be9a84b0a74612d97156989ff9b6155b4550f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/TRITON_CACHE_DIR/ZZVUHSYM7J6ZHFGWIJB4N2DV55NHK2CYKBVZ77RVK5NK3MH23A6A/_chunk_state_fwd_kernel.ttir",
+        "bytes": 30418,
+        "sha256": "00a735caac2f2332da7ad2a5c00f06b059137d334678d76e30dd3d3717728eb3"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/amc-validation-inference-20260927/gpu-gate/inference.lock",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "all_inference_processes_stopped": true,
+    "gpu_lease_unheld": true,
+    "root_absent": true
+  },
+  "memory_modes": {
+    "rml2016a": {
+      "budget": {
+        "allowed": true,
+        "available_bytes": 61664075776,
+        "input_bytes": 102498000,
+        "required_available_bytes": 13013024388
+      },
+      "load_seconds": 0.7121105699334294,
+      "mode": "resident_fork_readonly",
+      "resident_bytes": 102498000,
+      "sharing": "one parent allocation inherited read-only by sequential fresh model children; no parent CUDA context"
+    },
+    "rml2016b": {
+      "budget": {
+        "allowed": true,
+        "available_bytes": 61494202368,
+        "input_bytes": 559080000,
+        "required_available_bytes": 13583751888
+      },
+      "load_seconds": 4.062500610947609,
+      "mode": "resident_fork_readonly",
+      "resident_bytes": 559080000,
+      "sharing": "one parent allocation inherited read-only by sequential fresh model children; no parent CUDA context"
+    },
+    "rml2018a": {
+      "budget": {
+        "allowed": true,
+        "available_bytes": 62450081792,
+        "input_bytes": 9435104850,
+        "required_available_bytes": 24678782951
+      },
+      "load_seconds": 69.45517597184516,
+      "mode": "resident_fork_readonly",
+      "resident_bytes": 9435104850,
+      "sharing": "one parent allocation inherited read-only by sequential fresh model children; no parent CUDA context"
+    },
+    "hisarmod2019": {
+      "budget": {
+        "allowed": true,
+        "available_bytes": 59661934592,
+        "input_bytes": 2879370000,
+        "required_available_bytes": 16484114388
+      },
+      "load_seconds": 12.790767308091745,
+      "mode": "resident_fork_readonly",
+      "resident_bytes": 2879370000,
+      "sharing": "one parent allocation inherited read-only by sequential fresh model children; no parent CUDA context"
+    }
+  },
+  "completion_file_mtime_ns": 1790515070286948721,
+  "production_recognizer_available": false,
+  "conditional_sinr_report": "pending; all-row accuracy is not low-SINR evidence",
+  "new_rf": false,
+  "new_training": false
+}

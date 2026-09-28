@@ -117,3 +117,20 @@ Hisar首批实际开始比2018A完成标记晚7.794502096秒，满足先整套�
 6项测试通过，覆盖内存预算、驻留/分块输入相同、source原值及顺序、归一化、损坏/错行/错argmax拒绝、缺GPU记录而缺CPU拒绝。实机2016A八模型三路全部完成，792000次预测的成员、argmax/混淆计数读回通过；D10原source输入逐块重建SHA一致，source/raw/guard总体62.3515%/58.2212%/62.1485%。各模型三路在首/中/尾实际成员上通过batch/single数值门，source、raw/guard并列但不将整体精度当低SINR结论。
 
 后台单元`amc-validation-inference-20260927-resident.service`已进入2016B，48h内部期限、49h服务上限、120s停止宽限、单GPU租约。停止可创建结果根STOP或systemctl --user stop该单元。运行缓存`/var/tmp/sdrharness-dev/amc-validation-inference-20260927/`仍被使用，测试/准备日志已移入结果根startup-evidence；不得提前清缓存/租约或宣称整轮完成。无新RF、训练或生产切换。SHA、失败、启动及保留依据见[启动审计](../evidence/AMC_VALIDATION_INFERENCE_START_2026-09-27.json)。
+
+## 四套三路八模型识别完成（2026-09-28复核）
+
+后台于9月27日21:17:50完成，9月28日复核：四套×八模型×source/raw/guard共96组、17121240次预测全部完成。各数据集三路输入均按resident_fork_readonly一次驻留，跑完对应八模型后释放再切换；没有内存不足回退。32份当前权重SHA与登记值相同，FP32/TF32关闭及严格加载身份保持。
+
+最终读回全部预测块SHA、原seed42源行/排名、有限logits及argmax、96组混淆矩阵计数，32份模型报告与complete.json逐值一致。没有重跑模型或RF。全模型总体准确率在结果根`accuracy-summary.csv`，读回依据为`final-verification.json`，逐行预测和完整混淆计数仍保留。D10全部验证成员的总体准确率如下（不是高Z先导，也不是低SINR分层成绩）：
+
+| 数据集 | source | raw | guard | guard−raw（百分点） |
+| --- | ---: | ---: | ---: | ---: |
+| rml2016a | 62.35% | 58.22% | 62.15% | +3.93 |
+| rml2016b | 64.62% | 61.35% | 64.44% | +3.09 |
+| rml2018a | 63.86% | 49.53% | 58.26% | +8.73 |
+| hisarmod2019 | 70.24% | 24.14% | 59.68% | +35.54 |
+
+D10四套整体均为guard优于raw，但仍不能推出低SINR退化已解决；条件估计SINR分层及相应图表尚未生成，源Z不能替代接收SINR。source采用原始值/布局，接收两路采用既定适配；不将source到guard差额全部归因于单一LO机制。
+
+推理进程全部退出，GPU租约可独占获取并释放；删除本轮424缓存文件26547879字节，精确临时根`/var/tmp/sdrharness-dev/amc-validation-inference-20260927`已不存在。保留两份推理结果根（初次温度读取失败及a2完整结果）共11398文件1314455415字节，包含预测、配置身份、日志、汇总及最终清单；source/实收IQ/权重未删除或复制。`inference-retention-v1.json`逐文件列路径/大小/SHA，清单自身身份及删除清单见[最终审计](../evidence/AMC_VALIDATION_INFERENCE_COMPLETE_2026-09-28.json)。历史启动审计不改写；无训练、新RF或生产识别切换。

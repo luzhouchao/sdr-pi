@@ -27,7 +27,8 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
 - [x] 完整验证集2018A：383385行/375批全部封存；独立复核375份批次receipt SHA、VDS SHA、原val行号/排名及raw/guard有效性通过，Hisar首批开始晚于封存7.795秒。见[完整封存证据](evidence/AMC_VALIDATION_RML2018A_COMPLETE_2026-09-27.json)。仍未执行全验证集模型推理。
 - [x] 用户9月27日完整seed42验证集顺序收发：2016A 33000→2016B 180000→2018A 383385→Hisar 117000，共713385行/517批接收、raw/guard处理和封存完成；逐套落盘后才切换，最终源行/排名/VDS/receipt复核通过，USB空闲/P201恢复/临时目录清理完成。保留13998文件40941869862字节；975帧相消门未过保留raw，不删行。见[最终证据](evidence/AMC_VALIDATION_COMPLETE_2026-09-27.json)。完整验证集模型推理与条件SINR报告尚未运行。
 - [x] 完整验证集三路识别入口及首套：用户追加source，驻留单数据集、八模型顺序共享、内存不足分块、逐块SHA续跑；6测试及2016A八模型三路792000预测读回通过，119旧同轮RX块/7报告字节不变。温度sysfs初次失败及修正保留；见[启动记录](validation/AMC_UNIFORM_RF_2026-09-26.md#完整验证集三路八模型识别启动2026-09-27)。后台缓存仍在使用，整轮另项待完成。
-- [ ] 四套完整seed42验证集×8模型×source/raw/guard共96组、17121240预测及最终汇总/运行缓存清理；当前resident后台已进入2016B，不将首套或启动视为全部完成。条件SINR分层报告另待生成。
+- [x] 四套完整seed42验证集×8模型×source/raw/guard共96组、17121240预测全部完成，全部预测块SHA/原val行号/argmax/混淆计数及32权重身份读回通过；四套均驻留内存，后台退出。保留11398文件1314455415字节，清理424缓存26547879字节，临时根消失；见[最终审计](evidence/AMC_VALIDATION_INFERENCE_COMPLETE_2026-09-28.json)。
+- [ ] 新统一四数据集完整验证集的接收条件估计SINR分层及图表：source仅作原域基线，raw/guard按同成员及统一raw参考SINR配对；无效SINR单列，不用源Z替代。
 - [ ] 更长会话、低SINR多档及新入口STOP/断连故障注入仍待实机；本轮不作全量/生产准入。
 - [x] 四套D10统一seed42：沙盘正式权重/配置SHA、四份strict load通过，新三套CUDA全批/逐条logits容差与top-1一致通过；2018A权重未变。当前库仍32份且全部seed42；旧3非42包归档并保留旧seed路径身份。保留1020文件16757038字节，清理505文件26656872字节；无RF/生产切换，见[审计](evidence/D10_ALL_SEED42_IMPORT_2026-09-26.json)。
 - [x] 沙盘4090连接技能：个人技能`connect-shapan4090`安装并通过quick_validate，shapan4090/shapan4090-wsl两别名严格SSH读取身份通过；四D10源SHA与AGX匹配，明确D10/七baseline的不同训练服务器。未改远端配置/作业、无临时文件，见[审计](evidence/SHAPAN4090_CONNECTION_SKILL_2026-09-26.json)。
