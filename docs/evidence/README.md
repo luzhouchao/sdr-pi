@@ -348,3 +348,5 @@
 - [四套完整验证集条件SINR分层](AMC_VALIDATION_CONDITIONAL_SINR_2026-09-28.json)：713385行、5400模型/类/箱记录、9测试及独立读回、7图和无效组、原输入尺度线索；无新推理/RF。
 
 - [2018A原source仅RMS干预](AMC_SOURCE_RMS_CONTROL_2026-09-28.json)：两类31768成员、D10/MCFormer、63808有界forward，原source重现/归一化门及独立SHA读回，复现source→guard落差；不自动归因全部raw→guard机制。
+
+- [RMS历史实验复核](AMC_RMS_HISTORY_REVIEW_2026-09-28.json)：9月15/22日既有源域对照、同权重208重合成员两路top1零变化，区分源域损失与旧相消/尺度四路结论；无新模型实验。

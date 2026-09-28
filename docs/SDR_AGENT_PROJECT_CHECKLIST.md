@@ -30,7 +30,8 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
 - [x] 四套完整seed42验证集×8模型×source/raw/guard共96组、17121240预测全部完成，全部预测块SHA/原val行号/argmax/混淆计数及32权重身份读回通过；四套均驻留内存，后台退出。保留11398文件1314455415字节，清理424缓存26547879字节，临时根消失；见[最终审计](evidence/AMC_VALIDATION_INFERENCE_COMPLETE_2026-09-28.json)。
 - [x] 96组总体与同成员raw/guard分析：32组合整体均提升，D10 guard排名1/3/2/1；2018A纠正49837/回退16382，4ASK贡献47.33%回退，AM-SSB-SC主要在raw已退化。类ID按server-v1解释，无新推理/RF/临时文件；见[分析审计](evidence/AMC_VALIDATION_COMPARISON_2026-09-28.json)。不据此宣称低SINR退化解决。
 - [x] 新统一四数据集完整验证集的条件估计SINR分层及图表：713385行、32模型5400类/箱记录独立复核，9测试通过，7张PNG/SVG图，无效组单列。4ASK回退集中0–10dB，source/RX尺度差异待干预验证；Hisar411条8PSK无效组guard全错保留。保留38文件59088412字节、删字体缓存123432字节及临时根，无新推理/RF；见[分层审计](evidence/AMC_VALIDATION_CONDITIONAL_SINR_2026-09-28.json)。
-- [x] 2018A源域仅RMS干预：固定两类31768原val成员、D10/MCFormer，63808次有界forward；原source探针logits误差0、归一化数值门及独立输入/预测读回通过。单独归一化即重现两类source→guard落差，总体相差<0.30pp；留17文件6575942字节、删376缓存25714855字节。见[干预审计](evidence/AMC_SOURCE_RMS_CONTROL_2026-09-28.json)；未RF/训练/部署，不宣称已隔离实际raw→guard全部机制。
+- [x] 2018A源域仅RMS扩样复核：固定两类31768原val成员、D10/MCFormer，63808次有界forward；原source探针logits误差0、归一化数值门及独立输入/预测读回通过。单独归一化即重现两类source→guard落差，总体相差<0.30pp；留17文件6575942字节、删376缓存25714855字节。见[干预审计](evidence/AMC_SOURCE_RMS_CONTROL_2026-09-28.json)；未RF/训练/部署，不宣称已隔离实际raw→guard全部机制。
+- [x] RMS历史复核：9月15日8模型和9月22日D10已验证source-RMS敏感性；旧档案3个SHA核验、同权重208重合成员两路top1零变化。区分源域尺度损失与旧低源Z raw→guard退化，纠正首次发现表述；见[审计](evidence/AMC_RMS_HISTORY_REVIEW_2026-09-28.json)。无新推理/RF/临时文件，旧证据不改写。
 - [ ] 更长会话、低SINR多档及新入口STOP/断连故障注入仍待实机；本轮不作全量/生产准入。
 - [x] 四套D10统一seed42：沙盘正式权重/配置SHA、四份strict load通过，新三套CUDA全批/逐条logits容差与top-1一致通过；2018A权重未变。当前库仍32份且全部seed42；旧3非42包归档并保留旧seed路径身份。保留1020文件16757038字节，清理505文件26656872字节；无RF/生产切换，见[审计](evidence/D10_ALL_SEED42_IMPORT_2026-09-26.json)。
 - [x] 沙盘4090连接技能：个人技能`connect-shapan4090`安装并通过quick_validate，shapan4090/shapan4090-wsl两别名严格SSH读取身份通过；四D10源SHA与AGX匹配，明确D10/七baseline的不同训练服务器。未改远端配置/作业、无临时文件，见[审计](evidence/SHAPAN4090_CONNECTION_SKILL_2026-09-26.json)。

@@ -1,0 +1,73 @@
+{
+  "schema": "rms-history-reconciliation-v1",
+  "scope": "read-only review, no new inference/RF or archive mutation",
+  "historical_files_verified": [
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/plan.json",
+      "bytes": 37356,
+      "sha256": "d0cd17535d617341f0f0dfa6397813fac797fc5e0d423a44198cb73e1875d87d"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/results.json",
+      "bytes": 10695,
+      "sha256": "1c170fa0b6dbad2c6fbf1a0ab089f7a2c6a4295bb53673de8eaac75f741c1b08"
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/rml2018a-d10-replay-20260922/predictions.npz",
+      "bytes": 1040404,
+      "sha256": "55783229baee110aac821b6d07ab8f78d328fb003c5a4363213df30d12ff5ee4"
+    }
+  ],
+  "current_prediction_path": "/home/jetson/sdrharness/local-assets/amc-eval/results/source-rms-control-20260928/amc_mamba_d10/predictions.npz",
+  "current_prediction_sha256": "b5c6c57a5d32c1f566f7cb840a5868c7afa082babd20d2e1d431325d0e0ea9c1",
+  "same_checkpoint_sha256": "5d217592cabab54be4352d8ebddcc47eb9cf9b7ea81d1010027e8dd213546b81",
+  "overlap_rows": 208,
+  "overlap_source_rows_sha256": "30daff4433f573b178d82efa4e39dc131a44d70d33a7ad64e4c6b8a0746b31b1",
+  "top1_changes": {
+    "source": 0,
+    "source_rms": 0
+  },
+  "source_rms_max_abs_logit_difference": 1.9073486328125e-06,
+  "historical_class_counts": [
+    {
+      "class_id": 1,
+      "rows": 104,
+      "correct": {
+        "source": 71,
+        "source_rms": 20,
+        "raw": 73,
+        "guard": 13
+      }
+    },
+    {
+      "class_id": 18,
+      "rows": 104,
+      "correct": {
+        "source": 71,
+        "source_rms": 15,
+        "raw": 14,
+        "guard": 1
+      }
+    }
+  ],
+  "records": [
+    {
+      "date": "2026-09-15",
+      "document": "docs/validation/RML2018A_CLEAN12_EVALUATION_2026-09-14.md",
+      "finding": "8 models, 2496 members; source RMS-only loss 3.77 to 12.18pp"
+    },
+    {
+      "date": "2026-09-16",
+      "document": "docs/validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md",
+      "finding": "D8 pilot-amplitude and shared-raw-RMS candidates worsened performance; not enabled"
+    },
+    {
+      "date": "2026-09-22",
+      "document": "docs/validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md",
+      "finding": "D10 source RMS sensitivity already measured; separate 576-row low-source-Z factorial showed cancellation loss persists without renormalization"
+    }
+  ],
+  "correction": "2026-09-28 source-only RMS result extends/reproduces an existing finding, not a first discovery; source-to-normalized-input loss and received raw-to-guard loss remain distinct questions",
+  "temporary_files_created": 0,
+  "new_model_predictions": 0
+}
