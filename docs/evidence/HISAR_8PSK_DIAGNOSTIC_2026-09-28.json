@@ -1,0 +1,360 @@
+{
+  "schema": "hisar-8psk-diagnostic-complete-v1",
+  "completed_ns": 1790608836122690118,
+  "root": "/home/jetson/sdrharness/local-assets/amc-eval/results/hisar-8psk-audit-20260928",
+  "plan": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/hisar-8psk-audit-20260928/plan.json",
+    "bytes": 5270,
+    "sha256": "b732d50f70f49fe8364a907c99437a73a0d90b2f5b0381411721da7a07cfc786"
+  },
+  "followup_plan": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/hisar-8psk-audit-20260928/followup-plan.json",
+    "bytes": 4087,
+    "sha256": "c02be41a2545b6b94381ff075b74ee178e97a9917bd8cecc3f04bdeefe438dc9"
+  },
+  "source_audit": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/hisar-8psk-audit-20260928/source-audit.json",
+    "bytes": 3955,
+    "sha256": "510f87d2a25ba78f14f1c5e0b37d4e344ea08cb16787e5ccbb2a76763f299f54"
+  },
+  "verification": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/hisar-8psk-audit-20260928/verification.json",
+    "bytes": 4388,
+    "sha256": "6cc4252b4bd3f3257e0ca58acff9b4062302ca5d2e1f6775c921a4b654ff9779"
+  },
+  "retention": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/hisar-8psk-audit-20260928/retention-v1.json",
+    "bytes": 6706,
+    "sha256": "70a626d127b196fb557371b48db5ea3f54de7e7b316083b650f80c86570a555e"
+  },
+  "retained_files": 26,
+  "retained_bytes": 2044693,
+  "cleanup": {
+    "manifest": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/hisar-8psk-audit-20260928/evidence/cleanup.json",
+      "bytes": 107865,
+      "sha256": "3027872fdf85796fba84b53abf8cad121ebd490903e5bfb46908b922bb2ad86d"
+    },
+    "file_count": 378,
+    "bytes": 25889359,
+    "root_absent": true,
+    "processes_stopped": true,
+    "gpu_lease_unheld": true
+  },
+  "main_results": {
+    "baseline_max_errors": {
+      "guard": 0.0,
+      "matched": 0.0,
+      "raw": 0.0
+    },
+    "checkpoint_sha256": "1c55c8d9baec34322a56fc4292298bbd08ff9f79cfcee4270f083ba3c8f84959",
+    "diagnostic_only": true,
+    "elapsed_seconds": 150.08376888907515,
+    "forward_rows": 4419,
+    "plan_sha256": "b732d50f70f49fe8364a907c99437a73a0d90b2f5b0381411721da7a07cfc786",
+    "posthoc": true,
+    "results": {
+      "guard": {
+        "control": {
+          "correct": 73,
+          "prediction_counts": {
+            "4FSK": 6,
+            "8PAM": 1,
+            "8PSK": 73
+          },
+          "rows": 80
+        },
+        "target": {
+          "correct": 0,
+          "prediction_counts": {
+            "128QAM": 16,
+            "16PAM": 15,
+            "4FSK": 1,
+            "4QAM": 50,
+            "64PSK": 18,
+            "64QAM": 1,
+            "8QAM": 28,
+            "AM-DSB": 66,
+            "AM-LSB": 54,
+            "BPSK": 78,
+            "FM": 1,
+            "PM": 5,
+            "QPSK": 78
+          },
+          "rows": 411
+        }
+      },
+      "guard_middle_zero": {
+        "control": {
+          "correct": 80,
+          "prediction_counts": {
+            "8PSK": 80
+          },
+          "rows": 80
+        },
+        "target": {
+          "correct": 411,
+          "prediction_counts": {
+            "8PSK": 411
+          },
+          "rows": 411
+        }
+      },
+      "guard_minus_dc": {
+        "control": {
+          "correct": 72,
+          "prediction_counts": {
+            "4FSK": 7,
+            "8PAM": 1,
+            "8PSK": 72
+          },
+          "rows": 80
+        },
+        "target": {
+          "correct": 0,
+          "prediction_counts": {
+            "128QAM": 31,
+            "16PAM": 33,
+            "4FSK": 1,
+            "4QAM": 43,
+            "64PSK": 11,
+            "64QAM": 5,
+            "8QAM": 41,
+            "AM-DSB": 56,
+            "AM-LSB": 21,
+            "BPSK": 109,
+            "PM": 7,
+            "QPSK": 53
+          },
+          "rows": 411
+        }
+      },
+      "ideal_no_pilot": {
+        "control": {
+          "correct": 73,
+          "prediction_counts": {
+            "4FSK": 6,
+            "8PSK": 73,
+            "8QAM": 1
+          },
+          "rows": 80
+        },
+        "target": {
+          "correct": 411,
+          "prediction_counts": {
+            "8PSK": 411
+          },
+          "rows": 411
+        }
+      },
+      "ideal_rrc": {
+        "control": {
+          "correct": 73,
+          "prediction_counts": {
+            "4FSK": 6,
+            "8PSK": 73,
+            "8QAM": 1
+          },
+          "rows": 80
+        },
+        "target": {
+          "correct": 411,
+          "prediction_counts": {
+            "8PSK": 411
+          },
+          "rows": 411
+        }
+      },
+      "matched": {
+        "control": {
+          "correct": 73,
+          "prediction_counts": {
+            "4FSK": 6,
+            "8PSK": 73,
+            "8QAM": 1
+          },
+          "rows": 80
+        },
+        "target": {
+          "correct": 411,
+          "prediction_counts": {
+            "8PSK": 411
+          },
+          "rows": 411
+        }
+      },
+      "raw": {
+        "control": {
+          "correct": 78,
+          "prediction_counts": {
+            "4FSK": 1,
+            "8PSK": 78,
+            "8QAM": 1
+          },
+          "rows": 80
+        },
+        "target": {
+          "correct": 411,
+          "prediction_counts": {
+            "8PSK": 411
+          },
+          "rows": 411
+        }
+      },
+      "source_middle_from_guard": {
+        "control": {
+          "correct": 73,
+          "prediction_counts": {
+            "4FSK": 6,
+            "8PAM": 1,
+            "8PSK": 73
+          },
+          "rows": 80
+        },
+        "target": {
+          "correct": 0,
+          "prediction_counts": {
+            "128QAM": 8,
+            "16PSK": 68,
+            "256QAM": 15,
+            "4QAM": 9,
+            "64PSK": 34,
+            "8QAM": 69,
+            "AM-DSB": 13,
+            "BPSK": 81,
+            "QPSK": 114
+          },
+          "rows": 411
+        }
+      },
+      "source_plus_dc": {
+        "control": {
+          "correct": 73,
+          "prediction_counts": {
+            "4FSK": 6,
+            "8PSK": 73,
+            "8QAM": 1
+          },
+          "rows": 80
+        },
+        "target": {
+          "correct": 0,
+          "prediction_counts": {
+            "16QAM": 408,
+            "2FSK": 2,
+            "FM": 1
+          },
+          "rows": 411
+        }
+      }
+    },
+    "status": "complete"
+  },
+  "followup_results": {
+    "baseline_max_error": 1.0967254638671875e-05,
+    "forward_rows": 930,
+    "metrics": {
+      "normal_8psk_papr_db": [
+        3.06965721477596,
+        5.129559939974806,
+        9.746634457716162,
+        13.050063901060195,
+        21.299664175906265
+      ],
+      "removed_lo_fraction_of_raw": [
+        0.9138852377255653,
+        0.9427452499161803,
+        0.9608223931251929,
+        0.9789105906367204,
+        0.9880273414481401
+      ],
+      "target_papr_db": [
+        24.973087310791016,
+        26.66735076904297,
+        27.75558090209961,
+        29.50326442718506,
+        30.010467529296875
+      ]
+    },
+    "plan_sha256": "c02be41a2545b6b94381ff075b74ee178e97a9917bd8cecc3f04bdeefe438dc9",
+    "results": {
+      "cross_class_matched": {
+        "correct": 48,
+        "counts": {
+          "128QAM": 2,
+          "16FSK": 1,
+          "16PAM": 2,
+          "16PSK": 2,
+          "16QAM": 2,
+          "256QAM": 2,
+          "2FSK": 2,
+          "32PSK": 2,
+          "32QAM": 2,
+          "4FSK": 2,
+          "4PAM": 2,
+          "4QAM": 2,
+          "64PSK": 2,
+          "64QAM": 2,
+          "8FSK": 3,
+          "8PAM": 2,
+          "8QAM": 2,
+          "AM-DSB": 2,
+          "AM-DSB-SC": 2,
+          "AM-LSB": 3,
+          "AM-USB": 2,
+          "BPSK": 2,
+          "FM": 2,
+          "PM": 2,
+          "QPSK": 1
+        },
+        "predicted_8psk": 0,
+        "rows": 50
+      },
+      "cross_class_middle_zero": {
+        "correct": 0,
+        "counts": {
+          "8PSK": 50
+        },
+        "predicted_8psk": 50,
+        "rows": 50
+      },
+      "removed_lo_only": {
+        "correct": 411,
+        "counts": {
+          "8PSK": 411
+        },
+        "predicted_8psk": 411,
+        "rows": 411
+      },
+      "source_plus_fixed_1pct_complex_awgn": {
+        "correct": 0,
+        "counts": {
+          "256QAM": 10,
+          "8QAM": 354,
+          "AM-DSB": 46,
+          "QPSK": 1
+        },
+        "predicted_8psk": 0,
+        "rows": 411
+      }
+    },
+    "status": "complete",
+    "total_forward_rows": 5349
+  },
+  "interpretation": {
+    "pilot": "QPSK, not 8PSK. Ideal with/without pilot all 411 retain 8PSK outputs; 215 second-window rows outside direct pilot tail; exact ADC replay.",
+    "source": "All 117000 original validation members audited: only these 411 have middle [32,992) energy fraction below 1e-6. Stricter initial 1e-12/1e-18 counters remain zero, not exact zero IQ.",
+    "rf": "High source PAPR reduces average TX power under the fixed per-window peak rule. Removed LO comprises median 96.08% of raw power.",
+    "model": "Pure removed LO alone produces 411/411 8PSK outputs. Adding about 1% RMS noise to target source produces 0/411. Zeroing interiors of 50 other-class source members produces 50/50 8PSK outputs.",
+    "boundary": "Post-hoc response localization, not a deployable repair or altered-waveform recognition accuracy. Source generation upstream and internal training mechanism not established. Other Hisar residual gaps remain."
+  },
+  "new_rf": false,
+  "training": false,
+  "production_recognizer_available": false,
+  "cross_class_original_replay_readback": {
+    "rows": 50,
+    "max_logit_error": 4.76837158203125e-06,
+    "top1_equal": true,
+    "parent": "local-assets/amc-eval/results/matched-source-baseline-20260928/hisarmod2019/amc_mamba_d10"
+  }
+}
