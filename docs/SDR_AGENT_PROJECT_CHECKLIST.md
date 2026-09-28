@@ -32,6 +32,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
 - [x] 新统一四数据集完整验证集的条件估计SINR分层及图表：713385行、32模型5400类/箱记录独立复核，9测试通过，7张PNG/SVG图，无效组单列。4ASK回退集中0–10dB，source/RX尺度差异待干预验证；Hisar411条8PSK无效组guard全错保留。保留38文件59088412字节、删字体缓存123432字节及临时根，无新推理/RF；见[分层审计](evidence/AMC_VALIDATION_CONDITIONAL_SINR_2026-09-28.json)。
 - [x] 2018A源域仅RMS扩样复核：固定两类31768原val成员、D10/MCFormer，63808次有界forward；原source探针logits误差0、归一化数值门及独立输入/预测读回通过。单独归一化即重现两类source→guard落差，总体相差<0.30pp；留17文件6575942字节、删376缓存25714855字节。见[干预审计](evidence/AMC_SOURCE_RMS_CONTROL_2026-09-28.json)；未RF/训练/部署，不宣称已隔离实际raw→guard全部机制。
 - [x] RMS历史复核：9月15日8模型和9月22日D10已验证source-RMS敏感性；旧档案3个SHA核验、同权重208重合成员两路top1零变化。区分源域尺度损失与旧低源Z raw→guard退化，纠正首次发现表述；见[审计](evidence/AMC_RMS_HISTORY_REVIEW_2026-09-28.json)。无新推理/RF/临时文件，旧证据不改写。
+- [x] 新RRC幅度链审计＋一致幅度预处理基线：四套×八模型5707080条覆盖、4904544次新forward，32组读回/身份/复用核验通过；517批713385行缩放及四套TX幅度不可辨识证明通过。6张PNG/SVG图按同raw参考条件SINR，无效单列；2018A匹配source与guard差0.079～0.561pp，Hisar仍有411条8PSK异常。保留5741文件450404784字节，删除425缓存26669967字节及临时根，后台退出；见[审计](evidence/AMC_MATCHED_SOURCE_BASELINE_2026-09-28.json)。无RF/训练/生产变更。
 - [ ] 更长会话、低SINR多档及新入口STOP/断连故障注入仍待实机；本轮不作全量/生产准入。
 - [x] 四套D10统一seed42：沙盘正式权重/配置SHA、四份strict load通过，新三套CUDA全批/逐条logits容差与top-1一致通过；2018A权重未变。当前库仍32份且全部seed42；旧3非42包归档并保留旧seed路径身份。保留1020文件16757038字节，清理505文件26656872字节；无RF/生产切换，见[审计](evidence/D10_ALL_SEED42_IMPORT_2026-09-26.json)。
 - [x] 沙盘4090连接技能：个人技能`connect-shapan4090`安装并通过quick_validate，shapan4090/shapan4090-wsl两别名严格SSH读取身份通过；四D10源SHA与AGX匹配，明确D10/七baseline的不同训练服务器。未改远端配置/作业、无临时文件，见[审计](evidence/SHAPAN4090_CONNECTION_SKILL_2026-09-26.json)。

@@ -350,3 +350,5 @@
 - [2018A原source仅RMS干预](AMC_SOURCE_RMS_CONTROL_2026-09-28.json)：两类31768成员、D10/MCFormer、63808有界forward，原source重现/归一化门及独立SHA读回，复现source→guard落差；不自动归因全部raw→guard机制。
 
 - [RMS历史实验复核](AMC_RMS_HISTORY_REVIEW_2026-09-28.json)：9月15/22日既有源域对照、同权重208重合成员两路top1零变化，区分源域损失与旧相消/尺度四路结论；无新模型实验。
+
+- [幅度链审计与四套八模型匹配基线](AMC_MATCHED_SOURCE_BASELINE_2026-09-28.json)：5707080条覆盖、32组全量读回、517批缩放/不可辨识证明、四路总体及同raw参考SINR图；保留原source成绩和Hisar未解异常，完成缓存清理，无新RF/训练。
