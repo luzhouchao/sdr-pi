@@ -342,3 +342,5 @@
 - [完整验证集三路八模型识别启动](AMC_VALIDATION_INFERENCE_START_2026-09-27.json)：用户追加source、单套内存驻留、32份seed42、初次温度读取失败、6测试和2016A三路首套读回；整轮仍运行。
 
 - [四套三路八模型识别完成](AMC_VALIDATION_INFERENCE_COMPLETE_2026-09-28.json)：96组/17121240预测全量读回、32权重身份、总体准确率CSV、驻留内存执行及最终缓存清理；条件SINR分层待生成。
+
+- [完整验证集总体与同成员分析](AMC_VALIDATION_COMPARISON_2026-09-28.json)：32组合总体收益、逐成员纠正/回退、D10类别瓶颈、2018A server-v1标签身份；无新预测或源Z分层。
