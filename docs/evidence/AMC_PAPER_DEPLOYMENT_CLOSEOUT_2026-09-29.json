@@ -1,0 +1,594 @@
+{
+  "schema": "amc-paper-deployment-closeout-v1",
+  "status": "complete",
+  "result_root": "/home/jetson/sdrharness/local-assets/amc-eval/results/paper-deployment-closeout-20260929",
+  "scope": "offline coaxial-link validation; timing is a separate 2026-09-29 microbenchmark, not full radio real-time deployment",
+  "host": {
+    "commands": [
+      {
+        "args": [
+          "uname",
+          "-r"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "5.15.148-tegra"
+      },
+      {
+        "args": [
+          "nvpmodel",
+          "-q"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NV Power Mode: MODE_50W\n3"
+      },
+      {
+        "args": [
+          "dpkg-query",
+          "-W",
+          "nvidia-jetpack",
+          "nvidia-l4t-core",
+          "cuda-toolkit-12-6"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "cuda-toolkit-12-6\t12.6.11-1\nnvidia-jetpack\t6.2.1+b38\nnvidia-l4t-core\t36.4.4-20250616085344"
+      },
+      {
+        "args": [
+          "systemctl",
+          "show",
+          "spark-x25.service",
+          "-p",
+          "ActiveState",
+          "-p",
+          "MainPID"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "MainPID=0\nActiveState=inactive"
+      }
+    ],
+    "files": {
+      "/etc/nv_tegra_release": "# R36 (release), REVISION: 4.4, GCID: 41062509, BOARD: generic, EABI: aarch64, DATE: Mon Jun 16 16:07:13 UTC 2025\n# KERNEL_VARIANT: oot\nTARGET_USERSPACE_LIB_DIR=nvidia\nTARGET_USERSPACE_LIB_DIR_PATH=usr/lib/aarch64-linux-gnu/nvidia",
+      "/etc/os-release": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy",
+      "/proc/device-tree/compatible": "nvidia,p3737-0000+p3701-0005\nnvidia,p3701-0005\nnvidia,tegra234",
+      "/proc/device-tree/model": "NVIDIA Jetson AGX Orin Developer Kit",
+      "/proc/meminfo": "MemTotal:       64348728 kB\nMemFree:         6343852 kB\nMemAvailable:   57856892 kB\nBuffers:          630804 kB\nCached:         50767316 kB\nSwapCached:         1452 kB\nActive:         49299736 kB\nInactive:        2718452 kB\nActive(anon):     162832 kB\nInactive(anon):   493920 kB\nActive(file):   49136904 kB\nInactive(file):  2224532 kB\nUnevictable:       35396 kB\nMlocked:               0 kB\nSwapTotal:      32174352 kB\nSwapFree:       30593040 kB\nDirty:               688 kB\nWriteback:             0 kB\nAnonPages:        636256 kB\nMapped:           417476 kB\nShmem:              1308 kB\nKReclaimable:    1292024 kB\nSlab:            1604080 kB\nSReclaimable:    1292024 kB\nSUnreclaim:       312056 kB\nKernelStack:       14208 kB\nPageTables:        32412 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    64348716 kB\nCommitted_AS:    7564528 kB\nVmallocTotal:   133143592960 kB\nVmallocUsed:      250788 kB\nVmallocChunk:          0 kB\nPercpu:            11280 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:    253952 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:         0 kB\nFilePmdMapped:         0 kB\nCmaTotal:         524288 kB\nCmaFree:            5412 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB",
+      "/sys/class/devfreq/17000000.gpu/cur_freq": "306000000",
+      "/sys/class/devfreq/17000000.gpu/governor": "nvhost_podgov",
+      "/sys/class/devfreq/17000000.gpu/load": null,
+      "/sys/class/devfreq/17000000.gpu/max_freq": "816000000",
+      "/sys/class/devfreq/17000000.gpu/min_freq": "306000000",
+      "/sys/devices/system/cpu/online": "0-11"
+    },
+    "time_ns": 1790651106804923652
+  },
+  "runtime": {
+    "autocast": false,
+    "backend": "real_mamba2_weight_tied_bidirectional_d8_length_conditioned_shared_coarse_gated_token_v1_project_once_batched_v1_d10_v1",
+    "cuda_runtime_version": {
+      "status": 0,
+      "value": 12060
+    },
+    "cudnn_benchmark": false,
+    "cudnn_tf32": false,
+    "cudnn_version": 90300,
+    "gpu": {
+      "compute_capability": [
+        8,
+        7
+      ],
+      "multiprocessors": 16,
+      "name": "Orin",
+      "total_memory_bytes": 65893097472
+    },
+    "loaded_libraries": {
+      "/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/lib/python3.10/site-packages/causal_conv1d_cuda.cpython-310-aarch64-linux-gnu.so": "94a9393a2d5d9e3e2488dc73f24538b641f43d294fdfb99ef6a891dab6689150",
+      "/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/lib/python3.10/site-packages/selective_scan_cuda.cpython-310-aarch64-linux-gnu.so": "f357fdeb6e951ae3d89e592ff2088b9eb16455a3d372c2fea0c990307617faa2",
+      "/usr/local/cuda-12.6/targets/aarch64-linux/lib/libcudart.so.12.6.68": "dbd549c91a1fd8bbae65dd9b733fddf0e98382301f587ce1388ab49c42360ead"
+    },
+    "matmul_tf32": false,
+    "model_class": "models.d10.AMCMambaD10",
+    "packages": {
+      "causal-conv1d": "1.6.1",
+      "h5py": "3.14.0",
+      "mamba-ssm": "2.3.1",
+      "numpy": "1.26.4",
+      "triton": "3.4.0"
+    },
+    "parameters": 125294,
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+    "torch": "2.8.0",
+    "torch_cuda_build": "12.6",
+    "torch_interop_threads": 1,
+    "torch_threads": 2
+  },
+  "counts": {
+    "path": "/home/jetson/sdrharness/docs/evidence/AMC_PAPER_DEPLOYMENT_COUNTS_2026-09-29.csv",
+    "sha256": "80bd12c0b4c9141933b596767b26b2fc2a517c9f7bd6d86830641521af18264c",
+    "groups": 32,
+    "verification_path": "/home/jetson/sdrharness/local-assets/amc-eval/results/paper-deployment-closeout-20260929/paper-counts-verification.json"
+  },
+  "timing": {
+    "path": "/home/jetson/sdrharness/docs/evidence/AMC_PAPER_D10_TIMING_2026-09-29.csv",
+    "sha256": "ceec0dc90ecc8baa11049825c8181b58b4ebdc4d2b4ed4225e4ce3192b26dbe6",
+    "cases": 16,
+    "results": [
+      {
+        "dataset": "rml2016a",
+        "native_samples": 128,
+        "batch_size": 1,
+        "scope": "forward",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 15.098333010000001,
+        "host_median_ms": 15.087659500000001,
+        "host_p95_ms": 15.207178650000001,
+        "cuda_event_median_ms": 15.075135707855225,
+        "windows_per_second_mean": 66.23247740910703,
+        "cuda_peak_allocated_bytes": 11120128,
+        "cuda_peak_reserved_bytes": 25165824,
+        "process_peak_rss_kib": 1267604,
+        "parameters": 125294,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "rml2016a",
+        "native_samples": 128,
+        "batch_size": 1,
+        "scope": "pipeline",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 15.749902244999998,
+        "host_median_ms": 15.67245,
+        "host_p95_ms": 16.60018,
+        "cuda_event_median_ms": "",
+        "windows_per_second_mean": 63.492457568583475,
+        "cuda_peak_allocated_bytes": 11120128,
+        "cuda_peak_reserved_bytes": 25165824,
+        "process_peak_rss_kib": 1267920,
+        "parameters": 125294,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "rml2016a",
+        "native_samples": 128,
+        "batch_size": 128,
+        "scope": "forward",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 15.4579027,
+        "host_median_ms": 15.195625,
+        "host_p95_ms": 17.233741199999997,
+        "cuda_event_median_ms": 15.184415817260742,
+        "windows_per_second_mean": 8280.554127177938,
+        "cuda_peak_allocated_bytes": 142468608,
+        "cuda_peak_reserved_bytes": 155189248,
+        "process_peak_rss_kib": 1267920,
+        "parameters": 125294,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "rml2016a",
+        "native_samples": 128,
+        "batch_size": 128,
+        "scope": "pipeline",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 16.55882451,
+        "host_median_ms": 16.386663,
+        "host_p95_ms": 18.3763936,
+        "cuda_event_median_ms": "",
+        "windows_per_second_mean": 7730.0173042295255,
+        "cuda_peak_allocated_bytes": 142468608,
+        "cuda_peak_reserved_bytes": 155189248,
+        "process_peak_rss_kib": 1267920,
+        "parameters": 125294,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "rml2016b",
+        "native_samples": 128,
+        "batch_size": 1,
+        "scope": "forward",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 15.198431735,
+        "host_median_ms": 15.1915115,
+        "host_p95_ms": 15.29936665,
+        "cuda_event_median_ms": 15.178736209869385,
+        "windows_per_second_mean": 65.79626223521015,
+        "cuda_peak_allocated_bytes": 11119616,
+        "cuda_peak_reserved_bytes": 25165824,
+        "process_peak_rss_kib": 1162552,
+        "parameters": 125166,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "rml2016b",
+        "native_samples": 128,
+        "batch_size": 1,
+        "scope": "pipeline",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 15.719147775,
+        "host_median_ms": 15.705295,
+        "host_p95_ms": 15.865522449999998,
+        "cuda_event_median_ms": "",
+        "windows_per_second_mean": 63.61668038965936,
+        "cuda_peak_allocated_bytes": 11119616,
+        "cuda_peak_reserved_bytes": 25165824,
+        "process_peak_rss_kib": 1162552,
+        "parameters": 125166,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "rml2016b",
+        "native_samples": 128,
+        "batch_size": 128,
+        "scope": "forward",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 15.389496265000002,
+        "host_median_ms": 15.1960865,
+        "host_p95_ms": 16.84397705,
+        "cuda_event_median_ms": 15.184927940368652,
+        "windows_per_second_mean": 8317.361257048266,
+        "cuda_peak_allocated_bytes": 142468096,
+        "cuda_peak_reserved_bytes": 155189248,
+        "process_peak_rss_kib": 1162552,
+        "parameters": 125166,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "rml2016b",
+        "native_samples": 128,
+        "batch_size": 128,
+        "scope": "pipeline",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 16.438541555,
+        "host_median_ms": 16.3157335,
+        "host_p95_ms": 16.97488615,
+        "cuda_event_median_ms": "",
+        "windows_per_second_mean": 7786.578850181943,
+        "cuda_peak_allocated_bytes": 142468096,
+        "cuda_peak_reserved_bytes": 155189248,
+        "process_peak_rss_kib": 1162552,
+        "parameters": 125166,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "rml2018a",
+        "native_samples": 1024,
+        "batch_size": 1,
+        "scope": "forward",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 27.07180359,
+        "host_median_ms": 27.064685,
+        "host_p95_ms": 27.2276334,
+        "cuda_event_median_ms": 27.051471710205078,
+        "windows_per_second_mean": 36.9388022735725,
+        "cuda_peak_allocated_bytes": 12734976,
+        "cuda_peak_reserved_bytes": 27262976,
+        "process_peak_rss_kib": 1155272,
+        "parameters": 126958,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "rml2018a",
+        "native_samples": 1024,
+        "batch_size": 1,
+        "scope": "pipeline",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 27.498317220000004,
+        "host_median_ms": 27.4355905,
+        "host_p95_ms": 28.1409105,
+        "cuda_event_median_ms": "",
+        "windows_per_second_mean": 36.36586166344327,
+        "cuda_peak_allocated_bytes": 12734976,
+        "cuda_peak_reserved_bytes": 27262976,
+        "process_peak_rss_kib": 1155580,
+        "parameters": 126958,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "rml2018a",
+        "native_samples": 1024,
+        "batch_size": 128,
+        "scope": "forward",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 58.79824197,
+        "host_median_ms": 58.792574,
+        "host_p95_ms": 58.86575285,
+        "cuda_event_median_ms": 58.7872314453125,
+        "windows_per_second_mean": 2176.935835348752,
+        "cuda_peak_allocated_bytes": 349437440,
+        "cuda_peak_reserved_bytes": 381681664,
+        "process_peak_rss_kib": 1156372,
+        "parameters": 126958,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "rml2018a",
+        "native_samples": 1024,
+        "batch_size": 128,
+        "scope": "pipeline",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 60.089694405,
+        "host_median_ms": 60.048646500000004,
+        "host_p95_ms": 60.453295999999995,
+        "cuda_event_median_ms": "",
+        "windows_per_second_mean": 2130.1489592756066,
+        "cuda_peak_allocated_bytes": 349437440,
+        "cuda_peak_reserved_bytes": 379584512,
+        "process_peak_rss_kib": 1156636,
+        "parameters": 126958,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "hisarmod2019",
+        "native_samples": 1024,
+        "batch_size": 1,
+        "scope": "forward",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 27.124622770000002,
+        "host_median_ms": 27.084871,
+        "host_p95_ms": 27.3354766,
+        "cuda_event_median_ms": 27.07153606414795,
+        "windows_per_second_mean": 36.866872158163474,
+        "cuda_peak_allocated_bytes": 12736000,
+        "cuda_peak_reserved_bytes": 27262976,
+        "process_peak_rss_kib": 1148864,
+        "parameters": 127214,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "hisarmod2019",
+        "native_samples": 1024,
+        "batch_size": 1,
+        "scope": "pipeline",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 27.6062022,
+        "host_median_ms": 27.463231999999998,
+        "host_p95_ms": 28.35408515,
+        "cuda_event_median_ms": "",
+        "windows_per_second_mean": 36.223743952726686,
+        "cuda_peak_allocated_bytes": 12736000,
+        "cuda_peak_reserved_bytes": 27262976,
+        "process_peak_rss_kib": 1149184,
+        "parameters": 127214,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "hisarmod2019",
+        "native_samples": 1024,
+        "batch_size": 128,
+        "scope": "forward",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 58.76362485,
+        "host_median_ms": 58.7564175,
+        "host_p95_ms": 58.83726625,
+        "cuda_event_median_ms": 58.751359939575195,
+        "windows_per_second_mean": 2178.218248563337,
+        "cuda_peak_allocated_bytes": 349438464,
+        "cuda_peak_reserved_bytes": 381681664,
+        "process_peak_rss_kib": 1149976,
+        "parameters": 127214,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      },
+      {
+        "dataset": "hisarmod2019",
+        "native_samples": 1024,
+        "batch_size": 128,
+        "scope": "pipeline",
+        "warmup": 30,
+        "repeats": 200,
+        "host_mean_ms": 59.930935675,
+        "host_median_ms": 59.923691500000004,
+        "host_p95_ms": 60.04399885,
+        "cuda_event_median_ms": "",
+        "windows_per_second_mean": 2135.791783631284,
+        "cuda_peak_allocated_bytes": 349438464,
+        "cuda_peak_reserved_bytes": 381681664,
+        "process_peak_rss_kib": 1150240,
+        "parameters": 127214,
+        "power_mode": "MODE_50W",
+        "power_mode_id": 3
+      }
+    ],
+    "verification_path": "/home/jetson/sdrharness/local-assets/amc-eval/results/paper-deployment-closeout-20260929/benchmark-verification.json"
+  },
+  "rf": {
+    "scope": "Offline coaxial link validation, no OTA fading/deployment/real-time claim",
+    "rf_across_all_517_batches": {
+      "center_hz": 2455000000,
+      "rate_sps": 2100000,
+      "bandwidth_hz": 1500000,
+      "lo_offset_hz": 250000,
+      "tx_gain_db": 60,
+      "rx_gain_db": 50,
+      "rx_port": "RX1/RX0/A_BALANCED",
+      "settle_ms": 500
+    },
+    "tx_device": {
+      "user_name": "国产N210",
+      "paper_name": "B210-compatible USB SDR, UHD B200/B210 family",
+      "serial": "2508504",
+      "not_device": "not NI/Ettus Ethernet USRP N210; authentic Ettus B210 branding not established"
+    },
+    "rx_device": {
+      "user_name": "P201",
+      "paper_name": "P201 AD9361-based Linux/IIO receiver (vendor documentation: PZSDR P201Pro)",
+      "identity_evidence": "docs/evidence/P201_RX_PORT_SELECTION_AUDIT_2026-09-07.json",
+      "port": "front RX1 / IIO RX0 / A_BALANCED",
+      "identity_scope": "Retained vendor/port-routing evidence, no fresh live board probe"
+    },
+    "connection": "TX A TX/RX -> 20 dB attenuator -> 15 cm coax -> P201 RX1; nominal attenuator/cable values from confirmed setup, not fresh calibration",
+    "gain_units": "TX60 and RX50 are gain settings in dB; neither is calibrated RF output/input power in dBm",
+    "frame": {
+      "adc_tx_rate_sps": 2100000,
+      "native_rate_sps": 525000,
+      "rrc_factor": 4,
+      "rrc_rolloff": 0.25,
+      "rrc_taps_each": 129,
+      "rrc_span_native_intervals": 32,
+      "tx_group_delay_adc_samples": 64,
+      "rx_group_delay_adc_samples": 64,
+      "native_guard_each": 256,
+      "native_pilot": 1024,
+      "native_payload": 2048,
+      "native_total": 3584,
+      "rf_guard_each": 1024,
+      "rf_pilot": 4096,
+      "rf_payload": 8192,
+      "rf_nominal_frame": 14336,
+      "frame_ms": 6.826666666666667,
+      "windows_per_frame": {
+        "128_point": 16,
+        "1024_point": 2
+      },
+      "pilot": "QPSK, 128 pseudorandom chips repeated 4 native samples/chip per half; two identical 512-native-sample halves; 1024 native samples total",
+      "pilot_original_marker_modulus": 0.2,
+      "pilot_multiplier": 3.1622776601683795,
+      "pilot_modulus_before_batch_gain": 0.632455532033676,
+      "payload_peak_before_batch_gain": 0.632455532033676,
+      "tx_common_batch_gain": "additional common peak rescaling after interpolation; original per-window amplitudes not transmitted"
+    },
+    "processing": {
+      "receiver": "P201 bounded IIO RX and transfer only; AGX synchronization/CFO-phase correction, guard-tone cancellation or unchanged-raw fallback, matched RRC and 4x decimation, separate per-window RMS",
+      "model_adapter": {
+        "rml2016a": "sum(abs(complex IQ))=1",
+        "rml2016b": "sum(abs(complex IQ))=1",
+        "rml2018a": "complex RMS=1",
+        "hisarmod2019": "complex RMS=1"
+      },
+      "source": "original frozen reader values; matched source is a separate amplitude-only control",
+      "sinr": "source-assisted conditional estimate; paired results use same raw-reference bins; invalid separate",
+      "iio_buffer_samples": 65536
+    },
+    "historical_inference": {
+      "precision": "FP32 weights/inputs, no autocast; PyTorch matmul/cuDNN TF32 flags disabled. Do not infer precision of every custom kernel.",
+      "batch_size": 128,
+      "chunk_rows": 2048,
+      "cpu_torch_threads": 2,
+      "cpu_torch_interop_threads": 1,
+      "power_mode": "not recorded",
+      "clock_lock_state": "not recorded",
+      "full_runtime_versions": "not recorded as a complete historical snapshot; current environment is separately measured",
+      "latency": "not recorded as repeatable forward/pipeline benchmark; job elapsed times include IO/loading and cannot substitute"
+    },
+    "datasets": [
+      {
+        "dataset": "rml2016a",
+        "rows": 33000,
+        "batches": 5
+      },
+      {
+        "dataset": "rml2016b",
+        "rows": 180000,
+        "batches": 22
+      },
+      {
+        "dataset": "rml2018a",
+        "rows": 383385,
+        "batches": 375
+      },
+      {
+        "dataset": "hisarmod2019",
+        "rows": 117000,
+        "batches": 115
+      }
+    ]
+  },
+  "precision_scope": {
+    "model_and_input_dtype": "torch.float32",
+    "autocast": false,
+    "pytorch_matmul_tf32": false,
+    "pytorch_cudnn_tf32": false,
+    "mamba_triton": "The freshly generated forward PTX contains TF32 tensor-core dot instructions; PyTorch flags do not establish strict IEEE FP32 for custom kernels. No override or rerun performed.",
+    "ptx_evidence": [
+      {
+        "original_path": "/var/tmp/sdrharness-dev/paper-deployment-closeout-20260929/TRITON_CACHE_DIR/33RRNKOTVJJEJHUUNWDU475S3MQICRQOSLDI3BPZ2LUFOHDEUM4Q/_chunk_scan_fwd_kernel.ptx",
+        "retained_path": "/home/jetson/sdrharness/local-assets/amc-eval/results/paper-deployment-closeout-20260929/evidence/_chunk_scan_fwd_kernel.ptx",
+        "sha256": "a1ede57b2d423095064410ee599df1d50ba54e6c5b41ad2729b4c3f6f50e95af",
+        "line": 536,
+        "instruction": "mma.sync.aligned.m16n8k8.row.col.f32.tf32.tf32.f32 { %r726, %r727, %r728, %r729 }, { %r510, %r511, %r512, %r513 }, { %r514, %r515 }, { %r726, %r727, %r728, %r729 };"
+      },
+      {
+        "original_path": "/var/tmp/sdrharness-dev/paper-deployment-closeout-20260929/TRITON_CACHE_DIR/FFNMV3NLMRSMLUO3K4QBWLECBIRWTZLF2FIZC3J2WKENG463C6FA/_chunk_state_fwd_kernel.ptx",
+        "retained_path": "/home/jetson/sdrharness/local-assets/amc-eval/results/paper-deployment-closeout-20260929/evidence/_chunk_state_fwd_kernel.ptx",
+        "sha256": "34260f0ab14c16e6525dcbfdef6f0baa82084a35ad264f0139d99455962a8077",
+        "line": 1649,
+        "instruction": "mma.sync.aligned.m16n8k8.row.col.f32.tf32.tf32.f32 { %r1573, %r1574, %r1575, %r1576 }, { %r751, %r752, %r753, %r754 }, { %r797, %r798 }, { %r1573, %r1574, %r1575, %r1576 };"
+      },
+      {
+        "original_path": "/var/tmp/sdrharness-dev/paper-deployment-closeout-20260929/TRITON_CACHE_DIR/37XAS4NNEF2BLR5NK457LD4PMYIBXWDESBXTRZV4XY2VBCBWZKCA/_bmm_chunk_fwd_kernel.ptx",
+        "retained_path": "/home/jetson/sdrharness/local-assets/amc-eval/results/paper-deployment-closeout-20260929/evidence/_bmm_chunk_fwd_kernel.ptx",
+        "sha256": "c7e793dae55ae37bdda61b22ddd1dae9774196f52d9acb01c458368bb55418ca",
+        "line": 991,
+        "instruction": "mma.sync.aligned.m16n8k8.row.col.f32.tf32.tf32.f32 { %r1767, %r1768, %r1769, %r1770 }, { %r651, %r652, %r653, %r654 }, { %r655, %r656 }, { %r1767, %r1768, %r1769, %r1770 };"
+      }
+    ],
+    "paper_wording": "FP32 model weights and inputs, no AMP; PyTorch TF32 flags disabled, default frozen Mamba/Triton backend. Do not claim all kernels are IEEE FP32 or global TF32 disabled."
+  },
+  "unconfirmed": [
+    "historical RF/inference nvpmodel mode and clock-lock state",
+    "complete historical AGX runtime version snapshot",
+    "calibrated TX output/input power in dBm and attenuator actual response",
+    "full RF/capture/transport/DSP/service end-to-end latency and energy",
+    "upstream Hisar sparse-source generation cause and remaining 2FSK loss"
+  ],
+  "no_training": true,
+  "no_new_rf": true,
+  "production_recognizer_available": false,
+  "retention": {
+    "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/paper-deployment-closeout-20260929/retention-v1.json",
+    "bytes": 11649,
+    "sha256": "b84398ba480c59359cbe7a6bcdc7aa217cdfc761a0c59652a711229de32ba658"
+  },
+  "retained_files": 45,
+  "retained_bytes": 1343747,
+  "cleanup": {
+    "manifest": {
+      "path": "/home/jetson/sdrharness/local-assets/amc-eval/results/paper-deployment-closeout-20260929/evidence/cleanup.json",
+      "bytes": 113247,
+      "sha256": "f415cecee28e65f072eaeb182f846eec544711ee49cb4e200c6cb1d81fa85bae"
+    },
+    "file_count": 384,
+    "bytes": 25970750,
+    "root_absent": true,
+    "gpu_lease_unheld": true,
+    "processes_stopped": true
+  },
+  "software": {
+    "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc_paper_benchmark.py": "3cf4cdcca2458414d6986e04535f1b4f7d2bec0a952555223accd1f517fddad9",
+    "/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/amc_paper_counts.py": "cfe5e7d33fcae732040ecf9adc767a38367409e4dca123c768af864637fa65f6"
+  },
+  "runtime_reference_dataset": "rml2016a",
+  "runtime_note": "Environment common to all four; parameter count in this runtime snapshot belongs to rml2016a. Per-dataset parameter counts are in the timing CSV."
+}

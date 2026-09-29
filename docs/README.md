@@ -30,6 +30,8 @@
 
 Hisar 411条8PSK专项核查已完成：原source具有近零中段、端部集能形态；491原ADC重建无误，实际导频为QPSK。纯LO即可使D10全判8PSK，噪声/跨类形态干预支持非稳健响应；原成绩与异常成员保留，不启用诊断“修复”，见[核查证据与范围](validation/AMC_UNIFORM_RF_2026-09-26.md#hisar-411条8psk异常核查2026-09-28)。
 
+9月29日论文收尾完成：[32组四路整数/配对计数](evidence/AMC_PAPER_DEPLOYMENT_COUNTS_2026-09-29.csv)、[16组D10计时](evidence/AMC_PAPER_D10_TIMING_2026-09-29.csv)、当前平台/RF参数及历史未记录项见[收尾审计](evidence/AMC_PAPER_DEPLOYMENT_CLOSEOUT_2026-09-29.json)。仅离线同轴链路验证；当前50W模式不回填历史，Mamba/Triton精度不由PyTorch TF32 flags单独保证。
+
 历史实测报告：D10已补齐369497共同验证成员，当前8模型仅raw/guard；按接收端条件估计SINR分层。
 D10总体50.45%→55.09%，低SINR相消退化仍存在；见[大样本结果](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#d10补齐369497共同验证成员2026-09-22)。
 2026-09-26接收端RMS比值选择规则完成：主评估采集的172218剩余成员49.11%→50.70%，

@@ -280,3 +280,20 @@ D10四套的同成员总体准确率如下；matched列只改变source幅度规�
 已有同成员八模型表仍显示差异：这411条guard上CNN2正确407、ResNet326，而D10为0；本次未重跑其他模型。源形态异常不等于所有模型必然失败，不能把D10的响应直接推广到全部架构，也不能据此宣称这些标签已获独立射频真值验证。
 
 共5349次新forward（初轮4419、补充930），均在预登记8000总预算内；初轮491行matched/raw/guard相对封存logits最大误差0，补充8条探针最大误差1.097e−5、top1一致。两后台正常退出、GPU租约释放；两项DSP检查、独立117000行实部/虚部功率扫描及保存预测的成员/argmax/计数读回通过。结果根`/home/jetson/sdrharness/local-assets/amc-eval/results/hisar-8psk-audit-20260928/`保留26文件2044693字节，含两阶段计划、逐行指标/预测、491重建审计、CSV和两张PNG/SVG图；图表实际查看并修正了标题布局。删除378个缓存/临时绘图IQ文件25889359字节，精确临时根消失。完整血缘、SHA、人工删除及边界见[专项审计](../evidence/HISAR_8PSK_DIAGNOSTIC_2026-09-28.json)。本单元完成，不改原四套数据/预测，不上线任何诊断干预。
+
+
+## 论文硬件参数与有界计时收尾（2026-09-29）
+
+论文协作线程请求补齐可复核参数、整数计数和缺失时延，随后要求仅做必要复核、不扩展实验。此次没有新收发、训练、精度重跑或Hisar 2FSK诊断；硬件部分只称**离线同轴链路验证**。32组原source/匹配source/raw/guard整数正确数以及raw→guard纠正、回退、同对、同错，已从封存strata及32份result交叉核对，输出[紧凑计数CSV](../evidence/AMC_PAPER_DEPLOYMENT_COUNTS_2026-09-29.csv)。各行四种配对结果之和等于原N、纠正减回退等于guard正确数减raw正确数；回退/无效SINR成员均保留，不新增精度成绩。
+
+当前实机device-tree为NVIDIA Jetson AGX Orin Developer Kit，兼容串`p3737-0000+p3701-0005`，64GB级模块；Linux MemTotal与CUDA total_memory均65893097472字节（61.3677GiB，共享内存）。当前Ubuntu22.04.5、内核5.15.148-tegra、JetPack6.2.1+b38、L4T36.4.4；评估venv实测Python3.10.12、PyTorch2.8.0、CUDA构建/运行时12.6、cuDNN9.3.0、mamba-ssm2.3.1、causal-conv1d1.6.1、Triton3.4.0。当前`nvpmodel -q`为MODE_50W/id3，GPU governor为nvhost_podgov、频率范围306～816MHz；未改变模式或锁频。历史9月27日推理明确记录FP32张量、无autocast、PyTorch TF32开关关闭、batch128及2048行落块，但当时功率模式、锁频状态和完整运行时版本快照**未记录**，不得用本次状态回填。
+
+517份封存批次计划已逐一核对：TX是用户称“国产N210”的B210兼容USB SDR（UHD B200/B210系列、serial2508504），不能写成NI/Ettus网口USRP N210，也未验证正品Ettus B210品牌。RX为P201/AD9361 Linux-IIO接收板，保留厂商资料对应PZSDR P201Pro；本次未另行探测板卡。连接为TX A TX/RX→标称20dB衰减器/15cm同轴→P201 RX1。配置中心2455MHz、2.1MS/s、带宽1.5MHz、TX LO偏置+250kHz；TX60/RX50是**dB增益设置，不是dBm功率**。未补测实际功率和衰减器校准值。原生速率525kS/s，每帧256点前保护＋1024点QPSK导频＋2048点载荷＋256点后保护；4倍RRC、beta0.25、TX/RX各129抽头（各64 RF点群延迟），物理帧标称14336点/6.8267ms。导频每半含128个QPSK chip、每chip重复4原生点，两半相同；模值为0.2×sqrt(10)，之后仍有共同批增益。128/1024点模型分别每帧16/2窗。P201缓冲65536点，AGX负责DSP和识别；原逐窗峰值缩放及幅度匹配基线边界不变。
+
+现有总作业耗时包含加载/磁盘等，不能代替模型时延，故对四套冻结D10分别做batch1/128两种scope：①预置CUDA输入→CUDA logits，以CUDA事件并同步记录host wall time；②内存中已解码guard IQ→原数据集输入适配→pageable H2D→模型→CPU logits→NumPy argmax，以同步host wall time计时。第二项**不含RF采集/网络/磁盘、同步/CFO/相消/RRC、模型加载、服务IPC、Planner或队列等待**，不是完整无线系统端到端时延。每scope/shape预热30次、连续计时200次，未测冷启动，未做独立重复会话；batch1固定首个选中窗、batch128使用128个等距原val成员。运行前Spark及其他已知模型任务空闲，逐套新子进程、单GPU租约，后台桌面不关闭；原功率模式始终未变。
+
+16组完整均值/中位/P95、吞吐和内存见[计时CSV](../evidence/AMC_PAPER_D10_TIMING_2026-09-29.csv)。按2016A、2016B、2018A、Hisar顺序，batch1 forward的host中位数为15.088/15.192/27.065/27.085ms；CPU-IQ→CPU预测的batch1中位数为15.672/15.705/27.436/27.463ms，batch128为16.387/16.316/60.049/59.924ms/批。按平均批时长换算的吞吐不代表单窗等待时延或完整链路实时性。最高CUDA allocator allocated约333.25MiB、reserved为364MiB，进程峰值RSS约1.209GiB；CUDA计数不含全部驱动/context，RSS含该进程加载及预热，Jetson共享内存下二者不可相加。这里只驻留小批输入，不是历史整验证集驻留峰值（2018A原三路输入另占约8.79GiB）。
+
+**精度表述限定**：权重/输入为torch.float32，无AMP；PyTorch matmul/cuDNN TF32 flags关闭。但本轮新生成的Mamba/Triton前向PTX包含`mma.sync...f32.tf32.tf32.f32`，不能将这两个PyTorch开关推导为“所有内核均IEEE FP32/全局TF32禁用”。保留三个最小PTX例子及SHA，未修改默认冻结后端或重跑计时。论文宜写“FP32权重和输入、无AMP”，必要时注明框架和自定义内核精度边界。历史“TF32关闭”的描述只由PyTorch flags证据支持，不追溯改写封存数值。
+
+四套各128行冻结预测及8条batch/single门通过（最大误差约2.694e−5，top1全一致）；共237904个重复计时/数值检查窗口，在250000预算内，不算新增准确率样本。独立读回3200个host与1600个CUDA事件计时，复算统计、VDS/成员/输入哈希及检查点身份均通过。原始timings.npz、当前环境、逐套tegrastats和RF参数血缘在`/home/jetson/sdrharness/local-assets/amc-eval/results/paper-deployment-closeout-20260929/`；保留45文件1343747字节，删除384缓存文件25970750字节及临时根，子进程退出、GPU租约空闲。总索引、精确保留/清理与未确认项见[收尾审计](../evidence/AMC_PAPER_DEPLOYMENT_CLOSEOUT_2026-09-29.json)。本单元收束，未新增正文图表，不改变生产recognizer_available=false。
