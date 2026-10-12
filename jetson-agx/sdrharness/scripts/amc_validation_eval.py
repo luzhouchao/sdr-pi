@@ -167,7 +167,8 @@ def source_values(d,rows,labels,snrs):
     rows=np.asarray(rows);x=np.empty((len(rows),2,d['window_samples']),dtype=np.float32)
     with h5py.File(d['source_path'],'r') as f:
         if d['dataset']!='rml2018a':
-            names=[v.decode() if isinstance(v,bytes) else str(v) for v in f['classes'][:]]
+            # HisarMod2019.1 按原始码取名，规则与 amc_dataset_contract.source_class_names 相同。
+            names=capture.native.source_class_names(f['classes'][:],d['raw_label_values'])
             c.require(names==d['class_names'],'source class order')
         for block in np.unique(rows//8192):
             ids=np.flatnonzero(rows//8192==block);lo=int(block)*8192;hi=min(lo+8192,len(f['X']))

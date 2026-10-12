@@ -45,6 +45,26 @@ class EvaluationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'labels and Z'):
                 e.source_values(d,np.array([5]),np.array([0]),np.array([5]))
 
+    def test_hisar_source_class_names_follow_raw_codes(self):
+        native=e.capture.native
+        h5_names=list(native.HISARMOD2019_CODE_TO_NAME.values())
+        raw=np.array(sorted(native.HISARMOD2019_CODE_TO_NAME))
+        names=native.source_class_names(h5_names,raw)
+        with tempfile.TemporaryDirectory() as directory:
+            source_path=Path(directory)/'source.h5';inputs=np.arange(26*2*4,dtype=np.float32).reshape(26,2,4)
+            with h5py.File(source_path,'w') as source_file:
+                source_file['X']=inputs;source_file['Y']=raw[::-1];source_file['Z']=np.arange(26)
+                source_file['classes']=np.array(h5_names,dtype='S')
+            dataset=dict(dataset='hisarmod2019',source_path=str(source_path),window_samples=4,
+                         class_names=names,raw_label_values=raw.tolist())
+            rows=np.array([25,23,15,0]);labels=25-rows
+            got=e.source_values(dataset,rows,labels,rows)
+            np.testing.assert_array_equal(got,inputs[rows])
+            self.assertEqual([names[class_id] for class_id in labels],['BPSK','2FSK','8PSK','256QAM'])
+            dataset['class_names']=h5_names
+            with self.assertRaisesRegex(ValueError,'source class order'):
+                e.source_values(dataset,rows,labels,rows)
+
     def test_unreadable_gpu_is_recorded_but_unreadable_cpu_stops(self):
         names=['cpu-thermal','tj-thermal','soc0-thermal','soc1-thermal','soc2-thermal','gpu-thermal','cv0-thermal']
         missing={'gpu-thermal','cv0-thermal'}

@@ -10,6 +10,15 @@ SPECS = {'rml2016a': (220000, 128, 11), 'rml2016b': (1200000, 128, 10),
          'rml2018a': (2555904, 1024, 24), 'hisarmod2019': (780000, 1024, 26)}
 SCHEMA = 'amc-native-source-v1'
 
+# HisarMod2019.1 按原始码取名，统一由 amc_dataset_contract.source_class_names 提供；模型 ID 顺序不变。
+HISARMOD2019_CODE_TO_NAME = {
+    0: 'BPSK', 10: 'QPSK', 20: '8PSK', 30: '16PSK', 40: '32PSK', 50: '64PSK',
+    1: '4QAM', 11: '8QAM', 21: '16QAM', 31: '32QAM', 41: '64QAM', 51: '128QAM', 61: '256QAM',
+    2: '2FSK', 12: '4FSK', 22: '8FSK', 32: '16FSK',
+    3: '4PAM', 13: '8PAM', 23: '16PAM',
+    4: 'AM-DSB', 14: 'AM-DSB-SC', 24: 'AM-USB', 34: 'AM-LSB', 44: 'FM', 54: 'PM',
+}
+
 
 def require(ok, message):
     if not ok:
@@ -19,6 +28,15 @@ def require(ok, message):
 def label_hash(names):
     return hashlib.sha256((json.dumps(names, ensure_ascii=False, sort_keys=True,
                                      allow_nan=False)+'\n').encode()).hexdigest()
+
+
+def source_class_names(h5_names, raw_values):
+    """返回按模型 ID 排列的类名；只有原始码与类名集合都是 HisarMod2019.1 时才按原始码重排。"""
+    names = [v.decode() if isinstance(v, bytes) else str(v) for v in h5_names]
+    raw_values = [int(v) for v in raw_values]
+    if set(raw_values) == set(HISARMOD2019_CODE_TO_NAME) and set(names) == set(HISARMOD2019_CODE_TO_NAME.values()):
+        return [HISARMOD2019_CODE_TO_NAME[v] for v in raw_values]
+    return names
 
 
 def validate(contract):
@@ -98,7 +116,7 @@ def read_selected(path, dataset_id, rows, class_names, source_sha256):
             require(all_labels.dtype.kind in 'iu', 'integer source labels')
             raw_values = np.unique(all_labels).tolist()
             require(len(raw_values) == classes, 'source label cardinality')
-            names = [v.decode() if isinstance(v, bytes) else str(v) for v in f['classes'][:]]
+            names = source_class_names(f['classes'][:], raw_values)
             require(names == class_names, 'source class order')
         x = f['X'][rows[order]][undo]
         y = f['Y'][rows[order]][undo]; z = f['Z'][rows[order]][undo].reshape(-1)

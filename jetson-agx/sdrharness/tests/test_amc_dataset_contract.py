@@ -82,6 +82,32 @@ class DatasetTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'class order'):
                 a.read_selected(path,'hisarmod2019',np.array([0]),names[::-1],'0'*64)
 
+    def test_hisar_class_names_follow_raw_codes(self):
+        # h5 中 classes 的实际存储顺序（按调制族排列），与原始码不按位置对应。
+        h5_names=['BPSK','QPSK','8PSK','16PSK','32PSK','64PSK','4QAM','8QAM','16QAM','32QAM','64QAM',
+                  '128QAM','256QAM','2FSK','4FSK','8FSK','16FSK','4PAM','8PAM','16PAM',
+                  'AM-DSB','AM-DSB-SC','AM-USB','AM-LSB','FM','PM']
+        raw=sorted(a.HISARMOD2019_CODE_TO_NAME)
+        fixed=a.source_class_names(h5_names,raw)
+        self.assertEqual(fixed,['BPSK','4QAM','2FSK','4PAM','AM-DSB','QPSK','8QAM','4FSK','8PAM','AM-DSB-SC',
+                                '8PSK','16QAM','8FSK','16PAM','AM-USB','16PSK','32QAM','16FSK','AM-LSB',
+                                '32PSK','64QAM','FM','64PSK','128QAM','PM','256QAM'])
+        self.assertEqual(a.source_class_names(h5_names,range(26)),h5_names)
+        synthetic_names=[str(value) for value in raw]
+        self.assertEqual(a.source_class_names(synthetic_names,raw),synthetic_names)
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/'source.h5'
+            with h5py.File(path,'w') as f:
+                f.create_dataset('X',shape=(780000,2,1024),dtype='f4',chunks=(1,2,1024))
+                y=f.create_dataset('Y',shape=(780000,),dtype='i8');y[:26]=raw
+                z=f.create_dataset('Z',shape=(780000,),dtype='f4');z[:26]=18
+                f.create_dataset('classes',data=h5_names,dtype=h5py.string_dtype())
+            _,c=a.read_selected(path,'hisarmod2019',np.array([2]),fixed,'0'*64)
+            self.assertEqual(c['class_ids'],[2]);self.assertEqual(c['class_names'][2],'2FSK')
+            # 旧的按位置配对类名不再通过。
+            with self.assertRaisesRegex(ValueError,'class order'):
+                a.read_selected(path,'hisarmod2019',np.array([2]),h5_names,'0'*64)
+
     def test_spectrum_preserves_dc_and_rejects_outside_tx_passband(self):
         n=np.arange(128)
         x=(2+np.exp(2j*np.pi*8*n/128))[None,:]

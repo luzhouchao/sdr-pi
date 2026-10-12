@@ -24,6 +24,7 @@ from typing import Any, Iterator
 
 import h5py
 import numpy as np
+from amc_dataset_contract import source_class_names
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -189,6 +190,9 @@ def load_labels(
             raise RuntimeError(
                 f"scalar label mapping has {len(raw_label_values)} values, expected {num_classes}"
             )
+        if source["kind"] == "hdf5_dataset":
+            # HisarMod2019.1 按原始码取名，复用 amc_dataset_contract.source_class_names。
+            labels = source_class_names(labels, raw_label_values)
         source["raw_label_values"] = raw_label_values.tolist()
         source["mapping"] = "sorted unique raw value -> zero-based class index"
     return labels, source, raw_label_values
