@@ -1435,3 +1435,7 @@ The unified CLI and the Web recovery upgrade are installed; full production
 recognition remains unavailable.
 Do not interpret dated evidence statements about unchanged services as current
 status or restart completed S/V work.
+
+
+### 2026-10-20 测试集重跑
+- [ ] 四套测试集 713387 行同轴回放、封存及八模型评估；当前预检通过，详见 validation/AMC_UNIFORM_RF_2026-09-26.md 的本日记录。

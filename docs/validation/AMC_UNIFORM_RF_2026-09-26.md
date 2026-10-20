@@ -297,3 +297,12 @@ D10四套的同成员总体准确率如下；matched列只改变source幅度规�
 **精度表述限定**：权重/输入为torch.float32，无AMP；PyTorch matmul/cuDNN TF32 flags关闭。但本轮新生成的Mamba/Triton前向PTX包含`mma.sync...f32.tf32.tf32.f32`，不能将这两个PyTorch开关推导为“所有内核均IEEE FP32/全局TF32禁用”。保留三个最小PTX例子及SHA，未修改默认冻结后端或重跑计时。论文宜写“FP32权重和输入、无AMP”，必要时注明框架和自定义内核精度边界。历史“TF32关闭”的描述只由PyTorch flags证据支持，不追溯改写封存数值。
 
 四套各128行冻结预测及8条batch/single门通过（最大误差约2.694e−5，top1全一致）；共237904个重复计时/数值检查窗口，在250000预算内，不算新增准确率样本。独立读回3200个host与1600个CUDA事件计时，复算统计、VDS/成员/输入哈希及检查点身份均通过。原始timings.npz、当前环境、逐套tegrastats和RF参数血缘在`/home/jetson/sdrharness/local-assets/amc-eval/results/paper-deployment-closeout-20260929/`；保留45文件1343747字节，删除384缓存文件25970750字节及临时根，子进程退出、GPU租约空闲。总索引、精确保留/清理与未确认项见[收尾审计](../evidence/AMC_PAPER_DEPLOYMENT_CLOSEOUT_2026-09-29.json)。本单元收束，未新增正文图表，不改变生产recognizer_available=false。
+
+
+## 2026-10-20 测试集同轴回放
+
+用户明确要求用 N210 与 P201 重新回放四套 seed42 测试集，随后评估八个冻结模型。测试集计数为 33000、180000、383387、117000，共 713387 行，517 批；已核对与 train/val 无交集。沿用冻结 RRC、2455 MHz、2.1 MS/s、TX60/RX50 dB、20 dB 衰减与 RX1。接收完成封存后才启动模型；不训练、不调接收阈值、不覆盖历史结果。
+
+入口为 `amc_test_campaign.py`、`amc_test_eval.py`。结果根为 `local-assets/amc-eval/rf/test-seed42-20261020`，推理根为 `local-assets/amc-eval/results/test-seed42-20261020`。计划最大 ADC 30358372352 字节、保留预算 86738206720 字节，运行前可用 625301491712 字节。采集期限 24 小时、单批 300 秒；创建采集根的 STOP 文件可停止，原有限采集逻辑负责取消和恢复设备。
+
+当前状态：测试集选择与脚本检查通过，设备初始化通过，准备启动。收发与推理尚未完成，最终结果不能提前引用。
