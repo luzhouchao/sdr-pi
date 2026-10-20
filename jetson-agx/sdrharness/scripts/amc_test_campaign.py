@@ -224,7 +224,8 @@ def run(root,revision=None):
             c.require(not active.exists(),'unsealed attempt requires explicit recovery; never overwrite')
             x,contract=native.read_selected(d['source_path'],d['dataset'],expected,d['class_names'],d['source_sha256']);del x
             selection=folder/f'selection-{i:05d}.json'
-            entry=dict(source_path=d['source_path'],contract=contract,run_id=root.name+'-'+d['dataset']+'-'+str(i),test_campaign=dict(plan_sha256=c.file_hash(root/'campaign.json'),batch=i,test_rank_start=start,revision_sha256=p.get('active_revision_sha256')))
+            # 旧采集器接口字段沿用 validation_campaign；split 显式标注 test，样本只来自测试集。
+            entry=dict(source_path=d['source_path'],contract=contract,run_id=root.name+'-'+d['dataset']+'-'+str(i),validation_campaign=dict(split='test',plan_sha256=c.file_hash(root/'campaign.json'),batch=i,test_rank_start=start,revision_sha256=p.get('active_revision_sha256')))
             durable(selection,dict(source_selection={d['dataset']:entry}))
             m.prepare(active,selection,d['dataset'],verified_source=d['source_fingerprint'])
             # State checks precede one TX owner; STOP goes through the pilot's exact generation cancel.
