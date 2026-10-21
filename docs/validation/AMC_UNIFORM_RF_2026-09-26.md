@@ -331,3 +331,9 @@ D10四套的同成员总体准确率如下；matched列只改变source幅度规�
 - amc_test_campaign.read_plan支持显式Hisar类名修订，要求旧值精确匹配、原始标签码和新名称与源文件一致、类名集合不变。推理prepare通过同一revision读取有效计划，并记录修订SHA；未关闭source class order检查，未改源、权重、test成员或数字标签。
 - recovery-hisar-labels-20261021.json与revision-hisar-labels-20261021.json位于原测试根，保留父计划/AGC修订及恢复证据血缘。首1024行读回和数字ID对照通过，八模型权重身份及D10类名通过，原7项dataset_contract测试通过，语法与diff检查通过。
 - 新管线pipeline-hisar-20261021.log/pid，先校验已封存数据，再采Hisar，随后使用同一revision准备八模型source/raw/guard推理。原STOP有效。自动检查已指向新日志；完整任务尚未结束。
+
+
+### 2026-10-21 Hisar第62批同步失败重采
+- 13:14 Hisar batch-00061中frame24未通过pilot final gate、frame31未通过pilot coarse gate，1020/1024行同步；传输报告dropped_samples=0、missing_frames为空，设备恢复通过。未封存失败批，已封存658851/713387行。
+- 按用户自动修复授权，完整保留失败批与日志到本轮根failed-attempts/20261021-hisar-batch-00061，retry-hisar-00061.json记录原执行哈希及重采理由。
+- 设备空闲/恢复复核通过，原参数、同一1024测试成员、原同步门与软件修订均不变；pipeline-hisar-retry61-20261021.log/pid启动断点续跑及后续自动推理。自动监控同步新日志。重采结果待确认，不据失败单批推断硬件丢样或修改算法。
