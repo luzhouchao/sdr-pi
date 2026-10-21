@@ -1,0 +1,38 @@
+{
+  "checks": [
+    "frozen software identities",
+    "all prediction shards readback",
+    "confusion counts equal all test rows",
+    "report confusion matches predictions"
+  ],
+  "pairs": 32,
+  "planes": 96,
+  "predictions": 17121288,
+  "status": "passed",
+  "results_root": "/home/jetson/sdrharness/local-assets/amc-eval/results/test-seed42-20261020-a2",
+  "capture_root": "/home/jetson/sdrharness/local-assets/amc-eval/rf/test-seed42-20261020-a2",
+  "complete_sha256": "a26b8e63ddd3a55ff883eb48e44643c2e44928bdfa4a20ff2454cf1d6f756707",
+  "removed_caches": [
+    {
+      "path": "/var/tmp/sdrharness-dev/test-inference-20261020-a2/CUDA_CACHE_PATH",
+      "files": 0,
+      "bytes": 0
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/test-inference-20261020-a2/TMPDIR",
+      "files": 32,
+      "bytes": 75360
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/test-inference-20261020-a2/TORCHINDUCTOR_CACHE_DIR",
+      "files": 0,
+      "bytes": 0
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/test-inference-20261020-a2/TRITON_CACHE_DIR",
+      "files": 375,
+      "bytes": 25715821
+    }
+  ],
+  "retained": "All capture and prediction data, failure attempts, recovery revisions and gpu-gate audit retained"
+}

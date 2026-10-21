@@ -337,3 +337,7 @@ D10四套的同成员总体准确率如下；matched列只改变source幅度规�
 - 13:14 Hisar batch-00061中frame24未通过pilot final gate、frame31未通过pilot coarse gate，1020/1024行同步；传输报告dropped_samples=0、missing_frames为空，设备恢复通过。未封存失败批，已封存658851/713387行。
 - 按用户自动修复授权，完整保留失败批与日志到本轮根failed-attempts/20261021-hisar-batch-00061，retry-hisar-00061.json记录原执行哈希及重采理由。
 - 设备空闲/恢复复核通过，原参数、同一1024测试成员、原同步门与软件修订均不变；pipeline-hisar-retry61-20261021.log/pid启动断点续跑及后续自动推理。自动监控同步新日志。重采结果待确认，不据失败单批推断硬件丢样或修改算法。
+
+
+### 2026-10-21 测试集回放及八模型推理最终核验
+四套713387测试成员全部采集封存，设备恢复通过；AGX完成32组×source/raw/guard共96路、17121288条预测。独立调用verify_completed逐块读回全部32组，分块身份、完整覆盖及混淆矩阵与报告一致，每路数量等于对应测试集行数。推理进程退出。清理本轮四个推理缓存目录，保留gpu-gate审计、全部用户数据和失败证据。证据见../evidence/AMC_TEST_COMPLETE_2026-10-21.json。未追加matched-source，未修改论文。
