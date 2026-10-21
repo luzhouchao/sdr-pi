@@ -90,6 +90,19 @@ def read_plan(root,revision=None):
             target=(root/relative).resolve()
             c.require(target.is_relative_to(root) and c.file_hash(target)==sha,'approved recovery identity')
         p=dict(p,software=update['software'],active_revision_sha256=c.file_hash(revision))
+        corrections=update.get('class_name_corrections', {})
+        c.require(set(corrections).issubset({'hisarmod2019'}), 'bounded class name correction')
+        for d in p['datasets']:
+            if d['dataset'] not in corrections:
+                continue
+            correction=corrections[d['dataset']]
+            c.require(d['class_names']==correction['before'], 'class correction parent')
+            with h5py.File(d['source_path']) as f:
+                raw=np.unique(f['Y'][:].reshape(-1)).tolist()
+                names=native.source_class_names(f['classes'][:],raw)
+            c.require(raw==correction['raw_label_values'] and names==correction['after'] and
+                      set(names)==set(d['class_names']), 'class correction follows raw label codes')
+            d['class_names']=names
     for path,sha in p['software'].items():c.require(c.file_hash(path)==sha,'frozen campaign software')
     for d in p['datasets']:
         c.require(fingerprint(d['source_path'])==d['source_fingerprint'],'unchanged source fingerprint')

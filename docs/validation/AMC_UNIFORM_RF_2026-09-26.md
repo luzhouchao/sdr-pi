@@ -323,3 +323,11 @@ D10四套的同成员总体准确率如下；matched列只改变source幅度规�
 - 修改validate-p201-termination-background.py：保持路径、模式和所有其他值相同，仅同一已知AGC模式下允许对应hardwaregain变化；manual与未知模式仍严格核对。7项回归测试修正前AGC用例失败，修正后全通过；原实机失败快照通过修正后恢复检查。
 - 原失败批与日志保留在本轮根failed-attempts/20261021-rml2018a-batch-00293；recovery-agc-20261021.json保存基线/当前快照，revision-agc-20261021.json绑定父计划、恢复证据及软件SHA。原计划和封存批未改写，不增加测试成员。
 - pipeline-agc-20261021.log/pid记录新管线：校验旧批、重采00293、继续剩余数据、自动三路八模型推理。STOP路径不变。无硬件部署或固定增益变更，全量仍待完成。
+
+
+### 2026-10-21 Hisar测试计划类名顺序修订
+- 前三套596387行全部封存；Hisar首批读取源数据时source class order失败，未执行该套RF。
+- 原campaign.json沿用旧selection的HDF5家族排列类名；当前source_class_names与冻结D10 manifest按排序原始码命名（ID1=4QAM）。复现首1024测试行读取失败，确认仅文本类名顺序陈旧，数字ID仍由原始码排序映射。
+- amc_test_campaign.read_plan支持显式Hisar类名修订，要求旧值精确匹配、原始标签码和新名称与源文件一致、类名集合不变。推理prepare通过同一revision读取有效计划，并记录修订SHA；未关闭source class order检查，未改源、权重、test成员或数字标签。
+- recovery-hisar-labels-20261021.json与revision-hisar-labels-20261021.json位于原测试根，保留父计划/AGC修订及恢复证据血缘。首1024行读回和数字ID对照通过，八模型权重身份及D10类名通过，原7项dataset_contract测试通过，语法与diff检查通过。
+- 新管线pipeline-hisar-20261021.log/pid，先校验已封存数据，再采Hisar，随后使用同一revision准备八模型source/raw/guard推理。原STOP有效。自动检查已指向新日志；完整任务尚未结束。

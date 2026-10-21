@@ -51,13 +51,13 @@ def software():
             Path(capture.__file__).resolve(),Path(__file__).with_name('gpu_lease.py').resolve(),
             Path(__file__).with_name('rml2018a_campaign_store.py').resolve())}
 
-def prepare(root,source):
+def prepare(root,source,revision=None):
     c.require(root.is_absolute() and root.resolve()==root and not root.exists() and
               root.parent==c.REPO/'local-assets/amc-eval/results','fresh application result root')
     complete=read(source/'complete.json');status=read(source/'progress.json')
     c.require(complete['status']=='complete' and status['restored'] and
               complete['completed_rows']==sum(capture.COUNTS),'all RF finished/restored')
-    campaign=read(source/'campaign.json');datasets=[];models=[]
+    campaign=capture.read_plan(source,revision);datasets=[];models=[]
     for d in campaign['datasets']:
         folder=source/d['dataset'];seal=read(folder/'dataset-complete.json')
         c.require(seal['status']=='complete' and seal['rows']==d['rows'],'complete dataset')
@@ -78,6 +78,7 @@ def prepare(root,source):
     root.mkdir(mode=0o700)
     atomic(root/'plan.json',dict(schema='amc-full-test-inference-v1',source=str(source),
         capture_complete_sha256=backend.digest(source/'complete.json'),datasets=datasets,models=models,
+        capture_revision_sha256=backend.digest(revision) if revision is not None else None,
         software=software(),seed=42,planes=['source','raw','guard'],chunk_rows=CHUNK,batch_size=BATCH,
         total_predictions=complete['completed_rows']*24,deadline_seconds=48*3600,
         normalization={'rml2016a':'sum_abs_iq_one','rml2016b':'sum_abs_iq_one',
@@ -345,6 +346,6 @@ def run(root,scratch,revision=None):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('command',choices=['prepare','run','worker']);p.add_argument('--root',type=Path,required=True)
     p.add_argument('--source',type=Path);p.add_argument('--scratch',type=Path);p.add_argument('--dataset');p.add_argument('--variant');p.add_argument('--revision',type=Path);args=p.parse_args()
-    if args.command=='prepare':prepare(args.root,args.source)
+    if args.command=='prepare':prepare(args.root,args.source,args.revision)
     elif args.command=='run':run(args.root,args.scratch,args.revision)
     else:worker(args.root,args.dataset,args.variant,args.scratch)
