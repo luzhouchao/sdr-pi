@@ -315,3 +315,11 @@ D10四套的同成员总体准确率如下；matched列只改变source幅度规�
 - 10月21日10:21重新核验原baseline_radio一致、N210 serial2508504/5000Mbps且无占用、P201单sdrd。未改变软件、接收参数、权重或检查门；失败根因尚未复现，不宣称已修复。
 - 失败目录及日志移至本轮根failed-attempts/20261020-rml2018a-batch-00288，保留原字节；从同一测试索引批次重采，原封存批次校验复用。
 - 本轮根仍为local-assets/amc-eval/rf/test-seed42-20261020-a2；续跑记录resume-20261021.json，日志pipeline-resume-20261021.log。原STOP路径有效。剩余采集完成后自动prepare/run八模型source/raw/guard，失败则停止；尚未完成全量及推理。
+
+
+### 2026-10-21 自动增益空闲状态恢复误判修正
+- 上次续跑完成batch-00288至00292；00293在发射前背景采集后失败，已封存513032行。三次只读快照均仅RX1 slow_attack瞬时hardwaregain从63变为71 dB；模式、频率、带宽、两路端口、scan mask与buffer均一致。
+- sdrd_iio.c的adapter_restore仅在manual时恢复hardware_gain，自动模式恢复gain_control_mode后增益由硬件变化。原Python逐字快照比较误将自动增益观测值视为固定设定值。streaming_rx.rs要求manual/50 dB，采集固定TX60/RX50 dB未变。
+- 修改validate-p201-termination-background.py：保持路径、模式和所有其他值相同，仅同一已知AGC模式下允许对应hardwaregain变化；manual与未知模式仍严格核对。7项回归测试修正前AGC用例失败，修正后全通过；原实机失败快照通过修正后恢复检查。
+- 原失败批与日志保留在本轮根failed-attempts/20261021-rml2018a-batch-00293；recovery-agc-20261021.json保存基线/当前快照，revision-agc-20261021.json绑定父计划、恢复证据及软件SHA。原计划和封存批未改写，不增加测试成员。
+- pipeline-agc-20261021.log/pid记录新管线：校验旧批、重采00293、继续剩余数据、自动三路八模型推理。STOP路径不变。无硬件部署或固定增益变更，全量仍待完成。

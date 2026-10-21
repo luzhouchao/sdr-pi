@@ -66,10 +66,30 @@ def idle():
                    for line in connections.splitlines()), 'existing SDR connection; refuse capture'
 
 
+def restored_state_matches(before, after):
+    # AGC hardwaregain is a live observation, not a restorable setpoint.
+    # Match every path/value exactly except gain under the same known AGC mode.
+    left, right = before.splitlines(), after.splitlines()
+    if len(left) != len(right) or not left or len(left) % 2:
+        return False
+    if left[::2] != right[::2] or len(set(left[::2])) != len(left[::2]):
+        return False
+    prior, current = dict(zip(left[::2], left[1::2])), dict(zip(right[::2], right[1::2]))
+    for path, value in prior.items():
+        if value == current[path]:
+            continue
+        if path.endswith(('/in_voltage0_hardwaregain', '/in_voltage1_hardwaregain')):
+            mode_path = path.removesuffix('hardwaregain') + 'gain_control_mode'
+            if prior.get(mode_path) in ('slow_attack', 'fast_attack', 'hybrid') and prior[mode_path] == current.get(mode_path):
+                continue
+        return False
+    return True
+
+
 def restoration(before):
     for _ in range(30):
         after = ssh(STATE)
-        if after == before:
+        if restored_state_matches(before, after):
             return after
         time.sleep(.1)
     raise RuntimeError('both RX channels / scan masks / buffers not restored')
