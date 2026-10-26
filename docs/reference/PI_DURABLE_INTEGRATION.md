@@ -213,3 +213,68 @@ DeepSeek首轮因尝试列出范围外目录暂停，主控未扩大范围，续
 相关依据：[运行架构](SDR_AGENT_RUNTIME_DESIGN.md)、
 [SDK升级验证](../validation/PI_SDK_UPGRADE_2026-10-26.md)、
 [上游SQLite实现](https://github.com/earendil-works/pi/blob/v1.4.0/packages/durable/src/storage/sqlite/node.ts)。
+
+## GPT / Gemini 重讨论与实施交接
+
+用户要求补入GPT和Gemini，并保留前组MiMo、DeepSeek、GLM意见。
+本轮由GPT-6.1-Sol（high）、Gemini 4 Argon（medium）、Gemini 3.8 Flash（medium）独立讨论。
+三方收到相同事实和源码材料，首轮没有收到主控旧结论。
+随后就断连、身份与外部去重的实质分歧进行交叉核对。
+这仍是技术讨论；文件由主控整理，没有多AI起草流程。
+
+| 参与方 | 保留的主要意见 | 主控限定 |
+| --- | --- | --- |
+| MiMo-V2.6-Pro | Session Harness + outbox + Controller ACK | 放入分阶段路线；不采用默认断连detach |
+| DeepSeek V4.1 Flash | 未知提案首版不自动重发 | 保留，不能把无回执解释为未执行 |
+| GLM-5.3-Flash | 先验证账本及模型适配 | 可做技术验证；仅加账本不算完成durable任务恢复 |
+| GPT-6.1-Sol | 分离历史/执行恢复，加入Controller启动身份和请求资格 | 纳入；重点测试abort后迟到工具与socket清理竞态 |
+| Gemini 4 Argon | session-only、断连abort、保留确定性PlanningContext裁剪 | 纳入；不接受内存去重足够及彻底消除重复风险的断言 |
+| Gemini 3.8 Flash | 首版不改Controller执行路径，禁止未知提案重发 | 作为P0/P1范围；若要求跨Controller恢复，仍需P2持久协议 |
+
+以下规则约束后续实施，优先于讨论报告中的示例与乐观断言。
+
+- 输入去重属于Harness，提案唯一性属于Worker业务记录，执行与批准权威属于Controller。
+  三者不能互相替代。现有内存requests不构成跨进程执行账本。
+- 首版保留异常断连abort与清队列。正常close_session沿用“只在空闲时关闭”的既有约束。
+  进程崩溃无法运行清理；重开存储时先撤销旧执行资格，不能仅依赖dispose。
+- 同一业务会话映射独立conversation，不能用一个全局root反复reset来冒充多会话隔离。
+  provider session UUID、业务输入ID和执行请求身份分开管理。
+- 新旧连接切换须等待旧runtime清理与租约交接完成。
+  测试abort后迟到submit_plan、工具收到interrupted后模型再次调用，以及旧队列复活。
+  不采纳讨论中的任意100ms释放指标；先证明取消和清理完成，再释放租约，不能为达标提前放行。
+- 不把持久ACK与断连detach绑定。可以保留断连abort，同时增加Controller权威接收记录。
+  如果首版不改协议，就明确不自动恢复旧请求的提案交付，不承诺跨Controller执行恢复。
+- 开库前取得跨进程生命周期锁。仅有systemd单unit不够。
+  若选O_EXCL锁文件，必须另证崩溃遗留、PID复用和竞争清理的处理；不能将文件存在当成活锁证明。
+- StateDirectory只创建指定目录。选sdrharness-planner时库直接放其下；选其他根时显式创建子目录。
+  不能依赖讨论示例中“自动创建planner子目录”的说法。
+- Harness.close不是取消。submit、wait及其他可能推进调度的调用前均需落实资格守卫。
+  关闭自动摘要后还须核实overflow路径，不能让LLM摘要替代最新无线事实。
+- API签名、配置键、内存增量和工期均须以固定版本源码与测试确认。
+  不采信零回归、必然OOM、回滚零副作用或硬件exactly-once的措辞。
+
+首个独立交付为P0及P1隔离闭环，必须真正使用Harness与磁盘SQLite。
+在feature临时目录接入模拟提供商和虚拟Controller，先不切换生产入口。
+完成输入幂等、内容冲突拒绝、队列撤回、取消、崩溃重开、恢复门及排他锁测试。
+断言同请求受理次数、提案次数、虚拟执行次数以及旧epoch投递次数。
+旧epoch投递必须为零。未知提案不得自动补发。
+沿用71项既有回归；one-shot共享租约和资源，不能以“未改代码”免做回归。
+
+测试通过后继续P2/P3，不把P0演示当成整个接入完成。
+真实DeepSeek验证采用独立会话和hold/文本计划，不让测试连接真实SDR执行器。
+允许按项目规则进行源码、协议和隔离测试；切服务前完成制品、健康与回滚核对。
+P201真实RX或任何TX不属于本交接新增授权，当前Spectrum Agent继续运行。
+遇到确定的API不兼容，记录具体差异并调整接入，不绕过身份、批准或恢复门。
+
+两组原始意见、第二轮修正及模型验证元数据见
+[六方讨论记录](../evidence/PI_DURABLE_DISCUSSION_2026-10-26.json)。
+其中报告为各模型意见，不是已实现事实。以本文件的主控限定和后续验证结果为准。
+新增GPT及Gemini调用费用未由工具提供，记为未知，不并入上一组已报告金额。
+
+本轮组名为 `agx-pi-durable-gpt-gemini`。
+首轮GPT `20261026-173508-wo1c`、Gemini4 `20261026-173535-8osk`、
+Gemini3.8 `20261026-173733-3mu6`；交叉核对分别为
+`20261026-173941-rur5`、`20261026-174143-yetc`、`20261026-173943-z0fl`。
+两款Gemini均由适配器确认原生模型匹配，请求/实际模型元数据保存在讨论记录中。
+交叉核对后，Gemini撤回了默认detach、内存去重足够或彻底消除重复执行的表述。
+未采纳意见仍保留在原始记录，不改写其历史回答。

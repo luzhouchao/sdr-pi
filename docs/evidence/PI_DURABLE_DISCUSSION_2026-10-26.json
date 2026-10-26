@@ -1,0 +1,898 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "topic": "pi-durable integration",
+  "authority": "Model reports are proposals, not facts or deployment authorization. Adjudication is in docs/reference/PI_DURABLE_INTEGRATION.md.",
+  "host_workspace": "E:\\NXB210",
+  "runs": [
+    {
+      "run_id": "20261026-171203-nx8t",
+      "status": "needs_input",
+      "agent": "deepseek-v4.1-flash",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "effort": "max",
+      "round": 1,
+      "parent": null,
+      "model_verification": null,
+      "actual_generated_models": null,
+      "usage": {
+        "input_tokens": 4400,
+        "cached_input_tokens": 0,
+        "output_tokens": 142,
+        "reasoning_output_tokens": 0
+      },
+      "cost_usd": 0.0007452,
+      "warnings": [],
+      "report": null,
+      "last_message": "我先读取四份材料，再形成独立结论。"
+    },
+    {
+      "run_id": "20261026-171202-wvnd",
+      "status": "done",
+      "agent": "glm-5.3-flash",
+      "model": "opencode-go/glm-5.3-flash",
+      "effort": "max",
+      "round": 1,
+      "parent": null,
+      "model_verification": null,
+      "actual_generated_models": null,
+      "usage": {
+        "input_tokens": 140817,
+        "cached_input_tokens": 75308,
+        "output_tokens": 13485,
+        "reasoning_output_tokens": 11330
+      },
+      "cost_usd": 0.01882809,
+      "warnings": [],
+      "report": {
+        "position": "不把 pi-durable 当成 SessionRuntime 的无缝替换，分两步接入。第一步只把它当持久账本与崩溃恢复层：用 openNodeSqliteStorage 持久化请求准入、计划提案、交付状态，pi-agent-core 执行循环、RunLease、socket 层原样保留。第二步等验证了自定义 stream 注入点后，再考虑把生成循环搬进 Harness。无论哪步，plan_proposed 的对外交付都没有 exactly-once，必须新增 (session_generation, request_id) 维度的 ACK 与 Controller 侧幂等去重，这是上游不提供的。",
+        "options": [
+          {
+            "name": "账本优先接入",
+            "idea": "worker 内 Harness.open(await openNodeSqliteStorage(path))。每个 session_generation 开一个新 conversation，generation 到 conversationId 的映射存 app doc（defineDoc）。Controller 的 request_id 直接用作 submit() 的 requestId，PlanningContext JSON 作为 content，准入即持久化，靠上游 requestId 去重。submit_plan 改为 defineTool，execute 里先 commit 计划 entry 和交付账本（deliveryId、状态 proposed/sent/acked），再由独立步骤发 plan_proposed 并回写状态；崩溃后按账本决定补发或跳过。steer/follow_up 映射 submit(whenBusy:'steer') 与默认 follow-up，MAX_SESSION_QUEUE=4 仍在 socket 层查 pi.inbox 长度执行；abort 映射 root.abort()；clear_queue 用逐个 submission.abort() 实现，需在账本记录 submission id。pi.provider 的持久 UUIDv7 取代现在的 sessionId `sdr-${sessionGeneration}`。one-shot 路径同样入账本，重试同 request_id 可直接返回已存计划，省一次模型调用。",
+            "pros": [
+              "改动面小，71 项现有测试可延续",
+              "保留 requireSubmitPlan、spark 适配器、beforeToolCall 单工具限制等全部现有防护",
+              "获得持久 requestId 去重和事后审计，崩溃现场可查",
+              "回滚容易：关掉写路径即可，旧行为不受影响"
+            ],
+            "cons": [
+              "内存 Agent 与持久账本两套状态机并存，存在短暂不一致窗口",
+              "崩溃瞬间的运行中状态仍丢失，只能记 unanswered",
+              "pi-durable 的任务恢复、crash-loop 停车等能力暂时用不上"
+            ],
+            "recommended": true
+          },
+          {
+            "name": "全量 Harness 替换",
+            "idea": "用 pi-durable conversation 加 generation task 取代 pi-agent-core Agent。compactPlanningContext 移植为 hook(GenerationTask,{beforeRequest})，每请求一个计划的约束改用 ToolTask 的 beforeTool 钩子查已提交文档实现，terminateAfterPlan 对应工具结果 control:{terminate:true}，事件流换 watchEvents（带快照，落后超 100 批给全量快照）。",
+            "pros": [
+              "获得 checkpoint 级恢复和 crash-loop 停车（restartLimit 默认 5，停车原因 restart_limit）",
+              "统一队列进 pi.inbox，afterFailedRun 可配置 continue 或 withdraw",
+              "断连重连可用 watchEvents 快照补状态"
+            ],
+            "cons": [
+              "spark JSON 适配器和 requireSubmitPlan 载荷校验在 1.4.0 README 里没有注入点，beforeRequest 只能改消息不能换传输，迁移路径未证实",
+              "compaction 行为与 compactPlanningContext 不等价，会改变模型可见上下文，计划质量可能回归",
+              "改动大、验收成本高，experimental API 还会漂移"
+            ],
+            "recommended": false
+          },
+          {
+            "name": "不用 pi-durable，自写 SQLite 账本",
+            "idea": "直接在 worker 里为请求、计划、交付建表，自己写去重和恢复。",
+            "pros": [
+              "零新依赖，行为完全可控",
+              "不引入 experimental API 的版本风险"
+            ],
+            "cons": [
+              "requestId 去重、崩溃计数、任务停车、原子提交这些上游已测的逻辑全部重造",
+              "与已锁定的 pi-ai 1.4.0 生态脱节，后续升级 pi-durable 时还要再做一遍"
+            ],
+            "recommended": false
+          }
+        ],
+        "critiques": [
+          {
+            "target": "把持久化当作 worker 边界的无缝扩展",
+            "issue": "真正的语义断点在 session-server.mjs：socket close 触发 runtime.dispose()，清队列、abort、释放 RunLease。有了持久存储后，断连和崩溃必须拆成两种语义，否则 resume 会把 Controller 已主动放弃的会话又跑起来，产生无人监听的推理消耗。",
+            "severity": "high",
+            "suggestion": "第一阶段断连仍走 dispose（abort 但保留已提交 entry），resume() 只在 worker 进程崩溃重启后由 worker 自己调用；Controller 任何重连都开新 generation，worker 把旧 generation 账目标记 superseded，不再补发。"
+          },
+          {
+            "target": "期望 resume() 天然提供安全恢复",
+            "issue": "上游去重只覆盖 admission（requestId 重试返回原 submission）和内部嵌套调用，对 plan_proposed 这类外部交付无 exactly-once。工具默认非 replay:'safe'，崩溃后模型收到 interrupted 错误结果而非重跑；声明 replay:'safe' 则会重放外部副作用。",
+            "severity": "high",
+            "suggestion": "交付做两阶段：先 commit 含 deliveryId 的计划，再发送，再回写 sent/acked。恢复时按账本补发，幂等由 Controller 按 (session_generation, request_id) 保证；ACK 丢失就走补发加 Controller 回 already_handled。"
+          },
+          {
+            "target": "继续把计划事件当 fire-and-forget",
+            "issue": "现在 emit/writeFrame 无 ACK；controller-boundary.txt 显示未知 request_id 直接报错，StepApproval 下重复 plan_proposed 触发 'a validated plan is already pending'。自动模式下重复计划可能重复驱动硬件动作。",
+            "severity": "high",
+            "suggestion": "新增 plan_ack 或 Controller 幂等去重。注意 session-protocol 的 requireExactKeys 严格拒绝未知字段，SESSION_PROTOCOL_VERSION 硬校验不等于 1 即抛错，加命令必须双端同步升版本，不能只改 worker。"
+          }
+        ],
+        "risks": [
+          "SQLite 单所有者：README 明确 one process owns a storage, no cross-process locking；systemd 重启竞态或手动调试开第二个实例会打开同一文件。建议在数据目录加 flock 自保。",
+          "systemd 现状无可写持久目录：RuntimeDirectory=sdr-agent 是 tmpfs，ProtectSystem=strict、ProtectHome=read-only。必须改 unit 加 StateDirectory，否则 SQLite 放 /run 重启即丢，持久化目标落空。",
+          "内存：--max-old-space-size=192、MemoryMax=384M。README 说 package root 载入 TypeBox 未打包约 23MB 峰值 RSS（tree-shaken 约 4MB），加 SQLite 后需在 AGX 实测。",
+          "断电边界：SQLite 为 WAL、synchronous=NORMAL，进程崩溃不丢、断电或宿主故障可能丢最新提交；交付账本补发路径必须容忍账本回退。",
+          "pi-durable 是 experimental，API 无兼容承诺；planner 已锁 pi-ai 1.4.0 和 typebox 1.3.27，升 pi-durable 可能连带被迫升 pi-ai。",
+          "过早启用 pi-durable 自动 compaction 会改变模型可见上下文，与 compactPlanningContext 的保留最新用户消息策略不一致。",
+          "P201 上 Spectrum Agent 扫频任务进行中，任何验证都不得触碰 SDR 硬件。"
+        ],
+        "open_questions": [
+          "pi-durable 1.4.0 源码中 generation task 如何调用 models：有无自定义 streamFn 或 onPayload 拦截点（决定方案二可行性，需读 packages/durable/docs/spec.md 与源码，本讨论只依据 README）。",
+          "systemd unit 的 StateDirectory 命名与选址（如 /var/lib/sdrharness-planner），以及既有目录约定和备份策略。",
+          "Controller 侧是否接受为幂等去重和 plan_ack 做 Rust 改动，协议版本用协商还是同步升级。",
+          "worker 崩溃后 resume 重新调用模型产生重复推理成本是否可接受；不可接受则改用 abandonOnRestart 直接放弃该 run，需用户拍板。",
+          "断连后运行中的 run 是否允许脱离监听继续跑，当前倾向不允许。",
+          "survey_parameters 的 one-shot 路径是否也入账本。",
+          "新 provider key 是否已配置（上一单元清空旧 key，本任务未读取凭据），Phase 0 冒烟测试依赖此项。"
+        ],
+        "confidence": "medium"
+      },
+      "last_message": null
+    },
+    {
+      "run_id": "20261026-171204-hdit",
+      "status": "done",
+      "agent": "mimo-v2.6-pro",
+      "model": "opencode-go/mimo-v2.6-pro",
+      "effort": "high",
+      "round": 1,
+      "parent": null,
+      "model_verification": null,
+      "actual_generated_models": null,
+      "usage": {
+        "input_tokens": 113178,
+        "cached_input_tokens": 43264,
+        "output_tokens": 7774,
+        "reasoning_output_tokens": 3567
+      },
+      "cost_usd": 0.037332802,
+      "warnings": [],
+      "report": {
+        "position": "推荐把 pi-durable 1.4.0 只用作 Planner Worker 侧的持久会话层：用 Harness+SQLite 替换 SessionRuntime 的内存 Agent 生命周期，同时必须新增一条持久化的提案出站记录（outbox）和 Controller 显式 ACK 协议，硬件去重仍由 Rust Controller 的持久记录负责。不改 Controller 策略权威，不动 one-shot socket，不追求与现有断连即 abort 的行为无缝兼容。",
+        "options": [
+          {
+            "name": "A. Harness 替换 SessionRuntime + outbox + Controller ACK（推荐）",
+            "idea": "main.mjs 启动时 Harness.open(openNodeSqliteStorage(...))，resume() 接续未完任务。session-runtime.mjs 的 dispatch 把 prompt/steer/follow_up 映射为 conversation.submit 的 whenBusy 语义，requestId 用 `${session_generation}:${request_id}` 组合。submit_plan 工具先在自定义 defineDoc（如 app.plan_outbox）里提交 {generation, request_id, plan, state}，再向 Controller 发出，Controller 以持久化 (generation, request_id) 去重并回 ACK；Worker 收到 ACK 才把 outbox 置为 acked。断连改 detach 不改 dispose（见 controller-boundary.txt 中 socket close 调 runtime.dispose 的现状，planner-source.txt 的 SessionRuntime.dispose 会 abort）。「不做什么」：不改 Rust 验证/预算/批准逻辑，不迁移 Web 存储，不自动重放硬件动作，不改识别准入。",
+            "pros": [
+              "上游 requestId 幂等提交（upstream-durable-1.4.0.md Persist and Resume 节）直接解决重复提案输入侧，harness.submission(id) 支持断连后重取",
+              "工具默认 replay 不是 safe，崩溃后给模型 interrupted 结果而非重跑（Tools 节），天然避免静默重复副作用；需要重放时再显式声明 replay:\"safe\" 并配合 outbox",
+              "任务检查点逐阶段持久化，崩溃重启后从检查点续跑，替代当前 SessionRuntime 全内存状态（planner-source.txt 中 planSubmittedForRequest、pendingPlanRequestIds 均在内存）",
+              "Controller 已按 session_generation 丢弃过期事件（controller-boundary.txt handle_event 开头），代次失效语义可保留"
+            ],
+            "cons": [
+              "pi-durable API 标 experimental，锁定 1.4.0 后续升级成本未知",
+              "SQLite WAL synchronous=NORMAL，掉电可能丢最后一条 commit（Storage 节原文），outbox 写入与硬件执行之间仍有窗口，必须靠 Controller 侧持久记录兜底",
+              "systemd 单 ProtectSystem=strict、ProtectHome=read-only（controller-boundary.txt），当前未确认任何可写持久目录，需先加 StateDirectory 才能落盘",
+              "断连不再 abort 是行为边界变更，终端 32 条摘要之外会多出持续运行的会话，调度方需明确接受"
+            ],
+            "recommended": true
+          },
+          {
+            "name": "B. 薄持久化：只存 transcript，提案路径保持内存",
+            "idea": "只把对话条目、request↔submission 映射写入 SQLite 或 JSONL，Agent 运行、队列、去重仍走现有 SessionRuntime 内存逻辑，崩溃后靠重新 prompt 恢复。",
+            "pros": [
+              "改动面最小，71 项测试几乎不动",
+              "不依赖 pi-durable 的任务调度，内存开销增量小，384M MemoryMax 风险低"
+            ],
+            "cons": [
+              "无法解决崩溃后重复提案与重复硬件执行，问题原样保留",
+              "两套持久化语义并存，后续换 Harness 时迁移成本反而更高",
+              "JSONL 会全量驻留内存（Storage 节），长跑反而更危险"
+            ],
+            "recommended": false
+          },
+          {
+            "name": "C. 全面替换：one-shot 与 session 都迁 Harness，Controller 加持久执行日志",
+            "idea": "把 handleFrame 的一次性规划也做成持久 submission，Controller 增加持久化 requests/执行记录与重放对账协议，Web 只读 viewState/watchEvents。",
+            "pros": [
+              "一套身份与去重模型覆盖全部入口",
+              "Controller 重启后可对账，硬件执行幂等有权威依据"
+            ],
+            "cons": [
+              "超出最小范围，Controller 与 Planner 同时改动，AGX 上还有 Spectrum Agent 在 P201 跑扫频，验证窗口受限",
+              "Controller 重启对账协议设计量大，本轮材料没有 Controller 存储层信息",
+              "周期长，真实提供商对话尚未验收，风险叠加"
+            ],
+            "recommended": false
+          }
+        ],
+        "critiques": [
+          {
+            "target": "把 pi-durable 的 resume 当作可直接替代现有提交流",
+            "issue": "submit 的 requestId 幂等只覆盖输入受理（Persist and Resume 节），工具副作用不幂等。submit_plan 的 execute 直接 onPlan 发 plan_proposed（planner-adapters.txt），声明 replay:\"safe\" 后崩溃重跑会再次发提案。",
+            "severity": "high",
+            "suggestion": "先落 outbox 再发射，发射以 (generation, request_id) 为幂等键；Controller 侧持久去重，未见 ACK 前不标 acked。"
+          },
+          {
+            "target": "默认存在 Controller→Worker 的 ACK 通道",
+            "issue": "材料里 plan_proposed 是单向 event 帧（makeSessionEvent，planner-source.txt 的 #submitPlan），controller-boundary.txt 只显示 Controller 收到后验证、打印 record(\"validated request N\")，没有回程 ACK 帧的证据。",
+            "severity": "high",
+            "suggestion": "把 ACK 列为必须新增的协议：协议版本从 1 升 2 或新增 plan_acked 事件，Controller 持久化后再回。不要假设既有通道可靠。"
+          },
+          {
+            "target": "存储目录可用",
+            "issue": "systemd 片段只有 RuntimeDirectory=sdr-agent（/run，重启即失），ProtectSystem=strict 下 /home/jetson 只读，未见 StateDirectory。",
+            "severity": "high",
+            "suggestion": "先验证 /var/lib/sdrharness 写权限或加 StateDirectory=sdrharness，SQLite 文件放那里，不能放 /run。"
+          },
+          {
+            "target": "把 submit_plan 内存去重（planSubmittedForRequest）平移到持久层即可",
+            "issue": "该去重只在当前 request 生命周期内有效，clear_queue 会重建 pendingPlanRequestIds（planner-source.txt），语义与 outbox 状态机不同，平移会漏掉 clear_queue/abort 后再提案的场景。",
+            "severity": "medium",
+            "suggestion": "用 outbox 状态机显式建模 proposed/acked/validated/rejected/withdrawn，abort 与 clear_queue 对应置 withdrawn。"
+          }
+        ],
+        "risks": [
+          "内存：MemoryMax=384M、堆上限 192M，pi-durable 根包加载 TypeBox 约 23MB 峰值 RSS（Storage 节），叠加 chord 与流式响应，需实测再定是否调 MemoryMax",
+          "掉电窗口：SQLite synchronous=NORMAL 可能丢最后提交，必须以 Controller 持久记录为硬件执行的唯一幂等权威",
+          "行为变更：session socket 断开从 abort 改为 detach 后，旧代次失效与停止优先级必须逐场景回归，现有 dispose 逻辑（planner-source.txt）会清队并 abort",
+          "experimental API 升级风险：锁定 1.4.0 + pi-agent-core/pi-ai 1.4.0，升级需重跑 71 项测试与回滚验证",
+          "真实提供商行为未验收：OpenCode Go 文档地址变动、新 key 是否已配置均为未知，模型适配迁移前不得改动用户配置",
+          "崩溃循环停车：restartLimit 默认 5 后任务被 park，需要暴露 retryTask 入口，否则规划任务静默停摆"
+        ],
+        "open_questions": [
+          "pi-durable 1.4.0 是否暴露 payload 级变换入口（对应 planner-adapters.txt 的 onPayload/requireSubmitPlan 与 spark-stream 的 chat_template_kwargs、response_format json_schema）？README 只见 beforeRequest 换消息，未见 onPayload 等价物，若只能在 pi-ai provider api 层注入需先验证 createProvider({api}) 的兼容性",
+          "Controller 是否已有任何持久化 requests 映射？controller-boundary.txt 只显示内存 requests，重启后去重依据缺失时方案 A 的 ACK 无法闭环",
+          "/var/lib/sdrharness 或其它持久目录对 jetson 用户是否可写？systemd 是否允许加 StateDirectory？",
+          "session_generation 由谁分配、Controller 重启后是否强制递增？Worker 侧对话与 generation 的对应关系需决策者拍板：一 generation 一 conversation 还是单 conversation 多 generation",
+          "断连 detach 后由谁、何时触发 reconcile 查询 Controller 已受理的提案（需要新增 get_state 类只读命令？）",
+          "OpenCode Go 新文档地址、provider 新 key 是否可用、真实提供商对话何时验收，这些决定模型适配迁移排期",
+          "内存预算实测值：Harness+SQLite+chord 在 384M 限制下的 RSS 余量，未测不敢定"
+        ],
+        "confidence": "medium"
+      },
+      "last_message": null
+    },
+    {
+      "run_id": "20261026-171249-dd0a",
+      "status": "done",
+      "agent": "deepseek-v4.1-flash",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "effort": "max",
+      "round": 2,
+      "parent": "20261026-171203-nx8t",
+      "model_verification": null,
+      "actual_generated_models": null,
+      "usage": {
+        "input_tokens": 113870,
+        "cached_input_tokens": 79104,
+        "output_tokens": 12133,
+        "reasoning_output_tokens": 9745
+      },
+      "cost_usd": 0.012732012,
+      "warnings": [],
+      "report": {
+        "position": "推荐接入，但只让 pi-durable 承担会话与提案台账，不让它承担硬件执行的去重。第一版对未确认的 submit_plan 明确不重放：宁可让该 request 落成 unanswered，也不让 Controller 收到第二次计划。要自动重放，必须先给 Controller 加 plan_id 幂等键和 plan_settled 回执。",
+        "options": [
+          {
+            "name": "台账加禁止重放（第一版推荐）",
+            "idea": "保留现 SessionRuntime 与两个 socket。加一个 defineDoc 记录每个 (session_generation, request_id) 的提案状态：intent、emitted、orphaned。submit_plan 的 execute 里先 api.commit 写 intent，再走现在的 onPlan 发 plan_proposed。重启后凡是 intent 在、回执不在的记录一律标 orphaned，不重发。身份映射：一个 Controller session_generation 对一个 durable conversation，映射写在会话 doc 里同一笔 commit；durable 的 requestId 用 sdr:{session_generation}:{request_id}，与 Controller 的 request_id 一一对应；Controller 的 requests 映射仍是它自己的权威，不复制到 Planner。",
+            "pros": [
+              "不动 Controller，不新增协议版本",
+              "保持现有不变量：没有计划就没有硬件动作",
+              "失败面小，回滚只是把 current 指回旧制品",
+              "崩溃后的语义可解释：为什么没计划，台账里能查到"
+            ],
+            "cons": [
+              "提案台账与 Controller 判定仍是两份状态，靠人核对",
+              "崩溃后这个 request 没有计划，Controller 等多久取决于它自己的超时（材料未见）",
+              "会话历史能否续上还没解决，只解决提案不重复"
+            ],
+            "recommended": true
+          },
+          {
+            "name": "pi-durable 全量接管会话",
+            "idea": "用 Harness.open 加一个 conversation 承载会话。prompt 变 submit({type: input, requestId})，steer 和 follow_up 用 whenBusy，clear_queue 用 submission.abort，abort 用 conversation.abort，submit_plan 变成 durable tool（意图先提交，再 execute）。",
+            "pros": [
+              "transcript、inbox、requestId 去重都是现成能力",
+              "terminateAfterPlan 有 control.terminate 对应",
+              "重启后对话上下文自动回来，provider sessionId 也持久"
+            ],
+            "cons": [
+              "close_session 没有对应语义，会话会留在盘上，dispose 的边界变了",
+              "MAX_SESSION_QUEUE 是 4，durable 的 inbox 在文档里没写上限，得自己从 pi.inbox 长度补",
+              "onPayload、transformContext、sparkLocal 用的 streamFn 三个注入点，1.4.0 文档里没有同名钩子，要重做并做新旧 parity 测试",
+              "内存占用要重测，现配置是 --max-old-space-size=192 和 MemoryMax=384M"
+            ],
+            "recommended": false
+          },
+          {
+            "name": "加幂等键与回执后允许重放",
+            "idea": "协议升到 v2。计划带 plan_id，可由 session_generation 加 request_id 派生。Controller 持久化 plan_id 到判定的映射，重复 plan_id 回放旧判定，不重新进 pending。处理完回写 plan_settled 事件，Planner 记为 ack。open_session 交换 controller_epoch。",
+            "pros": [
+              "唯一能安全自动重放的路线",
+              "崩溃恢复对操作者透明，不用人去对日志"
+            ],
+            "cons": [
+              "Rust 和 TS 双侧改，Controller 还要新增持久存储",
+              "两份存储仍可能不一致，ack 本身丢了还是要人工介入",
+              "材料只看到 Controller 的事件分支，没有出站事件通道，工作量和风险都低估不了"
+            ],
+            "recommended": false
+          }
+        ],
+        "critiques": [
+          {
+            "target": "把 pi-durable 当成硬件动作的恰好一次保证",
+            "issue": "上游只给三件事：提交原子性、未完成 task 重启后重跑、requestId 提交去重。工具只有声明 replay: safe 才重跑，否则模型拿到 interrupted。跨进程外部副作用没有 exactly-once。",
+            "severity": "high",
+            "suggestion": "submit_plan 不要标 replay: safe，除非 Controller 侧先有 plan_id 幂等。第一版按不重放设计。"
+          },
+          {
+            "target": "直接拿 session_generation 当持久身份",
+            "issue": "Controller 的 requests 是内存映射，handle_event 里 requests.get 找不到就返回 invalid_input，提示 plan refers to an unknown request。Controller 一重启，早先生成的 plan_proposed 就是非法帧。",
+            "severity": "high",
+            "suggestion": "持久化 controller_epoch，握手时比对。epoch 不一致就不重放，把台账里的记录标 orphaned。"
+          },
+          {
+            "target": "重复 plan_proposed 无害",
+            "issue": "StepApproval 分支里 self.pending 已有值时会返回 Err（a validated plan is already pending）。这是错误返回，不是幂等忽略，会打断 Controller 的事件处理。重复投递不是安全操作。",
+            "severity": "high",
+            "suggestion": "在协议层拦截重复，不指望 Controller 容忍。台账先查后发，且发送失败不回滚状态。"
+          },
+          {
+            "target": "随便找目录放 SQLite",
+            "issue": "systemd 单元只给了 RuntimeDirectory=sdr-agent，那是 /run 下的 tmpfs，重启就丢。ProtectSystem=strict 加 ProtectHome=read-only，/home/jetson/.local/lib 只读。材料里没有 StateDirectory。",
+            "severity": "medium",
+            "suggestion": "加 StateDirectory=sdrharness-planner，或显式 ReadWritePaths。落盘前在目标机上验一遍能否写。"
+          },
+          {
+            "target": "当作多装一个 npm 包",
+            "issue": "文档写包根加载 TypeBox，未打包时峰值 RSS 约 23MB。另外存储错误会关掉整个 Harness，之后所有调用和 wait 都 reject。现在的 Planner 没有这种全量失败模式。",
+            "severity": "medium",
+            "suggestion": "把 harness.closed 接到进程退出，交给 systemd 重启。接入前在 192MB 堆上限下量一次 RSS。"
+          }
+        ],
+        "risks": [
+          "没有 ack 时只能在重复和丢失里选一个。我选丢失，代价是 Controller 可能一直等一个不会来的计划。材料里没看到 Planner 计划的超时。",
+          "Controller 重启后 requests 映射清零，孤儿提案只能靠人工看 validated request N 这类 stdout 记录对齐。",
+          "SQLite 是 WAL 加 synchronous=NORMAL，进程崩溃能扛，整机断电可能丢最新一次提交。",
+          "存储单所有者，无跨进程锁。Planner 和 Web 控制台不能同时开同一个库文件，材料显示 Web 另有会话与结果存储。",
+          "restartLimit 默认 5，内存紧张造成确定性 OOM 时任务会被 park，之后要人工 retryTask。",
+          "RunLease 在内存、one-shot 与 session 共享。模型调用搬进 durable 的 phase 后必须自己在请求前后 acquire 和 release，否则并发超预算。",
+          "协议命令里的 session_generation 现在由 Controller 给，durable 身份若以它为主键，代次语义就被绑死在 Controller 生命周期上。"
+        ],
+        "open_questions": [
+          "目标机的 systemd 版本是否支持 StateDirectory 与 ProtectSystem=strict 共存；最终写路径选 /var/lib 还是别的。",
+          "openNodeSqliteStorage 底层是 node:sqlite 还是 better-sqlite3 原生模块；Node 22.19.0 是否还要 --experimental-sqlite；arm64 上是否需要编译。",
+          "Controller 对迟迟不到的 plan 有没有超时；收到重复 plan 的完整行为（材料在 StepApproval 分支截断）。",
+          "是否接受 close_session 语义变化：原来是清内存，接入后会话留盘。",
+          "是否批准新增 plan_settled 事件和 plan_id，即协议 v2。这是 Rust 侧改动的前提。",
+          "pi-durable 1.4.0 有没有等价于 onPayload 的载荷改写点，还是只能改 provider 的 api 层。",
+          "材料是节选且没有行号，本文按出现的函数名、常量名和小节引用，未覆盖的代码没有核实。",
+          "新 key 是否已填、真实提供商对话能否验收，本任务不读，也不影响设计结论。"
+        ],
+        "confidence": "medium"
+      },
+      "last_message": null
+    },
+    {
+      "run_id": "20261026-173508-wo1c",
+      "status": "done",
+      "agent": "gpt-6.1-sol",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "round": 1,
+      "parent": null,
+      "model_verification": null,
+      "actual_generated_models": null,
+      "usage": {
+        "input_tokens": 51853,
+        "cached_input_tokens": 0,
+        "output_tokens": 3315,
+        "reasoning_output_tokens": 1034
+      },
+      "cost_usd": null,
+      "warnings": [],
+      "report": {
+        "position": "建议先接入可持久保存输入、会话和提案的受控试点；恢复历史与恢复执行必须分开。pi-durable 1.4.0负责内部任务恢复，新增身份隔离、提案发件箱和Controller接收账本负责外部副作用，不能据此宣称硬件恰好执行一次。",
+        "options": [
+          {
+            "name": "分阶段接入，恢复默认关闭",
+            "idea": "第一阶段只覆盖session路径，one-shot继续使用现有Agent，共享全局RunLease。新增durable宿主模块、唯一submit_plan扩展、身份映射文档和提案发件箱；修改session-runtime、session-protocol及session-server。Rust新增接收确认、状态查询和执行记录。禁止安装CodingTools、Code Mode、子Agent及文件、shell、SSH、IIO工具；识别准入保持false。\n\n身份分五层：用户输入有稳定input_id；业务会话有稳定session_id；durable conversation.id关联该会话；每次规划request使用Controller启动UUID、session_generation、request_id的组合键；command_id只关联传输应答。provider的pi.provider UUID仅用于模型会话亲和，不能充当批准或执行身份。重试复用原requestId，并由宿主校验内容摘要；README没有保证同ID不同内容会被拒绝。重连可以读取旧conversation，但新Controller实例或新安全代次必须重新取得PlanningContext。\n\n队列上限仍为4。durable试点先支持prompt、abort、clear_queue；steer/follow_up语义验明后再开放，旧模式保留完整现有功能。不能把多个完整PlanningContext合并后仍用可变currentContext绑定提案。每个提案必须关联明确输入与不可变request键。取消先使请求及代次失效，再撤回排队submission并等待conversation.abort完成；停止不等待模型自然结束。断连保留历史，但撤销连接的提案资格，终止当前工作、清除排队输入。重连不会自动续跑；若要改变这项边界，另行明确授权。\n\nsubmit_plan通过api.commit把规范化计划、请求键、内容摘要及待发送状态原子保存。相同request只能有一个提案；相同内容返回既有记录，不同内容拒绝。socket发送由宿主发件箱处理。Controller在本地事务中登记提案和验证结果，再返回ACK；ACK只表示提案接收状态，不表示批准或硬件完成。ACK丢失时查询或重发同一提案，不能重新生成计划。Controller执行前记录执行意图、消耗预算并核验批准、实例和代次；遇到执行结果不明就停止并要求核对，不能自动重做。两个进程的账本与实际SDR动作之间没有共同事务。\n\n启动使用openNodeSqliteStorage、Harness.open、createRegistry、defineExtension、defineTool及root/createConversation。输入用submit({type:'input',content,requestId})，繁忙拒绝用whenBusy:'reject'；队列撤回用submission.abort，整段停止用conversation.abort。UI通过watch或watchEvents重建快照，不把监听事件当可靠投递日志。submit、wait及resume都会启动调度，abort等操作也可能推进任务；因此恢复闸门和旧实例拒绝规则必须在任何此类调用前生效，不能仅靠省略resume。\n\n工具默认不声明replay:'safe'。中断工具会得到interrupted结果，但模型仍可能再次提案，所以必须有业务账本。只有证明发件箱写入幂等且代次校验完整后，才考虑safe。工具返回改为output及control:{terminate:true}；README规定整轮结果都要求terminate才终止，不能照搬Agent的terminate字段。\n\n继续使用createModels/createProvider及现有openai-completions或responses选择，不改用户已保存的DeepSeek地址与协议。durable没有材料中Agent的streamFn、transformContext、onPayload配置入口，不能直接复制构造参数。非Spark路径需验证Models调用是否保留强制submit_plan负载逻辑；Spark自定义流需另做模型访问适配。初期关闭自动摘要，并通过GenerationTask.beforeRequest执行已验证的完整快照裁剪策略；还须验证overflow触发的压缩路径，防止摘要替代无线事实。\n\nSQLite由单个Planner进程独占，部署需新增操作系统级所有者约束。可建议StateDirectory=sdrharness-planner，对应/var/lib/sdrharness-planner，但当前服务可写性尚未验证。数据库及WAL/SHM必须可写。先完成模拟提供商和假Controller故障测试，再做隔离环境的真实提供商验收，最后才切服务；本轮不实施。",
+            "pros": [
+              "保留Rust的硬件、策略、预算和批准权威。",
+              "先建立可核对的提案记录，再开放自动恢复。",
+              "可以逐会话选择旧模式或durable试点，便于回退。"
+            ],
+            "cons": [
+              "需要新增Worker与Controller协议及两侧状态管理。",
+              "首阶段durable试点不支持完整steer/follow_up。",
+              "尚不能认定现有Spark适配可直接复用。"
+            ],
+            "recommended": true
+          },
+          {
+            "name": "一次替换并自动恢复全部会话",
+            "idea": "将内存Agent直接替换为durable，启动即resume，并映射全部交互命令。",
+            "pros": [
+              "较快获得跨进程会话续跑能力。"
+            ],
+            "cons": [
+              "恢复会绕过原有断连即终止边界。",
+              "当前Controller没有已核实的持久去重接口。",
+              "队列、请求绑定及模型适配尚未证明等价，暂不建议。"
+            ],
+            "recommended": false
+          }
+        ],
+        "critiques": [
+          {
+            "target": "现有submit_plan内存检查",
+            "issue": "session-runtime的#submitPlan只检查currentContext和planSubmittedForRequest，没有检查active、pending集合或持久撤销状态；abort后迟到回调仍存在提案窗口。",
+            "severity": "high",
+            "suggestion": "提交事务检查请求资格和代次；Controller独立复核同一身份，不能只信Worker。"
+          },
+          {
+            "target": "socket关闭后的资源交接",
+            "issue": "session-server先清activeSocket，再异步dispose旧runtime。durable若在清理完成前释放租约或允许恢复，会扩大新旧运行重叠窗口。",
+            "severity": "high",
+            "suggestion": "清理完成前维持全局排他；恢复任务和后台压缩也必须遵守推理租约。"
+          },
+          {
+            "target": "把持久提交等同断电安全",
+            "issue": "README明确SQLite为WAL、synchronous=NORMAL：可承受进程崩溃，断电或主机故障可能丢失最新提交；上游也不提供跨进程锁。",
+            "severity": "high",
+            "suggestion": "区分进程崩溃与断电测试。更强落盘策略需核验固定版本适配器能力，不能虚构配置项或保证。"
+          }
+        ],
+        "risks": [
+          "故障矩阵：输入提交前崩溃→原ID重试；提交后应答丢失→获取既有submission；发件箱提交后崩溃→同提案重送；工具结果提交前崩溃→默认interrupted并查账本；ACK丢失→查询接收状态；执行中崩溃→标记未知，禁止自动重做。",
+          "Controller重启必须更换启动UUID，拒绝旧实例提案并使旧批准失效。Planner重启后只允许历史读取，重新握手和核验后才调度；socket重连不恢复执行资格。",
+          "存储错误会终止Harness，不能静默降级为内存继续接单。重启循环默认达到5次会停放任务，需要可见状态和人工处理。",
+          "回滚需先停止调度、使旧代次失效并处理未确认提案，再切旧制品。旧程序不得读取新数据库；禁止新旧进程同时拥有存储。保留数据库供核查，回滚不能撤销已执行的硬件动作。",
+          "粗估：API及适配验证1—2人日；宿主、身份与发件箱2—4人日；Controller账本及故障测试3—5人日；隔离验收与回滚1—2人日，合计7—13人日。Spark迁移或新增执行恢复会增加工作量。"
+        ],
+        "open_questions": [
+          "材料同时给出490d83e9efda50c867ec16df124d0b805b7b486c与仅增草案的f8a6340。实施前需确认实际基线及安装制品对应关系，本讨论未读取旧草案。",
+          "固定1.4.0源码中beforeRequest、Models适配、工具事务及压缩关闭的确切类型是什么？README不足以确定完整迁移代码。",
+          "Controller当前执行路径、批准寿命、预算扣减点和可用持久存储未完整提供，接收账本与执行意图事务需要据源码设计。",
+          "192MiB堆与384MiB服务上限下，durable、TypeBox、历史及SQLite缓存的实际峰值是多少？node:sqlite内存验证可用不代表磁盘存储和内存预算已验收。",
+          "真实DeepSeek提供商尚未请求验收，需验证工具调用、取消、错误脱敏与恢复。当前不读取key、不联网，也不推断配置已经兼容。"
+        ],
+        "confidence": "medium"
+      },
+      "last_message": null
+    },
+    {
+      "run_id": "20261026-173535-8osk",
+      "status": "done",
+      "agent": "gemini-4-argon-medium",
+      "model": "gemini-4-argon-medium",
+      "effort": "medium",
+      "round": 1,
+      "parent": null,
+      "model_verification": "confirmed",
+      "actual_generated_models": [
+        "MODEL_PLACEHOLDER_M418",
+        "gemini-4-argon-trial"
+      ],
+      "usage": {
+        "input_tokens": 49103,
+        "output_tokens": 4123,
+        "reasoning_output_tokens": 247,
+        "cached_input_tokens": null
+      },
+      "cost_usd": null,
+      "warnings": [],
+      "report": {
+        "position": "推荐采用“仅交互会话（SessionRuntime）接入 pi-durable + SQLite 单库单所有者 + 显式提案账本（PlanOutboxDoc）与 Controller ACK 闭环 + 断连默认 abort（不自动后台续跑）”的最小渐进方案；one-shot 规划与 survey_parameters 保持现有 pi-agent-core 无状态快路径，待真实 provider（opencode-go/deepseek-v4.1-flash）与 systemd StateDirectory 写权限验收后再分阶段切换。",
+        "options": [
+          {
+            "name": "方案A：仅 SessionRuntime 接入 pi-durable + 提案账本（推荐）",
+            "idea": "1. 最小接入范围与不做事项：仅将 session-server.mjs / session-runtime.mjs 背后的交互式会话切换为 @earendil-works/pi-durable 1.4.0 的 Harness + Conversation；one-shot socket（/run/sdr-agent/planner.sock 的 health、单次规划、survey_parameters）继续使用 pi-agent-core 的 Agent，不进 SQLite。明确不做：不开放 CodingTools（read/write/edit/bash）、不启用 CodemodeSandbox、不引入 subagent/task-graph、不让 Planner 跨过 Rust Controller 直接触发 SDR 硬件或自动恢复未决硬件动作、不启用 pi-durable 内置 LLM 摘要式自动 compaction（改用 GenerationTask beforeRequest 钩子复用 compactPlanningContext 確定性裁剪）。关键修改点：src/main.mjs（初始化单实例 Harness 与 SQLite 路径配置，保持 RunLease 仲裁）、src/session-runtime.mjs（用 Harness/Conversation/watchEvents 替代内存 Agent）、src/session-protocol.mjs（扩充或兼容重连状态查询与提案确认）、systemd unit（增加 StateDirectory=sdrharness 或 ReadWritePaths）。\n2. 身份映射与队列/取消/断连语义：Worker 进程持有唯一 Harness 实例；root conversation 长期复用，但在每次 open_session(session_generation) 时，若检测到代次演进，调用 conversation.reset(handoffNote, context) 隔离旧上下文并写入自定义文档 SessionMetaDoc 记录当前 controller_instance_id（若协议新增）与 session_generation。每次 prompt/steer/follow_up 输入以 requestId: `gen:${session_generation}:req:${context.request_id}` 调用 conversation.submit({ type: 'input', content: JSON.stringify(context), requestId, whenBusy })：prompt 对应 whenBusy: 'reject'，steer 对应 whenBusy: 'steer'，follow_up 对应默认排队，队列上限仍由 SessionRuntime 在入口拦截（MAX_SESSION_QUEUE = 4）。clear_queue 遍历未进入运行态的排队 Submission 逐个调用 submission.abort(context)；abort 命令调用 conversation.abort(context) 撤回排队项并中止当前任务。socket 断开时：为保持现有安全边界，默认在 socket close 回调中调用 conversation.abort(context) 并释放 RunLease，仅保留 SQLite 中的 transcript 审计与已完成提案记录，不在无人监管时后台盲目续跑模型或触发工具。\n3. 防重复提案与防重复硬件执行（区分上游保证与新增协议/存储）：pi-durable 上游仅保证相同 requestId 的 submit() 幂等返回同一 Submission，且工具默认（不声明 replay: 'safe'）在进程崩溃重启后不会重跑 execute()，而是向模型写入 interrupted 错误结果。但这不能单独解决进程崩溃前已通过 socket 发出 plan_proposed 或重连补发问题。必须新增自定义文档 PlanOutboxDoc（defineDoc，scope: 'conversation'，以 `${session_generation}:${request_id}` 为键记录状态：pending -> proposed -> acked_by_controller，以及规范化后的 PlanResponse 载荷）。submit_plan 工具不声明 replay: 'safe'，在 execute(params, api, context) 内通过 api.commit() 检查并写入 PlanOutboxDoc，且返回 control: { terminate: true } 终止本轮生成。若进程在 emit(plan_proposed) 前后崩溃或 socket 闪断，Controller 重连同代次会话时通过 get_state 获取未 ack 的 proposed 计划；Controller 侧以 (session_generation, request_id) 在内存 requests 映射及已验证集合中做幂等去重：已见过的 request_id 忽略重复事件，绝不二次入队 self.pending 或二次执行 SDR 动作。若 Controller 自身重启，其 session_generation 递增（或重新初始化），旧代次所有未决提案在 Controller 端因代次不匹配直接丢弃，Worker 在收到新代次 open_session 时 reset 会话并归档旧代次未决项。\n4. pi-durable 具体 API、SQLite 边界与模型适配迁移：使用 openNodeSqliteStorage('/var/lib/sdrharness/planner/durable.sqlite', { prefix: 'sdr_' }) 配合 Harness.open(storage, { models, registry, settings, onReport }, BACKGROUND_CONTEXT)。openNodeSqliteStorage 采用 WAL 模式与 synchronous = NORMAL：进程级崩溃不丢已提交事务，但断电或内核 panic 可能丢失最新一次未刷盘事务；且严禁多进程并发打开同一 SQLite 文件（无跨进程锁），必须由 systemd 保证 sdrharness-planner.service 单实例运行。内存方面，pi-durable 根包加载 TypeBox 约占 23MB 未打包峰值 RSS（打包树摇约 4MB），在 --max-old-space-size=192 与 MemoryMax=384M 下需关闭自动摘要 compaction（compaction: { enabled: false }）并设短 contextRetentionMs（如 60_000ms）。原模型适配迁移：① beforeToolCall 迁移为 ToolTask 的 hook(ToolTask, { beforeTool: (call) => call.name !== 'submit_plan' ? { block: 'tool is not allowed' } : undefined })；② compactPlanningContext 迁移为 GenerationTask 的 hook(GenerationTask, { beforeRequest: ({ messages }) => compactPlanningContext(...) })；③ spark-local 的 createSparkJsonPlanningStream 不能再通过 Agent 构造函数的 streamFn 注入，需在构建 Models 时包装自定义 Provider 的 stream/streamSimple 实现，使 models.streamSimple 在 provider === 'spark-local' 时走 Spark JSON + SearXNG 适配流；④ onPayload 的 requireSubmitPlan 同样下沉到自定义 Provider 的请求构建或 model 包装层；⑤ 事件流由 watchEvents(harness, root.id, context) 桥接转换为现有 session-protocol 的 thinking_start/delta/end、assistant_message、tool_start/end 及 plan_proposed 帧。\n5. 分阶段交付、回滚与未知项：阶段0（前置核验，0.5人日）：验证 opencode-go/deepseek-v4.1-flash 真实请求、确认 systemd 可写目录与 Node 22.19.0 下 pi-durable 1.4.0 安装及 RSS 占用；阶段1（最小闭环，1.5人日）：实现 MemoryStorage 下的 DurableSessionRuntime 与单元测试，跑通 71 项回归测试；阶段2（SQLite 与重连/去重协议，1人日）：接入 openNodeSqliteStorage、PlanOutboxDoc 与 systemd 配置，完成新旧制品软链回滚演练。回滚边界：通过环境变量 SDR_PLANNER_ENGINE=legacy|durable 切换，并保留 /home/jetson/.local/lib/sdrharness/planner/current 软链指回旧制品能力；SQLite 文件独立存放，回滚旧版时直接忽略该文件即可零副作用回退。",
+            "pros": [
+              "严格隔离 one-shot 快路径与交互会话，避免高频 health/单次请求污染 SQLite WAL 日志与增加延迟",
+              "通过 PlanOutboxDoc + 工具非 replay:safe + (session_generation, request_id) 幂等键，彻底消除崩溃重启后的重复提案与重复硬件执行风险",
+              "断连默认 abort 并释放 RunLease，完全兼容现有安全停止优先级与内存上限（192M V8 堆 / 384M Cgroup）",
+              "支持通过环境变量或软链瞬间回滚至现有 pi-agent-core 实现"
+            ],
+            "cons": [
+              "需要维护 pi-agent-core（用于 one-shot）与 pi-durable（用于 session）两套调用封装",
+              "spark-local 的 streamFn 与 onPayload 需从 Agent 参数下沉到 pi-ai Models/Provider 包装层"
+            ],
+            "recommended": true
+          },
+          {
+            "name": "方案B：One-shot 与 Session 全量统一至 pi-durable",
+            "idea": "将 handleFrame 中的单次规划、survey_parameters 以及 SessionRuntime 全部改为在同一个 Harness 实例中创建独立 Conversation（如每次 one-shot 调用 harness.createConversation({ ownership: { kind: 'ownerless' } })）并落盘 SQLite，移除对 @earendil-works/pi-agent-core 的直接依赖。",
+            "pros": [
+              "单一运行时抽象，移除 pi-agent-core 依赖，工具与钩子定义完全统一",
+              "单次规划的完整模型交互历史也自动留存在 SQLite 中便于事后审计"
+            ],
+            "cons": [
+              "每次 one-shot 规划均产生多个 SQLite 事务（conversation 创建、submit、generation task、tool task、settled），写放大严重且增加 eMMC/NVMe 磨损",
+              "ownerless 会话若无定期 GC 清理机制会导致 SQLite 文件与内存索引持续膨胀，威胁 192M 堆内存限制",
+              "改动面波及已稳定的 one-shot 路径，违背最小接入原则"
+            ],
+            "recommended": false
+          },
+          {
+            "name": "方案C：仅使用 pi-durable + MemoryStorage 替换 SessionRuntime",
+            "idea": "接入 pi-durable 的 Harness、Extension、Hook 与 watchEvents 机制，但后端固定使用 new MemoryStorage()，不落盘 SQLite，也不修改 systemd 目录权限。",
+            "pros": [
+              "无需修改 systemd ProtectSystem=strict 配置，无 SQLite 磁盘 I/O 与锁问题",
+              "可提前验证 pi-durable 1.4.0 的 Hook、defineTool 和 watchEvents 编程模型"
+            ],
+            "cons": [
+              "Worker 进程重启后状态全部丢失，无法利用 pi-durable 的核心持久化、requestId 跨重启去重与审计能力",
+              "引入了 23MB 额外依赖开销却未获得持久化收益"
+            ],
+            "recommended": false
+          }
+        ],
+        "critiques": [
+          {
+            "target": "将 submit_plan 设为 replay: 'safe' 并依赖 pi-durable 自动重放恢复运行",
+            "issue": "材料中 upstream-durable-1.4.0.md 明确指出：工具仅在声明 replay: 'safe' 时才会在崩溃重启后重跑 execute()，否则模型收到 interrupted 错误结果。若将 submit_plan 盲目设为 replay: 'safe'，当 Worker 在发出 plan_proposed 帧之后、任务结束提交之前崩溃，重启 resume() 会再次调用 submit_plan，导致向 Controller 重复发送提案；更危险的是，若 socket 已断开，resume() 会在无 Controller 连接的情况下后台空转模型和工具，占用全局 RunLease 阻塞 one-shot 请求。",
+            "severity": "high",
+            "suggestion": "submit_plan 严禁声明 replay: 'safe'；且启动 Harness 时不无条件自动后台续跑悬空生成任务，而是在 open_session / 断连时显式 abort 未完成运行，仅用 PlanOutboxDoc 恢复已生成但未确认送达的提案结果。"
+          },
+          {
+            "target": "直接使用 pi-durable 内置自动 Compaction 替代 compactPlanningContext",
+            "issue": "pi-durable 内置的 CompactionTask 会额外发起一次 LLM 摘要请求（消耗 token 与时间，且在阻塞阈值失败时会导致整个生成以 model_error 失败）。而 planner-adapters.txt 中的 compactPlanningContext 注释明确说明：每个 Rust PlanningContext 都是完整且最新验证的快照，达到阈值时直接丢弃旧轮次并保留最新 user 上下文即可，禁止对无线电事实做 LLM 摘要。",
+            "severity": "high",
+            "suggestion": "在 Harness settings 中设置 compaction: { enabled: false }，并通过 hook(GenerationTask, { beforeRequest }) 挂载现有的确定性 compactPlanningContext 函数。"
+          },
+          {
+            "target": "在现有 systemd 配置下直接打开 SQLite 文件",
+            "issue": "controller-boundary.txt 显示 sdrharness-planner.service 启用了 ProtectSystem=strict、ProtectHome=read-only，且仅配置了 RuntimeDirectory=sdr-agent（对应 /run/sdr-agent 内存 tmpfs）。若把 SQLite 放在 /run/sdr-agent 下，系统重启即丢失；若放在 /var/lib/sdrharness/planner 下而未配置 StateDirectory 或 ReadWritePaths，openNodeSqliteStorage 会因 EROFS（只读文件系统）直接导致 Harness.open 失败。",
+            "severity": "high",
+            "suggestion": "必须在 systemd unit 中显式配置 StateDirectory=sdrharness/planner（或 ReadWritePaths=/var/lib/sdrharness/planner），并在启动前校验目录属主（jetson:jetson，0750）与可写性。"
+          }
+        ],
+        "risks": [
+          "内存溢出（OOM）风险：sdrharness-planner.service 限制 --max-old-space-size=192 与 MemoryMax=384M。upstream-durable-1.4.0.md 指出 pi-durable 根包加载 TypeBox 未打包峰值 RSS 约 23MB，加上 node:sqlite 页缓存、Chord 文档状态与 watchEvents 缓冲（最多 100 批），长会话下易逼近 192MB V8 堆上限。",
+          "全局 RunLease 死锁或饥饿风险：pi-durable 的任务调度器在后台异步运行（如重试退避 sleep 唤醒或恢复运行）。若不在 generation 任务开始/结束与 RunLease.acquire('interactive_session') 之间建立严格绑定，后台恢复的任务可能绕过 RunLease 与 one-shot 规划并发调用模型，或者在任务 parked（达到 restartLimit=5）后永久锁死 RunLease。",
+          "SQLite 单所有者冲突与断电回退风险：openNodeSqliteStorage 无跨进程锁，且为 WAL + synchronous=NORMAL。若人工调试时手动运行 node src/main.mjs 与 systemd 服务同时打开同一数据库，会破坏状态机一致性；断电丢失最新事务可能导致 Controller 已收到 plan_proposed 但 SQLite 中未落盘。",
+          "实验性 API 变动与未迁移适配层风险：pi-durable 1.4.0 与 watchEvents 均标注为 Experimental；同时现有 Agent 的 onPayload（强制 tool_choice 为 submit_plan）和 spark-local 的 streamFn 在 pi-durable 的 Harness 高层 API 中无同名直接参数，若遗漏下沉会导致模型输出自由文本而非调用 submit_plan。"
+        ],
+        "open_questions": [
+          "材料不足项 1（Controller 侧完整会话管理代码缺失）：controller-boundary.txt 仅展示了 handle_event 处理事件片段，未包含 Controller 打开会话、生成/递增 session_generation、维护 self.requests 生命周期以及断开重连的完整 Rust 源码。需确认 Controller 在 socket 断开后是递增 session_generation 重新 open_session，还是复用原代次重连。",
+          "材料不足项 2（Web 控制台与终端会话边界缺失）：背景提到“终端只保存最多 32 条摘要，Web 另有会话/结果存储”，但材料未提供 Web 存储与 planner-worker 交互的代码。需决策：pi-durable 的 SQLite 仅作为 planner-worker 内部运行时状态库，还是需要向 Web 控制台暴露历史查询接口？",
+          "待验证未知项 1（真实 Provider 连通性）：用户的 opencode-go/deepseek-v4.1-flash（openai-completions，https://opencode.ai/zen/go/v1）尚未发送真实请求，需先在不改架构的前提下验证该模型是否支持 tool_choice 强制调用 submit_plan 以及延迟表现。",
+          "待验证未知项 2（pi-ai 1.4.0 Models 拦截点签名）：需在 AGX 上核对已安装的 @earendil-works/pi-ai 1.4.0 与 @earendil-works/pi-durable 1.4.0 导出符号，确认 GenerationTask 的 beforeRequest 钩子入参结构，以及在 createProvider 中包装 streamSimple / 注入 onPayload(requireSubmitPlan) 的精确 TypeScript/MJS 签名。",
+          "待验证未知项 3（持久化目录路径拍板）：需确认 systemd 持久化目录是新建 /var/lib/sdrharness/planner（通过 StateDirectory=sdrharness/planner 授权），还是复用 /var/lib/sdrharness 下的既有子目录。"
+        ],
+        "confidence": "high"
+      },
+      "last_message": null
+    },
+    {
+      "run_id": "20261026-173733-3mu6",
+      "status": "done",
+      "agent": "gemini-3.8-flash-medium",
+      "model": "gemini-3.8-flash-medium",
+      "effort": "medium",
+      "round": 1,
+      "parent": null,
+      "model_verification": "confirmed",
+      "actual_generated_models": [
+        "MODEL_PLACEHOLDER_M319",
+        "gemini-3.8-flash-n"
+      ],
+      "usage": {
+        "input_tokens": 49605,
+        "output_tokens": 3205,
+        "reasoning_output_tokens": 1667,
+        "cached_input_tokens": null
+      },
+      "cost_usd": null,
+      "warnings": [],
+      "report": {
+        "position": "建议仅对 Planner Worker 的 session socket 模式采用 pi-durable 进行最小侵入式包装，严格保持 one-shot socket 与 Rust Controller 硬件执行权威现状不变，绝不在未经 systemd 增加持久化目录授权前强行落地磁盘 SQLite。",
+        "options": [
+          {
+            "name": "SessionRuntime 最小耐久包装方案（推荐）",
+            "idea": "one-shot 模式保持现有纯内存无状态实现不变；在 session-runtime.mjs 中以 Harness + Conversation 封装替代原生 Agent 实例循环，使用 context.request_id 充当 Durable submission.requestId 保证输入幂等。submit_plan 不声明 replay: safe，依托 durable 的 inbox/steer/followUp 接管内存队列；断连时仅注销 socket 监听而不调用 runtime.dispose() 销毁状态。",
+            "pros": [
+              "隔离范围明确，one-shot 关键链路零回归风险",
+              "复用 pi-durable 现成的原子提交、inbox 队列以及崩溃后未决任务管理",
+              "输入 request_id 天然对齐 durable requestId，消除重复用户 prompt 提交"
+            ],
+            "cons": [
+              "submit_plan 触发的外部 plan_proposed 事件属于外部副作用，durable 内部状态与外部 Controller 缺乏跨进程分布式事务保证",
+              "Node 22 + durable + chord + TypeBox 运行期常驻 RSS 预计增加 20-30MB，逼近 systemd 384MB 上限"
+            ],
+            "recommended": true
+          },
+          {
+            "name": "全架构持久化透传方案（不推荐）",
+            "idea": "重构 Controller 与 Planner 间通信协议，增加跨进程持久化 ACK 与事务握手，将 Controller 的代次、硬件执行队列、批准状态与 Planner durable 任务图深度绑定。",
+            "pros": [
+              "可彻底消除 Controller ACK 丢失或 Controller 崩溃导致的重复执行问题",
+              "两端状态具备强一致性"
+            ],
+            "cons": [
+              "破坏了 Rust Controller 作为唯一确定性硬件仲裁边界的核心设计原则",
+              "修改范围波及 Controller 核心状态机与协议定义，工程量巨大且极易导致硬件异常",
+              "违背当前最小化设计与非侵入原则"
+            ],
+            "recommended": false
+          }
+        ],
+        "critiques": [
+          {
+            "target": "将 session 存储直接写入当前工作区或系统目录的设想",
+            "issue": "sdrharness-planner.service 明确配置了 ProtectSystem=strict 和 ProtectHome=read-only，User/Group 为 jetson，当前唯一的运行时目录 RuntimeDirectory=sdr-agent 是 tmpfs 内存挂载，重启即清空；当前不存在已核准的持久写路径，强行写入任意相对路径或用户目录必将引发 EACCES 或 read-only filesystem 错误导致服务崩溃退出。",
+            "severity": "high",
+            "suggestion": "必须在 systemd service 中配置 StateDirectory=sdrharness（由 systemd 创建 /var/lib/sdrharness/planner 属主 jetson:0750），或在未获得 systemd 变更权限前暂时以 MemoryStorage 进行无盘验证。"
+          },
+          {
+            "target": "假设依赖 pi-durable 上游能力即可天然避免硬件重复执行",
+            "issue": "pi-durable 的故障恢复和事务提交仅限于其自身 SQLite 的 Entry 与 Document，其不具备外部执行系统的分布式提交协调器功能。如果 submit_plan 在 Planner 端提交成功并触发 emit('plan_proposed')，但 Controller 在执行硬件动作后崩溃，或 Controller 处理完成前 Planner 重启，上游 durable 对此毫不知情。",
+            "severity": "high",
+            "suggestion": "确立明确边界：Planner 仅保证内部不重复生成相同 request_id 的提案；外部硬件执行的幂等必须完全由 Rust Controller 依据现有 requests 映射及 session_generation 校验强制拦截。"
+          },
+          {
+            "target": "将 submit_plan 标记为 replay: safe",
+            "issue": "一旦标记为 safe，durable 在进程崩溃重启恢复时会重新执行该 tool 函数，导致重新触发 onPlan 回调并向 Controller 再次发射一次 plan_proposed 事件，直接引发重复提案与硬件状态冲突。",
+            "severity": "high",
+            "suggestion": "保持 submit_plan 为默认行为（非 replay-safe）或自定义 Doc 记录提案发送状态。崩溃恢复时由 durable 向模型返回 interrupted 结果，若要重试必须由 Controller 或操作员主动发起重提。"
+          }
+        ],
+        "risks": [
+          "内存溢出风险：systemd 强加了 --max-old-space-size=192 和 MemoryMax=384M 约束，pi-durable 引入了 chord 和 TypeBox，加上 Node 22 内置 SQLite，极易在长时间会话累积大量 entries 时触发 cgroup OOM Killer",
+          "SQLite 单所有者与并发锁冲突风险：pi-durable 明确声明 'One process owns a storage at a time; there is no cross-process locking'。若部署或服务重启阶段出现双进程残留竞争同一个 SQLite 文件，将导致进程静默阻塞或抛出 StorageError 直接终止 Harness",
+          "断电数据不一致：openNodeSqliteStorage 默认采用 WAL 模式和 synchronous=NORMAL，能抵御进程 crash，但在 Jetson 意外掉电或拔电时，最新写入的 commit 可能丢失，导致状态回退到掉电前检查点",
+          "Spark 适配器兼容性风险：当前 spark-local 深度依赖 createSparkJsonPlanningStream 自定义流转换函数，而 pi-durable 默认通过内置的 GenerationTask 封装流处理，两者适配若不兼容会导致结构化输出劫持失效"
+        ],
+        "open_questions": [
+          "部署环境权限：是否允许在 AGX 修改 sdrharness-planner.service 添加 StateDirectory=sdrharness 用于存放 SQLite 数据库文件？如果不允许，持久化数据规划存放在哪个绝对路径？",
+          "多模型流式封装：当前使用的 opencode-go/deepseek-v4.1-flash 走 openai-completions 协议，而本地部署可能切到 spark-local。pi-durable 的 Extension 机制在多轮 durable generation 中如何正确嵌入 spark-stream 的自定义 streamFn？",
+          "旧会话归档策略：durable 会长期保留所有 entries，在 384MB 内存严格受限的嵌入式边缘设备上，是否需要设置会话轮转上限或自动清理策略？"
+        ],
+        "confidence": "high"
+      },
+      "last_message": null
+    },
+    {
+      "run_id": "20261026-173941-rur5",
+      "status": "done",
+      "agent": "gpt-6.1-sol",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "round": 2,
+      "parent": "20261026-173508-wo1c",
+      "model_verification": null,
+      "actual_generated_models": null,
+      "usage": {
+        "input_tokens": 56010,
+        "cached_input_tokens": 51712,
+        "output_tokens": 1956,
+        "reasoning_output_tokens": 502
+      },
+      "cost_usd": null,
+      "warnings": [],
+      "report": {
+        "position": "首版应接入真正的Session Harness，保留断连abort、清队列和旧代次失效语义。detach、自动补发和跨Controller恢复执行应后置；现有材料不能支持“内存去重已足够”或“彻底消除重复执行”的结论。",
+        "options": [
+          {
+            "name": "首个独立交付：隔离的durable会话闭环",
+            "idea": "AGX Codex可先在测试入口完成session-only适配：锁定1.4.0，使用Harness.open、openNodeSqliteStorage、createRegistry、defineExtension、defineTool，真正持久接纳输入并运行生成任务。新增业务session到conversation.id的持久映射，以及request资格记录。只注册submit_plan，工具先提交提案记录，再由假Controller接收。生产入口暂不切换。\n故障断言：同requestId重试只接纳一次；同键不同内容由宿主拒绝；断连撤销资格并清队列；abort后迟到提案被拒绝；工具中断后即使模型重新调用，也不能产生第二份不同提案；进程崩溃后旧Controller epoch的工作不能投递；第二进程必须在打开存储前被拒绝。\n进入下一阶段的条件：上述测试通过，取消与调度顺序经固定版源码验证，真实模型适配通过独立验收，再决定是否引入自动补发和Controller持久接收协议。这个交付验证真实Harness接入及恢复限制，不声称生产执行恢复已完成。",
+            "pros": [
+              "可以立即编码，不依赖当前SDR任务。",
+              "把身份、取消和重复提案问题变成可验证行为。"
+            ],
+            "cons": [
+              "尚不交付生产环境自动恢复执行。",
+              "后续仍需验证ACK、执行对账及服务写权限。"
+            ],
+            "recommended": true
+          }
+        ],
+        "critiques": [
+          {
+            "target": "断连detach与abort",
+            "issue": "detach允许模型、队列和提案在客户端离线后继续；abort撤销当前工作。现有session-server在socket close后调用dispose，后者清队列并abort，所以detach会改变既有边界。",
+            "severity": "high",
+            "suggestion": "首版保留abort。正常close_session当前要求空闲，应保留并把会话标记关闭；socket断开按异常断连处理。崩溃不会运行清理，必须在恢复时撤销旧运行资格。harness.close只关闭宿主，未完成工作仍可保持pending，不能替代conversation.abort。"
+          },
+          {
+            "target": "输入、提案与硬件去重",
+            "issue": "durable的requestId解决重复接纳输入。提案唯一性归Worker业务账本；硬件批准、预算和执行对账归Controller。内存requests只证明当前进程认识请求；重复pending报错只覆盖特定批准状态，不能证明执行去重。",
+            "severity": "high",
+            "suggestion": "ACK若只表示当前进程收到，可以不落盘，但必须明确该弱语义。若要支持重启后确认、重发或查询，接收记录必须持久提交后再ACK。ACK丢失时查账或重发同一提案键；无持久协议则标记未知并停止补发。执行结果未知时禁止自动重做。持久ACK仍不等于硬件动作完成。"
+          },
+          {
+            "target": "长期身份及全局root",
+            "issue": "generation/request_id没有已证明的跨Controller唯一性。reset仅改变模型可见上下文，旧记录和provider身份仍在；一个全局root会共享会话配置、队列及运行状态。",
+            "severity": "high",
+            "suggestion": "稳定业务session映射独立conversation.id；Controller每次启动产生新controller_epoch，请求键包含epoch、generation和request_id。input_id用于业务输入重试，不能代替执行身份。重连可读旧conversation，但必须取得新鲜PlanningContext。全局root可存索引，不应靠reset承载多个独立业务会话。"
+          },
+          {
+            "target": "路径与单所有者断言",
+            "issue": "StateDirectory=sdrharness只创建/var/lib/sdrharness，不会自动创建planner子目录。SQLite无跨进程锁；单个systemd service也挡不住手动实例。",
+            "severity": "high",
+            "suggestion": "可提议StateDirectory=sdrharness-planner，把数据库直接放在对应目录；这是待部署验证的配置。若使用子目录，必须显式创建并检查属主权限。数据库、WAL和SHM均需可写。所有启动入口必须持有同一生命周期排他锁，再打开存储；锁实现另行核验。"
+          }
+        ],
+        "risks": [
+          "必须禁止：默认detach、恢复旧批准、未知提案自动补发、未知执行自动重做、双进程打开存储，以及把watch事件当可靠投递日志。",
+          "默认不重放工具execute，只会将中断调用转成interrupted；模型仍可发起新调用。提案账本和资格校验不能省略。",
+          "不能仅省略resume来阻止恢复，因为submit、wait也会启动调度。资格守卫必须先于任何可能推进任务的操作生效。",
+          "SQLite NORMAL允许断电丢失最新提交。384MiB是否足够需测量；one-shot共享租约及资源，仍需回归验证。回滚不能撤销已发生的硬件动作。"
+        ],
+        "open_questions": [
+          "需先验证：固定1.4.0的工具事务、取消完成条件、事件重建和繁忙队列细节；README不足以给出全部类型签名。",
+          "需先验证：原onPayload、Spark streamFn及transformContext如何迁移。不能假定Harness支持这些Agent构造参数；自动压缩和溢出压缩也需分别核验。",
+          "需先验证：Controller执行意图、预算扣减和结果记录的事务边界，以及ACK/status协议。没有外部共同事务证据，不能承诺硬件exactly-once。"
+        ],
+        "confidence": "high"
+      },
+      "last_message": null
+    },
+    {
+      "run_id": "20261026-174143-yetc",
+      "status": "done",
+      "agent": "gemini-4-argon-medium",
+      "model": "gemini-4-argon-medium",
+      "effort": "medium",
+      "round": 2,
+      "parent": "20261026-173535-8osk",
+      "model_verification": "confirmed",
+      "actual_generated_models": [
+        "MODEL_PLACEHOLDER_M418",
+        "gemini-4-argon-trial"
+      ],
+      "usage": {
+        "input_tokens": 5238,
+        "output_tokens": 4203,
+        "reasoning_output_tokens": 1742,
+        "cached_input_tokens": 49104
+      },
+      "cost_usd": null,
+      "warnings": [],
+      "report": {
+        "position": "裁决结论：最小交付仅将 SessionRuntime 切换至 pi-durable 1.4.0，保留断连即 abort 的既有语义，禁止跨重启自动重放或补发未决硬件提案，通过进程级文件锁与 StateDirectory=sdrharness/planner 保障 SQLite 单所有者安全，分阶段交付且首阶段不改动 Rust Controller 协议。",
+        "options": [
+          {
+            "name": "首个可编码独立交付：SessionRuntime 最小接入 pi-durable（Phase 1）",
+            "idea": "1. 断连 detach 与 abort 裁决：最小交付必须保留 socket close 即 abort 的既有语义。若改用 detach，socket 断开后 pi-durable 任务继续后台运行并占住内存 RunLease，导致 one-shot 规划全部返回 unavailable；且断连期间产生的 plan_proposed 事件会被 session-server 丢弃。正常 close_session 或 socket 断开时，Worker 存活，在 close 链中调用 await conversation.abort(BACKGROUND_CONTEXT) 将终止状态写入 SQLite，随后释放 RunLease。进程崩溃（SIGKILL/OOM/断电）时，Worker 来不及写 abort 提交；重启调用 Harness.open() 后，不得直接调用 resume() 放任旧任务续跑（否则未声明 replay:'safe' 的工具会向模型返回 interrupted 错误结果，诱发模型在下一轮再次调用 submit_plan），而必须在接收新命令前先对残留活任务执行 await conversation.abort(BACKGROUND_CONTEXT)，将其标记为崩溃中止。\n2. 三层幂等与对账归属裁决：①输入幂等归 pi-durable：调用 conversation.submit({ type: 'input', content, requestId }, context) 保证同 requestId 不重复入队；②提案幂等归 Planner Worker：在 Conversation 的自定义文档（defineDoc）中记录每个请求的提案状态，submit_plan 工具不设 replay:'safe'，在 execute 内通过 api.commit() 校验同一请求未提案后落盘并返回 control: { terminate: true }；③硬件执行对账归 Rust Controller：现有 Controller 的内存 self.requests 仅做 contains_key 检查，既不能防御同代次非 StepApproval 模式的重复事件，也不能跨 Controller 重启存活，更不存在跨 SQLite 与 SDR 硬件的分布式事务，因此不能声称硬件 exactly-once。若要支持断连重发提案，Controller 与 Worker 必须同时做持久化 ACK 记账；在未改 Controller 协议的首阶段，一旦 ACK/连接丢失或结果未知，一律中止该轮运行并禁止自动补发提案，由 Controller 发起新 request_id。\n3. 身份映射与 Conversation 组织裁决：数字 session_generation 在现有材料中无跨 Controller 重启递增的持久化证据，(session_generation, request_id) 不能作为长期全局唯一键。完整身份应为 (controller_epoch, session_generation, request_id)。在 Controller 协议新增 controller_epoch 与业务 session_id 前，Worker 每次执行 open_session(session_generation) 时生成内部 boot_session_nonce 写入自定义文档，构成复合键 `nonce:gen:req`。单全局 root() 配合 reset() 仅能满足当前单活跃终端会话（reset 只截断模型可见上下文，不会自动清空 conversation 级 defineDoc，需在 commit 中同步重置文档状态）；若未来对接 Web 多并发或多历史会话，必须改为每个业务会话调用 harness.createConversation({ ownership: { kind: 'ownerless' } }) 并维护会话索引。\n4. API 符号、路径与单所有者修正：仅使用固定版 v1.4.0 README 已证实符号（Harness.open、openNodeSqliteStorage、createRegistry、defineExtension、defineTool、defineDoc、hook、GenerationTask、ToolTask、watchEvents、BACKGROUND_CONTEXT）。systemd 中 StateDirectory=sdrharness 只会创建 /var/lib/sdrharness，不会自动创建 planner 子目录；应配置 StateDirectory=sdrharness/planner（或在代码中对 /var/lib/sdrharness/planner 执行 mkdirSync recursive）。systemd 单 service 不能阻止人工手动运行 node src/main.mjs 形成双进程写损坏 SQLite；必须在调用 openNodeSqliteStorage 前，先完成 unix socket 独占绑定或基于文件描述符的排他锁，获取失败立即退出。\n5. 三类事项划分与首阶段交付边界：①可先实施：仅替换 SessionRuntime 内部实现为 pi-durable + SQLite，保持现有 session-protocol 帧格式不变，保持 one-shot 原路径（仍需跑全量回归测试防共享模块引入回归）；②需先验证：在 AGX 核实 pi-durable 1.4.0 中 hook(GenerationTask, { beforeRequest })、hook(ToolTask, { beforeTool }) 的精确入参签名，验证 spark-local stream 包装方式，验证 opencode-go/deepseek-v4.1-flash 真实请求与 192M/384M 内存水位；③必须禁止：禁止启用 CodingTools/Codemode、禁止将 submit_plan 设为 replay:'safe'、禁止崩溃重启后自动补发未确认提案、禁止无排他锁打开 SQLite。\n6. 交给 AGX Codex 的首个独立交付说明：目标是在不修改 Rust Controller 的前提下，在 planner-worker 中引入 DurableSessionRuntime 并通过开关切换。故障断言：(a) 同一 (session_generation, request_id) 重复触发 submit_plan 时第 2 次必须报错并拒绝 emit；(b) 模拟 Worker 在生成中途崩溃重启后，残留 running 任务必须在启动恢复阶段被 abort，不得自动发起新一轮模型请求或工具调用；(c) 第二个进程尝试打开同一 SQLite 路径时必须在 openNodeSqliteStorage 前因排他锁失败退出；(d) socket 断开后 RunLease 必须在 100ms 内释放，不阻塞后续 one-shot 请求。进入下一阶段（Controller 持久 ACK 与重连恢复协议）的条件：71 项既有测试与上述 4 项故障断言测试全绿、systemd StateDirectory 落盘验证通过、真实 Provider 单次与会话请求验收通过。",
+            "pros": [
+              "不依赖未核实的 Controller 持久化改造即可安全上线首阶段 pi-durable 会话持久化",
+              "阻断了非 replay:safe 工具在重启后返回 interrupted 诱导模型二次调用 submit_plan 的隐蔽漏洞",
+              "通过进程排他锁与显式子目录创建消除了 SQLite 并发写损坏与 EROFS 故障"
+            ],
+            "cons": [
+              "首阶段断连或崩溃仍按失败中止处理，跨断连的无缝提案重发需留待第二阶段与 Controller 协同升级后实现",
+              "回滚至旧制品时虽可切回 pi-agent-core，但期间在 SQLite 中产生的会话记录不会自动同步回旧内存结构"
+            ],
+            "recommended": true
+          }
+        ],
+        "critiques": [
+          {
+            "target": "Gemini4 前轮声称“彻底消除重复硬件执行风险”及“回滚零副作用”",
+            "issue": "Planner Worker 的 SQLite 与 Rust Controller 的 SDR 硬件执行不在同一个原子事务内，网络/socket 断开或进程崩溃总存在状态未知窗口，不可能实现跨边界硬件 exactly-once；且回滚旧制品会丢弃新版本运行期间写入 SQLite 的新会话上下文，并非零副作用。",
+            "severity": "high",
+            "suggestion": "撤回绝对化表述，明确 Worker 仅保证单请求最多生成一次提案，硬件防重必须在 Controller 侧闭环，未确认结果一律停机待人工或新请求处理。"
+          },
+          {
+            "target": "Gemini3.8 建议“断连 detach”及“仅靠旧 Controller 内存 requests 与数字 generation 即可防重”",
+            "issue": "第一，detach 会让断连后的生成任务继续持有全局 RunLease，锁死 one-shot 规划，且期间产出的 plan_proposed 无 socket 可发；第二，pi-durable 中工具中断后会把 interrupted 结果喂给模型继续下一轮生成，模型会再次调用 submit_plan；第三，Controller 的 requests 仅检查 key 存在，且 Controller 重启后内存清空、数字 generation 无法证明跨重启唯一。",
+            "severity": "high",
+            "suggestion": "最小交付保留断连 abort 语义；崩溃恢复时显式 abort 悬空任务而非自动 resume 续跑；跨重启恢复必须等待后续引入 controller_epoch 与持久化对账。"
+          },
+          {
+            "target": "直接依赖 systemd 单服务保证 SQLite 单所有者，或仅写 StateDirectory=sdrharness",
+            "issue": "systemd 不会拦截运维人员通过 CLI 启动第二个 node 进程直接打开同一 SQLite 文件；且 StateDirectory=sdrharness 不会创建 /var/lib/sdrharness/planner 子目录。",
+            "severity": "medium",
+            "suggestion": "使用 StateDirectory=sdrharness/planner 并在代码中确保目录存在，同时在打开 SQLite 前加 OS 文件排他锁（如锁文件 wx 或 flock）。"
+          }
+        ],
+        "risks": [
+          "pi-durable 中断恢复诱导二次工具调用风险：upstream-durable-1.4.0.md 规定 submit() 或 wait() 也会自动启动调度器。若不在打开存储后立即清理/abort 崩溃前遗留的未完成生成任务，首次新 submit() 就会唤醒旧任务，使旧任务因工具 interrupted 进入下一轮模型生成并再次调用 submit_plan。",
+          "资源受限风险：在 --max-old-space-size=192 与 MemoryMax=384M 限制下，虽然不一定必然 OOM，但 pi-durable 根包加载 TypeBox（未打包约 23MB 峰值 RSS）叠加长对话上下文与 SQLite 缓存会显著压缩安全余量，需实测监控 RSS 峰值。",
+          "实验性 Hook 签名偏差风险：upstream-durable-1.4.0.md 仅给出了 hook(GenerationTask, { beforeRequest }) 与 hook(ToolTask, { beforeTool }) 的概念示例，未列出完整 TypeScript 类型定义，直接盲写易出现运行时字段不匹配。"
+        ],
+        "open_questions": [
+          "在 AGX 已安装的 @earendil-works/pi-durable 1.4.0 类型定义中，GenerationTask 的 beforeRequest 回调入参能否直接修改并返回裁剪后的 messages 数组以替代 compactPlanningContext？",
+          "在 pi-durable 1.4.0 中，如何为 spark-local provider 注入 createSparkJsonPlanningStream 与 onPayload（是通过包装传入 Harness.open 的 models.streamSimple，还是通过 GenerationTask hook）？",
+          "第二阶段演进时，是否允许修改 Rust Controller 源码，在 open_session 中加入 controller_epoch（UUID）并在 Controller 侧落盘已接收/已执行的 (controller_epoch, session_generation, request_id) 状态？"
+        ],
+        "confidence": "high"
+      },
+      "last_message": null
+    },
+    {
+      "run_id": "20261026-173943-z0fl",
+      "status": "done",
+      "agent": "gemini-3.8-flash-medium",
+      "model": "gemini-3.8-flash-medium",
+      "effort": "medium",
+      "round": 2,
+      "parent": "20261026-173733-3mu6",
+      "model_verification": "confirmed",
+      "actual_generated_models": [
+        "MODEL_PLACEHOLDER_M319",
+        "gemini-3.8-flash-n"
+      ],
+      "usage": {
+        "input_tokens": 4446,
+        "output_tokens": 3877,
+        "reasoning_output_tokens": 2157,
+        "cached_input_tokens": 50509
+      },
+      "cost_usd": null,
+      "warnings": [],
+      "report": {
+        "position": "裁决结论：最小交付必须坚持“Session-only 接入、保持断连 abort 语义、禁止自动重发未知提案、严禁单方面伪造持久 ACK”。在 Controller 未持久化前，跨进程唯一对账权威仍为 Controller 现有内存 requests；Planner 仅负责本进程内的持久化与输入幂等，通过单实例文件锁确保 SQLite 单所有者。",
+        "options": [
+          {
+            "name": "Phase 1: 受限 Session 隔离与断连 Abort 方案（推荐）",
+            "idea": "在 Planner 侧引入 pi-durable 托管 SessionRuntime。配置 StateDirectory=sdrharness 并由代码自建 planner 子目录，增加启动排他文件锁防双实例。保留既有断连 abort 语义，利用 durable requestId 实现输入幂等；submit_plan 保持非 replay-safe 并增加本地已提案记录；禁止在重启后向 Controller 自动重发提案。Controller 协议保持零变动。",
+            "pros": [
+              "严格保护 Controller 硬件仲裁权威与现有状态机，不引入虚假外部一致性假设",
+              "保留既有断连即 abort 语义，防止网络抖动后孤儿任务在后台继续消耗硬件或 token",
+              "通过单实例文件锁填补 SQLite 无跨进程锁的硬缺陷",
+              "实现范围完全收敛在 Planner 内部，便于故障隔离与快速回滚"
+            ],
+            "cons": [
+              "断连重连后无法恢复未完成的规划任务，需上层或操作员重新发起 prompt",
+              "Controller 重启后旧提案依然无法跨代次执行（属既有边界维持）"
+            ],
+            "recommended": true
+          },
+          {
+            "name": "跨进程双端持久化与 ACK 对账方案（暂不采纳）",
+            "idea": "同步修改 Rust Controller，引入持久化 requests 账本、controller_boot_uuid 与双向 ACK 协议，Planner 增加持久发件箱并在断连时 detach，等待重连后重新对账。",
+            "pros": [
+              "理论上能实现跨 Controller 重启与网络中断的端到端提案状态对账",
+              "断连后任务可在后台持续运行并支持后期查询"
+            ],
+            "cons": [
+              "彻底打破现有 Controller 极简内存映射的设计，牵涉硬件状态机改造，工程面过大",
+              "在 P201 正在执行真实扫频任务的背景下，大幅变更 Controller 协议导致硬件误操作风险剧增",
+              "未在当前任务范围与已核实接口内"
+            ],
+            "recommended": false
+          }
+        ],
+        "critiques": [
+          {
+            "target": "断连采用 detach 且认为可在后台继续运行的观点",
+            "issue": "既有 session-server.mjs 明确在 socket close 时调用 runtime.dispose() 执行 clearAllQueues 和 agent.abort()。终端只保留 32 条摘要，无状态重挂载与认领协议。若改为 detach，断连后模型继续执行并提交 plan_proposed，因 activeSocket 已注销导致事件丢失；重连时代次若已改变，迟到的计划将被 Controller 判定为过期代次或产生状态争用。",
+            "severity": "high",
+            "suggestion": "首阶段必须严格保留既有断连 abort 语义。监听到 socket close 时，显式调用 durable 的 root.abort() 撤回未决输入并终止运行中的任务，不得任由其后台悬挂。"
+          },
+          {
+            "target": "通过增加内存 ACK 机制声称彻底消除重复硬件执行的观点",
+            "issue": "只要 Controller 侧未落地持久化日志，内存 ACK 在 Controller 崩溃或重启时瞬间清零；若 ACK 丢失或 Controller 在执行硬件动作后崩溃，Planner 端因未获 ACK 触发重发，将直接引发二次硬件动作。内存 ACK 无法解决分布式单点崩溃后的对账问题，反而引入虚假的安全感。",
+            "severity": "high",
+            "suggestion": "禁止在没有 Controller 对应持久协议前自行增加脆弱的半吊子内存 ACK。硬件执行去重唯一依赖 Controller 现有的 requests 映射以及 pending 检查；Planner 崩溃恢复后对未知状态的提案一律标记终止，严禁自动补发。"
+          },
+          {
+            "target": "认为使用单个全局 root Conversation 并通过 reset() 即可支持多个业务会话的观点",
+            "issue": "根据 upstream-durable-1.4.0 规范，reset() 仅在逻辑上切断模型视线，旧 entry 仍物理驻留在该 conversation 树与 SQLite 中，且 conversation 的 pi.provider UUIDv7 会被复用。长期运行会导致单个 conversation 历史膨胀，影响 context 查询性能，且破坏了多业务会话间的隔离性。",
+            "severity": "medium",
+            "suggestion": "业务会话应映射为独立的 conversation。每次建立合法会话时，通过 harness.createConversation() 创建独立会话，以 session_generation 与唯一标记命名，废弃会话归档隔离。"
+          },
+          {
+            "target": "认为 StateDirectory=sdrharness 即可自动创建子路径，以及 systemd 独占单实例的观点",
+            "issue": "systemd 的 StateDirectory=sdrharness 仅保证在启动前创建 /var/lib/sdrharness 目录并赋予 jetson 属主权限，绝不会自动创建 /var/lib/sdrharness/planner 子目录；此外，systemd 只能约束本服务单元，无法阻止终端手工二次拉起 node 调试进程，而 SQLite/node:sqlite 缺乏跨进程并发互斥保护。",
+            "severity": "high",
+            "suggestion": "代码中必须使用 mkdirSync 递归建目录；在打开 openNodeSqliteStorage 前，必须使用基于文件锁（如带有 O_CREAT|O_EXCL 标志的排他锁文件）实现进程级单实例排他防线，检测到冲突立即抛错退出。"
+          }
+        ],
+        "risks": [
+          "模型重试引发间接重提：submit_plan 虽非 replay: safe，但崩溃后 durable 向模型喂入 interrupted 结果，模型在下一次推理时可能根据上下文重新发起 submit_plan 造成隐蔽的二次提案",
+          "SQLite 运行时内存占用：嵌入式 aarch64 上 Node 22 内置 sqlite 加载 chord、TypeBox 和 durable 后，若未实施合理的 contextRetentionMs 和 documentRetentionMs，多轮会话累积将对 384MB 内存上限构成挤压",
+          "掉电数据回退：WAL 模式与 synchronous=NORMAL 在系统异常拔电时可能回退丢失最后几条 commit，重启后 durable 见到的状态可能滞后于 Controller 实际已接收的状态"
+        ],
+        "open_questions": [
+          "AGX 上的 Node 22.19.0 是否已配置好对 /var/lib/sdrharness 的写入权限？需确认 systemd drop-in 配置生效状态。",
+          "Controller 侧在 session 断开重连后，其 session_generation 递增规则是怎样的？重启后是否会重置为 0？",
+          "spark-stream 的 createSparkJsonPlanningStream 在非原生工具调用场景下，其流劫持机制与 pi-durable 内置的 GenerationTask 是否存在事件钩子冲突？"
+        ],
+        "confidence": "high"
+      },
+      "last_message": null
+    }
+  ]
+}
