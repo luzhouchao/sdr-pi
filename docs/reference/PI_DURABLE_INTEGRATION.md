@@ -1,0 +1,215 @@
+# pi-durable 接入实施草案
+
+状态：设计，未实施。日期：2026-10-26。
+供后续 Agent 拆分实施，不构成硬件操作或部署指令。
+基线为 `490d83e9efda50c867ec16df124d0b805b7b486c`，分支 `codex/sdr-improvements`。
+背景对话为 `01a1774c-5117-71f0-9de9-192cbd48a2c0`（确认 Pi 与 pi-d 工具）。
+
+## 目标与交付边界
+
+把 Planner 的会话运行层迁到 `@earendil-works/pi-durable@1.4.0`。
+先交付会话、输入队列、推理任务的持久恢复。
+硬件计划的自动恢复必须另有 Controller 持久去重和对账。
+不能用 SQLite 中的一条已提交记录，证明接收动作已经执行或尚未执行。
+
+```text
+Web / terminal
+    -> Rust Controller（策略、批准、执行、权威结果）
+    <-> Planner session adapter
+            -> Harness / conversation / inbox / tasks
+            -> SQLite（仅 Planner 自有状态，唯一 Worker 持有）
+```
+
+本单元不替换 Controller，不迁移 Web 结果库，不开放 shell、SSH、文件或 IIO 工具。
+不启用 Code Mode、coding tools、子 Agent 或后台硬件任务。
+`recognizer_available=false` 保持原边界。one-shot 路径暂时保留。
+首次实施只用模拟模型和虚拟 Controller，不访问 P201。
+AGX 当前另有 Spectrum Agent 扫频；不得为此方案中断或抢占它。
+
+## 已核实基线
+
+| 项目 | 现状及影响 |
+| --- | --- |
+| SDK | `pi-agent-core`、`pi-ai` 已锁 1.4.0，TypeBox 为 1.3.27；durable 未接入 |
+| Node | 22.19.0；已只读验证 `node:sqlite` 内存库可用，无需额外启动参数，仍有实验警告 |
+| 会话 | `SessionRuntime` 的 Agent、队列、当前请求和提案去重均在内存 |
+| 断连 | `session-server.mjs` 的 socket close 调用 `dispose()`，会清队列、abort、释放租约 |
+| 提案 | `submit_plan` 通过 `plan_proposed` 发事件，没有已核实的持久 ACK/执行查询协议 |
+| Controller | 按当前 generation 和内存 requests 验证；未知 request 报错；重复计划不是幂等受理 |
+| 停止 | `/stop` 有优先路径；旧代次必须失效，批准不能持久恢复为有效授权 |
+| 服务 | 系统服务 `sdrharness-planner.service`，安装路径为 `planner/current/src/main.mjs` |
+| 资源 | JS 堆上限 192 MiB，MemoryMax=384M；当前未做 durable 资源测试 |
+| 写权限 | `ProtectSystem=strict`、`ProtectHome=read-only`；仅有 RuntimeDirectory，无 StateDirectory |
+| 上游配置 | 用户已接入 OpenCode Go DeepSeek V4.1 Flash；已核对保存的provider/model及key存在，未读取或输出key内容 |
+| 上游验收 | 上一升级单元有71项测试；本次未调用真实提供商，成功hold对话仍需独立验证，不能由健康检查推定 |
+
+源码位于 `raspberry-pi/sdr-agent/`。Planner 服务实际运行安装制品，修改 checkout 不等于部署。
+实现前重查 HEAD、依赖、服务和工作区，保留原有未跟踪文件。
+
+## 上游保证与限制
+
+固定使用 [v1.4.0 README](https://github.com/earendil-works/pi/blob/v1.4.0/packages/durable/README.md) 和
+[同版 package.json](https://github.com/earendil-works/pi/blob/v1.4.0/packages/durable/package.json)。API 为 experimental。
+`pi-durable` 依赖同版 chord、pi-ai、pi-codemode、pi-telemetry；TypeBox 同为 1.3.27。
+依赖被安装不代表对应能力允许注册。
+
+- `Harness.open(storage, { models, registry }, context)` 打开会话存储。
+- `conversation.submit({ type: "input", content, requestId }, context)` 持久受理输入。
+  相同 requestId 返回既有 submission。它不证明 Controller 只执行一次。
+- `harness.resume()` 启动调度；submit 和 wait 也可能启动调度。
+  不能仅靠“尚未调用 resume”阻止未核对任务运行。恢复出口必须另设门。
+- 工具只有声明 `replay: "safe"` 才会在调用中断后重跑。
+  默认给模型 interrupted 结果。`submit_plan` 不声明 safe。
+  模型收到 interrupted 后仍可能再调用工具，必须有独立的请求/提案状态约束。
+- SQLite 入口是 `openNodeSqliteStorage`，导入路径为
+  `@earendil-works/pi-durable/storage/sqlite/node`，底层经 chord 使用 Node 内置 SQLite。
+- 存储要求单进程拥有，上游不提供跨进程锁。
+  默认 WAL + synchronous=NORMAL，能处理进程崩溃，但断电可能丢最新提交。
+- `watch()` 重连给当前快照，不保证补发所有历史增量。
+  UI 不能把每条 token/event 当成唯一业务记录。
+- 默认 restartLimit=5，达到后任务停在 blocked/restart_limit。
+  需要诊断和受控重试入口，不能无限自动重启。
+
+## 会话身份与恢复门
+
+新增应用身份，字段名属于本方案，不是现有协议。
+
+| 身份 | 设计用途 |
+| --- | --- |
+| `app_session_id` | Web/终端逻辑会话稳定 UUID，映射 durable conversation.id |
+| `controller_epoch` | Controller 每次启动的新随机 UUID，避免重启后数字代次碰撞 |
+| `session_generation` | 现有停止/会话代次，仍由 Controller 管理，不作为长期唯一身份 |
+| `request_id` | 现有 Controller 请求；只能在对应 epoch/generation 下解释 |
+| durable `requestId` | `epoch:generation:request_id`，同一输入重试必须复用并校验内容摘要 |
+| `plan_id` | 对一个请求的首个提案分配稳定 ID，绑定规范化内容摘要；相同 ID 不允许变内容 |
+
+首版对话可恢复，但旧 Controller epoch 的执行上下文不能复活。
+旧摘要只能作为不具权限的历史。需要动作时由新请求重新取得实时 observation。
+不得把旧计划改写成新 generation 后重发，也不恢复旧批准。
+
+恢复前核对逻辑会话、Controller epoch、generation、未完成请求、截止时间及 provider 身份。
+当前没有相应握手和查询保证；不能按现有 get_state 已经具备对账能力来实现。
+握手缺失时只允许查看持久历史，不能放行恢复后的 plan_proposed。
+恢复门必须覆盖所有调度入口和提案出口，不能让先恢复的推理绕过核对。
+
+## 命令与模型适配
+
+保留 session adapter，逐个映射现有协议。
+
+| 现有命令 | durable 映射与约束 |
+| --- | --- |
+| open_session | 查找应用会话映射，重连身份核对后打开 conversation，不自动恢复权限 |
+| prompt | submit input；原有 busy 拒绝语义用 whenBusy=reject 保持 |
+| steer | submit input + whenBusy=steer；只在当前 run 的边界注入 |
+| follow_up | submit input 的默认排队语义；保持一项一项处理 |
+| clear_queue | 对排队 submission 调 abort，不能误杀当前输入；撤回须持久化 |
+| abort / stop | conversation.abort 并清理队列，Controller 先使旧代次失效；wait 的 context 取消不能代替工作取消 |
+| close / 断连 | 保留历史，暂停提案出口并取消当前工作；首版不改为无人监听继续跑 |
+| get_state | adapter 返回有界状态、队列、恢复/blocked 原因；不暴露数据库内部记录 |
+
+保留队列上限4、帧上限32 KiB、命令关联及停止优先级。
+旧客户端不能因收到未知恢复字段而崩溃。严格解析协议需升级时，Controller/Worker同步版本并验证回滚。
+one-shot 与 durable session 继续共享同一推理租约。模型调用在恢复路径上也必须取得租约。
+一个 run 中存在多个 steer 输入时，工具关联不能只靠可变 currentContext 推断。
+
+`main.mjs` 目前用 `createAgent`、streamFn、onPayload、工具校验与上下文变换。
+Durable 使用 Models/Provider；不能假设把旧 Agent 放进 Harness 就能恢复任务。
+先验证 Spark JSON planning stream、Responses、Completions、压缩和错误脱敏的等价实现。
+载荷钩子是否可等价接入尚未核实；这是首个技术验证项。
+不为绕过适配问题改掉用户 provider、模型、Base URL 或 key。
+
+当前保存配置为 opencode-go/deepseek-v4.1-flash、openai-completions，
+Base URL为 https://opencode.ai/zen/go/v1，context_window=500000，key已配置。
+这是2026-10-26非秘密字段核对结果，不代表旧地址的在线兼容性已验证。
+P0模拟测试通过后，以此用户选择做仅hold/文本的真实提供商验证。
+不预设继续使用Spark，也不因此删除Spark回归适配。新请求可产生模型费用，应使用有限重试。
+
+## 提案与硬件结果跨进程对账
+
+Planner 自定义 doc/outbox 只记录提案及投递状态，和 transcript 在同一存储事务提交。
+状态至少区分 prepared、dispatch_attempted、accepted、rejected、unknown。
+必须在对外发送前记录 dispatch_attempted；发送异常不能回滚成“从未发送”。
+abort/clear_queue 不能把已经投递的动作标成已撤销；须由 Controller 确认取消或终态。
+
+第一阶段禁止自动补发。凡可能已经投递、但无权威结果的请求，进入 reconciliation_required。
+停止该请求及其排队动作，向 Controller 返回明确的失败/待核对状态，不能无限等候计划。
+历史查询、恢复后的推理和新硬件提案分别放行。旧请求不能被模型再次 submit_plan 绕过。
+
+若下一阶段要求自动补发，则必须同时实现以下协议与存储。
+
+1. Controller 持久记录 plan_id、内容摘要、请求身份、判定和执行状态，先受理入账再回 ACK。
+2. 重复 plan_id + 同摘要返回已存判定；同 ID + 不同摘要拒绝，不再次进入 pending 或执行。
+3. ACK 只代表受理，不代表执行成功。查询应区分 pending_approval、executing、completed、failed、unknown。
+4. Worker ACK 丢失时按 plan_id 查询；确认已受理后不重新驱动动作。
+5. Controller 在硬件开始后、结果入账前崩溃，仍可能无法确定结果。
+   此时只读核对状态/恢复证据，保留 unknown；不把缺少完成记录解释为允许重试。
+6. 对账后的动作仍走实时能力、预算、期限和批准门。不得由 durable 自动延续批准或收发授权。
+
+这不承诺外部硬件 exactly-once。先保证不因软件恢复重复执行，代价是某些请求需重新发起。
+Planner 记录、Controller 账本和 Web 结果库各守职责，不复制 IQ、张量或完整 logits。
+
+## 存储与部署约束
+
+建议给系统服务增加 `StateDirectory=sdrharness-planner` 和目录模式0700。
+候选库路径 `/var/lib/sdrharness-planner/planner.sqlite`，仅此 Worker 写。
+实现时检查实际 unit 合并结果、目录 owner 及 systemd 沙箱中的读写。
+在 Harness.open 前取得进程级独占锁，第二实例直接拒绝；systemd 单实例本身不够。
+不得放 /run 或安装制品目录。Web 通过接口查询，不能另开同库的 Harness。
+
+保留 SQLite 主文件/WAL/SHM 的一致性备份；用 SQLite 备份方式或停机 checkpoint 后复制。
+不要只复制正在写的主库。记录 schema、SDK 版本和备份恢复点。
+暂不承诺断电无丢失；如需要更强持久性，先核实同版连接选项并测试 FULL/fsync 成本。
+不能只写一个 PRAGMA，就宣称解决跨硬件提交窗口。
+
+仅保存有界 PlanningContext、用户输入、允许的模型回复和状态。
+key、鉴权 header、完整 provider 配置、原始 IQ 不入库；错误文本也要脱敏。
+定义容量/保留期限、已结束会话归档和人工删除入口。不得直接删活跃 conversation 绕过任务清理。
+先沿用现有资源限额；测 RSS、堆、库增长和模型延迟，不能未经测量提高限额。
+
+## 分阶段交付与验收
+
+| 阶段 | 修改范围 | 完成条件 |
+| --- | --- | --- |
+| P0 技术验证 | 独立 feature 临时目录，锁 durable/chord/pi-ai 1.4.0，模拟模型 | SQLite关闭重开、输入去重、队列撤回、流式适配、Spark等价行为、单所有者和资源预算通过；不能只测内存库 |
+| P1 会话接入 | runtime adapter、会话映射、恢复门、服务StateDirectory；模型仅hold/文本或虚拟Controller | 重启恢复历史与推理；abort/断连不复活；同一请求不重复出提案；不向真实硬件发动作 |
+| P2 跨域对账 | Controller持久账本、协议版本/握手、plan ACK/status、Worker outbox | ACK丢失/双端重启/未知结果均不重复执行；实时验证与批准门仍有效 |
+| P3 可回滚部署 | 独立release、数据库兼容说明、Web状态/删除入口 | 模拟端到端、只读健康与版本回滚通过；真实模型/真实RX按当时独立授权验收 |
+
+故障注入至少覆盖：输入提交前后、模型生成中、提案入账前后、socket发送中、
+Controller受理前后、ACK丢失、执行开始/完成前后、Worker/Controller分别或同时重启。
+还要覆盖 stop/abort与恢复并发、旧epoch/generation、内容冲突、重复输入、重复提案、
+队列溢出、第二写者、磁盘满/写失败、blocked任务、WAL恢复和资源耗尽。
+存储失败必须停止放行提案，不能静默退回内存模式。
+
+每个场景断言模型调用次数、提案次数、虚拟执行次数、批准状态及最终可见结果。
+沿用71项SDK测试，并新增真实durable+临时SQLite的集成测试。
+不要用新增测试数代替上述行为断言，也不为纯文档交付跑RF或模型实验。
+
+回滚前停接新输入并使旧Controller代次失效，处理/冻结未决提案，关闭库后备份。
+关闭进程不是“所有任务已取消”，重开库仍可能恢复未决任务，必须有持久的暂停/代次门。
+原子切换 planner/current 回旧制品；旧版不读取或重写新库。
+保留隔离后的新库，旧版只可载入不含权限的摘要。再次升级先处理隔离的outbox。
+
+粗估 P0 1–2 人日、P1 2–4 人日、P2 3–5 人日、P3 1–2 人日。
+这是规划量级，未验证的模型适配与Controller存储可能改变工期。当前只完成本设计。
+
+## 多 AI 讨论与主控取舍
+
+通过 Codex Foreman 调用了 DeepSeek V4.1 Flash（max）、GLM-5.3-Flash（max）、MiMo-V2.6-Pro（high）。
+三方仅独立讨论，未起草或修改本文件。主控核对源码、上游固定版本和实际服务后整理。
+
+GLM倾向先做持久账本，MiMo倾向直接迁Harness并同步加入ACK，DeepSeek倾向首版禁止补发。
+采用分阶段Harness验证与保守恢复门。暂不接受“只装账本就获得任务恢复”的说法。
+不采用MiMo提出的默认断连detach；首版保留取消行为，防止无人监听的工作继续派生提案。
+三方指出的输入去重/外部副作用差异、缺ACK、单所有者和systemd写权限均已纳入。
+三方部分示例只用generation作身份，主控补入controller_epoch，防止重启碰撞。
+SQLite底层及Node可用性已额外核实；provider载荷适配、durable资源占用仍待P0验证。
+
+讨论记录位于主控工作站 `E:\NXB210\.codex\foreman\runs\`，组为 `agx-pi-durable-20261026`。
+GLM `20261026-171202-wvnd`；MiMo `20261026-171204-hdit`；DeepSeek续接 `20261026-171249-dd0a`。
+DeepSeek首轮因尝试列出范围外目录暂停，主控未扩大范围，续接后完成。
+含首轮的工具报告费用合计约0.06964美元；这是工具返回值，不是上游结算凭证。
+
+相关依据：[运行架构](SDR_AGENT_RUNTIME_DESIGN.md)、
+[SDK升级验证](../validation/PI_SDK_UPGRADE_2026-10-26.md)、
+[上游SQLite实现](https://github.com/earendil-works/pi/blob/v1.4.0/packages/durable/src/storage/sqlite/node.ts)。
