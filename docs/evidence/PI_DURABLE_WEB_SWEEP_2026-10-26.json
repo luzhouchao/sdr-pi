@@ -1,0 +1,320 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26 12:21:46.803518+00:00",
+  "feature": "pd-web-sweep-1026",
+  "source_commit": "4c7173d",
+  "status": "passed",
+  "authorization": "user requested a sweep walkthrough; one bounded receive-only sweep, continuous Spectrum collection remains paused",
+  "plan": {
+    "schema_version": 1,
+    "feature": "pd-web-sweep-1026",
+    "session_id": "session-1789273063753",
+    "centers_hz": [
+      2455000000,
+      2456000000
+    ],
+    "sample_rate_hz": 10000000,
+    "rf_bandwidth_hz": 10000000,
+    "gain_db": 20,
+    "dwell_settle_ms": 20,
+    "samples_per_point": 4096,
+    "aggregate_frames": 1,
+    "point_deadline_ms": 250,
+    "point_count": 2,
+    "maximum_rx_bytes": 32768,
+    "scan_upper_time_ms": 540,
+    "expected_hardware_seconds": 2,
+    "overall_validation_deadline_seconds": 90,
+    "save_iq": true,
+    "agx_free_bytes": 706664181760,
+    "agx_temporary": "/var/tmp/sdrharness-dev/pd-web-sweep-1026",
+    "application_result_root": "/var/lib/sdrharness/web-console/captures/session-1789273063753",
+    "p201_inline_paths": "/tmp/sdr-agent-dev/agx-sweep-<actual_generation>-{0,1}; inline acquisition cleanup verified after run",
+    "stop": "Web /stop or POST /api/sessions/session-1789273063753/command {command:/stop}; independent cancel via sdr-agent --mode cancel --session-generation <actual generation> --sdrd 192.168.1.10:43110",
+    "rx_input": "RX1/RX0/A_BALANCED",
+    "spectrum_continuous_collection": "remain paused"
+  },
+  "timing_note": "540ms is the Controller dwell+point-timeout formula, not an end-to-end transport upper bound; expected hardware 2s and actual 1040ms. The 90s validation allowance applies per active attempt, excluding setup and postflight.",
+  "provider": {
+    "provider": "opencode-go",
+    "model": "deepseek-v4.1-flash",
+    "api": "openai-completions",
+    "base_url": "https://opencode.ai/zen/go/v1"
+  },
+  "thinking_level": "low; retained installed policy",
+  "model_attempts": 1,
+  "hardware_executions": 1,
+  "manual_plan_checked_before_approval": true,
+  "browser_errors": [],
+  "browser_visual_check": "result graph, two point metrics, saved IQ indicator and delete control visible; screenshot inspected then removed",
+  "new_result_count": 1,
+  "result": {
+    "summary": {
+      "id": 16,
+      "session_id": "session-1789273063753",
+      "sweep_id": "request-1",
+      "kind": "planned",
+      "created_at_ms": 1793016983786,
+      "point_count": 2,
+      "candidate_count": 0,
+      "elapsed_ms": 1040,
+      "gain_db": 20,
+      "noise_floor_dbfs": -53.537495,
+      "iq_bytes": 32768
+    },
+    "sweep_plot": {
+      "schema_version": 1,
+      "sweep_id": "request-1",
+      "kind": "planned",
+      "elapsed_ms": 1040,
+      "gain_db": 20,
+      "noise_floor_dbfs": -53.537495,
+      "points": [
+        [
+          2455000000,
+          -53.537495
+        ],
+        [
+          2456000000,
+          -53.754673
+        ]
+      ],
+      "candidates": [],
+      "dataset": {
+        "format": "sigmf",
+        "datatype": "ci16_le",
+        "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793013963098-1793016982720864044.sigmf-data",
+        "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793013963098-1793016982720864044.sigmf-meta",
+        "bytes": 32768
+      }
+    }
+  },
+  "radio_before": {
+    "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency": "2469500000",
+    "/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency": "30720000",
+    "/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth": "30000000",
+    "/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode": "manual",
+    "/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain": "60.000000 dB",
+    "/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select": "A_BALANCED",
+    "/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode": "manual",
+    "/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain": "60.000000 dB",
+    "/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select": "A_BALANCED",
+    "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en": "0",
+    "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en": "0",
+    "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en": "0",
+    "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en": "0",
+    "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en": "0",
+    "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en": "0",
+    "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en": "0",
+    "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en": "0",
+    "/sys/bus/iio/devices/iio:device2/buffer/enable": "0",
+    "/sys/bus/iio/devices/iio:device3/buffer/enable": "0"
+  },
+  "postflight": {
+    "radio_after": {
+      "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency": "2469500000",
+      "/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency": "30720000",
+      "/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth": "30000000",
+      "/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode": "manual",
+      "/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain": "60.000000 dB",
+      "/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select": "A_BALANCED",
+      "/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode": "manual",
+      "/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain": "60.000000 dB",
+      "/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select": "A_BALANCED",
+      "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en": "0",
+      "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en": "0",
+      "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en": "0",
+      "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en": "0",
+      "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en": "0",
+      "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en": "0",
+      "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en": "0",
+      "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en": "0",
+      "/sys/bus/iio/devices/iio:device2/buffer/enable": "0",
+      "/sys/bus/iio/devices/iio:device3/buffer/enable": "0"
+    },
+    "radio_restored_exact": true,
+    "ledger_record": {
+      "identity": {
+        "plan_id": "bfb6b64b-9f06-4e93-a8df-529b4176e0c1",
+        "hash": "1d36e1035000f97e68b7ccec1137963ed7a0d5fa64d908e642e58f6bea583eae",
+        "app_session_id": "session-1789273063753",
+        "controller_epoch": "fb290e5b6a4c4624d429cdf245c6301b",
+        "session_generation": 1793013963098,
+        "request_id": 1,
+        "deadline_unix_ms": 1793017007480
+      },
+      "decision": "accepted",
+      "execution": "completed"
+    },
+    "p201_temporary_paths": [
+      "/tmp/sdr-agent-dev/agx-sweep-1793013963098-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1793013963098-1"
+    ],
+    "p201_temporary_absent": true,
+    "single_sdrd_pid": 1318,
+    "established_control_connections": 0,
+    "browser_errors": []
+  },
+  "planner_control_state": [
+    {
+      "fb290e5b6a4c4624d429cdf245c6301b:1793013963098:1": {
+        "enabled": false,
+        "modelAttempts": 1,
+        "proposal": {
+          "planId": "bfb6b64b-9f06-4e93-a8df-529b4176e0c1",
+          "key": "fb290e5b6a4c4624d429cdf245c6301b:1793013963098:1",
+          "hash": "1d36e1035000f97e68b7ccec1137963ed7a0d5fa64d908e642e58f6bea583eae",
+          "action": {
+            "kind": "survey_band",
+            "start_hz": 2455000000,
+            "stop_hz": 2456000000,
+            "step_hz": 1000000,
+            "sample_rate_hz": 10000000,
+            "rf_bandwidth_hz": 10000000,
+            "dwell_ms": 20
+          },
+          "state": "accepted",
+          "controllerExecution": "completed"
+        },
+        "reason": "reconciliation_complete"
+      }
+    }
+  ],
+  "final_status": [
+    {
+      "id": 95,
+      "timestamp_ms": 1793016982716,
+      "kind": "prompt",
+      "text": "SDR Agent> "
+    },
+    {
+      "id": 96,
+      "timestamp_ms": 1793016983804,
+      "kind": "sweep",
+      "text": "扫频执行结果：request=1 已完成 2 个频点，耗时 1040 ms，固定增益 20 dB，噪声基线 -53.5 dBFS，发现 0 个候选；零削顶，射频状态已恢复。"
+    },
+    {
+      "id": 97,
+      "timestamp_ms": 1793017114918,
+      "kind": "operator",
+      "text": "Operator> /stop"
+    },
+    {
+      "id": 98,
+      "timestamp_ms": 1793017115011,
+      "kind": "system",
+      "text": "会话已停止；旧计划已失效。"
+    },
+    {
+      "id": 99,
+      "timestamp_ms": 1793017115013,
+      "kind": "prompt",
+      "text": "SDR Agent> "
+    },
+    {
+      "id": 100,
+      "timestamp_ms": 1793017115294,
+      "kind": "operator",
+      "text": "Operator> /status"
+    },
+    {
+      "id": 101,
+      "timestamp_ms": 1793017115301,
+      "kind": "system",
+      "text": "持久会话：最近记录中 0 项待核对，0 项阻塞；旧批准不会自动恢复。结果未知的计划不会重新执行。"
+    },
+    {
+      "id": 102,
+      "timestamp_ms": 1793017115304,
+      "kind": "system",
+      "text": "控制器状态：已保持，不会继续操作硬件；运行模式：逐步人工批准。"
+    },
+    {
+      "id": 103,
+      "timestamp_ms": 1793017115306,
+      "kind": "system",
+      "text": "Agent 会话：已打开；上游模型：空闲；等待处理的消息：0 条。"
+    },
+    {
+      "id": 104,
+      "timestamp_ms": 1793017115307,
+      "kind": "system",
+      "text": "人工批准：没有待处理计划；下一请求编号：2；安全代次：1793013963099。"
+    },
+    {
+      "id": 105,
+      "timestamp_ms": 1793017115308,
+      "kind": "cruise",
+      "text": "巡航状态：未启用；当前每个可执行动作都需要人工批准。"
+    },
+    {
+      "id": 106,
+      "timestamp_ms": 1793017115309,
+      "kind": "prompt",
+      "text": "SDR Agent> "
+    }
+  ],
+  "health_after": {
+    "online": true,
+    "healthy": true,
+    "health_flags": 0,
+    "iio_visible": true,
+    "can_retune": true,
+    "can_capture_iq": true,
+    "rx_input": {
+      "identity_version": 1,
+      "verified": true,
+      "front_panel_port": "RX1",
+      "logical_channel": "RX0",
+      "phy_channel": "voltage0",
+      "scan_i_channel": "voltage0",
+      "scan_q_channel": "voltage1",
+      "rf_port_select": "A_BALANCED",
+      "source": "iio_channel_attr"
+    }
+  },
+  "continuous_spectrum_phase": "paused",
+  "retained": {
+    "purpose": "user-visible bounded sweep output, one SigMF data/meta pair and shared application result row; no IQ copy",
+    "result_id": 16,
+    "session_id": "session-1789273063753",
+    "request_id": 1,
+    "plan_id": "bfb6b64b-9f06-4e93-a8df-529b4176e0c1",
+    "model_profile_preprocess": "DeepSeek planning only; no recognition model/profile/inference. AGX software power/noise aggregation; raw ci16_le IQ.",
+    "files": [
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793013963098-1793016982720864044.sigmf-data",
+        "bytes": 32768,
+        "sha256": "c822f1baccd15e9ba3c6030110f3b2f78842dc2d4212e1c9fee37a567d05fb4a"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793013963098-1793016982720864044.sigmf-meta",
+        "bytes": 683,
+        "sha256": "ed26d88c982a75247baec990591073c523ef2ca763e59eb445f47fcf107aca2e"
+      }
+    ],
+    "total_bytes": 33451,
+    "shared_result_database": "/var/lib/sdrharness/web-console/capture-results.sqlite3; row id16",
+    "manual_delete": "Open Web frequency results, select newest request-1 with id16 (2026-10-26), click 删除这次采集; exact API DELETE /api/results/16 removes row and this SigMF pair. Do not delete the shared database."
+  },
+  "limits": {
+    "no_tx": true,
+    "no_training_or_recognition": true,
+    "recognizer_available": false,
+    "full_band_scan": false,
+    "active_capture_cancellation": "not exercised; stop button checked after bounded success",
+    "results_interpretation": "0 candidates means none exceeded this detection threshold in these two short samples; does not prove band-wide absence"
+  },
+  "setup_failures": [
+    "Browser executable lookup followed isolated XDG cache; reused existing PLAYWRIGHT_BROWSERS_PATH, no install.",
+    "Persistent SSE prevented networkidle; attempted networkidle then waited for rendered controls.",
+    "Two initial status-text checks timed out before any model request or RX; stop sent each time. Corrected matching for both Idle and Holding. Single subsequent model/scan attempt succeeded."
+  ],
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/pd-web-sweep-1026",
+    "files": 97,
+    "bytes": 1589729,
+    "temporary_retained": 0,
+    "removed_verified": true
+  }
+}

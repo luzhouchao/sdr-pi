@@ -10,15 +10,15 @@
 2026-10-26 pi-durable接入P0—P3已完成：Harness/SQLite、v2协议及Controller账本、
 分会话存储/离线归档删除、服务单所有者/正常关闭已验证并部署，版本切回通过。
 DeepSeek思考保持开启，命名工具兼容改为自动选择，真实隔离hold已通过。
-本接入单元收束；Web真实对话仍是独立待验收项，不自动触发新扫描。
-用户要求Spectrum扫频暂停，保持SDR空闲；
-真实提供商验证仅hold/虚拟Controller，不新增硬件操作。见[实施方案](reference/PI_DURABLE_INTEGRATION.md)
+用户随后要求实际走扫频：已用生产Web完成一次2455/2456MHz两点RX，
+真实模型计划/批准/存储/结果页、双端账本completed及RF恢复均通过，最终停止。
+本接入与本轮Web实机单元收束；Spectrum连续扫频仍暂停，不自动扩展扫描或巡航。见[实施方案](reference/PI_DURABLE_INTEGRATION.md)
 及[本单元验证](validation/PI_DURABLE_CORE_2026-10-26.md)。
 
 此前用户选择先完成Pi SDK兼容升级，0.84.4→1.4.0已完成，
 包括隔离SDK测试、独立Planner版本目录、部署与切回验证；不接入pi-durable。
 用户随后要求不保留旧key，已清空外部提供商key并保留非秘密设置；
-用户随后已填入新key，独立真实durable hold已通过；Web全链路真实对话仍未验收，不能用模拟接口或健康检查替代。
+用户随后已填入新key，独立真实durable hold已通过；随后Web全链路真实两点扫频已验收，见上方当前选择。
 见[升级验证](validation/PI_SDK_UPGRADE_2026-10-26.md)，状态以checklist为准。
 
 2026-09-26用户取消近期自生成及后续诊断，确认删除8个结果目录，并退役AGX独立D8。已删除20个目录、2061个文件、1,369,327,545字节，路径缺失复核通过；原RML2018A源数据、实收IQ、raw/guard及D10结果保留。D10依赖的d8命名源码与混合模型历史审计保留。删除前逐文件大小/SHA及精确路径见[删除清单](evidence/EXPERIMENT_CLEANUP_D8_RETIREMENT_2026-09-26.json)。历史记录中的“保留”是当时状态，清单所列外部结果现已删除，不能再宣称可读回。

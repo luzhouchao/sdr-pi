@@ -358,3 +358,5 @@
 - [论文部署证据收尾](AMC_PAPER_DEPLOYMENT_CLOSEOUT_2026-09-29.json)：当前AGX/运行时及RF参数、历史功率模式未记录、精度边界与清理封存；[32组整数/配对CSV](AMC_PAPER_DEPLOYMENT_COUNTS_2026-09-29.csv)、[16组D10计时CSV](AMC_PAPER_D10_TIMING_2026-09-29.csv)，原始时延序列另存结果根，无新RF/训练。
 
 - [pi-durable实际部署、思考兼容、回滚与清理](PI_DURABLE_DEPLOYMENT_2026-10-26.json)
+
+- [pi-durable真实Web两点扫频、双端账本与RF恢复](PI_DURABLE_WEB_SWEEP_2026-10-26.json)

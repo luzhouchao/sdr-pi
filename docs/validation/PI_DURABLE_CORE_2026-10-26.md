@@ -181,3 +181,51 @@ AGX到30431/43110的控制连接0。Spectrum collector945217仅剩zombie、无�
 当前安装与回滚制品按上表保留；生产Planner历史和Controller账本属于应用存储，
 不参与开发清理，其路径、用途、大小/SHA时点快照及人工删除方法见P3证据。
 原两个未跟踪用户文件保留，无新IQ、模型或射频实验。
+
+## 真实Web两点扫频2026-10-26
+
+用户随后要求走一遍扫频流程，新增本次有界RX授权；原Spectrum连续采集仍暂停。
+本轮使用已安装生产Web/Controller/Planner和真实OpenCode Go DeepSeek V4.1 Flash，
+在原活动会话 `session-1789273063753` 中执行，不新建会话、不触发初扫、不改变provider/key。
+
+实际浏览器流程：查看状态/逐步批准模式 → 输入精确两点扫频指令 → 等模型生成计划 →
+核对Rust已验证计划的频率、采样率、带宽和停留时间 → 点击批准 → P201 RX/AGX聚合 →
+打开“频谱结果”确认图表、指标、IQ保留和删除入口 → 点击“立即停止” → 查看最终状态。
+只有一次实际模型调用和一次硬件执行；浏览器pageerror为0。截图已检查，开发副本已删除。
+
+有限计划：2455/2456MHz，步进1MHz，10MS/s、10MHz带宽、固定增益20dB，
+每点settle20ms后接收4096点，aggregate=1，point timeout250ms，
+最大IQ `2×4096×4=32768` 字节。执行前AGX可用706664181760字节。
+Controller的dwell+timeout公式为540ms，不包含连接、配置及传输开销；
+执行前预计硬件约2秒，实际1040ms。Planner请求有30秒绝对期限，
+浏览器各活动尝试的等待有界，准备/只读复核不计入该尝试时限。
+
+结果：两个频点功率分别−53.537495/−53.754673dBFS，噪声基线−53.537495dBFS，
+0个超过阈值的候选、零削顶。不能用本次短时两点接收证明整个频段没有信号。
+原接线保持B210停发；没有TX、训练或识别，生产 `recognizer_available=false`。
+
+Controller plan `bfb6b64b-9f06-4e93-a8df-529b4176e0c1` 为accepted/completed；
+Planner同计划为accepted、controllerExecution=completed、modelAttempts=1、
+停止后enabled=false、reason=reconciliation_complete；旧批准未恢复、没有重放。
+最终状态为Holding、模型空闲、队列0、无待批准计划、巡航未启用，待核对/阻塞均0。
+
+执行前后19项P201属性逐字一致：LO、采样率、带宽、两路gain mode/gain/端口，
+RX/TX全部buffer及scan mask。实际健康CLI确认RX1/RX0/A_BALANCED、healthy=true；
+单sdrd PID1318，控制连接0。精确P201瞬时目录
+`/tmp/sdr-agent-dev/agx-sweep-1793013963098-0` 和 `-1` 均不存在。
+
+应用结果新增1条：结果ID16、`request-1`，原始IQ32768字节、SigMF元数据683字节，
+合计33451字节保留在应用captures目录，未复制IQ。精确路径、SHA、request/session/plan身份
+与人工删除方法见[本轮证据](../evidence/PI_DURABLE_WEB_SWEEP_2026-10-26.json)。
+可在网页“频谱结果”选最新request-1后点击“删除这次采集”，或DELETE `/api/results/16`；
+不删除其他结果或共享SQLite库。
+
+准备时已修正三类浏览器检查问题：隔离XDG缓存改变浏览器查找位置，改用既有浏览器目录；
+SSE持续连接导致networkidle不能收敛，尝试后改等真实控件；
+两次状态文字精确匹配超时均发生在模型请求/RX之前，并发送/stop，
+最终兼容Idle/Holding后只有一次真实模型及扫频。没有为通过检查修改应用门禁。
+
+本轮无需源码改动或重建。只做实际浏览器/实机验收及文档、链接、diff检查。
+删除 `/var/tmp/sdrharness-dev/pd-web-sweep-1026` 的97文件、1589729逻辑字节，
+截图、脚本、浏览器缓存均清理，临时保留0；上述应用测量结果按用户设置保留。
+Spectrum连续采集仍paused，不恢复后台扫频。
