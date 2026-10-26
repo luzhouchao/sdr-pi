@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "baseline": "5d4d3b8",
+  "scope": "v2 session adapter and Controller ledger, default off; no production deployment",
+  "parent": "PI_DURABLE_CORE_2026-10-26.json",
+  "workerTests": {
+    "passed": 99,
+    "failed": 0,
+    "skipped": 0,
+    "controllerBinaryProvided": true,
+    "resource": {
+      "iterations": 32,
+      "peakRss": 144437248,
+      "peakHeap": 48038976,
+      "sqliteBytes": 4456168
+    }
+  },
+  "controllerTests": {
+    "passed": 139,
+    "failed": 0,
+    "ignored": 1,
+    "ignoredReason": "pre-existing explicit bounded synthetic replay export",
+    "fmt": true,
+    "clippyAllTargetsDenyWarnings": true
+  },
+  "realProviderControllerHold": {
+    "controllerExit": 0,
+    "plans": 1,
+    "decisions": [
+      "accepted"
+    ],
+    "executionStates": [
+      "completed"
+    ],
+    "hardwareExecutor": false,
+    "durationMs": 3773
+  },
+  "faultAssertions": [
+    "lost ACK then Controller SIGKILL/restart: two new inputs cause only two model calls, no old replay",
+    "duplicate plan ACK after in-memory request clear: no repeated handler effects",
+    "stop fence rejects before approval/execution",
+    "fresh epoch per Controller, old accepted/pending/executing -> unknown on reopen",
+    "fsync snapshot before ACK, fsync execution boundary before worker spawn",
+    "hash conflict, second plan for request, write failure, single owner, SIGKILL unlock",
+    "expiry before admission and delayed approval blocked",
+    "blocked task visible, lease retained until abort settles",
+    "duplicate ACK idempotent, decision conflict rejected",
+    "every Spark search model turn rechecks identity/deadline/budget"
+  ],
+  "corrections": [
+    "first Rust run: two Unix socket fixture paths too long under original TMPDIR; use shorter isolated feature root",
+    "session parser fuzz expected only v1; updated to allow explicit v1/v2 session protocol while Planner remains v1",
+    "clippy useless Box conversion removed"
+  ],
+  "featureGates": {
+    "worker": "SDR_DURABLE_DB",
+    "controller": "SDR_DURABLE_CONTROLLER_DIR"
+  },
+  "productionDeployed": false,
+  "hardwareActions": 0,
+  "cleanup": [
+    {
+      "path": "/var/tmp/sdrharness-dev/pi-durable-p2-20261026",
+      "files": 17342,
+      "bytes": 1364786325,
+      "verifiedAbsent": true
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/pd2-o26",
+      "files": 0,
+      "bytes": 0,
+      "verifiedAbsent": true
+    }
+  ],
+  "retainedTemporaryFiles": 0,
+  "remaining": [
+    "per-business state directory and operator archive/delete",
+    "single owner for service state",
+    "graceful service shutdown",
+    "release manifest and reversible deployment",
+    "installed read-only health/hold verification"
+  ]
+}

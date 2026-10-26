@@ -61,3 +61,52 @@ AGX至P201控制连接0；P201只读核对单sdrd1318，RX buffer/四路mask/TX 
 已删除本单元隔离目录13500文件、96968164字节，临时保留0，路径不存在已核验。
 测试socket由测试逐项删除，未修改现有应用结果。保留的是Git中的最小统计证据，
 见[审计](../evidence/PI_DURABLE_CORE_2026-10-26.json)；无IQ、SQLite、key、构建或依赖制品入Git。
+
+## v2会话与Controller对账（后续独立单元）
+
+基线 `5d4d3b8`。源码新增默认关闭的v2会话adapter和Controller持久账本；
+生产安装制品尚未切换。Worker用`SDR_DURABLE_DB`选择隔离数据库，
+Controller用`SDR_DURABLE_CONTROLLER_DIR`明确启用v2；两端不同版本直接拒绝，不静默降级。
+P3将进一步提供服务状态目录和运维入口，不能提前把这两个源码开关视为已部署。
+
+会话握手带稳定业务session ID、Controller新启动epoch及generation；现有严格PlanResponse
+仍为v1，仅外层v2 event携带plan ID、规范化action摘要、完整请求身份和绝对期限。
+Controller先核对摘要、请求、实时策略、停止门及期限，再fsync持久接收判定并发送ACK。
+同plan ID/身份返回旧ACK，冲突或同请求的第二计划拒绝；重复不再进入批准/执行分支。
+Controller账本在独立0700目录、0600单链接文件中，用flock保持单所有者；
+8MiB/4096项上限，临时快照fsync→rename→父目录fsync，写失败锁定失败状态。
+账本只保存身份、判定及状态，不保存IQ、模型key、批准凭证或新硬件权限。
+
+实际硬件worker启动前记录executing；结果后记录completed/failed，待批准为pending_approval。
+重开将未终结的accepted/pending/executing改unknown，不恢复待批准对象或自动启动动作。
+停止代次使未执行计划cancelled，执行窗口无法证明终态时保留unknown。
+人工批准也受原绝对期限约束。hold完成仅表示建议处理完成，不代表做过硬件动作。
+历史查询返回权威判定/执行状态；Worker只更新禁用的旧记录，不启用请求或补发提案。
+重复ACK幂等；未知ACK的后续判定可记录，但不能因此推断执行完成。
+
+adapter断连先关闭投递门、打断等待ACK的工具，再join abort；空闲close保留历史。
+get_state仅返回最近16项有界状态和blocked原因；缺少任务定义/restart_limit等不自动重试，
+通过abort退出阻塞，租约保持到真正清理完成。修正了idle交接微任务中的租约竞态。
+Spark受控检索复用现有host适配，每个物理模型调用都重新检查身份、期限和4次预算，
+不能仅在外层流入口检查一次后让检索循环绕过恢复门。
+
+最终Node **99项通过、0失败/跳过**，设置192MiB heap并提供本单元Rust测试二进制。
+Rust **139项通过、1项既有显式忽略**（bounded synthetic replay export），格式及
+all-targets Clippy `-D warnings`通过。新增真实Controller/Worker/loopback HTTP闭环：
+代理丢弃ACK后SIGKILL Controller，再以同业务session重启，旧判定只读对账；
+两次新输入只有两次模型调用、两条completed记录，epoch不同，无旧请求重放。
+另覆盖Controller重复提案、停止门、期限/迟到批准、进程锁/崩溃及写失败；
+blocked缺定义任务可见且abort前不释放租约，ACK重复/冲突和Spark检索期限门通过。
+
+首轮Rust两项旧socket测试因TMPDIR路径过长失败，改用更短的独立feature临时目录；
+未放宽socket或生产预算。旧fuzz假定session只支持v1，按显式v2更新断言；
+Planner请求仍只接受v1。Clippy发现一次无用Box转换，已修正。
+
+真实OpenCode Go DeepSeek V4.1 Flash保持原配置/key/`/zen/go/v1`，本单元又执行一次
+隔离真实Worker→新Rust Controller的hold：约3.77秒、退出码0、账本1条accepted/completed。
+未配置SDR执行器，无RX/TX；这仍不是安装制品或Web浏览器全链路验收。
+
+清理两个feature临时根，共17342文件、1364786325字节，临时保留0，均核验不存在。
+最小统计及血缘见[协议审计](../evidence/PI_DURABLE_PROTOCOL_2026-10-26.json)。
+生产Planner/Web、原SDK release和Spectrum暂停状态保持；后续是状态/归档删除、
+服务单所有者与正常关闭、独立制品/回滚及安装验证。

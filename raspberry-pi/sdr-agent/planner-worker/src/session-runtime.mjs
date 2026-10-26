@@ -31,6 +31,7 @@ export class SessionRuntime {
   }
 
   async dispatch(command, emit) {
+    if (command.protocol_version !== 1) return makeSessionResponse(command, false, "durable session protocol is disabled");
     this.emit = emit;
     try {
       switch (command.type) {

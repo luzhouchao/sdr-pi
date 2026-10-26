@@ -12,6 +12,7 @@ import { loadProviderSelection } from "./provider-config.mjs";
 import { validateRuntimeSocketPath } from "./runtime-path.mjs";
 import { RunLease } from "./run-lease.mjs";
 import { describeMissingPlan, formatUpstreamError } from "./planner-failure.mjs";
+import { DurableSessionRuntime } from "./durable-session-runtime.mjs";
 import { SessionRuntime } from "./session-runtime.mjs";
 import { startSessionServer } from "./session-server.mjs";
 import { createSparkJsonPlanningStream } from "./spark-stream.mjs";
@@ -76,8 +77,9 @@ server.listen(config.socketPath, () => {
 
 const sessionServer = startSessionServer({
   socketPath: config.sessionSocketPath,
-  createRuntime: () =>
-    new SessionRuntime({
+  createRuntime: () => config.durablePath
+    ? new DurableSessionRuntime({createEngine:createDurablePlanningEngine,plannerMeta:defaultPlannerMeta})
+    : new SessionRuntime({
       plannerMeta: defaultPlannerMeta,
       runLease,
       createAgent: ({ sessionGeneration, onPlan, onSearchEvent }) =>
@@ -97,7 +99,7 @@ sessionServer.on("listening", () => {
 async function handleFrame(frame) {
   // Read-only liveness; this never invokes a provider or changes a session.
   if (frame === '{"protocol_version":1,"operation":"health"}') {
-    return { schema_version: 1, service: "planner", ready: true, recognizer_available: false };
+    return { schema_version: 1, service: "planner", ready: true, recognizer_available: false, session_protocol:config.durablePath?2:1, durable:!!config.durablePath, session_available:sessionServer.sessionAvailable() };
   }
   let request;
   try {
@@ -160,17 +162,9 @@ async function handleFrame(frame) {
   return makeResponse(request, runtime.plannerMeta, submittedPlans[0]);
 }
 
-function createPlanningAgent({
-  sessionGeneration,
-  onPlan,
-  onSearchEvent = () => {},
-  terminateAfterPlan,
-  surveyRequest,
-}) {
-  const providerConfig = loadProviderSelection(config);
-  const plannerMeta = { provider: providerConfig.provider, model: providerConfig.model };
+function createPlanningModels(providerConfig,maxTokens) {
   const models = createModels();
-  const model = resolveModelProfile(providerConfig, config.maxTokens);
+  const model = resolveModelProfile(providerConfig, maxTokens);
   const providerApi = providerConfig.api === "openai-responses"
     ? openAIResponsesApi()
     : openAICompletionsApi();
@@ -195,6 +189,33 @@ function createPlanningAgent({
       api: providerApi,
     }),
   );
+  return {models,model};
+}
+
+async function createDurablePlanningEngine(callbacks) {
+  const providerConfig=loadProviderSelection(config);
+  const {models,model}=createPlanningModels(providerConfig,config.durableMaxTokens);
+  const {DurablePlanner}=await import('./durable-planner.mjs');
+  const engine=await DurablePlanner.open({path:config.durablePath,models,model:{provider:model.provider,modelId:model.id},
+    providerIdentity:{provider:model.provider,model:model.id,api:model.api,baseUrl:model.baseUrl},
+    runLease,contextWindow:providerConfig.contextWindow,thresholdPercent:providerConfig.compressionThresholdPercent,
+    secrets:[providerConfig.apiKey],streamAdapter:providerConfig.provider==='spark-local'
+      ? (base,requestIdentity)=>createSparkJsonPlanningStream(base,{webSearch,maxSearches:config.webSearchMaxSearches,
+        onSearchEvent:event=>callbacks.onProgress({...requestIdentity,event:{type:`web_search_${event.phase}`,data:event}})})
+      : undefined,...callbacks});
+  return {engine,plannerMeta:{provider:providerConfig.provider,model:providerConfig.model}};
+}
+
+function createPlanningAgent({
+  sessionGeneration,
+  onPlan,
+  onSearchEvent = () => {},
+  terminateAfterPlan,
+  surveyRequest,
+}) {
+  const providerConfig = loadProviderSelection(config);
+  const plannerMeta = { provider: providerConfig.provider, model: providerConfig.model };
+  const {models,model}=createPlanningModels(providerConfig,config.maxTokens);
   const submitPlan = {
     name: "submit_plan",
     label: "Submit SDR plan",
@@ -298,6 +319,8 @@ function loadConfig() {
       50,
       95,
     ),
+    durablePath:process.env.SDR_DURABLE_DB || undefined,
+    durableMaxTokens:boundedInteger("SDR_DURABLE_MAX_TOKENS",4096,128,8192),
     maxTokens: boundedInteger("SDR_PLANNER_MAX_TOKENS", 1_024, 128, 8_192),
     requestTimeoutMs: boundedInteger("SDR_PLANNER_TIMEOUT_MS", 30_000, 1_000, 120_000),
     webSearchUrl: optionalLoopbackUrl("SDR_PLANNER_WEB_SEARCH_URL"),

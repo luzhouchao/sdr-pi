@@ -23,13 +23,31 @@ export function parseSessionCommand(frame) {
   const command = JSON.parse(frame);
   requirePlainObject(command, "session command");
   requireSafeInteger(command.protocol_version, "protocol_version", 1);
-  if (command.protocol_version !== SESSION_PROTOCOL_VERSION) {
+  if (![1, 2].includes(command.protocol_version)) {
     throw new Error("unsupported session protocol version");
   }
   requireSafeInteger(command.command_id, "command_id", 1);
   requireSafeInteger(command.session_generation, "session_generation", 0);
   if (typeof command.type !== "string") {
     throw new Error("session command type is required");
+  }
+
+  if (command.protocol_version === 2 && command.type === "open_session") {
+    requireExactKeys(command, ["protocol_version", "command_id", "session_generation", "type", "app_session_id", "controller_epoch"], "durable session command");
+    for (const key of ["app_session_id", "controller_epoch"]) {
+      if (typeof command[key] !== "string" || !/^[A-Za-z0-9_-]{1,128}$/u.test(command[key]) || ["__proto__", "constructor", "prototype"].includes(command[key])) throw new Error(`invalid ${key}`);
+    }
+    return command;
+  }
+  if (command.protocol_version === 2 && command.type === "plan_ack") {
+    requireExactKeys(command, ["protocol_version", "command_id", "session_generation", "type", "plan_id", "hash", "state"], "plan acknowledgement");
+    if (typeof command.plan_id !== "string" || !/^[a-f0-9-]{36}$/u.test(command.plan_id) || !/^[a-f0-9]{64}$/u.test(command.hash) || !["accepted", "rejected"].includes(command.state)) throw new Error("invalid plan acknowledgement");
+    return command;
+  }
+  if (command.protocol_version === 2 && command.type === "plan_status") {
+    requireExactKeys(command, ["protocol_version", "command_id", "session_generation", "type", "plan_id", "hash", "decision", "execution_state"], "plan status");
+    if (typeof command.plan_id !== "string" || !/^[a-f0-9-]{36}$/u.test(command.plan_id) || !/^[a-f0-9]{64}$/u.test(command.hash) || !["accepted", "rejected", "unknown"].includes(command.decision) || !["accepted", "pending_approval", "executing", "completed", "failed", "cancelled", "unknown"].includes(command.execution_state)) throw new Error("invalid plan status");
+    return command;
   }
 
   if (CONTEXT_COMMANDS.has(command.type)) {
@@ -60,7 +78,7 @@ export function parseSessionCommand(frame) {
 
 export function makeSessionResponse(command, success, dataOrError) {
   const response = {
-    protocol_version: SESSION_PROTOCOL_VERSION,
+    protocol_version: command?.protocol_version === 2 ? 2 : SESSION_PROTOCOL_VERSION,
     command_id: Number.isSafeInteger(command?.command_id) ? command.command_id : 0,
     session_generation: Number.isSafeInteger(command?.session_generation)
       ? command.session_generation

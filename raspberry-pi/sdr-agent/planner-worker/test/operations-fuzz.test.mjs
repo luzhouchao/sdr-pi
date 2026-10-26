@@ -36,7 +36,7 @@ test('O1a fixed-seed Planner and session parser mutation corpus', () => {
       let result;
       try { result = parser(input); }
       catch (error) { assert(error instanceof Error); continue; }
-      assert.equal(result.protocol_version, 1); accepted += 1;
+      assert.ok((name === 'session' ? [1, 2] : [1]).includes(result.protocol_version)); accepted += 1;
     }
     console.log(JSON.stringify({ o1a_fuzz: name, seed: 20260906, cases: inputs.length, accepted, sha256: createHash('sha256').update(JSON.stringify(inputs)).digest('hex') }));
   }

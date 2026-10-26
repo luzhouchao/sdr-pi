@@ -222,3 +222,16 @@ test('generation mismatch and stale generation after restart produce zero old de
   await assert.rejects(f.engine.recover('session_a',[9]),/reconciliation/);
   assert.equal(f.deliveries.length,1);assert.equal(f.faux.state.callCount,1);
 });
+
+for(const expire of [false,true]) test(`Spark search turns recheck durable provider fence; expire=${expire}`,{timeout:10000},async t=>{
+  const {createSparkJsonPlanningStream}=await import('../src/spark-stream.mjs');let now=Date.now();
+  const f=await fixture(t,{now:()=>now,streamAdapter:base=>createSparkJsonPlanningStream(base,{webSearch:async query=>{
+    if(expire)now+=60000;return {query,sources:[],truncated:false};
+  }})});
+  f.faux.setResponses([
+    fauxAssistantMessage(JSON.stringify({adapter_action:'web_search',query:'bounded check'})),
+    fauxAssistantMessage(JSON.stringify({adapter_action:'submit_plan',plan:{action:'hold',reason:'safe'}})),
+  ]);
+  await f.engine.attach(identity);await f.engine.submit('session_a',input());await f.engine.idle();
+  assert.equal(f.faux.state.callCount,expire?1:2);assert.equal(f.deliveries.length,expire?0:1);
+});

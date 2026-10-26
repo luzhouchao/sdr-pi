@@ -91,6 +91,7 @@ export function startSessionServer({ socketPath, createRuntime, onError = () => 
       }).catch(onError);
     });
   });
+  server.sessionAvailable = () => activeSocket === undefined;
   server.maxConnections = 2;
   server.listen(socketPath, () => chmodSync(socketPath, 0o660));
   return server;

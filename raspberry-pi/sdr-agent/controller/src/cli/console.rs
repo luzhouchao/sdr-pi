@@ -8,6 +8,9 @@ use sdr_agent_controller::autonomy::{
 use sdr_agent_controller::execution::{
     ExecutionAuthorization, ExecutionObservation, SdrActionExecutor, SdrdActionAdapter,
 };
+use sdr_agent_controller::plan_ledger::{
+    action_hash, fresh_epoch, Decision, ExecutionState, PlanIdentity, PlanLedger,
+};
 use sdr_agent_controller::policy::ControllerPolicy;
 use sdr_agent_controller::protocol::{
     ControllerState, PlanRequest, PlanResponse, ProposedAction, ValidatedPlan, MAX_FRAME_BYTES,
@@ -237,7 +240,7 @@ fn handle_input(app: &mut ConsoleApp, input: &str) -> AppResult<bool> {
         "/status" | "/状态" => app.status()?,
         "/history" | "/历史" => app.print_history(),
         "/approve" | "/批准" => app.approve()?,
-        "/reject" | "/拒绝" => app.reject(),
+        "/reject" | "/拒绝" => app.reject()?,
         "/mode manual" | "/模式 人工" => app.enable_step_approval()?,
         "/pause" | "/暂停" => app.stop("会话已暂停")?,
         "/resume" | "/继续" => app.renew(ControllerState::Idle, "会话已恢复")?,
@@ -386,6 +389,7 @@ fn parse_bounded_auto_value(
 
 struct ConsoleApp {
     recognizer: Box<dyn RecognizerCapability>,
+    ledger: Option<PlanLedger>,
     client: SessionClient,
     template: PlanRequest,
     next_request_id: u64,
@@ -481,6 +485,7 @@ enum PendingSessionCommand {
         kind: SessionQueueKind,
     },
     Abort,
+    LedgerAck,
 }
 
 impl SessionQueueKind {
@@ -526,7 +531,9 @@ impl ConsoleApp {
                 )
             },
         );
+        let ledger = open_console_ledger(options.session_state_path.as_deref())?;
         let mut app = Self {
+            ledger,
             recognizer: Box::new(UnixRecognizerCapability::new(
                 options.recognizer_socket,
                 options.recognizer_admission,
@@ -562,6 +569,56 @@ impl ConsoleApp {
         };
         app.command("open_session", None)?;
         Ok(app)
+    }
+
+    fn send_ledger_ack(&mut self, id: &PlanIdentity, decision: Decision) -> AppResult<()> {
+        let command_id = self.client.next_command_id();
+        self.client.write(&json!({"protocol_version":2,"command_id":command_id,"session_generation":self.session_generation,"type":"plan_ack","plan_id":id.plan_id,"hash":id.hash,"state":decision}))?;
+        self.pending_session_commands
+            .insert(command_id, PendingSessionCommand::LedgerAck);
+        Ok(())
+    }
+    fn ledger_begin(&mut self, request_id: u64, generation: u64) -> AppResult<()> {
+        if let Some(ledger) = &mut self.ledger {
+            if ledger.by_request(request_id, generation).is_some() {
+                ledger.begin(request_id, generation)?;
+            }
+        }
+        Ok(())
+    }
+    fn ledger_finish(
+        &mut self,
+        request_id: u64,
+        generation: u64,
+        state: ExecutionState,
+    ) -> AppResult<()> {
+        if let Some(ledger) = &mut self.ledger {
+            if ledger.by_request(request_id, generation).is_some_and(|r| {
+                matches!(
+                    r.execution,
+                    ExecutionState::Accepted
+                        | ExecutionState::PendingApproval
+                        | ExecutionState::Executing
+                )
+            }) {
+                ledger.finish(request_id, generation, state)?;
+            }
+        }
+        Ok(())
+    }
+    fn ledger_sweep_finish(
+        &mut self,
+        kind: &ActiveSweepKind,
+        generation: u64,
+        state: ExecutionState,
+    ) -> AppResult<()> {
+        match kind {
+            ActiveSweepKind::Planned { request_id, .. }
+            | ActiveSweepKind::Inspection { request_id, .. } => {
+                self.ledger_finish(*request_id, generation, state)
+            }
+            ActiveSweepKind::Initial => Ok(()),
+        }
     }
 
     fn submit(&mut self, instruction: String) -> AppResult<()> {
@@ -662,6 +719,24 @@ impl ConsoleApp {
             .and_then(Value::as_bool)
             .unwrap_or(false);
         let queued = worker.get("queued").and_then(Value::as_u64).unwrap_or(0);
+        if worker.get("durable").and_then(Value::as_bool) == Some(true) {
+            let unresolved = worker
+                .get("requests")
+                .and_then(Value::as_array)
+                .map_or(0, |rows| {
+                    rows.iter()
+                        .filter(|r| {
+                            r.get("reason").and_then(Value::as_str)
+                                == Some("reconciliation_required")
+                        })
+                        .count()
+                });
+            let blocked = worker
+                .get("blocked")
+                .and_then(Value::as_array)
+                .map_or(0, Vec::len);
+            println!("持久会话：最近记录中 {unresolved} 项待核对，{blocked} 项阻塞；旧批准不会自动恢复。结果未知的计划不会重新执行。");
+        }
         println!(
             "控制器状态：{}；运行模式：{}。",
             controller_state_label(self.template.state),
@@ -707,6 +782,9 @@ impl ConsoleApp {
             .into());
         }
         self.command("close_session", None)?;
+        if let Some(ledger) = &mut self.ledger {
+            ledger.invalidate_generation(self.session_generation)?;
+        }
         self.session_generation = self
             .session_generation
             .checked_add(1)
@@ -865,6 +943,7 @@ impl ConsoleApp {
             session_generation,
             json!({"plan":plan,"maximum_rx_bytes":MAX_RX_BYTES,"engineering_only":true}),
         )?;
+        self.ledger_begin(request_id, session_generation)?;
         let worker = thread::spawn(move || {
             config.execute(address, &request, &plan, &authorization, &signal)
         });
@@ -906,6 +985,15 @@ impl ConsoleApp {
         }
         if active.cancellation.cancelled() || active.session_generation != self.session_generation {
             let restored = result.is_ok() || matches!(&result,Err(e) if e.code=="cancelled");
+            self.ledger_finish(
+                active.request_id,
+                active.session_generation,
+                if restored {
+                    ExecutionState::Cancelled
+                } else {
+                    ExecutionState::Unknown
+                },
+            )?;
             self.audit_recognition(
                 "recognition_cancelled",
                 active.request_id,
@@ -940,6 +1028,11 @@ impl ConsoleApp {
                 {
                     return Err(invalid_input("stale recognition report").into());
                 }
+                self.ledger_finish(
+                    active.request_id,
+                    active.session_generation,
+                    ExecutionState::Completed,
+                )?;
                 self.audit_recognition("recognition_observation",active.request_id,active.session_generation,json!({"observation":report.result.observation,"archive_id":report.archive_id,"archive_error":report.archive_error,"restored":report.post_execution_sdr.healthy}))?;
                 self.template.state = ControllerState::Idle;
                 self.template.observation = report.next_observation;
@@ -966,6 +1059,11 @@ impl ConsoleApp {
                 self.submit("请依据最新紧凑识别摘要给出一个受限 RX 下一步。当前状态若为 unavailable 或 error，只返回 hold 并解释原因；未标注实验预测不能称为已确认分类。".into())?;
             }
             Err(error) => {
+                self.ledger_finish(
+                    active.request_id,
+                    active.session_generation,
+                    ExecutionState::Failed,
+                )?;
                 self.template.state = ControllerState::Faulted;
                 self.cruise.stop(CruiseStopReason::Fault);
                 self.record(format!(
@@ -999,6 +1097,7 @@ impl ConsoleApp {
             return Ok(());
         };
         let session_generation = plan.session_generation;
+        self.ledger_begin(request_id, session_generation)?;
         let canceller = executor.clone();
         let worker = thread::spawn(move || {
             let result = executor.execute(&plan, &authorization);
@@ -1148,6 +1247,7 @@ impl ConsoleApp {
         let timeout = self.sdrd_timeout.max(Duration::from_millis(500));
         let adapter = self.software_sweep_adapter(address, timeout);
         let mut engine = SweepEngine::new(adapter);
+        self.ledger_begin(plan.request_id, plan.session_generation)?;
         let worker = thread::spawn(move || engine.run(&sweep));
         self.active_sweep = Some(ActiveSweep {
             kind: ActiveSweepKind::Planned {
@@ -1243,6 +1343,7 @@ impl ConsoleApp {
         let timeout = self.sdrd_timeout.max(Duration::from_millis(500));
         let adapter = self.software_sweep_adapter(address, timeout);
         let mut engine = SweepEngine::new(adapter);
+        self.ledger_begin(plan.request_id, plan.session_generation)?;
         let worker = thread::spawn(move || engine.run(&sweep));
         self.active_sweep = Some(ActiveSweep {
             kind: ActiveSweepKind::Inspection {
@@ -1302,6 +1403,11 @@ impl ConsoleApp {
         match result {
             Ok(report) => {
                 if !self.refresh_sdr_health(true)? {
+                    self.ledger_sweep_finish(
+                        &kind,
+                        active.session_generation,
+                        ExecutionState::Failed,
+                    )?;
                     self.template.state = ControllerState::Faulted;
                     println!("扫频失败：结束后 SDR 健康或状态恢复检查未通过。");
                     if self.cruise.is_active() {
@@ -1310,6 +1416,11 @@ impl ConsoleApp {
                     }
                     return Ok(());
                 }
+                self.ledger_sweep_finish(
+                    &kind,
+                    active.session_generation,
+                    ExecutionState::Completed,
+                )?;
                 let health = self.template.observation.health.clone();
                 self.template.state = ControllerState::Idle;
                 if !matches!(&kind, ActiveSweepKind::Inspection { .. }) {
@@ -1428,6 +1539,7 @@ impl ConsoleApp {
                 }
             }
             Err(error) => {
+                self.ledger_sweep_finish(&kind, active.session_generation, ExecutionState::Failed)?;
                 self.template.state = ControllerState::Holding;
                 match kind {
                     ActiveSweepKind::Initial => {
@@ -1466,13 +1578,19 @@ impl ConsoleApp {
         Ok(())
     }
 
-    fn reject(&mut self) {
+    fn reject(&mut self) -> AppResult<()> {
         if let Some(plan) = self.pending.take() {
+            self.ledger_finish(
+                plan.request_id,
+                plan.session_generation,
+                ExecutionState::Cancelled,
+            )?;
             self.record(format!("rejected request {}", plan.request_id));
             println!("已拒绝 request={}。", plan.request_id);
         } else {
             println!("没有等待拒绝的计划。")
         }
+        Ok(())
     }
 
     fn poll_execution(&mut self) -> AppResult<()> {
@@ -1495,6 +1613,11 @@ impl ConsoleApp {
         self.executor = Some(executor);
         match result {
             Ok(observation) => {
+                self.ledger_finish(
+                    request_id,
+                    active.session_generation,
+                    ExecutionState::Completed,
+                )?;
                 self.record(format!("executed request {request_id}"));
                 self.template.observation.age_ms = 0;
                 self.template.observation.health = observation
@@ -1526,6 +1649,11 @@ impl ConsoleApp {
                 }
             }
             Err(error) => {
+                self.ledger_finish(
+                    request_id,
+                    active.session_generation,
+                    ExecutionState::Failed,
+                )?;
                 self.record(format!("execution failed request {request_id}: {error}"));
                 println!("执行失败：{error}");
                 if self.cruise.is_active() && !self.refresh_sdr_health(true)? {
@@ -1990,6 +2118,11 @@ impl ConsoleApp {
             if frame.get("type").and_then(Value::as_str) == Some("response")
                 && frame.get("command_id").and_then(Value::as_u64) == Some(command_id)
             {
+                if self.ledger.is_some()
+                    && frame.get("protocol_version").and_then(Value::as_u64) != Some(2)
+                {
+                    return Err(invalid_input("durable response requires protocol v2").into());
+                }
                 if frame.get("session_generation").and_then(Value::as_u64)
                     != Some(self.session_generation)
                 {
@@ -2013,11 +2146,17 @@ impl ConsoleApp {
     fn send_session_command(&mut self, kind: &str, context: Option<PlanRequest>) -> AppResult<u64> {
         let command_id = self.client.next_command_id();
         let mut command = json!({
-            "protocol_version": 1,
+            "protocol_version": if self.ledger.is_some() {2} else {1},
             "command_id": command_id,
             "session_generation": self.session_generation,
             "type": kind,
         });
+        if kind == "open_session" {
+            if let Some(ledger) = &self.ledger {
+                command["app_session_id"] = json!(ledger.app_session_id());
+                command["controller_epoch"] = json!(ledger.epoch());
+            }
+        }
         if let Some(context) = context {
             command["context"] = serde_json::to_value(context)?;
         }
@@ -2026,6 +2165,10 @@ impl ConsoleApp {
     }
 
     fn handle_frame(&mut self, frame: Value) -> AppResult<()> {
+        if self.ledger.is_some() && frame.get("protocol_version").and_then(Value::as_u64) != Some(2)
+        {
+            return Err(invalid_input("durable frame requires protocol v2").into());
+        }
         match frame.get("type").and_then(Value::as_str) {
             Some("event") => self.handle_event(frame),
             Some("response") => self.handle_session_response(frame),
@@ -2110,6 +2253,10 @@ impl ConsoleApp {
                 println!("上游停止请求被拒绝：{error}");
             }
             PendingSessionCommand::Abort => {}
+            PendingSessionCommand::LedgerAck if !success => {
+                return Err(invalid_input("durable acknowledgement was rejected").into())
+            }
+            PendingSessionCommand::LedgerAck => {}
         }
         Ok(())
     }
@@ -2124,6 +2271,35 @@ impl ConsoleApp {
             return Ok(());
         }
         match frame.get("event").and_then(Value::as_str).unwrap_or("") {
+            "plan_status_query" => {
+                let ledger = self
+                    .ledger
+                    .as_ref()
+                    .ok_or_else(|| invalid_input("durable status is disabled"))?;
+                let plan_id = frame
+                    .pointer("/data/plan_id")
+                    .and_then(Value::as_str)
+                    .ok_or_else(|| invalid_input("missing status plan id"))?;
+                let hash = frame
+                    .pointer("/data/hash")
+                    .and_then(Value::as_str)
+                    .ok_or_else(|| invalid_input("missing status hash"))?;
+                let (decision, execution) = match ledger.get(plan_id) {
+                    Some(record) if record.identity.hash == hash => {
+                        (json!(record.decision), json!(record.execution))
+                    }
+                    Some(_) => {
+                        return Err(
+                            invalid_input("status hash conflicts with reception decision").into(),
+                        )
+                    }
+                    None => (json!("unknown"), json!("unknown")),
+                };
+                let command_id = self.client.next_command_id();
+                self.client.write(&json!({"protocol_version":2,"command_id":command_id,"session_generation":self.session_generation,"type":"plan_status","plan_id":plan_id,"hash":hash,"decision":decision,"execution_state":execution}))?;
+                self.pending_session_commands
+                    .insert(command_id, PendingSessionCommand::LedgerAck);
+            }
             "thinking_start" | "thinking_delta" | "thinking_end" => {
                 let data = frame
                     .get("data")
@@ -2166,17 +2342,104 @@ impl ConsoleApp {
                         .cloned()
                         .ok_or_else(|| invalid_input("missing plan"))?,
                 )?;
+                let delivery = if let Some(ledger) = &mut self.ledger {
+                    let identity: PlanIdentity =
+                        serde_json::from_value(frame.get("delivery").cloned().ok_or_else(
+                            || invalid_input("durable proposal missing delivery identity"),
+                        )?)?;
+                    let expected_hash = response
+                        .action
+                        .as_ref()
+                        .map(serde_json::to_value)
+                        .transpose()?
+                        .map(|value| action_hash(&value))
+                        .transpose()?;
+                    if frame.get("protocol_version").and_then(Value::as_u64) != Some(2)
+                        || identity.request_id != response.request_id
+                        || identity.session_generation != response.session_generation
+                        || expected_hash.as_deref() != Some(identity.hash.as_str())
+                    {
+                        return Err(invalid_input("durable proposal identity/hash mismatch").into());
+                    }
+                    if let Some(record) = ledger.get(&identity.plan_id) {
+                        let decision = record.decision;
+                        ledger.admit(identity.clone(), decision, false)?;
+                        self.send_ledger_ack(&identity, decision)?;
+                        return Ok(());
+                    }
+                    if identity.controller_epoch != ledger.epoch()
+                        || identity.app_session_id != ledger.app_session_id()
+                    {
+                        return Err(invalid_input("stale durable Controller identity").into());
+                    }
+                    Some(identity)
+                } else {
+                    if frame.get("delivery").is_some() {
+                        return Err(invalid_input("durable delivery is disabled").into());
+                    }
+                    None
+                };
                 let mut request = self
                     .requests
                     .get(&response.request_id)
                     .cloned()
                     .ok_or_else(|| invalid_input("plan refers to an unknown request"))?;
                 refresh_recognizer(&mut request, self.recognizer.as_mut());
-                let plan = if let Some(config) = &self.engineering_recognition {
-                    config.validate_plan(&request, response)?
-                } else {
-                    ControllerPolicy.validate_response(&request, response)?
+                let validation: AppResult<ValidatedPlan> =
+                    if let Some(config) = &self.engineering_recognition {
+                        config.validate_plan(&request, response).map_err(Into::into)
+                    } else {
+                        ControllerPolicy
+                            .validate_response(&request, response)
+                            .map_err(Into::into)
+                    };
+                let plan = match validation {
+                    Ok(plan)
+                        if self.deferred_renew.is_none()
+                            && delivery.as_ref().map_or(true, |id| {
+                                id.deadline_unix_ms
+                                    > sdr_agent_controller::recognition_execution::now_ms()
+                            }) =>
+                    {
+                        plan
+                    }
+                    result => {
+                        if let Some(identity) = delivery {
+                            self.ledger.as_mut().unwrap().admit(
+                                identity.clone(),
+                                Decision::Rejected,
+                                false,
+                            )?;
+                            self.send_ledger_ack(&identity, Decision::Rejected)?;
+                            println!("计划被实时策略或停止门拒绝；不会执行。");
+                            return Ok(());
+                        }
+                        match result {
+                            Err(error) => return Err(error),
+                            Ok(_) => return Ok(()),
+                        }
+                    }
                 };
+                if let Some(identity) = &delivery {
+                    let pending = self.cruise.mode() == InteractionMode::StepApproval
+                        || plan.approval_required;
+                    self.ledger.as_mut().unwrap().admit(
+                        identity.clone(),
+                        Decision::Accepted,
+                        pending,
+                    )?;
+                    self.send_ledger_ack(identity, Decision::Accepted)?;
+                }
+                if matches!(
+                    &plan.action,
+                    ProposedAction::Hold { .. } | ProposedAction::StopSession { .. }
+                ) {
+                    self.ledger_finish(
+                        plan.request_id,
+                        plan.session_generation,
+                        ExecutionState::Completed,
+                    )?;
+                }
                 let decision_basis = describe_decision_basis(&plan, &request);
                 let requires_early_abort = matches!(
                     &plan.action,
@@ -2468,6 +2731,21 @@ fn require_web_event_keys(
         return Err(invalid_input("web search event contains unexpected fields").into());
     }
     Ok(())
+}
+
+fn open_console_ledger(session_path: Option<&Path>) -> AppResult<Option<PlanLedger>> {
+    let Some(root) = env::var_os("SDR_DURABLE_CONTROLLER_DIR") else {
+        return Ok(None);
+    };
+    let root = PathBuf::from(root);
+    if root.as_os_str().is_empty() {
+        return Err(invalid_input("empty durable Controller directory").into());
+    }
+    let app_id = match session_path {
+        Some(path) => format!("session_{}", action_hash(&json!(path.to_string_lossy()))?),
+        None => format!("terminal_{}", fresh_epoch()?),
+    };
+    Ok(Some(PlanLedger::open(&root.join(&app_id), &app_id)?))
 }
 
 struct SessionClient {
@@ -3305,6 +3583,7 @@ mod tests {
                 next_request_id: 2,
                 session_generation: 1,
                 pending: None,
+                ledger: None,
                 requests: HashMap::new(),
                 pending_session_commands: HashMap::new(),
                 history: VecDeque::new(),
@@ -3982,5 +4261,86 @@ mod tests {
             assert!(app.pending.is_none());
             assert!(app.active_execution.is_none());
         }
+    }
+    fn durable_frame(app: &ConsoleApp, action: Value) -> Value {
+        json!({"protocol_version":2,"type":"event","session_generation":1,"event":"plan_proposed",
+          "delivery":{"plan_id":"a0000000-0000-0000-0000-000000000001","hash":action_hash(&action).unwrap(),"app_session_id":"test_app","controller_epoch":app.ledger.as_ref().unwrap().epoch(),"session_generation":1,"request_id":7,"deadline_unix_ms":unix_time_ms().unwrap()+30_000},
+          "data":{"protocol_version":1,"request_id":7,"session_generation":1,"status":"ok","planner":{"provider":"test","model":"hold"},"action":action}})
+    }
+
+    #[test]
+    fn durable_duplicate_returns_stored_ack_after_requests_are_cleared() {
+        let root = terminal_state_test_path("durable-idempotent")
+            .parent()
+            .unwrap()
+            .to_owned();
+        let (mut app, _peer) = test_console();
+        app.ledger = Some(PlanLedger::open(&root, "test_app").unwrap());
+        app.requests.insert(7, test_request(7, 1));
+        let frame = durable_frame(&app, json!({"kind":"hold","reason":"safe"}));
+        app.handle_event(frame.clone()).unwrap();
+        let history = app.history.clone();
+        app.requests.clear();
+        app.handle_event(frame.clone()).unwrap();
+        assert_eq!(history, app.history);
+        assert!(app.pending.is_none());
+        assert!(app.active_execution.is_none());
+        assert!(app.active_sweep.is_none());
+        assert_eq!(
+            app.ledger
+                .as_ref()
+                .unwrap()
+                .get(
+                    frame
+                        .pointer("/delivery/plan_id")
+                        .unwrap()
+                        .as_str()
+                        .unwrap()
+                )
+                .unwrap()
+                .execution,
+            ExecutionState::Completed
+        );
+        let mut conflict = frame;
+        conflict["data"]["action"]["reason"] = json!("changed");
+        assert!(app.handle_event(conflict).is_err());
+        drop(app);
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn durable_stop_fence_rejects_plan_before_approval_or_hardware() {
+        let root = terminal_state_test_path("durable-stop")
+            .parent()
+            .unwrap()
+            .to_owned();
+        let (mut app, _peer) = test_console();
+        app.ledger = Some(PlanLedger::open(&root, "test_app").unwrap());
+        app.requests.insert(7, test_request(7, 1));
+        app.deferred_renew = Some((ControllerState::Holding, "stop".into()));
+        let frame = durable_frame(
+            &app,
+            json!({"kind":"survey_band","start_hz":433000000,"stop_hz":434000000,"step_hz":500000,"sample_rate_hz":3000000,"rf_bandwidth_hz":1500000,"dwell_ms":10}),
+        );
+        app.handle_event(frame.clone()).unwrap();
+        assert!(app.pending.is_none());
+        assert!(app.active_sweep.is_none());
+        assert_eq!(
+            app.ledger
+                .as_ref()
+                .unwrap()
+                .get(
+                    frame
+                        .pointer("/delivery/plan_id")
+                        .unwrap()
+                        .as_str()
+                        .unwrap()
+                )
+                .unwrap()
+                .decision,
+            Decision::Rejected
+        );
+        drop(app);
+        fs::remove_dir_all(root).unwrap();
     }
 }

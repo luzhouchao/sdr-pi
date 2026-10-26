@@ -44,13 +44,14 @@ export class DurablePlanner {
 
   constructor({ path, models, model, providerIdentity, runLease, deliver, streamAdapter,
     secrets = [], contextWindow = 32_768, thresholdPercent = 90, now = Date.now,
-    maxBytes = 64 * 1024 * 1024, onReport = () => {}, beforeDelivery = async () => {} }) {
+    maxBytes = 64 * 1024 * 1024, onReport = () => {}, onProgress = () => {}, beforeDelivery = async () => {} }) {
     if (!runLease || typeof deliver !== "function") throw new Error("Controller delivery and shared RunLease required");
     this.path = path; this.models = models; this.model = model;
     this.provider = digest(providerIdentity); this.runLease = runLease; this.deliver = deliver;
     this.streamAdapter = streamAdapter; this.secrets = secrets; this.contextWindow = contextWindow;
     this.thresholdPercent = thresholdPercent; this.now = now; this.maxBytes = maxBytes;
     this.onReport = onReport; this.beforeDelivery = beforeDelivery;
+    this.onProgress = onProgress;
     this.attachments = new Map(); this.release = undefined; this.admissions = 0; this.revision = 0;
     this.joining = undefined; this.failed = false; this.closed = false; this.commands = Promise.resolve();
   }
@@ -257,11 +258,20 @@ export class DurablePlanner {
     try { return await action(); }
     finally {
       this.admissions--;
-      if (!this.joining) {
-        this.joining = this.#join().finally(() => { this.joining = undefined; });
-        this.joining.catch(() => { this.failed = true; });
-      }
+      this.#ensureJoin();
     }
+  }
+
+  #ensureJoin() {
+    if (this.joining) return;
+    const pending = this.#join();
+    this.joining = pending;
+    pending.then(() => {
+      if (this.joining === pending) this.joining = undefined;
+      // An admission can acquire a fresh lease between the old join releasing
+      // its lease and this completion microtask. Join that run as well.
+      if (this.release && !this.failed && !this.closed) this.#ensureJoin();
+    }, () => { this.failed = true; });
   }
 
   async #join() {
@@ -274,37 +284,54 @@ export class DurablePlanner {
     }
   }
 
-  #stream(model, context, options) {
+  #streamError(output, model, options, error) {
+    const message = { role: "assistant", content: [], api: model.api, provider: model.provider, model: model.id,
+      usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } },
+      stopReason: options.signal?.aborted ? "aborted" : "error", errorMessage: formatUpstreamError(error, this.secrets), timestamp: this.now() };
+    output.push({ type: "error", reason: message.stopReason, error: message }); output.end();
+  }
+
+  #providerStream(model, context, options, input) {
     const output = new AssistantMessageEventStream();
     void (async () => {
       try {
-        const input = envelope(context.messages);
-        // Identity is looked up by the immutable key, never a mutable currentContext.
+        // This guard runs for EVERY physical provider call, including each
+        // Spark host-search turn. Adapter loops cannot bypass identity/budget.
         const attached = this.attachments.get(input.appSessionId);
         if (!attached) throw new Error("request attachment missing");
-        const business = await this.harness.snapshot(Business, attached.conversationId, ctx);
-        this.#eligible(business, input.key);
-        await this.#commit(async (tx) => {
+        await this.#commit(async tx => {
           const doc = await tx.doc(Business, attached.conversationId);
           const request = this.#eligible(doc, input.key);
           if (request.toolCallId || request.modelAttempts >= 4 || request.hash !== digest(input)) throw new Error("request interrupted or model attempt budget exhausted");
           request.modelAttempts++;
         });
         if (options.signal?.aborted) throw new Error("request aborted");
-        const base = (m, c, o) => this.models.streamSimple(m, c, { ...o,
-          maxRetries: 0, onPayload: o.onPayload ?? ((payload) => requireSubmitPlan(payload, m.api)) });
-        const stream = this.streamAdapter ? this.streamAdapter(base)(model, context, options) : base(model, context, options);
-        for await (const event of stream) {
+        for await (const event of this.models.streamSimple(model, context, { ...options, maxRetries: 0,
+          onPayload: options.onPayload ?? (payload => requireSubmitPlan(payload, model.api)) })) {
           if (event.type === "error") event.error.errorMessage = formatUpstreamError(event.error.errorMessage, this.secrets);
           output.push(event);
         }
         output.end();
-      } catch (error) {
-        const message = { role: "assistant", content: [], api: model.api, provider: model.provider, model: model.id,
-          usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } },
-          stopReason: options.signal?.aborted ? "aborted" : "error", errorMessage: formatUpstreamError(error, this.secrets), timestamp: this.now() };
-        output.push({ type: "error", reason: message.stopReason, error: message }); output.end();
-      }
+      } catch (error) { this.#streamError(output, model, options, error); }
+    })();
+    return output;
+  }
+
+  #stream(model, context, options = {}) {
+    const output = new AssistantMessageEventStream();
+    void (async () => {
+      try {
+        const input = envelope(context.messages);
+        const identity = { appSessionId: input.appSessionId, requestId: input.context.request_id };
+        const base = (m, c, o = {}) => this.#providerStream(m, c, o, input);
+        const stream = this.streamAdapter ? this.streamAdapter(base, identity)(model, context, options) : base(model, context, options);
+        for await (const event of stream) {
+          if (event.type === "error") event.error.errorMessage = formatUpstreamError(event.error.errorMessage, this.secrets);
+          this.onProgress({ ...identity, event });
+          output.push(event);
+        }
+        output.end();
+      } catch (error) { this.#streamError(output, model, options, error); }
     })();
     return output;
   }
@@ -332,7 +359,7 @@ export class DurablePlanner {
     this.#eligible(business, proposal.key, proposal.planId);
     if (context.abortSignal?.aborted) throw new Error("delivery gate closed");
     try {
-      const ack = await this.deliver({ ...proposal, controllerEpoch: business.epoch, sessionGeneration: business.generation, appSessionId: business.appSessionId });
+      const ack = await this.deliver({ ...proposal, controllerEpoch: business.epoch, sessionGeneration: business.generation, appSessionId: business.appSessionId, deadlineUnixMs:business.requests[proposal.key].deadline });
       await api.commit(async (tx) => {
         const doc = await tx.doc(Business, api.conversationId);
         const record = doc.requests[proposal.key];
@@ -353,6 +380,48 @@ export class DurablePlanner {
     const index = await this.harness.snapshot(Index, ctx);
     const id = index?.sessions[appSessionId];
     return id ? this.harness.snapshot(Business, id, ctx) : undefined;
+  }
+
+  async blocked(appSessionId) {
+    const a = this.attachments.get(appSessionId);
+    if (!a) throw new Error("session not attached");
+    const view = await this.harness.inspect(ctx);
+    return view.tasks.filter(t => t.record.conversationId === a.conversationId && t.state.kind === "blocked")
+      .slice(0, 16).map(t => ({ reason: t.state.reason }));
+  }
+
+  async acknowledge(appSessionId, { plan_id, hash, state }) {
+    const a = this.attachments.get(appSessionId);
+    if (!a || a.closing || !["accepted", "rejected"].includes(state)) throw new Error("invalid acknowledgement attachment");
+    await this.#commit(async tx => {
+      const business = await tx.doc(Business, a.conversationId);
+      const request = Object.values(business.requests).find(r => r.proposal?.planId === plan_id);
+      if (!request || request.proposal.hash !== hash) throw new Error("unknown acknowledgement identity");
+      if (["accepted", "rejected"].includes(request.proposal.state)) {
+        if (request.proposal.state !== state) throw new Error("conflicting acknowledgement decision");
+        return;
+      }
+      if (request.proposal.state !== "unknown") throw new Error("proposal is not awaiting reconciliation");
+      request.proposal.state = state;
+      request.enabled = false;
+      request.reason = "proposal_finalized";
+    });
+  }
+
+  // Reconciliation records the Controller's answer only. It grants no request
+  // eligibility, restores no approval and never schedules or resends a plan.
+  async reconcile(appSessionId, { plan_id, hash, decision, execution_state }) {
+    const a = this.attachments.get(appSessionId);
+    if (!a || a.closing) throw new Error("session not attached");
+    if (!["accepted", "rejected", "unknown"].includes(decision) || !["accepted", "pending_approval", "executing", "completed", "failed", "cancelled", "unknown"].includes(execution_state)) throw new Error("invalid Controller status");
+    await this.#commit(async tx => {
+      const business = await tx.doc(Business, a.conversationId);
+      const request = Object.values(business.requests).find(r => r.proposal?.planId === plan_id);
+      if (!request || request.proposal.hash !== hash || request.enabled) throw new Error("status has no disabled matching proposal");
+      request.proposal.controllerExecution = execution_state;
+      request.proposal.state = decision;
+      request.reason = decision === "unknown" ? "reconciliation_required" : "reconciliation_complete";
+    });
   }
 
   clearQueue(appSessionId) { return this.#command(() => this.#clearQueue(appSessionId)); }
@@ -416,7 +485,7 @@ export class DurablePlanner {
     await this.abort(appSessionId);
   }
 
-  async idle() { if (this.joining) await this.joining; }
+  async idle() { while (this.joining) await this.joining; }
 
   // Process close deliberately does not claim to cancel work. Every reopen
   // revokes persisted capabilities before any scheduler entry point.

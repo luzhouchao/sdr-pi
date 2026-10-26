@@ -3,6 +3,7 @@ pub mod batch_recognition;
 mod bounded_audit;
 pub mod execution;
 pub mod live_recognition;
+pub mod plan_ledger;
 pub mod planner;
 pub mod policy;
 pub mod protocol;
