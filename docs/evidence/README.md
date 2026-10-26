@@ -360,3 +360,5 @@
 - [pi-durable实际部署、思考兼容、回滚与清理](PI_DURABLE_DEPLOYMENT_2026-10-26.json)
 
 - [pi-durable真实Web两点扫频、双端账本与RF恢复](PI_DURABLE_WEB_SWEEP_2026-10-26.json)
+
+- [pi-durable两轮有界巡航、结束事件/唯一编号修复及结果恢复](PI_DURABLE_AUTO_CRUISE_2026-10-26.json)

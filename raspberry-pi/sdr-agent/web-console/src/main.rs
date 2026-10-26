@@ -3353,6 +3353,28 @@ mod tests {
     }
 
     #[test]
+    fn restarted_request_results_remain_distinct_and_replays_are_idempotent() {
+        let root = temporary_test_directory("restarted-results");
+        fs::create_dir_all(&root).unwrap();
+        let database = root.join("results.sqlite3");
+        initialize_result_database(&database).unwrap();
+        let mut first = sweep_plot();
+        first.sweep_id = "request-0123456789abcdef0123456789abcdef-1".into();
+        let mut restarted = first.clone();
+        restarted.sweep_id = "request-fedcba9876543210fedcba9876543210-1".into();
+        for plot in [&first, &restarted, &restarted] {
+            persist_capture_result(&database, "session-1", plot).unwrap();
+        }
+        let summaries = load_capture_result_summaries(&database).unwrap();
+        assert_eq!(summaries.len(), 2);
+        for summary in summaries {
+            let detail = load_capture_result(&database, summary.id).unwrap();
+            assert!(detail.sweep_plot == first || detail.sweep_plot == restarted);
+        }
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
     fn managed_sigmf_validation_and_delete_stay_inside_capture_root() {
         let root = temporary_test_directory("managed-dataset");
         let capture_root = root.join("captures");

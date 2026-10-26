@@ -69,13 +69,16 @@ export class DurableSessionRuntime {
           return makeSessionResponse(command,true,{cleared});
         }
         case 'abort': {
+          const wasActive=this.active;
           // Close the delivery fence and unblock tool ACK waits before joining.
           this.closing=true;this.#rejectPending();
           await this.engine.abort(this.identity.appSessionId);
           await this.monitor;
           await this.engine.attach(this.identity);
           this.closing=false;
-          this.#event('agent_end');
+          // A natural completion may reach the Controller before its abort
+          // command comes back. Do not report that same run ending twice.
+          if(wasActive)this.#event('agent_end');
           return makeSessionResponse(command,true,{abort_requested:true});
         }
         case 'get_state': return makeSessionResponse(command,true,await this.#state());

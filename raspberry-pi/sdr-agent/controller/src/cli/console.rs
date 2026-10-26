@@ -1216,7 +1216,7 @@ impl ConsoleApp {
             return Ok(());
         }
         let sweep = SweepPlan {
-            sweep_id: format!("request-{}", plan.request_id),
+            sweep_id: execution_sweep_id("request", plan.request_id)?,
             session_generation: plan.session_generation,
             frequencies: SweepFrequencies::Range {
                 start_hz,
@@ -1315,7 +1315,7 @@ impl ConsoleApp {
             return Ok(());
         }
         let sweep = SweepPlan {
-            sweep_id: format!("inspect-{}", plan.request_id),
+            sweep_id: execution_sweep_id("inspect", plan.request_id)?,
             session_generation: plan.session_generation,
             frequencies: SweepFrequencies::Centers {
                 centers_hz: vec![center_hz],
@@ -2733,6 +2733,12 @@ fn require_web_event_keys(
     Ok(())
 }
 
+// Request counters and generations can repeat across process restarts. Result
+// identity must remain distinct even when the same business session is reopened.
+fn execution_sweep_id(kind: &str, request_id: u64) -> std::io::Result<String> {
+    Ok(format!("{kind}-{}-{request_id}", fresh_epoch()?))
+}
+
 fn open_console_ledger(session_path: Option<&Path>) -> AppResult<Option<PlanLedger>> {
     let Some(root) = env::var_os("SDR_DURABLE_CONTROLLER_DIR") else {
         return Ok(None);
@@ -3663,6 +3669,18 @@ mod tests {
                 rx_input: None,
             },
             next_observation: next,
+        }
+    }
+
+    #[test]
+    fn sweep_result_ids_are_unique_when_request_counters_restart() {
+        let first = execution_sweep_id("request", 1).unwrap();
+        let restarted = execution_sweep_id("request", 1).unwrap();
+        assert_ne!(first, restarted);
+        for kind in ["request", "inspect"] {
+            let id = execution_sweep_id(kind, u64::MAX).unwrap();
+            assert!(id.len() <= 64);
+            assert!(id.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-'));
         }
     }
 

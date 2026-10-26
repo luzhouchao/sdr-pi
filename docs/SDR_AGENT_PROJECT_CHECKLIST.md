@@ -207,6 +207,12 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
         DeepSeek保留思考的已安装制品隔离hold完成（约4.4秒），无SDR执行器。
         清理和制品登记见同一验证P3章节；后续Web实机验收见下项。
 
+- [x] 2026-10-26有界自动巡航及用户要求的重试：各8步/120秒/1MiB，实收36/38频点，
+      每轮均8条accepted/completed；重试无多余retry提示。修复空闲abort重复结束及重启请求号覆盖Web结果，
+      按原封存结果/两轮API快照恢复历史，IQ字节不变；Planner r4及Controller r4已部署并切回验证。
+      Node108/Controller140/Web38、格式/Clippy、实际浏览器、RF19项恢复与临时清理通过；
+      最终巡航空闲、Spectrum仍暂停。见[巡航验证](validation/PI_DURABLE_CORE_2026-10-26.md#有界自动巡航与重试2026-10-26)。
+
 - [x] 2026-10-26 Pi SDK 0.84.4→1.4.0兼容升级：Pi/TypeBox锁文件、
       系统消息内工具声明、压缩时规则保留、Spark JSON适配及旧OpenCode选择兼容；
       隔离真实SDK/模拟HTTP测试、AGX独立版本部署/健康检查和0.84.4切回通过。

@@ -1,17 +1,24 @@
 # pi-durable 接入与运维
 
-状态：P0—P3已实现并在AGX安装，保留思考；随后生产Web真实两点扫频已验收。日期：2026-10-26。
+状态：P0—P3已实现并在AGX安装，保留思考；随后生产Web两点扫频与两轮有界自动巡航已验收。日期：2026-10-26。
 进展和边界见[隔离核心验证](../validation/PI_DURABLE_CORE_2026-10-26.md)。
 下文设计基线/讨论保留当时语境；当前安装与运维以上方状态及以下运维段为准。
 基线为 `490d83e9efda50c867ec16df124d0b805b7b486c`，分支 `codex/sdr-improvements`。
 背景对话为 `01a1774c-5117-71f0-9de9-192cbd48a2c0`（确认 Pi 与 pi-d 工具）。
 
+自动巡航已实测每轮8步/120秒/1MiB硬预算，两轮分别36/38频点，最终均用完步数退出。
+空闲abort不重复发送结束事件；Controller实际执行的request/inspect结果ID增加128位随机epoch，
+避免进程重启后请求计数重用覆盖Web历史。同一结果消息重放仍幂等。
+已覆盖历史索引按封存结果与两轮API快照恢复，原SigMF不变；见
+[巡航验证](../validation/PI_DURABLE_CORE_2026-10-26.md#有界自动巡航与重试2026-10-26)。
+当前空闲，Spectrum连续任务保持暂停，不因服务重启恢复巡航。
+
 ## 当前安装与离线维护
 
-Planner为 `planner/releases/pi-durable-1.4.0-20261026-r3`，通过 `planner/current` 选择；
-Controller/Web制品为 `releases/pi-durable-1.4.0-20261026`，根均在
+Planner为 `planner/releases/pi-durable-1.4.0-20261026-r4`，通过 `planner/current` 选择；
+Controller制品为 `releases/pi-durable-1.4.0-20261026-r4`，Web保持 `releases/pi-durable-1.4.0-20261026`，根均在
 `/home/jetson/.local/lib/sdrharness/`。精确大小、SHA、回滚和清理见
-[部署验证](../validation/PI_DURABLE_CORE_2026-10-26.md#p3持久目录维护与实际部署)。
+[部署验证](../validation/PI_DURABLE_CORE_2026-10-26.md#p3持久目录维护与实际部署)及[巡航修复](../validation/PI_DURABLE_CORE_2026-10-26.md#有界自动巡航与重试2026-10-26)。
 
 - Planner unit设置 `SDR_DURABLE_STATE_DIR=/var/lib/sdrharness-planner`，0700；
   `service.sqlite` 的独占owner锁在触碰socket前取得。每业务会话独立

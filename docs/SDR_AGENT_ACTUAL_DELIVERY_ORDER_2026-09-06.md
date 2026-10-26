@@ -12,7 +12,8 @@
 DeepSeek思考保持开启，命名工具兼容改为自动选择，真实隔离hold已通过。
 用户随后要求实际走扫频：已用生产Web完成一次2455/2456MHz两点RX，
 真实模型计划/批准/存储/结果页、双端账本completed及RF恢复均通过，最终停止。
-本接入与本轮Web实机单元收束；Spectrum连续扫频仍暂停，不自动扩展扫描或巡航。见[实施方案](reference/PI_DURABLE_INTEGRATION.md)
+用户随后开启自动巡航并重试：两轮各8步，36/38频点，分别589824/622592字节IQ，均达到步数上限退出。
+结束事件与跨重启结果编号修复已部署，历史索引已恢复。当前巡航空闲，Spectrum连续扫频仍暂停；不自动扩展新的RF轮次。见[实施方案](reference/PI_DURABLE_INTEGRATION.md)
 及[本单元验证](validation/PI_DURABLE_CORE_2026-10-26.md)。
 
 此前用户选择先完成Pi SDK兼容升级，0.84.4→1.4.0已完成，

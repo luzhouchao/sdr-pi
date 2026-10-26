@@ -1,0 +1,2929 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "feature": "pd-auto-1026",
+  "source_base_commit": "f41ecf3",
+  "authorization": "User enabled adaptive cruise then explicitly requested retry. Each run independently bounded at 8 steps / 120 seconds / 1048576 IQ bytes. No additional RF after these two runs.",
+  "thinking": "DeepSeek low thinking retained; tool_choice auto; submit_plan only; Controller policy gates unchanged",
+  "runs": [
+    {
+      "name": "initial",
+      "plan": {
+        "max_steps": 8,
+        "max_duration_seconds": 120,
+        "hard_maximum_rx_bytes": 1048576,
+        "hard_maximum_4096_sample_points": 64,
+        "requested_maximum_points_per_step": 5,
+        "requested_maximum_iq_bytes_8_steps": 655360,
+        "initial_centers_hz": [
+          2450000000,
+          2455000000,
+          2460000000
+        ],
+        "mission_frequency_range_hz": [
+          2445000000,
+          2465000000
+        ],
+        "controller_policy_frequency_envelope_hz": [
+          70000000,
+          6000000000
+        ],
+        "frequency_range_source": "mission plus existing Controller policy, not a newly installed hard frequency fence",
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "gain_db": 20,
+        "settle_ms": 20,
+        "samples_per_point": 4096,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 250,
+        "scan_formula_max_ms_per_requested_step": 1350,
+        "estimated_hardware_seconds_per_requested_step": 4,
+        "controller_sweep_settle_hard_max_ms": 1000,
+        "hardware_hard_fallback_formula_ms_max_64_points": 80000,
+        "planner_per_request_deadline_ms": 30000,
+        "save_iq": true,
+        "agx_free_bytes": 706657341440,
+        "agx_temporary": "/var/tmp/sdrharness-dev/pd-auto-1026",
+        "application_result_root": "/var/lib/sdrharness/web-console/captures/session-1789273063753",
+        "p201_temporary_pattern": "/tmp/sdr-agent-dev/agx-sweep-<actual-generation>-<point-index>; inline cleanup verified",
+        "stop": "Web immediate stop /stop, or same session command API; independent sdr-agent --mode cancel --session-generation ACTUAL --sdrd 192.168.1.10:43110",
+        "command": "/auto start --steps 8 --seconds 120 --mib 1 在2445至2465MHz范围进行自适应扫频，只用survey_band或stop_session。首轮start_hz=2450000000,stop_hz=2460000000,step_hz=5000000。后续根据最新实测功率、噪声、候选自动选下一段或细化，单轮最多5点；保持sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20和固定增益20dB。无候选时换相邻位置，不凭空报告信号；不要识别、发射或单独capture_bounded_iq。"
+      },
+      "result_count": 8,
+      "points": 36,
+      "iq_bytes": 589824,
+      "candidate_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "results": [
+        {
+          "summary": {
+            "id": 24,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-9",
+            "kind": "planned",
+            "created_at_ms": 1793017931807,
+            "point_count": 4,
+            "candidate_count": 0,
+            "elapsed_ms": 1214,
+            "gain_db": 20,
+            "noise_floor_dbfs": -52.633125,
+            "iq_bytes": 65536
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-9",
+            "kind": "planned",
+            "elapsed_ms": 1214,
+            "gain_db": 20,
+            "noise_floor_dbfs": -52.633125,
+            "points": [
+              [
+                2445000000,
+                -53.264545
+              ],
+              [
+                2445500000,
+                -52.633125
+              ],
+              [
+                2446000000,
+                -53.9336
+              ],
+              [
+                2446500000,
+                -47.70845
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-9-1793013963100-1793017930539875499.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-9-1793013963100-1793017930539875499.sigmf-meta",
+              "bytes": 65536
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 23,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-8",
+            "kind": "planned",
+            "created_at_ms": 1793017919355,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1284,
+            "gain_db": 20,
+            "noise_floor_dbfs": -36.75512,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-8",
+            "kind": "planned",
+            "elapsed_ms": 1284,
+            "gain_db": 20,
+            "noise_floor_dbfs": -36.75512,
+            "points": [
+              [
+                2445000000,
+                -31.099861
+              ],
+              [
+                2446000000,
+                -30.486248
+              ],
+              [
+                2447000000,
+                -36.75512
+              ],
+              [
+                2448000000,
+                -53.655594
+              ],
+              [
+                2449000000,
+                -53.213066
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793013963100-1793017918039005117.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793013963100-1793017918039005117.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 22,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-7",
+            "kind": "planned",
+            "created_at_ms": 1793017910954,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1296,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.461723,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-7",
+            "kind": "planned",
+            "elapsed_ms": 1296,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.461723,
+            "points": [
+              [
+                2446000000,
+                -53.572857
+              ],
+              [
+                2446250000,
+                -53.461723
+              ],
+              [
+                2446500000,
+                -53.409588
+              ],
+              [
+                2446750000,
+                -53.5964
+              ],
+              [
+                2447000000,
+                -53.35112
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793013963100-1793017909632337002.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793013963100-1793017909632337002.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 21,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-6",
+            "kind": "planned",
+            "created_at_ms": 1793017903293,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1324,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.645515,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-6",
+            "kind": "planned",
+            "elapsed_ms": 1324,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.645515,
+            "points": [
+              [
+                2445000000,
+                -53.534126
+              ],
+              [
+                2445500000,
+                -53.645515
+              ],
+              [
+                2446000000,
+                -53.95328
+              ],
+              [
+                2446500000,
+                -46.59935
+              ],
+              [
+                2447000000,
+                -53.752934
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793013963100-1793017901915757421.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793013963100-1793017901915757421.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 20,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-5",
+            "kind": "planned",
+            "created_at_ms": 1793017897332,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1308,
+            "gain_db": 20,
+            "noise_floor_dbfs": -39.083214,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-5",
+            "kind": "planned",
+            "elapsed_ms": 1308,
+            "gain_db": 20,
+            "noise_floor_dbfs": -39.083214,
+            "points": [
+              [
+                2445000000,
+                -27.909924
+              ],
+              [
+                2446000000,
+                -53.486137
+              ],
+              [
+                2447000000,
+                -28.061863
+              ],
+              [
+                2448000000,
+                -41.900932
+              ],
+              [
+                2449000000,
+                -39.083214
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793013963100-1793017895967652775.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793013963100-1793017895967652775.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 19,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-4",
+            "kind": "planned",
+            "created_at_ms": 1793017890509,
+            "point_count": 4,
+            "candidate_count": 0,
+            "elapsed_ms": 1217,
+            "gain_db": 20,
+            "noise_floor_dbfs": -36.29158,
+            "iq_bytes": 65536
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-4",
+            "kind": "planned",
+            "elapsed_ms": 1217,
+            "gain_db": 20,
+            "noise_floor_dbfs": -36.29158,
+            "points": [
+              [
+                2462000000,
+                -39.338245
+              ],
+              [
+                2463000000,
+                -49.431538
+              ],
+              [
+                2464000000,
+                -36.14667
+              ],
+              [
+                2465000000,
+                -36.29158
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793013963100-1793017889229832089.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793013963100-1793017889229832089.sigmf-meta",
+              "bytes": 65536
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 18,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-3",
+            "kind": "planned",
+            "created_at_ms": 1793017883345,
+            "point_count": 5,
+            "candidate_count": 1,
+            "elapsed_ms": 1295,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.442303,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-3",
+            "kind": "planned",
+            "elapsed_ms": 1295,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.442303,
+            "points": [
+              [
+                2458000000,
+                -53.79531
+              ],
+              [
+                2459000000,
+                -53.71043
+              ],
+              [
+                2460000000,
+                -53.442303
+              ],
+              [
+                2461000000,
+                -52.624283
+              ],
+              [
+                2462000000,
+                -38.751984
+              ]
+            ],
+            "candidates": [
+              {
+                "id": "request-3-1",
+                "start_hz": 2457000000,
+                "stop_hz": 2467000000,
+                "center_hz": 2462000000,
+                "bandwidth_hz": 10000000,
+                "peak_dbfs": -38.751984,
+                "snr_db": 14.690319,
+                "point_count": 1
+              }
+            ],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793013963100-1793017882029116170.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793013963100-1793017882029116170.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 17,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-2",
+            "kind": "planned",
+            "created_at_ms": 1793017874814,
+            "point_count": 3,
+            "candidate_count": 0,
+            "elapsed_ms": 1116,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.440514,
+            "iq_bytes": 49152
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-2",
+            "kind": "planned",
+            "elapsed_ms": 1116,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.440514,
+            "points": [
+              [
+                2450000000,
+                -53.63126
+              ],
+              [
+                2455000000,
+                -53.440514
+              ],
+              [
+                2460000000,
+                -49.51192
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793013963100-1793017873649256888.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793013963100-1793017873649256888.sigmf-meta",
+              "bytes": 49152
+            }
+          }
+        }
+      ],
+      "radio_before": {
+        "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency": "2469500000",
+        "/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency": "30720000",
+        "/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth": "30000000",
+        "/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode": "manual",
+        "/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain": "60.000000 dB",
+        "/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select": "A_BALANCED",
+        "/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode": "manual",
+        "/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain": "60.000000 dB",
+        "/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select": "A_BALANCED",
+        "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en": "0",
+        "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en": "0",
+        "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en": "0",
+        "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en": "0",
+        "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en": "0",
+        "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en": "0",
+        "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en": "0",
+        "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en": "0",
+        "/sys/bus/iio/devices/iio:device2/buffer/enable": "0",
+        "/sys/bus/iio/devices/iio:device3/buffer/enable": "0"
+      },
+      "postflight": {
+        "radio_after": {
+          "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency": "2469500000",
+          "/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency": "30720000",
+          "/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth": "30000000",
+          "/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode": "manual",
+          "/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain": "60.000000 dB",
+          "/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select": "A_BALANCED",
+          "/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode": "manual",
+          "/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain": "60.000000 dB",
+          "/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select": "A_BALANCED",
+          "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en": "0",
+          "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en": "0",
+          "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en": "0",
+          "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en": "0",
+          "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en": "0",
+          "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en": "0",
+          "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en": "0",
+          "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en": "0",
+          "/sys/bus/iio/devices/iio:device2/buffer/enable": "0",
+          "/sys/bus/iio/devices/iio:device3/buffer/enable": "0"
+        },
+        "restored": true,
+        "records": [
+          {
+            "identity": {
+              "plan_id": "128025c2-7f0c-4ebc-b255-b5e3f7723aee",
+              "hash": "4c0a7bb2b9bfd770826beea6b3763d3a466041b7dec0eff266d4daed95da832b",
+              "app_session_id": "session-1789273063753",
+              "controller_epoch": "fb290e5b6a4c4624d429cdf245c6301b",
+              "session_generation": 1793013963100,
+              "request_id": 5,
+              "deadline_unix_ms": 1793017920519
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          {
+            "identity": {
+              "plan_id": "2394c9d8-0f83-4cff-8c5c-3144beaf60d6",
+              "hash": "c68fa31a5613c3e7d03b02079de6f70d1df9e42493cd8d19d74a4a84e37a3605",
+              "app_session_id": "session-1789273063753",
+              "controller_epoch": "fb290e5b6a4c4624d429cdf245c6301b",
+              "session_generation": 1793013963100,
+              "request_id": 7,
+              "deadline_unix_ms": 1793017933305
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          {
+            "identity": {
+              "plan_id": "2ca799c8-3154-419a-83ae-d4b5e0fa4236",
+              "hash": "4c0a7bb2b9bfd770826beea6b3763d3a466041b7dec0eff266d4daed95da832b",
+              "app_session_id": "session-1789273063753",
+              "controller_epoch": "fb290e5b6a4c4624d429cdf245c6301b",
+              "session_generation": 1793013963100,
+              "request_id": 8,
+              "deadline_unix_ms": 1793017940965
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          {
+            "identity": {
+              "plan_id": "7f9a5a3d-166c-4312-a576-eb12e1a79a0d",
+              "hash": "d9da16bfbb17ff9331ff2349bec42954f7dbc673e632a1323640242fc9b1ae42",
+              "app_session_id": "session-1789273063753",
+              "controller_epoch": "fb290e5b6a4c4624d429cdf245c6301b",
+              "session_generation": 1793013963100,
+              "request_id": 2,
+              "deadline_unix_ms": 1793017899950
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          {
+            "identity": {
+              "plan_id": "b3696ee7-5724-4fdd-99af-9968a12a9394",
+              "hash": "aa130af2bd07c2738390f3cad9180bd6c05b1c094972eabdf95a5f18b73fc265",
+              "app_session_id": "session-1789273063753",
+              "controller_epoch": "fb290e5b6a4c4624d429cdf245c6301b",
+              "session_generation": 1793013963100,
+              "request_id": 3,
+              "deadline_unix_ms": 1793017904827
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          {
+            "identity": {
+              "plan_id": "e6114301-e78b-471d-870e-c9bebe27b1db",
+              "hash": "4238ad820c3e0a029e7aac4d40180096773b44ecb30f61077efee20b349ddf63",
+              "app_session_id": "session-1789273063753",
+              "controller_epoch": "fb290e5b6a4c4624d429cdf245c6301b",
+              "session_generation": 1793013963100,
+              "request_id": 6,
+              "deadline_unix_ms": 1793017927344
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          {
+            "identity": {
+              "plan_id": "e8de35c4-a72b-437f-86d9-15c903553916",
+              "hash": "4924a12d4c08595b7d9bf26c8dff149a8fb3380f327eedf3991ec99c9e02a496",
+              "app_session_id": "session-1789273063753",
+              "controller_epoch": "fb290e5b6a4c4624d429cdf245c6301b",
+              "session_generation": 1793013963100,
+              "request_id": 4,
+              "deadline_unix_ms": 1793017913359
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          {
+            "identity": {
+              "plan_id": "f6924047-150e-4d14-a7f4-513a2295490c",
+              "hash": "d4a799636498add33bb40f07431a293a97120c8f38c6aa3faed7588328566f75",
+              "app_session_id": "session-1789273063753",
+              "controller_epoch": "fb290e5b6a4c4624d429cdf245c6301b",
+              "session_generation": 1793013963100,
+              "request_id": 9,
+              "deadline_unix_ms": 1793017949366
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          }
+        ]
+      }
+    },
+    {
+      "name": "retry",
+      "plan": {
+        "max_steps": 8,
+        "max_duration_seconds": 120,
+        "hard_maximum_rx_bytes": 1048576,
+        "hard_maximum_4096_sample_points": 64,
+        "requested_maximum_points_per_step": 5,
+        "requested_maximum_iq_bytes_8_steps": 655360,
+        "initial_centers_hz": [
+          2450000000,
+          2455000000,
+          2460000000
+        ],
+        "mission_frequency_range_hz": [
+          2445000000,
+          2465000000
+        ],
+        "controller_policy_frequency_envelope_hz": [
+          70000000,
+          6000000000
+        ],
+        "frequency_range_source": "mission plus existing Controller policy, not a newly installed hard frequency fence",
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "gain_db": 20,
+        "settle_ms": 20,
+        "samples_per_point": 4096,
+        "aggregate_frames": 1,
+        "point_timeout_ms": 250,
+        "scan_formula_max_ms_per_requested_step": 1350,
+        "estimated_hardware_seconds_per_requested_step": 4,
+        "controller_sweep_settle_hard_max_ms": 1000,
+        "hardware_hard_fallback_formula_ms_max_64_points": 80000,
+        "planner_per_request_deadline_ms": 30000,
+        "save_iq": true,
+        "agx_free_bytes": 706490048512,
+        "agx_temporary": "/var/tmp/sdrharness-dev/pd-auto-1026/retry",
+        "application_result_root": "/var/lib/sdrharness/web-console/captures/session-1789273063753",
+        "p201_temporary_pattern": "/tmp/sdr-agent-dev/agx-sweep-<actual-generation>-<point-index>; inline cleanup verified",
+        "stop": "Web immediate stop /stop, or same session command API; independent sdr-agent --mode cancel --session-generation ACTUAL --sdrd 192.168.1.10:43110",
+        "command": "/auto start --steps 8 --seconds 120 --mib 1 在2445至2465MHz范围进行自适应扫频，只用survey_band或stop_session。首轮start_hz=2450000000,stop_hz=2460000000,step_hz=5000000。后续根据最新实测功率、噪声、候选自动选下一段或细化，单轮最多5点；保持sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20和固定增益20dB。无候选时换相邻位置，不凭空报告信号；不要识别、发射或单独capture_bounded_iq。"
+      },
+      "result_count": 8,
+      "points": 38,
+      "iq_bytes": 622592,
+      "candidate_counts": [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "results": [
+        {
+          "summary": {
+            "id": 33,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-1",
+            "kind": "planned",
+            "created_at_ms": 1793021206927,
+            "point_count": 3,
+            "candidate_count": 1,
+            "elapsed_ms": 1132,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.378986,
+            "iq_bytes": 49152
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-1",
+            "kind": "planned",
+            "elapsed_ms": 1132,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.378986,
+            "points": [
+              [
+                2450000000,
+                -34.363556
+              ],
+              [
+                2455000000,
+                -53.642124
+              ],
+              [
+                2460000000,
+                -53.378986
+              ]
+            ],
+            "candidates": [
+              {
+                "id": "request-recovered1793021180590-1-1",
+                "start_hz": 2445000000,
+                "stop_hz": 2455000000,
+                "center_hz": 2450000000,
+                "bandwidth_hz": 10000000,
+                "peak_dbfs": -34.363556,
+                "snr_db": 19.01543,
+                "point_count": 1
+              }
+            ],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793021180590-1793021205795208486.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793021180590-1793021205795208486.sigmf-meta",
+              "bytes": 49152
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 34,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-6",
+            "kind": "planned",
+            "created_at_ms": 1793021240375,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1313,
+            "gain_db": 20,
+            "noise_floor_dbfs": -33.69972,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-6",
+            "kind": "planned",
+            "elapsed_ms": 1313,
+            "gain_db": 20,
+            "noise_floor_dbfs": -33.69972,
+            "points": [
+              [
+                2450550000,
+                -33.69972
+              ],
+              [
+                2450650000,
+                -32.977253
+              ],
+              [
+                2450750000,
+                -33.490265
+              ],
+              [
+                2450850000,
+                -52.947025
+              ],
+              [
+                2450950000,
+                -53.17131
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793021180590-1793021239062490285.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793021180590-1793021239062490285.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 35,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-2",
+            "kind": "planned",
+            "created_at_ms": 1793021212329,
+            "point_count": 5,
+            "candidate_count": 1,
+            "elapsed_ms": 1296,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.086826,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-2",
+            "kind": "planned",
+            "elapsed_ms": 1296,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.086826,
+            "points": [
+              [
+                2446000000,
+                -53.15534
+              ],
+              [
+                2447000000,
+                -53.557747
+              ],
+              [
+                2448000000,
+                -53.086826
+              ],
+              [
+                2449000000,
+                -52.98345
+              ],
+              [
+                2450000000,
+                -38.743202
+              ]
+            ],
+            "candidates": [
+              {
+                "id": "request-recovered1793021180590-2-1",
+                "start_hz": 2445000000,
+                "stop_hz": 2455000000,
+                "center_hz": 2450000000,
+                "bandwidth_hz": 10000000,
+                "peak_dbfs": -38.743202,
+                "snr_db": 14.343624,
+                "point_count": 1
+              }
+            ],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793021180590-1793021211033562994.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793021180590-1793021211033562994.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 36,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-7",
+            "kind": "planned",
+            "created_at_ms": 1793021247039,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1283,
+            "gain_db": 20,
+            "noise_floor_dbfs": -52.663223,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-7",
+            "kind": "planned",
+            "elapsed_ms": 1283,
+            "gain_db": 20,
+            "noise_floor_dbfs": -52.663223,
+            "points": [
+              [
+                2450100000,
+                -52.663223
+              ],
+              [
+                2450200000,
+                -49.976723
+              ],
+              [
+                2450300000,
+                -52.768764
+              ],
+              [
+                2450400000,
+                -52.785103
+              ],
+              [
+                2450500000,
+                -52.486423
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793021180590-1793021245755986648.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793021180590-1793021245755986648.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 37,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-5",
+            "kind": "planned",
+            "created_at_ms": 1793021231061,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1299,
+            "gain_db": 20,
+            "noise_floor_dbfs": -35.119556,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-5",
+            "kind": "planned",
+            "elapsed_ms": 1299,
+            "gain_db": 20,
+            "noise_floor_dbfs": -35.119556,
+            "points": [
+              [
+                2450500000,
+                -35.119556
+              ],
+              [
+                2450625000,
+                -38.68774
+              ],
+              [
+                2450750000,
+                -30.883333
+              ],
+              [
+                2450875000,
+                -35.063942
+              ],
+              [
+                2451000000,
+                -48.137352
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793021180590-1793021229762755657.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793021180590-1793021229762755657.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 38,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-4",
+            "kind": "planned",
+            "created_at_ms": 1793021223657,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1286,
+            "gain_db": 20,
+            "noise_floor_dbfs": -39.36345,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-4",
+            "kind": "planned",
+            "elapsed_ms": 1286,
+            "gain_db": 20,
+            "noise_floor_dbfs": -39.36345,
+            "points": [
+              [
+                2450250000,
+                -39.36345
+              ],
+              [
+                2450500000,
+                -37.28284
+              ],
+              [
+                2450750000,
+                -35.08847
+              ],
+              [
+                2451000000,
+                -53.22442
+              ],
+              [
+                2451250000,
+                -53.207455
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793021180590-1793021222371002379.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793021180590-1793021222371002379.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 39,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-3",
+            "kind": "planned",
+            "created_at_ms": 1793021217597,
+            "point_count": 5,
+            "candidate_count": 1,
+            "elapsed_ms": 1276,
+            "gain_db": 20,
+            "noise_floor_dbfs": -52.883957,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-3",
+            "kind": "planned",
+            "elapsed_ms": 1276,
+            "gain_db": 20,
+            "noise_floor_dbfs": -52.883957,
+            "points": [
+              [
+                2450000000,
+                -53.002083
+              ],
+              [
+                2450500000,
+                -34.419884
+              ],
+              [
+                2451000000,
+                -52.893837
+              ],
+              [
+                2451500000,
+                -52.883957
+              ],
+              [
+                2452000000,
+                -52.444237
+              ]
+            ],
+            "candidates": [
+              {
+                "id": "request-recovered1793021180590-3-1",
+                "start_hz": 2445500000,
+                "stop_hz": 2455500000,
+                "center_hz": 2450500000,
+                "bandwidth_hz": 10000000,
+                "peak_dbfs": -34.419884,
+                "snr_db": 18.464073,
+                "point_count": 1
+              }
+            ],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793021180590-1793021216321061290.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793021180590-1793021216321061290.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 40,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-8",
+            "kind": "planned",
+            "created_at_ms": 1793021257056,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1299,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.469696,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-8",
+            "kind": "planned",
+            "elapsed_ms": 1299,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.469696,
+            "points": [
+              [
+                2450000000,
+                -52.726933
+              ],
+              [
+                2451250000,
+                -53.525467
+              ],
+              [
+                2452500000,
+                -53.780193
+              ],
+              [
+                2453750000,
+                -53.469696
+              ],
+              [
+                2455000000,
+                -44.636692
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793021180590-1793021255757743577.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793021180590-1793021255757743577.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        }
+      ],
+      "radio_before": {
+        "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency": "2469500000",
+        "/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency": "30720000",
+        "/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth": "30000000",
+        "/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode": "manual",
+        "/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain": "60.000000 dB",
+        "/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select": "A_BALANCED",
+        "/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode": "manual",
+        "/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain": "60.000000 dB",
+        "/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select": "A_BALANCED",
+        "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en": "0",
+        "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en": "0",
+        "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en": "0",
+        "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en": "0",
+        "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en": "0",
+        "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en": "0",
+        "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en": "0",
+        "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en": "0",
+        "/sys/bus/iio/devices/iio:device2/buffer/enable": "0",
+        "/sys/bus/iio/devices/iio:device3/buffer/enable": "0"
+      },
+      "postflight": [
+        {
+          "identity": {
+            "plan_id": "51f7b034-d5ad-4926-beb8-906452195259",
+            "hash": "d9da16bfbb17ff9331ff2349bec42954f7dbc673e632a1323640242fc9b1ae42",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 1,
+            "deadline_unix_ms": 1793021229746
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "6339575b-51f8-4401-aca9-e7819c1dba5a",
+            "hash": "87199bc80e8a74b5a70870bd2c8190dff9bbee93c1f642861675e747ff648d8e",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 6,
+            "deadline_unix_ms": 1793021261089
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "a0a1942c-e7be-400b-8aab-79452c5982e3",
+            "hash": "163517e3862978b26b7bc532ccf966eb9501dfeaf24b14deb23e213466645e5f",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 2,
+            "deadline_unix_ms": 1793021236974
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "b4580abd-d5ed-41ba-a36f-a2f958a79676",
+            "hash": "385849866f1deaa76336d475b6746b588b70503cb3fba6da69110c5c55ad4d0b",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 7,
+            "deadline_unix_ms": 1793021270451
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "bc8137d6-7342-4348-8f40-e27ad263deef",
+            "hash": "79cefec7b6000ce82c46ed5ec128f3c33a73be7b66bc514f459b173f2b06bc6e",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 5,
+            "deadline_unix_ms": 1793021253710
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "f3fc5e25-3bb9-4519-9bdc-7b35bcb29d5e",
+            "hash": "4cc94028cff152e94a155db47244d7e5c7826c555e92769a2490b7bc6e3e49ca",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 4,
+            "deadline_unix_ms": 1793021247659
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "f7211cf3-92a0-40e7-965d-585cf818d663",
+            "hash": "1cc0bb124eafe06c859174b10e3154c25836bf1c553875dd2fd750c4bf268f66",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 3,
+            "deadline_unix_ms": 1793021242367
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "fb37d5dd-7ac7-4fab-9b97-ed4885e83026",
+            "hash": "5950968931fcf5fa0f06643c3d2f5c7d8fec9c2f9e659427b541ed2fd16ad581",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 8,
+            "deadline_unix_ms": 1793021277084
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        }
+      ]
+    }
+  ],
+  "bugs_fixed": [
+    {
+      "issue": "Inactive abort emitted a second agent_end after natural completion, causing spurious upstream retry",
+      "verification": "Regression failed before fix (2 ends instead of 1), passed after fix; active abort still ends once; retry run has no upstream retry messages"
+    },
+    {
+      "issue": "Controller request counters restarted and reused result keys in same business session, overwriting SQLite payloads",
+      "fix": "128-bit OS-random epoch per actual sweep execution; request/inspect IDs remain <=64 bytes. Existing result replay stays idempotent.",
+      "recovery": {
+        "restored_ids": [
+          16,
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17
+        ],
+        "new_ids": [
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40
+        ],
+        "timestamp_source": "SigMF created_at_unix_ms plus sweep elapsed_ms; reconstructed completion estimate",
+        "retained_files_verified": [
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793013963098-1793016982720864044.sigmf-data",
+            "bytes": 32768,
+            "sha256": "c822f1baccd15e9ba3c6030110f3b2f78842dc2d4212e1c9fee37a567d05fb4a"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793013963098-1793016982720864044.sigmf-meta",
+            "bytes": 683,
+            "sha256": "ed26d88c982a75247baec990591073c523ef2ca763e59eb445f47fcf107aca2e"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-9-1793013963100-1793017930539875499.sigmf-data",
+            "bytes": 65536,
+            "sha256": "407c18c17098a69d09080d96018730db7068523be6953069832a18058eedb1f9"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-9-1793013963100-1793017930539875499.sigmf-meta",
+            "bytes": 1072,
+            "sha256": "b9f9540d6a0033c3a73999d17e537178a0b601a34004a3f4c657d957897e1ce5"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793013963100-1793017918039005117.sigmf-data",
+            "bytes": 81920,
+            "sha256": "05a49ea5529994e6a0d2e3e34635e7c2a6060a4faa49b29773a8d06c3b6b0350"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793013963100-1793017918039005117.sigmf-meta",
+            "bytes": 1267,
+            "sha256": "a074b304863f8c57ebbb1f62b20809feb7961fd1af2b381d409f8a5e4e124993"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793013963100-1793017909632337002.sigmf-data",
+            "bytes": 81920,
+            "sha256": "f3692df4c253a0cd518194f56a880da7904948ca12367967ad106a40d14a37e6"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793013963100-1793017909632337002.sigmf-meta",
+            "bytes": 1267,
+            "sha256": "88d35c6a9e3c3d6958864493478f2d2876af4fffd7a787da2edfb2586ece3781"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793013963100-1793017901915757421.sigmf-data",
+            "bytes": 81920,
+            "sha256": "6073ec55c248f669bed127ec6626aa43c096c34addf2361712e0325a0dc0ea94"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793013963100-1793017901915757421.sigmf-meta",
+            "bytes": 1267,
+            "sha256": "d1d1673767e437f12537115054b6c0b1bff31789868c518e361f0e9a80a3b138"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793013963100-1793017895967652775.sigmf-data",
+            "bytes": 81920,
+            "sha256": "26e643175c14e8daf3f60218214e3ed561f350e750a5cf8bff3108bd394f3c65"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793013963100-1793017895967652775.sigmf-meta",
+            "bytes": 1267,
+            "sha256": "790e330274975f26d8c80d619d1b92aa151e22722797371b3c366d83d8c63ff8"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793013963100-1793017889229832089.sigmf-data",
+            "bytes": 65536,
+            "sha256": "66771acfcff0de7eda74ed6ab01637cfbc0daff38d3dfd857b535ea1d26abc14"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793013963100-1793017889229832089.sigmf-meta",
+            "bytes": 1072,
+            "sha256": "6438de0c3dfb210614bfec9bfbc09e3c80fac499820a63193d0a4bb7920aa1f6"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793013963100-1793017882029116170.sigmf-data",
+            "bytes": 81920,
+            "sha256": "5d62e7d0362dad24c89165d59c1bde7cceb6fa2c882048e84950aa9ac922c4ad"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793013963100-1793017882029116170.sigmf-meta",
+            "bytes": 1267,
+            "sha256": "f79118e97d6b4e4d8f278ef67d53a6b5214bd3b19b6891e3d25262e282dfd1c2"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793013963100-1793017873649256888.sigmf-data",
+            "bytes": 49152,
+            "sha256": "523881347bdb381448070aa8ccfc17cf63c26503d5a64fe2318f84edf2bc755d"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793013963100-1793017873649256888.sigmf-meta",
+            "bytes": 877,
+            "sha256": "c7fead8816fbc7db07f00bc4da6ad1171b4a81676fd38881315b3d30bf682114"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793021180590-1793021205795208486.sigmf-data",
+            "bytes": 49152,
+            "sha256": "d142047b65f44803761277b03c45d7d0f1b379e948e228070f4e50a030918d1e"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793021180590-1793021205795208486.sigmf-meta",
+            "bytes": 877,
+            "sha256": "089df14a987c2d132f9b344a46ceee9d0fbf2bc6396edbb012b946be88b44194"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793021180590-1793021239062490285.sigmf-data",
+            "bytes": 81920,
+            "sha256": "48396f82e66a011432518423cd17f3235244e01988a5fa7645b60d2d4e0b8455"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793021180590-1793021239062490285.sigmf-meta",
+            "bytes": 1267,
+            "sha256": "5fc8be7b028ba1c038cb54c77f25fbb980483bec0844a5e69cdf36cc05b1a487"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793021180590-1793021211033562994.sigmf-data",
+            "bytes": 81920,
+            "sha256": "8eb406fe85c07cb7ff35d5d8c6a8c7a30a2889c03debf8218dcc35dc9b277e59"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793021180590-1793021211033562994.sigmf-meta",
+            "bytes": 1267,
+            "sha256": "24b734daf5f470b54a2a3e1176fa09b5cf66cc540cb99b036c4e8bef34508a94"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793021180590-1793021245755986648.sigmf-data",
+            "bytes": 81920,
+            "sha256": "88146c5a12fde36f8e97330ea2a22171a23be4dc22441b5e4f0f6baa28748621"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793021180590-1793021245755986648.sigmf-meta",
+            "bytes": 1267,
+            "sha256": "98633deaf082d294ffa7bb3d28eb0bed739b1f38cd6ef69a88e259f7471e32b0"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793021180590-1793021229762755657.sigmf-data",
+            "bytes": 81920,
+            "sha256": "929bda4088a459b78c90cccff57de9765ca015423ff5c152b9213a326ac4a2fd"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793021180590-1793021229762755657.sigmf-meta",
+            "bytes": 1267,
+            "sha256": "4ecf52a322fd962d7f14b1fe4d1c276f25e7c4efbcbbce6b244bea4e40e56f67"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793021180590-1793021222371002379.sigmf-data",
+            "bytes": 81920,
+            "sha256": "1d2f2645230e7ab9058dee3d6051ce081e0013168e7be8c937a84b12f313d0ca"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793021180590-1793021222371002379.sigmf-meta",
+            "bytes": 1267,
+            "sha256": "c45edcf918e93c56ed8759762ee26faa99585eb7a9def9000149697250b75fb7"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793021180590-1793021216321061290.sigmf-data",
+            "bytes": 81920,
+            "sha256": "7d4d51557dc312c77093d3c170b8e156c71cdc75b7341bcf735f89d2330b3422"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793021180590-1793021216321061290.sigmf-meta",
+            "bytes": 1267,
+            "sha256": "b0797cfd4f8bcecd79f8ab598a80e5bf433bc5e1cb579b9ac51703d15cf52931"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793021180590-1793021255757743577.sigmf-data",
+            "bytes": 81920,
+            "sha256": "546da0e97036cf76c5dad9f72fdd0b957060302aa97170b1a9f21a33f66d85bb"
+          },
+          {
+            "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793021180590-1793021255757743577.sigmf-meta",
+            "bytes": 1267,
+            "sha256": "2cc3e78c86031395a29a51df6273dd983fbf816db23967ea33f721affc5842a2"
+          }
+        ]
+      },
+      "lineage": "Original result 16 restored from unchanged PI_DURABLE_WEB_SWEEP_2026-10-26.json.result; 17–24 restored from first-run API snapshots; second run payloads retained before transaction and inserted with unique recovered IDs. Raw SigMF bytes unchanged; reconstructed completion time from SigMF start plus elapsed_ms."
+    }
+  ],
+  "verification": {
+    "node": {
+      "passed": 108,
+      "failed": 0
+    },
+    "controller": {
+      "passed": 140,
+      "ignored": 1,
+      "failed": 0
+    },
+    "web": {
+      "passed": 38,
+      "ignored": 2,
+      "failed": 0
+    },
+    "rust_fmt": "passed",
+    "clippy_all_targets_deny_warnings": "passed",
+    "browser": {
+      "checked": [
+        {
+          "selected": "request-recovered1793021180590-8",
+          "title": "request-recovered1793021180590-8",
+          "points": "5"
+        },
+        {
+          "selected": "request-9",
+          "title": "request-9",
+          "points": "4"
+        },
+        {
+          "selected": "request-1",
+          "title": "request-1",
+          "points": "2"
+        }
+      ],
+      "page_errors": []
+    },
+    "postflight": {
+      "results": [
+        {
+          "summary": {
+            "id": 33,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-1",
+            "kind": "planned",
+            "created_at_ms": 1793021206927,
+            "point_count": 3,
+            "candidate_count": 1,
+            "elapsed_ms": 1132,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.378986,
+            "iq_bytes": 49152
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-1",
+            "kind": "planned",
+            "elapsed_ms": 1132,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.378986,
+            "points": [
+              [
+                2450000000,
+                -34.363556
+              ],
+              [
+                2455000000,
+                -53.642124
+              ],
+              [
+                2460000000,
+                -53.378986
+              ]
+            ],
+            "candidates": [
+              {
+                "id": "request-recovered1793021180590-1-1",
+                "start_hz": 2445000000,
+                "stop_hz": 2455000000,
+                "center_hz": 2450000000,
+                "bandwidth_hz": 10000000,
+                "peak_dbfs": -34.363556,
+                "snr_db": 19.01543,
+                "point_count": 1
+              }
+            ],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793021180590-1793021205795208486.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793021180590-1793021205795208486.sigmf-meta",
+              "bytes": 49152
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 34,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-6",
+            "kind": "planned",
+            "created_at_ms": 1793021240375,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1313,
+            "gain_db": 20,
+            "noise_floor_dbfs": -33.69972,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-6",
+            "kind": "planned",
+            "elapsed_ms": 1313,
+            "gain_db": 20,
+            "noise_floor_dbfs": -33.69972,
+            "points": [
+              [
+                2450550000,
+                -33.69972
+              ],
+              [
+                2450650000,
+                -32.977253
+              ],
+              [
+                2450750000,
+                -33.490265
+              ],
+              [
+                2450850000,
+                -52.947025
+              ],
+              [
+                2450950000,
+                -53.17131
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793021180590-1793021239062490285.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793021180590-1793021239062490285.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 35,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-2",
+            "kind": "planned",
+            "created_at_ms": 1793021212329,
+            "point_count": 5,
+            "candidate_count": 1,
+            "elapsed_ms": 1296,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.086826,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-2",
+            "kind": "planned",
+            "elapsed_ms": 1296,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.086826,
+            "points": [
+              [
+                2446000000,
+                -53.15534
+              ],
+              [
+                2447000000,
+                -53.557747
+              ],
+              [
+                2448000000,
+                -53.086826
+              ],
+              [
+                2449000000,
+                -52.98345
+              ],
+              [
+                2450000000,
+                -38.743202
+              ]
+            ],
+            "candidates": [
+              {
+                "id": "request-recovered1793021180590-2-1",
+                "start_hz": 2445000000,
+                "stop_hz": 2455000000,
+                "center_hz": 2450000000,
+                "bandwidth_hz": 10000000,
+                "peak_dbfs": -38.743202,
+                "snr_db": 14.343624,
+                "point_count": 1
+              }
+            ],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793021180590-1793021211033562994.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793021180590-1793021211033562994.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 36,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-7",
+            "kind": "planned",
+            "created_at_ms": 1793021247039,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1283,
+            "gain_db": 20,
+            "noise_floor_dbfs": -52.663223,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-7",
+            "kind": "planned",
+            "elapsed_ms": 1283,
+            "gain_db": 20,
+            "noise_floor_dbfs": -52.663223,
+            "points": [
+              [
+                2450100000,
+                -52.663223
+              ],
+              [
+                2450200000,
+                -49.976723
+              ],
+              [
+                2450300000,
+                -52.768764
+              ],
+              [
+                2450400000,
+                -52.785103
+              ],
+              [
+                2450500000,
+                -52.486423
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793021180590-1793021245755986648.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793021180590-1793021245755986648.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 37,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-5",
+            "kind": "planned",
+            "created_at_ms": 1793021231061,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1299,
+            "gain_db": 20,
+            "noise_floor_dbfs": -35.119556,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-5",
+            "kind": "planned",
+            "elapsed_ms": 1299,
+            "gain_db": 20,
+            "noise_floor_dbfs": -35.119556,
+            "points": [
+              [
+                2450500000,
+                -35.119556
+              ],
+              [
+                2450625000,
+                -38.68774
+              ],
+              [
+                2450750000,
+                -30.883333
+              ],
+              [
+                2450875000,
+                -35.063942
+              ],
+              [
+                2451000000,
+                -48.137352
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793021180590-1793021229762755657.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793021180590-1793021229762755657.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 38,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-4",
+            "kind": "planned",
+            "created_at_ms": 1793021223657,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1286,
+            "gain_db": 20,
+            "noise_floor_dbfs": -39.36345,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-4",
+            "kind": "planned",
+            "elapsed_ms": 1286,
+            "gain_db": 20,
+            "noise_floor_dbfs": -39.36345,
+            "points": [
+              [
+                2450250000,
+                -39.36345
+              ],
+              [
+                2450500000,
+                -37.28284
+              ],
+              [
+                2450750000,
+                -35.08847
+              ],
+              [
+                2451000000,
+                -53.22442
+              ],
+              [
+                2451250000,
+                -53.207455
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793021180590-1793021222371002379.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793021180590-1793021222371002379.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 39,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-3",
+            "kind": "planned",
+            "created_at_ms": 1793021217597,
+            "point_count": 5,
+            "candidate_count": 1,
+            "elapsed_ms": 1276,
+            "gain_db": 20,
+            "noise_floor_dbfs": -52.883957,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-3",
+            "kind": "planned",
+            "elapsed_ms": 1276,
+            "gain_db": 20,
+            "noise_floor_dbfs": -52.883957,
+            "points": [
+              [
+                2450000000,
+                -53.002083
+              ],
+              [
+                2450500000,
+                -34.419884
+              ],
+              [
+                2451000000,
+                -52.893837
+              ],
+              [
+                2451500000,
+                -52.883957
+              ],
+              [
+                2452000000,
+                -52.444237
+              ]
+            ],
+            "candidates": [
+              {
+                "id": "request-recovered1793021180590-3-1",
+                "start_hz": 2445500000,
+                "stop_hz": 2455500000,
+                "center_hz": 2450500000,
+                "bandwidth_hz": 10000000,
+                "peak_dbfs": -34.419884,
+                "snr_db": 18.464073,
+                "point_count": 1
+              }
+            ],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793021180590-1793021216321061290.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793021180590-1793021216321061290.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        },
+        {
+          "summary": {
+            "id": 40,
+            "session_id": "session-1789273063753",
+            "sweep_id": "request-recovered1793021180590-8",
+            "kind": "planned",
+            "created_at_ms": 1793021257056,
+            "point_count": 5,
+            "candidate_count": 0,
+            "elapsed_ms": 1299,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.469696,
+            "iq_bytes": 81920
+          },
+          "sweep_plot": {
+            "schema_version": 1,
+            "sweep_id": "request-recovered1793021180590-8",
+            "kind": "planned",
+            "elapsed_ms": 1299,
+            "gain_db": 20,
+            "noise_floor_dbfs": -53.469696,
+            "points": [
+              [
+                2450000000,
+                -52.726933
+              ],
+              [
+                2451250000,
+                -53.525467
+              ],
+              [
+                2452500000,
+                -53.780193
+              ],
+              [
+                2453750000,
+                -53.469696
+              ],
+              [
+                2455000000,
+                -44.636692
+              ]
+            ],
+            "candidates": [],
+            "dataset": {
+              "format": "sigmf",
+              "datatype": "ci16_le",
+              "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793021180590-1793021255757743577.sigmf-data",
+              "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793021180590-1793021255757743577.sigmf-meta",
+              "bytes": 81920
+            }
+          }
+        }
+      ],
+      "radio_after": {
+        "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency": "2469500000",
+        "/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency": "30720000",
+        "/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth": "30000000",
+        "/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode": "manual",
+        "/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain": "60.000000 dB",
+        "/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select": "A_BALANCED",
+        "/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode": "manual",
+        "/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain": "60.000000 dB",
+        "/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select": "A_BALANCED",
+        "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en": "0",
+        "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en": "0",
+        "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en": "0",
+        "/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en": "0",
+        "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en": "0",
+        "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en": "0",
+        "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en": "0",
+        "/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en": "0",
+        "/sys/bus/iio/devices/iio:device2/buffer/enable": "0",
+        "/sys/bus/iio/devices/iio:device3/buffer/enable": "0"
+      },
+      "restored": true,
+      "ledger": [
+        {
+          "identity": {
+            "plan_id": "51f7b034-d5ad-4926-beb8-906452195259",
+            "hash": "d9da16bfbb17ff9331ff2349bec42954f7dbc673e632a1323640242fc9b1ae42",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 1,
+            "deadline_unix_ms": 1793021229746
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "6339575b-51f8-4401-aca9-e7819c1dba5a",
+            "hash": "87199bc80e8a74b5a70870bd2c8190dff9bbee93c1f642861675e747ff648d8e",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 6,
+            "deadline_unix_ms": 1793021261089
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "a0a1942c-e7be-400b-8aab-79452c5982e3",
+            "hash": "163517e3862978b26b7bc532ccf966eb9501dfeaf24b14deb23e213466645e5f",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 2,
+            "deadline_unix_ms": 1793021236974
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "b4580abd-d5ed-41ba-a36f-a2f958a79676",
+            "hash": "385849866f1deaa76336d475b6746b588b70503cb3fba6da69110c5c55ad4d0b",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 7,
+            "deadline_unix_ms": 1793021270451
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "bc8137d6-7342-4348-8f40-e27ad263deef",
+            "hash": "79cefec7b6000ce82c46ed5ec128f3c33a73be7b66bc514f459b173f2b06bc6e",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 5,
+            "deadline_unix_ms": 1793021253710
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "f3fc5e25-3bb9-4519-9bdc-7b35bcb29d5e",
+            "hash": "4cc94028cff152e94a155db47244d7e5c7826c555e92769a2490b7bc6e3e49ca",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 4,
+            "deadline_unix_ms": 1793021247659
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "f7211cf3-92a0-40e7-965d-585cf818d663",
+            "hash": "1cc0bb124eafe06c859174b10e3154c25836bf1c553875dd2fd750c4bf268f66",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 3,
+            "deadline_unix_ms": 1793021242367
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        },
+        {
+          "identity": {
+            "plan_id": "fb37d5dd-7ac7-4fab-9b97-ed4885e83026",
+            "hash": "5950968931fcf5fa0f06643c3d2f5c7d8fec9c2f9e659427b541ed2fd16ad581",
+            "app_session_id": "session-1789273063753",
+            "controller_epoch": "d82ea552082e11ea28640c0ee168e149",
+            "session_generation": 1793021180590,
+            "request_id": 8,
+            "deadline_unix_ms": 1793021277084
+          },
+          "decision": "accepted",
+          "execution": "completed"
+        }
+      ],
+      "planner": [
+        {
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:1",
+          "model_attempts": 1,
+          "proposal": {
+            "planId": "51f7b034-d5ad-4926-beb8-906452195259",
+            "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:1",
+            "hash": "d9da16bfbb17ff9331ff2349bec42954f7dbc673e632a1323640242fc9b1ae42",
+            "action": {
+              "kind": "survey_band",
+              "start_hz": 2450000000,
+              "stop_hz": 2460000000,
+              "step_hz": 5000000,
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "dwell_ms": 20
+            },
+            "state": "accepted",
+            "controllerExecution": "completed"
+          }
+        },
+        {
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:2",
+          "model_attempts": 1,
+          "proposal": {
+            "planId": "a0a1942c-e7be-400b-8aab-79452c5982e3",
+            "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:2",
+            "hash": "163517e3862978b26b7bc532ccf966eb9501dfeaf24b14deb23e213466645e5f",
+            "action": {
+              "kind": "survey_band",
+              "start_hz": 2446000000,
+              "stop_hz": 2450000000,
+              "step_hz": 1000000,
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "dwell_ms": 20
+            },
+            "state": "accepted",
+            "controllerExecution": "completed"
+          }
+        },
+        {
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:3",
+          "model_attempts": 1,
+          "proposal": {
+            "planId": "f7211cf3-92a0-40e7-965d-585cf818d663",
+            "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:3",
+            "hash": "1cc0bb124eafe06c859174b10e3154c25836bf1c553875dd2fd750c4bf268f66",
+            "action": {
+              "kind": "survey_band",
+              "start_hz": 2450000000,
+              "stop_hz": 2452000000,
+              "step_hz": 500000,
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "dwell_ms": 20
+            },
+            "state": "accepted",
+            "controllerExecution": "completed"
+          }
+        },
+        {
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:4",
+          "model_attempts": 1,
+          "proposal": {
+            "planId": "f3fc5e25-3bb9-4519-9bdc-7b35bcb29d5e",
+            "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:4",
+            "hash": "4cc94028cff152e94a155db47244d7e5c7826c555e92769a2490b7bc6e3e49ca",
+            "action": {
+              "kind": "survey_band",
+              "start_hz": 2450250000,
+              "stop_hz": 2451250000,
+              "step_hz": 250000,
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "dwell_ms": 20
+            },
+            "state": "accepted",
+            "controllerExecution": "completed"
+          }
+        },
+        {
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:5",
+          "model_attempts": 1,
+          "proposal": {
+            "planId": "bc8137d6-7342-4348-8f40-e27ad263deef",
+            "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:5",
+            "hash": "79cefec7b6000ce82c46ed5ec128f3c33a73be7b66bc514f459b173f2b06bc6e",
+            "action": {
+              "kind": "survey_band",
+              "start_hz": 2450500000,
+              "stop_hz": 2451000000,
+              "step_hz": 125000,
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "dwell_ms": 20
+            },
+            "state": "accepted",
+            "controllerExecution": "completed"
+          }
+        },
+        {
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:6",
+          "model_attempts": 1,
+          "proposal": {
+            "planId": "6339575b-51f8-4401-aca9-e7819c1dba5a",
+            "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:6",
+            "hash": "87199bc80e8a74b5a70870bd2c8190dff9bbee93c1f642861675e747ff648d8e",
+            "action": {
+              "kind": "survey_band",
+              "start_hz": 2450550000,
+              "stop_hz": 2450950000,
+              "step_hz": 100000,
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "dwell_ms": 20
+            },
+            "state": "accepted",
+            "controllerExecution": "completed"
+          }
+        },
+        {
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:7",
+          "model_attempts": 1,
+          "proposal": {
+            "planId": "b4580abd-d5ed-41ba-a36f-a2f958a79676",
+            "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:7",
+            "hash": "385849866f1deaa76336d475b6746b588b70503cb3fba6da69110c5c55ad4d0b",
+            "action": {
+              "kind": "survey_band",
+              "start_hz": 2450100000,
+              "stop_hz": 2450500000,
+              "step_hz": 100000,
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "dwell_ms": 20
+            },
+            "state": "accepted",
+            "controllerExecution": "completed"
+          }
+        },
+        {
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:8",
+          "model_attempts": 1,
+          "proposal": {
+            "planId": "fb37d5dd-7ac7-4fab-9b97-ed4885e83026",
+            "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:8",
+            "hash": "5950968931fcf5fa0f06643c3d2f5c7d8fec9c2f9e659427b541ed2fd16ad581",
+            "action": {
+              "kind": "survey_band",
+              "start_hz": 2450000000,
+              "stop_hz": 2455000000,
+              "step_hz": 1250000,
+              "sample_rate_hz": 10000000,
+              "rf_bandwidth_hz": 10000000,
+              "dwell_ms": 20
+            },
+            "state": "accepted",
+            "controllerExecution": "completed"
+          }
+        }
+      ],
+      "final_status": [
+        {
+          "id": 276,
+          "timestamp_ms": 1793021851912,
+          "kind": "operator",
+          "text": "Operator> /status"
+        },
+        {
+          "id": 277,
+          "timestamp_ms": 1793021851922,
+          "kind": "system",
+          "text": "持久会话：最近记录中 0 项待核对，0 项阻塞；旧批准不会自动恢复。结果未知的计划不会重新执行。"
+        },
+        {
+          "id": 278,
+          "timestamp_ms": 1793021851924,
+          "kind": "system",
+          "text": "控制器状态：空闲，可以接收新任务；运行模式：逐步人工批准。"
+        },
+        {
+          "id": 279,
+          "timestamp_ms": 1793021851925,
+          "kind": "system",
+          "text": "Agent 会话：已打开；上游模型：空闲；等待处理的消息：0 条。"
+        },
+        {
+          "id": 280,
+          "timestamp_ms": 1793021851926,
+          "kind": "system",
+          "text": "人工批准：没有待处理计划；下一请求编号：1；安全代次：1793021838067。"
+        },
+        {
+          "id": 281,
+          "timestamp_ms": 1793021851927,
+          "kind": "cruise",
+          "text": "巡航状态：未启用；当前每个可执行动作都需要人工批准。"
+        },
+        {
+          "id": 282,
+          "timestamp_ms": 1793021851928,
+          "kind": "prompt",
+          "text": "SDR Agent> "
+        },
+        {
+          "id": 283,
+          "timestamp_ms": 1793021979212,
+          "kind": "system",
+          "text": "终端进程已启动，等待控制器提示。"
+        },
+        {
+          "id": 284,
+          "timestamp_ms": 1793021979615,
+          "kind": "system",
+          "text": "SDR Agent 已连接。输入 /help 查看命令。硬件执行=已启用。"
+        },
+        {
+          "id": 285,
+          "timestamp_ms": 1793021979616,
+          "kind": "prompt",
+          "text": "SDR Agent> "
+        },
+        {
+          "id": 286,
+          "timestamp_ms": 1793022048568,
+          "kind": "operator",
+          "text": "Operator> /status"
+        },
+        {
+          "id": 287,
+          "timestamp_ms": 1793022048606,
+          "kind": "system",
+          "text": "终端进程已启动，等待控制器提示。"
+        }
+      ],
+      "retained": [
+        {
+          "result_id": 24,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-9-1793013963100-1793017930539875499.sigmf-data",
+          "bytes": 65536,
+          "sha256": "407c18c17098a69d09080d96018730db7068523be6953069832a18058eedb1f9"
+        },
+        {
+          "result_id": 24,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-9-1793013963100-1793017930539875499.sigmf-meta",
+          "bytes": 1072,
+          "sha256": "b9f9540d6a0033c3a73999d17e537178a0b601a34004a3f4c657d957897e1ce5"
+        },
+        {
+          "result_id": 23,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793013963100-1793017918039005117.sigmf-data",
+          "bytes": 81920,
+          "sha256": "05a49ea5529994e6a0d2e3e34635e7c2a6060a4faa49b29773a8d06c3b6b0350"
+        },
+        {
+          "result_id": 23,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793013963100-1793017918039005117.sigmf-meta",
+          "bytes": 1267,
+          "sha256": "a074b304863f8c57ebbb1f62b20809feb7961fd1af2b381d409f8a5e4e124993"
+        },
+        {
+          "result_id": 22,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793013963100-1793017909632337002.sigmf-data",
+          "bytes": 81920,
+          "sha256": "f3692df4c253a0cd518194f56a880da7904948ca12367967ad106a40d14a37e6"
+        },
+        {
+          "result_id": 22,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793013963100-1793017909632337002.sigmf-meta",
+          "bytes": 1267,
+          "sha256": "88d35c6a9e3c3d6958864493478f2d2876af4fffd7a787da2edfb2586ece3781"
+        },
+        {
+          "result_id": 21,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793013963100-1793017901915757421.sigmf-data",
+          "bytes": 81920,
+          "sha256": "6073ec55c248f669bed127ec6626aa43c096c34addf2361712e0325a0dc0ea94"
+        },
+        {
+          "result_id": 21,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793013963100-1793017901915757421.sigmf-meta",
+          "bytes": 1267,
+          "sha256": "d1d1673767e437f12537115054b6c0b1bff31789868c518e361f0e9a80a3b138"
+        },
+        {
+          "result_id": 20,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793013963100-1793017895967652775.sigmf-data",
+          "bytes": 81920,
+          "sha256": "26e643175c14e8daf3f60218214e3ed561f350e750a5cf8bff3108bd394f3c65"
+        },
+        {
+          "result_id": 20,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793013963100-1793017895967652775.sigmf-meta",
+          "bytes": 1267,
+          "sha256": "790e330274975f26d8c80d619d1b92aa151e22722797371b3c366d83d8c63ff8"
+        },
+        {
+          "result_id": 19,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793013963100-1793017889229832089.sigmf-data",
+          "bytes": 65536,
+          "sha256": "66771acfcff0de7eda74ed6ab01637cfbc0daff38d3dfd857b535ea1d26abc14"
+        },
+        {
+          "result_id": 19,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793013963100-1793017889229832089.sigmf-meta",
+          "bytes": 1072,
+          "sha256": "6438de0c3dfb210614bfec9bfbc09e3c80fac499820a63193d0a4bb7920aa1f6"
+        },
+        {
+          "result_id": 18,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793013963100-1793017882029116170.sigmf-data",
+          "bytes": 81920,
+          "sha256": "5d62e7d0362dad24c89165d59c1bde7cceb6fa2c882048e84950aa9ac922c4ad"
+        },
+        {
+          "result_id": 18,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793013963100-1793017882029116170.sigmf-meta",
+          "bytes": 1267,
+          "sha256": "f79118e97d6b4e4d8f278ef67d53a6b5214bd3b19b6891e3d25262e282dfd1c2"
+        },
+        {
+          "result_id": 17,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793013963100-1793017873649256888.sigmf-data",
+          "bytes": 49152,
+          "sha256": "523881347bdb381448070aa8ccfc17cf63c26503d5a64fe2318f84edf2bc755d"
+        },
+        {
+          "result_id": 17,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793013963100-1793017873649256888.sigmf-meta",
+          "bytes": 877,
+          "sha256": "c7fead8816fbc7db07f00bc4da6ad1171b4a81676fd38881315b3d30bf682114"
+        },
+        {
+          "result_id": 33,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793021180590-1793021205795208486.sigmf-data",
+          "bytes": 49152,
+          "sha256": "d142047b65f44803761277b03c45d7d0f1b379e948e228070f4e50a030918d1e"
+        },
+        {
+          "result_id": 33,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793021180590-1793021205795208486.sigmf-meta",
+          "bytes": 877,
+          "sha256": "089df14a987c2d132f9b344a46ceee9d0fbf2bc6396edbb012b946be88b44194"
+        },
+        {
+          "result_id": 34,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793021180590-1793021239062490285.sigmf-data",
+          "bytes": 81920,
+          "sha256": "48396f82e66a011432518423cd17f3235244e01988a5fa7645b60d2d4e0b8455"
+        },
+        {
+          "result_id": 34,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793021180590-1793021239062490285.sigmf-meta",
+          "bytes": 1267,
+          "sha256": "5fc8be7b028ba1c038cb54c77f25fbb980483bec0844a5e69cdf36cc05b1a487"
+        },
+        {
+          "result_id": 35,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793021180590-1793021211033562994.sigmf-data",
+          "bytes": 81920,
+          "sha256": "8eb406fe85c07cb7ff35d5d8c6a8c7a30a2889c03debf8218dcc35dc9b277e59"
+        },
+        {
+          "result_id": 35,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793021180590-1793021211033562994.sigmf-meta",
+          "bytes": 1267,
+          "sha256": "24b734daf5f470b54a2a3e1176fa09b5cf66cc540cb99b036c4e8bef34508a94"
+        },
+        {
+          "result_id": 36,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793021180590-1793021245755986648.sigmf-data",
+          "bytes": 81920,
+          "sha256": "88146c5a12fde36f8e97330ea2a22171a23be4dc22441b5e4f0f6baa28748621"
+        },
+        {
+          "result_id": 36,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793021180590-1793021245755986648.sigmf-meta",
+          "bytes": 1267,
+          "sha256": "98633deaf082d294ffa7bb3d28eb0bed739b1f38cd6ef69a88e259f7471e32b0"
+        },
+        {
+          "result_id": 37,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793021180590-1793021229762755657.sigmf-data",
+          "bytes": 81920,
+          "sha256": "929bda4088a459b78c90cccff57de9765ca015423ff5c152b9213a326ac4a2fd"
+        },
+        {
+          "result_id": 37,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793021180590-1793021229762755657.sigmf-meta",
+          "bytes": 1267,
+          "sha256": "4ecf52a322fd962d7f14b1fe4d1c276f25e7c4efbcbbce6b244bea4e40e56f67"
+        },
+        {
+          "result_id": 38,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793021180590-1793021222371002379.sigmf-data",
+          "bytes": 81920,
+          "sha256": "1d2f2645230e7ab9058dee3d6051ce081e0013168e7be8c937a84b12f313d0ca"
+        },
+        {
+          "result_id": 38,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793021180590-1793021222371002379.sigmf-meta",
+          "bytes": 1267,
+          "sha256": "c45edcf918e93c56ed8759762ee26faa99585eb7a9def9000149697250b75fb7"
+        },
+        {
+          "result_id": 39,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793021180590-1793021216321061290.sigmf-data",
+          "bytes": 81920,
+          "sha256": "7d4d51557dc312c77093d3c170b8e156c71cdc75b7341bcf735f89d2330b3422"
+        },
+        {
+          "result_id": 39,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793021180590-1793021216321061290.sigmf-meta",
+          "bytes": 1267,
+          "sha256": "b0797cfd4f8bcecd79f8ab598a80e5bf433bc5e1cb579b9ac51703d15cf52931"
+        },
+        {
+          "result_id": 40,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793021180590-1793021255757743577.sigmf-data",
+          "bytes": 81920,
+          "sha256": "546da0e97036cf76c5dad9f72fdd0b957060302aa97170b1a9f21a33f66d85bb"
+        },
+        {
+          "result_id": 40,
+          "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793021180590-1793021255757743577.sigmf-meta",
+          "bytes": 1267,
+          "sha256": "2cc3e78c86031395a29a51df6273dd983fbf816db23967ea33f721affc5842a2"
+        }
+      ],
+      "single_sdrd": "1318",
+      "control_connections": 0,
+      "p201_temporary_absent": true,
+      "health": {
+        "online": true,
+        "healthy": true,
+        "health_flags": 0,
+        "iio_visible": true,
+        "can_retune": true,
+        "can_capture_iq": true,
+        "rx_input": {
+          "identity_version": 1,
+          "verified": true,
+          "front_panel_port": "RX1",
+          "logical_channel": "RX0",
+          "phy_channel": "voltage0",
+          "scan_i_channel": "voltage0",
+          "scan_q_channel": "voltage1",
+          "rf_port_select": "A_BALANCED",
+          "source": "iio_channel_attr"
+        }
+      },
+      "spectrum_phase": "paused"
+    },
+    "planner_rollbacks": [
+      {
+        "release": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026-r4",
+        "planner": {
+          "schema_version": 1,
+          "service": "planner",
+          "ready": true,
+          "recognizer_available": false,
+          "session_protocol": 2,
+          "durable": true,
+          "session_available": true
+        },
+        "web": {
+          "ready": true,
+          "recognizer_available": false,
+          "schema_version": 1,
+          "service": "web"
+        }
+      },
+      {
+        "release": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026-r3",
+        "planner": {
+          "schema_version": 1,
+          "service": "planner",
+          "ready": true,
+          "recognizer_available": false,
+          "session_protocol": 2,
+          "durable": true,
+          "session_available": true
+        },
+        "web": {
+          "ready": true,
+          "recognizer_available": false,
+          "schema_version": 1,
+          "service": "web"
+        }
+      },
+      {
+        "release": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026-r4",
+        "planner": {
+          "schema_version": 1,
+          "service": "planner",
+          "ready": true,
+          "recognizer_available": false,
+          "session_protocol": 2,
+          "durable": true,
+          "session_available": true
+        },
+        "web": {
+          "ready": true,
+          "recognizer_available": false,
+          "schema_version": 1,
+          "service": "web"
+        }
+      }
+    ],
+    "controller_rollbacks": {
+      "manifest": {
+        "version": "pi-durable-1.4.0-20261026-r4",
+        "base_commit": "f41ecf3",
+        "change": "unique sweep identifiers across Controller restarts",
+        "files": [
+          {
+            "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261026-r4/sdr-agent",
+            "bytes": 2655000,
+            "sha256": "d8dd4bbdf001ccb655f02af99afa1757bff5f0cab2b86da7391f76f9e85f2ce8"
+          }
+        ]
+      },
+      "manifest_file": {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261026-r4/release-manifest.json",
+        "bytes": 380,
+        "sha256": "1676bce65976c0a60e4cd6eb3f4eaaa1cc77c7fc4ad395df5a3834763a354b52"
+      },
+      "switches": [
+        {
+          "controller": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261026-r4/sdr-agent",
+          "installed": {
+            "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent",
+            "bytes": 2655000,
+            "sha256": "d8dd4bbdf001ccb655f02af99afa1757bff5f0cab2b86da7391f76f9e85f2ce8"
+          },
+          "web": {
+            "ready": true,
+            "recognizer_available": false,
+            "schema_version": 1,
+            "service": "web"
+          }
+        },
+        {
+          "controller": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261026/sdr-agent",
+          "installed": {
+            "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent",
+            "bytes": 2655000,
+            "sha256": "0ff37a800499cdcc102a69eeee60a5734179b4887061a60b46183354246609cf"
+          },
+          "web": {
+            "ready": true,
+            "recognizer_available": false,
+            "schema_version": 1,
+            "service": "web"
+          }
+        },
+        {
+          "controller": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261026-r4/sdr-agent",
+          "installed": {
+            "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent",
+            "bytes": 2655000,
+            "sha256": "d8dd4bbdf001ccb655f02af99afa1757bff5f0cab2b86da7391f76f9e85f2ce8"
+          },
+          "web": {
+            "ready": true,
+            "recognizer_available": false,
+            "schema_version": 1,
+            "service": "web"
+          }
+        }
+      ]
+    },
+    "deployment_check_correction": "First Controller health check used /health and received no success; corrected to actual /api/health and reran full new-old-new verification.",
+    "monitor_correction": "First browser monitor matched wrong completion wording and sent stop at 140s while hardware had already completed. Second monitor used actual cruise exit text and finished naturally.",
+    "final_planner_health": {
+      "schema_version": 1,
+      "service": "planner",
+      "ready": true,
+      "recognizer_available": false,
+      "session_protocol": 2,
+      "durable": true,
+      "session_available": false
+    },
+    "node_final_installed_controller": {
+      "passed": 108,
+      "failed": 0,
+      "note": "Repeated Node suite with newly installed Controller r4, including real Controller protocol e2e, without RF"
+    }
+  },
+  "retention": {
+    "files": [
+      {
+        "result_id": 24,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-9-1793013963100-1793017930539875499.sigmf-data",
+        "bytes": 65536,
+        "sha256": "407c18c17098a69d09080d96018730db7068523be6953069832a18058eedb1f9"
+      },
+      {
+        "result_id": 24,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-9-1793013963100-1793017930539875499.sigmf-meta",
+        "bytes": 1072,
+        "sha256": "b9f9540d6a0033c3a73999d17e537178a0b601a34004a3f4c657d957897e1ce5"
+      },
+      {
+        "result_id": 23,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793013963100-1793017918039005117.sigmf-data",
+        "bytes": 81920,
+        "sha256": "05a49ea5529994e6a0d2e3e34635e7c2a6060a4faa49b29773a8d06c3b6b0350"
+      },
+      {
+        "result_id": 23,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793013963100-1793017918039005117.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "a074b304863f8c57ebbb1f62b20809feb7961fd1af2b381d409f8a5e4e124993"
+      },
+      {
+        "result_id": 22,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793013963100-1793017909632337002.sigmf-data",
+        "bytes": 81920,
+        "sha256": "f3692df4c253a0cd518194f56a880da7904948ca12367967ad106a40d14a37e6"
+      },
+      {
+        "result_id": 22,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793013963100-1793017909632337002.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "88d35c6a9e3c3d6958864493478f2d2876af4fffd7a787da2edfb2586ece3781"
+      },
+      {
+        "result_id": 21,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793013963100-1793017901915757421.sigmf-data",
+        "bytes": 81920,
+        "sha256": "6073ec55c248f669bed127ec6626aa43c096c34addf2361712e0325a0dc0ea94"
+      },
+      {
+        "result_id": 21,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793013963100-1793017901915757421.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "d1d1673767e437f12537115054b6c0b1bff31789868c518e361f0e9a80a3b138"
+      },
+      {
+        "result_id": 20,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793013963100-1793017895967652775.sigmf-data",
+        "bytes": 81920,
+        "sha256": "26e643175c14e8daf3f60218214e3ed561f350e750a5cf8bff3108bd394f3c65"
+      },
+      {
+        "result_id": 20,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793013963100-1793017895967652775.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "790e330274975f26d8c80d619d1b92aa151e22722797371b3c366d83d8c63ff8"
+      },
+      {
+        "result_id": 19,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793013963100-1793017889229832089.sigmf-data",
+        "bytes": 65536,
+        "sha256": "66771acfcff0de7eda74ed6ab01637cfbc0daff38d3dfd857b535ea1d26abc14"
+      },
+      {
+        "result_id": 19,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793013963100-1793017889229832089.sigmf-meta",
+        "bytes": 1072,
+        "sha256": "6438de0c3dfb210614bfec9bfbc09e3c80fac499820a63193d0a4bb7920aa1f6"
+      },
+      {
+        "result_id": 18,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793013963100-1793017882029116170.sigmf-data",
+        "bytes": 81920,
+        "sha256": "5d62e7d0362dad24c89165d59c1bde7cceb6fa2c882048e84950aa9ac922c4ad"
+      },
+      {
+        "result_id": 18,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793013963100-1793017882029116170.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "f79118e97d6b4e4d8f278ef67d53a6b5214bd3b19b6891e3d25262e282dfd1c2"
+      },
+      {
+        "result_id": 17,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793013963100-1793017873649256888.sigmf-data",
+        "bytes": 49152,
+        "sha256": "523881347bdb381448070aa8ccfc17cf63c26503d5a64fe2318f84edf2bc755d"
+      },
+      {
+        "result_id": 17,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793013963100-1793017873649256888.sigmf-meta",
+        "bytes": 877,
+        "sha256": "c7fead8816fbc7db07f00bc4da6ad1171b4a81676fd38881315b3d30bf682114"
+      },
+      {
+        "result_id": 33,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793021180590-1793021205795208486.sigmf-data",
+        "bytes": 49152,
+        "sha256": "d142047b65f44803761277b03c45d7d0f1b379e948e228070f4e50a030918d1e"
+      },
+      {
+        "result_id": 33,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-1-1793021180590-1793021205795208486.sigmf-meta",
+        "bytes": 877,
+        "sha256": "089df14a987c2d132f9b344a46ceee9d0fbf2bc6396edbb012b946be88b44194"
+      },
+      {
+        "result_id": 34,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793021180590-1793021239062490285.sigmf-data",
+        "bytes": 81920,
+        "sha256": "48396f82e66a011432518423cd17f3235244e01988a5fa7645b60d2d4e0b8455"
+      },
+      {
+        "result_id": 34,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-6-1793021180590-1793021239062490285.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "5fc8be7b028ba1c038cb54c77f25fbb980483bec0844a5e69cdf36cc05b1a487"
+      },
+      {
+        "result_id": 35,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793021180590-1793021211033562994.sigmf-data",
+        "bytes": 81920,
+        "sha256": "8eb406fe85c07cb7ff35d5d8c6a8c7a30a2889c03debf8218dcc35dc9b277e59"
+      },
+      {
+        "result_id": 35,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-2-1793021180590-1793021211033562994.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "24b734daf5f470b54a2a3e1176fa09b5cf66cc540cb99b036c4e8bef34508a94"
+      },
+      {
+        "result_id": 36,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793021180590-1793021245755986648.sigmf-data",
+        "bytes": 81920,
+        "sha256": "88146c5a12fde36f8e97330ea2a22171a23be4dc22441b5e4f0f6baa28748621"
+      },
+      {
+        "result_id": 36,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-7-1793021180590-1793021245755986648.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "98633deaf082d294ffa7bb3d28eb0bed739b1f38cd6ef69a88e259f7471e32b0"
+      },
+      {
+        "result_id": 37,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793021180590-1793021229762755657.sigmf-data",
+        "bytes": 81920,
+        "sha256": "929bda4088a459b78c90cccff57de9765ca015423ff5c152b9213a326ac4a2fd"
+      },
+      {
+        "result_id": 37,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-5-1793021180590-1793021229762755657.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "4ecf52a322fd962d7f14b1fe4d1c276f25e7c4efbcbbce6b244bea4e40e56f67"
+      },
+      {
+        "result_id": 38,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793021180590-1793021222371002379.sigmf-data",
+        "bytes": 81920,
+        "sha256": "1d2f2645230e7ab9058dee3d6051ce081e0013168e7be8c937a84b12f313d0ca"
+      },
+      {
+        "result_id": 38,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4-1793021180590-1793021222371002379.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "c45edcf918e93c56ed8759762ee26faa99585eb7a9def9000149697250b75fb7"
+      },
+      {
+        "result_id": 39,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793021180590-1793021216321061290.sigmf-data",
+        "bytes": 81920,
+        "sha256": "7d4d51557dc312c77093d3c170b8e156c71cdc75b7341bcf735f89d2330b3422"
+      },
+      {
+        "result_id": 39,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-3-1793021180590-1793021216321061290.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "b0797cfd4f8bcecd79f8ab598a80e5bf433bc5e1cb579b9ac51703d15cf52931"
+      },
+      {
+        "result_id": 40,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793021180590-1793021255757743577.sigmf-data",
+        "bytes": 81920,
+        "sha256": "546da0e97036cf76c5dad9f72fdd0b957060302aa97170b1a9f21a33f66d85bb"
+      },
+      {
+        "result_id": 40,
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-8-1793021180590-1793021255757743577.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "2cc3e78c86031395a29a51df6273dd983fbf816db23967ea33f721affc5842a2"
+      }
+    ],
+    "iq_bytes_total": 1212416,
+    "delete": "Use application DELETE /api/results/{id} for exact result IDs; deletes associated SigMF files. Do not delete shared application storage root.",
+    "planner_manifest": {
+      "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026-r4/release-manifest.json",
+      "bytes": 2504535,
+      "sha256": "348ae635927d9253c9e02c73f86a081215177f6bbd3b55294a74342c2deb21e4"
+    },
+    "controller_manifest": {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261026-r4/release-manifest.json",
+      "bytes": 380,
+      "sha256": "1676bce65976c0a60e4cd6eb3f4eaaa1cc77c7fc4ad395df5a3834763a354b52"
+    },
+    "release_delete": "After stopping both services, keep current and needed rollback releases; remove exact unused release directory only. r3 Planner and original P3 Controller/Web remain rollback artifacts.",
+    "new_release_inventories": [
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026-r4",
+        "regular_files": 12682,
+        "bytes": 82240371,
+        "symlinks": 2
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261026-r4",
+        "regular_files": 2,
+        "bytes": 2655380,
+        "symlinks": 0
+      }
+    ]
+  },
+  "final_state": {
+    "cruise_active": false,
+    "reason": "8-step budget exhausted",
+    "spectrum": "paused",
+    "recognizer_available": false,
+    "tx": false
+  },
+  "cleanup": {
+    "temporary": {
+      "path": "/var/tmp/sdrharness-dev/pd-auto-1026",
+      "regular_files": 12146,
+      "bytes": 1878311949,
+      "symlinks": 10,
+      "other_entries": 0
+    },
+    "method": "shutil.rmtree on resolved feature root; symlink targets are not followed; removes scripts, isolated checkout, Cargo registry/cache/targets, logs, browser artifacts and temporary SQLite metadata rollback backup",
+    "verified_absent": true
+  }
+}

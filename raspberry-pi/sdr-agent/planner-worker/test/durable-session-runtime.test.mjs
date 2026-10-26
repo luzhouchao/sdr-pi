@@ -90,3 +90,18 @@ test('text without submit_plan reports failure and sends zero proposals',{timeou
  assert.ok(f.frames.some(v=>v.event==='agent_error' && v.data.error.includes('No valid proposal')));
  assert.equal(f.faux.state.callCount,1);assert.equal(f.lease.state().busy,false);
 });
+
+test('abort after natural completion does not emit a duplicate agent_end',{timeout:10000},async t=>{
+ const f=await fixture(t);await f.dispatch(command('prompt',{context:req}));await f.runtime.monitor;
+ assert.equal(f.frames.filter(v=>v.event==='agent_end').length,1);
+ assert.equal((await f.dispatch(command('abort'))).success,true);
+ assert.equal(f.frames.filter(v=>v.event==='agent_end').length,1,'duplicate end would make cruise count a successful plan as missing');
+});
+
+test('abort of an active run emits exactly one agent_end',{timeout:10000},async t=>{
+ const f=await fixture(t,{ack:false});await f.dispatch(command('prompt',{context:req}));
+ while(!f.frames.some(v=>v.event==='plan_proposed'))await new Promise(r=>setImmediate(r));
+ assert.equal((await f.dispatch(command('abort'))).success,true);
+ assert.equal(f.frames.filter(v=>v.event==='agent_end').length,1);
+ assert.equal(f.lease.state().busy,false);
+});

@@ -229,3 +229,43 @@ SSE持续连接导致networkidle不能收敛，尝试后改等真实控件；
 删除 `/var/tmp/sdrharness-dev/pd-web-sweep-1026` 的97文件、1589729逻辑字节，
 截图、脚本、浏览器缓存均清理，临时保留0；上述应用测量结果按用户设置保留。
 Spectrum连续采集仍paused，不恢复后台扫频。
+
+## 有界自动巡航与重试2026-10-26
+
+用户开启自动巡航后，首次8步完成；随后按“重试”再次执行8步。每次独立硬预算为
+8步、120秒、1048576字节IQ；任务指令限制2445–2465MHz、单步最多5点，
+10MS/s、10MHz带宽、20dB、dwell20ms、settle20ms、每点4096样本。
+频段指令不是新增硬频率围栏，Controller既有70MHz–6GHz及单次span20MHz限制仍有效。
+完整有限计划、执行前空间、停止路径及临时路径见[本轮证据](../evidence/PI_DURABLE_AUTO_CRUISE_2026-10-26.json)。
+
+首次36频点/589824字节，重试38频点/622592字节；每轮8条Controller账本均
+accepted/completed，重试8条Planner请求均只调用模型一次，执行completed。
+首轮0候选；重试部分步骤报告候选，仅表示功率候选，无识别/标签确认。保留DeepSeek
+low思考及自动工具选择，模型工具仍只有submit_plan；没有TX、训练或生产识别切换。
+两轮分别受1MiB预算约束，合计1212416字节不是单轮预算。
+
+首轮结束后出现多余上游retry：自然完成已发送agent_end，随后空闲abort又重复发送。
+修复为只有原先active的abort发送结束事件。回归修复前2次结束事件断言失败，
+修复后自然完成再abort及活动取消两项均通过。独立Planner r4部署并完成r4→r3→r4健康切回；
+重试没有多余retry，实际浏览器观察到“已用完巡航步数”自然退出。
+首次监控脚本误匹配退出文案，在140秒发stop时硬件早已完成；重试已纠正文案。
+
+复核发现Web按session/sweep_id唯一保存，而重启Controller会从request-1开始计数，
+造成第二轮覆盖原结果16–23的索引payload。原始SigMF均还在。Controller实际request/inspect
+执行ID现含128位随机epoch，最长61字节；消费者测试确认新执行独立、同消息重放幂等。
+先停止双方服务、保存第二轮payload及临时SQLite备份，事务内将原16从既有封存证据恢复、
+17–24从首轮快照恢复，第二轮以独立ID33–40插入。第二轮显示时间按SigMF开始时间加elapsed
+重建，为估计完成时间；旧证据不改字节，原始IQ/metadata不改路径或内容。
+
+Node108项、Controller140项（另1忽略）、Web38项（另2忽略）、Rust格式及
+all-target Clippy -D warnings通过。新Controller独立release r4已安装，完成新→旧→新切回。
+第一次部署验证误用/health路径，纠正为/api/health后完整重做通过；最终Planner/Web健康。
+浏览器实际打开第二轮末条、第一轮末条与原单次结果，点数5/4/2，pageerror为0。
+本单元未在新Controller安装后额外发RF；新ID由单元/消费者测试验证，实机RF事实来自上述两轮。
+
+19项RF属性与执行前逐项一致，单实例sdrd、控制连接0、两轮P201瞬时目录均不存在。
+最终巡航用完8步退出，模型空闲/无待批准；原Spectrum任务仍paused，recognizer_available=false。
+两轮用户结果16份IQ与16份metadata保留在应用存储，32文件1231518字节；
+每个精确路径/大小/SHA及人工DELETE /api/results/{id}方法见证据。原单次结果继续按原证据保留。
+新Planner/Controller release与所需旧回滚release保留，manifest和精确大小见证据；
+本单元所有临时脚本、隔离源码、缓存/构建、浏览器文件及SQLite备份均删除，清理数量见证据。
