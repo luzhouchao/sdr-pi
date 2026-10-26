@@ -45,7 +45,7 @@
 
 ## Agent、控制与部署
 
-- [pi-durable隔离核心、崩溃恢复与真实hold验证](PI_DURABLE_CORE_2026-10-26.md)
+- [pi-durable核心、崩溃恢复、实际部署及保留思考的hold验证](PI_DURABLE_CORE_2026-10-26.md)
 - [Pi SDK 1.4.0升级、部署与切回验证](PI_SDK_UPGRADE_2026-10-26.md)
 - [普通对话展示修复](HOLD_REPLY_DISPLAY_VALIDATION_2026-09-08.md)
 - [首次扫描混合选参](SURVEY_PARAMETER_ASSIST_VALIDATION_2026-09-08.md)

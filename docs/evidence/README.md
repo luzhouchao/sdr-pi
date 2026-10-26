@@ -356,3 +356,5 @@
 - [Hisar 411条8PSK异常专项核查](HISAR_8PSK_DIAGNOSTIC_2026-09-28.json)：117000源成员扫描、491 ADC重建、5349次有界干预，排查QPSK导频并定位近零形态/LO敏感性；保留原成绩，非部署修复，完成清理封存。
 
 - [论文部署证据收尾](AMC_PAPER_DEPLOYMENT_CLOSEOUT_2026-09-29.json)：当前AGX/运行时及RF参数、历史功率模式未记录、精度边界与清理封存；[32组整数/配对CSV](AMC_PAPER_DEPLOYMENT_COUNTS_2026-09-29.csv)、[16组D10计时CSV](AMC_PAPER_D10_TIMING_2026-09-29.csv)，原始时延序列另存结果根，无新RF/训练。
+
+- [pi-durable实际部署、思考兼容、回滚与清理](PI_DURABLE_DEPLOYMENT_2026-10-26.json)

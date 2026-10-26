@@ -8,6 +8,7 @@ export function startSessionServer({ socketPath, createRuntime, onError = () => 
   if (!Number.isInteger(frameTimeoutMs) || frameTimeoutMs < 1 || frameTimeoutMs > 1000 || !Number.isInteger(maxPendingFrames) || maxPendingFrames < 1 || maxPendingFrames > 32) throw new Error("invalid session frame budgets");
   prepareSocket(socketPath);
   let activeSocket;
+  let activeCleanup = Promise.resolve();
   const server = createServer((socket) => {
     if (activeSocket !== undefined) {
       writeFrame(socket, makeSessionResponse(undefined, false, "interactive session is busy"));
@@ -15,6 +16,8 @@ export function startSessionServer({ socketPath, createRuntime, onError = () => 
       return;
     }
     activeSocket = socket;
+    let finishCleanup;
+    activeCleanup = new Promise(resolve => { finishCleanup = resolve; });
     const runtime = createRuntime();
     let buffer = Buffer.alloc(0);
     let commandChain = Promise.resolve();
@@ -88,9 +91,15 @@ export function startSessionServer({ socketPath, createRuntime, onError = () => 
       // Retain ownership until late tools and disposal have actually settled.
       void commandChain.finally(() => runtime.dispose()).then(() => {
         if (activeSocket === socket) activeSocket = undefined;
-      }).catch(onError);
+      }).catch(onError).finally(finishCleanup);
     });
   });
+  server.shutdown = async () => {
+    const closed = new Promise((resolve,reject) => server.close(error => error ? reject(error) : resolve()));
+    activeSocket?.destroy();
+    await activeCleanup;
+    await closed;
+  };
   server.sessionAvailable = () => activeSocket === undefined;
   server.maxConnections = 2;
   server.listen(socketPath, () => chmodSync(socketPath, 0o660));

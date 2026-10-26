@@ -239,3 +239,9 @@ test("recognition rejects stale, mixed, oversized and internal Planner data", ()
   ]) { const r = recognition(); mutate(r); assert.throws(() => parseRecognition(r)); }
   assert.throws(() => parseRecognition({ candidate_id: "candidate-1", label: "BPSK", confidence: 0.99 }));
 });
+
+test('thinking Completions preserves reasoning and selects automatic tools without mutating input',()=>{
+ const payload={model:'deepseek',thinking:{type:'enabled'},messages:[]};
+ const result=requireSubmitPlan(payload);assert.deepEqual(result.thinking,payload.thinking);assert.equal(result.tool_choice,'auto');assert.equal(Object.hasOwn(payload,'tool_choice'),false);
+ assert.deepEqual(requireSubmitPlan({...payload,thinking:{type:'disabled'}}).tool_choice,{type:'function',function:{name:'submit_plan'}});
+});

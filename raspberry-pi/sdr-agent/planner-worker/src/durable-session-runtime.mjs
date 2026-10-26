@@ -27,7 +27,7 @@ export class DurableSessionRuntime {
         if (this.engine) throw new Error('a session is already open');
         this.closing = false;
         this.identity = {appSessionId:command.app_session_id,controllerEpoch:command.controller_epoch,sessionGeneration:command.session_generation};
-        const created = await this.createEngine({deliver:p=>this.#deliver(p),onProgress:p=>this.#progress(p)});
+        const created = await this.createEngine({identity:this.identity,deliver:p=>this.#deliver(p),onProgress:p=>this.#progress(p)});
         this.engine = created.engine;
         this.plannerMeta = created.plannerMeta ?? this.plannerMeta;
         await this.engine.attach(this.identity);

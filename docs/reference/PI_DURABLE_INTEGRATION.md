@@ -1,10 +1,51 @@
-# pi-durable 接入实施草案
+# pi-durable 接入与运维
 
-状态：隔离核心、v2会话adapter及P2账本已实现并验证；P3生产部署未完成。日期：2026-10-26。
+状态：P0—P3已实现、验证并在AGX安装，保留思考模式。日期：2026-10-26。
 进展和边界见[隔离核心验证](../validation/PI_DURABLE_CORE_2026-10-26.md)。
-供后续 Agent 拆分实施，不构成硬件操作或部署指令。
+下文设计基线/讨论保留当时语境；当前安装与运维以上方状态及以下运维段为准。
 基线为 `490d83e9efda50c867ec16df124d0b805b7b486c`，分支 `codex/sdr-improvements`。
 背景对话为 `01a1774c-5117-71f0-9de9-192cbd48a2c0`（确认 Pi 与 pi-d 工具）。
+
+## 当前安装与离线维护
+
+Planner为 `planner/releases/pi-durable-1.4.0-20261026-r3`，通过 `planner/current` 选择；
+Controller/Web制品为 `releases/pi-durable-1.4.0-20261026`，根均在
+`/home/jetson/.local/lib/sdrharness/`。精确大小、SHA、回滚和清理见
+[部署验证](../validation/PI_DURABLE_CORE_2026-10-26.md#p3持久目录维护与实际部署)。
+
+- Planner unit设置 `SDR_DURABLE_STATE_DIR=/var/lib/sdrharness-planner`，0700；
+  `service.sqlite` 的独占owner锁在触碰socket前取得。每业务会话独立
+  `<app_session_id>/planner.sqlite`，0600，最多128个目录、每库64MiB业务门限。
+  旧隔离开关 `SDR_DURABLE_DB` 会明确拒绝启动，不能静默退回v1。
+- Web给Controller传稳定 `SDR_DURABLE_APP_SESSION_ID`，账本根为
+  `/var/lib/sdrharness/web-console/plan-ledger`。终端仍可用持久session路径生成稳定ID；
+  安装CLI独立使用时需显式设置账本根才启用v2，未设置仍兼容v1。
+- SIGTERM停止新请求，等待session dispose和进行中的one-shot，再释放根锁。
+  正常退出与SIGKILL均不赋予旧请求新的执行资格；新epoch不会恢复旧批准或自动重发未知提案。
+- DeepSeek保留原Planner的low思考级别，显式传给Harness及实际模型入口。
+  Completions载荷 `thinking.type=enabled` 时使用 `tool_choice=auto`，避免上游拒绝命名工具强制调用；
+  唯一模型工具仍为 `submit_plan`，没有有效工具计划时明确报错、零提案。
+  其他载荷保留原命名工具选择。没有关闭思考，也没有放宽Controller校验。
+
+维护仅在两服务停机后执行；在线调用明确拒绝。以运行用户jetson执行：
+
+```sh
+sudo systemctl stop sdrharness-web.service sdrharness-planner.service
+/home/jetson/.local/bin/node /home/jetson/.local/lib/sdrharness/planner/current/src/durable-maintenance.mjs status --state-dir /var/lib/sdrharness-planner
+```
+
+在同一入口，使用 `archive --state-dir /var/lib/sdrharness-planner --session-id SESSION_ID --output /私有目录/新文件.sqlite`
+做SQLite一致性备份，生成0600的DB及含SHA的manifest并fsync文件/父目录；不会覆盖既有文件。
+使用 `delete --state-dir /var/lib/sdrharness-planner --session-id SESSION_ID --yes`
+只删除选中的Planner历史，拒绝额外文件/非私有文件/链接；返回关闭前文件数/字节。
+Controller账本是独立权威，以上命令不删除它，也不修改Web结果库。
+完全人工删除会话时，先核对业务ID及各应用目录，停机后分别处理对应账本；不要清空公共根。
+
+恢复归档时保持两服务停止，将归档复制到私有新会话目录的 `planner.sqlite`，
+保持0700/0600，核对manifest的SDK版本、会话ID和SHA；不复制旧owner锁文件。
+只支持本版归档，不承诺任意schema兼容。启动时撤销所有历史执行资格；不恢复批准或自动执行。
+恢复前须另行备份原Planner库和对应Controller账本，不能用归档覆盖尚未对账的权威结果。
+维护后通过systemd启动原两服务；不会新建Web会话或主动触发初始扫描。
 
 ## 目标与交付边界
 
@@ -153,8 +194,8 @@ Planner 记录、Controller 账本和 Web 结果库各守职责，不复制 IQ�
 
 ## 存储与部署约束
 
-建议给系统服务增加 `StateDirectory=sdrharness-planner` 和目录模式0700。
-候选库路径 `/var/lib/sdrharness-planner/planner.sqlite`，仅此 Worker 写。
+系统服务现使用 `StateDirectory=sdrharness-planner` 和目录模式0700。
+每业务库路径 `/var/lib/sdrharness-planner/<app_session_id>/planner.sqlite`，仅此 Worker 写。
 实现时检查实际 unit 合并结果、目录 owner 及 systemd 沙箱中的读写。
 在 Harness.open 前取得进程级独占锁，第二实例直接拒绝；systemd 单实例本身不够。
 不得放 /run 或安装制品目录。Web 通过接口查询，不能另开同库的 Harness。
@@ -176,7 +217,7 @@ key、鉴权 header、完整 provider 配置、原始 IQ 不入库；错误文�
 | P0 技术验证 | 独立 feature 临时目录，锁 durable/chord/pi-ai 1.4.0，模拟模型 | SQLite关闭重开、输入去重、队列撤回、流式适配、Spark等价行为、单所有者和资源预算通过；不能只测内存库 |
 | P1 会话接入 | runtime adapter、会话映射、恢复门、服务StateDirectory；模型仅hold/文本或虚拟Controller | 重启恢复历史与推理；abort/断连不复活；同一请求不重复出提案；不向真实硬件发动作 |
 | P2 跨域对账 | Controller持久账本、协议版本/握手、plan ACK/status、Worker outbox | ACK丢失/双端重启/未知结果均不重复执行；实时验证与批准门仍有效 |
-| P3 可回滚部署 | 独立release、数据库兼容说明、Web状态/删除入口 | 模拟端到端、只读健康与版本回滚通过；真实模型/真实RX按当时独立授权验收 |
+| P3 可回滚部署 | 独立release、数据库兼容说明、会话状态及离线归档/删除入口 | 模拟端到端、只读健康与版本回滚通过；真实模型/真实RX按当时独立授权验收 |
 
 故障注入至少覆盖：输入提交前后、模型生成中、提案入账前后、socket发送中、
 Controller受理前后、ACK丢失、执行开始/完成前后、Worker/Controller分别或同时重启。
@@ -194,7 +235,7 @@ Controller受理前后、ACK丢失、执行开始/完成前后、Worker/Controll
 保留隔离后的新库，旧版只可载入不含权限的摘要。再次升级先处理隔离的outbox。
 
 粗估 P0 1–2 人日、P1 2–4 人日、P2 3–5 人日、P3 1–2 人日。
-这是规划量级；当前隔离核心验证已完成，Controller存储与生产接入仍可能改变工期。
+这是实施前的规划量级；实际完成情况以上方状态和部署验证为准。
 
 ## 多 AI 讨论与主控取舍
 

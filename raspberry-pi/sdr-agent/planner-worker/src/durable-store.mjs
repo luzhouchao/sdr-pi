@@ -39,6 +39,9 @@ export async function openDurableStore(path) {
     let closed = false;
     return {
       storage,
+      // Maintenance may close the business database while retaining the
+      // permanent owner inode's lock until backup/deletion has settled.
+      async quiesce() { await storage.close(); },
       async close() {
         if (closed) return;
         closed = true;

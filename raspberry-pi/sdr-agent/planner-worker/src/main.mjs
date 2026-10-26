@@ -30,6 +30,11 @@ import {
 import { parseSurveyRequest, validateSurveyParameters, surveyParametersSchema, surveyParametersPrompt } from "./survey-parameters.mjs";
 
 const config = loadConfig();
+const durableState = config.durableDirectory
+  ? await (await import('./durable-service-state.mjs')).openDurableServiceState(config.durableDirectory)
+  : undefined;
+let shuttingDown = false;
+const pendingRequests = new Set();
 const defaultPlannerMeta = { provider: config.provider, model: config.model };
 const runLease = new RunLease();
 const webSearch = config.webSearchUrl === undefined
@@ -62,9 +67,12 @@ const server = createServer((socket) => {
       writeResponse(socket, makeErrorResponse(undefined, defaultPlannerMeta, "error", "one request per connection is required"));
       return;
     }
-    handleFrame(frame.subarray(0, newline).toString("utf8"))
+    const pending=handleFrame(frame.subarray(0, newline).toString("utf8"));
+    pendingRequests.add(pending);
+    pending
       .then((response) => writeResponse(socket, response))
-      .catch((error) => writeResponse(socket, makeErrorResponse(undefined, defaultPlannerMeta, "error", error)));
+      .catch((error) => writeResponse(socket, makeErrorResponse(undefined, defaultPlannerMeta, "error", error)))
+      .finally(()=>pendingRequests.delete(pending));
   });
   socket.on("timeout", () => socket.destroy());
   socket.on("error", (error) => process.stderr.write(`planner_socket_error=${safeMessage(error)}\n`));
@@ -77,7 +85,7 @@ server.listen(config.socketPath, () => {
 
 const sessionServer = startSessionServer({
   socketPath: config.sessionSocketPath,
-  createRuntime: () => config.durablePath
+  createRuntime: () => config.durableDirectory
     ? new DurableSessionRuntime({createEngine:createDurablePlanningEngine,plannerMeta:defaultPlannerMeta})
     : new SessionRuntime({
       plannerMeta: defaultPlannerMeta,
@@ -96,11 +104,25 @@ sessionServer.on("listening", () => {
   process.stderr.write(`session_ready socket=${config.sessionSocketPath}\n`);
 });
 
+async function shutdown() {
+  if(shuttingDown)return;
+  shuttingDown=true;
+  try {
+    await Promise.all([new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve())),sessionServer.shutdown()]);
+    await Promise.allSettled([...pendingRequests]);
+    await durableState?.close();
+    process.exitCode=0;
+  }catch(error){process.stderr.write(`planner_shutdown_error=${safeMessage(error)}\n`);process.exitCode=1;}
+}
+process.on('SIGTERM',()=>void shutdown());
+process.on('SIGINT',()=>void shutdown());
+
 async function handleFrame(frame) {
   // Read-only liveness; this never invokes a provider or changes a session.
   if (frame === '{"protocol_version":1,"operation":"health"}') {
-    return { schema_version: 1, service: "planner", ready: true, recognizer_available: false, session_protocol:config.durablePath?2:1, durable:!!config.durablePath, session_available:sessionServer.sessionAvailable() };
+    return { schema_version: 1, service: "planner", ready: true, recognizer_available: false, session_protocol:config.durableDirectory?2:1, durable:!!config.durableDirectory, session_available:sessionServer.sessionAvailable() };
   }
+  if(shuttingDown)return makeErrorResponse(undefined,defaultPlannerMeta,"unavailable","Planner is shutting down");
   let request;
   try {
     request = JSON.parse(frame)?.operation === "survey_parameters" ? parseSurveyRequest(frame) : parseRequest(frame);
@@ -192,12 +214,13 @@ function createPlanningModels(providerConfig,maxTokens) {
   return {models,model};
 }
 
-async function createDurablePlanningEngine(callbacks) {
+async function createDurablePlanningEngine({identity,...callbacks}) {
   const providerConfig=loadProviderSelection(config);
   const {models,model}=createPlanningModels(providerConfig,config.durableMaxTokens);
   const {DurablePlanner}=await import('./durable-planner.mjs');
-  const engine=await DurablePlanner.open({path:config.durablePath,models,model:{provider:model.provider,modelId:model.id},
-    providerIdentity:{provider:model.provider,model:model.id,api:model.api,baseUrl:model.baseUrl},
+  const engine=await DurablePlanner.open({path:durableState.databasePath(identity.appSessionId),models,model:{provider:model.provider,modelId:model.id},
+    providerIdentity:{provider:model.provider,model:model.id,api:model.api,baseUrl:model.baseUrl,thinkingLevel:model.reasoning?"low":"off"},
+    thinkingLevel:model.reasoning?"low":"off",
     runLease,contextWindow:providerConfig.contextWindow,thresholdPercent:providerConfig.compressionThresholdPercent,
     secrets:[providerConfig.apiKey],streamAdapter:providerConfig.provider==='spark-local'
       ? (base,requestIdentity)=>createSparkJsonPlanningStream(base,{webSearch,maxSearches:config.webSearchMaxSearches,
@@ -294,6 +317,7 @@ function createPlanningAgent({
 }
 
 function loadConfig() {
+  if(process.env.SDR_DURABLE_DB)throw new Error("SDR_DURABLE_DB was isolated-only; configure SDR_DURABLE_STATE_DIR for per-session state");
   const baseUrl = requiredEnv("SDR_PLANNER_BASE_URL").replace(/\/$/u, "");
   if (!/^https?:\/\//u.test(baseUrl)) throw new Error("SDR_PLANNER_BASE_URL must be HTTP(S)");
   const credentialsDirectory = process.env.CREDENTIALS_DIRECTORY?.trim();
@@ -319,7 +343,7 @@ function loadConfig() {
       50,
       95,
     ),
-    durablePath:process.env.SDR_DURABLE_DB || undefined,
+    durableDirectory:process.env.SDR_DURABLE_STATE_DIR || undefined,
     durableMaxTokens:boundedInteger("SDR_DURABLE_MAX_TOKENS",4096,128,8192),
     maxTokens: boundedInteger("SDR_PLANNER_MAX_TOKENS", 1_024, 128, 8_192),
     requestTimeoutMs: boundedInteger("SDR_PLANNER_TIMEOUT_MS", 30_000, 1_000, 120_000),

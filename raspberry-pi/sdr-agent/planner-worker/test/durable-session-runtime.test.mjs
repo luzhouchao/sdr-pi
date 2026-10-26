@@ -82,3 +82,11 @@ test('duplicate persisted ACK is idempotent, changed decision rejects',{timeout:
  assert.equal((await f.dispatch({...ack,state:'rejected'})).success,false);
  assert.equal(f.frames.filter(v=>v.event==='plan_proposed').length,1);
 });
+
+test('text without submit_plan reports failure and sends zero proposals',{timeout:10000},async t=>{
+ const f=await fixture(t);f.faux.setResponses([fauxAssistantMessage('Hold without a tool call.')]);
+ await f.dispatch(command('prompt',{context:req}));await f.runtime.monitor;
+ assert.equal(f.frames.filter(v=>v.event==='plan_proposed').length,0);
+ assert.ok(f.frames.some(v=>v.event==='agent_error' && v.data.error.includes('No valid proposal')));
+ assert.equal(f.faux.state.callCount,1);assert.equal(f.lease.state().busy,false);
+});

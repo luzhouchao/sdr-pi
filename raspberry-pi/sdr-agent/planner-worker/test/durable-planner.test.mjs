@@ -235,3 +235,38 @@ for(const expire of [false,true]) test(`Spark search turns recheck durable provi
   await f.engine.attach(identity);await f.engine.submit('session_a',input());await f.engine.idle();
   assert.equal(f.faux.state.callCount,expire?1:2);assert.equal(f.deliveries.length,expire?0:1);
 });
+
+test('archived Planner history reopens with old execution eligibility revoked',{timeout:10000},async t=>{
+ const {openDurableServiceState}=await import('../src/durable-service-state.mjs');
+ const {maintainDurableState}=await import('../src/durable-maintenance.mjs');
+ const base=await mkdtemp(join(tmpdir(),'pd-restore-'));const root=join(base,'state');
+ let service=await openDurableServiceState(root);const path=service.databasePath('session_a');
+ const f=await fixture(t,{path});f.faux.setResponses([hold()]);await f.engine.attach(identity);await f.engine.submit('session_a',input());await f.engine.idle();
+ await f.engine.close();await service.close();
+ const output=join(base,'history.sqlite');await maintainDurableState({operation:'archive',root,sessionId:'session_a',output});
+ let restored;
+ try {
+  restored=await DurablePlanner.open({...f.options,path:output});
+  assert.equal((await restored.state('session_a')).requests['epoch_a:3:9'].enabled,false);
+  await restored.attach({...identity,controllerEpoch:'new_epoch'});
+  await assert.rejects(restored.recover('session_a',[9]),/reconciliation/);
+  await restored.idle();assert.equal(f.deliveries.length,1);assert.equal(f.faux.state.callCount,1);
+ }finally{await restored?.close();await rm(base,{recursive:true,force:true});}
+});
+
+test('DeepSeek structured request preserves thinking with compatible automatic tool choice',{timeout:10000},async t=>{
+ const {openAICompletionsApi}=await import('@earendil-works/pi-ai/api/openai-completions.lazy');
+ const {resolveModelProfile}=await import('../src/model-profile.mjs');
+ const {planningUpstream}=await import('../test-support/planning-upstream.mjs');
+ const {upstream,requests}=await planningUpstream();
+ t.after(async()=>{upstream.closeAllConnections();await new Promise(r=>upstream.close(r));});
+ const model=resolveModelProfile({provider:'opencode-go',model:'deepseek-v4.1-flash',api:'openai-completions',baseUrl:'https://opencode.ai/zen/go/v1',contextWindow:500000},4096);
+ assert.equal(model.compat.thinkingFormat,'deepseek');model.baseUrl=`http://127.0.0.1:${upstream.address().port}/v1`;
+ const models=createModels();models.setProvider(createProvider({id:model.provider,baseUrl:model.baseUrl,auth:{apiKey:{name:'test',resolve:async()=>({auth:{apiKey:'test-only'},source:'test'})}},models:[model],api:openAICompletionsApi()}));
+ const f=await fixture(t,{models,thinkingLevel:"low",model:{provider:model.provider,modelId:model.id}});
+ await f.engine.attach(identity);await f.engine.submit('session_a',input());await f.engine.idle();
+ assert.equal(requests.length,1);assert.equal(f.deliveries.length,1);
+ assert.deepEqual(requests[0].payload.thinking,{type:'enabled'});
+ assert.equal(requests[0].payload.tool_choice,'auto');
+ assert.deepEqual(requests[0].payload.tools.map(tool=>tool.function.name),['submit_plan']);
+});

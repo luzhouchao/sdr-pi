@@ -195,23 +195,26 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
 
 ## 1. Agent/Harness and operator interface
 
-- [ ] pi-durable 1.4.0接入：[实施方案](reference/PI_DURABLE_INTEGRATION.md)。
+- [x] pi-durable 1.4.0接入：[实施方案](reference/PI_DURABLE_INTEGRATION.md)。
   - [x] 2026-10-26隔离核心：真实Harness/磁盘SQLite、会话/请求幂等、队列撤回、
         取消/共享租约、SIGKILL恢复门、未知提案禁止重发、跨进程锁及流式适配；
         90项测试和独立真实提供商hold通过，临时目录清理完成。见[验证](validation/PI_DURABLE_CORE_2026-10-26.md)。
   - [x] v2 session adapter及Controller持久epoch/ACK/status账本源码/隔离验收：
         丢ACK/Controller重启不重放、停止门、过期批准、blocked取消及真实提供商hold；
         Node99项、Rust139项、Clippy及清理通过，见同一验证的v2章节。
-  - [ ] 持久状态/归档删除、服务单所有者/正常关闭及可回滚部署；当前生产未启用durable。
+  - [x] 持久状态/归档删除、服务单所有者/正常关闭及AGX可回滚部署：
+        Node106项、Controller139项/Web37项测试、格式/Clippy、旧新切回通过；
+        DeepSeek保留思考的已安装制品隔离hold完成（约4.4秒），无SDR执行器。
+        清理和制品登记见同一验证P3章节；Web真实对话验收仍单列。
 
 - [x] 2026-10-26 Pi SDK 0.84.4→1.4.0兼容升级：Pi/TypeBox锁文件、
       系统消息内工具声明、压缩时规则保留、Spark JSON适配及旧OpenCode选择兼容；
       隔离真实SDK/模拟HTTP测试、AGX独立版本部署/健康检查和0.84.4切回通过。
       浏览器及清理/制品记录见[验证](validation/PI_SDK_UPGRADE_2026-10-26.md)。
-      用户要求不保留旧key，已清空；pi-durable未启用，识别准入不变。
+      用户要求不保留旧key，当时已清空；该SDK升级时未启用durable，后续接入见上项。
 - [ ] Pi 1.4.0真实提供商对话验收：用户2026-10-26已接入OpenCode Go
-      DeepSeek V4.1 Flash，保存配置与key存在已核对；本次未发模型请求，
-      Web→Planner→Controller的成功hold对话仍待独立验收。见[接入草案](reference/PI_DURABLE_INTEGRATION.md)。
+      DeepSeek V4.1 Flash，隔离Controller的真实hold已通过，当前key未改；
+      生产Web→Planner→Controller的成功hold对话仍待独立验收。见[接入草案](reference/PI_DURABLE_INTEGRATION.md)。
 
 2026-09-07 [Web 升级](validation/WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)已安装当前 Web
 源码及实例隔离修正。下列 S6/V1a 原验证中的“未部署”保留历史时点；现有归档/

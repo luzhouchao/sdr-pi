@@ -15,6 +15,7 @@ RestartSec=3
 TimeoutStopSec=50
 StateDirectory=sdrharness/web-console
 StateDirectoryMode=0700
+Environment=SDR_DURABLE_CONTROLLER_DIR=/var/lib/sdrharness/web-console/plan-ledger
 
 MemoryHigh=64M
 MemoryMax=96M

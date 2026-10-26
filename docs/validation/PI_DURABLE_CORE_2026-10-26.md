@@ -110,3 +110,74 @@ Planner请求仍只接受v1。Clippy发现一次无用Box转换，已修正。
 最小统计及血缘见[协议审计](../evidence/PI_DURABLE_PROTOCOL_2026-10-26.json)。
 生产Planner/Web、原SDK release和Spectrum暂停状态保持；后续是状态/归档删除、
 服务单所有者与正常关闭、独立制品/回滚及安装验证。
+
+## P3持久目录维护与实际部署
+
+2026-10-26完成并安装在AGX。Planner使用每业务会话独立SQLite和根目录单所有者锁，
+在操作socket前取得锁；Web把稳定业务ID传给Controller，Controller账本独立保存。
+SIGTERM等待真实dispose及one-shot结束后释放根锁；未知提案/旧批准仍不自动重放。
+生产 `recognizer_available=false`，Spectrum扫频仍暂停。
+
+最终验证：Node **106通过、0失败/跳过**（192MiB堆，实际Rust二进制参与闭环）；
+Controller **139通过、1项原有ignored**，Web **37通过、2项原有ignored**；
+两Rust包fmt及all-target Clippy `-D warnings`通过。
+新增覆盖服务根锁在socket处理前拒绝第二Worker、SIGTERM后接手、实际清理屏障、
+稳定Web业务ID在 `--session-state off` 下跨Controller重启保持、在线拒绝维护、
+SQLite归档完整性/哈希/恢复后的资格撤销、精确删除及其他会话保留、
+异常文件/链接拒绝和通过 `current` 符号链接执行维护CLI。
+
+真实安装hold第一次失败：上游HTTP400明确表示思考模式不支持强制指定命名工具，
+Controller账本0提案。用户明确要求保留思考后，最终采用显式low思考级别和
+`thinking.type=enabled` 时的 `tool_choice=auto`，模型仅注册 `submit_plan`；
+未提交工具计划时明确失败，不把文字当动作。请求身份/期限/批准/去重门不变。
+最终已安装r2的真实hold约**4433ms**完成：退出0，1次模型尝试，1条accepted/completed；
+响应含1个非空thinking块。未提供 `--sdrd`，Controller无SDR执行器。
+最终r3仅修正维护CLI的符号链接入口识别，全部源码逐文件与安装制品核对一致；
+无须因此重复发模型请求。生产Web真实聊天和浏览器本轮未验收，未新建Web会话。
+
+实际修正还包括：维护删除最初误拒SQLite owner journal，增加精确私有文件白名单后通过；
+线上的维护命令最初因 `current` 与真实模块路径不同而未进入CLI，canonical入口检查修正后，
+实际调用退出1并报告already-owned；一次错误从仓库根启动的Node检查已中止，最终只采用
+隔离candidate的106项结果，遗留的两个socket已清理。
+未放宽Unix socket长度、权限、预算或执行准入。
+
+安装制品根为 `/home/jetson/.local/lib/sdrharness/`：
+
+| 保留路径（相对该根） | 用途 | 文件数/逻辑字节（含manifest和链接） |
+| --- | --- | --- |
+| `planner/releases/pi-durable-1.4.0-20261026-r3` | 当前Planner、固定依赖与NOTICE | 12684 / 82240232 |
+| `releases/pi-durable-1.4.0-20261026` | Controller/Web及对应unit模板 | 5 / 5980955 |
+| `releases/pre-durable-20261026` | 匹配旧二进制、unit及Planner指针 | 6 / 5870340 |
+
+每目录 `release-manifest.json` 记录版本、逐文件大小/SHA及删除方法，manifest自身SHA见
+[P3证据](../evidence/PI_DURABLE_DEPLOYMENT_2026-10-26.json)。不含key/完整provider配置。
+新Controller SHA为 `0ff37a800499cdcc102a69eeee60a5734179b4887061a60b46183354246609cf`；
+新Web SHA为 `ee89bea61154b3a274245e5cb99316dba890c82ea61cd385faad7b274592e601`。
+实际unit保留 `30-operations.conf`、192MiB堆及原资源/沙箱限制。
+Planner增加0700 StateDirectory，实际DB/owner文件0600。
+最终观察MemoryCurrent约34.3MB/1.5MB（Planner/Web），这是当前值，不是峰值；未提高限额。
+
+完成新版→旧版→新版切换，最终r3再次做旧新切回及健康检查。
+旧版运行期间，新库停机快照的4个文件SHA完全不变；旧unit不含durable开关，
+没有读取/迁移新库。最终Planner健康返回session_protocol=2、durable=true；两服务active。
+现有两个Web会话的initial_survey_status均complete，重启未触发新扫描。
+实际Web Controller的环境身份与原session ID相同，账本及Planner库使用该ID。
+
+回滚操作必须先停Web和Planner，等待Controller/Worker退出，再从
+`releases/pre-durable-20261026` 恢复两个匹配二进制和两份unit，
+将 `planner/current` 原子切到 `planner/releases/pi-1.4.0-20261026`，
+`systemctl daemon-reload` 后启动Planner/Web。保留原operations drop-in；
+旧unit移除双方durable环境开关，**不删除新库，也不让旧版打开新库**。
+重新升级同样先停双方，用新制品目录恢复二进制/unit，再原子切回r3、reload/start。
+任何未决动作保留unknown，不把回滚当成已取消或可重新执行的依据。
+新库备份、恢复及精确人工删除方法见[当前运维入口](../reference/PI_DURABLE_INTEGRATION.md#当前安装与离线维护)。
+
+最终P201只读复核：单sdrd PID1318，RX/TX buffer及全部scan mask均0，
+AGX到30431/43110的控制连接0。Spectrum collector945217仅剩zombie、无资源；
+保留Web/预测服务和既有用户数据，未宣称恢复未知扫描前RF基线。
+
+清理 `/var/tmp/sdrharness-dev/pd3-1026`、本单元两个已替代Planner release和两个孤立socket，
+共**47867个文件/链接，2264951962逻辑字节**，逐项确认路径不存在，临时保留0。
+当前安装与回滚制品按上表保留；生产Planner历史和Controller账本属于应用存储，
+不参与开发清理，其路径、用途、大小/SHA时点快照及人工删除方法见P3证据。
+原两个未跟踪用户文件保留，无新IQ、模型或射频实验。

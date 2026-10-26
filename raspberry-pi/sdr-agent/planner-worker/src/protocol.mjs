@@ -121,7 +121,9 @@ export function requireSubmitPlan(payload, api = "openai-completions") {
   }
   return {
     ...payload,
-    tool_choice: {
+    // DeepSeek thinking rejects a named tool choice. Keep thinking enabled;
+    // only submit_plan is registered, and text without a plan fails locally.
+    tool_choice: payload.thinking?.type === "enabled" ? "auto" : {
       type: "function",
       function: { name: "submit_plan" },
     },

@@ -10,6 +10,10 @@ Group=jetson
 EnvironmentFile=/etc/sdrharness/runtime.env
 RuntimeDirectory=sdr-agent
 RuntimeDirectoryMode=0750
+StateDirectory=sdrharness-planner
+StateDirectoryMode=0700
+Environment=SDR_DURABLE_STATE_DIR=/var/lib/sdrharness-planner
+TimeoutStopSec=50
 WorkingDirectory=/home/jetson/.local/lib/sdrharness/planner/current
 ExecStart=/home/jetson/.local/bin/node --max-old-space-size=192 /home/jetson/.local/lib/sdrharness/planner/current/src/main.mjs
 Restart=on-failure

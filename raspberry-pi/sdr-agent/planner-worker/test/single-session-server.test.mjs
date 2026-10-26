@@ -108,3 +108,14 @@ test('disconnected owner retains socket reservation until disposal settles', {ti
   replacement.write(JSON.stringify({protocol_version:1,command_id:1,session_generation:0,type:'get_state'})+'\n');
   assert.equal((await response).success,true);assert.equal(created,2);
 });
+
+test('shutdown waits for actual runtime disposal', {timeout:10000}, async t=>{
+ const socketPath=`/run/user/${process.getuid()}/sdr-agent/shutdown-${process.pid}.sock`;
+ let finish,entered;const barrier=new Promise(r=>finish=r);const disposing=new Promise(r=>entered=r);
+ const server=startSessionServer({socketPath,createRuntime:()=>({async dispatch(){return {};},async dispose(){entered();await barrier;}})});
+ t.after(()=>{finish();rmSync(socketPath,{force:true});});await once(server,'listening');
+ const owner=await openSocket(socketPath);let completed=false;
+ const stopped=server.shutdown().then(()=>{completed=true;});await disposing;
+ await new Promise(r=>setImmediate(r));assert.equal(completed,false);assert.equal(server.sessionAvailable(),false);
+ finish();await stopped;assert.equal(completed,true);assert.equal(server.sessionAvailable(),true);owner.destroy();
+});

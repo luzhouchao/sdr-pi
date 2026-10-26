@@ -43,10 +43,10 @@ export class DurablePlanner {
   }
 
   constructor({ path, models, model, providerIdentity, runLease, deliver, streamAdapter,
-    secrets = [], contextWindow = 32_768, thresholdPercent = 90, now = Date.now,
+    secrets = [], thinkingLevel = "off", contextWindow = 32_768, thresholdPercent = 90, now = Date.now,
     maxBytes = 64 * 1024 * 1024, onReport = () => {}, onProgress = () => {}, beforeDelivery = async () => {} }) {
     if (!runLease || typeof deliver !== "function") throw new Error("Controller delivery and shared RunLease required");
-    this.path = path; this.models = models; this.model = model;
+    this.path = path; this.models = models; this.model = model; this.thinkingLevel = thinkingLevel;
     this.provider = digest(providerIdentity); this.runLease = runLease; this.deliver = deliver;
     this.streamAdapter = streamAdapter; this.secrets = secrets; this.contextWindow = contextWindow;
     this.thresholdPercent = thresholdPercent; this.now = now; this.maxBytes = maxBytes;
@@ -184,7 +184,7 @@ export class DurablePlanner {
     if (!conversationId) {
       if (Object.keys(index?.sessions ?? {}).length >= 16) throw new Error("durable session capacity reached");
       const conversation = await this.harness.createConversation({ ownership: { kind: "ownerless" },
-        agent: { model: this.model, instructions: PLANNER_SYSTEM_PROMPT, tools: [this.#tool()] },
+        agent: { model: this.model, thinkingLevel: this.thinkingLevel, instructions: PLANNER_SYSTEM_PROMPT, tools: [this.#tool()] },
         init: async (tx, id) => {
           (await tx.doc(Index)).sessions[appSessionId] = id;
           const business = await tx.doc(Business, id); business.appSessionId = appSessionId;
@@ -306,7 +306,7 @@ export class DurablePlanner {
           request.modelAttempts++;
         });
         if (options.signal?.aborted) throw new Error("request aborted");
-        for await (const event of this.models.streamSimple(model, context, { ...options, maxRetries: 0,
+        for await (const event of this.models.streamSimple(model, context, { ...options, reasoning: this.thinkingLevel, maxRetries: 0,
           onPayload: options.onPayload ?? (payload => requireSubmitPlan(payload, model.api)) })) {
           if (event.type === "error") event.error.errorMessage = formatUpstreamError(event.error.errorMessage, this.secrets);
           output.push(event);

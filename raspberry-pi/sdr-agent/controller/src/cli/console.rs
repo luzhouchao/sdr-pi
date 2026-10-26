@@ -2741,9 +2741,13 @@ fn open_console_ledger(session_path: Option<&Path>) -> AppResult<Option<PlanLedg
     if root.as_os_str().is_empty() {
         return Err(invalid_input("empty durable Controller directory").into());
     }
-    let app_id = match session_path {
-        Some(path) => format!("session_{}", action_hash(&json!(path.to_string_lossy()))?),
-        None => format!("terminal_{}", fresh_epoch()?),
+    let app_id = match env::var("SDR_DURABLE_APP_SESSION_ID") {
+        Ok(id) => id,
+        Err(env::VarError::NotPresent) => match session_path {
+            Some(path) => format!("session_{}", action_hash(&json!(path.to_string_lossy()))?),
+            None => format!("terminal_{}", fresh_epoch()?),
+        },
+        Err(error) => return Err(error.into()),
     };
     Ok(Some(PlanLedger::open(&root.join(&app_id), &app_id)?))
 }

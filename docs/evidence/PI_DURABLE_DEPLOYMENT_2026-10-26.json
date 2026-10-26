@@ -1,0 +1,281 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26 11:28:19.799356+00:00",
+  "feature": "pi-durable-p3",
+  "base_commit": "0ba19fa",
+  "status": "deployed",
+  "tests": {
+    "node": {
+      "passed": 106,
+      "failed": 0,
+      "skipped": 0
+    },
+    "controller": {
+      "passed": 139,
+      "ignored": 1
+    },
+    "web": {
+      "passed": 37,
+      "ignored": 2
+    },
+    "rust_fmt": "passed",
+    "clippy_all_targets_deny_warnings": "passed"
+  },
+  "installed_hold": {
+    "installed_artifacts": true,
+    "hardware_executor": false,
+    "exit_code": 0,
+    "accepted": 1,
+    "completed": 1,
+    "elapsed_ms": 4433
+  },
+  "thinking": {
+    "thinking_blocks": 1,
+    "thinking_characters": 68,
+    "model_attempts": [
+      1
+    ]
+  },
+  "compatibility": {
+    "thinking_level": "low",
+    "thinking_enabled": true,
+    "thinking_completions_tool_choice": "auto",
+    "sole_model_tool": "submit_plan",
+    "text_without_tool": "explicit error and zero proposals",
+    "provider_and_key": "unchanged"
+  },
+  "deployment": {
+    "first": {
+      "version": "new",
+      "planner": {
+        "schema_version": 1,
+        "service": "planner",
+        "ready": true,
+        "recognizer_available": false,
+        "session_protocol": 2,
+        "durable": true,
+        "session_available": false
+      },
+      "web": {
+        "ready": true,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "service": "web"
+      },
+      "planner_current": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026"
+    },
+    "final": {
+      "version": "new",
+      "planner": {
+        "schema_version": 1,
+        "service": "planner",
+        "ready": true,
+        "recognizer_available": false,
+        "session_protocol": 2,
+        "durable": true,
+        "session_available": true
+      },
+      "web": {
+        "ready": true,
+        "recognizer_available": false,
+        "schema_version": 1,
+        "service": "web"
+      },
+      "planner_current": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026-r3"
+    },
+    "rollback": [
+      "{\"version\": \"old\", \"planner\": {\"schema_version\": 1, \"service\": \"planner\", \"ready\": true, \"recognizer_available\": false}, \"web\": {\"ready\": true, \"recognizer_available\": false, \"schema_version\": 1, \"service\": \"web\"}, \"planner_current\": \"/home/jetson/.local/lib/sdrharness/planner/releases/pi-1.4.0-20261026\"}",
+      "{\"old_release_durable_files_unchanged\": 4}"
+    ],
+    "source_matches_installed": true,
+    "online_maintenance_refused": true,
+    "memory_current_bytes": {
+      "planner": 34271232,
+      "web": 1495040
+    },
+    "memory_current_is_not_peak": true,
+    "state_directory_mode": "0700",
+    "database_mode": "0600",
+    "operations_drop_ins": "retained"
+  },
+  "failures_and_fixes": [
+    "First maintenance deletion rejected SQLite owner journal; exact allowlist includes private owner journal and counts it before close.",
+    "One Node run was accidentally started from repository root, then terminated; final checks ran in isolated candidate and its two orphan sockets were removed.",
+    "First installed hold failed with upstream HTTP400: thinking mode rejects forced named tool choice; no plan was delivered. User requested preserving thinking: explicit low level and automatic tool choice now pass, with strict local plan validation unchanged.",
+    "Initial maintenance CLI through current symlink returned without running; canonical entry-path comparison fixed, subprocess symlink tests and installed online refusal verified.",
+    "Pre-final wire assertion exposed Harness default off/omitted thinking field; explicit thinking policy now reaches physical provider calls, and real response includes thinking."
+  ],
+  "boundaries": {
+    "no_new_rx_or_tx": true,
+    "no_training": true,
+    "recognizer_available": false,
+    "production_web_real_chat": "not tested; initial survey avoidance; stable business identity verified in actual child process",
+    "real_hold_release": "r2; final r3 only changes maintenance CLI entry detection; final installed source hashes match checkout",
+    "durable_sqlite": "WAL + NORMAL; no power-loss exactly-once promise"
+  },
+  "spectrum": {
+    "phase": "paused",
+    "pause_reason": "signal:SIGTERM",
+    "dataset": "/home/jetson/agent/data/datasets/wifi24_A_20261026T070214Z_30s_500ms",
+    "collector_pid": 945217,
+    "collector_state": "zombie; zero SDR resources; Web parent left running",
+    "agx_control_connections": 0,
+    "p201_readonly": "1318\n/sys/bus/iio/devices/iio:device2/buffer/enable=0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en=0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en=0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en=0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en=0\n/sys/bus/iio/devices/iio:device3/buffer/enable=0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en=0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en=0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en=0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en=0\n"
+  },
+  "retained_releases": [
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pre-durable-20261026",
+      "files": 6,
+      "bytes": 5870340,
+      "symlinks": 0,
+      "purpose": "matching old Controller/Web units and binaries plus old Planner pointer for rollback",
+      "manifest": "/home/jetson/.local/lib/sdrharness/releases/pre-durable-20261026/release-manifest.json",
+      "manifest_sha256": "54f2a0cd1a7e1a7429cf780c5353c5aa8334d79f759ce4a5bf0189b8cf0690d1",
+      "manifest_bytes": 983,
+      "regular_payload_bytes": 5869357,
+      "manual_delete": "stop both services, ensure no executable/current pointer uses this release, then rm -rf -- /home/jetson/.local/lib/sdrharness/releases/pre-durable-20261026"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261026",
+      "files": 5,
+      "bytes": 5980955,
+      "symlinks": 0,
+      "purpose": "installed Controller/Web pair and service templates",
+      "manifest": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261026/release-manifest.json",
+      "manifest_sha256": "e7d808d830d7171c2968a49dd98964d65d85230d399171d93343edc6d2245654",
+      "manifest_bytes": 855,
+      "regular_payload_bytes": 5980100,
+      "manual_delete": "stop both services, ensure no executable/current pointer uses this release, then rm -rf -- /home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261026"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026-r3",
+      "files": 12684,
+      "bytes": 82240232,
+      "symlinks": 2,
+      "purpose": "installed Pi durable Planner and fixed dependencies",
+      "manifest": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026-r3/release-manifest.json",
+      "manifest_sha256": "052c0670c656e4c0159f8a7c2e98bf690645fc66fc09591c89b73ed2b4ca2585",
+      "manifest_bytes": 2504535,
+      "regular_payload_bytes": 79735633,
+      "manual_delete": "stop both services, ensure no executable/current pointer uses this release, then rm -rf -- /home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026-r3"
+    }
+  ],
+  "mutable_application_state": [
+    {
+      "purpose": "live application-owned durable history/authority, not development leftovers",
+      "root": "/var/lib/sdrharness-planner",
+      "snapshot_only_not_backup": true,
+      "files": [
+        {
+          "path": "/var/lib/sdrharness-planner/service.sqlite",
+          "bytes": 122880,
+          "sha256": "ad3a70b317da377f5cb8b5fa202f803490d8e91528a77332f24a949bc2b10651"
+        },
+        {
+          "path": "/var/lib/sdrharness-planner/service.sqlite-shm",
+          "bytes": 32768,
+          "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+        },
+        {
+          "path": "/var/lib/sdrharness-planner/service.sqlite-wal",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/lib/sdrharness-planner/service.sqlite.owner.sqlite",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/lib/sdrharness-planner/service.sqlite.owner.sqlite-journal",
+          "bytes": 512,
+          "sha256": "2e010dc96ed24011084c0e66322ce6b6de5669bc93a96615564dead851e403a5"
+        },
+        {
+          "path": "/var/lib/sdrharness-planner/session-1789273063753/planner.sqlite",
+          "bytes": 122880,
+          "sha256": "146ad22b8b614bb48bdb371d43478e4a7971a5142e1cc54f27eda83e1d9a2b16"
+        },
+        {
+          "path": "/var/lib/sdrharness-planner/session-1789273063753/planner.sqlite-shm",
+          "bytes": 32768,
+          "sha256": "0684aff182cae44c7d0ab51df72d94e1ec1ca24108a05823e9856900b248be42"
+        },
+        {
+          "path": "/var/lib/sdrharness-planner/session-1789273063753/planner.sqlite-wal",
+          "bytes": 16512,
+          "sha256": "0c93ef31d29e002ecac88dd55cd670b0c938ce0c05a3f89bdc6d9dc9f0c947ed"
+        },
+        {
+          "path": "/var/lib/sdrharness-planner/session-1789273063753/planner.sqlite.owner.sqlite",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/lib/sdrharness-planner/session-1789273063753/planner.sqlite.owner.sqlite-journal",
+          "bytes": 512,
+          "sha256": "16193d3e65414058a30aa7e5231983fd92debfabe7efe6447e03bd97e3871942"
+        }
+      ],
+      "manual_delete": "stop both services, select exact session ID; use Planner delete command and separately verify/remove corresponding Controller session directory; never delete active shared roots"
+    },
+    {
+      "purpose": "live application-owned durable history/authority, not development leftovers",
+      "root": "/var/lib/sdrharness/web-console/plan-ledger",
+      "snapshot_only_not_backup": true,
+      "files": [
+        {
+          "path": "/var/lib/sdrharness/web-console/plan-ledger/session-1789273063753/owner.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/var/lib/sdrharness/web-console/plan-ledger/session-1789273063753/plans.json",
+          "bytes": 74,
+          "sha256": "182eac046a06a1157c6f0491cd44fda778a0f32247c9ca00e041a50f2d86d12e"
+        }
+      ],
+      "manual_delete": "stop both services, select exact session ID; use Planner delete command and separately verify/remove corresponding Controller session directory; never delete active shared roots"
+    }
+  ],
+  "cleanup": [
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026",
+      "files": 12684,
+      "bytes": 82239806,
+      "symlinks": 2,
+      "removed_verified": true
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026-r2",
+      "files": 12684,
+      "bytes": 82240216,
+      "symlinks": 2,
+      "removed_verified": true
+    },
+    {
+      "path": "/run/user/1000/sdr-agent/pi-sdk-mEU0kF-plan.sock",
+      "files": 1,
+      "bytes": 0,
+      "removed_verified": true
+    },
+    {
+      "path": "/run/user/1000/sdr-agent/pi-sdk-mEU0kF-session.sock",
+      "files": 1,
+      "bytes": 0,
+      "removed_verified": true
+    },
+    {
+      "path": "/var/tmp/sdrharness-dev/pd3-1026",
+      "files": 22497,
+      "bytes": 2100471940,
+      "symlinks": 2,
+      "removed_verified": true
+    }
+  ],
+  "cleanup_total": {
+    "files": 47867,
+    "bytes": 2264951962,
+    "temporary_retained": 0
+  }
+}

@@ -1578,6 +1578,9 @@ async fn process_actor(
         }
     }
     let mut command = Command::new(&state.config.agent_binary);
+    // Web owns the stable business identity even though terminal history is
+    // disabled here. A Controller restart must not allocate a new conversation.
+    command.env("SDR_DURABLE_APP_SESSION_ID", &session_id);
     command
         .arg("--socket")
         .arg(&state.config.session_socket)

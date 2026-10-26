@@ -7,10 +7,11 @@
 
 ## 当前执行选择
 
-2026-10-26当前推进pi-durable接入：隔离Harness/SQLite核心已验证，
-v2 session adapter与Controller持久epoch/ACK/status对账已通过隔离验证，
-下一单元为持久状态/归档删除、服务正常关闭与单所有者、独立制品及可回滚部署。
-不把隔离核心当成整个接入完成。用户要求Spectrum扫频暂停，保持SDR空闲；
+2026-10-26 pi-durable接入P0—P3已完成：Harness/SQLite、v2协议及Controller账本、
+分会话存储/离线归档删除、服务单所有者/正常关闭已验证并部署，版本切回通过。
+DeepSeek思考保持开启，命名工具兼容改为自动选择，真实隔离hold已通过。
+本接入单元收束；Web真实对话仍是独立待验收项，不自动触发新扫描。
+用户要求Spectrum扫频暂停，保持SDR空闲；
 真实提供商验证仅hold/虚拟Controller，不新增硬件操作。见[实施方案](reference/PI_DURABLE_INTEGRATION.md)
 及[本单元验证](validation/PI_DURABLE_CORE_2026-10-26.md)。
 
