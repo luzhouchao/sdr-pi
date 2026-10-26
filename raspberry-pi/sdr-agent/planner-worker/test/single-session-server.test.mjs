@@ -82,3 +82,29 @@ test("permits only one interactive control connection", async (context) => {
   await once(server, "close");
   rmSync(socketPath, { force: true });
 });
+
+test('disconnected owner retains socket reservation until disposal settles', {timeout:10000}, async t => {
+  const runtimeRoot = `/run/user/${process.getuid()}/sdr-agent`;
+  const socketPath = `${runtimeRoot}/durable-dispose-${process.pid}.sock`;
+  mkdirSync(runtimeRoot, { recursive: true, mode: 0o700 });
+  let finishDispose, enteredDispose;
+  const disposal = new Promise(r => finishDispose = r);
+  const entered = new Promise(r => enteredDispose = r);
+  let created = 0;
+  const server = startSessionServer({socketPath,createRuntime:()=>{
+    created++;
+    return {async dispatch(){return {success:true};},async dispose(){enteredDispose();await disposal;}};
+  }});
+  const sockets=[];
+  t.after(async()=>{finishDispose();for(const socket of sockets)socket.destroy();await new Promise(r=>server.close(r));rmSync(socketPath,{force:true});});
+  await once(server,'listening');
+  const owner=await openSocket(socketPath);sockets.push(owner);owner.end();await entered;
+  const rejected=await openSocket(socketPath);sockets.push(rejected);
+  assert.match((await readFrame(rejected)).error,/busy/);await waitForClose(rejected);
+  assert.equal(created,1);
+  finishDispose();await disposal;await new Promise(r=>setImmediate(r));
+  const replacement=await openSocket(socketPath);sockets.push(replacement);
+  const response=readFrame(replacement);
+  replacement.write(JSON.stringify({protocol_version:1,command_id:1,session_generation:0,type:'get_state'})+'\n');
+  assert.equal((await response).success,true);assert.equal(created,2);
+});

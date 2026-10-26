@@ -7,10 +7,16 @@
 
 ## 当前执行选择
 
-2026-10-26用户选择先完成Pi SDK兼容升级。当前单元为0.84.4→1.4.0，
+2026-10-26当前推进pi-durable接入：隔离Harness/SQLite核心已验证，
+后续先完成session adapter与Controller持久epoch/ACK/status对账，再做可回滚部署。
+不把隔离核心当成整个接入完成。用户要求Spectrum扫频暂停，保持SDR空闲；
+真实提供商验证仅hold/虚拟Controller，不新增硬件操作。见[实施方案](reference/PI_DURABLE_INTEGRATION.md)
+及[本单元验证](validation/PI_DURABLE_CORE_2026-10-26.md)。
+
+此前用户选择先完成Pi SDK兼容升级，0.84.4→1.4.0已完成，
 包括隔离SDK测试、独立Planner版本目录、部署与切回验证；不接入pi-durable。
 用户随后要求不保留旧key，已清空外部提供商key并保留非秘密设置；
-真实上游对话验收等待用户在Web填入新key，不能用模拟接口或健康检查替代。
+用户随后已填入新key，独立真实durable hold已通过；Web全链路真实对话仍未验收，不能用模拟接口或健康检查替代。
 见[升级验证](validation/PI_SDK_UPGRADE_2026-10-26.md)，状态以checklist为准。
 
 2026-09-26用户取消近期自生成及后续诊断，确认删除8个结果目录，并退役AGX独立D8。已删除20个目录、2061个文件、1,369,327,545字节，路径缺失复核通过；原RML2018A源数据、实收IQ、raw/guard及D10结果保留。D10依赖的d8命名源码与混合模型历史审计保留。删除前逐文件大小/SHA及精确路径见[删除清单](evidence/EXPERIMENT_CLEANUP_D8_RETIREMENT_2026-09-26.json)。历史记录中的“保留”是当时状态，清单所列外部结果现已删除，不能再宣称可读回。

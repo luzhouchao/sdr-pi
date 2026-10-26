@@ -195,8 +195,12 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
 
 ## 1. Agent/Harness and operator interface
 
-- [ ] pi-durable 1.4.0接入：已形成[实施草案](reference/PI_DURABLE_INTEGRATION.md)，
-      覆盖会话身份、恢复门、Controller回执/持久去重及故障矩阵；尚未实现、测试或部署。
+- [ ] pi-durable 1.4.0接入：[实施方案](reference/PI_DURABLE_INTEGRATION.md)。
+  - [x] 2026-10-26隔离核心：真实Harness/磁盘SQLite、会话/请求幂等、队列撤回、
+        取消/共享租约、SIGKILL恢复门、未知提案禁止重发、跨进程锁及流式适配；
+        90项测试和独立真实提供商hold通过，临时目录清理完成。见[验证](validation/PI_DURABLE_CORE_2026-10-26.md)。
+  - [ ] 生产session adapter、Controller持久epoch/ACK/status账本、blocked任务运维、
+        状态/归档删除及可回滚部署；当前生产未启用durable。
 
 - [x] 2026-10-26 Pi SDK 0.84.4→1.4.0兼容升级：Pi/TypeBox锁文件、
       系统消息内工具声明、压缩时规则保留、Spark JSON适配及旧OpenCode选择兼容；

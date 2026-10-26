@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "baseline": "c7d250a",
+  "scope": "isolated durable core; production unchanged",
+  "sdk": {
+    "durable": "1.4.0",
+    "chord": "1.4.0",
+    "node": "22.19.0"
+  },
+  "tests": {
+    "passed": 90,
+    "failed": 0,
+    "skipped": 0,
+    "heapLimitMiB": 192,
+    "resourceScenario": {
+      "iterations": 32,
+      "peakRss": 151166976,
+      "peakHeap": 50295232,
+      "sqliteBytes": 4456168
+    },
+    "cases": [
+      "disk reopen",
+      "duplicate input and content conflict",
+      "independent conversations",
+      "bounded queue withdrawal",
+      "abort late tool and lease cleanup",
+      "deadline",
+      "unknown ACK no resend",
+      "cross-process owner and SIGKILL unlock",
+      "SIGKILL during model/prepared/dispatch",
+      "old epoch zero delivery",
+      "stale generation",
+      "durable write failure",
+      "Completions Responses Spark HTTP/SSE parity",
+      "delayed socket disposal"
+    ]
+  },
+  "realProvider": {
+    "first": {
+      "maxOutputTokens": 1024,
+      "modelAttempts": 1,
+      "deliveries": 0,
+      "durationMs": 2025,
+      "cause": "not retained; no successful proposal; do not infer cause"
+    },
+    "second": {
+      "provider": "opencode-go",
+      "model": "deepseek-v4.1-flash",
+      "api": "openai-completions",
+      "baseUrl": "https://opencode.ai/zen/go/v1",
+      "deliveries": 1,
+      "action": "hold",
+      "streamMeta": [
+        {
+          "type": "done",
+          "reason": "toolUse",
+          "blocks": [
+            {
+              "type": "toolCall",
+              "name": "submit_plan"
+            }
+          ]
+        }
+      ],
+      "proposalState": "accepted",
+      "modelAttempts": 1,
+      "durationMs": 3041,
+      "hardwareExecutor": false,
+      "maxOutputTokens": 4096
+    }
+  },
+  "sweepStop": {
+    "endpoint": "http://127.0.0.1:18000/api/collection/stop",
+    "signal": "SIGTERM",
+    "collectorPid": 945217,
+    "phase": "paused",
+    "completedRounds": 335,
+    "pausedUtc": "2026-10-26T09:49:44Z",
+    "collectorProcessState": "zombie; no SDR resources",
+    "p201ControlConnections": 0,
+    "deviceReadback": {
+      "sdrdPid": 1318,
+      "rxBuffer": 0,
+      "rxScanMasks": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "txBuffer": 0,
+      "radioSettings": "last sweep values retained; no baseline restore claimed"
+    }
+  },
+  "productionDeployed": false,
+  "remaining": [
+    "session protocol adapter",
+    "Controller persistent ledger and epoch/ACK/status",
+    "blocked-task operations",
+    "state/archive/delete UX",
+    "reversible production deployment"
+  ],
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/pi-durable-p01-20261026",
+    "files": 13500,
+    "bytes": 96968164,
+    "retainedTemporaryFiles": 0,
+    "verifiedAbsent": true
+  }
+}

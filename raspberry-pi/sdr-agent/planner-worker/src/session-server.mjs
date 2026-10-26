@@ -85,8 +85,10 @@ export function startSessionServer({ socketPath, createRuntime, onError = () => 
     socket.on("close", () => {
       closing = true;
       clearTimeout(partialTimer);
-      activeSocket = undefined;
-      void commandChain.finally(() => runtime.dispose()).catch(onError);
+      // Retain ownership until late tools and disposal have actually settled.
+      void commandChain.finally(() => runtime.dispose()).then(() => {
+        if (activeSocket === socket) activeSocket = undefined;
+      }).catch(onError);
     });
   });
   server.maxConnections = 2;
