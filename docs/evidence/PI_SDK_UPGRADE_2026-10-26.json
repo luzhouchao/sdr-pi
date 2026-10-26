@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "feature": "pi-sdk-upgrade",
+  "base_revision": "47c8a56",
+  "branch": "codex/sdr-improvements",
+  "source_session": "current user-authorized Pi upgrade; old-key removal requested during work",
+  "scope": "Pi SDK compatibility and AGX Planner deployment; no pi-durable, RF, training or recognition",
+  "versions": {
+    "node": "22.19.0",
+    "pi-agent-core": "1.4.0",
+    "pi-ai": "1.4.0",
+    "typebox": "1.3.27"
+  },
+  "verification": {
+    "tests": 71,
+    "passed": 71,
+    "failed": 0,
+    "skipped": 0,
+    "upstream": "loopback HTTP/SSE test doubles with real installed Pi SDK",
+    "test_log_deleted_sha256": "62fec612ab6208ce1e98ced0a5af4226f8610cb8415da92e6716ae14429f9c1b",
+    "npm_install_audit_vulnerabilities": 0,
+    "installed_dependencies_match_locks": {
+      "old": 93,
+      "new": 86
+    },
+    "rollback": "1.4.0 -> 0.84.4 health/version verified -> 1.4.0 health/version verified",
+    "browser": {
+      "page_errors": [],
+      "active_session_preserved": "session-1789273063753",
+      "missing_key_error_visible": true,
+      "hardware_actions": 0
+    },
+    "browser_diagnostics": "missing-key error visible after expanding existing technical diagnostics",
+    "unit_sha256": "0fbb4d130d26e69e0ec78dbc6f81d948494d61abcf7091904daddc09e6c541c2"
+  },
+  "deployment": {
+    "current": "/home/jetson/.local/lib/sdrharness/planner/current",
+    "selected_release": "pi-1.4.0-20261026",
+    "planner_active": true,
+    "web_active": true,
+    "planner_health_ready": true,
+    "web_health_ready": true,
+    "recognizer_available": false,
+    "pi_durable_enabled": false,
+    "active_session_preserved": "session-1789273063753",
+    "initial_survey_rerun": false
+  },
+  "credentials": {
+    "saved_upstream_key_cleared": true,
+    "credential_backups_created": 0,
+    "nonsecret_settings_preserved": true,
+    "real_upstream_validation": "pending user-provided new key; missing key returns unavailable with no action"
+  },
+  "retained_releases": [
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-0.84.4-47c8a56",
+      "purpose": "pre-upgrade rollback runtime",
+      "regular_files": 10732,
+      "symlinks": 3,
+      "bytes": 63585740,
+      "manifest": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-0.84.4-47c8a56/release-manifest.json",
+      "manifest_bytes": 2125568,
+      "manifest_sha256": "4edbd36d0be0fa35791dabe0ea1f742fffc316869fc38f394c384a009b6c132d",
+      "manual_delete": "rm -rf -- /home/jetson/.local/lib/sdrharness/planner/releases/pi-0.84.4-47c8a56"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-1.4.0-20261026",
+      "purpose": "active Pi 1.4.0 Planner runtime",
+      "regular_files": 11942,
+      "symlinks": 2,
+      "bytes": 71960398,
+      "manifest": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-1.4.0-20261026/release-manifest.json",
+      "manifest_bytes": 2362364,
+      "manifest_sha256": "3146e88fb8c10268684309fb8e04aeb5b3e784280503b6b448023e6160643bc2",
+      "manual_delete": "rm -rf -- /home/jetson/.local/lib/sdrharness/planner/releases/pi-1.4.0-20261026"
+    }
+  ],
+  "retained_regular_files": 22674,
+  "retained_bytes": 135546138,
+  "delete_precondition": "Before deleting the currently selected release, stop Web/Planner and atomically switch current to another validated release. No credential restoration.",
+  "cleanup": {
+    "path": "/var/tmp/sdrharness-dev/pi-upgrade-20261026",
+    "regular_files": 12942,
+    "bytes": 141264902,
+    "symlinks": 3,
+    "removed": true
+  },
+  "test_sockets_remaining": 0,
+  "original_untracked_sinr_files_preserved": true
+}

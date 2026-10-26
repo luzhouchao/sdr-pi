@@ -11,6 +11,11 @@ The production implementation directly depends on the published
 `@earendil-works/pi-agent-core` and `@earendil-works/pi-ai` packages rather than
 copying their Agent loop.
 
+The deployed SDK dependencies are pinned to Pi **1.4.0** (release tag
+`v1.4.0`, https://github.com/earendil-works/pi/releases/tag/v1.4.0).
+The historical design-review commit above identifies the origin of the session
+vocabulary; it is not the installed SDK version. Pi-durable is not enabled.
+
 ```text
 MIT License
 

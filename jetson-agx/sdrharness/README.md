@@ -62,6 +62,22 @@ The Planner systemd template deliberately uses
 `/home/jetson/.local/bin/node`; review that path if Node is provisioned another
 way.
 
+The AGX Planner now runs from the credential-free release selected by
+`/home/jetson/.local/lib/sdrharness/planner/current`, rather than directly from
+the checkout. Each directory under `planner/releases/` contains `src/`,
+`package.json`, `package-lock.json`, `THIRD_PARTY_NOTICES.md`, and its locked
+`node_modules/`. Prepare dependencies with `npm ci --ignore-scripts`, using a
+feature directory under `/var/tmp/sdrharness-dev/` for `TMPDIR` and npm's cache;
+test the candidate before installing a release. The checkout's existing ignored
+`node_modules` entry links to `planner/current/node_modules` on this AGX.
+
+For a version switch, stop Web gracefully, stop Planner, atomically replace
+`planner/current` with a symlink to the validated release, then start Planner
+and Web. Rollback follows the same sequence with the retained prior release.
+Never put provider configuration or credentials inside releases. The
+[Pi 1.4 upgrade validation](../../docs/validation/PI_SDK_UPGRADE_2026-10-26.md)
+records the installed versions, rollback check, and the pending new-key gate.
+
 ## Configuration and deployment gate
 
 Do not install services from an unverified clone. After the AGX is online:

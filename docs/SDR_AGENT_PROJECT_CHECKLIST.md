@@ -195,6 +195,14 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
 
 ## 1. Agent/Harness and operator interface
 
+- [x] 2026-10-26 Pi SDK 0.84.4→1.4.0兼容升级：Pi/TypeBox锁文件、
+      系统消息内工具声明、压缩时规则保留、Spark JSON适配及旧OpenCode选择兼容；
+      隔离真实SDK/模拟HTTP测试、AGX独立版本部署/健康检查和0.84.4切回通过。
+      浏览器及清理/制品记录见[验证](validation/PI_SDK_UPGRADE_2026-10-26.md)。
+      用户要求不保留旧key，已清空；pi-durable未启用，识别准入不变。
+- [ ] Pi 1.4.0真实提供商对话验收：等待用户在Web填入新key，之后验证
+      Web→Planner→Controller的hold对话；当前缺key失败关闭，不宣称上游已可用。
+
 2026-09-07 [Web 升级](validation/WEB_RECOVERY_UPGRADE_VALIDATION_2026-09-07.md)已安装当前 Web
 源码及实例隔离修正。下列 S6/V1a 原验证中的“未部署”保留历史时点；现有归档/
 语料接口随 Web 制品安装，生产识别能力和已准入结果验收仍未完成。

@@ -50,3 +50,28 @@ test("uses a conservative profile when endpoint or protocol does not match the c
   assert.equal(model.contextWindow, 65_536);
   assert.equal(model.maxTokens, 2_048);
 });
+
+test("uses the new catalog endpoint without rewriting the operator's selection", () => {
+  const model = resolveModelProfile({
+    api: "openai-completions",
+    baseUrl: "https://opencode.ai/inference/go/v1/",
+    provider: "opencode-go",
+    model: "deepseek-v4.1-flash",
+    contextWindow: 32_768,
+  }, 1_024);
+  assert.equal(model.reasoning, true);
+  assert.equal(model.compat.requiresReasoningContentOnAssistantMessages, true);
+  assert.equal(model.baseUrl, "https://opencode.ai/inference/go/v1/");
+});
+
+test("legacy compatibility does not apply to another host or protocol", () => {
+  for (const [baseUrl, api] of [
+    ["https://proxy.example/zen/go/v1", "openai-completions"],
+    ["https://opencode.ai/zen/go/v1", "openai-responses"],
+  ]) {
+    const model = resolveModelProfile({ api, baseUrl, provider: "opencode-go",
+      model: "deepseek-v4-flash", contextWindow: 32_768 }, 1_024);
+    assert.equal(model.reasoning, false);
+    assert.equal(model.compat.requiresReasoningContentOnAssistantMessages, undefined);
+  }
+});

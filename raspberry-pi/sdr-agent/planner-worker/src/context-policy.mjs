@@ -1,4 +1,5 @@
-import { estimateContextTokens } from "@earendil-works/pi-agent-core";
+import { getCurrentSystemMessage } from "@earendil-works/pi-ai";
+import { estimateContextTokens } from "@earendil-works/pi-ai/utils/estimate";
 
 export function compactPlanningContext(messages, contextWindow, thresholdPercent = 90) {
   if (!Number.isSafeInteger(contextWindow) || contextWindow < 8_192 || contextWindow > 1_000_000) {
@@ -15,5 +16,9 @@ export function compactPlanningContext(messages, contextWindow, thresholdPercent
   // the newest user context and can be removed without summarizing radio facts.
   const latestUserIndex = messages.findLastIndex((message) => message?.role === "user");
   if (latestUserIndex <= 0) return messages;
-  return messages.slice(latestUserIndex);
+  // Pi 1.x carries the prompt and tool declarations in system messages. Replay
+  // them before removing old turns so compaction cannot remove planning rules.
+  const system = getCurrentSystemMessage(messages);
+  const recent = messages.slice(latestUserIndex).filter((message) => message.role !== "system");
+  return system === undefined ? recent : [system, ...recent];
 }

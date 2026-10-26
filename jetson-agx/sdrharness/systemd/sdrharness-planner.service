@@ -10,8 +10,8 @@ Group=jetson
 EnvironmentFile=/etc/sdrharness/runtime.env
 RuntimeDirectory=sdr-agent
 RuntimeDirectoryMode=0750
-WorkingDirectory=/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker
-ExecStart=/home/jetson/.local/bin/node --max-old-space-size=192 /home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/main.mjs
+WorkingDirectory=/home/jetson/.local/lib/sdrharness/planner/current
+ExecStart=/home/jetson/.local/bin/node --max-old-space-size=192 /home/jetson/.local/lib/sdrharness/planner/current/src/main.mjs
 Restart=on-failure
 RestartSec=3
 

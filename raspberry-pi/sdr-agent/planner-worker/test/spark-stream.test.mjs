@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { AssistantMessageEventStream } from "@earendil-works/pi-ai";
+import { AssistantMessageEventStream, getCurrentTools } from "@earendil-works/pi-ai";
 import {
   createSparkJsonPlanningStream,
   prepareSparkJsonPayload,
@@ -66,7 +66,8 @@ test("converts constrained Spark JSON into the sole Agent tool call", async () =
     },
   ).result();
 
-  assert.deepEqual(capturedContext.tools, []);
+  assert.deepEqual(getCurrentTools(capturedContext.messages), []);
+  assert.equal(capturedContext.messages[0].content, "system");
   assert.equal(Object.hasOwn(capturedPayload, "tools"), false);
   assert.equal(result.stopReason, "toolUse");
   assert.equal(result.content.length, 1);

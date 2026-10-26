@@ -1,5 +1,10 @@
 import { randomUUID } from "node:crypto";
-import { AssistantMessageEventStream } from "@earendil-works/pi-ai";
+import {
+  AssistantMessageEventStream,
+  collapseSystemMessages,
+  getCurrentTools,
+  normalizeContext,
+} from "@earendil-works/pi-ai";
 import {
   formatSearchEvidence,
   normalizeSearchQuery,
@@ -73,14 +78,24 @@ async function runSparkJsonPlanningStream(
 ) {
   const output = makeAssistantMessage(model);
   try {
-    const submitPlan = context.tools?.find((tool) => tool.name === "submit_plan");
-    if (submitPlan === undefined || context.tools.length !== 1) {
+    const transcript = collapseSystemMessages(normalizeContext(context));
+    const tools = getCurrentTools(transcript.messages);
+    const submitPlan = tools.find((tool) => tool.name === "submit_plan");
+    if (submitPlan === undefined || tools.length !== 1) {
       throw new Error("Spark planner requires exactly one submit_plan tool");
     }
     const webSearch = adapterOptions.webSearch;
     const maxSearches = webSearch === undefined ? 0 : (adapterOptions.maxSearches ?? 2);
     const onSearchEvent = adapterOptions.onSearchEvent ?? (() => {});
-    let workingContext = { ...context, tools: [] };
+    // Spark uses constrained JSON, not native tool calling. Pi 1.x declares
+    // tools inside system messages, so remove those declarations as well.
+    let workingContext = {
+      messages: transcript.messages.map((message) => {
+        if (message.role !== "system") return message;
+        const { toolsAdded, toolsRemoved, ...prompt } = message;
+        return prompt;
+      }),
+    };
     let searchCount = 0;
     let result;
     let text;
