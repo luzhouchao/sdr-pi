@@ -245,3 +245,26 @@ test('thinking Completions preserves reasoning and selects automatic tools witho
  const result=requireSubmitPlan(payload);assert.deepEqual(result.thinking,payload.thinking);assert.equal(result.tool_choice,'auto');assert.equal(Object.hasOwn(payload,'tool_choice'),false);
  assert.deepEqual(requireSubmitPlan({...payload,thinking:{type:'disabled'}}).tool_choice,{type:'function',function:{name:'submit_plan'}});
 });
+
+test("accepts optional bounded cruise progress without weakening legacy frames", () => {
+  const value = request();
+  value.cruise = {remaining_steps: 7, remaining_ms: 90000, remaining_iq_bytes: 999424,
+    local_sweep_limit: 3, empty_sweep_limit: 3, consecutive_empty_sweeps: 0,
+    recent_sweeps: [{start_hz: 2450000000, stop_hz: 2460000000, candidate_count: 1}],
+    history_truncated: false};
+  assert.deepEqual(parseRequest(JSON.stringify(value)), value);
+  for (const mutate of [
+    x => x.cruise.remaining_steps = 129,
+    x => x.cruise.remaining_ms = 1800001,
+    x => x.cruise.remaining_iq_bytes = -1,
+    x => x.cruise.local_sweep_limit = 999,
+    x => x.cruise.recent_sweeps = Array(9).fill(x.cruise.recent_sweeps[0]),
+    x => x.cruise.recent_sweeps[0].stop_hz = 6000000001,
+    x => x.cruise.recent_sweeps[0].candidate_count = 33,
+    x => x.cruise.recent_sweeps[0].iq_path = "/do/not/expose",
+    x => x.cruise.history_truncated = "false",
+  ]) {
+    const bad = structuredClone(value); mutate(bad);
+    assert.throws(() => parseRequest(JSON.stringify(bad)));
+  }
+});

@@ -160,3 +160,25 @@ test("real Pi session abort and disconnect release ownership without a plan", { 
   oneShot.send(f.context);
   assert.match(JSON.stringify(await oneShot.next()), /timed out/);
 });
+
+test("recorded empty-sweep feedback and bounded cruise progress reach the actual SDK payload", {timeout: 10000}, async t => {
+  const f = await fixture(t);
+  const trace = JSON.parse(readFileSync(new URL("../../../../docs/evidence/PI_DURABLE_CRUISE_REVIEW_2026-10-27.json", import.meta.url)));
+  f.context.observation = trace.steps[4].input.observation;
+  f.context.cruise = {remaining_steps: 4, remaining_ms: 80000, remaining_iq_bytes: 753664,
+    local_sweep_limit: 3, empty_sweep_limit: 3, consecutive_empty_sweeps: 1,
+    recent_sweeps: [{start_hz: 2450250000, stop_hz: 2451250000, candidate_count: 0}],
+    history_truncated: false};
+  const c = await client(f.plannerPath, t);c.send(f.context);
+  const response = await c.next();assert.equal(response.status, "ok");
+  assert.equal(f.requests.length,1);
+  const payload = f.requests[0].payload;
+  const user = payload.messages.filter(m => m.role === "user").at(-1);
+  const text = typeof user.content === "string" ? user.content : user.content.filter(x => x.type === "text").map(x => x.text).join("");
+  const received = JSON.parse(text);
+  assert.deepEqual(received.cruise, f.context.cruise);
+  assert.deepEqual(received.observation.latest_sweep.points, f.context.observation.latest_sweep.points);
+  assert.match(payload.messages[0].content, /NOT independent measured noise/u);
+  assert.match(payload.messages[0].content, /choose a disjoint adjacent tuning-center/u);
+  assert.doesNotMatch(text, /data_path|metadata_path|logits|thinkingSignature/u);
+});

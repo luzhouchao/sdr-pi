@@ -1,9 +1,9 @@
 #![cfg(unix)]
 
 use sdr_agent_controller::autonomy::{
-    CruiseControl, CruisePhase, CruiseStopReason, InteractionMode, AUTO_RETRY_DELAY_SECS,
-    AUTO_RETRY_LIMIT, DEFAULT_AUTO_DURATION_SECS, DEFAULT_AUTO_MAX_STEPS, HARD_AUTO_DURATION_SECS,
-    HARD_AUTO_MAX_STEPS, MIN_AUTO_DURATION_SECS,
+    CruiseControl, CruisePhase, CruiseStopReason, InteractionMode, SweepProgress, SweepVisit,
+    AUTO_RETRY_DELAY_SECS, AUTO_RETRY_LIMIT, DEFAULT_AUTO_DURATION_SECS, DEFAULT_AUTO_MAX_STEPS,
+    HARD_AUTO_DURATION_SECS, HARD_AUTO_MAX_STEPS, MIN_AUTO_DURATION_SECS,
 };
 use sdr_agent_controller::execution::{
     ExecutionAuthorization, ExecutionObservation, SdrActionExecutor, SdrdActionAdapter,
@@ -412,6 +412,7 @@ struct ConsoleApp {
     survey_gain_db: i16,
     sigmf_directory: Option<PathBuf>,
     cruise: CruiseControl,
+    sweep_progress: SweepProgress,
     auto_mission: Option<String>,
     auto_next_instruction: Option<String>,
     next_auto_attempt: Instant,
@@ -560,6 +561,7 @@ impl ConsoleApp {
             survey_gain_db: options.survey_gain_db,
             sigmf_directory: options.sigmf_directory,
             cruise: CruiseControl::default(),
+            sweep_progress: SweepProgress::default(),
             auto_mission: None,
             auto_next_instruction: None,
             next_auto_attempt: Instant::now(),
@@ -643,6 +645,10 @@ impl ConsoleApp {
             || instruction.clone(),
             |summary| carry_forward_instruction(summary, &instruction),
         );
+        request.cruise = self.cruise.is_active().then(|| {
+            self.sweep_progress
+                .planning_summary(&self.cruise, Instant::now())
+        });
         ControllerPolicy.validate_request(&request)?;
         self.resume_summary = None;
         println!("模型输入> {}", serde_json::to_string(&request)?);
@@ -690,6 +696,10 @@ impl ConsoleApp {
         request.request_id = request_id;
         request.session_generation = self.session_generation;
         request.instruction = instruction.to_owned();
+        request.cruise = self.cruise.is_active().then(|| {
+            self.sweep_progress
+                .planning_summary(&self.cruise, Instant::now())
+        });
         ControllerPolicy.validate_request(&request)?;
         println!(
             "模型{}输入> {}",
@@ -1177,6 +1187,9 @@ impl ConsoleApp {
     }
 
     fn start_planned_survey(&mut self, plan: ValidatedPlan) -> AppResult<()> {
+        if !self.enforce_sweep_progress(&plan)? {
+            return Ok(());
+        }
         if self.active_execution.is_some()
             || self.active_sweep.is_some()
             || self.active_recognition.is_some()
@@ -1277,6 +1290,9 @@ impl ConsoleApp {
     }
 
     fn start_candidate_inspection(&mut self, plan: ValidatedPlan) -> AppResult<()> {
+        if !self.enforce_sweep_progress(&plan)? {
+            return Ok(());
+        }
         if self.active_execution.is_some()
             || self.active_sweep.is_some()
             || self.active_recognition.is_some()
@@ -1383,6 +1399,38 @@ impl ConsoleApp {
             })
     }
 
+    fn enforce_sweep_progress(&mut self, plan: &ValidatedPlan) -> AppResult<bool> {
+        if self.cruise.mode() == InteractionMode::AutomaticCruise {
+            if let Err(reason) = self.sweep_progress.check(&plan.action) {
+                self.cruise.stop(reason);
+                self.ledger_finish(
+                    plan.request_id,
+                    plan.session_generation,
+                    ExecutionState::Cancelled,
+                )?;
+                println!("巡航进度门在执行前拒绝计划：{}", reason.label());
+                self.print_cruise_status();
+                return Ok(false);
+            }
+        }
+        Ok(true)
+    }
+
+    fn record_sweep_progress(&mut self, report: &SweepReport) {
+        if let (Some(first), Some(last)) = (report.points.first(), report.points.last()) {
+            let reason = self.sweep_progress.record(SweepVisit {
+                start_hz: first.actual_center_hz,
+                stop_hz: last.actual_center_hz,
+                candidate_count: self.template.observation.candidates.len() as u8,
+            });
+            if self.cruise.is_active() {
+                if let Some(reason) = reason {
+                    self.cruise.stop(reason);
+                }
+            }
+        }
+    }
+
     fn poll_sweep(&mut self) -> AppResult<()> {
         let finished = self
             .active_sweep
@@ -1462,6 +1510,7 @@ impl ConsoleApp {
                         );
                         if self.cruise.is_active() {
                             self.cruise.record_execution(maximum_bytes);
+                            self.record_sweep_progress(&report);
                             if self.cruise.is_active() {
                                 let mission =
                                     self.auto_mission.as_deref().unwrap_or("继续受限巡航");
@@ -1508,6 +1557,7 @@ impl ConsoleApp {
                         );
                         if self.cruise.is_active() {
                             self.cruise.record_execution(maximum_bytes);
+                            self.record_sweep_progress(&report);
                             if self.cruise.is_active() {
                                 let mission =
                                     self.auto_mission.as_deref().unwrap_or("继续受限巡航");
@@ -1929,6 +1979,7 @@ impl ConsoleApp {
         self.cruise
             .start(max_iq_bytes, max_steps, max_duration_secs, Instant::now())
             .map_err(invalid_input)?;
+        self.sweep_progress = SweepProgress::default();
         self.auto_mission = Some(mission.to_owned());
         self.auto_next_instruction = Some(format!(
             "自动巡航任务：{mission}\n本巡航最多 {max_steps} 个已执行步骤、{max_duration_secs} 秒、累计 {} 字节 IQ；SDR 不可用或上游未给出下一步各自连续重试 5 次，每次间隔 10 秒。只能提出 Rust Controller 能验证的接收动作，安全边界不变。请给出第一步。",
@@ -2420,6 +2471,24 @@ impl ConsoleApp {
                         }
                     }
                 };
+                if self.cruise.mode() == InteractionMode::AutomaticCruise {
+                    if let Err(reason) = self.sweep_progress.check(&plan.action) {
+                        if let Some(identity) = &delivery {
+                            self.ledger.as_mut().unwrap().admit(
+                                identity.clone(),
+                                Decision::Rejected,
+                                false,
+                            )?;
+                            self.send_ledger_ack(identity, Decision::Rejected)?;
+                        }
+                        self.plan_seen_in_cycle = true;
+                        self.cruise.stop(reason);
+                        self.auto_next_instruction = None;
+                        println!("巡航进度门拒绝计划，不会执行：{}", reason.label());
+                        self.print_cruise_status();
+                        return Ok(());
+                    }
+                }
                 if let Some(identity) = &delivery {
                     let pending = self.cruise.mode() == InteractionMode::StepApproval
                         || plan.approval_required;
@@ -3611,6 +3680,7 @@ mod tests {
                 survey_gain_db: 20,
                 sigmf_directory: None,
                 cruise: CruiseControl::default(),
+                sweep_progress: SweepProgress::default(),
                 auto_mission: None,
                 auto_next_instruction: None,
                 next_auto_attempt: Instant::now(),
@@ -3670,6 +3740,55 @@ mod tests {
             },
             next_observation: next,
         }
+    }
+
+    #[test]
+    fn automatic_progress_rejection_never_reaches_a_hardware_executor() {
+        let (mut app, _peer) = test_console();
+        app.cruise.start(1_048_576, 8, 120, Instant::now()).unwrap();
+        app.sweep_progress.record(SweepVisit {
+            start_hz: 2_450_000_000,
+            stop_hz: 2_451_000_000,
+            candidate_count: 0,
+        });
+        app.requests.insert(1, test_request(1, 1));
+        app.agent_cycle_active = true;
+        app.handle_event(json!({"type":"event","session_generation":1,"event":"plan_proposed","data":{
+            "protocol_version":1,"request_id":1,"session_generation":1,"status":"ok",
+            "planner":{"provider":"test","model":"test"},
+            "action":{"kind":"survey_band","start_hz":2_450_100_000_u64,"stop_hz":2_450_500_000_u64,
+                "step_hz":100_000,"sample_rate_hz":10_000_000,"rf_bandwidth_hz":10_000_000,"dwell_ms":20}
+        }})).unwrap();
+        assert_eq!(
+            app.cruise.snapshot(Instant::now()).stop_reason,
+            Some(CruiseStopReason::AdjacentSweepRequired)
+        );
+        assert!(
+            app.active_sweep.is_none() && app.active_execution.is_none() && app.pending.is_none()
+        );
+        assert!(app.plan_seen_in_cycle);
+    }
+
+    #[test]
+    fn model_can_finish_cruise_before_the_step_budget() {
+        let (mut app, _peer) = test_console();
+        app.cruise.start(1_048_576, 8, 120, Instant::now()).unwrap();
+        app.requests.insert(1, test_request(1, 1));
+        app.handle_event(
+            json!({"type":"event","session_generation":1,"event":"plan_proposed","data":{
+                "protocol_version":1,"request_id":1,"session_generation":1,"status":"ok",
+                "planner":{"provider":"test","model":"test"},
+                "action":{"kind":"stop_session","reason":"没有有用且允许的下一步；信号性质仍未确认"}
+            }}),
+        )
+        .unwrap();
+        let state = app.cruise.snapshot(Instant::now());
+        assert_eq!(
+            state.stop_reason,
+            Some(CruiseStopReason::PlannerRequestedStop)
+        );
+        assert_eq!(state.completed_steps, 0);
+        assert!(app.active_sweep.is_none());
     }
 
     #[test]
@@ -4288,6 +4407,46 @@ mod tests {
         json!({"protocol_version":2,"type":"event","session_generation":1,"event":"plan_proposed",
           "delivery":{"plan_id":"a0000000-0000-0000-0000-000000000001","hash":action_hash(&action).unwrap(),"app_session_id":"test_app","controller_epoch":app.ledger.as_ref().unwrap().epoch(),"session_generation":1,"request_id":7,"deadline_unix_ms":unix_time_ms().unwrap()+30_000},
           "data":{"protocol_version":1,"request_id":7,"session_generation":1,"status":"ok","planner":{"provider":"test","model":"hold"},"action":action}})
+    }
+
+    #[test]
+    fn progress_rejection_is_persisted_before_ack_and_replay_never_executes() {
+        let root = terminal_state_test_path("progress-reject")
+            .parent()
+            .unwrap()
+            .to_owned();
+        let (mut app, _peer) = test_console();
+        app.ledger = Some(PlanLedger::open(&root, "test_app").unwrap());
+        app.cruise.start(1_048_576, 8, 120, Instant::now()).unwrap();
+        app.sweep_progress.record(SweepVisit {
+            start_hz: 2_450_000_000,
+            stop_hz: 2_451_000_000,
+            candidate_count: 0,
+        });
+        app.requests.insert(7, test_request(7, 1));
+        let frame = durable_frame(
+            &app,
+            json!({"kind":"survey_band","start_hz":2_450_100_000_u64,
+            "stop_hz":2_450_500_000_u64,"step_hz":100_000,"sample_rate_hz":10_000_000,
+            "rf_bandwidth_hz":10_000_000,"dwell_ms":20}),
+        );
+        app.handle_event(frame.clone()).unwrap();
+        app.requests.clear();
+        app.handle_event(frame.clone()).unwrap();
+        let id = frame
+            .pointer("/delivery/plan_id")
+            .unwrap()
+            .as_str()
+            .unwrap();
+        assert_eq!(
+            app.ledger.as_ref().unwrap().get(id).unwrap().decision,
+            Decision::Rejected
+        );
+        assert!(
+            app.pending.is_none() && app.active_sweep.is_none() && app.active_execution.is_none()
+        );
+        drop(app);
+        fs::remove_dir_all(root).unwrap();
     }
 
     #[test]

@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
 
 pub const AUTO_RETRY_LIMIT: u8 = 5;
@@ -61,6 +61,9 @@ pub enum CruiseStopReason {
     ApprovalRequired,
     UnsupportedAction,
     PlannerRequestedStop,
+    AdjacentSweepRequired,
+    LocalSweepLimit,
+    EmptySweepLimit,
     Fault,
 }
 
@@ -76,6 +79,9 @@ impl CruiseStopReason {
             Self::ApprovalRequired => "下一步需要人工批准",
             Self::UnsupportedAction => "下一步没有生产执行器",
             Self::PlannerRequestedStop => "上游建议停止或保持",
+            Self::AdjacentSweepRequired => "上一轮无候选，不能继续同一区域细扫",
+            Self::LocalSweepLimit => "已达到局部扫频复查上限",
+            Self::EmptySweepLimit => "连续三轮无候选，结束本次巡航",
             Self::Fault => "控制器检测到故障",
         }
     }
@@ -294,6 +300,143 @@ impl CruiseControl {
             retry_limit: AUTO_RETRY_LIMIT,
             stop_reason: self.stop_reason,
             stop_reason_label: self.stop_reason.map(CruiseStopReason::label),
+        }
+    }
+}
+
+// These limits bound work, not RF truth: empty relative-contrast candidates do
+// not prove an empty spectrum. History covers only this explicitly started run.
+pub const LOCAL_SWEEP_LIMIT: u8 = 3;
+pub const EMPTY_SWEEP_LIMIT: u8 = 3;
+pub const RECENT_SWEEP_LIMIT: usize = 8;
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SweepVisit {
+    pub start_hz: u64,
+    pub stop_hz: u64,
+    pub candidate_count: u8,
+}
+
+impl SweepVisit {
+    fn overlaps(&self, start_hz: u64, stop_hz: u64) -> bool {
+        // Neighboring multi-point scans may share one boundary. A single-point
+        // recheck inside a previous range still counts as local work.
+        if self.start_hz == self.stop_hz || start_hz == stop_hz {
+            self.start_hz <= stop_hz && start_hz <= self.stop_hz
+        } else {
+            self.start_hz < stop_hz && start_hz < self.stop_hz
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CruisePlanningSummary {
+    pub remaining_steps: u8,
+    pub remaining_ms: u64,
+    pub remaining_iq_bytes: u64,
+    pub local_sweep_limit: u8,
+    pub empty_sweep_limit: u8,
+    pub consecutive_empty_sweeps: u8,
+    pub recent_sweeps: Vec<SweepVisit>,
+    pub history_truncated: bool,
+}
+
+impl CruisePlanningSummary {
+    pub fn valid(&self, min_hz: u64, max_hz: u64) -> bool {
+        self.remaining_steps <= HARD_AUTO_MAX_STEPS
+            && self.remaining_ms <= HARD_AUTO_DURATION_SECS * 1_000
+            && self.remaining_iq_bytes <= 9_007_199_254_740_991
+            && self.local_sweep_limit == LOCAL_SWEEP_LIMIT
+            && self.empty_sweep_limit == EMPTY_SWEEP_LIMIT
+            && self.consecutive_empty_sweeps <= EMPTY_SWEEP_LIMIT
+            && self.recent_sweeps.len() <= RECENT_SWEEP_LIMIT
+            && self.recent_sweeps.iter().all(|v| {
+                min_hz <= v.start_hz
+                    && v.start_hz <= v.stop_hz
+                    && v.stop_hz <= max_hz
+                    && v.candidate_count <= 32
+            })
+    }
+}
+
+#[derive(Default)]
+pub struct SweepProgress {
+    visits: Vec<SweepVisit>,
+    consecutive_empty: u8,
+}
+
+impl SweepProgress {
+    pub fn check(&self, action: &crate::protocol::ProposedAction) -> Result<(), CruiseStopReason> {
+        use crate::protocol::ProposedAction;
+        let (start_hz, stop_hz) = match action {
+            ProposedAction::SurveyBand {
+                start_hz, stop_hz, ..
+            } => (*start_hz, *stop_hz),
+            ProposedAction::InspectCandidate { center_hz, .. } => (*center_hz, *center_hz),
+            _ => return Ok(()),
+        };
+        if self.consecutive_empty >= EMPTY_SWEEP_LIMIT {
+            return Err(CruiseStopReason::EmptySweepLimit);
+        }
+        if self.visits.len() >= usize::from(HARD_AUTO_MAX_STEPS) {
+            return Err(CruiseStopReason::StepBudgetExhausted);
+        }
+        if self
+            .visits
+            .last()
+            .is_some_and(|last| last.candidate_count == 0 && last.overlaps(start_hz, stop_hz))
+        {
+            return Err(CruiseStopReason::AdjacentSweepRequired);
+        }
+        if self
+            .visits
+            .iter()
+            .filter(|v| v.overlaps(start_hz, stop_hz))
+            .count()
+            >= usize::from(LOCAL_SWEEP_LIMIT)
+        {
+            return Err(CruiseStopReason::LocalSweepLimit);
+        }
+        Ok(())
+    }
+
+    pub fn record(&mut self, visit: SweepVisit) -> Option<CruiseStopReason> {
+        if self.visits.len() >= usize::from(HARD_AUTO_MAX_STEPS) {
+            return Some(CruiseStopReason::StepBudgetExhausted);
+        }
+        self.consecutive_empty = if visit.candidate_count == 0 {
+            self.consecutive_empty
+                .saturating_add(1)
+                .min(EMPTY_SWEEP_LIMIT)
+        } else {
+            0
+        };
+        self.visits.push(visit);
+        (self.consecutive_empty >= EMPTY_SWEEP_LIMIT).then_some(CruiseStopReason::EmptySweepLimit)
+    }
+
+    pub fn planning_summary(&self, cruise: &CruiseControl, now: Instant) -> CruisePlanningSummary {
+        let status = cruise.snapshot(now);
+        CruisePlanningSummary {
+            remaining_steps: status.max_steps.saturating_sub(status.completed_steps),
+            remaining_ms: status.max_duration_ms.saturating_sub(status.elapsed_ms),
+            remaining_iq_bytes: cruise.remaining_iq_bytes(),
+            local_sweep_limit: LOCAL_SWEEP_LIMIT,
+            empty_sweep_limit: EMPTY_SWEEP_LIMIT,
+            consecutive_empty_sweeps: self.consecutive_empty,
+            recent_sweeps: self
+                .visits
+                .iter()
+                .rev()
+                .take(RECENT_SWEEP_LIMIT)
+                .cloned()
+                .collect::<Vec<_>>()
+                .into_iter()
+                .rev()
+                .collect(),
+            history_truncated: self.visits.len() > RECENT_SWEEP_LIMIT,
         }
     }
 }

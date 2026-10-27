@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "feature": "cp1027",
+  "base_commit": "2f15498",
+  "status": "source and isolated offline validation; not installed",
+  "scope": "Planner measurement semantics, Controller bounded sweep/inspection progress, remaining budget summary. No provider call or SDR operation; all HTTP upstreams local mocks.",
+  "parent": {
+    "path": "docs/evidence/PI_DURABLE_CRUISE_REVIEW_2026-10-27.json",
+    "sha256": "29d254c00f279b601dc1697a2b85b64ba099cdadc35da8ff37981613bd80868a"
+  },
+  "rules": {
+    "local_visit_limit": 3,
+    "consecutive_empty_limit": 3,
+    "history_maximum": 128,
+    "planner_history_maximum": 8,
+    "overlap": "Positive overlap of tuned-center intervals, or a single tuned center inside a prior interval. Two multi-point scans may share exactly one boundary. This is a work budget, not occupied RF bandwidth.",
+    "empty_followup": "Last measured candidate count zero forbids overlapping survey/inspection; adjacent exploration or stop. A violation rejects the proposal and stops cruise.",
+    "candidate_rechecks": "Fourth proposal overlapping three prior visits rejects even if grid, bandwidth, candidate ID or survey/inspection action changes. Full bounded history enforces visits beyond condensed last eight.",
+    "termination": "Third consecutive empty observation ends run; existing byte/step/time/operator limits remain. stop_session also permits goal completion or no useful permitted action. No claim that candidate absence proves empty spectrum.",
+    "admission": "Progress checked before ledger acceptance/ACK and again before sweep/inspection execution. Rejected v2 proposal persists and replay never executes.",
+    "context": "Optional cruise summary applies to automatic mode; current manual contexts omit it. Remaining steps, milliseconds, IQ bytes, constants and bounded recent visits validated by Rust and Node. Maximum 768-point/32-candidate context plus summary remains below 32KiB."
+  },
+  "verification": {
+    "controller": {
+      "passed": 149,
+      "ignored": 1,
+      "failed": 0
+    },
+    "node": {
+      "passed": 110,
+      "failed": 0,
+      "controller_binary": "isolated newly compiled debug/sdr-agent"
+    },
+    "web": {
+      "passed": 38,
+      "ignored": 2,
+      "failed": 0
+    },
+    "rust_fmt": "passed",
+    "clippy_all_targets_deny_warnings": "passed",
+    "recorded_trace": "Original first four proposals allowed; first empty local followup (old step 5) denied. Alternate adjacent scans accepted; third empty result ends run.",
+    "sdk_transport": "Actual Pi SDK/HTTP-SSE with local mock sees recorded power pairs and exact progress summary; no IQ paths/logits. This proves transport, not actual provider decision quality.",
+    "other_regressions": [
+      "Jittered local rechecks and inspect bypass denied",
+      "History compaction does not reset hard visit limits",
+      "Explicit new run resets history",
+      "Budget summary arithmetic and malformed bound rejection",
+      "Out-of-band/transmit remain rejected",
+      "Model stop before budget tested with synthetic proposal",
+      "Durable rejection stored before ACK; duplicate replay zero execution"
+    ],
+    "corrections": [
+      "Initial long TMPDIR exceeded Linux Unix socket SUN_LEN; shortened feature path without relaxing production validation.",
+      "Test event fixtures initially omitted required envelope fields; corrected to current session event shape.",
+      "SDK user content is an array of text blocks; payload test corrected to decode that wire shape.",
+      "One Node run mistakenly started at repo root (125 pass/1 fixture decode failure); final isolated planner suite repeated after correction, 110 pass."
+    ],
+    "controller-final.log": {
+      "sha256": "2691563ea41724c8fb81b5305b599ebc118e8ccce929c75a1988d34ffaf3ca18",
+      "test_summaries": [
+        "test result: ok. 113 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.48s",
+        "test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.65s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.79s"
+      ]
+    },
+    "node-final.log": {
+      "sha256": "254db1e1a98ddb13969651709b81ea81e6b14a541cd1568f86115cd7e92397ca",
+      "test_summaries": [
+        "# tests 110",
+        "# pass 110",
+        "# fail 0"
+      ]
+    },
+    "web.log": {
+      "sha256": "86c101d902fba5e358919631daaa4e7d000e9bd8f6b147b8982001498f5255e5",
+      "test_summaries": [
+        "test result: ok. 38 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 4.30s",
+        "Finished `dev` profile [unoptimized + debuginfo] target(s) in 19.83s"
+      ]
+    }
+  },
+  "source_files": [
+    {
+      "path": "raspberry-pi/sdr-agent/controller/src/autonomy.rs",
+      "bytes": 20146,
+      "sha256": "1b1730ba68626dc46fe335d7a2f4ecb8844b08acb5b870f3938af48658b95193"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/controller/src/cli/console.rs",
+      "bytes": 184476,
+      "sha256": "02b2231897e32d7952dbf260a07106fe72acb2c374f440e24dca8ff857e2f368"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/controller/src/policy.rs",
+      "bytes": 31398,
+      "sha256": "701584a4718795ca6e1ce39bee5e7104412c7e4f1279fcf92e7caa962d1081e8"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/controller/src/protocol.rs",
+      "bytes": 6676,
+      "sha256": "f411be7c0005008ff48515530dc507820717506b42126f794bb6474eec15e4c3"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/controller/src/runner.rs",
+      "bytes": 49733,
+      "sha256": "358d93d6cbe900846ebcf458edc0794ce2e4a33d7a90a98571219dfc37745138"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/planner-worker/src/protocol.mjs",
+      "bytes": 12919,
+      "sha256": "85abc3977e69e1ea4f582fc94aa58b8f49588c863fea1f06aa962c23f30d0d4c"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/planner-worker/src/system-prompt.mjs",
+      "bytes": 8252,
+      "sha256": "01184577fb2cb3d323b009a7cfad4d0d6622103c6d170e425aa63fbacabf851f"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/planner-worker/test/pi-sdk-integration.test.mjs",
+      "bytes": 9083,
+      "sha256": "d097315fef267834d36e30aee28ec00b3ec5302d59471a01b295f054513a04c1"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/planner-worker/test/protocol.test.mjs",
+      "bytes": 10134,
+      "sha256": "85f7a21b21ba49cffc619e7d2d1647c734de64910f6a2dcfae1a0839f17934b7"
+    },
+    {
+      "path": "raspberry-pi/sdr-agent/controller/tests/cruise_recorded_observations.rs",
+      "bytes": 8710,
+      "sha256": "6dcc94597f6615d0a5a2a3ad9d90c4af2e352c176c0d21dbcd36aa8f76bcc9cb"
+    }
+  ],
+  "production": {
+    "changed": false,
+    "planner": "pi-durable-1.4.0-20261026-r4",
+    "controller": "pi-durable-1.4.0-20261026-r4",
+    "recognizer_available": false,
+    "spectrum_phase": "paused"
+  },
+  "retention": {
+    "purpose": "Minimal offline validation evidence. No new raw IQ, model weights or application result.",
+    "temporary_root": "/var/tmp/sdrharness-dev/cp1027",
+    "delete": "Remove this exact evidence JSON and its documentation links if no longer needed; original archived RF results unchanged."
+  },
+  "cleanup": {
+    "deleted_regular_files": 13037,
+    "deleted_bytes": 2138743892,
+    "deleted_symlinks": 10,
+    "feature_absent": true,
+    "old_feature_path_absent": true,
+    "temporary_test_sockets_remaining": []
+  }
+}

@@ -16,6 +16,8 @@ pub struct PlanRequest {
     pub state: ControllerState,
     pub observation: ObservationSummary,
     pub limits: SafetyLimits,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cruise: Option<crate::autonomy::CruisePlanningSummary>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]

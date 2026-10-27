@@ -670,6 +670,7 @@ mod tests {
 
     fn request() -> PlanRequest {
         PlanRequest {
+            cruise: None,
             protocol_version: PROTOCOL_VERSION,
             request_id: 7,
             session_generation: 3,

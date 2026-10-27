@@ -30,6 +30,13 @@ impl ControllerPolicy {
             "must contain 1 to 1024 bytes",
         )?;
         validate_limits(&request.limits)?;
+        if let Some(cruise) = &request.cruise {
+            require(
+                cruise.valid(request.limits.min_freq_hz, request.limits.max_freq_hz),
+                "cruise_context",
+                "invalid bounded cruise summary",
+            )?;
+        }
         require(
             request.observation.age_ms <= request.limits.max_observation_age_ms,
             "observation_stale",
@@ -596,6 +603,7 @@ mod tests {
 
     fn request() -> PlanRequest {
         PlanRequest {
+            cruise: None,
             protocol_version: PROTOCOL_VERSION,
             request_id: 7,
             session_generation: 3,

@@ -30,6 +30,7 @@ export function parseRequest(frame) {
       "state",
       "observation",
       "limits",
+      ...(Object.hasOwn(request, "cruise") ? ["cruise"] : []),
     ],
     "request",
   );
@@ -50,6 +51,7 @@ export function parseRequest(frame) {
   }
   validateObservation(request.observation);
   validateLimits(request.limits);
+  if (Object.hasOwn(request, "cruise")) validateCruise(request.cruise, request.limits);
   if (request.observation.recognition !== undefined) {
     validateRecognition(
       request.observation.recognition,
@@ -59,6 +61,31 @@ export function parseRequest(frame) {
     );
   }
   return request;
+}
+
+function validateCruise(cruise, limits) {
+  requirePlainObject(cruise, "cruise");
+  requireExactKeys(cruise, ["remaining_steps", "remaining_ms", "remaining_iq_bytes",
+    "local_sweep_limit", "empty_sweep_limit", "consecutive_empty_sweeps",
+    "recent_sweeps", "history_truncated"], "cruise");
+  for (const [field, maximum] of [["remaining_steps", 128], ["remaining_ms", 1800000],
+    ["remaining_iq_bytes", Number.MAX_SAFE_INTEGER], ["consecutive_empty_sweeps", 3]]) {
+    requireSafeInteger(cruise[field], `cruise.${field}`, 0);
+    if (cruise[field] > maximum) throw new Error(`cruise.${field} exceeds bound`);
+  }
+  if (cruise.local_sweep_limit !== 3 || cruise.empty_sweep_limit !== 3 ||
+    typeof cruise.history_truncated !== "boolean" || !Array.isArray(cruise.recent_sweeps) ||
+    cruise.recent_sweeps.length > 8) throw new Error("invalid bounded cruise history");
+  for (const visit of cruise.recent_sweeps) {
+    requirePlainObject(visit, "cruise visit");
+    requireExactKeys(visit, ["start_hz", "stop_hz", "candidate_count"], "cruise visit");
+    requireSafeInteger(visit.start_hz, "cruise visit start_hz", limits.min_freq_hz);
+    requireSafeInteger(visit.stop_hz, "cruise visit stop_hz", visit.start_hz);
+    requireSafeInteger(visit.candidate_count, "cruise visit candidate_count", 0);
+    if (visit.stop_hz > limits.max_freq_hz || visit.candidate_count > 32) {
+      throw new Error("cruise visit exceeds bounds");
+    }
+  }
 }
 
 export function normalizeAction(params) {
