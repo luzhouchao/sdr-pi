@@ -374,3 +374,4 @@
 - [2026-10-27 持久提示刷新与新对话完整巡航](PI_DURABLE_POLICY_REFRESH_2026-10-27.json)：Planner r6、旧聊天删除、新会话3轮7点相邻换段/三空停止及恢复；结果保留。
 
 - [2026-10-27 人工批准过期](PI_DURABLE_APPROVAL_EXPIRY_2026-10-27.json)：原deadline诊断、零执行取消/终端存活回归、r7部署与数据保留，无新RF。
+- [2026-10-27 过期点击重新规划](PI_DURABLE_APPROVAL_REPLAN_2026-10-27.json)：r8部署、真实浏览器旧计划取消/新请求/再次批准门、153项Rust与117项JS、精确清理与保留，无新RF。

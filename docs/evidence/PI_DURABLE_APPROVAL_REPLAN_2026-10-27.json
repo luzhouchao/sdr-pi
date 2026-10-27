@@ -1,0 +1,393 @@
+{
+  "purpose": "Late approve cancels expired proposal and replans original task once; replacement requires explicit approval",
+  "source_base_commit": "aa2e85b",
+  "source": {
+    "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/controller/src/cli/console.rs",
+    "bytes": 197236,
+    "sha256": "aff0189cad12d11cafa76973d2417e0b9322c974a89d3d9b8a9d752520bae2af"
+  },
+  "deployment": {
+    "binary_release": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r8",
+    "planner_release": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r6",
+    "release_manifest": {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r8/release-manifest.json",
+      "bytes": 1141,
+      "sha256": "771e70def082ac2b50a4a147793fcbd1e63ffc88eae32925ff3b77ebe2c3003a"
+    },
+    "release_files": 5,
+    "release_bytes": 6018105,
+    "manual_delete": "Stop both services; delete exact binary release after replacement/uninstall. Preserve application state/results.",
+    "installed_binary": {
+      "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent",
+      "bytes": 2679576,
+      "sha256": "1bc556015432702c609973ca7dcf530e0711fbd2b98815d0e3e7a771ffaef99a"
+    },
+    "session_id": "session-1793071197684",
+    "result_count_preserved": 32,
+    "corpus_preserved": true,
+    "old_bundle_deleted": {
+      "root": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r7",
+      "files": 5,
+      "bytes": 6014008,
+      "manifest": {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r7/release-manifest.json",
+        "bytes": 1140,
+        "sha256": "68050941729fe11ff750cec6d7cf451e91b66f1d79377f2dd467157a9cc27181"
+      },
+      "verified_absent": true
+    },
+    "key_config_changes": false
+  },
+  "release_manifest": {
+    "version": "pi-durable-1.4.0-20261027-r8",
+    "source_base_commit": "aa2e85b",
+    "purpose": "Expired approval click cancels old request and replans once; new plan still needs approval",
+    "files": [
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r8/sdr-agent",
+        "bytes": 2679576,
+        "sha256": "1bc556015432702c609973ca7dcf530e0711fbd2b98815d0e3e7a771ffaef99a"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r8/sdr-agent-web-console",
+        "bytes": 3335456,
+        "sha256": "956fc962c6a940f2f0138087ed6e1a479083557159efae696528498a34207202"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r8/sdrharness-planner.service",
+        "bytes": 976,
+        "sha256": "bb92f8d303d6be21d1f1c99332ffe07ce67b068ae09f7927281bda689e3a5866"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r8/sdrharness-web.service",
+        "bytes": 956,
+        "sha256": "9e7453361945d3c0d992c69899d1084fb49e985a5226176b22e2a85d0fb666c1"
+      }
+    ],
+    "bytes": 6016964
+  },
+  "verification": {
+    "rust_passed": 153,
+    "rust_ignored": 1,
+    "node_passed": 117,
+    "fmt": "passed",
+    "all_target_clippy_deny_warnings": "passed",
+    "release_build": "passed",
+    "regression": "expired_click_replans_once_with_fresh_context_and_requires_new_approval",
+    "logs": [
+      {
+        "path": "/var/tmp/sdrharness-dev/r1027/red.log",
+        "bytes": 1993,
+        "sha256": "bf56bef4616a3d263782c8b1b12c8dbe0e680cf38271b9c1d8e647e3db4d7a25"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/r1027/green.log",
+        "bytes": 1519,
+        "sha256": "4129011933275892376a232950ed7ddee4d5aad89d01ff0ee94302f82cc1e818"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/r1027/green-final.log",
+        "bytes": 1464,
+        "sha256": "3c0c81e9aa50d5689eb20a87c4881532e4fce5e298afc39974223f407613fed4"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/r1027/rust-final.log",
+        "bytes": 14464,
+        "sha256": "2ba35e1285a785e5e3ff2e982475fc5f45825f5951ff64ffb54a1fd000207c6d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/r1027/fmt.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/r1027/clippy.log",
+        "bytes": 620,
+        "sha256": "755dda2f09dc5a66d30d6b04230845ed32afe082e278d4a9a8ac4e2fad458bb3"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/r1027/node.log",
+        "bytes": 23869,
+        "sha256": "fad49f5e31f4358beea38c721dbd8342ab373d13b06d56afa9ec31f90257d86f"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/r1027/release.log",
+        "bytes": 799,
+        "sha256": "064314ca9ef561e686f2c04f0d7dc3496f409dc3eb7388e686e7fa752885adcc"
+      }
+    ]
+  },
+  "failed_checks": [
+    {
+      "phase": "regression fixture",
+      "reason": "test_console max_span invalid for real submit; fixed fixture to 20 MHz; distinct replacement plan ID"
+    },
+    {
+      "phase": "first production plan-only acceptance",
+      "request_id": 1,
+      "plan_id": "89d30174-9467-42f4-846d-501967456dd2",
+      "reason": "Invalid single-point survey: start_hz equals stop_hz; policy requires start_hz < stop_hz. Rejected before approval, then /stop. Valid two-point retry passed."
+    }
+  ],
+  "browser": {
+    "session_id": "session-1793071197684",
+    "instruction": "自动重规划验收：申请一次2455/2456MHz两点survey_band，start_hz=2455000000,stop_hz=2456000000,step_hz=1000000,sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20。请生成计划并等待人工批准。只用survey_band，不要识别、发射或单独capture_bounded_iq。",
+    "click_ms": 1793073297293,
+    "first": {
+      "identity": {
+        "plan_id": "ca252194-294a-4b8b-972f-5a83abf77025",
+        "hash": "1d36e1035000f97e68b7ccec1137963ed7a0d5fa64d908e642e58f6bea583eae",
+        "app_session_id": "session-1793071197684",
+        "controller_epoch": "5a02bc951b57486f8f9807a202236580",
+        "session_generation": 1793073055502,
+        "request_id": 2,
+        "deadline_unix_ms": 1793073296880
+      },
+      "decision": "accepted",
+      "execution": "pending_approval"
+    },
+    "replacement": {
+      "identity": {
+        "plan_id": "54423ad3-f078-404e-a6bb-52760b0eeb96",
+        "hash": "1d36e1035000f97e68b7ccec1137963ed7a0d5fa64d908e642e58f6bea583eae",
+        "app_session_id": "session-1793071197684",
+        "controller_epoch": "5a02bc951b57486f8f9807a202236580",
+        "session_generation": 1793073055502,
+        "request_id": 3,
+        "deadline_unix_ms": 1793073327308
+      },
+      "decision": "accepted",
+      "execution": "pending_approval"
+    },
+    "final_records": {
+      "54423ad3-f078-404e-a6bb-52760b0eeb96": {
+        "identity": {
+          "plan_id": "54423ad3-f078-404e-a6bb-52760b0eeb96",
+          "hash": "1d36e1035000f97e68b7ccec1137963ed7a0d5fa64d908e642e58f6bea583eae",
+          "app_session_id": "session-1793071197684",
+          "controller_epoch": "5a02bc951b57486f8f9807a202236580",
+          "session_generation": 1793073055502,
+          "request_id": 3,
+          "deadline_unix_ms": 1793073327308
+        },
+        "decision": "accepted",
+        "execution": "cancelled"
+      },
+      "ca252194-294a-4b8b-972f-5a83abf77025": {
+        "identity": {
+          "plan_id": "ca252194-294a-4b8b-972f-5a83abf77025",
+          "hash": "1d36e1035000f97e68b7ccec1137963ed7a0d5fa64d908e642e58f6bea583eae",
+          "app_session_id": "session-1793071197684",
+          "controller_epoch": "5a02bc951b57486f8f9807a202236580",
+          "session_generation": 1793073055502,
+          "request_id": 2,
+          "deadline_unix_ms": 1793073296880
+        },
+        "decision": "accepted",
+        "execution": "cancelled"
+      }
+    },
+    "events": [
+      {
+        "id": 95,
+        "timestamp_ms": 1793073266872,
+        "kind": "operator",
+        "text": "Operator> 自动重规划验收：申请一次2455/2456MHz两点survey_band，start_hz=2455000000,stop_hz=2456000000,step_hz=1000000,sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20。请生成计划并等待人工批准。只用survey_band，不要识别、发射或单独capture_bounded_iq。"
+      },
+      {
+        "id": 96,
+        "timestamp_ms": 1793073266881,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 97,
+        "timestamp_ms": 1793073271167,
+        "kind": "plan",
+        "text": "已验证计划：受限扫频 2455000000–2456000000 Hz，步进 1000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 98,
+        "timestamp_ms": 1793073271168,
+        "kind": "decision",
+        "text": "决策依据> request=2、generation=1793073055502 与当前上下文一致；状态=Holding；扫频范围位于 70000000–6000000000 Hz，跨度 1000000≤20000000 Hz，点数 2≤768，步进 1000000≤射频带宽 10000000 的 80%，采样率 10000000 Hz，停留 20≤5000 ms，预计处理 32768≤4194304 字节；SDR 在线且允许调谐"
+      },
+      {
+        "id": 99,
+        "timestamp_ms": 1793073271169,
+        "kind": "qwen",
+        "text": "Agent> 计划已生成：受限扫频 2455000000–2456000000 Hz，步进 1000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内。请点击批准或输入 /approve 执行，也可以拒绝。"
+      },
+      {
+        "id": 100,
+        "timestamp_ms": 1793073271169,
+        "kind": "system",
+        "text": "逐步批准模式：输入 /approve 执行，或输入 /reject 拒绝。"
+      },
+      {
+        "id": 101,
+        "timestamp_ms": 1793073271170,
+        "kind": "system",
+        "text": "计划有效期剩余约 26 秒；超时后点击批准将按原任务重��规划，新计划仍需再次批准。"
+      },
+      {
+        "id": 102,
+        "timestamp_ms": 1793073271171,
+        "kind": "system",
+        "text": "可执行计划已经 Rust 验证；已结束本轮剩余模型生成，避免队列中的旧输入越过批准或执行门禁。"
+      },
+      {
+        "id": 103,
+        "timestamp_ms": 1793073297279,
+        "kind": "operator",
+        "text": "Operator> /approve"
+      },
+      {
+        "id": 104,
+        "timestamp_ms": 1793073297301,
+        "kind": "system",
+        "text": "旧计划已过期，正在刷新设备状态并按原任务重新规划；旧候选与测量已移除，新计划仍需再次批准。不会自动采样。"
+      },
+      {
+        "id": 105,
+        "timestamp_ms": 1793073297308,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 106,
+        "timestamp_ms": 1793073301038,
+        "kind": "plan",
+        "text": "已验证计划：受限扫频 2455000000–2456000000 Hz，步进 1000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 107,
+        "timestamp_ms": 1793073301039,
+        "kind": "decision",
+        "text": "决策依据> request=3、generation=1793073055502 与当前上下文一致；状态=Holding；扫频范围位于 70000000–6000000000 Hz，跨度 1000000≤20000000 Hz，点数 2≤768，步进 1000000≤射频带宽 10000000 的 80%，采样率 10000000 Hz，停留 20≤5000 ms，预计处理 32768≤4194304 字节；SDR 在线且允许调谐"
+      },
+      {
+        "id": 108,
+        "timestamp_ms": 1793073301040,
+        "kind": "qwen",
+        "text": "Agent> 计划已生成：受限扫频 2455000000–2456000000 Hz，步进 1000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内。请点击批准或输入 /approve 执行，也可以拒绝。"
+      },
+      {
+        "id": 109,
+        "timestamp_ms": 1793073301041,
+        "kind": "system",
+        "text": "逐步批准模式：输入 /approve 执行，或输入 /reject 拒绝。"
+      },
+      {
+        "id": 110,
+        "timestamp_ms": 1793073301041,
+        "kind": "system",
+        "text": "计划有效期剩余约 27 秒；超时后点击批准将按原任务重��规划，新计划仍需再次批准。"
+      },
+      {
+        "id": 111,
+        "timestamp_ms": 1793073301042,
+        "kind": "system",
+        "text": "可执行计划已经 Rust 验证；已结束本轮剩余模型生成，避免队列中的旧输入越过批准或执行门禁。"
+      },
+      {
+        "id": 112,
+        "timestamp_ms": 1793073301293,
+        "kind": "operator",
+        "text": "Operator> /reject"
+      },
+      {
+        "id": 113,
+        "timestamp_ms": 1793073301314,
+        "kind": "system",
+        "text": "已拒绝 request=3。"
+      },
+      {
+        "id": 114,
+        "timestamp_ms": 1793073301315,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 115,
+        "timestamp_ms": 1793073301961,
+        "kind": "operator",
+        "text": "Operator> /status"
+      },
+      {
+        "id": 116,
+        "timestamp_ms": 1793073301967,
+        "kind": "system",
+        "text": "持久会话：最近记录中 0 项待核对，0 项阻塞；旧批准不会自动恢复。结果未知的计划不会重新执行。"
+      },
+      {
+        "id": 117,
+        "timestamp_ms": 1793073301970,
+        "kind": "system",
+        "text": "控制器状态：已保持，不会继续操作硬件；运行模式：逐步人工批准。"
+      },
+      {
+        "id": 118,
+        "timestamp_ms": 1793073301971,
+        "kind": "system",
+        "text": "Agent 会话：已打开；上游模型：空闲；等待处理的消息：0 条。"
+      },
+      {
+        "id": 119,
+        "timestamp_ms": 1793073301972,
+        "kind": "system",
+        "text": "人工批准：没有待处理计划；下一请求编号：4；安全代次：1793073055502。"
+      },
+      {
+        "id": 120,
+        "timestamp_ms": 1793073301973,
+        "kind": "cruise",
+        "text": "巡航状态：未启用；当前每个可执行动作都需要人工批准。"
+      },
+      {
+        "id": 121,
+        "timestamp_ms": 1793073301973,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      }
+    ],
+    "page_errors": [],
+    "elapsed_seconds": 38.430689819157124,
+    "new_rx_results": 0,
+    "new_corpus_results": 0,
+    "no_hardware_execution": true,
+    "replacement_rejected_for_cleanup": true
+  },
+  "scope": {
+    "provider": "OpenCode Go DeepSeek, low thinking enabled",
+    "planner_calls_successful_browser_flow": 2,
+    "background_renewal": false,
+    "new_rf": false,
+    "unknown_historical_record_replayed": false,
+    "result_count_preserved": 32,
+    "keys_copied_or_changed": false,
+    "stale_rf_candidates_and_measurements": "cleared before refreshing health and submitting new request"
+  },
+  "services": {
+    "sdrharness-planner.service": "active",
+    "sdrharness-web.service": "active"
+  },
+  "retention": {
+    "purpose": "Current installed runtime, application ledger/session and pre-existing user results remain necessary",
+    "current_release": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r8",
+    "planner_release": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r6",
+    "application_state": [
+      "/var/lib/sdrharness/web-console",
+      "/var/lib/sdrharness-planner"
+    ],
+    "manual_delete": "Use application result/session deletion UI for user data. For installed artifacts, stop sdrharness-web.service and sdrharness-planner.service, replace/uninstall binaries, then remove exact r8 release directory. Do not remove historical RF evidence."
+  },
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/r1027",
+    "files_deleted": 10111,
+    "bytes_deleted": 1146414309,
+    "symlinks_deleted": 0,
+    "verified_absent": true,
+    "test_sockets_remaining": []
+  }
+}

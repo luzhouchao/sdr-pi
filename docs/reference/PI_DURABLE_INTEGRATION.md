@@ -33,7 +33,7 @@ model/thinking/instructions/tools并撤销旧请求执行资格。用户要求�
 ## 当前安装与离线维护
 
 Planner为 `planner/releases/pi-durable-1.4.0-20261027-r6`，通过 `planner/current` 选择；
-Controller及Web制品统一为 `releases/pi-durable-1.4.0-20261027-r7`，根均在
+Controller及Web制品统一为 `releases/pi-durable-1.4.0-20261027-r8`，根均在
 `/home/jetson/.local/lib/sdrharness/`。前轮37个旧安装目录及随后替换的Planner/二进制r5包已删除，旧版回滚路径不再可用；
 应用结果、IQ和持久账本保留。精确路径、大小、SHA和清理见
 [最新版本验收](../validation/PI_DURABLE_CORE_2026-10-26.md#仅支持最新版与旧包删除2026-10-27)。
@@ -57,9 +57,11 @@ OpenCode Go当前选择为 `deepseek-v4.1-flash`，Base URL为
   唯一模型工具仍为 `submit_plan`，没有有效工具计划时明确报错、零提案。
   其他载荷保留原命名工具选择。没有关闭思考，也没有放宽Controller校验。
 
-人工计划显示剩余有效时间。逾期`/approve`会取消该计划、提示重新提交并保持终端可用，
-不会延长期限、恢复批准或重试旧请求；旧版崩溃后记录的unknown仍保持未知。见
-[批准过期修复](../validation/PI_DURABLE_CORE_2026-10-26.md#人工批准过期不再退出终端2026-10-27)。
+人工计划显示剩余有效时间。逾期`/approve`会持久取消旧计划，清除旧候选/测量，刷新设备健康，
+按保存的原任务提交一次新请求；新计划必须再次人工批准。没有后台续期或自动采样，
+重复点击在模型运行期间不会追加请求。缺少当前代次原任务时提示重新提交。
+原绝对期限不延长，旧版崩溃后记录的unknown仍保持未知。Controller r8替换的r7包已删除。见
+[过期后点击重新规划](../validation/PI_DURABLE_CORE_2026-10-26.md#过期后点击批准重新规划2026-10-27)。
 
 维护仅在两服务停机后执行；在线调用明确拒绝。以运行用户jetson执行：
 

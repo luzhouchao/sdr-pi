@@ -395,6 +395,7 @@ struct ConsoleApp {
     next_request_id: u64,
     session_generation: u64,
     pending: Option<ValidatedPlan>,
+    pending_instruction: Option<(u64, u64, String)>,
     requests: HashMap<u64, PlanRequest>,
     pending_session_commands: HashMap<u64, PendingSessionCommand>,
     history: VecDeque<String>,
@@ -544,6 +545,7 @@ impl ConsoleApp {
             next_request_id,
             session_generation: generation,
             pending: None,
+            pending_instruction: None,
             requests: HashMap::new(),
             pending_session_commands: HashMap::new(),
             history,
@@ -595,7 +597,7 @@ impl ConsoleApp {
                             self.cruise.stop(CruiseStopReason::Fault);
                             self.print_cruise_status();
                         }
-                        println!("计划已过期：request={request_id} 未执行，原批准已失效；请重新提交采样指令，等待新计划后再批准。");
+                        println!("计划已过期：request={request_id} 已取消，旧批准不会执行硬件。");
                         return Ok(false);
                     }
                     Err(error) => return Err(error.into()),
@@ -820,6 +822,7 @@ impl ConsoleApp {
         self.template.session_generation = self.session_generation;
         self.template.observation.recognition = None;
         self.pending = None;
+        self.pending_instruction = None;
         self.requests.clear();
         self.pending_session_commands.clear();
         self.active_request_id = None;
@@ -829,6 +832,40 @@ impl ConsoleApp {
         self.record(message.to_owned());
         println!("{message}；旧计划已失效。");
         Ok(())
+    }
+
+    fn remember_pending_instruction(
+        &mut self,
+        request_id: u64,
+        generation: u64,
+        instruction: &str,
+    ) {
+        self.pending_instruction = Some((request_id, generation, instruction.to_owned()));
+    }
+
+    fn replan_expired_approval(
+        &mut self,
+        generation: u64,
+        instruction: Option<String>,
+        old_plan_summary: &str,
+    ) -> AppResult<()> {
+        self.template.state = ControllerState::Holding;
+        self.auto_mission = None;
+        self.auto_next_instruction = None;
+        self.cruise.switch_to_step_approval();
+        let Some(instruction) = instruction.filter(|_| generation == self.session_generation)
+        else {
+            println!("过期计划没有当前会话的原始任务；请重新提交指令，不会恢复旧批准。");
+            return Ok(());
+        };
+        // A health probe cannot make old RF evidence fresh. Remove those
+        // candidates/measurements before submit refreshes live device health.
+        self.template.observation.candidates.clear();
+        self.template.observation.latest_sweep = None;
+        self.template.observation.recognition = None;
+        println!("旧计划已过期，正在刷新设备状态并按原任务重新规划；旧候选与测量已移除，新计划仍需再次批准。不会自动采样。");
+        let summary = format!("过期计划仅作任务目标参考，不含批准或新鲜观测：{old_plan_summary}；请基于当前观测重新规划，新计划必须再次人工批准。");
+        self.submit(carry_forward_instruction(&summary, &instruction))
     }
 
     fn approve(&mut self) -> AppResult<()> {
@@ -844,6 +881,29 @@ impl ConsoleApp {
             return Ok(());
         }
         if let Some(plan) = self.pending.take() {
+            let request_id = plan.request_id;
+            let generation = plan.session_generation;
+            let old_plan_summary = describe_plan(&plan);
+            let instruction = self.pending_instruction.take().and_then(|(id, gen, text)| {
+                (id == request_id && gen == generation).then_some(text)
+            });
+            let expired = self
+                .ledger
+                .as_ref()
+                .and_then(|ledger| ledger.by_request(request_id, generation))
+                .is_some_and(|record| {
+                    record.decision == Decision::Accepted
+                        && matches!(
+                            record.execution,
+                            ExecutionState::Accepted | ExecutionState::PendingApproval
+                        )
+                        && record.identity.deadline_unix_ms
+                            <= sdr_agent_controller::recognition_execution::now_ms()
+                });
+            if expired {
+                self.ledger_finish(request_id, generation, ExecutionState::Cancelled)?;
+                return self.replan_expired_approval(generation, instruction, &old_plan_summary);
+            }
             if matches!(plan.action, ProposedAction::RunLocalRecognition { .. }) {
                 let mut current = self.template.clone();
                 current.request_id = plan.request_id;
@@ -867,6 +927,20 @@ impl ConsoleApp {
                 }
                 ProposedAction::RunLocalRecognition { .. } => self.start_recognition(plan)?,
                 _ => println!("request={} 没有可批准的生产执行动作。", plan.request_id),
+            }
+            // The deadline can pass during execution preflight. ledger_begin
+            // cancels at that final boundary; replan after resources return.
+            let expired_during_preflight = self
+                .ledger
+                .as_ref()
+                .and_then(|ledger| ledger.by_request(request_id, generation))
+                .is_some_and(|record| {
+                    record.execution == ExecutionState::Cancelled
+                        && record.identity.deadline_unix_ms
+                            <= sdr_agent_controller::recognition_execution::now_ms()
+                });
+            if expired_during_preflight {
+                self.replan_expired_approval(generation, instruction, &old_plan_summary)?;
             }
         } else {
             println!("没有等待批准的计划。")
@@ -926,6 +1000,11 @@ impl ConsoleApp {
             plan.session_generation,
             json!({"plan":plan,"maximum_rx_bytes":MAX_RX_BYTES,"engineering_only":true}),
         )?;
+        self.remember_pending_instruction(
+            plan.request_id,
+            plan.session_generation,
+            &request.instruction,
+        );
         self.pending = Some(plan);
         if self.cruise.is_active() {
             self.cruise.stop(CruiseStopReason::ApprovalRequired);
@@ -1654,6 +1733,7 @@ impl ConsoleApp {
     }
 
     fn reject(&mut self) -> AppResult<()> {
+        self.pending_instruction = None;
         if let Some(plan) = self.pending.take() {
             self.ledger_finish(
                 plan.request_id,
@@ -2561,13 +2641,18 @@ impl ConsoleApp {
                                     invalid_input("a validated plan is already pending").into()
                                 );
                             }
+                            self.remember_pending_instruction(
+                                plan.request_id,
+                                plan.session_generation,
+                                &request.instruction,
+                            );
                             self.pending = Some(plan);
                             println!("逐步批准模式：输入 /approve 执行，或输入 /reject 拒绝。");
                             if let Some(identity) = &delivery {
                                 let remaining_ms = identity.deadline_unix_ms.saturating_sub(
                                     sdr_agent_controller::recognition_execution::now_ms(),
                                 );
-                                println!("计划有效期剩余约 {} 秒；超时后请重新提交，旧批准不会延长有效期。", remaining_ms.div_ceil(1_000));
+                                println!("计划有效期剩余约 {} 秒；超时后点击批准将按原任务重新规划，新计划仍需再次批准。", remaining_ms.div_ceil(1_000));
                             }
                         } else {
                             println!("该计划当前没有生产执行器，仅记录建议，不会操作硬件。");
@@ -2578,6 +2663,11 @@ impl ConsoleApp {
                     }
                     InteractionMode::AutomaticCruise => match &plan.action {
                         _ if plan.approval_required => {
+                            self.remember_pending_instruction(
+                                plan.request_id,
+                                plan.session_generation,
+                                &request.instruction,
+                            );
                             self.pending = Some(plan);
                             self.cruise.stop(CruiseStopReason::ApprovalRequired);
                             println!("自动巡航不会代替人工批准；计划已停在批准门前。");
@@ -3698,6 +3788,7 @@ mod tests {
                 next_request_id: 2,
                 session_generation: 1,
                 pending: None,
+                pending_instruction: None,
                 ledger: None,
                 requests: HashMap::new(),
                 pending_session_commands: HashMap::new(),
@@ -4505,6 +4596,93 @@ mod tests {
             ExecutionState::Cancelled
         );
         drop(ledger);
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn expired_click_replans_once_with_fresh_context_and_requires_new_approval() {
+        use std::io::{BufRead, BufReader};
+        let root = terminal_state_test_path("approval-replan")
+            .parent()
+            .unwrap()
+            .to_owned();
+        let (mut app, peer) = test_console();
+        app.template.limits.max_span_hz = 20_000_000;
+        let mut ledger = PlanLedger::open(&root, "test_app").unwrap();
+        let identity = PlanIdentity {
+            plan_id: "a0000000-0000-0000-0000-000000000001".into(),
+            hash: "a".repeat(64),
+            app_session_id: "test_app".into(),
+            controller_epoch: ledger.epoch().into(),
+            session_generation: 1,
+            request_id: 1,
+            deadline_unix_ms: unix_time_ms().unwrap() + 100,
+        };
+        ledger
+            .admit(identity.clone(), Decision::Accepted, true)
+            .unwrap();
+        app.ledger = Some(ledger);
+        app.pending = Some(reply_plan(ProposedAction::SurveyBand {
+            start_hz: 2_450_000_000,
+            stop_hz: 2_460_000_000,
+            step_hz: 5_000_000,
+            sample_rate_hz: 10_000_000,
+            rf_bandwidth_hz: 10_000_000,
+            dwell_ms: 20,
+        }));
+        // The origin must survive agent_end, which clears the transient requests.
+        let request = test_request(1, 1);
+        app.requests.insert(1, request.clone());
+        app.remember_pending_instruction(1, 1, &request.instruction);
+        app.requests.clear();
+        app.template.observation.candidates.push(
+            sdr_agent_controller::protocol::CandidateSummary {
+                id: "old-candidate".into(),
+                center_hz: 2_455_000_000,
+                bandwidth_hz: 200_000,
+                peak_dbfs: -20.0,
+                snr_db: 20.0,
+                age_ms: 0,
+            },
+        );
+        thread::sleep(Duration::from_millis(110));
+        app.approve().unwrap();
+        assert!(app.pending.is_none() && app.agent_cycle_active);
+        assert!(app.active_execution.is_none() && app.active_sweep.is_none());
+        assert_eq!(
+            app.ledger
+                .as_ref()
+                .unwrap()
+                .get(&identity.plan_id)
+                .unwrap()
+                .execution,
+            ExecutionState::Cancelled
+        );
+        assert_eq!(app.next_request_id, 3);
+        assert!(app.template.observation.candidates.is_empty());
+        peer.set_read_timeout(Some(Duration::from_secs(1))).unwrap();
+        let mut reader = BufReader::new(peer);
+        let mut line = String::new();
+        reader.read_line(&mut line).unwrap();
+        let sent: Value = serde_json::from_str(&line).unwrap();
+        assert_eq!(sent["type"], "prompt");
+        assert_eq!(sent["context"]["request_id"], 2);
+        assert_eq!(sent["context"]["observation"]["candidates"], json!([]));
+        app.approve().unwrap();
+        assert_eq!(app.next_request_id, 3); // double click cannot enqueue another replan
+        app.agent_cycle_active = false;
+        app.requests.insert(7, test_request(7, 1));
+        let mut frame = durable_frame(
+            &app,
+            json!({"kind":"survey_band","start_hz":2_450_000_000_u64,
+            "stop_hz":2_460_000_000_u64,"step_hz":5_000_000,"sample_rate_hz":10_000_000,
+            "rf_bandwidth_hz":10_000_000,"dwell_ms":20}),
+        );
+        frame["delivery"]["plan_id"] = json!("b0000000-0000-0000-0000-000000000002");
+        app.handle_event(frame).unwrap();
+        assert!(app.pending.is_some());
+        assert!(app.active_execution.is_none() && app.active_sweep.is_none()); // new plan still requires approval
+        drop(app);
         fs::remove_dir_all(root).unwrap();
     }
 
