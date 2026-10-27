@@ -176,34 +176,38 @@ calling the model, waits for the owner response that confirms restoration, and t
 advances the session generation. It retries only the bounded startup window in
 which `START_SESSION` has not yet completed.
 
-The terminal defaults to step approval. An operator starts bounded automatic
-cruise with optional budgets:
+Describe the receive task directly in natural language, for example:
 
 ```text
-/auto start --steps 16 --seconds 300 在允许频段内寻找活动并根据结果继续
+在2445至2465MHz内根据每轮结果调整扫描，完成四轮后停止。
+寻找候选，有候选就复查一次，没有就结束。
 ```
 
-Steps are limited to 1–128 and duration to 10–1,800 seconds. Omitting both uses
-8 steps and 120 seconds. Consecutive SDR-unavailable and missing-upstream-action
-failures are counted independently; each retries at 10-second intervals and the
-fifth failure exits. `/stop` remains immediately available during the interval.
-Automatic `survey_band` uses the fixed RX gain saved on the settings page,
-counts its maximum processed sample bytes and one completed step against the
-cruise budgets, and writes both compact deterministic candidates and the
-complete bounded measured sweep as compact `[center_hz, power_dbfs]` pairs into
-the next Planner turn. Raw IQ is persisted only when the Web storage switch is
-enabled.
+The Planner proposes one finite `start_task` goal. Rust validates its frequency
+fence, action/time/IQ budgets and storage before automatic execution. Successful
+complete sweeps count toward an explicit scan target; inspections do not. A
+qualitative goal uses fresh observations to decide whether to continue or stop.
+The old cruise form and `/auto`/`/mode` command routes have been removed.
+`/status`, `/stop`, `/approve` and `/reject` remain available. Hardware actions
+that require approval still wait at the approval gate.
+
+Actions are limited to 1–128 and duration to 10–1,800 seconds. Each task carries
+an explicit finite byte budget. Consecutive SDR-unavailable and missing-upstream
+action failures are counted independently; each retries at 10-second intervals
+and the fifth failure exits. `/stop` remains immediately available.
+`survey_band` uses the fixed RX gain saved on the settings page and passes
+bounded measured results to the next Planner turn. Automatic tasks require IQ
+storage so successful saved/restored sweeps can be counted reliably.
 `inspect_candidate` revisits one current candidate for at most 1,000 ms using
 the same fixed gain and one 4,096-sample inline-IQ window aggregated on AGX. It
 processes at most 16 KiB, persists no IQ, updates the selected candidate for the
-next Planner turn, and counts against automatic-cruise step/byte budgets. Rust
+next Planner turn, and counts against task action/byte budgets. Rust
 passes the validated center/sample-rate/RF-bandwidth profile to SDRD/1
 `APPLY_PROFILE` and verifies exact readback before capture.
 
 Every model proposal is rendered as a visible `Agent>` reply only after Rust
 has validated its structured action. Greetings, status questions and
-explanations use a validated `hold.reason` in the operator's language. In
-step-approval mode, an executable `survey_band`, `inspect_candidate` or
+explanations use a validated `hold.reason` in the operator's language. When a plan needs approval, an executable `survey_band`, `inspect_candidate` or
 bounded-IQ reply explicitly asks the operator to click approve or enter
 `/approve`; sending the natural-language request alone does not bypass that
 gate. SDRD capability parsing remains strict while accepting the declared

@@ -534,3 +534,25 @@ Web二进制字节未改，两生产服务active。包与每份新IQ/metadata SH
 5新结果IQ/metadata保留10文件316463字节，具备Web删除入口；不复制原IQ。
 开发暂存10918文件1492011222字节已清理，`/var/tmp/sdrharness-dev/b1027`及测试socket不存在。
 保留会话/账本、原用户结果及封存证据，包目录树摘要和精确删除方法已登记。
+
+## 旧模式入口删除（2026-10-27）
+
+按用户要求删除旧`/auto`、`/mode`命令路由、参数解析与默认预算推导、网页巡航表单、
+模式切换及废弃样式。统一自然语言任务入口；共享Controller预算/计数/进度门与批准、
+拒绝、停止功能保留。内部cruise字段继续用于共用执行状态，不另建第二套自动执行器。
+
+Controller157通过/1忽略、Web38通过/2忽略、Node118通过；格式、all-target Clippy
+（-D warnings）及release构建通过。首次编译发现测试仍调用旧start_auto，改为显式预算
+start_task_budget后通过。真实浏览器确认旧控件不存在、旧命令不产生计划/模型调用，
+帮助无旧推荐入口；自然语言“仅解释不执行”真实模型产生一个completed hold。
+批准/拒绝/停止、历史结果返回正常，页面错误0。最后停止并核对模型空闲、无待批准。
+
+Controller/Web r12与Planner r9已安装，服务健康；本单元无新增RF，39份结果与corpus不变，
+历史unknown计划保持未知，thinking low开启、recognizer_available=false。未改动或复制key。
+本单元没有重跑上单元的自适应RF流程，不能将浏览器hold当作新的射频验收。
+
+旧r11二进制包与Planner r8删除12686文件85777494字节及2链接；开发根
+`/var/tmp/sdrharness-dev/e1027`删除11898文件2061159057字节，无socket残留，路径已不存在。
+保留当前r12的5文件6038589字节与Planner r9的12681文件79734779字节/2链接；
+用户会话、结果、IQ及旧证据保留。精确路径、制品SHA/树摘要及人工删除方法见
+[删除验收证据](../evidence/PI_DURABLE_LEGACY_MODES_REMOVAL_2026-10-27.json)。

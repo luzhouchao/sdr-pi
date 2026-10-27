@@ -307,7 +307,7 @@ test('reattaching a persisted conversation refreshes policy/model/thinking befor
   await f.engine.submit('session_a',next);await f.engine.idle();
   assert.equal(f.deliveries.length,2);assert.equal(contexts.length,2);
   const wire=JSON.stringify(contexts[1]);
-  assert.ok(wire.includes('[AUTOMATIC CRUISE PROGRESS]'));
+  assert.ok(wire.includes('[AUTOMATIC TASK PROGRESS]'));
   assert.ok(wire.includes('start_task: interpret an operator'));
   assert.ok(wire.includes('Do not require a special command'));
   assert.ok(wire.includes('NOT independent measured noise'));

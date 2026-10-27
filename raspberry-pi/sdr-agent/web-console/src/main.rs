@@ -1882,7 +1882,7 @@ fn classify_output(line: &str, stderr: bool) -> &'static str {
         "decision"
     } else if line.starts_with("搜索> ") || line.starts_with("搜索来源> ") {
         "search"
-    } else if line.starts_with("巡航状态：")
+    } else if line.starts_with("任务状态：")
         || line.starts_with("SDR 连通性重试：")
         || line.starts_with("上游下一步重试：")
     {
@@ -3427,7 +3427,7 @@ mod tests {
             classify_output("候选复查结果：安全完成", false),
             "execution"
         );
-        assert_eq!(classify_output("巡航状态：正在检查 SDR", false), "cruise");
+        assert_eq!(classify_output("任务状态：正在检查 SDR", false), "cruise");
         assert_eq!(classify_output("搜索> 正在查询 \"Spark\"", false), "search");
         assert_eq!(
             classify_output("搜索来源> \"来源\" — \"https://example.com\"", false),

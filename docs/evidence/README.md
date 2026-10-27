@@ -376,3 +376,5 @@
 - [2026-10-27 人工批准过期](PI_DURABLE_APPROVAL_EXPIRY_2026-10-27.json)：原deadline诊断、零执行取消/终端存活回归、r7部署与数据保留，无新RF。
 - [2026-10-27 过期点击重新规划](PI_DURABLE_APPROVAL_REPLAN_2026-10-27.json)：r8部署、真实浏览器旧计划取消/新请求/再次批准门、153项Rust与117项JS、精确清理与保留，无新RF。
 - [2026-10-27 自然语言统一自动任务](PI_DURABLE_AUTONOMOUS_TASK_2026-10-27.json)：有限任务目标、四轮自适应/语义停止实机、r11/Planner r8部署、精确清理与5份新结果保留。
+
+- [2026-10-27 旧模式入口删除](PI_DURABLE_LEGACY_MODES_REMOVAL_2026-10-27.json)：统一自然语言入口、r12/Planner r9、浏览器真实hold、无新RF及精确清理。

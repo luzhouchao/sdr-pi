@@ -1,0 +1,441 @@
+{
+  "date": "2026-10-27",
+  "unit": "Remove legacy automatic cruise/mode entry points; unified natural-language tasks",
+  "source_base_commit": "6450903",
+  "changes": [
+    "Removed /auto and /mode routes, parameter parser and old defaults inference",
+    "Removed Web mode/cruise form and unused styles",
+    "Preserved shared Controller budget/progress/count/approval/stop enforcement; internal cruise fields retained",
+    "User-facing labels use automatic task; durable prompt refreshed on attach"
+  ],
+  "checks": {
+    "controller": {
+      "passed": 157,
+      "ignored": 1,
+      "fmt": true,
+      "clippy_all_targets_deny_warnings": true,
+      "release": true
+    },
+    "web": {
+      "passed": 38,
+      "ignored": 2,
+      "fmt": true,
+      "clippy_all_targets_deny_warnings": true,
+      "release": true
+    },
+    "node": {
+      "passed": 118,
+      "failed": 0,
+      "skipped": 0
+    },
+    "initial_failure": "First controller compile found one remaining test invocation of renamed start_auto; updated to start_task_budget with explicit finite budget; all final checks passed",
+    "browser": {
+      "page_errors": [],
+      "results_and_corpus_unchanged": true,
+      "controls_present": true,
+      "removed_controls_absent": true,
+      "history_results_readable": true,
+      "final_status": [
+        {
+          "id": 228,
+          "timestamp_ms": 1793081174310,
+          "kind": "operator",
+          "text": "Operator> /status"
+        },
+        {
+          "id": 229,
+          "timestamp_ms": 1793081174317,
+          "kind": "system",
+          "text": "持久会话：最近记录中 0 项待核对，0 项阻塞；旧批准不会自动恢复。结果未知的计划不会重新执行。"
+        },
+        {
+          "id": 230,
+          "timestamp_ms": 1793081174320,
+          "kind": "system",
+          "text": "控制器状态：已保持，不会继续操作硬件；执行授权：等待批准。"
+        },
+        {
+          "id": 231,
+          "timestamp_ms": 1793081174321,
+          "kind": "system",
+          "text": "Agent 会话：已打开；上游模型：空闲；等待处理的消息：0 条。"
+        },
+        {
+          "id": 232,
+          "timestamp_ms": 1793081174321,
+          "kind": "system",
+          "text": "人工批准：没有待处理计划；下一请求编号：2；安全代次：1793081141387。"
+        },
+        {
+          "id": 233,
+          "timestamp_ms": 1793081174322,
+          "kind": "cruise",
+          "text": "任务状态：空闲；直接输入任务目标，需要批准时会明确提示。"
+        },
+        {
+          "id": 234,
+          "timestamp_ms": 1793081174323,
+          "kind": "prompt",
+          "text": "SDR Agent> "
+        }
+      ],
+      "help_events": [
+        {
+          "id": 211,
+          "timestamp_ms": 1793081167195,
+          "kind": "operator",
+          "text": "Operator> /help"
+        },
+        {
+          "id": 212,
+          "timestamp_ms": 1793081167197,
+          "kind": "system",
+          "text": "查看：/status 当前状态，/history 本次历史"
+        },
+        {
+          "id": 213,
+          "timestamp_ms": 1793081167204,
+          "kind": "system",
+          "text": "任务：直接输入自然语言目标；模型据实测决定下一步，Controller限制预算并在目标完成后停止。"
+        },
+        {
+          "id": 214,
+          "timestamp_ms": 1793081167206,
+          "kind": "system",
+          "text": "批准：/approve 批准待处理动作，/reject 拒绝；需要批准时会明确提示。"
+        },
+        {
+          "id": 215,
+          "timestamp_ms": 1793081167207,
+          "kind": "system",
+          "text": "流式输入：普通文本或 /steer 会立即引导当前轮，/follow-up 在本轮后处理；队列最多 4 条"
+        },
+        {
+          "id": 216,
+          "timestamp_ms": 1793081167208,
+          "kind": "system",
+          "text": "工程识别：配置后 /recognize <候选ID>，仍须 /approve；不会开启生产能力。"
+        },
+        {
+          "id": 217,
+          "timestamp_ms": 1793081167208,
+          "kind": "system",
+          "text": "会话：/pause 暂停，/resume 继续，/stop 始终优先立即停止，/quit 退出"
+        },
+        {
+          "id": 218,
+          "timestamp_ms": 1793081167209,
+          "kind": "prompt",
+          "text": "SDR Agent> "
+        }
+      ]
+    },
+    "legacy_commands": [
+      {
+        "command": "/auto start --steps 1 --seconds 30",
+        "events": [
+          {
+            "id": 205,
+            "timestamp_ms": 1793081166373,
+            "kind": "operator",
+            "text": "Operator> /auto start --steps 1 --seconds 30"
+          },
+          {
+            "id": 206,
+            "timestamp_ms": 1793081166375,
+            "kind": "system",
+            "text": "未知命令；输入 /help 查看可用命令。"
+          },
+          {
+            "id": 207,
+            "timestamp_ms": 1793081166382,
+            "kind": "prompt",
+            "text": "SDR Agent> "
+          }
+        ]
+      },
+      {
+        "command": "/mode manual",
+        "events": [
+          {
+            "id": 208,
+            "timestamp_ms": 1793081166779,
+            "kind": "operator",
+            "text": "Operator> /mode manual"
+          },
+          {
+            "id": 209,
+            "timestamp_ms": 1793081166781,
+            "kind": "system",
+            "text": "未知命令；输入 /help 查看可用命令。"
+          },
+          {
+            "id": 210,
+            "timestamp_ms": 1793081166788,
+            "kind": "prompt",
+            "text": "SDR Agent> "
+          }
+        ]
+      }
+    ],
+    "new_completed_hold_records": {
+      "9d713204-d286-47bf-a6c2-1ae28aecf083": {
+        "identity": {
+          "plan_id": "9d713204-d286-47bf-a6c2-1ae28aecf083",
+          "hash": "354944d07550712fea36626489c9bab966edafd437940b1df554031c67cfc3d7",
+          "app_session_id": "session-1793076607439",
+          "controller_epoch": "18bc5c3245fbd9259e906be767f8ebd2",
+          "session_generation": 1793081141386,
+          "request_id": 1,
+          "deadline_unix_ms": 1793081197426
+        },
+        "decision": "accepted",
+        "execution": "completed"
+      }
+    }
+  },
+  "deployment": {
+    "binary_release": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r12",
+    "planner_release": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9",
+    "binary_manifest": {
+      "version": "pi-durable-1.4.0-20261027-r12",
+      "source_base_commit": "6450903",
+      "purpose": "Remove legacy cruise/mode command routes, UI, styles, defaults and help; retain shared bounded task execution",
+      "files": [
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r12/sdr-agent",
+          "bytes": 2700056,
+          "sha256": "f6b0bc92d034a685b34d027f7a0e302b3e13e0bb6fb0da2b8d7ef07076199710"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r12/sdr-agent-web-console",
+          "bytes": 3335456,
+          "sha256": "a5b24af495d034dcdce410a4d19511528dac2149690096c8ce8bf3a1dc0b8921"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r12/sdrharness-planner.service",
+          "bytes": 976,
+          "sha256": "bb92f8d303d6be21d1f1c99332ffe07ce67b068ae09f7927281bda689e3a5866"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r12/sdrharness-web.service",
+          "bytes": 956,
+          "sha256": "9e7453361945d3c0d992c69899d1084fb49e985a5226176b22e2a85d0fb666c1"
+        }
+      ]
+    },
+    "planner_manifest": {
+      "version": "pi-durable-1.4.0-20261027-r9",
+      "source_base_commit": "6450903",
+      "purpose": "Unified automatic-task terminology",
+      "source_files": [
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/context-policy.mjs",
+          "bytes": 1496,
+          "sha256": "f3051f7976f233936af29f32a144f4c8129d909ab6b6640c7f8eb8b615108e7d"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/durable-maintenance.mjs",
+          "bytes": 5676,
+          "sha256": "568abe55db5d28fca566cfc23b192a61c19495f63739c53bcb9afe1d713f23c5"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/durable-planner.mjs",
+          "bytes": 27885,
+          "sha256": "ae4f45d08a8ceca349f5c997c8985c16fe23b28467c5d17b5b48bd32833fb783"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/durable-service-state.mjs",
+          "bytes": 1072,
+          "sha256": "64b523a85df2e0e7ac9af91695a50b6fd50ab34a428c63b1554348caff2ef0bc"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/durable-session-runtime.mjs",
+          "bytes": 9356,
+          "sha256": "a632434bd0ec6f1223621a4eea089fedb650eb767da22ed88634e26ad1b44e68"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/durable-store.mjs",
+          "bytes": 2598,
+          "sha256": "cdd52bb8a57ec1f3f543809a51025fb1b4a1c53f0b5603c4c31482b47c4a223a"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/main.mjs",
+          "bytes": 16309,
+          "sha256": "3e3ec5c187fd006df0ec28da8b5c40e5ce7443cd04e021601dc62026378e2afe"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/model-profile.mjs",
+          "bytes": 1570,
+          "sha256": "fc1700c4bcde098d89f02bf2b7bad4256b2e1b767b273c073daf269783b5d132"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/planner-failure.mjs",
+          "bytes": 1515,
+          "sha256": "fafc5b15070cd96dff5cc5068399504a0ca6de7a18a076eeece8ce59f11fbc8c"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/protocol.mjs",
+          "bytes": 13108,
+          "sha256": "dc663dbb8730cc8d6b949bfa9c8a41ca78750059222a85af4396fe5a8ba9a27a"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/provider-config.mjs",
+          "bytes": 6369,
+          "sha256": "380f55f5d2ec0669c54a72d08ed86ff49ef990a2c0ecd343d3779d9f19ffe8f8"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/recognition-observation.mjs",
+          "bytes": 4867,
+          "sha256": "5960c40db37ff789a09c55233dd31bc6bc3af784e632494175405e71dba80db2"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/run-lease.mjs",
+          "bytes": 554,
+          "sha256": "270a6344aaf0b6bb48bafb11ef054c33fdbc162972c835801c9fdee9f18f3801"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/runtime-path.mjs",
+          "bytes": 625,
+          "sha256": "ba64cd053b22f1fbd4f5c11d1e24a0bbec169d13167f28825cf0045e84bdb8fb"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/session-protocol.mjs",
+          "bytes": 5810,
+          "sha256": "6703a14095cb4227983b70512022b6f6631cbb80a5c7df2a44f87d6b347a814b"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/session-server.mjs",
+          "bytes": 5016,
+          "sha256": "44d7b081eb8c05146be90789186fbba957673e7f5c681d74bb6393f904e7e7a3"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/spark-stream.mjs",
+          "bytes": 10431,
+          "sha256": "503d7d0395f9555114cb4f0238c3b7415b48b2c3c55af56e93135508e463c999"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/survey-parameters.mjs",
+          "bytes": 2886,
+          "sha256": "46a78c9b50ea6d838a17a207598bf91b7206e035d21095b34bd2b7cf1fa094d8"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/system-prompt.mjs",
+          "bytes": 10517,
+          "sha256": "b8be040c59276420fd042f501701625bcceee0ad86ab0d6ff86b72cd16a18158"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/src/web-search.mjs",
+          "bytes": 7514,
+          "sha256": "cbb0931d9ba720ef3ecc4b298ddf7a6f31596029241b6a2a806a0ee6b6add57f"
+        }
+      ],
+      "dependency_lock": {
+        "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/package-lock.json",
+        "bytes": 45588,
+        "sha256": "bb1cb4e493f95687a5bfb69db7e8d4af799b93df52fc7e304c7ec3c62ab0592a"
+      },
+      "parent_manifest": {
+        "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/release-manifest.json",
+        "bytes": 5463,
+        "sha256": "3c8b7e08c04807cb2697ca94b01732ad853eb04ba177e042cf0ae16dc5f0dc7c"
+      }
+    },
+    "binary_manifest_digest": {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r12/release-manifest.json",
+      "bytes": 1145,
+      "sha256": "6937bf7666aa0153dc9688c704291dfd66fef7ab4da32f9c3f71a8e7ab0a065e"
+    },
+    "planner_manifest_digest": {
+      "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9/release-manifest.json",
+      "bytes": 5416,
+      "sha256": "e8ec6e4a4e1b3b177cacecf22ae7967466e78a969da712cefa8b1c60d3ab269f"
+    },
+    "installed_binaries": [
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent",
+        "bytes": 2700056,
+        "sha256": "f6b0bc92d034a685b34d027f7a0e302b3e13e0bb6fb0da2b8d7ef07076199710"
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent-web-console",
+        "bytes": 3335456,
+        "sha256": "a5b24af495d034dcdce410a4d19511528dac2149690096c8ce8bf3a1dc0b8921"
+      }
+    ],
+    "session_id": "session-1793076607439",
+    "result_count_preserved": 39,
+    "corpus_preserved": true,
+    "predecessors": [
+      "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r11",
+      "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8"
+    ],
+    "key_config_changes": false
+  },
+  "new_rf": false,
+  "result_count_preserved": 39,
+  "unknown_plan_preserved": {
+    "path": "/var/lib/sdrharness/web-console/plan-ledger/session-1793071197684/plans.json",
+    "plan_id": "93938483-cbb6-4500-885e-612c57014c6f",
+    "execution": "unknown"
+  },
+  "thinking": "low enabled; unchanged",
+  "recognizer_available": false,
+  "secrets_changed_or_copied": false,
+  "removed_releases": [
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r11",
+      "files": 5,
+      "bytes": 6042662,
+      "symlinks": 0,
+      "tree_sha256": "a61179d49a2a576826f6699795431f30ccbaef6eb9b0b2850677c738f6d9b9ec",
+      "tree_algorithm": "sorted relative path TAB bytes TAB file SHA256 LF; symlink relative path -> target LF",
+      "absent": true
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8",
+      "files": 12681,
+      "bytes": 79734832,
+      "symlinks": 2,
+      "tree_sha256": "8c961aba984573c7c681b7957ec1c303ef4053cd4558ab0ea19f275374b4a5b0",
+      "tree_algorithm": "sorted relative path TAB bytes TAB file SHA256 LF; symlink relative path -> target LF",
+      "absent": true
+    }
+  ],
+  "retained_releases": [
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r12",
+      "files": 5,
+      "bytes": 6038589,
+      "symlinks": 0,
+      "tree_sha256": "18e632d85e0b3fda537dca7cf90be8d23918fcc1d85b85af644aacf96fdafb76",
+      "tree_algorithm": "sorted relative path TAB bytes TAB file SHA256 LF; symlink relative path -> target LF",
+      "purpose": "current installed release",
+      "identity": "source base 6450903 plus this focused change; individual file hashes in installed release-manifest.json",
+      "manual_delete": "stop sdrharness-web.service and sdrharness-planner.service, replace current runtime, then remove exact path /home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r12"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9",
+      "files": 12681,
+      "bytes": 79734779,
+      "symlinks": 2,
+      "tree_sha256": "9f9584a5bfea1a54a9936ba0ae61e365ff051a932a69629231141961b222adfd",
+      "tree_algorithm": "sorted relative path TAB bytes TAB file SHA256 LF; symlink relative path -> target LF",
+      "purpose": "current installed release",
+      "identity": "source base 6450903 plus this focused change; individual file hashes in installed release-manifest.json",
+      "manual_delete": "stop sdrharness-web.service and sdrharness-planner.service, replace current runtime, then remove exact path /home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r9"
+    }
+  ],
+  "user_results_iq_sessions_and_prior_evidence": "preserved; no copies or deletions",
+  "development_cleanup": {
+    "path": "/var/tmp/sdrharness-dev/e1027",
+    "files": 11898,
+    "bytes": 2061159057,
+    "symlinks": 0,
+    "tree_sha256": "32758ee7ee823e0d46896b290d1fd39a6afbc721eafd615497e491be83902708",
+    "tree_algorithm": "sorted relative path TAB bytes TAB file SHA256 LF; symlink relative path -> target LF",
+    "absent": true,
+    "sockets": [],
+    "retained_files": 0
+  }
+}

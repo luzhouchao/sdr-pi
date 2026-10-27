@@ -552,7 +552,7 @@ function renderOverview() {
     ? `${plot.sweep_id} · ${plot.points.length} 点 · ${plot.candidates.length} 个候选`
     : latestText('sweep') || initialSurveyLabel(initialSurveyState(view.active)));
   setText('#qwen-status', latestText('qwen') || '尚无模型输出');
-  setText('#cruise-status', latestText('cruise') || '逐步批准模式');
+  setText('#task-status', latestText('cruise') || '尚无自动任务');
   setText('#session-survey', initialSurveyLabel(initialSurveyState(view.active)));
   setText('#receive-feedback', latestText('sweep') || '尚无接收进度反馈');
   setText('#session-result', plot ? formatFrequency(plot.points[0][0]) + '–' + formatFrequency(plot.points.at(-1)[0]) : '尚无本会话曲线');
@@ -997,21 +997,11 @@ async function send(command, { fromInput = false } = {}) {
 }
 function renderControls() {
   const enabled = Boolean(view.active);
-  document.querySelectorAll('[data-command], #command-input, #command-form button, #auto-form input, #auto-form button').forEach(element => {
+  document.querySelectorAll('[data-command], #command-input, #command-form button').forEach(element => {
     element.disabled = !enabled || (element.dataset.command !== '/stop' && (view.sessionPending || view.commandPending));
   });
   document.querySelector('#new-session').disabled = view.sessionPending || !view.state;
   document.querySelectorAll('.session').forEach(element => { element.disabled = view.sessionPending; });
-}
-
-async function startAuto(event) {
-  event.preventDefault();
-  const form = document.querySelector('#auto-form');
-  const mission = document.querySelector('#auto-mission');
-  if (!form.reportValidity()) return;
-  const steps = Number(document.querySelector('#auto-steps').value);
-  const seconds = Number(document.querySelector('#auto-seconds').value);
-  await send(`/auto start --steps ${steps} --seconds ${seconds} ${mission.value.trim()}`);
 }
 
 function connectEvents() {
@@ -1073,7 +1063,7 @@ function scrollBottom() { view.terminal.scrollTop = view.terminal.scrollHeight; 
 function setText(selector, text) { document.querySelector(selector).textContent = text; }
 function safeKind(value) { return /^[a-z]+$/.test(value) ? value : 'system'; }
 function kindLabel(kind) {
-  return ({ system: '系统', prompt: '提示', operator: '操作员', qwen: '上游模型', plan: '已验证计划', decision: '校验依据', search: '网络搜索', execution: '执行', sweep: '扫频', cruise: '巡航', error: '错误' })[kind] || '系统';
+  return ({ system: '系统', prompt: '提示', operator: '操作员', qwen: '上游模型', plan: '已验证计划', decision: '校验依据', search: '网络搜索', execution: '执行', sweep: '扫频', cruise: '任务', error: '错误' })[kind] || '系统';
 }
 function formatTokens(value) {
   return `${new Intl.NumberFormat('zh-CN').format(value)} tokens`;
@@ -1152,7 +1142,6 @@ document.querySelectorAll('input[name="survey-mode"]').forEach((radio) => radio.
   markSettingsDirty();
 }));
 document.querySelector('#scroll-bottom').addEventListener('click', scrollBottom);
-document.querySelector('#auto-form').addEventListener('submit', startAuto);
 document.querySelectorAll('[data-command]').forEach((button) => button.addEventListener('click', () => send(button.dataset.command)));
 document.querySelector('#command-form').addEventListener('submit', (event) => { event.preventDefault(); send(view.input.value, { fromInput: true }); });
 view.input.addEventListener('keydown', (event) => {

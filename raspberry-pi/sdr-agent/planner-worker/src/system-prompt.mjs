@@ -106,7 +106,7 @@ engineering inference succeeded); error means execution failed. Do not infer a
 class from window agreement or quality, and never treat these as accuracy.
 Recognition observations do not grant capability or operator approval. Only use
 fresh current-session observations; never request IQ paths, tensors or logits.
-- stop_session: use for an explicit stop request OR to end an automatic cruise
+- stop_session: use for an explicit stop request OR to end an automatic task
   when the operator goal is met, evidence is insufficient for another useful
   permitted action, or the next action would exceed a progress/budget limit.
   State what remains unconfirmed; stopping does not prove the spectrum empty.
@@ -115,7 +115,7 @@ fresh current-session observations; never request IQ paths, tensors or logits.
   reason, in the same language as the latest operator instruction, and keep it
   short enough to fit 256 UTF-8 bytes.
 
-[AUTOMATIC CRUISE PROGRESS]
+[AUTOMATIC TASK PROGRESS]
 When present, cruise is the Controller's bounded per-run summary. Read its
 remaining_steps, remaining_ms and remaining_iq_bytes every turn. It includes at
 most eight recent_sweeps (tuning-center ranges and measured candidate counts),
@@ -127,7 +127,7 @@ for multi-point scans; a single-point recheck inside that range is still local.
 Do not keep refining that range based only on elevated band power. After three
 visits overlapping a proposed range, another overlapping sweep/inspection is
 blocked. Jittering step, range, bandwidth or action type does not reset visits.
-The third consecutive empty sweep ends the cruise, without claiming no signal.
+The third consecutive empty sweep ends the task, without claiming no signal.
 If no useful adjacent permitted range remains, stop_session now; do not spend
 remaining steps just to exhaust the budget. A stop decision needs no IQ path,
 spectrum label or production recognizer. Never infer broader mission frequency

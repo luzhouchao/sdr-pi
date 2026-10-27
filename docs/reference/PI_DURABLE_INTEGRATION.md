@@ -32,8 +32,8 @@ model/thinking/instructions/tools并撤销旧请求执行资格。用户要求�
 
 ## 当前安装与离线维护
 
-Planner为 `planner/releases/pi-durable-1.4.0-20261027-r8`，通过 `planner/current` 选择；
-Controller及Web制品统一为 `releases/pi-durable-1.4.0-20261027-r11`，根均在
+Planner为 `planner/releases/pi-durable-1.4.0-20261027-r9`，通过 `planner/current` 选择；
+Controller及Web制品统一为 `releases/pi-durable-1.4.0-20261027-r12`，根均在
 `/home/jetson/.local/lib/sdrharness/`。前轮37个旧安装目录及随后替换的Planner/二进制r5包已删除，旧版回滚路径不再可用；
 应用结果、IQ和持久账本保留。精确路径、大小、SHA和清理见
 [最新版本验收](../validation/PI_DURABLE_CORE_2026-10-26.md#仅支持最新版与旧包删除2026-10-27)。
@@ -80,9 +80,11 @@ Controller验证有限任务，等待本次模型生成结束、检查存储空�
 任务频率围栏由Controller校验，原能力、每动作预算、期限、批准门保持有效。
 运行中的任务不能通过`start_task`追加预算；`/stop`优先取消，重启不恢复自动任务或旧批准。
 完成后的新请求清除旧任务执行状态。普通问题返回hold；关键范围不明时应解释或澄清，
-不承诺任意自然语言都能无歧义解释。显式`/auto`和人工批准命令仍用于调试及操作。
-当前r11/Planner r8的部署、旧包删除和实测边界见
-[统一任务验收](../validation/PI_DURABLE_CORE_2026-10-26.md#自然语言统一自动任务2026-10-27)。
+不承诺任意自然语言都能无歧义解释。旧`/auto`、`/mode`和网页巡航/模式表单已删除，
+统一使用自然语言入口；`/approve`、`/reject`和`/stop`仍可操作。内部共用预算/进度状态保留，
+不因删除旧入口而删除安全检查。当前Controller/Web r12、Planner r9已部署；
+无新增RF，浏览器真实解释hold及历史结果读取通过。见
+[旧模式删除验收](../validation/PI_DURABLE_CORE_2026-10-26.md#旧模式入口删除2026-10-27)。
 
 维护仅在两服务停机后执行；在线调用明确拒绝。以运行用户jetson执行：
 

@@ -35,21 +35,14 @@
       <div id="terminal" class="terminal" role="log" aria-live="polite" aria-relevant="additions text" tabindex="0" aria-label="会话消息流"><div class="terminal-empty">正在读取会话…</div></div>
       <div class="composer">
         <div class="controls" aria-label="计划与会话控制"><button type="button" class="approve-button" data-command="/approve">✓ 批准计划</button><button type="button" class="reject-button" data-command="/reject">拒绝</button><span class="control-spacer"></span><button type="button" data-command="/pause">暂停</button><button type="button" data-command="/resume">恢复</button><button type="button" data-command="/status">查看状态</button></div>
-        <form id="command-form" class="command-form"><label class="sr-only" for="command-input">发送给接收助手的指令</label><div><textarea id="command-input" rows="2" maxlength="1024" placeholder="描述接收任务，或输入 /help 查看命令"></textarea><button type="submit">发送 ↑</button></div><div class="composer-foot"><small>Ctrl + Enter 发送 · 可在生成期间停止</small><span id="command-feedback" role="status"></span></div></form>
+        <form id="command-form" class="command-form"><label class="sr-only" for="command-input">发送给接收助手的指令</label><div><textarea id="command-input" rows="2" maxlength="1024" placeholder="直接描述任务目标，例如：根据结果调整频段，完成四轮扫描"></textarea><button type="submit">发送 ↑</button></div><div class="composer-foot"><small>Ctrl + Enter 发送 · 可在生成期间停止</small><span id="command-feedback" role="status"></span></div></form>
       </div>
     </section>
     <aside class="context-panel" aria-label="当前接收与系统状态">
       <section id="receive-status" class="receive-card"><div class="section-heading"><h2>接收进度</h2><span class="state-dot" aria-hidden="true"></span></div><strong id="session-survey">等待会话</strong><p id="receive-feedback">尚无接收反馈</p><small>仅显示控制器已上报的进度</small></section>
       <button id="sweep-results-entry" class="result-shortcut" type="button" aria-controls="results-view"><span>本会话最近结果 <b aria-hidden="true">↗</b></span><strong id="session-result">尚无曲线</strong><small id="sweep-status">查看频谱与历史结果</small></button>
       <section class="system-summary"><h2>系统状态</h2><dl><dt>控制器连接</dt><dd id="controller-status">等待状态</dd><dt>信号识别</dt><dd>不可用 · 尚未生产准入</dd></dl><p>控制器连接不代表射频链路已验证；查看状态可获取最新反馈。</p></section>
-      <details class="mode-disclosure"><summary>运行模式与自动巡航</summary>          <section class="authorization-rail" aria-labelledby="authorization-title">
-            <div class="rail-copy"><small>运行权限</small><strong id="authorization-title">运行模式</strong><p>两种模式都经过 Rust 安全校验；不会放宽频段、时长、字节或独占限制。</p></div>
-            <button type="button" data-command="/mode manual" class="mode-card manual-mode"><span>逐步批准</span><small>每个可执行动作都停在人工批准门前</small></button>
-            <form id="auto-form" class="mode-card auto-mode"><label for="auto-mission">受限自动巡航</label><div class="auto-mission-row"><input id="auto-mission" maxlength="700" placeholder="例如：在允许频段内寻找活动并根据结果继续" required><button type="submit">启动巡航</button></div><div class="auto-budget-row"><label for="auto-steps"><span>最多步数</span><input id="auto-steps" type="number" min="1" max="128" step="1" value="8" required></label><label for="auto-seconds"><span>总时长（秒）</span><input id="auto-seconds" type="number" min="10" max="1800" step="1" value="120" required></label><small>IQ 预算按步数 × 单动作上限自动推导；两类失败各重试 5 次</small></div></form>
-
-          </section>
-</details>
-      <details class="status-disclosure"><summary>上游与授权详情</summary><h3>上游最近回复</h3><p id="qwen-status">尚无模型输出</p><h3>运行授权</h3><p id="cruise-status">逐步批准模式</p></details>
+      <details class="status-disclosure"><summary>上游与授权详情</summary><h3>上游最近回复</h3><p id="qwen-status">尚无模型输出</p><h3>运行授权</h3><p id="task-status">尚无自动任务</p></details>
     </aside>
   </div>
   <details class="diagnostics"><summary><span>技术诊断与原始记录</span><small id="log-count">0 条原始记录</small></summary>          <section id="model-trace" class="model-trace" hidden aria-label="模型透明度">

@@ -19,8 +19,8 @@ pub enum InteractionMode {
 impl InteractionMode {
     pub fn label(self) -> &'static str {
         match self {
-            Self::StepApproval => "逐步人工批准",
-            Self::AutomaticCruise => "受限自动巡航",
+            Self::StepApproval => "等待批准",
+            Self::AutomaticCruise => "自动任务",
         }
     }
 }
@@ -75,15 +75,15 @@ impl CruiseStopReason {
             Self::OperatorStopped => "操作员已停止",
             Self::SdrRetryExhausted => "连续 5 次检测不到 SDR",
             Self::PlannerRetryExhausted => "连续 5 次未收到上游下一步",
-            Self::StepBudgetExhausted => "已用完巡航步数",
-            Self::DurationBudgetExhausted => "已达到巡航时长上限",
+            Self::StepBudgetExhausted => "已用完任务步数",
+            Self::DurationBudgetExhausted => "已达到任务时长上限",
             Self::ByteBudgetExhausted => "已达到 IQ 字节预算",
             Self::ApprovalRequired => "下一步需要人工批准",
             Self::UnsupportedAction => "下一步没有生产执行器",
             Self::PlannerRequestedStop => "上游建议停止或保持",
             Self::AdjacentSweepRequired => "上一轮无候选，不能继续同一区域细扫",
             Self::LocalSweepLimit => "已达到局部扫频复查上限",
-            Self::EmptySweepLimit => "连续三轮无候选，结束本次巡航",
+            Self::EmptySweepLimit => "连续三轮无候选，结束本次任务",
             Self::Fault => "控制器检测到故障",
         }
     }

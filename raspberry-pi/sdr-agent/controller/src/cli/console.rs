@@ -2,8 +2,7 @@
 
 use sdr_agent_controller::autonomy::{
     CruiseControl, CruisePhase, CruiseStopReason, InteractionMode, SweepProgress, SweepVisit,
-    AUTO_RETRY_DELAY_SECS, AUTO_RETRY_LIMIT, DEFAULT_AUTO_DURATION_SECS, DEFAULT_AUTO_MAX_STEPS,
-    HARD_AUTO_DURATION_SECS, HARD_AUTO_MAX_STEPS, MIN_AUTO_DURATION_SECS,
+    AUTO_RETRY_DELAY_SECS, AUTO_RETRY_LIMIT,
 };
 use sdr_agent_controller::execution::{
     ExecutionAuthorization, ExecutionObservation, SdrActionExecutor, SdrdActionAdapter,
@@ -241,7 +240,6 @@ fn handle_input(app: &mut ConsoleApp, input: &str) -> AppResult<bool> {
         "/history" | "/历史" => app.print_history(),
         "/approve" | "/批准" => app.approve()?,
         "/reject" | "/拒绝" => app.reject()?,
-        "/mode manual" | "/模式 人工" => app.enable_step_approval()?,
         "/pause" | "/暂停" => app.stop("会话已暂停")?,
         "/resume" | "/继续" => app.renew(ControllerState::Idle, "会话已恢复")?,
         "/stop" | "/停止" => app.stop("会话已停止")?,
@@ -269,28 +267,12 @@ fn handle_input(app: &mut ConsoleApp, input: &str) -> AppResult<bool> {
             input.trim_start_matches("/跟进 ").trim(),
             SessionQueueKind::FollowUp,
         )?,
-        _ if input == "/auto" || input == "/auto start" => println!(
-            "请在命令后写明巡航任务，例如：/auto start --steps 16 --seconds 300 扫描指定的受限频段并根据结果给出下一步。"
-        ),
-        _ if input.starts_with("/auto start ") => {
-            match parse_auto_start(input.trim_start_matches("/auto start ").trim()) {
-                Ok(command) => app.start_auto(
-                    &command.mission,
-                    command.steps,
-                    command.seconds,
-                    command.iq_bytes,
-                )?,
-                Err(error) => println!("自动巡航参数无效：{error}"),
-            }
-        }
         _ if input.starts_with("/recognize ") => app.propose_recognition(input[11..].trim())?,
         _ if input.starts_with('/') => println!("未知命令；输入 /help 查看可用命令。"),
         _ if app.task.is_some() && app.cruise.is_active() => {
             println!("自动任务执行中；/status 查看进度，/stop 停止后可修改目标。");
         }
-        _ if app.agent_cycle_active => {
-            app.queue_model_input(input, SessionQueueKind::Steer)?
-        }
+        _ if app.agent_cycle_active => app.queue_model_input(input, SessionQueueKind::Steer)?,
         _ => app.submit(input.to_owned())?,
     }
     Ok(true)
@@ -328,95 +310,6 @@ impl AutonomousTask {
             Err(CruiseStopReason::UnsupportedAction)
         }
     }
-}
-
-#[derive(Debug, Eq, PartialEq)]
-struct AutoStartCommand {
-    mission: String,
-    steps: u8,
-    seconds: u64,
-    iq_bytes: Option<u64>,
-}
-
-fn parse_auto_start(arguments: &str) -> Result<AutoStartCommand, String> {
-    let mut steps = None;
-    let mut seconds = None;
-    let mut mib = None;
-    let mut mission = Vec::new();
-    let mut tokens = arguments.split_whitespace();
-    while let Some(token) = tokens.next() {
-        match token {
-            "--steps" => {
-                if steps.is_some() {
-                    return Err("--steps 只能填写一次".to_owned());
-                }
-                let value = tokens
-                    .next()
-                    .ok_or_else(|| "--steps 后缺少步数".to_owned())?;
-                steps =
-                    Some(
-                        parse_bounded_auto_value(value, "步数", 1, u64::from(HARD_AUTO_MAX_STEPS))?
-                            as u8,
-                    );
-            }
-            "--seconds" => {
-                if seconds.is_some() {
-                    return Err("--seconds 只能填写一次".to_owned());
-                }
-                let value = tokens
-                    .next()
-                    .ok_or_else(|| "--seconds 后缺少秒数".to_owned())?;
-                seconds = Some(parse_bounded_auto_value(
-                    value,
-                    "总时长",
-                    MIN_AUTO_DURATION_SECS,
-                    HARD_AUTO_DURATION_SECS,
-                )?);
-            }
-            "--mib" => {
-                if mib.is_some() {
-                    return Err("--mib 只能填写一次".to_owned());
-                }
-                let value = tokens
-                    .next()
-                    .ok_or_else(|| "--mib 后缺少累计预算".to_owned())?;
-                mib = Some(parse_bounded_auto_value(
-                    value,
-                    "累计预算",
-                    1,
-                    u64::MAX / (1024 * 1024),
-                )?);
-            }
-            unknown if unknown.starts_with("--") => {
-                return Err(format!("未知参数 {unknown}"));
-            }
-            word => mission.push(word),
-        }
-    }
-    if mission.is_empty() {
-        return Err("必须填写巡航任务".to_owned());
-    }
-    Ok(AutoStartCommand {
-        mission: mission.join(" "),
-        steps: steps.unwrap_or(DEFAULT_AUTO_MAX_STEPS),
-        seconds: seconds.unwrap_or(DEFAULT_AUTO_DURATION_SECS),
-        iq_bytes: mib.map(|value| value * 1024 * 1024),
-    })
-}
-
-fn parse_bounded_auto_value(
-    value: &str,
-    label: &str,
-    minimum: u64,
-    maximum: u64,
-) -> Result<u64, String> {
-    let parsed = value
-        .parse::<u64>()
-        .map_err(|_| format!("{label}必须是 {minimum}–{maximum} 的整数"))?;
-    if !(minimum..=maximum).contains(&parsed) {
-        return Err(format!("{label}必须在 {minimum}–{maximum} 之间"));
-    }
-    Ok(parsed)
 }
 
 struct ConsoleApp {
@@ -808,7 +701,7 @@ impl ConsoleApp {
             println!("持久会话：最近记录中 {unresolved} 项待核对，{blocked} 项阻塞；旧批准不会自动恢复。结果未知的计划不会重新执行。");
         }
         println!(
-            "控制器状态：{}；运行模式：{}。",
+            "控制器状态：{}；执行授权：{}。",
             controller_state_label(self.template.state),
             self.cruise.mode().label()
         );
@@ -1400,7 +1293,7 @@ impl ConsoleApp {
         if self.cruise.is_active() && maximum_bytes > self.cruise.remaining_iq_bytes() {
             self.cruise.stop(CruiseStopReason::ByteBudgetExhausted);
             println!(
-                "自动扫频未开始：需要处理 {maximum_bytes} 字节，超过巡航剩余接收预算 {} 字节。",
+                "自动扫频未开始：需要处理 {maximum_bytes} 字节，超过任务剩余接收预算 {} 字节。",
                 self.cruise.remaining_iq_bytes()
             );
             self.print_cruise_status();
@@ -1501,7 +1394,7 @@ impl ConsoleApp {
         if self.cruise.is_active() && maximum_bytes > self.cruise.remaining_iq_bytes() {
             self.cruise.stop(CruiseStopReason::ByteBudgetExhausted);
             println!(
-                "候选复查未开始：需要处理 {maximum_bytes} 字节，超过巡航剩余接收预算 {} 字节。",
+                "候选复查未开始：需要处理 {maximum_bytes} 字节，超过任务剩余接收预算 {} 字节。",
                 self.cruise.remaining_iq_bytes()
             );
             self.print_cruise_status();
@@ -1581,7 +1474,7 @@ impl ConsoleApp {
                     plan.session_generation,
                     ExecutionState::Cancelled,
                 )?;
-                println!("巡航进度门在执行前拒绝计划：{}", reason.label());
+                println!("任务进度门在执行前拒绝计划：{}", reason.label());
                 self.print_cruise_status();
                 return Ok(false);
             }
@@ -1702,9 +1595,9 @@ impl ConsoleApp {
                             self.record_sweep_progress(&report);
                             if self.cruise.is_active() {
                                 let mission =
-                                    self.auto_mission.as_deref().unwrap_or("继续受限巡航");
+                                    self.auto_mission.as_deref().unwrap_or("继续受限任务");
                                 self.auto_next_instruction = Some(format!(
-                                    "自动巡航任务：{mission}\n上一步 survey_band request={request_id} 已执行：{} 个频点、固定增益 {} dB、噪声基线 {:.1} dBFS、{} 个候选、处理 {} 字节，零削顶且射频状态已恢复。最新候选已写入 PlanningContext，请根据真实结果只给出下一步。",
+                                    "自动任务：{mission}\n上一步 survey_band request={request_id} 已执行：{} 个频点、固定增益 {} dB、噪声基线 {:.1} dBFS、{} 个候选、处理 {} 字节，零削顶且射频状态已恢复。最新候选已写入 PlanningContext，请根据真实结果只给出下一步。",
                                     report.points.len(),
                                     self.survey_gain_db,
                                     report.noise_floor_dbfs,
@@ -1749,9 +1642,9 @@ impl ConsoleApp {
                             self.record_sweep_progress(&report);
                             if self.cruise.is_active() {
                                 let mission =
-                                    self.auto_mission.as_deref().unwrap_or("继续受限巡航");
+                                    self.auto_mission.as_deref().unwrap_or("继续受限任务");
                                 self.auto_next_instruction = Some(format!(
-                                    "自动巡航任务：{mission}\n上一步 inspect_candidate request={request_id} 已真实复查候选 {candidate_id}：中心 {} Hz、带宽 {} Hz、固定增益 {} dB、实测功率 {:.1} dBFS、参考信噪比 {:.1} dB、处理 {} 字节，零削顶且射频状态已恢复。请根据最新候选只给出下一步。",
+                                    "自动任务：{mission}\n上一步 inspect_candidate request={request_id} 已真实复查候选 {candidate_id}：中心 {} Hz、带宽 {} Hz、固定增益 {} dB、实测功率 {:.1} dBFS、参考信噪比 {:.1} dB、处理 {} 字节，零削顶且射频状态已恢复。请根据最新候选只给出下一步。",
                                     candidate.center_hz,
                                     candidate.bandwidth_hz,
                                     self.survey_gain_db,
@@ -1875,9 +1768,9 @@ impl ConsoleApp {
                     self.cruise
                         .record_execution(observation.capture.bytes_written);
                     if self.cruise.is_active() {
-                        let mission = self.auto_mission.as_deref().unwrap_or("继续受限巡航");
+                        let mission = self.auto_mission.as_deref().unwrap_or("继续受限任务");
                         self.auto_next_instruction = Some(format!(
-                            "自动巡航任务：{mission}\n上一步 request={request_id} 已完成，采集 {} 个样本、{} 字节、丢样 {}、溢出 {}，并已恢复射频状态。请根据这个结果和最新健康状态只给出下一步。",
+                            "自动任务：{mission}\n上一步 request={request_id} 已完成，采集 {} 个样本、{} 字节、丢样 {}、溢出 {}，并已恢复射频状态。请根据这个结果和最新健康状态只给出下一步。",
                             observation.capture.samples_captured,
                             observation.capture.bytes_written,
                             observation.capture.dropped_samples,
@@ -1906,7 +1799,7 @@ impl ConsoleApp {
                         if retrying {
                             "，10 秒后重试"
                         } else {
-                            "，巡航退出"
+                            "，任务退出"
                         }
                     );
                     self.print_cruise_status();
@@ -2113,28 +2006,6 @@ impl ConsoleApp {
         Ok(())
     }
 
-    fn enable_step_approval(&mut self) -> AppResult<()> {
-        if self.cruise.mode() == InteractionMode::StepApproval && !self.cruise.is_active() {
-            println!("当前已经是逐步人工批准模式。每个可执行动作都会等待 /approve 或 /reject。");
-            return Ok(());
-        }
-        let had_active_step = self.agent_cycle_active
-            || self.active_execution.is_some()
-            || self.active_sweep.is_some()
-            || self.active_recognition.is_some();
-        if had_active_step {
-            self.stop("已切换到逐步人工批准模式")?;
-        }
-        self.cruise.switch_to_step_approval();
-        self.auto_mission = None;
-        self.auto_next_instruction = None;
-        if !had_active_step {
-            self.renew(ControllerState::Idle, "已切换到逐步人工批准模式")?;
-        }
-        println!("已切换到逐步人工批准模式；自动巡航已关闭，旧自动计划不会继续执行。");
-        Ok(())
-    }
-
     fn start_queued_task(&mut self) -> AppResult<()> {
         let Some(plan) = self.queued_task.take() else {
             return Ok(());
@@ -2194,7 +2065,7 @@ impl ConsoleApp {
             plan.session_generation,
             ExecutionState::Completed,
         )?;
-        self.start_auto(mission, *max_steps, *max_seconds, Some(maximum_bytes))?;
+        self.start_task_budget(mission, *max_steps, *max_seconds, maximum_bytes)?;
         self.task = Some(AutonomousTask {
             target_sweeps: *target_sweeps,
             completed_sweeps: 0,
@@ -2206,15 +2077,15 @@ impl ConsoleApp {
         Ok(())
     }
 
-    fn start_auto(
+    fn start_task_budget(
         &mut self,
         mission: &str,
         max_steps: u8,
         max_duration_secs: u64,
-        max_iq_bytes: Option<u64>,
+        max_iq_bytes: u64,
     ) -> AppResult<()> {
         if mission.is_empty() || mission.len() > 700 || mission.chars().any(char::is_control) {
-            return Err(invalid_input("自动巡航任务必须为 1–700 字节的单行文本").into());
+            return Err(invalid_input("自动任务必须为 1–700 字节的单行文本").into());
         }
         if self.cruise.is_active()
             || self.agent_cycle_active
@@ -2222,23 +2093,17 @@ impl ConsoleApp {
             || self.active_sweep.is_some()
             || self.active_recognition.is_some()
         {
-            println!("当前步骤尚未结束；请先 /stop，再启动新的自动巡航。");
+            println!("当前步骤尚未结束；请先 /stop，再启动新的自动任务。");
             return Ok(());
         }
         if self.pending.is_some() {
             println!("仍有计划等待人工决定；请先 /approve、/reject 或 /stop。");
             return Ok(());
         }
-        let max_iq_bytes = max_iq_bytes.unwrap_or_else(|| {
-            self.template
-                .limits
-                .max_iq_bytes
-                .saturating_mul(u64::from(max_steps))
-        });
         if max_iq_bytes == 0 {
-            return Err(invalid_input("无法从步骤数推导有限 IQ 预算").into());
+            return Err(invalid_input("自动任务必须提供有限正数 IQ 预算").into());
         }
-        self.renew(ControllerState::Idle, "自动巡航已建立新的安全代次")?;
+        self.renew(ControllerState::Idle, "自动任务已建立新的安全代次")?;
         self.cruise
             .start(max_iq_bytes, max_steps, max_duration_secs, Instant::now())
             .map_err(invalid_input)?;
@@ -2246,12 +2111,12 @@ impl ConsoleApp {
         self.task = None;
         self.auto_mission = Some(mission.to_owned());
         self.auto_next_instruction = Some(format!(
-            "自动巡航任务：{mission}\n本巡航最多 {max_steps} 个已执行步骤、{max_duration_secs} 秒、累计 {} 字节 IQ；SDR 不可用或上游未给出下一步各自连续重试 5 次，每次间隔 10 秒。只能提出 Rust Controller 能验证的接收动作，安全边界不变。请给出第一步。",
+            "自动任务：{mission}\n本任务最多 {max_steps} 个已执行步骤、{max_duration_secs} 秒、累计 {} 字节 IQ；SDR 不可用或上游未给出下一步各自连续重试 5 次，每次间隔 10 秒。只能提出 Rust Controller 能验证的接收动作，安全边界不变。请给出第一步。",
             max_iq_bytes
         ));
         self.next_auto_attempt = Instant::now();
         println!(
-            "已启动受限自动巡航：最多 {max_steps} 步、{max_duration_secs} 秒、{} 字节；两类失败分别最多重试 5 次、间隔 10 秒。输入 /stop 可立即停止。",
+            "已启动受限自动任务：最多 {max_steps} 步、{max_duration_secs} 秒、{} 字节；两类失败分别最多重试 5 次、间隔 10 秒。输入 /stop 可立即停止。",
             max_iq_bytes
         );
         self.print_cruise_status();
@@ -2296,7 +2161,7 @@ impl ConsoleApp {
                 || self.active_sweep.is_some()
                 || self.active_recognition.is_some()
             {
-                self.stop("自动巡航达到时长上限")?;
+                self.stop("自动任务达到时长上限")?;
             }
             return Ok(());
         }
@@ -2320,7 +2185,7 @@ impl ConsoleApp {
                 if retrying {
                     "，10 秒后重试"
                 } else {
-                    "，巡航退出"
+                    "，任务退出"
                 }
             );
             self.print_cruise_status();
@@ -2329,8 +2194,8 @@ impl ConsoleApp {
         self.cruise.record_sdr_available();
         let instruction = self.auto_next_instruction.take().unwrap_or_else(|| {
             format!(
-                "自动巡航任务：{}\n请根据最新状态给出下一步。",
-                self.auto_mission.as_deref().unwrap_or("继续受限巡航")
+                "自动任务：{}\n请根据最新状态给出下一步。",
+                self.auto_mission.as_deref().unwrap_or("继续受限任务")
             )
         });
         let instruction = self.task.as_ref().map_or(instruction.clone(), |task| {
@@ -2410,12 +2275,12 @@ impl ConsoleApp {
         }
         let snapshot = self.cruise.snapshot(Instant::now());
         if snapshot.mode == InteractionMode::StepApproval {
-            println!("巡航状态：未启用；当前每个可执行动作都需要人工批准。");
+            println!("任务状态：空闲；直接输入任务目标，需要批准时会明确提示。");
             return;
         }
         if snapshot.active {
             println!(
-                "巡航状态：{}；已完成 {}/{} 步，累计 {:.1}/{:.1} MiB，SDR 重试 {}/{}，上游重试 {}/{}。",
+                "任务状态：{}；已完成 {}/{} 步，累计 {:.1}/{:.1} MiB，SDR 重试 {}/{}，上游重试 {}/{}。",
                 snapshot.phase_label,
                 snapshot.completed_steps,
                 snapshot.max_steps,
@@ -2428,7 +2293,7 @@ impl ConsoleApp {
             );
         } else {
             println!(
-                "巡航状态：已退出；原因：{}。",
+                "任务状态：已退出；原因：{}。",
                 snapshot.stop_reason_label.unwrap_or("尚未启动")
             );
         }
@@ -2566,7 +2431,7 @@ impl ConsoleApp {
                         if retrying {
                             "，10 秒后重试"
                         } else {
-                            "，巡航退出"
+                            "，任务退出"
                         }
                     );
                     self.print_cruise_status();
@@ -2794,7 +2659,7 @@ impl ConsoleApp {
                         self.plan_seen_in_cycle = true;
                         self.cruise.stop(reason);
                         self.auto_next_instruction = None;
-                        println!("巡航进度门拒绝计划，不会执行：{}", reason.label());
+                        println!("任务进度门拒绝计划，不会执行：{}", reason.label());
                         self.print_cruise_status();
                         return Ok(());
                     }
@@ -2855,7 +2720,7 @@ impl ConsoleApp {
                                 &request.instruction,
                             );
                             self.pending = Some(plan);
-                            println!("逐步批准模式：输入 /approve 执行，或输入 /reject 拒绝。");
+                            println!("此动作需要批准：输入 /approve 执行，或输入 /reject 拒绝。");
                             if let Some(identity) = &delivery {
                                 let remaining_ms = identity.deadline_unix_ms.saturating_sub(
                                     sdr_agent_controller::recognition_execution::now_ms(),
@@ -2867,7 +2732,7 @@ impl ConsoleApp {
                         }
                     }
                     InteractionMode::AutomaticCruise if !self.cruise.is_active() => {
-                        println!("该计划到达时巡航已经停止，已作为过期计划忽略，不会执行。")
+                        println!("该计划到达时任务已经停止，已作为过期计划忽略，不会执行。")
                     }
                     InteractionMode::AutomaticCruise => match &plan.action {
                         _ if plan.approval_required => {
@@ -2878,7 +2743,7 @@ impl ConsoleApp {
                             );
                             self.pending = Some(plan);
                             self.cruise.stop(CruiseStopReason::ApprovalRequired);
-                            println!("自动巡航不会代替人工批准；计划已停在批准门前。");
+                            println!("自动任务不会代替人工批准；计划已停在批准门前。");
                             self.print_cruise_status();
                         }
                         ProposedAction::CaptureBoundedIq { .. } => {
@@ -2897,7 +2762,7 @@ impl ConsoleApp {
                         }
                         _ => {
                             self.cruise.stop(CruiseStopReason::UnsupportedAction);
-                            println!("自动巡航已停止：该建议尚无生产执行器，不能伪装成已执行。");
+                            println!("自动任务已停止：该建议尚无生产执行器，不能伪装成已执行。");
                             self.print_cruise_status();
                         }
                     },
@@ -2931,7 +2796,7 @@ impl ConsoleApp {
                         if retrying {
                             "，10 秒后重试"
                         } else {
-                            "，巡航退出"
+                            "，任务退出"
                         }
                     );
                     self.print_cruise_status();
@@ -3510,10 +3375,8 @@ fn read_bounded(mut reader: impl Read) -> AppResult<Vec<u8>> {
 fn print_help() {
     println!(
         "查看：/status 当前状态，/history 本次历史\n\
-         人工模式：/mode manual，/approve 批准当前步骤，/reject 拒绝当前步骤\n\
-         自动巡航：/auto start [--steps 1–128] [--seconds 10–1800] [--mib 正整数] <任务>\n\
-         不填 --mib 时，按步数 × 单动作 IQ 上限自动推导有限预算。\n\
-         默认 8 步、120 秒；累计字节预算按当前限制推导。两类失败各重试 5 次，每次间隔 10 秒\n\
+         任务：直接输入自然语言目标；模型据实测决定下一步，Controller限制预算并在目标完成后停止。\n\
+         批准：/approve 批准待处理动作，/reject 拒绝；需要批准时会明确提示。\n\
          流式输入：普通文本或 /steer 会立即引导当前轮，/follow-up 在本轮后处理；队列最多 4 条\n\
          工程识别：配置后 /recognize <候选ID>，仍须 /approve；不会开启生产能力。\n\
          会话：/pause 暂停，/resume 继续，/stop 始终优先立即停止，/quit 退出"
@@ -4235,7 +4098,7 @@ mod tests {
         assert!(!app.cruise.is_active());
         assert!(app.renew(ControllerState::Holding, "too early").is_err());
         app.submit("must not execute".into()).unwrap();
-        app.start_auto("must not restart", 2, 60, Some(65536))
+        app.start_task_budget("must not restart", 2, 60, 65536)
             .unwrap();
         assert_eq!(app.session_generation, 1);
         assert_eq!(app.next_request_id, 2);
@@ -4624,45 +4487,17 @@ mod tests {
     }
 
     #[test]
-    fn parses_default_and_operator_cruise_budgets() {
-        assert_eq!(
-            parse_auto_start("在允许频段内检查活动").unwrap(),
-            AutoStartCommand {
-                mission: "在允许频段内检查活动".to_owned(),
-                steps: DEFAULT_AUTO_MAX_STEPS,
-                seconds: DEFAULT_AUTO_DURATION_SECS,
-                iq_bytes: None,
-            }
-        );
-        assert_eq!(
-            parse_auto_start("--steps 128 --seconds 1800 --mib 32 完整巡航").unwrap(),
-            AutoStartCommand {
-                mission: "完整巡航".to_owned(),
-                steps: 128,
-                seconds: 1_800,
-                iq_bytes: Some(32 * 1024 * 1024),
-            }
-        );
-    }
-
-    #[test]
-    fn rejects_invalid_or_ambiguous_cruise_parameters() {
-        for invalid in [
-            "--steps 0 任务",
-            "--steps 129 任务",
-            "--seconds 9 任务",
-            "--seconds 1801 任务",
-            "--steps 8 --steps 9 任务",
-            "--seconds 120 --seconds 121 任务",
-            "--mib 0 任务",
-            "--mib 17592186044416 任务",
-            "--mib 16 --mib 32 任务",
-            "--unknown 1 任务",
-            "--steps",
-            "--seconds",
-            "--mib",
+    fn removed_mode_commands_cannot_start_tasks_or_reach_the_model() {
+        let (mut app, _peer) = test_console();
+        for command in [
+            "/auto",
+            "/auto start --steps 10 扫频",
+            "/mode manual",
+            "/模式 人工",
         ] {
-            assert!(parse_auto_start(invalid).is_err(), "accepted {invalid}");
+            assert!(handle_input(&mut app, command).unwrap());
+            assert!(!app.agent_cycle_active && !app.cruise.is_active());
+            assert!(app.queued_task.is_none() && app.task.is_none() && app.pending.is_none());
         }
     }
 
