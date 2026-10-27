@@ -362,3 +362,5 @@
 - [pi-durable真实Web两点扫频、双端账本与RF恢复](PI_DURABLE_WEB_SWEEP_2026-10-26.json)
 
 - [pi-durable两轮有界巡航、结束事件/唯一编号修复及结果恢复](PI_DURABLE_AUTO_CRUISE_2026-10-26.json)
+
+- [pi-durable既有8步决策复盘、反馈核对与定位/停止边界](PI_DURABLE_CRUISE_REVIEW_2026-10-27.json)

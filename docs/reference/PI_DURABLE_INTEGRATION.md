@@ -13,6 +13,11 @@
 [巡航验证](../validation/PI_DURABLE_CORE_2026-10-26.md#有界自动巡航与重试2026-10-26)。
 当前空闲，Spectrum连续任务保持暂停，不因服务重启恢复巡航。
 
+2026-10-27决策复盘仅确认反馈与有界执行：`latest_sweep.points`是每次调谐后整窗IQ总功率，
+`noise_floor_dbfs`是同轮功率上中位参考；小LO步进不代表等宽频谱分辨率。
+既有8步不能验收物理带宽/跳频或模型主动停止，详见
+[决策复盘](../validation/PI_DURABLE_CORE_2026-10-26.md#自动巡航决策复盘2026-10-27)。
+
 ## 当前安装与离线维护
 
 Planner为 `planner/releases/pi-durable-1.4.0-20261026-r4`，通过 `planner/current` 选择；

@@ -1,0 +1,1164 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "scope": "Read-only review of existing retry 8-step cruise. No model calls, RF operations, service restarts, IQ reads/copies or production changes.",
+  "base_commit": "007bb83e227f63bc95a2ee7810abbb2dd8900a8f",
+  "lineage": {
+    "parent": "docs/evidence/PI_DURABLE_AUTO_CRUISE_2026-10-26.json",
+    "parent_sha256": "23dc1dbaa163fa85bab18e674862f13b5ec2e23ab8251a1c7f53923a3ae935fb",
+    "planner_db": "/var/lib/sdrharness-planner/session-1789273063753/planner.sqlite",
+    "method": "mode=ro; selected durable input and submit_plan records joined through request toolCallId; no raw thinking exported",
+    "source_files": [
+      {
+        "path": "raspberry-pi/sdr-agent/controller/src/sweep.rs",
+        "sha256": "404db31503ae83aa6844b421cba1c7a028056ebe9e739bd8f7a832388e4ea636"
+      },
+      {
+        "path": "raspberry-pi/sdr-agent/controller/src/cli/console.rs",
+        "sha256": "ef36b1cbb100fdbe7ca2f26b2d0248751f40a567200b1b35aa7f9afff45b9a5d"
+      },
+      {
+        "path": "raspberry-pi/sdr-agent/controller/src/autonomy.rs",
+        "sha256": "d995a7c96a4f53bd31639120420543441c0b8268b892903ebf9b063a134eccf3"
+      },
+      {
+        "path": "raspberry-pi/sdr-agent/planner-worker/src/system-prompt.mjs",
+        "sha256": "a12faa1687a4373deb6d12fb5603a7fdc87abf061d320ea24f310e4571cd7abe"
+      }
+    ],
+    "installed_prompt_matches_source": true
+  },
+  "checks": {
+    "matched_plans_and_results": 8,
+    "feedback_transitions_verified": 7,
+    "max_power_rounding_error_db": 1.8432617210351054e-06,
+    "all_live_result_records_match_archive": true,
+    "model_attempts_each": 1,
+    "total_points": 38,
+    "unique_tuned_centers": 26,
+    "repeated_center_measurements": 12,
+    "exact_repeated_grid_count": 0,
+    "sample_rate_hz": 10000000,
+    "rf_bandwidth_hz_all_steps": 10000000,
+    "actual_iq_samples_per_point": 4096,
+    "actual_iq_window_duration_ms": 0.4096,
+    "candidate_counts_in_execution_order": [
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "stop_action_count": 0,
+    "termination": "Controller StepBudgetExhausted after step 8; no model decision to stop and no post-step-8 feedback turn"
+  },
+  "steps": [
+    {
+      "step": 1,
+      "input": {
+        "entry_id": 74,
+        "commit_seq": 333,
+        "record_sha256": "f9f3f2e7e3cf14f5a7beb5db15135e3270905bd25aac3da7d7d94eabc7b6e23d",
+        "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:1",
+        "instruction": "自动巡航任务：在2445至2465MHz范围进行自适应扫频，只用survey_band或stop_session。首轮start_hz=2450000000,stop_hz=2460000000,step_hz=5000000。后续根据最新实测功率、噪声、候选自动选下一段或细化，单轮最多5点；保持sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20和固定增益20dB。无候选时换相邻位置，不凭空报告信号；不要识别、发射或单独capture_bounded_iq。\n本巡航最多 8 个已执行步骤、120 秒、累计 1048576 字节 IQ；SDR 不可用或上游未给出下一步各自连续重试 5 次，每次间隔 10 秒。只能提出 Rust Controller 能验证的接收动作，安全边界不变。请给出第一步。",
+        "observation": {
+          "age_ms": 0,
+          "candidates": [],
+          "health": {
+            "can_capture_iq": true,
+            "can_retune": true,
+            "dropped_observations": 0,
+            "recognizer_available": false,
+            "sdr_online": true
+          },
+          "latest_sweep": {
+            "fixed_gain_db": 20,
+            "noise_floor_dbfs": -52.63312530517578,
+            "points": [
+              [
+                2445000000,
+                -53.26454544067383
+              ],
+              [
+                2445500000,
+                -52.63312530517578
+              ],
+              [
+                2446000000,
+                -53.93360137939453
+              ],
+              [
+                2446500000,
+                -47.70845031738281
+              ]
+            ],
+            "rf_bandwidth_hz": 10000000,
+            "sample_rate_hz": 10000000,
+            "sweep_id": "request-9"
+          }
+        }
+      },
+      "submitted_plan": {
+        "entry_id": 77,
+        "commit_seq": 342,
+        "record_sha256": "af3c2c18db8a578b5101d6c452e076cfc524fd716be10f3f2ff220e85dd5ef13",
+        "arguments": {
+          "action": "survey_band",
+          "dwell_ms": 20,
+          "reason": "新一轮巡航首步：2450–2460MHz、5MHz步进3点（2450/2455/2460），10MHz采样与带宽、20dB固定增益；后续按实测功率与候选细化或换段。",
+          "rf_bandwidth_hz": 10000000,
+          "sample_rate_hz": 10000000,
+          "start_hz": 2450000000,
+          "step_hz": 5000000,
+          "stop_hz": 2460000000
+        }
+      },
+      "durable_status": {
+        "model_attempts": 1,
+        "proposal": {
+          "planId": "51f7b034-d5ad-4926-beb8-906452195259",
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:1",
+          "hash": "d9da16bfbb17ff9331ff2349bec42954f7dbc673e632a1323640242fc9b1ae42",
+          "action": {
+            "kind": "survey_band",
+            "start_hz": 2450000000,
+            "stop_hz": 2460000000,
+            "step_hz": 5000000,
+            "sample_rate_hz": 10000000,
+            "rf_bandwidth_hz": 10000000,
+            "dwell_ms": 20
+          },
+          "state": "accepted",
+          "controllerExecution": "completed"
+        }
+      },
+      "result_id": 33,
+      "result_sweep_id": "request-recovered1793021180590-1",
+      "point_count": 3,
+      "points": [
+        [
+          2450000000,
+          -34.363556
+        ],
+        [
+          2455000000,
+          -53.642124
+        ],
+        [
+          2460000000,
+          -53.378986
+        ]
+      ],
+      "baseline_dbfs": -53.378986,
+      "candidate_count": 1,
+      "previously_sampled_centers_hz": [],
+      "grid": [
+        2450000000,
+        2455000000,
+        2460000000
+      ]
+    },
+    {
+      "step": 2,
+      "input": {
+        "entry_id": 81,
+        "commit_seq": 355,
+        "record_sha256": "a7593c67051cf23124a9284d592695be52be707f20f502bac13820dfa0432c3b",
+        "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:2",
+        "instruction": "自动巡航任务：在2445至2465MHz范围进行自适应扫频，只用survey_band或stop_session。首轮start_hz=2450000000,stop_hz=2460000000,step_hz=5000000。后续根据最新实测功率、噪声、候选自动选下一段或细化，单轮最多5点；保持sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20和固定增益20dB。无候选时换相邻位置，不凭空报告信号；不要识别、发射或单独capture_bounded_iq。\n上一步 survey_band request=1 已执行：3 个频点、固定增益 20 dB、噪声基线 -53.4 dBFS、1 个候选、处理 49152 字节，零削顶且射频状态已恢复。最新候选已写入 PlanningContext，请根据真实结果只给出下一步。",
+        "observation": {
+          "age_ms": 0,
+          "candidates": [
+            {
+              "age_ms": 0,
+              "bandwidth_hz": 10000000,
+              "center_hz": 2450000000,
+              "id": "request-1-1",
+              "peak_dbfs": -34.363555908203125,
+              "snr_db": 19.015430450439453
+            }
+          ],
+          "health": {
+            "can_capture_iq": true,
+            "can_retune": true,
+            "dropped_observations": 0,
+            "recognizer_available": false,
+            "sdr_online": true
+          },
+          "latest_sweep": {
+            "fixed_gain_db": 20,
+            "noise_floor_dbfs": -53.37898635864258,
+            "points": [
+              [
+                2450000000,
+                -34.363555908203125
+              ],
+              [
+                2455000000,
+                -53.64212417602539
+              ],
+              [
+                2460000000,
+                -53.37898635864258
+              ]
+            ],
+            "rf_bandwidth_hz": 10000000,
+            "sample_rate_hz": 10000000,
+            "sweep_id": "request-1"
+          }
+        }
+      },
+      "submitted_plan": {
+        "entry_id": 84,
+        "commit_seq": 365,
+        "record_sha256": "6a6a16e7244265e5045c787a7fa744a5873a79aa2c6d3a94a10f1da90f911389",
+        "arguments": {
+          "action": "survey_band",
+          "dwell_ms": 20,
+          "reason": "候选request-1-1位于2450MHz(峰-34.36dBFS,SNR19dB)且在首轮下边界，信号可能向低侧延伸；以1MHz步进细化并扩扫2446–2450MHz共5点，参数不变。",
+          "rf_bandwidth_hz": 10000000,
+          "sample_rate_hz": 10000000,
+          "start_hz": 2446000000,
+          "step_hz": 1000000,
+          "stop_hz": 2450000000
+        }
+      },
+      "durable_status": {
+        "model_attempts": 1,
+        "proposal": {
+          "planId": "a0a1942c-e7be-400b-8aab-79452c5982e3",
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:2",
+          "hash": "163517e3862978b26b7bc532ccf966eb9501dfeaf24b14deb23e213466645e5f",
+          "action": {
+            "kind": "survey_band",
+            "start_hz": 2446000000,
+            "stop_hz": 2450000000,
+            "step_hz": 1000000,
+            "sample_rate_hz": 10000000,
+            "rf_bandwidth_hz": 10000000,
+            "dwell_ms": 20
+          },
+          "state": "accepted",
+          "controllerExecution": "completed"
+        }
+      },
+      "result_id": 35,
+      "result_sweep_id": "request-recovered1793021180590-2",
+      "point_count": 5,
+      "points": [
+        [
+          2446000000,
+          -53.15534
+        ],
+        [
+          2447000000,
+          -53.557747
+        ],
+        [
+          2448000000,
+          -53.086826
+        ],
+        [
+          2449000000,
+          -52.98345
+        ],
+        [
+          2450000000,
+          -38.743202
+        ]
+      ],
+      "baseline_dbfs": -53.086826,
+      "candidate_count": 1,
+      "previously_sampled_centers_hz": [
+        2450000000
+      ],
+      "grid": [
+        2446000000,
+        2447000000,
+        2448000000,
+        2449000000,
+        2450000000
+      ]
+    },
+    {
+      "step": 3,
+      "input": {
+        "entry_id": 88,
+        "commit_seq": 378,
+        "record_sha256": "c3761b09ca16626fc70cc49375a40fb0ab3a97b84939cba22ce41b1b57cdeeec",
+        "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:3",
+        "instruction": "自动巡航任务：在2445至2465MHz范围进行自适应扫频，只用survey_band或stop_session。首轮start_hz=2450000000,stop_hz=2460000000,step_hz=5000000。后续根据最新实测功率、噪声、候选自动选下一段或细化，单轮最多5点；保持sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20和固定增益20dB。无候选时换相邻位置，不凭空报告信号；不要识别、发射或单独capture_bounded_iq。\n上一步 survey_band request=2 已执行：5 个频点、固定增益 20 dB、噪声基线 -53.1 dBFS、1 个候选、处理 81920 字节，零削顶且射频状态已恢复。最新候选已写入 PlanningContext，请根据真实结果只给出下一步。",
+        "observation": {
+          "age_ms": 0,
+          "candidates": [
+            {
+              "age_ms": 0,
+              "bandwidth_hz": 10000000,
+              "center_hz": 2450000000,
+              "id": "request-2-1",
+              "peak_dbfs": -38.743202209472656,
+              "snr_db": 14.343624114990234
+            }
+          ],
+          "health": {
+            "can_capture_iq": true,
+            "can_retune": true,
+            "dropped_observations": 0,
+            "recognizer_available": false,
+            "sdr_online": true
+          },
+          "latest_sweep": {
+            "fixed_gain_db": 20,
+            "noise_floor_dbfs": -53.08682632446289,
+            "points": [
+              [
+                2446000000,
+                -53.155338287353516
+              ],
+              [
+                2447000000,
+                -53.55774688720703
+              ],
+              [
+                2448000000,
+                -53.08682632446289
+              ],
+              [
+                2449000000,
+                -52.98345184326172
+              ],
+              [
+                2450000000,
+                -38.743202209472656
+              ]
+            ],
+            "rf_bandwidth_hz": 10000000,
+            "sample_rate_hz": 10000000,
+            "sweep_id": "request-2"
+          }
+        }
+      },
+      "submitted_plan": {
+        "entry_id": 91,
+        "commit_seq": 389,
+        "record_sha256": "e33708a7e2b480825474cd96c196e95cf418fa35d7584bd7b14531bcb2c8f616",
+        "arguments": {
+          "action": "survey_band",
+          "dwell_ms": 20,
+          "reason": "2450MHz附近持续为-38.7dBFS(SNR14.3dB)、低侧全为噪声底，峰应在2450MHz上侧；以0.5MHz步进细化2450–2452MHz五点定位带宽。",
+          "rf_bandwidth_hz": 10000000,
+          "sample_rate_hz": 10000000,
+          "start_hz": 2450000000,
+          "step_hz": 500000,
+          "stop_hz": 2452000000
+        }
+      },
+      "durable_status": {
+        "model_attempts": 1,
+        "proposal": {
+          "planId": "f7211cf3-92a0-40e7-965d-585cf818d663",
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:3",
+          "hash": "1cc0bb124eafe06c859174b10e3154c25836bf1c553875dd2fd750c4bf268f66",
+          "action": {
+            "kind": "survey_band",
+            "start_hz": 2450000000,
+            "stop_hz": 2452000000,
+            "step_hz": 500000,
+            "sample_rate_hz": 10000000,
+            "rf_bandwidth_hz": 10000000,
+            "dwell_ms": 20
+          },
+          "state": "accepted",
+          "controllerExecution": "completed"
+        }
+      },
+      "result_id": 39,
+      "result_sweep_id": "request-recovered1793021180590-3",
+      "point_count": 5,
+      "points": [
+        [
+          2450000000,
+          -53.002083
+        ],
+        [
+          2450500000,
+          -34.419884
+        ],
+        [
+          2451000000,
+          -52.893837
+        ],
+        [
+          2451500000,
+          -52.883957
+        ],
+        [
+          2452000000,
+          -52.444237
+        ]
+      ],
+      "baseline_dbfs": -52.883957,
+      "candidate_count": 1,
+      "previously_sampled_centers_hz": [
+        2450000000
+      ],
+      "grid": [
+        2450000000,
+        2450500000,
+        2451000000,
+        2451500000,
+        2452000000
+      ]
+    },
+    {
+      "step": 4,
+      "input": {
+        "entry_id": 95,
+        "commit_seq": 402,
+        "record_sha256": "8a931251231682733b617df27d6961658abef25f653123530a5243135400271e",
+        "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:4",
+        "instruction": "自动巡航任务：在2445至2465MHz范围进行自适应扫频，只用survey_band或stop_session。首轮start_hz=2450000000,stop_hz=2460000000,step_hz=5000000。后续根据最新实测功率、噪声、候选自动选下一段或细化，单轮最多5点；保持sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20和固定增益20dB。无候选时换相邻位置，不凭空报告信号；不要识别、发射或单独capture_bounded_iq。\n上一步 survey_band request=3 已执行：5 个频点、固定增益 20 dB、噪声基线 -52.9 dBFS、1 个候选、处理 81920 字节，零削顶且射频状态已恢复。最新候选已写入 PlanningContext，请根据真实结果只给出下一步。",
+        "observation": {
+          "age_ms": 0,
+          "candidates": [
+            {
+              "age_ms": 0,
+              "bandwidth_hz": 10000000,
+              "center_hz": 2450500000,
+              "id": "request-3-1",
+              "peak_dbfs": -34.419883728027344,
+              "snr_db": 18.464073181152344
+            }
+          ],
+          "health": {
+            "can_capture_iq": true,
+            "can_retune": true,
+            "dropped_observations": 0,
+            "recognizer_available": false,
+            "sdr_online": true
+          },
+          "latest_sweep": {
+            "fixed_gain_db": 20,
+            "noise_floor_dbfs": -52.88395690917969,
+            "points": [
+              [
+                2450000000,
+                -53.00208282470703
+              ],
+              [
+                2450500000,
+                -34.419883728027344
+              ],
+              [
+                2451000000,
+                -52.893836975097656
+              ],
+              [
+                2451500000,
+                -52.88395690917969
+              ],
+              [
+                2452000000,
+                -52.444236755371094
+              ]
+            ],
+            "rf_bandwidth_hz": 10000000,
+            "sample_rate_hz": 10000000,
+            "sweep_id": "request-3"
+          }
+        }
+      },
+      "submitted_plan": {
+        "entry_id": 98,
+        "commit_seq": 417,
+        "record_sha256": "d26b803d21d767c11d98e8d7ea58cda0d0e67280ed72d138167e8081ff40cc75",
+        "arguments": {
+          "action": "survey_band",
+          "dwell_ms": 20,
+          "reason": "本轮峰移至2450.5MHz(-34.4dBFS,SNR18.5dB)，2450MHz已回落，似窄带跳变信号；以0.25MHz步进细化2450.25–2451.25MHz五点定位实际峰位。",
+          "rf_bandwidth_hz": 10000000,
+          "sample_rate_hz": 10000000,
+          "start_hz": 2450250000,
+          "step_hz": 250000,
+          "stop_hz": 2451250000
+        }
+      },
+      "durable_status": {
+        "model_attempts": 1,
+        "proposal": {
+          "planId": "f3fc5e25-3bb9-4519-9bdc-7b35bcb29d5e",
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:4",
+          "hash": "4cc94028cff152e94a155db47244d7e5c7826c555e92769a2490b7bc6e3e49ca",
+          "action": {
+            "kind": "survey_band",
+            "start_hz": 2450250000,
+            "stop_hz": 2451250000,
+            "step_hz": 250000,
+            "sample_rate_hz": 10000000,
+            "rf_bandwidth_hz": 10000000,
+            "dwell_ms": 20
+          },
+          "state": "accepted",
+          "controllerExecution": "completed"
+        }
+      },
+      "result_id": 38,
+      "result_sweep_id": "request-recovered1793021180590-4",
+      "point_count": 5,
+      "points": [
+        [
+          2450250000,
+          -39.36345
+        ],
+        [
+          2450500000,
+          -37.28284
+        ],
+        [
+          2450750000,
+          -35.08847
+        ],
+        [
+          2451000000,
+          -53.22442
+        ],
+        [
+          2451250000,
+          -53.207455
+        ]
+      ],
+      "baseline_dbfs": -39.36345,
+      "candidate_count": 0,
+      "previously_sampled_centers_hz": [
+        2450500000,
+        2451000000
+      ],
+      "grid": [
+        2450250000,
+        2450500000,
+        2450750000,
+        2451000000,
+        2451250000
+      ]
+    },
+    {
+      "step": 5,
+      "input": {
+        "entry_id": 102,
+        "commit_seq": 430,
+        "record_sha256": "2075f7df1b83238bf09329259e0f1e4ce310b0bf796519b9c625c35ab5b0c111",
+        "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:5",
+        "instruction": "自动巡航任务：在2445至2465MHz范围进行自适应扫频，只用survey_band或stop_session。首轮start_hz=2450000000,stop_hz=2460000000,step_hz=5000000。后续根据最新实测功率、噪声、候选自动选下一段或细化，单轮最多5点；保持sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20和固定增益20dB。无候选时换相邻位置，不凭空报告信号；不要识别、发射或单独capture_bounded_iq。\n上一步 survey_band request=4 已执行：5 个频点、固定增益 20 dB、噪声基线 -39.4 dBFS、0 个候选、处理 81920 字节，零削顶且射频状态已恢复。最新候选已写入 PlanningContext，请根据真实结果只给出下一步。",
+        "observation": {
+          "age_ms": 0,
+          "candidates": [],
+          "health": {
+            "can_capture_iq": true,
+            "can_retune": true,
+            "dropped_observations": 0,
+            "recognizer_available": false,
+            "sdr_online": true
+          },
+          "latest_sweep": {
+            "fixed_gain_db": 20,
+            "noise_floor_dbfs": -39.36344909667969,
+            "points": [
+              [
+                2450250000,
+                -39.36344909667969
+              ],
+              [
+                2450500000,
+                -37.282840728759766
+              ],
+              [
+                2450750000,
+                -35.088470458984375
+              ],
+              [
+                2451000000,
+                -53.22441864013672
+              ],
+              [
+                2451250000,
+                -53.207454681396484
+              ]
+            ],
+            "rf_bandwidth_hz": 10000000,
+            "sample_rate_hz": 10000000,
+            "sweep_id": "request-4"
+          }
+        }
+      },
+      "submitted_plan": {
+        "entry_id": 105,
+        "commit_seq": 448,
+        "record_sha256": "88975569014bf5d938c42b8b34ada19eef72ea50d0acb8e63a0bbc3c4f2c7dae",
+        "arguments": {
+          "action": "survey_band",
+          "dwell_ms": 20,
+          "reason": "2446.25–2450.75MHz呈抬升(-39.4~-35.1dBFS)而2451MHz已回落至-53dBFS，边界在2451附近；以0.125MHz步进细化2450.5–2451.0MHz五点确定信号边缘。",
+          "rf_bandwidth_hz": 10000000,
+          "sample_rate_hz": 10000000,
+          "start_hz": 2450500000,
+          "step_hz": 125000,
+          "stop_hz": 2451000000
+        }
+      },
+      "durable_status": {
+        "model_attempts": 1,
+        "proposal": {
+          "planId": "bc8137d6-7342-4348-8f40-e27ad263deef",
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:5",
+          "hash": "79cefec7b6000ce82c46ed5ec128f3c33a73be7b66bc514f459b173f2b06bc6e",
+          "action": {
+            "kind": "survey_band",
+            "start_hz": 2450500000,
+            "stop_hz": 2451000000,
+            "step_hz": 125000,
+            "sample_rate_hz": 10000000,
+            "rf_bandwidth_hz": 10000000,
+            "dwell_ms": 20
+          },
+          "state": "accepted",
+          "controllerExecution": "completed"
+        }
+      },
+      "result_id": 37,
+      "result_sweep_id": "request-recovered1793021180590-5",
+      "point_count": 5,
+      "points": [
+        [
+          2450500000,
+          -35.119556
+        ],
+        [
+          2450625000,
+          -38.68774
+        ],
+        [
+          2450750000,
+          -30.883333
+        ],
+        [
+          2450875000,
+          -35.063942
+        ],
+        [
+          2451000000,
+          -48.137352
+        ]
+      ],
+      "baseline_dbfs": -35.119556,
+      "candidate_count": 0,
+      "previously_sampled_centers_hz": [
+        2450500000,
+        2450750000,
+        2451000000
+      ],
+      "grid": [
+        2450500000,
+        2450625000,
+        2450750000,
+        2450875000,
+        2451000000
+      ]
+    },
+    {
+      "step": 6,
+      "input": {
+        "entry_id": 109,
+        "commit_seq": 461,
+        "record_sha256": "f132c06bc1fb2161786fbac85304c51272115a007f0a02871fb2d26fb027619c",
+        "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:6",
+        "instruction": "自动巡航任务：在2445至2465MHz范围进行自适应扫频，只用survey_band或stop_session。首轮start_hz=2450000000,stop_hz=2460000000,step_hz=5000000。后续根据最新实测功率、噪声、候选自动选下一段或细化，单轮最多5点；保持sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20和固定增益20dB。无候选时换相邻位置，不凭空报告信号；不要识别、发射或单独capture_bounded_iq。\n上一步 survey_band request=5 已执行：5 个频点、固定增益 20 dB、噪声基线 -35.1 dBFS、0 个候选、处理 81920 字节，零削顶且射频状态已恢复。最新候选已写入 PlanningContext，请根据真实结果只给出下一步。",
+        "observation": {
+          "age_ms": 0,
+          "candidates": [],
+          "health": {
+            "can_capture_iq": true,
+            "can_retune": true,
+            "dropped_observations": 0,
+            "recognizer_available": false,
+            "sdr_online": true
+          },
+          "latest_sweep": {
+            "fixed_gain_db": 20,
+            "noise_floor_dbfs": -35.11955642700195,
+            "points": [
+              [
+                2450500000,
+                -35.11955642700195
+              ],
+              [
+                2450625000,
+                -38.687740325927734
+              ],
+              [
+                2450750000,
+                -30.883333206176758
+              ],
+              [
+                2450875000,
+                -35.063941955566406
+              ],
+              [
+                2451000000,
+                -48.137351989746094
+              ]
+            ],
+            "rf_bandwidth_hz": 10000000,
+            "sample_rate_hz": 10000000,
+            "sweep_id": "request-5"
+          }
+        }
+      },
+      "submitted_plan": {
+        "entry_id": 112,
+        "commit_seq": 481,
+        "record_sha256": "396a9ac40832c91583a45d98131f0c793bd83f8787f71cabae8ef62707ad44e2",
+        "arguments": {
+          "action": "survey_band",
+          "dwell_ms": 20,
+          "reason": "细化网格显示2450.75MHz为峰(-30.9dBFS)、2451MHz回落，仍无候选；用100kHz步进在2450.55–2450.95MHz五点复核峰位与可重复性。",
+          "rf_bandwidth_hz": 10000000,
+          "sample_rate_hz": 10000000,
+          "start_hz": 2450550000,
+          "step_hz": 100000,
+          "stop_hz": 2450950000
+        }
+      },
+      "durable_status": {
+        "model_attempts": 1,
+        "proposal": {
+          "planId": "6339575b-51f8-4401-aca9-e7819c1dba5a",
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:6",
+          "hash": "87199bc80e8a74b5a70870bd2c8190dff9bbee93c1f642861675e747ff648d8e",
+          "action": {
+            "kind": "survey_band",
+            "start_hz": 2450550000,
+            "stop_hz": 2450950000,
+            "step_hz": 100000,
+            "sample_rate_hz": 10000000,
+            "rf_bandwidth_hz": 10000000,
+            "dwell_ms": 20
+          },
+          "state": "accepted",
+          "controllerExecution": "completed"
+        }
+      },
+      "result_id": 34,
+      "result_sweep_id": "request-recovered1793021180590-6",
+      "point_count": 5,
+      "points": [
+        [
+          2450550000,
+          -33.69972
+        ],
+        [
+          2450650000,
+          -32.977253
+        ],
+        [
+          2450750000,
+          -33.490265
+        ],
+        [
+          2450850000,
+          -52.947025
+        ],
+        [
+          2450950000,
+          -53.17131
+        ]
+      ],
+      "baseline_dbfs": -33.69972,
+      "candidate_count": 0,
+      "previously_sampled_centers_hz": [
+        2450750000
+      ],
+      "grid": [
+        2450550000,
+        2450650000,
+        2450750000,
+        2450850000,
+        2450950000
+      ]
+    },
+    {
+      "step": 7,
+      "input": {
+        "entry_id": 116,
+        "commit_seq": 494,
+        "record_sha256": "aa711705654320017bb52937be359ce4a8823f5e0660e8b44a08c13f4aa84293",
+        "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:7",
+        "instruction": "自动巡航任务：在2445至2465MHz范围进行自适应扫频，只用survey_band或stop_session。首轮start_hz=2450000000,stop_hz=2460000000,step_hz=5000000。后续根据最新实测功率、噪声、候选自动选下一段或细化，单轮最多5点；保持sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20和固定增益20dB。无候选时换相邻位置，不凭空报告信号；不要识别、发射或单独capture_bounded_iq。\n上一步 survey_band request=6 已执行：5 个频点、固定增益 20 dB、噪声基线 -33.7 dBFS、0 个候选、处理 81920 字节，零削顶且射频状态已恢复。最新候选已写入 PlanningContext，请根据真实结果只给出下一步。",
+        "observation": {
+          "age_ms": 0,
+          "candidates": [],
+          "health": {
+            "can_capture_iq": true,
+            "can_retune": true,
+            "dropped_observations": 0,
+            "recognizer_available": false,
+            "sdr_online": true
+          },
+          "latest_sweep": {
+            "fixed_gain_db": 20,
+            "noise_floor_dbfs": -33.6997184753418,
+            "points": [
+              [
+                2450550000,
+                -33.6997184753418
+              ],
+              [
+                2450650000,
+                -32.97725296020508
+              ],
+              [
+                2450750000,
+                -33.490264892578125
+              ],
+              [
+                2450850000,
+                -52.947025299072266
+              ],
+              [
+                2450950000,
+                -53.17131042480469
+              ]
+            ],
+            "rf_bandwidth_hz": 10000000,
+            "sample_rate_hz": 10000000,
+            "sweep_id": "request-6"
+          }
+        }
+      },
+      "submitted_plan": {
+        "entry_id": 119,
+        "commit_seq": 514,
+        "record_sha256": "d652a882cac32a65b3401742d6fe6ebc85e6299bcfafd505ede72fb3e5d8e4f8",
+        "arguments": {
+          "action": "survey_band",
+          "dwell_ms": 20,
+          "reason": "上缘已定位：2450.75MHz约-33.5dBFS，2450.85MHz即降至噪声底；本轮以100kHz步进测下缘2450.1–2450.5MHz五点，完成该抬升带宽界定。",
+          "rf_bandwidth_hz": 10000000,
+          "sample_rate_hz": 10000000,
+          "start_hz": 2450100000,
+          "step_hz": 100000,
+          "stop_hz": 2450500000
+        }
+      },
+      "durable_status": {
+        "model_attempts": 1,
+        "proposal": {
+          "planId": "b4580abd-d5ed-41ba-a36f-a2f958a79676",
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:7",
+          "hash": "385849866f1deaa76336d475b6746b588b70503cb3fba6da69110c5c55ad4d0b",
+          "action": {
+            "kind": "survey_band",
+            "start_hz": 2450100000,
+            "stop_hz": 2450500000,
+            "step_hz": 100000,
+            "sample_rate_hz": 10000000,
+            "rf_bandwidth_hz": 10000000,
+            "dwell_ms": 20
+          },
+          "state": "accepted",
+          "controllerExecution": "completed"
+        }
+      },
+      "result_id": 36,
+      "result_sweep_id": "request-recovered1793021180590-7",
+      "point_count": 5,
+      "points": [
+        [
+          2450100000,
+          -52.663223
+        ],
+        [
+          2450200000,
+          -49.976723
+        ],
+        [
+          2450300000,
+          -52.768764
+        ],
+        [
+          2450400000,
+          -52.785103
+        ],
+        [
+          2450500000,
+          -52.486423
+        ]
+      ],
+      "baseline_dbfs": -52.663223,
+      "candidate_count": 0,
+      "previously_sampled_centers_hz": [
+        2450500000
+      ],
+      "grid": [
+        2450100000,
+        2450200000,
+        2450300000,
+        2450400000,
+        2450500000
+      ]
+    },
+    {
+      "step": 8,
+      "input": {
+        "entry_id": 123,
+        "commit_seq": 527,
+        "record_sha256": "8e43a8f63f7e379ea5ff5143f7358de2d56f690bff3f9cbd8e14b5a42ce332fc",
+        "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:8",
+        "instruction": "自动巡航任务：在2445至2465MHz范围进行自适应扫频，只用survey_band或stop_session。首轮start_hz=2450000000,stop_hz=2460000000,step_hz=5000000。后续根据最新实测功率、噪声、候选自动选下一段或细化，单轮最多5点；保持sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20和固定增益20dB。无候选时换相邻位置，不凭空报告信号；不要识别、发射或单独capture_bounded_iq。\n上一步 survey_band request=7 已执行：5 个频点、固定增益 20 dB、噪声基线 -52.7 dBFS、0 个候选、处理 81920 字节，零削顶且射频状态已恢复。最新候选已写入 PlanningContext，请根据真实结果只给出下一步。",
+        "observation": {
+          "age_ms": 0,
+          "candidates": [],
+          "health": {
+            "can_capture_iq": true,
+            "can_retune": true,
+            "dropped_observations": 0,
+            "recognizer_available": false,
+            "sdr_online": true
+          },
+          "latest_sweep": {
+            "fixed_gain_db": 20,
+            "noise_floor_dbfs": -52.66322326660156,
+            "points": [
+              [
+                2450100000,
+                -52.66322326660156
+              ],
+              [
+                2450200000,
+                -49.976722717285156
+              ],
+              [
+                2450300000,
+                -52.76876449584961
+              ],
+              [
+                2450400000,
+                -52.78510284423828
+              ],
+              [
+                2450500000,
+                -52.48642349243164
+              ]
+            ],
+            "rf_bandwidth_hz": 10000000,
+            "sample_rate_hz": 10000000,
+            "sweep_id": "request-7"
+          }
+        }
+      },
+      "submitted_plan": {
+        "entry_id": 126,
+        "commit_seq": 545,
+        "record_sha256": "888b334f627e618287bde72a5140a84540c11d4662ba6e2764edc0d2eaee20eb",
+        "arguments": {
+          "action": "survey_band",
+          "dwell_ms": 20,
+          "reason": "下缘2450.1–2450.5MHz为噪声底，抬升带约2450.3–2450.8MHz。用最后一步以1.25MHz步进补扫未细查的2450–2455MHz（5点），确认是否有相邻信号。",
+          "rf_bandwidth_hz": 10000000,
+          "sample_rate_hz": 10000000,
+          "start_hz": 2450000000,
+          "step_hz": 1250000,
+          "stop_hz": 2455000000
+        }
+      },
+      "durable_status": {
+        "model_attempts": 1,
+        "proposal": {
+          "planId": "fb37d5dd-7ac7-4fab-9b97-ed4885e83026",
+          "key": "d82ea552082e11ea28640c0ee168e149:1793021180590:8",
+          "hash": "5950968931fcf5fa0f06643c3d2f5c7d8fec9c2f9e659427b541ed2fd16ad581",
+          "action": {
+            "kind": "survey_band",
+            "start_hz": 2450000000,
+            "stop_hz": 2455000000,
+            "step_hz": 1250000,
+            "sample_rate_hz": 10000000,
+            "rf_bandwidth_hz": 10000000,
+            "dwell_ms": 20
+          },
+          "state": "accepted",
+          "controllerExecution": "completed"
+        }
+      },
+      "result_id": 40,
+      "result_sweep_id": "request-recovered1793021180590-8",
+      "point_count": 5,
+      "points": [
+        [
+          2450000000,
+          -52.726933
+        ],
+        [
+          2451250000,
+          -53.525467
+        ],
+        [
+          2452500000,
+          -53.780193
+        ],
+        [
+          2453750000,
+          -53.469696
+        ],
+        [
+          2455000000,
+          -44.636692
+        ]
+      ],
+      "baseline_dbfs": -53.469696,
+      "candidate_count": 0,
+      "previously_sampled_centers_hz": [
+        2450000000,
+        2451250000,
+        2455000000
+      ],
+      "grid": [
+        2450000000,
+        2451250000,
+        2452500000,
+        2453750000,
+        2455000000
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "feedback",
+      "status": "passed",
+      "detail": "Steps 2–8 received actual previous sweep centers/powers/candidate count; each plan matches actual result. Fine LO spacing chosen after candidates: 5MHz→1MHz→500kHz→250kHz→125kHz→100kHz."
+    },
+    {
+      "id": "resolution",
+      "status": "not_accepted",
+      "detail": "Each point is aggregate IQ band power over a 10MHz receive profile, not a spectral bin. Smaller LO spacing does not establish signal center/occupied bandwidth. Sequential 4096-sample windows cannot separate time variation from frequency structure. Reasons in steps 3–8 overstate bandwidth, hopping, peak or edge localization."
+    },
+    {
+      "id": "median_reference",
+      "status": "not_accepted",
+      "detail": "noise_floor_dbfs is upper median of same sweep band powers; candidates require +12dB over this reference. In steps 4–6 reference rises to -39.36/-35.12/-33.70dBFS and candidate count becomes zero. This is relative contrast selection, not independently estimated noise or physical SNR. No candidates is not proof of absence."
+    },
+    {
+      "id": "reason_frequency",
+      "status": "failed",
+      "detail": "Step 5 reason reports 2446.25–2450.75MHz elevated; preceding observation actually samples 2450.25–2451.25MHz, elevated first three at 2450.25/2450.5/2450.75. Action frequencies themselves stay in mission range."
+    },
+    {
+      "id": "no_candidate_behavior",
+      "status": "not_accepted",
+      "detail": "Following no candidates from steps 4–6, steps 5–7 keep refining same neighborhood, despite mission asking adjacent exploration when candidates absent. Measured elevations are real but semantic instruction conflict is not enforced by Controller."
+    },
+    {
+      "id": "repeats",
+      "status": "partial",
+      "detail": "No exact grid repeated. Overlap has reasons (refine/recheck), but no hard same-region retry ceiling or information-gain stopping condition is demonstrated."
+    },
+    {
+      "id": "termination",
+      "status": "partial",
+      "detail": "8-step hard stop works. Autonomous stop_session based on enough evidence/low information gain was not exercised."
+    },
+    {
+      "id": "stop_prompt_gap",
+      "status": "not_accepted",
+      "detail": "Installed system prompt describes stop_session only for an explicit stop request; it has no concrete information-gain/convergence rule for autonomous mission completion. This review identifies a contract gap, not proof that the model would always refuse to stop."
+    }
+  ],
+  "historical_correction": {
+    "prior_statement": "Validation section said initial run had zero candidates",
+    "actual_initial_candidate_results": [
+      {
+        "result_id": 18,
+        "sweep_id": "request-3",
+        "candidates": [
+          {
+            "id": "request-3-1",
+            "start_hz": 2457000000,
+            "stop_hz": 2467000000,
+            "center_hz": 2462000000,
+            "bandwidth_hz": 10000000,
+            "peak_dbfs": -38.751984,
+            "snr_db": 14.690319,
+            "point_count": 1
+          }
+        ]
+      }
+    ],
+    "actual_initial_candidate_count": 1,
+    "policy": "Append correction; preserve parent sealed evidence bytes/hash. Result arrays and database IDs are not chronological; sort by request ordinal."
+  },
+  "next_unit": {
+    "deliverable": "Correct Planner measurement semantics and bounded follow-up/stop criteria, verify with recorded-observation offline regressions before any new RF.",
+    "requirements": [
+      "Describe band power, median reference, candidate proxy and sequential timing accurately; prohibit physical bandwidth/hopping claims from LO grid alone.",
+      "Carry bounded coverage/recheck summary and explicit remaining steps/bytes/time into each turn; enforce chosen hard repetition limits in Controller, not prompt alone.",
+      "Exercise candidate→follow-up, candidate disappearance→adjacent scan, repeated weak/no new evidence→stop and malicious/out-of-bound proposals with stored observations.",
+      "Only after offline validation plan a fresh bounded receive-only test; if physical localization is needed provide validated bounded spectral summaries rather than IQ paths/tensors."
+    ],
+    "implementation_started": false
+  },
+  "runtime_snapshot": {
+    "session_id": "session-1789273063753",
+    "status": "connected",
+    "last_events": [
+      {
+        "id": 288,
+        "kind": "system",
+        "text": "SDR Agent 已连接。输入 /help 查看命令。硬件执行=已启用。"
+      },
+      {
+        "id": 289,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 290,
+        "kind": "system",
+        "text": "持久会话：最近记录中 0 项待核对，0 项阻塞；旧批准不会自动恢复。结果未知的计划不会重新执行。"
+      },
+      {
+        "id": 291,
+        "kind": "system",
+        "text": "控制器状态：空闲，可以接收新任务；运行模式：逐步人工批准。"
+      },
+      {
+        "id": 292,
+        "kind": "system",
+        "text": "Agent 会话：已打开；上游模型：空闲；等待处理的消息：0 条。"
+      },
+      {
+        "id": 293,
+        "kind": "system",
+        "text": "人工批准：没有待处理计划；下一请求编号：1；安全代次：1793022048597。"
+      },
+      {
+        "id": 294,
+        "kind": "cruise",
+        "text": "巡航状态：未启用；当前每个可执行动作都需要人工批准。"
+      },
+      {
+        "id": 295,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      }
+    ],
+    "spectrum_phase": "paused"
+  },
+  "retention": {
+    "purpose": "Minimal derived review evidence for per-step decision audit; original application IQ unchanged",
+    "temporary_files_created": 0,
+    "temporary_bytes_created": 0,
+    "delete": "Remove exactly docs/evidence/PI_DURABLE_CRUISE_REVIEW_2026-10-27.json and its documentation references if no longer needed; source application results retain their existing deletion API."
+  }
+}
