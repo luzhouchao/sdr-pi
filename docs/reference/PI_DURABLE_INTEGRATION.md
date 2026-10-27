@@ -20,7 +20,7 @@
 
 巡航进度门源码/离线验收已完成：自动模式请求新增有界cruise摘要（人工模式省略），
 本轮局部访问最多3次、无候选后换段、连续3轮空候选停；细节见
-[规则验收](../validation/PI_DURABLE_CORE_2026-10-26.md#巡航规则离线修复2026-10-27)。Controller r5已应用此改动。随后有界实机2轮8点验证相邻换段及第三个违规局部提案拒绝，
+[规则验收](../validation/PI_DURABLE_CORE_2026-10-26.md#巡航规则离线修复2026-10-27)。当前Controller已应用此改动。随后有界实机2轮8点验证相邻换段及第三个违规局部提案拒绝，
 射频恢复通过；模型尚未主动停止，连续三空/第四次局部门未在本轮触发。见
 [新版实机](../validation/PI_DURABLE_CORE_2026-10-26.md#r5新版巡航实机验收2026-10-27)。
 
@@ -33,8 +33,8 @@ model/thinking/instructions/tools并撤销旧请求执行资格。用户要求�
 ## 当前安装与离线维护
 
 Planner为 `planner/releases/pi-durable-1.4.0-20261027-r6`，通过 `planner/current` 选择；
-Controller及Web制品统一为 `releases/pi-durable-1.4.0-20261027-r5`，根均在
-`/home/jetson/.local/lib/sdrharness/`。前轮37个旧安装目录及随后替换的Planner r5已删除，旧版回滚路径不再可用；
+Controller及Web制品统一为 `releases/pi-durable-1.4.0-20261027-r7`，根均在
+`/home/jetson/.local/lib/sdrharness/`。前轮37个旧安装目录及随后替换的Planner/二进制r5包已删除，旧版回滚路径不再可用；
 应用结果、IQ和持久账本保留。精确路径、大小、SHA和清理见
 [最新版本验收](../validation/PI_DURABLE_CORE_2026-10-26.md#仅支持最新版与旧包删除2026-10-27)。
 OpenCode Go当前选择为 `deepseek-v4.1-flash`，Base URL为
@@ -56,6 +56,10 @@ OpenCode Go当前选择为 `deepseek-v4.1-flash`，Base URL为
   Completions载荷 `thinking.type=enabled` 时使用 `tool_choice=auto`，避免上游拒绝命名工具强制调用；
   唯一模型工具仍为 `submit_plan`，没有有效工具计划时明确报错、零提案。
   其他载荷保留原命名工具选择。没有关闭思考，也没有放宽Controller校验。
+
+人工计划显示剩余有效时间。逾期`/approve`会取消该计划、提示重新提交并保持终端可用，
+不会延长期限、恢复批准或重试旧请求；旧版崩溃后记录的unknown仍保持未知。见
+[批准过期修复](../validation/PI_DURABLE_CORE_2026-10-26.md#人工批准过期不再退出终端2026-10-27)。
 
 维护仅在两服务停机后执行；在线调用明确拒绝。以运行用户jetson执行：
 

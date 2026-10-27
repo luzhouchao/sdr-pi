@@ -580,13 +580,29 @@ impl ConsoleApp {
             .insert(command_id, PendingSessionCommand::LedgerAck);
         Ok(())
     }
-    fn ledger_begin(&mut self, request_id: u64, generation: u64) -> AppResult<()> {
+    fn ledger_begin(&mut self, request_id: u64, generation: u64) -> AppResult<bool> {
         if let Some(ledger) = &mut self.ledger {
             if ledger.by_request(request_id, generation).is_some() {
-                ledger.begin(request_id, generation)?;
+                match ledger.begin(request_id, generation) {
+                    Ok(()) => {}
+                    Err(error) if error.kind() == std::io::ErrorKind::TimedOut => {
+                        // Persist a terminal decision without granting a new
+                        // deadline. A late human click is not a console fault.
+                        ledger.finish(request_id, generation, ExecutionState::Cancelled)?;
+                        self.template.state = ControllerState::Holding;
+                        self.auto_next_instruction = None;
+                        if self.cruise.is_active() {
+                            self.cruise.stop(CruiseStopReason::Fault);
+                            self.print_cruise_status();
+                        }
+                        println!("计划已过期：request={request_id} 未执行，原批准已失效；请重新提交采样指令，等待新计划后再批准。");
+                        return Ok(false);
+                    }
+                    Err(error) => return Err(error.into()),
+                }
             }
         }
-        Ok(())
+        Ok(true)
     }
     fn ledger_finish(
         &mut self,
@@ -953,7 +969,9 @@ impl ConsoleApp {
             session_generation,
             json!({"plan":plan,"maximum_rx_bytes":MAX_RX_BYTES,"engineering_only":true}),
         )?;
-        self.ledger_begin(request_id, session_generation)?;
+        if !self.ledger_begin(request_id, session_generation)? {
+            return Ok(());
+        }
         let worker = thread::spawn(move || {
             config.execute(address, &request, &plan, &authorization, &signal)
         });
@@ -1107,7 +1125,10 @@ impl ConsoleApp {
             return Ok(());
         };
         let session_generation = plan.session_generation;
-        self.ledger_begin(request_id, session_generation)?;
+        if !self.ledger_begin(request_id, session_generation)? {
+            self.executor = Some(executor);
+            return Ok(());
+        }
         let canceller = executor.clone();
         let worker = thread::spawn(move || {
             let result = executor.execute(&plan, &authorization);
@@ -1260,7 +1281,9 @@ impl ConsoleApp {
         let timeout = self.sdrd_timeout.max(Duration::from_millis(500));
         let adapter = self.software_sweep_adapter(address, timeout);
         let mut engine = SweepEngine::new(adapter);
-        self.ledger_begin(plan.request_id, plan.session_generation)?;
+        if !self.ledger_begin(plan.request_id, plan.session_generation)? {
+            return Ok(());
+        }
         let worker = thread::spawn(move || engine.run(&sweep));
         self.active_sweep = Some(ActiveSweep {
             kind: ActiveSweepKind::Planned {
@@ -1359,7 +1382,9 @@ impl ConsoleApp {
         let timeout = self.sdrd_timeout.max(Duration::from_millis(500));
         let adapter = self.software_sweep_adapter(address, timeout);
         let mut engine = SweepEngine::new(adapter);
-        self.ledger_begin(plan.request_id, plan.session_generation)?;
+        if !self.ledger_begin(plan.request_id, plan.session_generation)? {
+            return Ok(());
+        }
         let worker = thread::spawn(move || engine.run(&sweep));
         self.active_sweep = Some(ActiveSweep {
             kind: ActiveSweepKind::Inspection {
@@ -2537,7 +2562,13 @@ impl ConsoleApp {
                                 );
                             }
                             self.pending = Some(plan);
-                            println!("逐步批准模式：输入 /approve 执行，或输入 /reject 拒绝。")
+                            println!("逐步批准模式：输入 /approve 执行，或输入 /reject 拒绝。");
+                            if let Some(identity) = &delivery {
+                                let remaining_ms = identity.deadline_unix_ms.saturating_sub(
+                                    sdr_agent_controller::recognition_execution::now_ms(),
+                                );
+                                println!("计划有效期剩余约 {} 秒；超时后请重新提交，旧批准不会延长有效期。", remaining_ms.div_ceil(1_000));
+                            }
                         } else {
                             println!("该计划当前没有生产执行器，仅记录建议，不会操作硬件。");
                         }
@@ -4419,6 +4450,64 @@ mod tests {
             assert!(app.active_execution.is_none());
         }
     }
+    #[test]
+    fn late_approval_cancels_expired_plan_without_losing_executor_or_exiting() {
+        let root = terminal_state_test_path("expired-approval")
+            .parent()
+            .unwrap()
+            .to_owned();
+        let (mut app, _peer) = test_console();
+        let mut ledger = PlanLedger::open(&root, "test_app").unwrap();
+        let identity = PlanIdentity {
+            plan_id: "a0000000-0000-0000-0000-000000000001".into(),
+            hash: "a".repeat(64),
+            app_session_id: "test_app".into(),
+            controller_epoch: ledger.epoch().into(),
+            session_generation: 1,
+            request_id: 1,
+            deadline_unix_ms: unix_time_ms().unwrap() + 100,
+        };
+        ledger
+            .admit(identity.clone(), Decision::Accepted, true)
+            .unwrap();
+        app.ledger = Some(ledger);
+        app.executor = Some(SdrdActionAdapter::new(
+            "127.0.0.1:9".parse().unwrap(),
+            Duration::from_millis(10),
+        ));
+        app.pending = Some(reply_plan(ProposedAction::CaptureBoundedIq {
+            candidate_id: "candidate-1".into(),
+            center_hz: 2_455_000_000,
+            sample_rate_hz: 10_000_000,
+            rf_bandwidth_hz: 10_000_000,
+            samples: 65_536,
+        }));
+        thread::sleep(Duration::from_millis(110));
+        app.approve().unwrap();
+        assert!(app.pending.is_none() && app.active_execution.is_none());
+        assert!(app.executor.is_some());
+        assert_eq!(
+            app.ledger
+                .as_ref()
+                .unwrap()
+                .get(&identity.plan_id)
+                .unwrap()
+                .execution,
+            ExecutionState::Cancelled
+        );
+        app.approve().unwrap(); // repeated click is harmless, console stays usable
+        assert!(app.active_execution.is_none());
+        assert!(app.ledger.as_mut().unwrap().begin(1, 1).is_err());
+        drop(app);
+        let ledger = PlanLedger::open(&root, "test_app").unwrap();
+        assert_eq!(
+            ledger.get(&identity.plan_id).unwrap().execution,
+            ExecutionState::Cancelled
+        );
+        drop(ledger);
+        fs::remove_dir_all(root).unwrap();
+    }
+
     fn durable_frame(app: &ConsoleApp, action: Value) -> Value {
         json!({"protocol_version":2,"type":"event","session_generation":1,"event":"plan_proposed",
           "delivery":{"plan_id":"a0000000-0000-0000-0000-000000000001","hash":action_hash(&action).unwrap(),"app_session_id":"test_app","controller_epoch":app.ledger.as_ref().unwrap().epoch(),"session_generation":1,"request_id":7,"deadline_unix_ms":unix_time_ms().unwrap()+30_000},

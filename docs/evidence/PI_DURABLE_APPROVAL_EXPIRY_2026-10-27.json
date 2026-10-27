@@ -1,0 +1,809 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "feature": "approval-expiry-1027 (short build root a1027)",
+  "source_base_commit": "c9e0705",
+  "incident": {
+    "session_id": "session-1793071197684",
+    "records": [
+      {
+        "identity": {
+          "plan_id": "93938483-cbb6-4500-885e-612c57014c6f",
+          "hash": "fdb600465596985e0d2dfb1dc5a5d6fe690c0b44de3533a200b6363f4ad91157",
+          "app_session_id": "session-1793071197684",
+          "controller_epoch": "b89d90cfb55b9ab699423777308ad950",
+          "session_generation": 1793071197723,
+          "request_id": 3,
+          "deadline_unix_ms": 1793071344319
+        },
+        "decision": "accepted",
+        "execution": "unknown"
+      }
+    ],
+    "events": [
+      {
+        "id": 11,
+        "timestamp_ms": 1793071254355,
+        "kind": "qwen",
+        "text": "Agent> 计划已生成：受限复查候选 initial-1793071197723-1：中心 2435000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz、驻留 100 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内。请点击批准或输入 /approve 执行，也可以拒绝。"
+      },
+      {
+        "id": 12,
+        "timestamp_ms": 1793071254356,
+        "kind": "system",
+        "text": "逐步批准模式：输入 /approve 执行，或输入 /reject 拒绝。"
+      },
+      {
+        "id": 14,
+        "timestamp_ms": 1793071268231,
+        "kind": "operator",
+        "text": "Operator> /approve"
+      },
+      {
+        "id": 18,
+        "timestamp_ms": 1793071274270,
+        "kind": "operator",
+        "text": "Operator> /approve"
+      },
+      {
+        "id": 23,
+        "timestamp_ms": 1793071291280,
+        "kind": "plan",
+        "text": "已验证计划：受限采集候选 initial-1793071197723-1：中心 2439512939 Hz、采样率 10000000、射频带宽 10000000、65536 个复数样本（最多 262144 字节）；位于自动安全阈值内"
+      },
+      {
+        "id": 25,
+        "timestamp_ms": 1793071291281,
+        "kind": "qwen",
+        "text": "Agent> 计划已生成：受限采集候选 initial-1793071197723-1：中心 2439512939 Hz、采样率 10000000、射频带宽 10000000、65536 个复数样本（最多 262144 字节）；位于自动安全阈值内。请点击批准或输入 /approve 执行，也可以拒绝。"
+      },
+      {
+        "id": 26,
+        "timestamp_ms": 1793071291282,
+        "kind": "system",
+        "text": "逐步批准模式：输入 /approve 执行，或输入 /reject 拒绝。"
+      },
+      {
+        "id": 28,
+        "timestamp_ms": 1793071302636,
+        "kind": "operator",
+        "text": "Operator> /approve"
+      },
+      {
+        "id": 32,
+        "timestamp_ms": 1793071314309,
+        "kind": "operator",
+        "text": "Operator> 继续采样10次"
+      },
+      {
+        "id": 34,
+        "timestamp_ms": 1793071320508,
+        "kind": "plan",
+        "text": "已验证计划：受限采集候选 initial-1793071197723-1：中心 2439512939 Hz、采样率 10000000、射频带宽 10000000、65536 个复数样本（最多 262144 字节）；位于自动安全阈值内"
+      },
+      {
+        "id": 36,
+        "timestamp_ms": 1793071320510,
+        "kind": "qwen",
+        "text": "Agent> 计划已生成：受限采集候选 initial-1793071197723-1：中心 2439512939 Hz、采样率 10000000、射频带宽 10000000、65536 个复数样本（最多 262144 字节）；位于自动安全阈值内。请点击批准或输入 /approve 执行，也可以拒绝。"
+      },
+      {
+        "id": 37,
+        "timestamp_ms": 1793071320511,
+        "kind": "system",
+        "text": "逐步批准模式：输入 /approve 执行，或输入 /reject 拒绝。"
+      },
+      {
+        "id": 39,
+        "timestamp_ms": 1793071355780,
+        "kind": "operator",
+        "text": "Operator> /approve"
+      },
+      {
+        "id": 40,
+        "timestamp_ms": 1793071355782,
+        "kind": "error",
+        "text": "sdr_agent_error=plan cannot cross execution boundary again"
+      },
+      {
+        "id": 41,
+        "timestamp_ms": 1793071355789,
+        "kind": "system",
+        "text": "终端进程已退出：Ok(ExitStatus(unix_wait_status(256)))"
+      },
+      {
+        "id": 42,
+        "timestamp_ms": 1793071359773,
+        "kind": "operator",
+        "text": "Operator> /approve"
+      }
+    ],
+    "results_before": [
+      {
+        "id": 46,
+        "session_id": "session-1793071197684",
+        "sweep_id": "initial-1793071197723",
+        "kind": "initial",
+        "created_at_ms": 1793071217998,
+        "point_count": 18,
+        "candidate_count": 1,
+        "elapsed_ms": 20128,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.30824,
+        "iq_bytes": 294912
+      },
+      {
+        "id": 45,
+        "session_id": "session-1793070425380",
+        "sweep_id": "request-9c880905431bb4514a88e42d996a09a2-3",
+        "kind": "planned",
+        "created_at_ms": 1793070617150,
+        "point_count": 2,
+        "candidate_count": 0,
+        "elapsed_ms": 1038,
+        "gain_db": 20,
+        "noise_floor_dbfs": -42.30497,
+        "iq_bytes": 32768
+      },
+      {
+        "id": 44,
+        "session_id": "session-1793070425380",
+        "sweep_id": "request-8135b958ce4f4175454eb221d9d552be-2",
+        "kind": "planned",
+        "created_at_ms": 1793070612663,
+        "point_count": 2,
+        "candidate_count": 0,
+        "elapsed_ms": 1017,
+        "gain_db": 20,
+        "noise_floor_dbfs": -51.785,
+        "iq_bytes": 32768
+      },
+      {
+        "id": 43,
+        "session_id": "session-1793070425380",
+        "sweep_id": "request-e87d4df11207fde846631ad3d11da616-1",
+        "kind": "planned",
+        "created_at_ms": 1793070606612,
+        "point_count": 3,
+        "candidate_count": 0,
+        "elapsed_ms": 1113,
+        "gain_db": 20,
+        "noise_floor_dbfs": -43.176174,
+        "iq_bytes": 49152
+      },
+      {
+        "id": 42,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-4f320a6bc9fce8ed2e37381445c3632b-3",
+        "kind": "planned",
+        "created_at_ms": 1793069396039,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 1306,
+        "gain_db": 20,
+        "noise_floor_dbfs": -47.99486,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 41,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-662041a92b95ab79aadf738fb9cec270-2",
+        "kind": "planned",
+        "created_at_ms": 1793069390311,
+        "point_count": 3,
+        "candidate_count": 0,
+        "elapsed_ms": 1114,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.396416,
+        "iq_bytes": 49152
+      },
+      {
+        "id": 40,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-recovered1793021180590-8",
+        "kind": "planned",
+        "created_at_ms": 1793021257056,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 1299,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.469696,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 36,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-recovered1793021180590-7",
+        "kind": "planned",
+        "created_at_ms": 1793021247039,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 1283,
+        "gain_db": 20,
+        "noise_floor_dbfs": -52.663223,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 34,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-recovered1793021180590-6",
+        "kind": "planned",
+        "created_at_ms": 1793021240375,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 1313,
+        "gain_db": 20,
+        "noise_floor_dbfs": -33.69972,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 37,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-recovered1793021180590-5",
+        "kind": "planned",
+        "created_at_ms": 1793021231061,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 1299,
+        "gain_db": 20,
+        "noise_floor_dbfs": -35.119556,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 38,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-recovered1793021180590-4",
+        "kind": "planned",
+        "created_at_ms": 1793021223657,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 1286,
+        "gain_db": 20,
+        "noise_floor_dbfs": -39.36345,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 39,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-recovered1793021180590-3",
+        "kind": "planned",
+        "created_at_ms": 1793021217597,
+        "point_count": 5,
+        "candidate_count": 1,
+        "elapsed_ms": 1276,
+        "gain_db": 20,
+        "noise_floor_dbfs": -52.883957,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 35,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-recovered1793021180590-2",
+        "kind": "planned",
+        "created_at_ms": 1793021212329,
+        "point_count": 5,
+        "candidate_count": 1,
+        "elapsed_ms": 1296,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.086826,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 33,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-recovered1793021180590-1",
+        "kind": "planned",
+        "created_at_ms": 1793021206927,
+        "point_count": 3,
+        "candidate_count": 1,
+        "elapsed_ms": 1132,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.378986,
+        "iq_bytes": 49152
+      },
+      {
+        "id": 24,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-9",
+        "kind": "planned",
+        "created_at_ms": 1793017931807,
+        "point_count": 4,
+        "candidate_count": 0,
+        "elapsed_ms": 1214,
+        "gain_db": 20,
+        "noise_floor_dbfs": -52.633125,
+        "iq_bytes": 65536
+      },
+      {
+        "id": 23,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-8",
+        "kind": "planned",
+        "created_at_ms": 1793017919355,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 1284,
+        "gain_db": 20,
+        "noise_floor_dbfs": -36.75512,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 22,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-7",
+        "kind": "planned",
+        "created_at_ms": 1793017910954,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 1296,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.461723,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 21,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-6",
+        "kind": "planned",
+        "created_at_ms": 1793017903293,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 1324,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.645515,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 20,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-5",
+        "kind": "planned",
+        "created_at_ms": 1793017897332,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 1308,
+        "gain_db": 20,
+        "noise_floor_dbfs": -39.083214,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 19,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-4",
+        "kind": "planned",
+        "created_at_ms": 1793017890509,
+        "point_count": 4,
+        "candidate_count": 0,
+        "elapsed_ms": 1217,
+        "gain_db": 20,
+        "noise_floor_dbfs": -36.29158,
+        "iq_bytes": 65536
+      },
+      {
+        "id": 18,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-3",
+        "kind": "planned",
+        "created_at_ms": 1793017883345,
+        "point_count": 5,
+        "candidate_count": 1,
+        "elapsed_ms": 1295,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.442303,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 17,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-2",
+        "kind": "planned",
+        "created_at_ms": 1793017874814,
+        "point_count": 3,
+        "candidate_count": 0,
+        "elapsed_ms": 1116,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.440514,
+        "iq_bytes": 49152
+      },
+      {
+        "id": 16,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-1",
+        "kind": "planned",
+        "created_at_ms": 1793016983786,
+        "point_count": 2,
+        "candidate_count": 0,
+        "elapsed_ms": 1040,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.537495,
+        "iq_bytes": 32768
+      },
+      {
+        "id": 15,
+        "session_id": "session-1789273063753",
+        "sweep_id": "initial-1789273063764",
+        "kind": "initial",
+        "created_at_ms": 1789273083797,
+        "point_count": 18,
+        "candidate_count": 0,
+        "elapsed_ms": 19954,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.75984,
+        "iq_bytes": 294912
+      },
+      {
+        "id": 14,
+        "session_id": "session-1788875331003",
+        "sweep_id": "request-1",
+        "kind": "planned",
+        "created_at_ms": 1788876043266,
+        "point_count": 201,
+        "candidate_count": 18,
+        "elapsed_ms": 214108,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.756172,
+        "iq_bytes": 3293184
+      },
+      {
+        "id": 13,
+        "session_id": "session-1788875331003",
+        "sweep_id": "initial-1788875331014",
+        "kind": "initial",
+        "created_at_ms": 1788875351051,
+        "point_count": 18,
+        "candidate_count": 1,
+        "elapsed_ms": 19972,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.749336,
+        "iq_bytes": 294912
+      },
+      {
+        "id": 12,
+        "session_id": "session-1788840575092",
+        "sweep_id": "request-1",
+        "kind": "planned",
+        "created_at_ms": 1788862527906,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 6147,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.276783,
+        "iq_bytes": 0
+      },
+      {
+        "id": 11,
+        "session_id": "session-1788840575092",
+        "sweep_id": "initial-1788840575133",
+        "kind": "initial",
+        "created_at_ms": 1788840588785,
+        "point_count": 12,
+        "candidate_count": 1,
+        "elapsed_ms": 13593,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.544006,
+        "iq_bytes": 0
+      },
+      {
+        "id": 10,
+        "session_id": "session-1788840214179",
+        "sweep_id": "initial-1788840214191",
+        "kind": "initial",
+        "created_at_ms": 1788840228054,
+        "point_count": 12,
+        "candidate_count": 1,
+        "elapsed_ms": 13575,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.544235,
+        "iq_bytes": 0
+      },
+      {
+        "id": 9,
+        "session_id": "session-1788837562515",
+        "sweep_id": "initial-1788837562525",
+        "kind": "initial",
+        "created_at_ms": 1788837611178,
+        "point_count": 743,
+        "candidate_count": 15,
+        "elapsed_ms": 48591,
+        "gain_db": 20,
+        "noise_floor_dbfs": -52.916687,
+        "iq_bytes": 0
+      },
+      {
+        "id": 8,
+        "session_id": "session-1788263597140",
+        "sweep_id": "request-2",
+        "kind": "planned",
+        "created_at_ms": 1788325769453,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 2389,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.34516,
+        "iq_bytes": 0
+      },
+      {
+        "id": 6,
+        "session_id": "session-1788263597140",
+        "sweep_id": "request-1",
+        "kind": "planned",
+        "created_at_ms": 1788316632994,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 2355,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.241394,
+        "iq_bytes": 0
+      }
+    ]
+  },
+  "diagnosis": {
+    "deadline_local": "2026-10-27 11:22:24.319 +08:00",
+    "operator_approval_local": "2026-10-27 11:22:35 +08:00",
+    "cause": "Late approval reached PlanLedger.begin after original deadline. Expiry and already-executed states shared the same error; CLI propagated it and exited.",
+    "recovery": "Second approve started a fresh Controller with no pending approval. Prior pending record became unknown on reopen as designed; do not retry it."
+  },
+  "fix": [
+    "PlanLedger.begin returns TimedOut only for an eligible but expired plan; duplicate/terminal state remains InvalidData",
+    "CLI commits expired request as Cancelled and prints a resubmit message without spawning a worker or exiting",
+    "Capture executor restored to Console on denied start; survey/inspection/recognition handle same expiry before worker spawn",
+    "Pending manual plan shows remaining deadline seconds; deadline is never extended"
+  ],
+  "verification": {
+    "red": "Late approval console regression reproduced original InvalidData error",
+    "rust_passed": 152,
+    "rust_ignored": 1,
+    "javascript_passed": 117,
+    "javascript_failed": 0,
+    "javascript_scope": "repository Node test discovery; includes Planner and real new Controller lost-ACK/restart integration",
+    "fmt": "passed",
+    "clippy_all_targets_D_warnings": "passed",
+    "release_build": "passed",
+    "regressions": [
+      "Expired pending vs repeated execution errors distinguished",
+      "Expired approve returns normally, starts no executor, retains executor for new work",
+      "Repeated approve harmless; cancelled record remains cancelled after reopen",
+      "Existing live deadline and no-replay gates unchanged"
+    ],
+    "setup_correction": "Initial long feature TMPDIR exceeded Unix SUN_LEN in an existing recognizer socket fixture. Moved exact feature root to a1027 and reran entire Rust suite successfully; no production change for this fixture.",
+    "log_digests": [
+      {
+        "path": "/var/tmp/sdrharness-dev/a1027/red.log",
+        "bytes": 2028,
+        "sha256": "dad8ac0a07120dc27ec57e4c8049e704111ddec1e976f878f4b4a853d2e08345"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/a1027/rust.log",
+        "bytes": 10779,
+        "sha256": "29dae9532f61f912b42e463f4886f06aa65ba5ecac49fcae110b3eadf2526c8d"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/a1027/rust-final.log",
+        "bytes": 15000,
+        "sha256": "e5ad1a906a0c2b2a219f557b81ed6077d2526ce2982db6bb76a661685b7de493"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/a1027/fmt.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/a1027/clippy.log",
+        "bytes": 620,
+        "sha256": "7829edc65f8bd092e68b47da82ff44c9c25d9511dda1990cf9ac9b42485c39fe"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/a1027/release.log",
+        "bytes": 799,
+        "sha256": "a15537cecd554af73c5eb24f2fee05a057d921742d9e79bb048404ee09e3f852"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/a1027/node.log",
+        "bytes": 23877,
+        "sha256": "09dbf62a1f5d7c203eebfa321359d4ef45349e91f25de7a2ba56c55f0d571a9f"
+      }
+    ]
+  },
+  "deployment": {
+    "binary_release": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r7",
+    "planner_release": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r6",
+    "release_manifest": {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r7/release-manifest.json",
+      "bytes": 1140,
+      "sha256": "68050941729fe11ff750cec6d7cf451e91b66f1d79377f2dd467157a9cc27181"
+    },
+    "release_files": 5,
+    "release_bytes": 6014008,
+    "manual_delete": "Stop both services; delete exact binary release only after replacement/uninstall. Preserve application results and state.",
+    "installed_binary": {
+      "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent",
+      "bytes": 2675480,
+      "sha256": "e49e42248c66e8356e802ba608e80319338bb14008bf934be9184102008cf6fd"
+    },
+    "session_id": "session-1793071197684",
+    "prior_unknown_records_preserved": {
+      "93938483-cbb6-4500-885e-612c57014c6f": {
+        "identity": {
+          "plan_id": "93938483-cbb6-4500-885e-612c57014c6f",
+          "hash": "fdb600465596985e0d2dfb1dc5a5d6fe690c0b44de3533a200b6363f4ad91157",
+          "app_session_id": "session-1793071197684",
+          "controller_epoch": "b89d90cfb55b9ab699423777308ad950",
+          "session_generation": 1793071197723,
+          "request_id": 3,
+          "deadline_unix_ms": 1793071344319
+        },
+        "decision": "accepted",
+        "execution": "unknown"
+      }
+    },
+    "result_count_unchanged": 32,
+    "corpus_unchanged": true,
+    "old_binary_bundle_deleted": {
+      "root": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r5",
+      "files": 5,
+      "bytes": 6013984,
+      "manifest": {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r5/release-manifest.json",
+        "bytes": 1116,
+        "sha256": "59f1c05f4e8fa932556a7cb8764d091adde523c9351cdde6880ebba5293fce8a"
+      },
+      "verified_absent": true
+    },
+    "rf_operations": 0,
+    "key_config_changes": false,
+    "status_events": [
+      {
+        "id": 53,
+        "timestamp_ms": 1793072242022,
+        "kind": "cruise",
+        "text": "巡航状态：未启用；当前每个可执行动作都需要人工批准。"
+      },
+      {
+        "id": 54,
+        "timestamp_ms": 1793072242023,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 55,
+        "timestamp_ms": 1793072243904,
+        "kind": "system",
+        "text": "终端进程已启动，等待控制器提示。"
+      },
+      {
+        "id": 56,
+        "timestamp_ms": 1793072243923,
+        "kind": "operator",
+        "text": "Operator> /status"
+      },
+      {
+        "id": 57,
+        "timestamp_ms": 1793072244332,
+        "kind": "system",
+        "text": "SDR Agent 已连接。输入 /help 查看命令。硬件执行=已启用。"
+      },
+      {
+        "id": 58,
+        "timestamp_ms": 1793072244333,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 59,
+        "timestamp_ms": 1793072244343,
+        "kind": "system",
+        "text": "持久会话：最近记录中 0 项待核对，0 项阻塞；旧批准不会自动恢复。结果未知的计划不会重新执行。"
+      },
+      {
+        "id": 60,
+        "timestamp_ms": 1793072244344,
+        "kind": "system",
+        "text": "控制器状态：空闲，可以接收新任务；运行模式：逐步人工批准。"
+      },
+      {
+        "id": 61,
+        "timestamp_ms": 1793072244344,
+        "kind": "system",
+        "text": "Agent 会话：已打开；上游模型：空闲；等待处理的消息：0 条。"
+      },
+      {
+        "id": 62,
+        "timestamp_ms": 1793072244345,
+        "kind": "system",
+        "text": "人工批准：没有待处理计划；下一请求编号：1；安全代次：1793072243887。"
+      },
+      {
+        "id": 63,
+        "timestamp_ms": 1793072244346,
+        "kind": "cruise",
+        "text": "巡航状态：未启用；当前每个可执行动作都需要人工批准。"
+      },
+      {
+        "id": 64,
+        "timestamp_ms": 1793072244346,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      }
+    ]
+  },
+  "browser": {
+    "page_errors": [],
+    "session_id": "session-1793071197684",
+    "status_events": [
+      {
+        "id": 65,
+        "timestamp_ms": 1793072265913,
+        "kind": "operator",
+        "text": "Operator> /status"
+      },
+      {
+        "id": 66,
+        "timestamp_ms": 1793072265920,
+        "kind": "system",
+        "text": "持久会话：最近记录中 0 项待核对，0 项阻塞；旧批准不会自动恢复。结果未知的计划不会重新执行。"
+      },
+      {
+        "id": 67,
+        "timestamp_ms": 1793072265922,
+        "kind": "system",
+        "text": "控制器状态：空闲，可以接收新任务；运行模式：逐步人工批准。"
+      },
+      {
+        "id": 68,
+        "timestamp_ms": 1793072265923,
+        "kind": "system",
+        "text": "Agent 会话：已打开；上游模型：空闲；等待处理的消息：0 条。"
+      },
+      {
+        "id": 69,
+        "timestamp_ms": 1793072265924,
+        "kind": "system",
+        "text": "人工批准：没有待处理计划；下一请求编号：1；安全代次：1793072243887。"
+      },
+      {
+        "id": 70,
+        "timestamp_ms": 1793072265924,
+        "kind": "cruise",
+        "text": "巡航状态：未启用；当前每个可执行动作都需要人工批准。"
+      },
+      {
+        "id": 71,
+        "timestamp_ms": 1793072265925,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      }
+    ],
+    "input_enabled": true,
+    "new_model_requests": 0,
+    "new_rf_requests": 0
+  },
+  "boundaries": [
+    "No new provider or RF calls; no retry of original capture or 10-capture execution",
+    "Old unknown ledger record preserved; new expiry handling does not retroactively relabel it",
+    "Production validation checks install identity/healthy same-session status and preserved data; actual delayed approval verified with isolated real Console/ledger tests, not new RF",
+    "Planner r6 and current thinking level untouched; recognizer_available remains false",
+    "No API keys or protected provider configuration copied or modified"
+  ],
+  "retention": {
+    "release": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r7",
+    "files": 5,
+    "bytes": 6014008,
+    "manifest": {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r7/release-manifest.json",
+      "bytes": 1140,
+      "sha256": "68050941729fe11ff750cec6d7cf451e91b66f1d79377f2dd467157a9cc27181"
+    },
+    "manual_delete": "Stop both services; delete exact binary release only after replacement/uninstall. Preserve application results and state.",
+    "application": "Existing results/corpus/IQ and Controller/Planner state retained in place; no development copies of RF data"
+  },
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/a1027",
+    "files": 10931,
+    "bytes": 1405134610,
+    "symlinks": 1,
+    "sockets": [],
+    "former_long_root": "/var/tmp/sdrharness-dev/approval-expiry-1027",
+    "method": "Exact feature tree only, without following dependency links; all bounded test/build/browser processes completed",
+    "verified_absent": true
+  }
+}

@@ -278,14 +278,19 @@ impl PlanLedger {
                     && r.identity.session_generation == generation
             })
             .ok_or_else(|| invalid("execution has no reception decision"))?;
-        if record.identity.deadline_unix_ms <= now_ms()
-            || record.decision != Decision::Accepted
+        if record.decision != Decision::Accepted
             || !matches!(
                 record.execution,
                 ExecutionState::Accepted | ExecutionState::PendingApproval
             )
         {
             return Err(invalid("plan cannot cross execution boundary again"));
+        }
+        if record.identity.deadline_unix_ms <= now_ms() {
+            return Err(io::Error::new(
+                io::ErrorKind::TimedOut,
+                "plan execution deadline expired",
+            ));
         }
         record.execution = ExecutionState::Executing;
         self.publish(next)
@@ -479,6 +484,36 @@ mod tests {
         stale.plan_id = "b0000000-0000-0000-0000-000000000002".into();
         assert!(reopened.admit(stale, Decision::Accepted, false).is_err());
     }
+    #[test]
+    fn expired_pending_is_distinct_from_replay_and_never_crosses_execution() {
+        let root = Temp::new();
+        let mut ledger = PlanLedger::open(&root.0, "app").unwrap();
+        let id = identity(&ledger);
+        ledger.admit(id.clone(), Decision::Accepted, true).unwrap();
+        // Deterministically expire an admitted fixture without weakening the
+        // production admission deadline or waiting for wall-clock time.
+        ledger
+            .state
+            .records
+            .get_mut(&id.plan_id)
+            .unwrap()
+            .identity
+            .deadline_unix_ms = 1;
+        assert_eq!(
+            ledger.begin(9, 3).unwrap_err().kind(),
+            io::ErrorKind::TimedOut
+        );
+        assert_eq!(
+            ledger.get(&id.plan_id).unwrap().execution,
+            ExecutionState::PendingApproval
+        );
+        ledger.finish(9, 3, ExecutionState::Cancelled).unwrap();
+        assert_eq!(
+            ledger.begin(9, 3).unwrap_err().kind(),
+            io::ErrorKind::InvalidData
+        );
+    }
+
     #[test]
     fn generation_invalidation_cancels_pending_and_execution_remains_unknown() {
         let root = Temp::new();

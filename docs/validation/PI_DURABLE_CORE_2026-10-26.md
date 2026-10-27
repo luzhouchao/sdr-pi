@@ -439,3 +439,27 @@ Spectrum仍paused，recognizer_available=false。无TX/训练/识别准入。
 新结果IQ/metadata保留6文件116931字节；r6保留12681文件83257328字节，逐项SHA/人工删除方法见证据。
 最终暂存143文件1306109字节/1链接清理；初始化时误复制的依赖另删12659文件79552235字节
 （按未变依赖字节重建计数），临时根与测试socket不存在。旧封存证据不追溯改写。
+
+
+## 人工批准过期不再退出终端2026-10-27
+
+用户报告11:22:00计划提示批准、11:22:35首次/approve即报
+`plan cannot cross execution boundary again`并退出。账本期限实际为11:22:24.319（+08:00），
+批准已晚约11秒；旧PlanLedger.begin将deadline与执行状态冲突合并为InvalidData，CLI直接传播退出。
+第二次approve重开Controller后无pending；旧pending按原恢复门成为unknown，不追溯改为未执行或自动重试。
+事件/身份与具体SHA见[过期验收](../evidence/PI_DURABLE_APPROVAL_EXPIRY_2026-10-27.json)。
+
+修复保留原期限：合法待执行状态超过deadline返回TimedOut，重复执行/终态仍返回InvalidData。
+Controller在真正创建硬件worker前将过期计划持久取消，提示重新提交且正常返回；
+capture执行器还回Console，survey/inspect/recognition共用同一门。人工计划显示剩余有效秒数，
+不延长deadline，不恢复旧批准。磁盘取消失败仍报错拒绝，不能作为过期成功掩盖持久化失败。
+
+新增晚批准回归修复前复现原报错；修复后零worker、executor保留、重复批准正常、重启后仍cancelled。
+另测过期与重复执行错误区分。Rust152通过/1忽略，库114、CLI25、巡航6、运维1、恢复6；
+仓库JavaScript117全部通过，含新Controller丢ACK/重启端到端；格式和all-target Clippy -D warnings通过。
+首次长TMPDIR触发既有Unix socket SUN_LEN限制，缩短feature根为a1027后完整重跑通过。
+
+Controller/Web制品包r7已部署（Web字节未改），Planner仍r6；当前会话/status和浏览器输入可用、页面异常0。
+旧unknown记录、结果摘要与corpus均保持不变；未调用模型、未重发原采集或执行“10次”。
+生产只核验安装/同会话状态/数据保留，实际过期批准路径由隔离真实Console/ledger测试覆盖，未新增RF。
+旧r5二进制包删除，当前制品保留5文件6014008字节，manifest见证据。构建/测试/浏览器暂存10931文件1405134610字节及1链接已清理，目录及测试socket不存在。
