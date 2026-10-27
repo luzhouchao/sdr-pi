@@ -373,3 +373,32 @@ Controller150通过/1忽略，Node100通过，Web38通过/2忽略，格式及all
 本单元构建、测试缓存及脚本清理13591文件2352324146字节、10个链接，临时根确认不存在且无遗留测试socket。
 保留r5共12686文件89270878字节；manifest、SHA、人工删除方法见
 [最新版本证据](../evidence/PI_DURABLE_LATEST_ONLY_2026-10-27.json)。
+
+
+## r5新版巡航实机验收2026-10-27
+
+用户继续后，登记8步/120秒/1MiB的有限计划，单步最多5点、每点4096样本，
+10MS/s、10MHz、20dB、dwell/settle20ms。首轮2450/2455/2460MHz；任务范围2445–2465MHz，
+它仍是mission限制，Controller原硬频率范围未改变。执行前AGX可用706847399936字节，
+P201单sdrd PID1318、无活动控制连接；两路端口A_BALANCED，scan mask/buffer均0。
+停止路径为同业务会话`/stop`及专用cancel；完整计划及前后射频状态见
+[实机证据](../evidence/PI_DURABLE_CRUISE_R5_LIVE_2026-10-27.json)。
+
+实收2轮/8频点/131072字节IQ，约27.7秒含结束核验：
+第一轮2450–2460MHz、5MHz步进、3点；第二轮换到相邻2460–2465MHz、1.25MHz步进、5点。
+候选数按执行顺序为[0,0]。第三个模型提案为2461.5–2463.5MHz、0.5MHz步进，
+重叠上一空候选范围，Controller以AdjacentSweepRequired拒绝并退出，未执行第三轮。
+因此已实测相邻换段与空候选后局部细扫拒绝，且退出早于步数/时长/字节预算。
+这不是模型主动stop：Planner仍提出违规细化，不能据此验收自主决策质量。
+局部第四次访问门、连续三空候选停止及模型stop_session本轮未触发，保留既有离线依据。
+无候选仅指同轮上中位参考+12dB门未过，不证明无信号、边缘或占用带宽。
+
+三个Planner请求各调用模型一次；Controller前两accepted/completed，第三rejected/failed，
+Planner对应状态一致。浏览器实际读回新增3/5点结果，页面异常0；原26条结果摘要不变。
+自然拒绝退出后发`/stop`撤销旧代次，最终上游空闲/队列0/无待批准/巡航已退出。
+19项射频属性逐项恢复，单sdrd且控制连接0，P201本轮临时路径不存在，Spectrum仍paused。
+保留DeepSeek low思考，无TX/训练/识别准入或软件部署变更；recognizer_available=false。
+
+保留应用IQ/metadata共4文件133216字节，精确路径/SHA和Web人工删除入口见证据；
+本单元临时脚本/浏览器缓存共83文件890027字节全部删除，临时根确认不存在、无测试socket。
+本轮仅追加实机记录，未改源码或重跑Rust/Node测试；JSON、链接及diff核验后提交。

@@ -1,0 +1,620 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "feature": "cruise-r5-1027",
+  "source_commit": "d9db32d",
+  "authorization": "User continued the explicitly proposed bounded live verification of deployed cruise rules; prior RX-only authorization applies. No TX.",
+  "plan": {
+    "command": "/auto start --steps 8 --seconds 120 --mib 1 在2445至2465MHz范围进行新版规则有界验收，仅survey_band或stop_session。首轮start_hz=2450000000,stop_hz=2460000000,step_hz=5000000。单步最多5点，sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20，固定增益20dB，每点4096样本。按实测摘要选择下一段：无候选后换相邻区域或停止，同一局部最多访问3次，连续3轮无候选停止。整窗功率不是FFT谱线，不能据LO步进推断带宽或边缘。不要识别、发射、capture_bounded_iq。",
+    "hard_max_steps": 8,
+    "hard_duration_seconds": 120,
+    "hard_max_iq_bytes": 1048576,
+    "requested_max_points_per_step": 5,
+    "requested_max_total_points": 40,
+    "requested_max_iq_bytes": 655360,
+    "bytes_per_point": 16384,
+    "initial_centers_hz": [
+      2450000000,
+      2455000000,
+      2460000000
+    ],
+    "mission_frequency_envelope_hz": [
+      2445000000,
+      2465000000
+    ],
+    "frequency_fence": "mission; existing Controller policy 70MHz–6GHz and maximum sweep span20MHz",
+    "rx_identity": "RX1/RX0/A_BALANCED",
+    "sample_rate_hz": 10000000,
+    "rf_bandwidth_hz": 10000000,
+    "gain_db": 20,
+    "dwell_ms": 20,
+    "settle_ms": 20,
+    "samples_per_point": 4096,
+    "aggregate_frames": 1,
+    "point_timeout_ms": 250,
+    "per_request_deadline_ms": 30000,
+    "expected_hardware_seconds_per_step": 4,
+    "expected_wall_seconds_max": 120,
+    "free_bytes": 706847363072,
+    "agx_temporary": "/var/tmp/sdrharness-dev/cruise-r5-1027",
+    "p201_temporary": "/tmp/sdr-agent-dev/agx-sweep-<actual-generation>-<point-index>; managed inline",
+    "result_root": "/var/lib/sdrharness/web-console/captures/session-1789273063753",
+    "stop": "POST same session command /stop; fallback sdr-agent --mode cancel --session-generation ACTUAL --sdrd 192.168.1.10:43110",
+    "save_iq": true
+  },
+  "radio_before": {
+    "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n2469500000\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "identity": "1318\ntcp        0      0 192.168.1.10:43110      0.0.0.0:*               LISTEN      \ndae7c32fd63fc4542fd5eadce37c272160eba92193accdb983919ad1a4fce74e  /sd/sdr-agent/current/sdrd\n",
+    "state_command": "for p in /sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency /sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency /sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth /sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode /sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain /sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select /sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode /sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain /sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select /sys/bus/iio/devices/iio:device*/scan_elements/*_en /sys/bus/iio/devices/iio:device*/buffer/enable; do if test -f \"$p\"; then echo \"$p\"; cat \"$p\"; fi; done"
+  },
+  "radio_after": {
+    "radio": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n2469500000\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "restored": true,
+    "single_daemon": "1318\ntcp        0      0 192.168.1.10:43110      0.0.0.0:*               LISTEN      \n",
+    "control_connections": 0,
+    "p201_feature_paths_absent": true
+  },
+  "execution": {
+    "elapsed_seconds": 27.70609355601482,
+    "detected_finish": true,
+    "events": [
+      {
+        "id": 312,
+        "timestamp_ms": 1793069383580,
+        "kind": "operator",
+        "text": "Operator> /auto start --steps 8 --seconds 120 --mib 1 在2445至2465MHz范围进行新版规则有界验收，仅survey_band或stop_session。首轮start_hz=2450000000,stop_hz=2460000000,step_hz=5000000。单步最多5点，sample_rate_hz=10000000,rf_bandwidth_hz=10000000,dwell_ms=20，固定增益20dB，每点4096样本。按实测摘要选择下一段：无候选后换相邻区域或停止，同一局部最多访问3次，连续3轮无候选停止。整窗功率不是FFT谱线，不能据LO步进推断带宽或边缘。不要识别、发射、capture_bounded_iq。"
+      },
+      {
+        "id": 313,
+        "timestamp_ms": 1793069383661,
+        "kind": "system",
+        "text": "自动巡航已建立新的安全代次；旧计划已失效。"
+      },
+      {
+        "id": 314,
+        "timestamp_ms": 1793069383662,
+        "kind": "system",
+        "text": "已启动受限自动巡航：最多 8 步、120 秒、1048576 字节；两类失败分别最多重试 5 次、间隔 10 秒。输入 /stop 可立即停止。"
+      },
+      {
+        "id": 315,
+        "timestamp_ms": 1793069383664,
+        "kind": "cruise",
+        "text": "巡航状态：正在检查 SDR；已完成 0/8 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 316,
+        "timestamp_ms": 1793069383665,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 317,
+        "timestamp_ms": 1793069383668,
+        "kind": "cruise",
+        "text": "巡航状态：正在等待上游给出下一步；已完成 0/8 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 318,
+        "timestamp_ms": 1793069389115,
+        "kind": "plan",
+        "text": "已验证计划：受限扫频 2450000000–2460000000 Hz，步进 5000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 319,
+        "timestamp_ms": 1793069389117,
+        "kind": "decision",
+        "text": "决策依据> request=2、generation=1793068599704 与当前上下文一致；状态=Idle；扫频范围位于 70000000–6000000000 Hz，跨度 10000000≤20000000 Hz，点数 3≤768，步进 5000000≤射频带宽 10000000 的 80%，采样率 10000000 Hz，停留 20≤5000 ms，预计处理 49152≤4194304 字节；SDR 在线且允许调谐"
+      },
+      {
+        "id": 320,
+        "timestamp_ms": 1793069389118,
+        "kind": "qwen",
+        "text": "Agent> 下一步计划：受限扫频 2450000000–2460000000 Hz，步进 5000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 321,
+        "timestamp_ms": 1793069389133,
+        "kind": "sweep",
+        "text": "自动扫频 request=2 已开始：2450000000–2460000000 Hz，3 个点，步进 5000000 Hz，采样率 10000000 Hz，射频带宽 10000000 Hz，每点停留 20 ms，固定接收增益 20 dB；最多处理 49152 字节，可随时输入 /stop。"
+      },
+      {
+        "id": 322,
+        "timestamp_ms": 1793069389135,
+        "kind": "system",
+        "text": "可执行计划已经 Rust 验证；已结束本轮剩余模型生成，避免队列中的旧输入越过批准或执行门禁。"
+      },
+      {
+        "id": 323,
+        "timestamp_ms": 1793069390328,
+        "kind": "sweep",
+        "text": "扫频执行结果：request=2 已完成 3 个频点，耗时 1114 ms，固定增益 20 dB，噪声基线 -53.4 dBFS，发现 0 个候选；零削顶，射频状态已恢复。"
+      },
+      {
+        "id": 324,
+        "timestamp_ms": 1793069390329,
+        "kind": "cruise",
+        "text": "巡航状态：正在检查 SDR；已完成 1/8 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 325,
+        "timestamp_ms": 1793069390332,
+        "kind": "cruise",
+        "text": "巡航状态：正在等待上游给出下一步；已完成 1/8 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 326,
+        "timestamp_ms": 1793069394644,
+        "kind": "plan",
+        "text": "已验证计划：受限扫频 2460000000–2465000000 Hz，步进 1250000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 327,
+        "timestamp_ms": 1793069394646,
+        "kind": "decision",
+        "text": "决策依据> request=3、generation=1793068599704 与当前上下文一致；状态=Idle；扫频范围位于 70000000–6000000000 Hz，跨度 5000000≤20000000 Hz，点数 5≤768，步进 1250000≤射频带宽 10000000 的 80%，采样率 10000000 Hz，停留 20≤5000 ms，预计处理 81920≤4194304 字节；SDR 在线且允许调谐"
+      },
+      {
+        "id": 328,
+        "timestamp_ms": 1793069394647,
+        "kind": "qwen",
+        "text": "Agent> 下一步计划：受限扫频 2460000000–2465000000 Hz，步进 1250000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 329,
+        "timestamp_ms": 1793069394663,
+        "kind": "sweep",
+        "text": "自动扫频 request=3 已开始：2460000000–2465000000 Hz，5 个点，步进 1250000 Hz，采样率 10000000 Hz，射频带宽 10000000 Hz，每点停留 20 ms，固定接收增益 20 dB；最多处理 81920 字节，可随时输入 /stop。"
+      },
+      {
+        "id": 330,
+        "timestamp_ms": 1793069394664,
+        "kind": "system",
+        "text": "可执行计划已经 Rust 验证；已结束本轮剩余模型生成，避免队列中的旧输入越过批准或执行门禁。"
+      },
+      {
+        "id": 331,
+        "timestamp_ms": 1793069396059,
+        "kind": "sweep",
+        "text": "扫频执行结果：request=3 已完成 5 个频点，耗时 1306 ms，固定增益 20 dB，噪声基线 -48.0 dBFS，发现 0 个候选；零削顶，射频状态已恢复。"
+      },
+      {
+        "id": 332,
+        "timestamp_ms": 1793069396060,
+        "kind": "cruise",
+        "text": "巡航状态：正在检查 SDR；已完成 2/8 步，累计 0.1/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 333,
+        "timestamp_ms": 1793069396062,
+        "kind": "cruise",
+        "text": "巡航状态：正在等待上游给出下一步；已完成 2/8 步，累计 0.1/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 334,
+        "timestamp_ms": 1793069409229,
+        "kind": "system",
+        "text": "巡航进度门拒绝计划，不会执行：上一轮无候选，不能继续同一区域细扫"
+      },
+      {
+        "id": 335,
+        "timestamp_ms": 1793069409231,
+        "kind": "cruise",
+        "text": "巡航状态：已退出；原因：上一轮无候选，不能继续同一区域细扫。"
+      },
+      {
+        "id": 336,
+        "timestamp_ms": 1793069409758,
+        "kind": "operator",
+        "text": "Operator> /stop"
+      },
+      {
+        "id": 337,
+        "timestamp_ms": 1793069409866,
+        "kind": "system",
+        "text": "会话已停止；旧计划已失效。"
+      },
+      {
+        "id": 338,
+        "timestamp_ms": 1793069409868,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 339,
+        "timestamp_ms": 1793069410768,
+        "kind": "operator",
+        "text": "Operator> /status"
+      },
+      {
+        "id": 340,
+        "timestamp_ms": 1793069410776,
+        "kind": "system",
+        "text": "持久会话：最近记录中 0 项待核对，0 项阻塞；旧批准不会自动恢复。结果未知的计划不会重新执行。"
+      },
+      {
+        "id": 341,
+        "timestamp_ms": 1793069410778,
+        "kind": "system",
+        "text": "控制器状态：已保持，不会继续操作硬件；运行模式：受限自动巡航。"
+      },
+      {
+        "id": 342,
+        "timestamp_ms": 1793069410779,
+        "kind": "system",
+        "text": "Agent 会话：已打开；上游模型：空闲；等待处理的消息：0 条。"
+      },
+      {
+        "id": 343,
+        "timestamp_ms": 1793069410780,
+        "kind": "system",
+        "text": "人工批准：没有待处理计划；下一请求编号：5；安全代次：1793068599705。"
+      },
+      {
+        "id": 344,
+        "timestamp_ms": 1793069410781,
+        "kind": "cruise",
+        "text": "巡航状态：已退出；原因：上一轮无候选，不能继续同一区域细扫。"
+      },
+      {
+        "id": 345,
+        "timestamp_ms": 1793069410783,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      }
+    ],
+    "omitted_event_kinds": [
+      "thinking",
+      "model_input"
+    ]
+  },
+  "results": [
+    {
+      "summary": {
+        "id": 41,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-662041a92b95ab79aadf738fb9cec270-2",
+        "kind": "planned",
+        "created_at_ms": 1793069390311,
+        "point_count": 3,
+        "candidate_count": 0,
+        "elapsed_ms": 1114,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.396416,
+        "iq_bytes": 49152
+      },
+      "sweep_plot": {
+        "schema_version": 1,
+        "sweep_id": "request-662041a92b95ab79aadf738fb9cec270-2",
+        "kind": "planned",
+        "elapsed_ms": 1114,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.396416,
+        "points": [
+          [
+            2450000000,
+            -53.162243
+          ],
+          [
+            2455000000,
+            -53.531048
+          ],
+          [
+            2460000000,
+            -53.396416
+          ]
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-662041a92b95ab79aadf738fb9cec270-2-1793068599704-1793069389139224824.sigmf-data",
+          "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-662041a92b95ab79aadf738fb9cec270-2-1793068599704-1793069389139224824.sigmf-meta",
+          "bytes": 49152
+        }
+      }
+    },
+    {
+      "summary": {
+        "id": 42,
+        "session_id": "session-1789273063753",
+        "sweep_id": "request-4f320a6bc9fce8ed2e37381445c3632b-3",
+        "kind": "planned",
+        "created_at_ms": 1793069396039,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 1306,
+        "gain_db": 20,
+        "noise_floor_dbfs": -47.99486,
+        "iq_bytes": 81920
+      },
+      "sweep_plot": {
+        "schema_version": 1,
+        "sweep_id": "request-4f320a6bc9fce8ed2e37381445c3632b-3",
+        "kind": "planned",
+        "elapsed_ms": 1306,
+        "gain_db": 20,
+        "noise_floor_dbfs": -47.99486,
+        "points": [
+          [
+            2460000000,
+            -47.99486
+          ],
+          [
+            2461250000,
+            -53.42747
+          ],
+          [
+            2462500000,
+            -41.705288
+          ],
+          [
+            2463750000,
+            -43.232765
+          ],
+          [
+            2465000000,
+            -53.525124
+          ]
+        ],
+        "candidates": [],
+        "dataset": {
+          "format": "sigmf",
+          "datatype": "ci16_le",
+          "data_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4f320a6bc9fce8ed2e37381445c3632b-3-1793068599704-1793069394669217701.sigmf-data",
+          "metadata_path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4f320a6bc9fce8ed2e37381445c3632b-3-1793068599704-1793069394669217701.sigmf-meta",
+          "bytes": 81920
+        }
+      }
+    }
+  ],
+  "planner_requests": [
+    {
+      "request_key": "4f213d7d3e00ecc56ce705b414683d73:1793068599704:2",
+      "model_attempts": 1,
+      "proposal": {
+        "planId": "a245db9e-69d1-4bdc-8c59-efebf5092809",
+        "key": "4f213d7d3e00ecc56ce705b414683d73:1793068599704:2",
+        "hash": "d9da16bfbb17ff9331ff2349bec42954f7dbc673e632a1323640242fc9b1ae42",
+        "action": {
+          "kind": "survey_band",
+          "start_hz": 2450000000,
+          "stop_hz": 2460000000,
+          "step_hz": 5000000,
+          "sample_rate_hz": 10000000,
+          "rf_bandwidth_hz": 10000000,
+          "dwell_ms": 20
+        },
+        "state": "accepted",
+        "controllerExecution": "completed"
+      }
+    },
+    {
+      "request_key": "4f213d7d3e00ecc56ce705b414683d73:1793068599704:3",
+      "model_attempts": 1,
+      "proposal": {
+        "planId": "47b1a086-b4f7-49af-8f13-eeccdcbb7a6c",
+        "key": "4f213d7d3e00ecc56ce705b414683d73:1793068599704:3",
+        "hash": "0e8789ae9637f40c400b46b7c6e64ffbe71517f684aa5080051ddba3dda4d11d",
+        "action": {
+          "kind": "survey_band",
+          "start_hz": 2460000000,
+          "stop_hz": 2465000000,
+          "step_hz": 1250000,
+          "sample_rate_hz": 10000000,
+          "rf_bandwidth_hz": 10000000,
+          "dwell_ms": 20
+        },
+        "state": "accepted",
+        "controllerExecution": "completed"
+      }
+    },
+    {
+      "request_key": "4f213d7d3e00ecc56ce705b414683d73:1793068599704:4",
+      "model_attempts": 1,
+      "proposal": {
+        "planId": "ebbadc3c-37e7-4103-8a6f-d1fc173f4947",
+        "key": "4f213d7d3e00ecc56ce705b414683d73:1793068599704:4",
+        "hash": "cb7ae5f978342077ec2e02f245fe85be4c026bc5c70f8836f3fffc12c9aea31d",
+        "action": {
+          "kind": "survey_band",
+          "start_hz": 2461500000,
+          "stop_hz": 2463500000,
+          "step_hz": 500000,
+          "sample_rate_hz": 10000000,
+          "rf_bandwidth_hz": 10000000,
+          "dwell_ms": 20
+        },
+        "state": "rejected",
+        "controllerExecution": "failed"
+      }
+    }
+  ],
+  "controller_ledger": [
+    {
+      "identity": {
+        "plan_id": "47b1a086-b4f7-49af-8f13-eeccdcbb7a6c",
+        "hash": "0e8789ae9637f40c400b46b7c6e64ffbe71517f684aa5080051ddba3dda4d11d",
+        "app_session_id": "session-1789273063753",
+        "controller_epoch": "4f213d7d3e00ecc56ce705b414683d73",
+        "session_generation": 1793068599704,
+        "request_id": 3,
+        "deadline_unix_ms": 1793069420323
+      },
+      "decision": "accepted",
+      "execution": "completed"
+    },
+    {
+      "identity": {
+        "plan_id": "a245db9e-69d1-4bdc-8c59-efebf5092809",
+        "hash": "d9da16bfbb17ff9331ff2349bec42954f7dbc673e632a1323640242fc9b1ae42",
+        "app_session_id": "session-1789273063753",
+        "controller_epoch": "4f213d7d3e00ecc56ce705b414683d73",
+        "session_generation": 1793068599704,
+        "request_id": 2,
+        "deadline_unix_ms": 1793069413713
+      },
+      "decision": "accepted",
+      "execution": "completed"
+    },
+    {
+      "identity": {
+        "plan_id": "ebbadc3c-37e7-4103-8a6f-d1fc173f4947",
+        "hash": "cb7ae5f978342077ec2e02f245fe85be4c026bc5c70f8836f3fffc12c9aea31d",
+        "app_session_id": "session-1789273063753",
+        "controller_epoch": "4f213d7d3e00ecc56ce705b414683d73",
+        "session_generation": 1793068599704,
+        "request_id": 4,
+        "deadline_unix_ms": 1793069426051
+      },
+      "decision": "rejected",
+      "execution": "failed"
+    }
+  ],
+  "browser": {
+    "page_errors": [],
+    "result_point_counts": [
+      3,
+      5
+    ],
+    "browser": "production Web restored results"
+  },
+  "conclusions": {
+    "executed_sweeps": 2,
+    "executed_points": 8,
+    "iq_bytes": 131072,
+    "candidate_counts_in_execution_order": [
+      0,
+      0
+    ],
+    "adjacent_followup_executed": true,
+    "third_proposal": "2461500000–2463500000 Hz,500000 Hz step, overlaps preceding empty range",
+    "third_proposal_rejected_before_execution": true,
+    "termination": "AdjacentSweepRequired; Controller progress gate, not step/time/byte budget exhaustion",
+    "model_voluntary_stop": false,
+    "model_policy_limitation": "Planner attempted local refinement after empty candidates; gate prevents hardware repetition. Improved autonomous decision quality is not fully accepted.",
+    "not_exercised_live": [
+      "local fourth-visit limit",
+      "three-consecutive-empty termination",
+      "Planner stop_session"
+    ],
+    "no_candidates_meaning": "No points exceed same-sweep upper-median reference by12dB; not evidence of no RF signals or occupied bandwidth",
+    "thinking": "low remains configured; no setting changed"
+  },
+  "final_state": {
+    "events": [
+      {
+        "kind": "operator",
+        "text": "Operator> /stop"
+      },
+      {
+        "kind": "system",
+        "text": "会话已停止；旧计划已失效。"
+      },
+      {
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "kind": "operator",
+        "text": "Operator> /status"
+      },
+      {
+        "kind": "system",
+        "text": "持久会话：最近记录中 0 项待核对，0 项阻塞；旧批准不会自动恢复。结果未知的计划不会重新执行。"
+      },
+      {
+        "kind": "system",
+        "text": "控制器状态：已保持，不会继续操作硬件；运行模式：受限自动巡航。"
+      },
+      {
+        "kind": "system",
+        "text": "Agent 会话：已打开；上游模型：空闲；等待处理的消息：0 条。"
+      },
+      {
+        "kind": "system",
+        "text": "人工批准：没有待处理计划；下一请求编号：5；安全代次：1793068599705。"
+      },
+      {
+        "kind": "cruise",
+        "text": "巡航状态：已退出；原因：上一轮无候选，不能继续同一区域细扫。"
+      },
+      {
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      }
+    ],
+    "spectrum_phase": "paused",
+    "result_count": 28,
+    "prior_26_results_unchanged": true,
+    "recognizer_available": false,
+    "rf_restored": true,
+    "control_connections": 0
+  },
+  "retention": {
+    "files": [
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-662041a92b95ab79aadf738fb9cec270-2-1793068599704-1793069389139224824.sigmf-data",
+        "bytes": 49152,
+        "sha256": "7a63d76e9d36c1251d4c1035e3d612eafeac5774852fcaf2f85adeb4b9857bd1",
+        "source": "live P201 RX1; current r5 auto cruise",
+        "session_id": "session-1789273063753",
+        "generation": 1793068599704,
+        "sweep_id": "request-662041a92b95ab79aadf738fb9cec270-2",
+        "profile": "10MS/s,10MHz,20dB,4096 samples/point,ci16_le",
+        "purpose": "user-visible bounded cruise RX result",
+        "manual_delete": "DELETE /api/results/41 through Web result deletion; removes paired IQ/metadata"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-662041a92b95ab79aadf738fb9cec270-2-1793068599704-1793069389139224824.sigmf-meta",
+        "bytes": 877,
+        "sha256": "549432d7940b891c33a381e0c89829c88d3bed0b22c068d0766a36e4d0f58ff2",
+        "source": "live P201 RX1; current r5 auto cruise",
+        "session_id": "session-1789273063753",
+        "generation": 1793068599704,
+        "sweep_id": "request-662041a92b95ab79aadf738fb9cec270-2",
+        "profile": "10MS/s,10MHz,20dB,4096 samples/point,ci16_le",
+        "purpose": "user-visible bounded cruise RX result",
+        "manual_delete": "DELETE /api/results/41 through Web result deletion; removes paired IQ/metadata"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4f320a6bc9fce8ed2e37381445c3632b-3-1793068599704-1793069394669217701.sigmf-data",
+        "bytes": 81920,
+        "sha256": "99ac47a881e79b54590f16f8d4f2fb2eb60f2b6b149f8f5d9021506937b87f5d",
+        "source": "live P201 RX1; current r5 auto cruise",
+        "session_id": "session-1789273063753",
+        "generation": 1793068599704,
+        "sweep_id": "request-4f320a6bc9fce8ed2e37381445c3632b-3",
+        "profile": "10MS/s,10MHz,20dB,4096 samples/point,ci16_le",
+        "purpose": "user-visible bounded cruise RX result",
+        "manual_delete": "DELETE /api/results/42 through Web result deletion; removes paired IQ/metadata"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1789273063753/request-4f320a6bc9fce8ed2e37381445c3632b-3-1793068599704-1793069394669217701.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "027cced0961372cf09c6868111fb5e85142d4f333d641ad739f89dca05b8fa26",
+        "source": "live P201 RX1; current r5 auto cruise",
+        "session_id": "session-1789273063753",
+        "generation": 1793068599704,
+        "sweep_id": "request-4f320a6bc9fce8ed2e37381445c3632b-3",
+        "profile": "10MS/s,10MHz,20dB,4096 samples/point,ci16_le",
+        "purpose": "user-visible bounded cruise RX result",
+        "manual_delete": "DELETE /api/results/42 through Web result deletion; removes paired IQ/metadata"
+      }
+    ],
+    "file_count": 4,
+    "bytes": 133216,
+    "application_state": "Web results DB and durable/controller ledgers retained in place; no copies"
+  },
+  "verification": "Live radio restoration and single-owner checks plus real production browser results; no source changes, no Rust/Node test rerun",
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/cruise-r5-1027",
+    "files": 83,
+    "bytes": 890027,
+    "symlinks": 0,
+    "p201_paths_absent": true,
+    "processes": "bounded run and browser exited; close.py deletes itself; production services remain",
+    "test_sockets": 0,
+    "verified_absent": true
+  }
+}
