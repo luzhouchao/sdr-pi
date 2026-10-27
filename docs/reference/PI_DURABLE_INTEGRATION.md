@@ -20,15 +20,21 @@
 
 巡航进度门源码/离线验收已完成：自动模式请求新增有界cruise摘要（人工模式省略），
 本轮局部访问最多3次、无候选后换段、连续3轮空候选停；细节见
-[规则验收](../validation/PI_DURABLE_CORE_2026-10-26.md#巡航规则离线修复2026-10-27)。当前r5已应用此改动。随后有界实机2轮8点验证相邻换段及第三个违规局部提案拒绝，
+[规则验收](../validation/PI_DURABLE_CORE_2026-10-26.md#巡航规则离线修复2026-10-27)。Controller r5已应用此改动。随后有界实机2轮8点验证相邻换段及第三个违规局部提案拒绝，
 射频恢复通过；模型尚未主动停止，连续三空/第四次局部门未在本轮触发。见
 [新版实机](../validation/PI_DURABLE_CORE_2026-10-26.md#r5新版巡航实机验收2026-10-27)。
 
+随后确认旧持久会话保存的系统提示未随r5更新；Planner r6在每次attach时原子刷新
+model/thinking/instructions/tools并撤销旧请求执行资格。用户要求删除旧聊天，新对话已建立，
+28条旧结果保留。新对话完整实测3轮7点：中心区→左相邻→右相邻，三空后Controller停止，
+无重复细扫或第四次调用；不等同于模型主动stop。见
+[提示刷新与完整巡航](../validation/PI_DURABLE_CORE_2026-10-26.md#持久提示刷新新对话与完整巡航2026-10-27)。
+
 ## 当前安装与离线维护
 
-Planner为 `planner/releases/pi-durable-1.4.0-20261027-r5`，通过 `planner/current` 选择；
+Planner为 `planner/releases/pi-durable-1.4.0-20261027-r6`，通过 `planner/current` 选择；
 Controller及Web制品统一为 `releases/pi-durable-1.4.0-20261027-r5`，根均在
-`/home/jetson/.local/lib/sdrharness/`。37个旧安装目录已删除，旧版回滚路径不再可用；
+`/home/jetson/.local/lib/sdrharness/`。前轮37个旧安装目录及随后替换的Planner r5已删除，旧版回滚路径不再可用；
 应用结果、IQ和持久账本保留。精确路径、大小、SHA和清理见
 [最新版本验收](../validation/PI_DURABLE_CORE_2026-10-26.md#仅支持最新版与旧包删除2026-10-27)。
 OpenCode Go当前选择为 `deepseek-v4.1-flash`，Base URL为
@@ -38,6 +44,7 @@ OpenCode Go当前选择为 `deepseek-v4.1-flash`，Base URL为
 - Planner启动必须配置 `SDR_DURABLE_STATE_DIR`，unit设置 `SDR_DURABLE_STATE_DIR=/var/lib/sdrharness-planner`，0700；
   `service.sqlite` 的独占owner锁在触碰socket前取得。每业务会话独立
   `<app_session_id>/planner.sqlite`，0600，最多128个目录、每库64MiB业务门限。
+  attach已有会话也会刷新持久Agent配置；软件重启本身不会自动更新库内提示。
   旧隔离开关 `SDR_DURABLE_DB` 会明确拒绝启动，不能静默退回v1。
 - Web给Controller传稳定 `SDR_DURABLE_APP_SESSION_ID`，账本根为
   `/var/lib/sdrharness/web-console/plan-ledger`。终端仍可用持久session路径生成稳定ID；

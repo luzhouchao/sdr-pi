@@ -2,7 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { existsSync, statSync } from "node:fs";
 import { BACKGROUND_CONTEXT } from "@earendil-works/chord/context";
 import { AssistantMessageEventStream, Type } from "@earendil-works/pi-ai";
-import { Harness, GenerationTask, ToolTask, SessionFailed, StorageRequestError, createRegistry, defineDoc, defineExtension, defineTool, hook } from "@earendil-works/pi-durable";
+import { Harness, GenerationTask, ToolTask, SessionFailed, StorageRequestError, configure, createRegistry, defineDoc, defineExtension, defineTool, hook } from "@earendil-works/pi-durable";
 import { compactPlanningContext } from "./context-policy.mjs";
 import { formatUpstreamError } from "./planner-failure.mjs";
 import { normalizeAction, parseRequest, requireSubmitPlan } from "./protocol.mjs";
@@ -201,6 +201,13 @@ export class DurablePlanner {
       }
       business.epoch = controllerEpoch; business.generation = sessionGeneration;
       business.provider = this.provider; business.attachment = token;
+      // Agent configuration is persisted by Harness, including instructions.
+      // Refresh it on EVERY attach, atomically with revoking old requests and
+      // before publishing the new attachment. Restart alone keeps old policy.
+      await configure(tx, conversationId, {
+        model: this.model, thinkingLevel: this.thinkingLevel,
+        instructions: PLANNER_SYSTEM_PROMPT, tools: [this.#tool()],
+      });
     });
     this.attachments.set(appSessionId, { token, epoch: controllerEpoch, generation: sessionGeneration, conversationId, closing: false });
     return conversationId;

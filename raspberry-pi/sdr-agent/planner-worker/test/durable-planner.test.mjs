@@ -10,6 +10,9 @@ import { createModels, createProvider } from '@earendil-works/pi-ai';
 import { fauxProvider, fauxAssistantMessage, fauxToolCall } from '@earendil-works/pi-ai/providers/faux';
 import { DurablePlanner } from '../src/durable-planner.mjs';
 import { RunLease } from '../src/run-lease.mjs';
+import { AgentDoc, configure } from '@earendil-works/pi-durable';
+import { BACKGROUND_CONTEXT } from '@earendil-works/chord/context';
+import { PLANNER_SYSTEM_PROMPT } from '../src/system-prompt.mjs';
 
 const request = JSON.parse(await readFile(new URL('../../../../jetson-agx/sdrharness/config/request.json', import.meta.url)));
 const hold = () => fauxAssistantMessage(fauxToolCall('submit_plan', {action:'hold', reason:'isolated verification'}), {stopReason:'toolUse'});
@@ -269,4 +272,45 @@ test('DeepSeek structured request preserves thinking with compatible automatic t
  assert.deepEqual(requests[0].payload.thinking,{type:'enabled'});
  assert.equal(requests[0].payload.tool_choice,'auto');
  assert.deepEqual(requests[0].payload.tools.map(tool=>tool.function.name),['submit_plan']);
+});
+
+
+test('reattaching a persisted conversation refreshes policy/model/thinking before the next provider call', {timeout:10000}, async t => {
+  const contexts=[];
+  const f=await fixture(t,{thinkingLevel:'low',streamAdapter:base=>(model,context,options)=>{
+    contexts.push(structuredClone(context));return base(model,context,options);
+  }});
+  f.faux.setResponses([hold(),hold()]);
+  const conversationId=await f.engine.attach(identity);
+  await f.engine.submit('session_a',input());await f.engine.idle();
+  // Reproduce an existing conversation created by a previous installed policy.
+  await f.engine.harness.commit(tx=>configure(tx,conversationId,{
+    instructions:'obsolete policy without cruise progress rules',
+    model:{provider:'obsolete',modelId:'obsolete'},thinkingLevel:'off',tools:[],
+  }),BACKGROUND_CONTEXT);
+  await f.reopen();
+  const reopenedId=await f.engine.attach({...identity,controllerEpoch:'epoch_b'});
+  assert.equal(reopenedId,conversationId);
+  const agent=await f.engine.harness.snapshot(AgentDoc,conversationId,BACKGROUND_CONTEXT);
+  assert.equal(agent.instructions,PLANNER_SYSTEM_PROMPT);
+  assert.deepEqual(agent.model,f.options.model);
+  assert.equal(agent.thinkingLevel,'low');
+  assert.deepEqual(agent.tools,['submit_plan']);
+  assert.equal(f.deliveries.length,1); // attach must not replay the old request
+  const state=await f.engine.state('session_a');
+  assert.equal(state.requests['epoch_a:3:9'].enabled,false);
+  const next=input(10);
+  next.cruise={remaining_steps:6,remaining_ms:90000,remaining_iq_bytes:917504,
+    local_sweep_limit:3,empty_sweep_limit:3,consecutive_empty_sweeps:2,
+    recent_sweeps:[{start_hz:2450000000,stop_hz:2460000000,candidate_count:0},
+      {start_hz:2460000000,stop_hz:2465000000,candidate_count:0}],history_truncated:false};
+  await f.engine.submit('session_a',next);await f.engine.idle();
+  assert.equal(f.deliveries.length,2);assert.equal(contexts.length,2);
+  const wire=JSON.stringify(contexts[1]);
+  assert.ok(wire.includes('[AUTOMATIC CRUISE PROGRESS]'));
+  assert.ok(wire.includes('NOT independent measured noise'));
+  assert.ok(!wire.includes('obsolete policy'));
+  const user=contexts[1].messages.findLast(x=>x.role==='user');
+  const text=typeof user.content==='string'?user.content:user.content.filter(x=>x.type==='text').map(x=>x.text).join('');
+  assert.deepEqual(JSON.parse(text).context.cruise,next.cruise);
 });
