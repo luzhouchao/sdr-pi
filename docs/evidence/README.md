@@ -378,3 +378,5 @@
 - [2026-10-27 自然语言统一自动任务](PI_DURABLE_AUTONOMOUS_TASK_2026-10-27.json)：有限任务目标、四轮自适应/语义停止实机、r11/Planner r8部署、精确清理与5份新结果保留。
 
 - [2026-10-27 旧模式入口删除](PI_DURABLE_LEGACY_MODES_REMOVAL_2026-10-27.json)：统一自然语言入口、r12/Planner r9、浏览器真实hold、无新RF及精确清理。
+
+- [2026-10-27 统一入口两轮实机](PI_DURABLE_UNIFIED_ENTRY_LIVE_2026-10-27.json)：r12/Planner r9自然语言自动两轮7点、按反馈换段、目标停止、19项恢复及结果哈希/清理。
