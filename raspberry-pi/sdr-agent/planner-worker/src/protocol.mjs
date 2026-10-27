@@ -94,6 +94,14 @@ export function normalizeAction(params) {
     throw new Error("submit_plan.action is required");
   }
   switch (params.action) {
+    case "start_task":
+      return {kind: "start_task", mission: requireText(params.mission, "mission", 700),
+        target_sweeps: requireSafeInteger(params.target_sweeps, "target_sweeps", 0),
+        max_steps: requireInteger(params.max_steps, "max_steps"),
+        max_seconds: requireInteger(params.max_seconds, "max_seconds"),
+        max_iq_bytes: requireInteger(params.max_iq_bytes, "max_iq_bytes"),
+        min_freq_hz: requireInteger(params.min_freq_hz, "min_freq_hz"),
+        max_freq_hz: requireInteger(params.max_freq_hz, "max_freq_hz")};
     case "hold":
       return { kind: "hold", reason: normalizeReason(params.reason) };
     case "stop_session":

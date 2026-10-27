@@ -67,6 +67,26 @@ does not relax any limit. observation.age_ms must not exceed
 limits.max_observation_age_ms.
 
 [ACTION CONTRACT]
+- start_task: interpret an operator's actionable natural-language goal for
+  autonomous, multi-step receive work. Do not require a special command, exact
+  phrase or user-selected mode. A question/explanation alone is hold, not a task.
+  Provide mission (single line <=700 UTF-8 bytes), target_sweeps (requested
+  complete scans, 1..128, only when that count alone completes the whole goal;
+  use 0 for qualitative/time-bounded or compound goals with work after scanning),
+  max_steps (1..128, includes inspections/captures, >=target_sweeps), max_seconds
+  (10..1800), max_iq_bytes (positive finite total, no more than
+  limits.max_iq_bytes * max_steps), and an explicit min_freq_hz/max_freq_hz mission
+  fence within limits. Choose tight byte/time budgets for the requested work.
+  Preserve the requested count exactly; do not replace an unknown/unbounded
+  count with a guess. Ask a concise clarification using hold when essential
+  scope is missing or the request cannot fit the hard bounds. If no frequency
+  is stated, use the latest explicit operator RF mission or 2445..2465MHz around
+  the user's 2455MHz preference, and state this scope in mission. Keep bounded
+  RX limits in mission (e.g. <=5 points/sweep, 10MHz rate/bandwidth, 20ms dwell).
+  This configures one finite task; it does not itself collect RF. When cruise is
+  already present, NEVER start_task to renew or expand its budgets. Instead
+  choose the next action from fresh observations. Hardware actions still face
+  Controller policy/approval gates. Ordinary one-off work may use one action.
 - survey_band: provide start_hz, stop_hz, step_hz, sample_rate_hz,
   rf_bandwidth_hz and dwell_ms. Choose all values from the latest measured
   result and operator goal; do not rely on hidden defaults.
@@ -112,6 +132,16 @@ If no useful adjacent permitted range remains, stop_session now; do not spend
 remaining steps just to exhaust the budget. A stop decision needs no IQ path,
 spectrum label or production recognizer. Never infer broader mission frequency
 authorization from the hardware's tuning envelope.
+
+When the current Controller instruction reports a target number of successful
+complete scans, adapt each next survey_band using fresh results within the
+mission fence. Do not replay fixed parameters or count an inspection as a scan.
+Empty candidates alone do not end an explicitly requested scan count; choose a
+useful next scan. That goal uses its target counter rather than the exploratory
+three-empty/local-visit stop rule. The Controller enforces the count and all
+health, byte, time and frequency bounds. Stop on safety concerns and honestly
+report incomplete work. For qualitative goals, finish when the operator's goal
+is met or useful bounded progress is exhausted; never claim proof of absence.
 
 [DECISION RULES]
 Prefer measured evidence over assumptions. An empty latest_sweep/candidate set

@@ -280,6 +280,54 @@ fn validate_action_mode(
     }
 
     match action {
+        ProposedAction::StartTask {
+            mission,
+            target_sweeps,
+            max_steps,
+            max_seconds,
+            max_iq_bytes,
+            min_freq_hz,
+            max_freq_hz,
+        } => {
+            require_sdr_capability(request, true, false)?;
+            require(
+                !mission.trim().is_empty()
+                    && mission.len() <= 700
+                    && !mission.chars().any(char::is_control),
+                "task_mission",
+                "task mission must be bounded single-line text",
+            )?;
+            require(
+                (1..=128).contains(max_steps)
+                    && target_sweeps <= max_steps
+                    && (10..=1800).contains(max_seconds),
+                "task_budget",
+                "invalid finite task steps, target or duration",
+            )?;
+            require(
+                *max_iq_bytes > 0
+                    && *max_iq_bytes
+                        <= request
+                            .limits
+                            .max_iq_bytes
+                            .saturating_mul(u64::from(*max_steps)),
+                "task_bytes",
+                "task receive budget exceeds finite policy envelope",
+            )?;
+            validate_frequency(*min_freq_hz, &request.limits)?;
+            validate_frequency(*max_freq_hz, &request.limits)?;
+            require(
+                min_freq_hz < max_freq_hz,
+                "task_frequency",
+                "task frequency fence is empty",
+            )?;
+            require(
+                request.cruise.is_none(),
+                "task_nested",
+                "an active task cannot grant itself another task budget",
+            )?;
+            Ok(false)
+        }
         ProposedAction::Hold { reason } | ProposedAction::StopSession { reason } => {
             validate_reason(reason)?;
             Ok(false)
@@ -599,6 +647,52 @@ mod tests {
             }
             assert!(ControllerPolicy.validate_request(&bad).is_err(), "{fault}");
         }
+    }
+
+    #[test]
+    fn task_intent_requires_finite_budget_frequency_fence_and_no_nested_task() {
+        let mut req = request();
+        let action = ProposedAction::StartTask {
+            mission: "根据结果选择下一步".into(),
+            target_sweeps: 0,
+            max_steps: 12,
+            max_seconds: 300,
+            max_iq_bytes: 1_000_000,
+            min_freq_hz: 2_445_000_000,
+            max_freq_hz: 2_465_000_000,
+        };
+        assert!(!validate_action_mode(&req, &action, false).unwrap());
+        for (target, steps, seconds, low, high) in [
+            (13, 12, 300, 2_445_000_000, 2_465_000_000),
+            (0, 0, 300, 2_445_000_000, 2_465_000_000),
+            (3, 12, 1801, 2_445_000_000, 2_465_000_000),
+            (3, 12, 300, 1, 2_465_000_000),
+            (3, 12, 300, 2_465_000_000, 2_445_000_000),
+        ] {
+            assert!(validate_action_mode(
+                &req,
+                &ProposedAction::StartTask {
+                    mission: "任务".into(),
+                    target_sweeps: target,
+                    max_steps: steps,
+                    max_seconds: seconds,
+                    max_iq_bytes: 1_000_000,
+                    min_freq_hz: low,
+                    max_freq_hz: high
+                },
+                false
+            )
+            .is_err());
+        }
+        let mut cruise = crate::autonomy::CruiseControl::default();
+        cruise
+            .start(1_000_000, 12, 300, std::time::Instant::now())
+            .unwrap();
+        req.cruise = Some(
+            crate::autonomy::SweepProgress::default()
+                .planning_summary(&cruise, std::time::Instant::now()),
+        );
+        assert!(validate_action_mode(&req, &action, false).is_err());
     }
 
     fn request() -> PlanRequest {

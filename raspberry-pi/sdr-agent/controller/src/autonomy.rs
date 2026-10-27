@@ -52,6 +52,7 @@ impl CruisePhase {
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CruiseStopReason {
+    TaskCompleted,
     OperatorStopped,
     SdrRetryExhausted,
     PlannerRetryExhausted,
@@ -70,6 +71,7 @@ pub enum CruiseStopReason {
 impl CruiseStopReason {
     pub fn label(self) -> &'static str {
         match self {
+            Self::TaskCompleted => "任务目标已完成",
             Self::OperatorStopped => "操作员已停止",
             Self::SdrRetryExhausted => "连续 5 次检测不到 SDR",
             Self::PlannerRetryExhausted => "连续 5 次未收到上游下一步",

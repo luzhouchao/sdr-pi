@@ -285,6 +285,9 @@ fn handle_input(app: &mut ConsoleApp, input: &str) -> AppResult<bool> {
         }
         _ if input.starts_with("/recognize ") => app.propose_recognition(input[11..].trim())?,
         _ if input.starts_with('/') => println!("未知命令；输入 /help 查看可用命令。"),
+        _ if app.task.is_some() && app.cruise.is_active() => {
+            println!("自动任务执行中；/status 查看进度，/stop 停止后可修改目标。");
+        }
         _ if app.agent_cycle_active => {
             app.queue_model_input(input, SessionQueueKind::Steer)?
         }
@@ -296,6 +299,35 @@ fn handle_input(app: &mut ConsoleApp, input: &str) -> AppResult<bool> {
 fn print_prompt() -> io::Result<()> {
     print!("SDR Agent> ");
     io::stdout().flush()
+}
+
+#[derive(Debug)]
+struct AutonomousTask {
+    target_sweeps: u8,
+    completed_sweeps: u8,
+    min_freq_hz: u64,
+    max_freq_hz: u64,
+}
+
+impl AutonomousTask {
+    fn check(&self, action: &ProposedAction) -> Result<(), CruiseStopReason> {
+        let within = match action {
+            ProposedAction::SurveyBand {
+                start_hz, stop_hz, ..
+            } => *start_hz >= self.min_freq_hz && *stop_hz <= self.max_freq_hz,
+            ProposedAction::InspectCandidate { center_hz, .. }
+            | ProposedAction::CaptureBoundedIq { center_hz, .. } => {
+                (self.min_freq_hz..=self.max_freq_hz).contains(center_hz)
+            }
+            ProposedAction::StartTask { .. } => false,
+            _ => true,
+        };
+        if within {
+            Ok(())
+        } else {
+            Err(CruiseStopReason::UnsupportedAction)
+        }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -415,6 +447,8 @@ struct ConsoleApp {
     cruise: CruiseControl,
     sweep_progress: SweepProgress,
     auto_mission: Option<String>,
+    task: Option<AutonomousTask>,
+    queued_task: Option<ValidatedPlan>,
     auto_next_instruction: Option<String>,
     next_auto_attempt: Instant,
     deferred_renew: Option<(ControllerState, String)>,
@@ -565,6 +599,8 @@ impl ConsoleApp {
             cruise: CruiseControl::default(),
             sweep_progress: SweepProgress::default(),
             auto_mission: None,
+            task: None,
+            queued_task: None,
             auto_next_instruction: None,
             next_auto_attempt: Instant::now(),
             deferred_renew: None,
@@ -649,6 +685,12 @@ impl ConsoleApp {
         {
             println!("当前步骤尚未结束；可输入 /stop 立即停止，或等待完成后再提交新指令。");
             return Ok(());
+        }
+        // A completed automatic task must not leave subsequent one-off plans
+        // stuck in the inactive-cruise branch. New goals start with no old grant.
+        if self.task.is_some() && !self.cruise.is_active() {
+            self.cruise.switch_to_step_approval();
+            self.task = None;
         }
         self.refresh_sdr_health(false)?;
         let request_id = self.next_request_id;
@@ -809,6 +851,11 @@ impl ConsoleApp {
             )
             .into());
         }
+        if self.cruise.is_active() {
+            self.cruise.stop(CruiseStopReason::OperatorStopped);
+            self.auto_next_instruction = None;
+            self.print_cruise_status();
+        }
         self.command("close_session", None)?;
         if let Some(ledger) = &mut self.ledger {
             ledger.invalidate_generation(self.session_generation)?;
@@ -822,6 +869,7 @@ impl ConsoleApp {
         self.template.session_generation = self.session_generation;
         self.template.observation.recognition = None;
         self.pending = None;
+        self.queued_task = None;
         self.pending_instruction = None;
         self.requests.clear();
         self.pending_session_commands.clear();
@@ -851,6 +899,7 @@ impl ConsoleApp {
     ) -> AppResult<()> {
         self.template.state = ControllerState::Holding;
         self.auto_mission = None;
+        self.task = None;
         self.auto_next_instruction = None;
         self.cruise.switch_to_step_approval();
         let Some(instruction) = instruction.filter(|_| generation == self.session_generation)
@@ -1503,9 +1552,29 @@ impl ConsoleApp {
             })
     }
 
+    fn check_auto_action(&self, action: &ProposedAction) -> Result<(), CruiseStopReason> {
+        if let Some(task) = &self.task {
+            task.check(action)?;
+            if task.target_sweeps > 0 {
+                return Ok(());
+            }
+        }
+        self.sweep_progress.check(action)
+    }
+
+    fn record_task_sweep(&mut self) {
+        if let Some(task) = &mut self.task {
+            task.completed_sweeps = task.completed_sweeps.saturating_add(1);
+            if task.target_sweeps > 0 && task.completed_sweeps == task.target_sweeps {
+                self.cruise.stop(CruiseStopReason::TaskCompleted);
+                self.auto_next_instruction = None;
+            }
+        }
+    }
+
     fn enforce_sweep_progress(&mut self, plan: &ValidatedPlan) -> AppResult<bool> {
         if self.cruise.mode() == InteractionMode::AutomaticCruise {
-            if let Err(reason) = self.sweep_progress.check(&plan.action) {
+            if let Err(reason) = self.check_auto_action(&plan.action) {
                 self.cruise.stop(reason);
                 self.ledger_finish(
                     plan.request_id,
@@ -1521,13 +1590,17 @@ impl ConsoleApp {
     }
 
     fn record_sweep_progress(&mut self, report: &SweepReport) {
+        let exploratory = !self
+            .task
+            .as_ref()
+            .is_some_and(|task| task.target_sweeps > 0);
         if let (Some(first), Some(last)) = (report.points.first(), report.points.last()) {
             let reason = self.sweep_progress.record(SweepVisit {
                 start_hz: first.actual_center_hz,
                 stop_hz: last.actual_center_hz,
                 candidate_count: self.template.observation.candidates.len() as u8,
             });
-            if self.cruise.is_active() {
+            if self.cruise.is_active() && exploratory {
                 if let Some(reason) = reason {
                     self.cruise.stop(reason);
                 }
@@ -1566,6 +1639,17 @@ impl ConsoleApp {
                         self.cruise.stop(CruiseStopReason::Fault);
                         self.print_cruise_status();
                     }
+                    return Ok(());
+                }
+                if self.task.is_some() && self.cruise.is_active() && report.dataset.is_none() {
+                    self.ledger_sweep_finish(
+                        &kind,
+                        active.session_generation,
+                        ExecutionState::Failed,
+                    )?;
+                    self.cruise.stop(CruiseStopReason::Fault);
+                    println!("扫描未计入完成：IQ未成功落盘，自动任务已停止。");
+                    self.print_cruise_status();
                     return Ok(());
                 }
                 self.ledger_sweep_finish(
@@ -1614,6 +1698,7 @@ impl ConsoleApp {
                         );
                         if self.cruise.is_active() {
                             self.cruise.record_execution(maximum_bytes);
+                            self.record_task_sweep();
                             self.record_sweep_progress(&report);
                             if self.cruise.is_active() {
                                 let mission =
@@ -1836,6 +1921,7 @@ impl ConsoleApp {
     }
 
     fn stop(&mut self, message: &str) -> AppResult<()> {
+        self.queued_task = None;
         if self.cruise.is_active() {
             self.cruise.stop(CruiseStopReason::OperatorStopped);
             self.auto_mission = None;
@@ -2049,6 +2135,77 @@ impl ConsoleApp {
         Ok(())
     }
 
+    fn start_queued_task(&mut self) -> AppResult<()> {
+        let Some(plan) = self.queued_task.take() else {
+            return Ok(());
+        };
+        if plan.session_generation != self.session_generation
+            || self.cruise.is_active()
+            || self.pending.is_some()
+        {
+            self.ledger_finish(
+                plan.request_id,
+                plan.session_generation,
+                ExecutionState::Cancelled,
+            )?;
+            return Ok(());
+        }
+        let ProposedAction::StartTask {
+            mission,
+            target_sweeps,
+            max_steps,
+            max_seconds,
+            max_iq_bytes,
+            min_freq_hz,
+            max_freq_hz,
+        } = &plan.action
+        else {
+            return Ok(());
+        };
+        let Some(directory) = &self.sigmf_directory else {
+            self.ledger_finish(
+                plan.request_id,
+                plan.session_generation,
+                ExecutionState::Failed,
+            )?;
+            println!("自动任务未开始：必须配置IQ存储，不能把未落盘的扫描计为完成。");
+            return Ok(());
+        };
+        let maximum_bytes = *max_iq_bytes;
+        let required = maximum_bytes
+            .checked_add(u64::from(*max_steps) * 65536)
+            .ok_or_else(|| invalid_input("task space budget overflow"))?;
+        let available = sdr_agent_controller::sweep::available_storage_bytes(directory)?;
+        if available < required {
+            self.ledger_finish(
+                plan.request_id,
+                plan.session_generation,
+                ExecutionState::Failed,
+            )?;
+            println!("自动任务未开始：空间{available}字节少于有限预算{required}字节。");
+            return Ok(());
+        }
+        println!("自动任务空间检查：{} 可用{available}字节，累计IQ上限{maximum_bytes}字节；每轮另预留65536字节元数据。", directory.display());
+        if !self.ledger_begin(plan.request_id, plan.session_generation)? {
+            return Ok(());
+        }
+        self.ledger_finish(
+            plan.request_id,
+            plan.session_generation,
+            ExecutionState::Completed,
+        )?;
+        self.start_auto(mission, *max_steps, *max_seconds, Some(maximum_bytes))?;
+        self.task = Some(AutonomousTask {
+            target_sweeps: *target_sweeps,
+            completed_sweeps: 0,
+            min_freq_hz: *min_freq_hz,
+            max_freq_hz: *max_freq_hz,
+        });
+        println!("已按自然语言目标启动自动任务：{mission}；频率范围{min_freq_hz}–{max_freq_hz}Hz。根据每轮结果选择下一步；/stop 随时停止。");
+        self.print_cruise_status();
+        Ok(())
+    }
+
     fn start_auto(
         &mut self,
         mission: &str,
@@ -2059,7 +2216,8 @@ impl ConsoleApp {
         if mission.is_empty() || mission.len() > 700 || mission.chars().any(char::is_control) {
             return Err(invalid_input("自动巡航任务必须为 1–700 字节的单行文本").into());
         }
-        if self.agent_cycle_active
+        if self.cruise.is_active()
+            || self.agent_cycle_active
             || self.active_execution.is_some()
             || self.active_sweep.is_some()
             || self.active_recognition.is_some()
@@ -2085,6 +2243,7 @@ impl ConsoleApp {
             .start(max_iq_bytes, max_steps, max_duration_secs, Instant::now())
             .map_err(invalid_input)?;
         self.sweep_progress = SweepProgress::default();
+        self.task = None;
         self.auto_mission = Some(mission.to_owned());
         self.auto_next_instruction = Some(format!(
             "自动巡航任务：{mission}\n本巡航最多 {max_steps} 个已执行步骤、{max_duration_secs} 秒、累计 {} 字节 IQ；SDR 不可用或上游未给出下一步各自连续重试 5 次，每次间隔 10 秒。只能提出 Rust Controller 能验证的接收动作，安全边界不变。请给出第一步。",
@@ -2106,6 +2265,14 @@ impl ConsoleApp {
         }
         self.poll_execution()?;
         self.poll_sweep()?;
+        if !self.agent_cycle_active
+            && self.active_execution.is_none()
+            && self.active_sweep.is_none()
+            && self.active_recognition.is_none()
+            && self.deferred_renew.is_none()
+        {
+            self.start_queued_task()?;
+        }
         if !self.agent_cycle_active
             && self.active_execution.is_none()
             && self.active_sweep.is_none()
@@ -2166,6 +2333,10 @@ impl ConsoleApp {
                 self.auto_mission.as_deref().unwrap_or("继续受限巡航")
             )
         });
+        let instruction = self.task.as_ref().map_or(instruction.clone(), |task| {
+            let progress = if task.target_sweeps > 0 { format!("目标完整扫描{}轮，已成功落盘{}轮；正常空候选不结束目标。", task.target_sweeps, task.completed_sweeps) } else { "按原任务的完成条件决定下一步或结束，不为耗尽预算而运行。".into() };
+            carry_forward_instruction(self.auto_mission.as_deref().unwrap_or(""), &format!("自动任务进度：{progress}频率必须在{}–{}Hz。根据最新观测自适应选择下一动作；复查/采集不计完整扫描。禁止start_task追加预算。", task.min_freq_hz, task.max_freq_hz))
+        });
         self.cruise.set_phase(CruisePhase::WaitingForPlanner);
         self.print_cruise_status();
         self.submit(instruction)
@@ -2222,6 +2393,21 @@ impl ConsoleApp {
     }
 
     fn print_cruise_status(&self) {
+        if let Some(task) = &self.task {
+            if task.target_sweeps > 0 {
+                let status = if task.completed_sweeps == task.target_sweeps {
+                    "已完成"
+                } else if self.cruise.is_active() {
+                    "执行中"
+                } else {
+                    "已停止，未完成目标"
+                };
+                println!(
+                    "自动任务：成功落盘 {}/{} 轮完整扫描；{status}。",
+                    task.completed_sweeps, task.target_sweeps
+                );
+            }
+        }
         let snapshot = self.cruise.snapshot(Instant::now());
         if snapshot.mode == InteractionMode::StepApproval {
             println!("巡航状态：未启用；当前每个可执行动作都需要人工批准。");
@@ -2249,6 +2435,7 @@ impl ConsoleApp {
     }
 
     fn close(&mut self) -> AppResult<()> {
+        self.queued_task = None;
         if self.active_execution.is_some()
             || self.active_sweep.is_some()
             || self.active_recognition.is_some()
@@ -2573,8 +2760,29 @@ impl ConsoleApp {
                         }
                     }
                 };
+                if matches!(plan.action, ProposedAction::StartTask { .. }) {
+                    if self.task.is_some() && self.cruise.is_active() || self.queued_task.is_some()
+                    {
+                        return Err(invalid_input("task cannot replace an active task").into());
+                    }
+                    if let Some(identity) = &delivery {
+                        self.ledger.as_mut().unwrap().admit(
+                            identity.clone(),
+                            Decision::Accepted,
+                            false,
+                        )?;
+                        self.send_ledger_ack(identity, Decision::Accepted)?;
+                    }
+                    println!("已验证任务目标：{}", describe_plan(&plan));
+                    self.plan_seen_in_cycle = true;
+                    self.queued_task = Some(plan);
+                    if self.agent_cycle_active {
+                        self.request_agent_abort()?;
+                    }
+                    return Ok(());
+                }
                 if self.cruise.mode() == InteractionMode::AutomaticCruise {
-                    if let Err(reason) = self.sweep_progress.check(&plan.action) {
+                    if let Err(reason) = self.check_auto_action(&plan.action) {
                         if let Some(identity) = &delivery {
                             self.ledger.as_mut().unwrap().admit(
                                 identity.clone(),
@@ -3330,6 +3538,7 @@ fn describe_plan(plan: &ValidatedPlan) -> String {
         "；位于自动安全阈值内"
     };
     match &plan.action {
+        ProposedAction::StartTask { mission, target_sweeps, max_steps, max_seconds, max_iq_bytes, min_freq_hz, max_freq_hz } => format!("{mission}；目标扫描{target_sweeps}轮（0表示按目标结束），最多{max_steps}动作/{max_seconds}秒/{max_iq_bytes}字节IQ，范围{min_freq_hz}–{max_freq_hz}Hz"),
         ProposedAction::Hold { reason } => format!("保持当前状态：{reason}"),
         ProposedAction::SurveyBand {
             start_hz,
@@ -3381,6 +3590,7 @@ fn describe_decision_basis(plan: &ValidatedPlan, request: &PlanRequest) -> Strin
         plan.request_id, plan.session_generation, request.state
     );
     let action = match &plan.action {
+        ProposedAction::StartTask { .. } => "建立有限任务目标，不采样、不继承旧批准".to_owned(),
         ProposedAction::Hold { .. } => "保持不触发硬件，原因文本已通过长度和可打印字符校验".to_owned(),
         ProposedAction::StopSession { .. } => {
             "停止会话不触发新的硬件动作，原因文本已通过校验".to_owned()
@@ -3809,6 +4019,8 @@ mod tests {
                 cruise: CruiseControl::default(),
                 sweep_progress: SweepProgress::default(),
                 auto_mission: None,
+                task: None,
+                queued_task: None,
                 auto_next_instruction: None,
                 next_auto_attempt: Instant::now(),
                 deferred_renew: None,
@@ -4293,6 +4505,122 @@ mod tests {
         assert!(instruction.len() <= MAX_INSTRUCTION_BYTES);
         assert!(instruction.contains("不含任何批准或执行授权"));
         assert!(instruction.ends_with("当前指令：当前只查询状态"));
+    }
+
+    #[test]
+    fn completed_task_does_not_leave_next_request_in_inactive_automatic_mode() {
+        let (mut app, _peer) = test_console();
+        app.template.limits.max_span_hz = 20_000_000;
+        app.cruise.start(1000000, 8, 300, Instant::now()).unwrap();
+        app.cruise.stop(CruiseStopReason::TaskCompleted);
+        app.task = Some(AutonomousTask {
+            target_sweeps: 4,
+            completed_sweeps: 4,
+            min_freq_hz: 2445000000,
+            max_freq_hz: 2465000000,
+        });
+        app.submit("新的自然语言任务".into()).unwrap();
+        assert_eq!(app.cruise.mode(), InteractionMode::StepApproval);
+        assert!(app.task.is_none() && app.agent_cycle_active);
+        assert!(!app.cruise.is_active());
+    }
+
+    #[test]
+    fn autonomous_goal_counts_only_completed_sweeps_and_allows_adaptive_choices() {
+        let (mut app, _peer) = test_console();
+        app.cruise
+            .start(1_000_000, 20, 400, Instant::now())
+            .unwrap();
+        app.task = Some(AutonomousTask {
+            target_sweeps: 7,
+            completed_sweeps: 0,
+            min_freq_hz: 2_445_000_000,
+            max_freq_hz: 2_465_000_000,
+        });
+        for round in 0..7 {
+            let action = ProposedAction::SurveyBand {
+                start_hz: 2_445_000_000 + round * 1_000_000,
+                stop_hz: 2_446_000_000 + round * 1_000_000,
+                step_hz: 1_000_000,
+                sample_rate_hz: 10_000_000,
+                rf_bandwidth_hz: 10_000_000,
+                dwell_ms: 20,
+            };
+            assert!(app.check_auto_action(&action).is_ok());
+            app.cruise.record_execution(32768);
+            // A separate inspection consumes action/byte budgets, not a scan.
+            app.cruise.record_execution(16384);
+            assert_eq!(app.task.as_ref().unwrap().completed_sweeps, round as u8);
+            app.record_task_sweep();
+            assert_eq!(app.cruise.is_active(), round < 6);
+        }
+        assert_eq!(app.cruise.snapshot(Instant::now()).completed_steps, 14);
+        assert_eq!(
+            app.cruise.snapshot(Instant::now()).stop_reason,
+            Some(CruiseStopReason::TaskCompleted)
+        );
+        let out_of_scope = ProposedAction::SurveyBand {
+            start_hz: 2_465_000_000,
+            stop_hz: 2_466_000_000,
+            step_hz: 1_000_000,
+            sample_rate_hz: 10_000_000,
+            rf_bandwidth_hz: 10_000_000,
+            dwell_ms: 20,
+        };
+        assert!(app.check_auto_action(&out_of_scope).is_err());
+    }
+
+    #[test]
+    fn model_task_intent_is_queued_without_hardware_and_stale_stop_clears_it() {
+        let (mut app, _peer) = test_console();
+        app.requests.insert(7, test_request(7, 1));
+        app.handle_event(json!({"type":"event","session_generation":1,"event":"plan_proposed","data":{
+            "protocol_version":1,"request_id":7,"session_generation":1,"status":"ok",
+            "planner":{"provider":"test","model":"test"},"action":{"kind":"start_task","mission":"观察几轮后复查候选","target_sweeps":3,"max_steps":10,"max_seconds":300,"max_iq_bytes":1000000,"min_freq_hz":2_445_000_000_u64,"max_freq_hz":2_465_000_000_u64}
+        }})).unwrap();
+        assert!(app.queued_task.is_some());
+        assert!(
+            app.active_sweep.is_none() && app.active_execution.is_none() && !app.cruise.is_active()
+        );
+        // A stopped generation cannot activate a previously proposed task.
+        app.session_generation += 1;
+        app.start_queued_task().unwrap();
+        assert!(app.queued_task.is_none() && !app.cruise.is_active());
+    }
+
+    #[test]
+    fn failed_scan_does_not_increment_task_goal_or_restart_automatically() {
+        let (mut app, _peer) = test_console();
+        app.cruise
+            .start(1_000_000, 20, 400, Instant::now())
+            .unwrap();
+        app.task = Some(AutonomousTask {
+            target_sweeps: 12,
+            completed_sweeps: 2,
+            min_freq_hz: 2_445_000_000,
+            max_freq_hz: 2_465_000_000,
+        });
+        let worker = thread::spawn(|| Err(SweepError::new("test", "RX or persistence failure")));
+        while !worker.is_finished() {
+            thread::yield_now();
+        }
+        app.active_sweep = Some(ActiveSweep {
+            kind: ActiveSweepKind::Planned {
+                request_id: 3,
+                maximum_bytes: 32768,
+            },
+            session_generation: 1,
+            canceller: SdrdActionAdapter::new(
+                "127.0.0.1:1".parse().unwrap(),
+                Duration::from_millis(10),
+            ),
+            worker,
+        });
+        app.poll_sweep().unwrap();
+        assert_eq!(app.task.as_ref().unwrap().completed_sweeps, 2);
+        assert!(!app.cruise.is_active());
+        app.advance_auto().unwrap();
+        assert!(!app.agent_cycle_active && app.active_sweep.is_none());
     }
 
     #[test]

@@ -1,0 +1,1731 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "feature": "Model-interpreted finite autonomous tasks; no fixed natural-language phrase parser or user-selected scan modes",
+  "source_base_commit": "a833688",
+  "source": [
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/controller/src/autonomy.rs",
+      "bytes": 20225,
+      "sha256": "b9ee56696d83a1faf470f224d4b6bbdeb8694c93a723c9bad3129d8765b1c898"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/controller/src/cli/console.rs",
+      "bytes": 211352,
+      "sha256": "7dd98520cb9a36147248832bacb77ceafe2c75212d58f941de8c2cd1ac640adc"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/controller/src/policy.rs",
+      "bytes": 34901,
+      "sha256": "1dd6aa3db42227f7dca031c45e8f864c9e71855f474aba1dd25ca5f7d49eca81"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/controller/src/protocol.rs",
+      "bytes": 5827,
+      "sha256": "ab25ee8495e104167f0da21d0d964355c943fa0a852f585679a2a1d5152195ba"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/durable-planner.mjs",
+      "bytes": 27885,
+      "sha256": "ae4f45d08a8ceca349f5c997c8985c16fe23b28467c5d17b5b48bd32833fb783"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/main.mjs",
+      "bytes": 16309,
+      "sha256": "3e3ec5c187fd006df0ec28da8b5c40e5ce7443cd04e021601dc62026378e2afe"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/protocol.mjs",
+      "bytes": 13108,
+      "sha256": "dc663dbb8730cc8d6b949bfa9c8a41ca78750059222a85af4396fe5a8ba9a27a"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/src/system-prompt.mjs",
+      "bytes": 10523,
+      "sha256": "2f76927dcf6f860dc629f1bc1d4c3651848e064109ffafe2b51d863a6d1469eb"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/test/durable-planner.test.mjs",
+      "bytes": 21093,
+      "sha256": "3b789a92bf65725c45f455d804ffc1b2987f09edab756fca040da3cc7721ae7f"
+    },
+    {
+      "path": "/home/jetson/sdrharness/raspberry-pi/sdr-agent/planner-worker/test/protocol.test.mjs",
+      "bytes": 10541,
+      "sha256": "44abb950b15589dfa1604c4fd4adcf2da1698c4bb6209a2b238fc4d1caaca194"
+    }
+  ],
+  "change": {
+    "structured_action": "start_task(mission,target_sweeps,max_steps,max_seconds,max_iq_bytes,min_freq_hz,max_freq_hz)",
+    "target_sweeps": "0: semantic/compound goal; positive: stop after N successfully saved/restored complete surveys",
+    "counting": "only complete survey increments scan counter; inspection/capture only consume action/byte budgets",
+    "model_role": "interpret natural language and choose each next action using fresh bounded observations",
+    "controller_role": "validate finite budgets/capabilities, mission tuning fence, freshness, per-action approval, storage, count and stop",
+    "no_background_budget_renewal": true,
+    "restart": "no automatic task/approval restoration; accepted unfinished identities remain unknown under existing rules"
+  },
+  "verification": {
+    "rust_passed": 158,
+    "rust_ignored": 1,
+    "node_passed": 118,
+    "fmt": "passed",
+    "clippy_all_targets_deny_warnings": "passed",
+    "release_build": "passed",
+    "logs": [
+      {
+        "path": "/var/tmp/sdrharness-dev/b1027/rust.log",
+        "bytes": 14952,
+        "sha256": "aa7ca764f698c1669e184339b3fb8c248552b4ceaf8103022b47b1e0696c75fc"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b1027/node-final.log",
+        "bytes": 24108,
+        "sha256": "8805ed1060cfe78e2d61436d389fa81bb09c4d395976032a7342b9feca26f5cf"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b1027/fmt.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b1027/clippy.log",
+        "bytes": 173,
+        "sha256": "835c6abcd6be510eb6954431e7265afa9ec38794ca434110dc155e59bfecbc29"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/b1027/release.log",
+        "bytes": 164,
+        "sha256": "52800d9af6f6caa7e5fa08eb1b21c1b5703f2aae7245d733efd77bb8d3840828"
+      }
+    ]
+  },
+  "failed_or_superseded_work": [
+    {
+      "description": "Initial phrase-parser/fixed-parameter implementation superseded by user clarification; not part of final source."
+    },
+    {
+      "description": "r9 browser natural scan request was wrapped by old Web compressed history and treated as an ordinary unapproved proposal. Stopped, no RF. Unified model task interpretation handles compacted context without special phrase parsing."
+    },
+    {
+      "description": "First JS fixture assertion used unescaped newline against JSON string; assertion corrected, final 118 pass."
+    },
+    {
+      "description": "After adding explicit task IQ budget, one test initializer missed the new field; compiler rejection corrected before final checks."
+    }
+  ],
+  "live_r10": {
+    "plan": {
+      "cases": [
+        {
+          "goal": "four successful adaptive surveys",
+          "max_actions": 8,
+          "max_seconds": 300,
+          "max_iq_bytes": 1048576
+        },
+        {
+          "goal": "seek candidate; inspect once if present, stop if absent",
+          "max_actions": 3,
+          "max_seconds": 300,
+          "max_iq_bytes": 1048576
+        }
+      ],
+      "tuning_fence_hz": [
+        2445000000,
+        2465000000
+      ],
+      "sample_rate_hz": 10000000,
+      "rf_bandwidth_hz": 10000000,
+      "gain_db": 20,
+      "requested_max_points_per_sweep": 5,
+      "samples_per_point": 4096,
+      "settle_ms": 20,
+      "point_timeout_ms": 250,
+      "request_deadline_ms": 30000,
+      "exact_total_iq_budget_bytes": 2097152,
+      "estimated_rf_seconds": 44,
+      "estimated_wall_seconds": 180,
+      "agx_free_bytes": 705288450048,
+      "agx_feature": "/var/tmp/sdrharness-dev/b1027",
+      "agx_results": "/var/lib/sdrharness/web-console/captures/session-1793076607439",
+      "p201_transient": "/tmp/sdr-agent-dev/agx-sweep-<actual-generation>-<point-index>; inline cleanup",
+      "stop": "POST same Web session /stop; fallback sdr-agent --mode cancel --session-generation ACTUAL --sdrd 192.168.1.10:43110",
+      "rx_identity": "RX1/RX0/A_BALANCED",
+      "tx": "none"
+    },
+    "session_id": "session-1793076607439",
+    "cases": [
+      {
+        "instruction": "请在2445至2465MHz内，根据每轮结果自己决定下一轮，完成四轮完整扫频后停止。每轮最多5频点，采样率和带宽10MHz，dwell20ms，首轮2455至2456MHz步进1MHz。总共最多8动作、300秒、1MiB IQ。只做survey_band，不识别、不发射、不单独capture。",
+        "records": {
+          "20f76567-cef3-4f9d-9227-5df97a92f88b": {
+            "identity": {
+              "plan_id": "20f76567-cef3-4f9d-9227-5df97a92f88b",
+              "hash": "91d6f44c359fe673687f90203668d47e775df0538eda5ca261576727fbeb214b",
+              "app_session_id": "session-1793076607439",
+              "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+              "session_generation": 1793078486196,
+              "request_id": 1,
+              "deadline_unix_ms": 1793078538929
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          "3789d78b-1a1a-4e76-9338-488ba41d4e3c": {
+            "identity": {
+              "plan_id": "3789d78b-1a1a-4e76-9338-488ba41d4e3c",
+              "hash": "7415a6376bd53d297e9df5a4e4d7090f3bb99a53eef16fb4f5a08a402a8a6e4b",
+              "app_session_id": "session-1793076607439",
+              "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+              "session_generation": 1793078486197,
+              "request_id": 4,
+              "deadline_unix_ms": 1793078559824
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          "9f0d1f03-fe5e-467e-8a60-d0dbb99e7f6c": {
+            "identity": {
+              "plan_id": "9f0d1f03-fe5e-467e-8a60-d0dbb99e7f6c",
+              "hash": "a024ee6f9a5d280886c825955cc4878f70c389124198f8f944f2978d9149c3fe",
+              "app_session_id": "session-1793076607439",
+              "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+              "session_generation": 1793078486197,
+              "request_id": 5,
+              "deadline_unix_ms": 1793078564500
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          "cf8da1bf-3e73-44e1-b81c-8e3f7dbf44c8": {
+            "identity": {
+              "plan_id": "cf8da1bf-3e73-44e1-b81c-8e3f7dbf44c8",
+              "hash": "c1286b510402fea8b414c06425146a2c9e6829bc8694322434349e673e94d0e4",
+              "app_session_id": "session-1793076607439",
+              "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+              "session_generation": 1793078486197,
+              "request_id": 3,
+              "deadline_unix_ms": 1793078551678
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          "f90527cd-86ef-4a3f-9932-6ba82c6ca00c": {
+            "identity": {
+              "plan_id": "f90527cd-86ef-4a3f-9932-6ba82c6ca00c",
+              "hash": "1d36e1035000f97e68b7ccec1137963ed7a0d5fa64d908e642e58f6bea583eae",
+              "app_session_id": "session-1793076607439",
+              "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+              "session_generation": 1793078486197,
+              "request_id": 2,
+              "deadline_unix_ms": 1793078546023
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          }
+        },
+        "event_ids": [
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118
+        ]
+      },
+      {
+        "instruction": "在2445至2465MHz内寻找候选：先对2455至2456MHz做一次步进1MHz的短扫，有候选就复查一次，没有候选就结束。每次最多5频点、采样率及带宽10MHz、dwell20ms；最多3动作、300秒、1MiB IQ。不识别、不发射、不单独capture。",
+        "records": {
+          "48723e0b-aa25-4e46-a7b0-1747d5d70ef4": {
+            "identity": {
+              "plan_id": "48723e0b-aa25-4e46-a7b0-1747d5d70ef4",
+              "hash": "1d36e1035000f97e68b7ccec1137963ed7a0d5fa64d908e642e58f6bea583eae",
+              "app_session_id": "session-1793076607439",
+              "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+              "session_generation": 1793078486198,
+              "request_id": 7,
+              "deadline_unix_ms": 1793078586240
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          "76dbc7a7-69ef-4063-8763-ed91cd5102d3": {
+            "identity": {
+              "plan_id": "76dbc7a7-69ef-4063-8763-ed91cd5102d3",
+              "hash": "cee403972f4c0458ecd56e05ecfe8331c2e0af800544278704948f9c1ada9f23",
+              "app_session_id": "session-1793076607439",
+              "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+              "session_generation": 1793078486197,
+              "request_id": 6,
+              "deadline_unix_ms": 1793078575328
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          },
+          "fb8fcd22-fc4d-4989-9e14-1884295e5299": {
+            "identity": {
+              "plan_id": "fb8fcd22-fc4d-4989-9e14-1884295e5299",
+              "hash": "ed2a4eb0c23cf54ad9f8b003a0ebb6f5623cb8fcf89bdcd93a698556ba647fe4",
+              "app_session_id": "session-1793076607439",
+              "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+              "session_generation": 1793078486198,
+              "request_id": 8,
+              "deadline_unix_ms": 1793078592053
+            },
+            "decision": "accepted",
+            "execution": "completed"
+          }
+        },
+        "event_ids": [
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140
+        ]
+      }
+    ],
+    "records": {
+      "20f76567-cef3-4f9d-9227-5df97a92f88b": {
+        "identity": {
+          "plan_id": "20f76567-cef3-4f9d-9227-5df97a92f88b",
+          "hash": "91d6f44c359fe673687f90203668d47e775df0538eda5ca261576727fbeb214b",
+          "app_session_id": "session-1793076607439",
+          "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+          "session_generation": 1793078486196,
+          "request_id": 1,
+          "deadline_unix_ms": 1793078538929
+        },
+        "decision": "accepted",
+        "execution": "completed"
+      },
+      "3789d78b-1a1a-4e76-9338-488ba41d4e3c": {
+        "identity": {
+          "plan_id": "3789d78b-1a1a-4e76-9338-488ba41d4e3c",
+          "hash": "7415a6376bd53d297e9df5a4e4d7090f3bb99a53eef16fb4f5a08a402a8a6e4b",
+          "app_session_id": "session-1793076607439",
+          "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+          "session_generation": 1793078486197,
+          "request_id": 4,
+          "deadline_unix_ms": 1793078559824
+        },
+        "decision": "accepted",
+        "execution": "completed"
+      },
+      "48723e0b-aa25-4e46-a7b0-1747d5d70ef4": {
+        "identity": {
+          "plan_id": "48723e0b-aa25-4e46-a7b0-1747d5d70ef4",
+          "hash": "1d36e1035000f97e68b7ccec1137963ed7a0d5fa64d908e642e58f6bea583eae",
+          "app_session_id": "session-1793076607439",
+          "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+          "session_generation": 1793078486198,
+          "request_id": 7,
+          "deadline_unix_ms": 1793078586240
+        },
+        "decision": "accepted",
+        "execution": "completed"
+      },
+      "76dbc7a7-69ef-4063-8763-ed91cd5102d3": {
+        "identity": {
+          "plan_id": "76dbc7a7-69ef-4063-8763-ed91cd5102d3",
+          "hash": "cee403972f4c0458ecd56e05ecfe8331c2e0af800544278704948f9c1ada9f23",
+          "app_session_id": "session-1793076607439",
+          "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+          "session_generation": 1793078486197,
+          "request_id": 6,
+          "deadline_unix_ms": 1793078575328
+        },
+        "decision": "accepted",
+        "execution": "completed"
+      },
+      "9f0d1f03-fe5e-467e-8a60-d0dbb99e7f6c": {
+        "identity": {
+          "plan_id": "9f0d1f03-fe5e-467e-8a60-d0dbb99e7f6c",
+          "hash": "a024ee6f9a5d280886c825955cc4878f70c389124198f8f944f2978d9149c3fe",
+          "app_session_id": "session-1793076607439",
+          "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+          "session_generation": 1793078486197,
+          "request_id": 5,
+          "deadline_unix_ms": 1793078564500
+        },
+        "decision": "accepted",
+        "execution": "completed"
+      },
+      "cf8da1bf-3e73-44e1-b81c-8e3f7dbf44c8": {
+        "identity": {
+          "plan_id": "cf8da1bf-3e73-44e1-b81c-8e3f7dbf44c8",
+          "hash": "c1286b510402fea8b414c06425146a2c9e6829bc8694322434349e673e94d0e4",
+          "app_session_id": "session-1793076607439",
+          "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+          "session_generation": 1793078486197,
+          "request_id": 3,
+          "deadline_unix_ms": 1793078551678
+        },
+        "decision": "accepted",
+        "execution": "completed"
+      },
+      "f90527cd-86ef-4a3f-9932-6ba82c6ca00c": {
+        "identity": {
+          "plan_id": "f90527cd-86ef-4a3f-9932-6ba82c6ca00c",
+          "hash": "1d36e1035000f97e68b7ccec1137963ed7a0d5fa64d908e642e58f6bea583eae",
+          "app_session_id": "session-1793076607439",
+          "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+          "session_generation": 1793078486197,
+          "request_id": 2,
+          "deadline_unix_ms": 1793078546023
+        },
+        "decision": "accepted",
+        "execution": "completed"
+      },
+      "fb8fcd22-fc4d-4989-9e14-1884295e5299": {
+        "identity": {
+          "plan_id": "fb8fcd22-fc4d-4989-9e14-1884295e5299",
+          "hash": "ed2a4eb0c23cf54ad9f8b003a0ebb6f5623cb8fcf89bdcd93a698556ba647fe4",
+          "app_session_id": "session-1793076607439",
+          "controller_epoch": "15697617aee6c1e18a217c6c4af98ab4",
+          "session_generation": 1793078486198,
+          "request_id": 8,
+          "deadline_unix_ms": 1793078592053
+        },
+        "decision": "accepted",
+        "execution": "completed"
+      }
+    },
+    "normalized_proposals": {
+      "20f76567-cef3-4f9d-9227-5df97a92f88b": {
+        "kind": "start_task",
+        "mission": "在2445–2465MHz内完成4轮完整扫频后停止；每轮≤5频点，采样率/带宽10MHz，dwell20ms，仅survey_band；首轮2455–2456MHz步进1MHz；最多8动作、300秒、1MiB IQ。",
+        "target_sweeps": 4,
+        "max_steps": 8,
+        "max_seconds": 300,
+        "max_iq_bytes": 1048576,
+        "min_freq_hz": 2445000000,
+        "max_freq_hz": 2465000000
+      },
+      "f90527cd-86ef-4a3f-9932-6ba82c6ca00c": {
+        "kind": "survey_band",
+        "start_hz": 2455000000,
+        "stop_hz": 2456000000,
+        "step_hz": 1000000,
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "dwell_ms": 20
+      },
+      "cf8da1bf-3e73-44e1-b81c-8e3f7dbf44c8": {
+        "kind": "survey_band",
+        "start_hz": 2456000000,
+        "stop_hz": 2460000000,
+        "step_hz": 1000000,
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "dwell_ms": 20
+      },
+      "3789d78b-1a1a-4e76-9338-488ba41d4e3c": {
+        "kind": "survey_band",
+        "start_hz": 2460000000,
+        "stop_hz": 2464000000,
+        "step_hz": 1000000,
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "dwell_ms": 20
+      },
+      "9f0d1f03-fe5e-467e-8a60-d0dbb99e7f6c": {
+        "kind": "survey_band",
+        "start_hz": 2445000000,
+        "stop_hz": 2455000000,
+        "step_hz": 2500000,
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "dwell_ms": 20
+      },
+      "76dbc7a7-69ef-4063-8763-ed91cd5102d3": {
+        "kind": "start_task",
+        "mission": "在2445–2465MHz内寻找候选：先扫2455–2456MHz步进1MHz；若有候选则对候选中心复查一次，无候选即结束。每次≤5频点、采样率/带宽10MHz、dwell20ms；最多3动作、300秒、1MiB IQ；仅survey_band/inspect_candidate，不识别、不发射、不单独capture。",
+        "target_sweeps": 0,
+        "max_steps": 3,
+        "max_seconds": 300,
+        "max_iq_bytes": 1048576,
+        "min_freq_hz": 2445000000,
+        "max_freq_hz": 2465000000
+      },
+      "48723e0b-aa25-4e46-a7b0-1747d5d70ef4": {
+        "kind": "survey_band",
+        "start_hz": 2455000000,
+        "stop_hz": 2456000000,
+        "step_hz": 1000000,
+        "sample_rate_hz": 10000000,
+        "rf_bandwidth_hz": 10000000,
+        "dwell_ms": 20
+      },
+      "fb8fcd22-fc4d-4989-9e14-1884295e5299": {
+        "kind": "stop_session",
+        "reason": "2455–2456MHz短扫2点实测2455:-51.15、2456:-53.52 dBFS，均未达候选判据，0候选；按任务完成条件“无候选即结束”停止。此结果不能证明该频段无信号，仅限本次短扫窗口。"
+      }
+    },
+    "events": [
+      {
+        "id": 65,
+        "timestamp_ms": 1793078508915,
+        "kind": "operator",
+        "text": "Operator> 请在2445至2465MHz内，根据每轮结果自己决定下一轮，完成四轮完整扫频后停止。每轮最多5频点，采样率和带宽10MHz，dwell20ms，首轮2455至2456MHz步进1MHz。总共最多8动作、300秒、1MiB IQ。只做survey_band，不识别、不发射、不单独capture。"
+      },
+      {
+        "id": 66,
+        "timestamp_ms": 1793078508926,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 67,
+        "timestamp_ms": 1793078515864,
+        "kind": "sweep",
+        "text": "已验证任务目标：在2445–2465MHz内完成4轮完整扫频后停止；每轮≤5频点，采样率/带宽10MHz，dwell20ms，仅survey_band；首轮2455–2456MHz步进1MHz；最多8动作、300秒、1MiB IQ。；目标扫描4轮（0表示按目标结束），最多8动作/300秒/1048576字节IQ，范围2445000000–2465000000Hz"
+      },
+      {
+        "id": 68,
+        "timestamp_ms": 1793078515915,
+        "kind": "system",
+        "text": "自动任务空间检查：/var/lib/sdrharness/web-console/captures/session-1793076607439 可用705269350400字节，累计IQ上限1048576字节；每轮另预留65536字节元数据。"
+      },
+      {
+        "id": 69,
+        "timestamp_ms": 1793078516007,
+        "kind": "system",
+        "text": "自动巡航已建立新的安全代次；旧计划已失效。"
+      },
+      {
+        "id": 70,
+        "timestamp_ms": 1793078516008,
+        "kind": "system",
+        "text": "已启动受限自动巡航：最多 8 步、300 秒、1048576 字节；两类失败分别最多重试 5 次、间隔 10 秒。输入 /stop 可立即停止。"
+      },
+      {
+        "id": 71,
+        "timestamp_ms": 1793078516009,
+        "kind": "cruise",
+        "text": "巡航状态：正在检查 SDR；已完成 0/8 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 72,
+        "timestamp_ms": 1793078516010,
+        "kind": "sweep",
+        "text": "已按自然语言目标启动自动任务：在2445–2465MHz内完成4轮完整扫频后停止；每轮≤5频点，采样率/带宽10MHz，dwell20ms，仅survey_band；首轮2455–2456MHz步进1MHz；最多8动作、300秒、1MiB IQ。；频率范围2445000000–2465000000Hz。根据每轮结果选择下一步；/stop 随时停止。"
+      },
+      {
+        "id": 73,
+        "timestamp_ms": 1793078516011,
+        "kind": "system",
+        "text": "自动任务：成功落盘 0/4 轮完整扫描；执行中。"
+      },
+      {
+        "id": 74,
+        "timestamp_ms": 1793078516012,
+        "kind": "cruise",
+        "text": "巡航状态：正在检查 SDR；已完成 0/8 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 75,
+        "timestamp_ms": 1793078516013,
+        "kind": "system",
+        "text": "自动任务：成功落盘 0/4 轮完整扫描；执行中。"
+      },
+      {
+        "id": 76,
+        "timestamp_ms": 1793078516014,
+        "kind": "cruise",
+        "text": "巡航状态：正在等待上游给出下一步；已完成 0/8 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 77,
+        "timestamp_ms": 1793078520560,
+        "kind": "plan",
+        "text": "已验证计划：受限扫频 2455000000–2456000000 Hz，步进 1000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 78,
+        "timestamp_ms": 1793078520562,
+        "kind": "decision",
+        "text": "决策依据> request=2、generation=1793078486197 与当前上下文一致；状态=Idle；扫频范围位于 70000000–6000000000 Hz，跨度 1000000≤20000000 Hz，点数 2≤768，步进 1000000≤射频带宽 10000000 的 80%，采样率 10000000 Hz，停留 20≤5000 ms，预计处理 32768≤4194304 字节；SDR 在线且允许调谐"
+      },
+      {
+        "id": 79,
+        "timestamp_ms": 1793078520562,
+        "kind": "qwen",
+        "text": "Agent> 下一步计划：受限扫频 2455000000–2456000000 Hz，步进 1000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 80,
+        "timestamp_ms": 1793078520580,
+        "kind": "sweep",
+        "text": "自动扫频 request=2 已开始：2455000000–2456000000 Hz，2 个点，步进 1000000 Hz，采样率 10000000 Hz，射频带宽 10000000 Hz，每点停留 20 ms，固定接收增益 20 dB；最多处理 32768 字节，可随时输入 /stop。"
+      },
+      {
+        "id": 81,
+        "timestamp_ms": 1793078520581,
+        "kind": "system",
+        "text": "可执行计划已经 Rust 验证；已结束本轮剩余模型生成，避免队列中的旧输入越过批准或执行门禁。"
+      },
+      {
+        "id": 82,
+        "timestamp_ms": 1793078521692,
+        "kind": "sweep",
+        "text": "扫频执行结果：request=2 已完成 2 个频点，耗时 1037 ms，固定增益 20 dB，噪声基线 -46.6 dBFS，发现 0 个候选；零削顶，射频状态已恢复。"
+      },
+      {
+        "id": 83,
+        "timestamp_ms": 1793078521693,
+        "kind": "system",
+        "text": "自动任务：成功落盘 1/4 轮完整扫描；执行中。"
+      },
+      {
+        "id": 84,
+        "timestamp_ms": 1793078521694,
+        "kind": "cruise",
+        "text": "巡航状态：正在检查 SDR；已完成 1/8 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 85,
+        "timestamp_ms": 1793078521695,
+        "kind": "system",
+        "text": "自动任务：成功落盘 1/4 轮完整扫描；执行中。"
+      },
+      {
+        "id": 86,
+        "timestamp_ms": 1793078521696,
+        "kind": "cruise",
+        "text": "巡航状态：正在等待上游给出下一步；已完成 1/8 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 87,
+        "timestamp_ms": 1793078528468,
+        "kind": "plan",
+        "text": "已验证计划：受限扫频 2456000000–2460000000 Hz，步进 1000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 88,
+        "timestamp_ms": 1793078528469,
+        "kind": "decision",
+        "text": "决策依据> request=3、generation=1793078486197 与当前上下文一致；状态=Idle；扫频范围位于 70000000–6000000000 Hz，跨度 4000000≤20000000 Hz，点数 5≤768，步进 1000000≤射频带宽 10000000 的 80%，采样率 10000000 Hz，停留 20≤5000 ms，预计处理 81920≤4194304 字节；SDR 在线且允许调谐"
+      },
+      {
+        "id": 89,
+        "timestamp_ms": 1793078528470,
+        "kind": "qwen",
+        "text": "Agent> 下一步计划：受限扫频 2456000000–2460000000 Hz，步进 1000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 90,
+        "timestamp_ms": 1793078528486,
+        "kind": "sweep",
+        "text": "自动扫频 request=3 已开始：2456000000–2460000000 Hz，5 个点，步进 1000000 Hz，采样率 10000000 Hz，射频带宽 10000000 Hz，每点停留 20 ms，固定接收增益 20 dB；最多处理 81920 字节，可随时输入 /stop。"
+      },
+      {
+        "id": 91,
+        "timestamp_ms": 1793078528487,
+        "kind": "system",
+        "text": "可执行计划已经 Rust 验证；已结束本轮剩余模型生成，避免队列中的旧输入越过批准或执行门禁。"
+      },
+      {
+        "id": 92,
+        "timestamp_ms": 1793078529833,
+        "kind": "sweep",
+        "text": "扫频执行结果：request=3 已完成 5 个频点，耗时 1289 ms，固定增益 20 dB，噪声基线 -53.3 dBFS，发现 2 个候选；零削顶，射频状态已恢复。"
+      },
+      {
+        "id": 93,
+        "timestamp_ms": 1793078529834,
+        "kind": "system",
+        "text": "自动任务：成功落盘 2/4 轮完整扫描；执行中。"
+      },
+      {
+        "id": 94,
+        "timestamp_ms": 1793078529835,
+        "kind": "cruise",
+        "text": "巡航状态：正在检查 SDR；已完成 2/8 步，累计 0.1/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 95,
+        "timestamp_ms": 1793078529837,
+        "kind": "system",
+        "text": "候选 request-63d1c607f5d395a4798406ab3bc568b2-3-1：中心 2458000000 Hz，带宽 10000000 Hz，峰值 -39.5 dBFS，信噪比 13.8 dB。"
+      },
+      {
+        "id": 96,
+        "timestamp_ms": 1793078529837,
+        "kind": "system",
+        "text": "候选 request-63d1c607f5d395a4798406ab3bc568b2-3-2：中心 2460000000 Hz，带宽 10000000 Hz，峰值 -31.9 dBFS，信噪比 21.4 dB。"
+      },
+      {
+        "id": 97,
+        "timestamp_ms": 1793078529838,
+        "kind": "system",
+        "text": "自动任务：成功落盘 2/4 轮完整扫描；执行中。"
+      },
+      {
+        "id": 98,
+        "timestamp_ms": 1793078529839,
+        "kind": "cruise",
+        "text": "巡航状态：正在等待上游给出下一步；已完成 2/8 步，累计 0.1/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 99,
+        "timestamp_ms": 1793078533145,
+        "kind": "plan",
+        "text": "已验证计划：受限扫频 2460000000–2464000000 Hz，步进 1000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 100,
+        "timestamp_ms": 1793078533146,
+        "kind": "decision",
+        "text": "决策依据> request=4、generation=1793078486197 与当前上下文一致；状态=Idle；扫频范围位于 70000000–6000000000 Hz，跨度 4000000≤20000000 Hz，点数 5≤768，步进 1000000≤射频带宽 10000000 的 80%，采样率 10000000 Hz，停留 20≤5000 ms，预计处理 81920≤4194304 字节；SDR 在线且允许调谐"
+      },
+      {
+        "id": 101,
+        "timestamp_ms": 1793078533147,
+        "kind": "qwen",
+        "text": "Agent> 下一步计划：受限扫频 2460000000–2464000000 Hz，步进 1000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 102,
+        "timestamp_ms": 1793078533162,
+        "kind": "sweep",
+        "text": "自动扫频 request=4 已开始：2460000000–2464000000 Hz，5 个点，步进 1000000 Hz，采样率 10000000 Hz，射频带宽 10000000 Hz，每点停留 20 ms，固定接收增益 20 dB；最多处理 81920 字节，可随时输入 /stop。"
+      },
+      {
+        "id": 103,
+        "timestamp_ms": 1793078533163,
+        "kind": "system",
+        "text": "可执行计划已经 Rust 验证；已结束本轮剩余模型生成，避免队列中的旧输入越过批准或执行门禁。"
+      },
+      {
+        "id": 104,
+        "timestamp_ms": 1793078534506,
+        "kind": "sweep",
+        "text": "扫频执行结果：request=4 已完成 5 个频点，耗时 1293 ms，固定增益 20 dB，噪声基线 -39.8 dBFS，发现 0 个候选；零削顶，射频状态已恢复。"
+      },
+      {
+        "id": 105,
+        "timestamp_ms": 1793078534507,
+        "kind": "system",
+        "text": "自动任务：成功落盘 3/4 轮完整扫描；执行中。"
+      },
+      {
+        "id": 106,
+        "timestamp_ms": 1793078534507,
+        "kind": "cruise",
+        "text": "巡航状态：正在���查 SDR；已完成 3/8 步，累计 0.2/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 107,
+        "timestamp_ms": 1793078534509,
+        "kind": "system",
+        "text": "自动任务：成功落盘 3/4 轮完整扫描；执行中。"
+      },
+      {
+        "id": 108,
+        "timestamp_ms": 1793078534510,
+        "kind": "cruise",
+        "text": "巡航状态：正在等待上游给出下一步；已完成 3/8 步，累计 0.2/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 109,
+        "timestamp_ms": 1793078540035,
+        "kind": "plan",
+        "text": "已验证计划：受限扫频 2445000000–2455000000 Hz，步进 2500000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 110,
+        "timestamp_ms": 1793078540036,
+        "kind": "decision",
+        "text": "决策依据> request=5、generation=1793078486197 与当前上下文一致；状态=Idle；扫频范围位于 70000000–6000000000 Hz，跨度 10000000≤20000000 Hz，点数 5≤768，步进 2500000≤射频带宽 10000000 的 80%，采样率 10000000 Hz，停留 20≤5000 ms，预计处理 81920≤4194304 字节；SDR 在线且允许调谐"
+      },
+      {
+        "id": 111,
+        "timestamp_ms": 1793078540037,
+        "kind": "qwen",
+        "text": "Agent> 下一步计划：受限扫频 2445000000–2455000000 Hz，步进 2500000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 112,
+        "timestamp_ms": 1793078540053,
+        "kind": "sweep",
+        "text": "自动扫频 request=5 已开始：2445000000–2455000000 Hz，5 个点，步进 2500000 Hz，采样率 10000000 Hz，射频带宽 10000000 Hz，每点停留 20 ms，固定接收增益 20 dB；最多处理 81920 字节，可随时输入 /stop。"
+      },
+      {
+        "id": 113,
+        "timestamp_ms": 1793078540055,
+        "kind": "system",
+        "text": "可执行计划已经 Rust 验证；已结束本轮剩余模型生成，避免队列中的旧输入越过批准或执行门禁。"
+      },
+      {
+        "id": 114,
+        "timestamp_ms": 1793078541392,
+        "kind": "sweep",
+        "text": "扫频执行结果：request=5 已完成 5 个频点，耗时 1280 ms，固定增益 20 dB，噪声基线 -53.0 dBFS，发现 2 个候选；零削顶，射频状态已恢复。"
+      },
+      {
+        "id": 115,
+        "timestamp_ms": 1793078541393,
+        "kind": "system",
+        "text": "自动任务：成功落盘 4/4 轮完整扫描；已完成。"
+      },
+      {
+        "id": 116,
+        "timestamp_ms": 1793078541393,
+        "kind": "cruise",
+        "text": "巡航状态：已退出；原因：任务目标已完成。"
+      },
+      {
+        "id": 117,
+        "timestamp_ms": 1793078541396,
+        "kind": "system",
+        "text": "候选 request-4ae1e8c88bedcb19a8e1d2ec89fa1274-5-1：中心 2445000000 Hz，带宽 10000000 Hz，峰值 -29.6 dBFS，信噪比 23.3 dB。"
+      },
+      {
+        "id": 118,
+        "timestamp_ms": 1793078541397,
+        "kind": "system",
+        "text": "候选 request-4ae1e8c88bedcb19a8e1d2ec89fa1274-5-2：中心 2450000000 Hz，带宽 10000000 Hz，峰值 -35.8 dBFS，信噪比 17.1 dB。"
+      },
+      {
+        "id": 119,
+        "timestamp_ms": 1793078545318,
+        "kind": "operator",
+        "text": "Operator> 在2445至2465MHz内寻找候选：先对2455至2456MHz做一次步进1MHz的短扫，有候选就复查一次，没有候选就结束。每次最多5频点、采样率及带宽10MHz、dwell20ms；最多3动作、300秒、1MiB IQ。不识别、不发射、不单独capture。"
+      },
+      {
+        "id": 120,
+        "timestamp_ms": 1793078545329,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 121,
+        "timestamp_ms": 1793078556075,
+        "kind": "system",
+        "text": "已验证任务目标：在2445–2465MHz内寻找候选：先扫2455–2456MHz步进1MHz；若有候选则对候选中心复查一次，无候选即结束。每次≤5频点、采样率/带宽10MHz、dwell20ms；最多3动作、300秒、1MiB IQ；仅survey_band/inspect_candidate，不识别、不发射、不单独capture。；目标扫描0轮（0表示按目标结束），最多3动作/300秒/1048576字节IQ，范围2445000000–2465000000Hz"
+      },
+      {
+        "id": 122,
+        "timestamp_ms": 1793078556125,
+        "kind": "system",
+        "text": "自动任务空间检查：/var/lib/sdrharness/web-console/captures/session-1793076607439 可用705266110464字节，累计IQ上限1048576字节；每轮另预留65536字节元数据。"
+      },
+      {
+        "id": 123,
+        "timestamp_ms": 1793078556215,
+        "kind": "system",
+        "text": "自动巡航已建立新的安全代次；旧计划已失效。"
+      },
+      {
+        "id": 124,
+        "timestamp_ms": 1793078556217,
+        "kind": "system",
+        "text": "已启动受限自动巡航：最多 3 步、300 秒、1048576 字节；两类失败分别最多重试 5 次、间隔 10 秒。输入 /stop 可立即停止。"
+      },
+      {
+        "id": 125,
+        "timestamp_ms": 1793078556218,
+        "kind": "cruise",
+        "text": "巡航状态：正在检查 SDR；已完成 0/3 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 126,
+        "timestamp_ms": 1793078556219,
+        "kind": "system",
+        "text": "已按自然语言目标启动自动任务：在2445–2465MHz内寻找候选：先扫2455–2456MHz步进1MHz；若有候选则对候选中心复查一次，无候选即结束。每次≤5频点、采样率/带宽10MHz、dwell20ms；最多3动作、300秒、1MiB IQ；仅survey_band/inspect_candidate，不识别、不发射、不单独capture。；频率范围2445000000–2465000000Hz。根据每轮结果选择下一步；/stop 随时停止。"
+      },
+      {
+        "id": 127,
+        "timestamp_ms": 1793078556220,
+        "kind": "cruise",
+        "text": "巡航状态：正在检查 SDR；已完成 0/3 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 128,
+        "timestamp_ms": 1793078556222,
+        "kind": "cruise",
+        "text": "巡航状态：正在等待上游给出下一步；已完成 0/3 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 129,
+        "timestamp_ms": 1793078560951,
+        "kind": "plan",
+        "text": "已验证计划：受限扫频 2455000000–2456000000 Hz，步进 1000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 130,
+        "timestamp_ms": 1793078560953,
+        "kind": "decision",
+        "text": "决策依据> request=7、generation=1793078486198 与当前上下文一致；状态=Idle；扫频范围位于 70000000–6000000000 Hz，跨度 1000000≤20000000 Hz，点数 2≤768，步进 1000000≤射频带宽 10000000 的 80%，采样率 10000000 Hz，停留 20≤5000 ms，预计处理 32768≤4194304 字节；SDR 在线且允许调谐"
+      },
+      {
+        "id": 131,
+        "timestamp_ms": 1793078560954,
+        "kind": "qwen",
+        "text": "Agent> 下一步计划：受限扫频 2455000000–2456000000 Hz，步进 1000000 Hz、采样率 10000000 Hz、射频带宽 10000000 Hz，每点停留 20 ms，执行时采用设置中的固定接收增益；位于自动安全阈值内"
+      },
+      {
+        "id": 132,
+        "timestamp_ms": 1793078560969,
+        "kind": "sweep",
+        "text": "自动扫频 request=7 已开始：2455000000–2456000000 Hz，2 个点，步进 1000000 Hz，采样率 10000000 Hz，射频带宽 10000000 Hz，每点停留 20 ms，固定接收增益 20 dB；最多处理 32768 字节，可随时输入 /stop。"
+      },
+      {
+        "id": 133,
+        "timestamp_ms": 1793078560971,
+        "kind": "system",
+        "text": "可执行计划已经 Rust 验证；已结束本轮剩余模型生成，避免队列中的旧输入越过批准或执行门禁。"
+      },
+      {
+        "id": 134,
+        "timestamp_ms": 1793078562059,
+        "kind": "sweep",
+        "text": "扫频执行结果：request=7 已完成 2 个频点，耗时 1014 ms，固定增益 20 dB，噪声基线 -51.1 dBFS，发现 0 个候选；零削顶，射频状态已恢复。"
+      },
+      {
+        "id": 135,
+        "timestamp_ms": 1793078562060,
+        "kind": "cruise",
+        "text": "巡航状态：正在检查 SDR；已完成 1/3 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 136,
+        "timestamp_ms": 1793078562062,
+        "kind": "cruise",
+        "text": "巡航状态：正在等待上游给出下一步；已完成 1/3 步，累计 0.0/1.0 MiB，SDR 重试 0/5，上游重试 0/5。"
+      },
+      {
+        "id": 137,
+        "timestamp_ms": 1793078565392,
+        "kind": "plan",
+        "text": "已验证计划：停止本次会话：2455–2456MHz短扫2点实测2455:-51.15、2456:-53.52 dBFS，均未达候选判据，0候选；按任务完成条件“无候选即结束”停止。此结果不能证明该频段无信号，仅限本次短扫窗口。"
+      },
+      {
+        "id": 138,
+        "timestamp_ms": 1793078565393,
+        "kind": "decision",
+        "text": "决策依据> request=8、generation=1793078486198 与当前上下文一致；状态=Idle；停止会话不触发新的硬件动作，原因文本已通过校验"
+      },
+      {
+        "id": 139,
+        "timestamp_ms": 1793078565394,
+        "kind": "qwen",
+        "text": "Agent> 下一步计划：停止本次会话：2455–2456MHz短扫2点实测2455:-51.15、2456:-53.52 dBFS，均未达候选判据，0候选；按任务完成条件“无候选即结束”停止。此结果不能证明该频段无信号，仅限本次短扫窗口。"
+      },
+      {
+        "id": 140,
+        "timestamp_ms": 1793078565395,
+        "kind": "cruise",
+        "text": "巡航状态：已退出；原因：上游建议停止或保持。"
+      }
+    ],
+    "new_results": [
+      {
+        "id": 53,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-e80412ddb2686b2ee25902144640ff9e-7",
+        "kind": "planned",
+        "created_at_ms": 1793078562041,
+        "point_count": 2,
+        "candidate_count": 0,
+        "elapsed_ms": 1014,
+        "gain_db": 20,
+        "noise_floor_dbfs": -51.14584,
+        "iq_bytes": 32768
+      },
+      {
+        "id": 52,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-4ae1e8c88bedcb19a8e1d2ec89fa1274-5",
+        "kind": "planned",
+        "created_at_ms": 1793078541374,
+        "point_count": 5,
+        "candidate_count": 2,
+        "elapsed_ms": 1280,
+        "gain_db": 20,
+        "noise_floor_dbfs": -52.956505,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 51,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-77107d3b8e6c3115e9afe14e91224b1d-4",
+        "kind": "planned",
+        "created_at_ms": 1793078534488,
+        "point_count": 5,
+        "candidate_count": 0,
+        "elapsed_ms": 1293,
+        "gain_db": 20,
+        "noise_floor_dbfs": -39.77079,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 50,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-63d1c607f5d395a4798406ab3bc568b2-3",
+        "kind": "planned",
+        "created_at_ms": 1793078529812,
+        "point_count": 5,
+        "candidate_count": 2,
+        "elapsed_ms": 1289,
+        "gain_db": 20,
+        "noise_floor_dbfs": -53.32136,
+        "iq_bytes": 81920
+      },
+      {
+        "id": 49,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-a8c64fcf815d7c8710e5aa2f83cca436-2",
+        "kind": "planned",
+        "created_at_ms": 1793078521667,
+        "point_count": 2,
+        "candidate_count": 0,
+        "elapsed_ms": 1037,
+        "gain_db": 20,
+        "noise_floor_dbfs": -46.617813,
+        "iq_bytes": 32768
+      }
+    ],
+    "prior_result_count": 34,
+    "prior_results_preserved": true,
+    "radio_before": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n2469500000\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "radio_after": "/sys/bus/iio/devices/iio:device0/out_altvoltage0_RX_LO_frequency\n2469500000\n/sys/bus/iio/devices/iio:device0/in_voltage_sampling_frequency\n30720000\n/sys/bus/iio/devices/iio:device0/in_voltage_rf_bandwidth\n30000000\n/sys/bus/iio/devices/iio:device0/in_voltage0_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage0_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage0_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device0/in_voltage1_gain_control_mode\nmanual\n/sys/bus/iio/devices/iio:device0/in_voltage1_hardwaregain\n60.000000 dB\n/sys/bus/iio/devices/iio:device0/in_voltage1_rf_port_select\nA_BALANCED\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage0_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage1_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage2_en\n0\n/sys/bus/iio/devices/iio:device2/scan_elements/out_voltage3_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage0_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage1_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage2_en\n0\n/sys/bus/iio/devices/iio:device3/scan_elements/in_voltage3_en\n0\n/sys/bus/iio/devices/iio:device2/buffer/enable\n0\n/sys/bus/iio/devices/iio:device3/buffer/enable\n0\n",
+    "restored_properties": 19,
+    "p201_identity": "1318\ntcp        0      0 192.168.1.10:43110      0.0.0.0:*               LISTEN      \n",
+    "owner_count": 1,
+    "final_connections": "",
+    "transient_absent": [
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486196-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486196-1",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486196-2",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486196-3",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486196-4",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486197-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486197-1",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486197-2",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486197-3",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486197-4",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486198-0",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486198-1",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486198-2",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486198-3",
+      "/tmp/sdr-agent-dev/agx-sweep-1793078486198-4"
+    ],
+    "page_errors": [],
+    "elapsed_seconds": 64.01210115803406,
+    "retained": [
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-e80412ddb2686b2ee25902144640ff9e-7-1793078486198-1793078560975528438.sigmf-data",
+        "bytes": 32768,
+        "sha256": "05df8811bbb619a6116643022f48b780a10b3b53e759d54a7463e1250c3cf980",
+        "result_id": 53,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-e80412ddb2686b2ee25902144640ff9e-7",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-e80412ddb2686b2ee25902144640ff9e-7-1793078486198-1793078560975528438.sigmf-meta",
+        "bytes": 683,
+        "sha256": "30e57b37d06d507c13e178e04c891a57af158d03a294b3681b340873ac5c0377",
+        "result_id": 53,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-e80412ddb2686b2ee25902144640ff9e-7",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-4ae1e8c88bedcb19a8e1d2ec89fa1274-5-1793078486197-1793078540058998108.sigmf-data",
+        "bytes": 81920,
+        "sha256": "d93d3f9da83f277e1c345a0127d8b9848b3296e25a892ee701e1b1d23c664285",
+        "result_id": 52,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-4ae1e8c88bedcb19a8e1d2ec89fa1274-5",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-4ae1e8c88bedcb19a8e1d2ec89fa1274-5-1793078486197-1793078540058998108.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "e744dd6abb8c853d40ac73adcc7f34733d91dce2833c2f760b47909790eafffb",
+        "result_id": 52,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-4ae1e8c88bedcb19a8e1d2ec89fa1274-5",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-77107d3b8e6c3115e9afe14e91224b1d-4-1793078486197-1793078533169071943.sigmf-data",
+        "bytes": 81920,
+        "sha256": "a62c52d40026aad47fc42073c35fdac72f1950135bba7600b14b4485cc94a189",
+        "result_id": 51,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-77107d3b8e6c3115e9afe14e91224b1d-4",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-77107d3b8e6c3115e9afe14e91224b1d-4-1793078486197-1793078533169071943.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "179cc41cf0334cae0f24defbb9bf2587715aff5b2ad2b9459b9a37647a9e8b42",
+        "result_id": 51,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-77107d3b8e6c3115e9afe14e91224b1d-4",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-63d1c607f5d395a4798406ab3bc568b2-3-1793078486197-1793078528492766290.sigmf-data",
+        "bytes": 81920,
+        "sha256": "85480e0e1bc768f798d7f7e3c018eb83a14336ae5139afac0f963849abf06518",
+        "result_id": 50,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-63d1c607f5d395a4798406ab3bc568b2-3",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-63d1c607f5d395a4798406ab3bc568b2-3-1793078486197-1793078528492766290.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "68686fb5833cb4b826e70e9e6812d3befe140f7a89d9db406cb0915f0b818885",
+        "result_id": 50,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-63d1c607f5d395a4798406ab3bc568b2-3",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-a8c64fcf815d7c8710e5aa2f83cca436-2-1793078486197-1793078520586696628.sigmf-data",
+        "bytes": 32768,
+        "sha256": "184bae2d94bd80e9195510da1fb0f247e5d9ec25a2518e946632a1e8c35c9b1e",
+        "result_id": 49,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-a8c64fcf815d7c8710e5aa2f83cca436-2",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-a8c64fcf815d7c8710e5aa2f83cca436-2-1793078486197-1793078520586696628.sigmf-meta",
+        "bytes": 683,
+        "sha256": "f8440bf679e99478c4d341c78ab45c4a15d41de92af063906181131955a99126",
+        "result_id": 49,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-a8c64fcf815d7c8710e5aa2f83cca436-2",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      }
+    ],
+    "retention_delete": "Use Web results delete UI for each new result ID; preserve all other results."
+  },
+  "final_installed_r11_browser": {
+    "instruction": "请只解释刚才两个任务为什么结束，不启动新任务、不生成硬件计划、不采样。",
+    "records": {
+      "92d8c029-8e46-4ce7-a3cf-aed81a5fd11b": {
+        "identity": {
+          "plan_id": "92d8c029-8e46-4ce7-a3cf-aed81a5fd11b",
+          "hash": "1151edf8b395b73b423d9073d0499aed8d4ee6ccf3d00510a66ec5da65fbbd52",
+          "app_session_id": "session-1793076607439",
+          "controller_epoch": "2652436074325bfdcb8e1ef21c4d4a52",
+          "session_generation": 1793078725174,
+          "request_id": 1,
+          "deadline_unix_ms": 1793078787669
+        },
+        "decision": "accepted",
+        "execution": "completed"
+      }
+    },
+    "events": [
+      {
+        "id": 165,
+        "timestamp_ms": 1793078757653,
+        "kind": "operator",
+        "text": "Operator> 请只解释刚才两个任务为什么结束，不启动新任务、不生成硬件计划、不采样。"
+      },
+      {
+        "id": 166,
+        "timestamp_ms": 1793078757665,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 167,
+        "timestamp_ms": 1793078762204,
+        "kind": "plan",
+        "text": "已验证计划：保持当前状态：任务一（10轮扫描）被您的 /stop 中断，新指令改为4轮扫频，故未续。任务二按条件执行：2455–2456MHz短扫得2455:-51.15、2456:-53.52 dBFS，0候选，符合“无候选即结束”，遂停止。两者均未证明相应…"
+      },
+      {
+        "id": 168,
+        "timestamp_ms": 1793078762205,
+        "kind": "decision",
+        "text": "决策依据> request=1、generation=1793078725174 与当前上下文一致；状态=Idle；保持不触发硬件，原因文本已通过长度和可打印字符校验"
+      },
+      {
+        "id": 169,
+        "timestamp_ms": 1793078762205,
+        "kind": "qwen",
+        "text": "Agent> 任务一（10轮扫描）被您的 /stop 中断，新指令改为4轮扫频，故未续。任务二按条件执行：2455–2456MHz短扫得2455:-51.15、2456:-53.52 dBFS，0候选，符合“无候选即结束”，遂停止。两者均未证明相应…"
+      },
+      {
+        "id": 170,
+        "timestamp_ms": 1793078762206,
+        "kind": "system",
+        "text": "该计划当前没有生产执行器，仅记录建议，不会操作硬件。"
+      }
+    ],
+    "page_errors": [],
+    "no_new_rf_or_results": true,
+    "result_count": 39
+  },
+  "deployment": {
+    "binary_release": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r10",
+    "planner_release": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8",
+    "binary_manifest": {
+      "version": "pi-durable-1.4.0-20261027-r10",
+      "source_base_commit": "a833688",
+      "purpose": "Unified autonomous task intent, finite budgets, mission fence and successful scan counter",
+      "files": [
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r10/sdr-agent",
+          "bytes": 2704152,
+          "sha256": "8c7e8fc3ff0108fea8f89985e3ac482f90b1b64bd92cade62b922c11f1f02a67"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r10/sdr-agent-web-console",
+          "bytes": 3335456,
+          "sha256": "956fc962c6a940f2f0138087ed6e1a479083557159efae696528498a34207202"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r10/sdrharness-planner.service",
+          "bytes": 976,
+          "sha256": "bb92f8d303d6be21d1f1c99332ffe07ce67b068ae09f7927281bda689e3a5866"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r10/sdrharness-web.service",
+          "bytes": 956,
+          "sha256": "9e7453361945d3c0d992c69899d1084fb49e985a5226176b22e2a85d0fb666c1"
+        }
+      ],
+      "bytes": 6041540
+    },
+    "planner_manifest": {
+      "version": "pi-durable-1.4.0-20261027-r8",
+      "source_base_commit": "a833688",
+      "purpose": "Natural-language task intent, bounded autonomous actions and adaptive survey goals",
+      "source_files": [
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/context-policy.mjs",
+          "bytes": 1496,
+          "sha256": "f3051f7976f233936af29f32a144f4c8129d909ab6b6640c7f8eb8b615108e7d"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/durable-maintenance.mjs",
+          "bytes": 5676,
+          "sha256": "568abe55db5d28fca566cfc23b192a61c19495f63739c53bcb9afe1d713f23c5"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/durable-planner.mjs",
+          "bytes": 27885,
+          "sha256": "ae4f45d08a8ceca349f5c997c8985c16fe23b28467c5d17b5b48bd32833fb783"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/durable-service-state.mjs",
+          "bytes": 1072,
+          "sha256": "64b523a85df2e0e7ac9af91695a50b6fd50ab34a428c63b1554348caff2ef0bc"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/durable-session-runtime.mjs",
+          "bytes": 9356,
+          "sha256": "a632434bd0ec6f1223621a4eea089fedb650eb767da22ed88634e26ad1b44e68"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/durable-store.mjs",
+          "bytes": 2598,
+          "sha256": "cdd52bb8a57ec1f3f543809a51025fb1b4a1c53f0b5603c4c31482b47c4a223a"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/main.mjs",
+          "bytes": 16309,
+          "sha256": "3e3ec5c187fd006df0ec28da8b5c40e5ce7443cd04e021601dc62026378e2afe"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/model-profile.mjs",
+          "bytes": 1570,
+          "sha256": "fc1700c4bcde098d89f02bf2b7bad4256b2e1b767b273c073daf269783b5d132"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/planner-failure.mjs",
+          "bytes": 1515,
+          "sha256": "fafc5b15070cd96dff5cc5068399504a0ca6de7a18a076eeece8ce59f11fbc8c"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/protocol.mjs",
+          "bytes": 13108,
+          "sha256": "dc663dbb8730cc8d6b949bfa9c8a41ca78750059222a85af4396fe5a8ba9a27a"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/provider-config.mjs",
+          "bytes": 6369,
+          "sha256": "380f55f5d2ec0669c54a72d08ed86ff49ef990a2c0ecd343d3779d9f19ffe8f8"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/recognition-observation.mjs",
+          "bytes": 4867,
+          "sha256": "5960c40db37ff789a09c55233dd31bc6bc3af784e632494175405e71dba80db2"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/run-lease.mjs",
+          "bytes": 554,
+          "sha256": "270a6344aaf0b6bb48bafb11ef054c33fdbc162972c835801c9fdee9f18f3801"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/runtime-path.mjs",
+          "bytes": 625,
+          "sha256": "ba64cd053b22f1fbd4f5c11d1e24a0bbec169d13167f28825cf0045e84bdb8fb"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/session-protocol.mjs",
+          "bytes": 5810,
+          "sha256": "6703a14095cb4227983b70512022b6f6631cbb80a5c7df2a44f87d6b347a814b"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/session-server.mjs",
+          "bytes": 5016,
+          "sha256": "44d7b081eb8c05146be90789186fbba957673e7f5c681d74bb6393f904e7e7a3"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/spark-stream.mjs",
+          "bytes": 10431,
+          "sha256": "503d7d0395f9555114cb4f0238c3b7415b48b2c3c55af56e93135508e463c999"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/survey-parameters.mjs",
+          "bytes": 2886,
+          "sha256": "46a78c9b50ea6d838a17a207598bf91b7206e035d21095b34bd2b7cf1fa094d8"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/system-prompt.mjs",
+          "bytes": 10523,
+          "sha256": "2f76927dcf6f860dc629f1bc1d4c3651848e064109ffafe2b51d863a6d1469eb"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/src/web-search.mjs",
+          "bytes": 7514,
+          "sha256": "cbb0931d9ba720ef3ecc4b298ddf7a6f31596029241b6a2a806a0ee6b6add57f"
+        }
+      ],
+      "dependency_lock": {
+        "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/package-lock.json",
+        "bytes": 45588,
+        "sha256": "bb1cb4e493f95687a5bfb69db7e8d4af799b93df52fc7e304c7ec3c62ab0592a"
+      },
+      "parent_manifest": {
+        "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r7/release-manifest.json",
+        "bytes": 908,
+        "sha256": "b6d2990ead23ffc9c5e2aaf594e3a91a6b9c944fde6a181ea9832daae14a7ead"
+      }
+    },
+    "binary_manifest_digest": {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r10/release-manifest.json",
+      "bytes": 1145,
+      "sha256": "3e8d0f2e8198574189afac416c47e2926c51a5ca7c4dab0d973ef2cceac48c18"
+    },
+    "planner_manifest_digest": {
+      "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8/release-manifest.json",
+      "bytes": 5463,
+      "sha256": "3c8b7e08c04807cb2697ca94b01732ad853eb04ba177e042cf0ae16dc5f0dc7c"
+    },
+    "installed_binary": {
+      "path": "/home/jetson/.local/lib/sdrharness/bin/sdr-agent",
+      "bytes": 2704152,
+      "sha256": "d9f8cdc87bb70318f26771bf9f8f116f994435ceff0016e3994dd01220983747"
+    },
+    "session_id": "session-1793076607439",
+    "result_count_before": 34,
+    "corpus_preserved_at_install": true,
+    "predecessors": [
+      "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r9",
+      "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r7"
+    ],
+    "key_config_changes": false,
+    "final_binary_release": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r11",
+    "final_binary_manifest": {
+      "version": "pi-durable-1.4.0-20261027-r11",
+      "source_base_commit": "a833688",
+      "purpose": "Unified model-interpreted autonomous tasks; clean new-goal entry after task completion",
+      "files": [
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r11/sdr-agent",
+          "bytes": 2704152,
+          "sha256": "d9f8cdc87bb70318f26771bf9f8f116f994435ceff0016e3994dd01220983747"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r11/sdr-agent-web-console",
+          "bytes": 3335456,
+          "sha256": "956fc962c6a940f2f0138087ed6e1a479083557159efae696528498a34207202"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r11/sdrharness-planner.service",
+          "bytes": 976,
+          "sha256": "bb92f8d303d6be21d1f1c99332ffe07ce67b068ae09f7927281bda689e3a5866"
+        },
+        {
+          "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r11/sdrharness-web.service",
+          "bytes": 956,
+          "sha256": "9e7453361945d3c0d992c69899d1084fb49e985a5226176b22e2a85d0fb666c1"
+        }
+      ]
+    },
+    "final_binary_manifest_digest": {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r11/release-manifest.json",
+      "bytes": 1122,
+      "sha256": "c85737cc5554be12fd53b00c3ab8bc036dd7ff14b039f50e4f31cf6ceaa4cee0"
+    },
+    "result_count_preserved_final": 39,
+    "entry_fix": "After completed task, a new natural-language request clears the inactive automatic grant before planning."
+  },
+  "retained_packages": [
+    {
+      "root": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r11",
+      "files": 5,
+      "symlinks": 0,
+      "bytes": 6042662,
+      "tree_sha256": "272df82ffc2f6abe725c102b1e21b7b07864189b4195b6226ab0076be1e1dc45",
+      "tree_digest_algorithm": "sha256(JSON compact sorted rows [relative_posix_path,size,sha256] or [relative_posix_path,\"symlink\",target]; ensure_ascii=true)"
+    },
+    {
+      "root": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r8",
+      "files": 12681,
+      "symlinks": 2,
+      "bytes": 79734832,
+      "tree_sha256": "5391fff7a7b9376f2993a275bdaf97c88d95cdbb6df0c700e4f92ad20febff8c",
+      "tree_digest_algorithm": "sha256(JSON compact sorted rows [relative_posix_path,size,sha256] or [relative_posix_path,\"symlink\",target]; ensure_ascii=true)"
+    }
+  ],
+  "deleted_predecessor_packages": [
+    {
+      "root": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r8",
+      "files": 5,
+      "symlinks": 0,
+      "bytes": 6018105,
+      "tree_sha256": "572fa40f7a888f7d5f087806acec024f9fd76d853192757652838550a2c76de8",
+      "tree_digest_algorithm": "sha256(JSON compact sorted rows [relative_posix_path,size,sha256] or [relative_posix_path,\"symlink\",target]; ensure_ascii=true)",
+      "manifest": {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r8/release-manifest.json",
+        "bytes": 1141,
+        "sha256": "771e70def082ac2b50a4a147793fcbd1e63ffc88eae32925ff3b77ebe2c3003a"
+      },
+      "verified_absent": true
+    },
+    {
+      "root": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r9",
+      "files": 5,
+      "symlinks": 0,
+      "bytes": 6026280,
+      "tree_sha256": "334e434781087da8be24760e93f7398e011466cee66e094907ebff44d65f6a0b",
+      "tree_digest_algorithm": "sha256(JSON compact sorted rows [relative_posix_path,size,sha256] or [relative_posix_path,\"symlink\",target]; ensure_ascii=true)",
+      "manifest": {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r9/release-manifest.json",
+        "bytes": 1124,
+        "sha256": "3098c1d426ce1918a5b8b3d66f8aef89467b3784ef5557056839bdc7e899748c"
+      },
+      "verified_absent": true
+    },
+    {
+      "root": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r10",
+      "files": 5,
+      "symlinks": 0,
+      "bytes": 6042685,
+      "tree_sha256": "065388a54772641d47e571c7a9917c2f8795a95827fe22b8236eab4607190a77",
+      "tree_digest_algorithm": "sha256(JSON compact sorted rows [relative_posix_path,size,sha256] or [relative_posix_path,\"symlink\",target]; ensure_ascii=true)",
+      "manifest": {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r10/release-manifest.json",
+        "bytes": 1145,
+        "sha256": "3e8d0f2e8198574189afac416c47e2926c51a5ca7c4dab0d973ef2cceac48c18"
+      },
+      "verified_absent": true
+    },
+    {
+      "root": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r6",
+      "files": 12681,
+      "symlinks": 2,
+      "bytes": 83257328,
+      "tree_sha256": "790638c70ab5c6d217e0e0197cc73de6b13dcb33ad06be0548fd2536bb4c1128",
+      "tree_digest_algorithm": "sha256(JSON compact sorted rows [relative_posix_path,size,sha256] or [relative_posix_path,\"symlink\",target]; ensure_ascii=true)",
+      "manifest": {
+        "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r6/release-manifest.json",
+        "bytes": 3531454,
+        "sha256": "3876f1227ee6f1b1a6119e1ff3d028f3ad0ae7be1bcaad5c823c6608084d401f"
+      },
+      "verified_absent": true
+    },
+    {
+      "root": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r7",
+      "files": 12681,
+      "symlinks": 2,
+      "bytes": 79727282,
+      "tree_sha256": "f17f3b894f2dd45e63d17b2960cc57a1652615ec0a09dde9edfbd1e1a8bb4f8f",
+      "tree_digest_algorithm": "sha256(JSON compact sorted rows [relative_posix_path,size,sha256] or [relative_posix_path,\"symlink\",target]; ensure_ascii=true)",
+      "manifest": {
+        "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r7/release-manifest.json",
+        "bytes": 908,
+        "sha256": "b6d2990ead23ffc9c5e2aaf594e3a91a6b9c944fde6a181ea9832daae14a7ead"
+      },
+      "verified_absent": true
+    }
+  ],
+  "deployment_boundary": "r10 ran both RF goals. r11 only adds clearing of an inactive old task before a new root request (regression covered); same RF path/counter. r11 installed hash/status and real-provider browser hold passed without new RF. Planner r8 is unchanged between these validations.",
+  "retention": {
+    "purpose": "Five user-visible RF observations verify adaptive count and qualitative termination; current runtime and application sessions/ledgers remain installed",
+    "new_rf_files": [
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-e80412ddb2686b2ee25902144640ff9e-7-1793078486198-1793078560975528438.sigmf-data",
+        "bytes": 32768,
+        "sha256": "05df8811bbb619a6116643022f48b780a10b3b53e759d54a7463e1250c3cf980",
+        "result_id": 53,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-e80412ddb2686b2ee25902144640ff9e-7",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-e80412ddb2686b2ee25902144640ff9e-7-1793078486198-1793078560975528438.sigmf-meta",
+        "bytes": 683,
+        "sha256": "30e57b37d06d507c13e178e04c891a57af158d03a294b3681b340873ac5c0377",
+        "result_id": 53,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-e80412ddb2686b2ee25902144640ff9e-7",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-4ae1e8c88bedcb19a8e1d2ec89fa1274-5-1793078486197-1793078540058998108.sigmf-data",
+        "bytes": 81920,
+        "sha256": "d93d3f9da83f277e1c345a0127d8b9848b3296e25a892ee701e1b1d23c664285",
+        "result_id": 52,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-4ae1e8c88bedcb19a8e1d2ec89fa1274-5",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-4ae1e8c88bedcb19a8e1d2ec89fa1274-5-1793078486197-1793078540058998108.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "e744dd6abb8c853d40ac73adcc7f34733d91dce2833c2f760b47909790eafffb",
+        "result_id": 52,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-4ae1e8c88bedcb19a8e1d2ec89fa1274-5",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-77107d3b8e6c3115e9afe14e91224b1d-4-1793078486197-1793078533169071943.sigmf-data",
+        "bytes": 81920,
+        "sha256": "a62c52d40026aad47fc42073c35fdac72f1950135bba7600b14b4485cc94a189",
+        "result_id": 51,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-77107d3b8e6c3115e9afe14e91224b1d-4",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-77107d3b8e6c3115e9afe14e91224b1d-4-1793078486197-1793078533169071943.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "179cc41cf0334cae0f24defbb9bf2587715aff5b2ad2b9459b9a37647a9e8b42",
+        "result_id": 51,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-77107d3b8e6c3115e9afe14e91224b1d-4",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-63d1c607f5d395a4798406ab3bc568b2-3-1793078486197-1793078528492766290.sigmf-data",
+        "bytes": 81920,
+        "sha256": "85480e0e1bc768f798d7f7e3c018eb83a14336ae5139afac0f963849abf06518",
+        "result_id": 50,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-63d1c607f5d395a4798406ab3bc568b2-3",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-63d1c607f5d395a4798406ab3bc568b2-3-1793078486197-1793078528492766290.sigmf-meta",
+        "bytes": 1267,
+        "sha256": "68686fb5833cb4b826e70e9e6812d3befe140f7a89d9db406cb0915f0b818885",
+        "result_id": 50,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-63d1c607f5d395a4798406ab3bc568b2-3",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-a8c64fcf815d7c8710e5aa2f83cca436-2-1793078486197-1793078520586696628.sigmf-data",
+        "bytes": 32768,
+        "sha256": "184bae2d94bd80e9195510da1fb0f247e5d9ec25a2518e946632a1e8c35c9b1e",
+        "result_id": 49,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-a8c64fcf815d7c8710e5aa2f83cca436-2",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      },
+      {
+        "path": "/var/lib/sdrharness/web-console/captures/session-1793076607439/request-a8c64fcf815d7c8710e5aa2f83cca436-2-1793078486197-1793078520586696628.sigmf-meta",
+        "bytes": 683,
+        "sha256": "f8440bf679e99478c4d341c78ab45c4a15d41de92af063906181131955a99126",
+        "result_id": 49,
+        "session_id": "session-1793076607439",
+        "sweep_id": "request-a8c64fcf815d7c8710e5aa2f83cca436-2",
+        "profile": "RX1/RX0/A_BALANCED; AGX software aggregate; ci16_le; no recognizer/model"
+      }
+    ],
+    "new_rf_files_count": 10,
+    "new_rf_bytes": 316463,
+    "manual_delete_results": "Use Web result delete for result IDs 53,52,51,50,49 only; this removes corresponding IQ and metadata. Preserve pre-existing results and evidence.",
+    "manual_delete_packages": "Stop sdrharness-web.service and sdrharness-planner.service; replace/uninstall current binaries/planner/current before removing exact retained package roots. Do not delete application state or historical RF evidence."
+  },
+  "boundaries": {
+    "recognizer_available": false,
+    "thinking": "low enabled",
+    "keys_modified_or_copied": false,
+    "new_tx": false,
+    "model_training": false,
+    "unknown_historical_record_replayed": false,
+    "retained_preexisting_results": 34,
+    "total_results": 39,
+    "remaining_live_branch": "No candidate was detected in qualitative live case; its candidate-inspection branch was not exercised as a new real-RF branch."
+  },
+  "final_state": {
+    "events": [
+      {
+        "id": 176,
+        "timestamp_ms": 1793078762406,
+        "kind": "cruise",
+        "text": "巡航状态：未启用；当前每个可执行动作都需要人工批准。"
+      },
+      {
+        "id": 177,
+        "timestamp_ms": 1793078762407,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 178,
+        "timestamp_ms": 1793078955872,
+        "kind": "operator",
+        "text": "Operator> /stop"
+      },
+      {
+        "id": 179,
+        "timestamp_ms": 1793078955958,
+        "kind": "system",
+        "text": "会话已停止；旧计划已失效。"
+      },
+      {
+        "id": 180,
+        "timestamp_ms": 1793078955959,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      },
+      {
+        "id": 181,
+        "timestamp_ms": 1793078956278,
+        "kind": "operator",
+        "text": "Operator> /status"
+      },
+      {
+        "id": 182,
+        "timestamp_ms": 1793078956283,
+        "kind": "system",
+        "text": "持久会话：最近记录中 0 项待核对，0 项阻塞；旧批准不会自动恢复。结果未知的计划不会重新执行。"
+      },
+      {
+        "id": 183,
+        "timestamp_ms": 1793078956283,
+        "kind": "system",
+        "text": "控制器状态：已保持，不会继续操作硬件；运行模式：逐步人工批准。"
+      },
+      {
+        "id": 184,
+        "timestamp_ms": 1793078956284,
+        "kind": "system",
+        "text": "Agent 会话：已打开；上游模型：空闲；等待处理的消息：0 条。"
+      },
+      {
+        "id": 185,
+        "timestamp_ms": 1793078956284,
+        "kind": "system",
+        "text": "人工批准：没有待处理计划；下一请求编号：2；安全代次：1793078725175。"
+      },
+      {
+        "id": 186,
+        "timestamp_ms": 1793078956285,
+        "kind": "cruise",
+        "text": "巡航状态：未启用；当前每个可执行动作都需要人工批准。"
+      },
+      {
+        "id": 187,
+        "timestamp_ms": 1793078956285,
+        "kind": "prompt",
+        "text": "SDR Agent> "
+      }
+    ],
+    "services": [
+      "active",
+      "active"
+    ],
+    "results": 39
+  },
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/b1027",
+    "files_deleted": 10918,
+    "bytes_deleted": 1492011222,
+    "symlinks_deleted": 0,
+    "verified_absent": true,
+    "test_sockets_remaining": []
+  }
+}

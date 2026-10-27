@@ -267,3 +267,11 @@ test("validates bounded cruise progress for automatic mode", () => {
     assert.throws(() => parseRequest(JSON.stringify(bad)));
   }
 });
+
+test("task intent carries model-selected goals and bounds without a fixed phrase parser", () => {
+  for (const target of [0, 3, 12, 25]) {
+    const action = normalizeAction({action:"start_task",mission:"按每轮结果选择下一步",target_sweeps:target,max_steps:32,max_seconds:600,max_iq_bytes:1048576,min_freq_hz:2445000000,max_freq_hz:2465000000});
+    assert.equal(action.kind,"start_task");assert.equal(action.target_sweeps,target);
+  }
+  assert.throws(()=>normalizeAction({action:"start_task",mission:"missing budgets"}));
+});

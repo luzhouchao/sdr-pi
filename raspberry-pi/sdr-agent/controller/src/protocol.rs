@@ -127,6 +127,15 @@ pub struct PlannerMeta {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum ProposedAction {
+    StartTask {
+        mission: String,
+        target_sweeps: u8,
+        max_steps: u8,
+        max_seconds: u64,
+        max_iq_bytes: u64,
+        min_freq_hz: u64,
+        max_freq_hz: u64,
+    },
     Hold {
         reason: String,
     },

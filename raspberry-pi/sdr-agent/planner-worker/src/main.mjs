@@ -231,6 +231,7 @@ function createPlanningAgent({
     executionMode: "sequential",
     parameters: surveyRequest ? surveyParametersSchema : Type.Object({
       action: Type.Union([
+        Type.Literal("start_task"),
         Type.Literal("hold"),
         Type.Literal("survey_band"),
         Type.Literal("inspect_candidate"),
@@ -238,6 +239,9 @@ function createPlanningAgent({
         Type.Literal("run_local_recognition"),
         Type.Literal("stop_session"),
       ]),
+      mission: Type.Optional(Type.String({ maxLength: 700 })),
+      target_sweeps: Type.Optional(Type.Integer({ minimum: 0, maximum: 128 })),
+      ...Object.fromEntries(["max_steps", "max_seconds", "max_iq_bytes", "min_freq_hz", "max_freq_hz"].map(k => [k, Type.Optional(Type.Integer({ minimum: 1 }))])),
       reason: Type.Optional(Type.String({ maxLength: 256 })),
       candidate_id: Type.Optional(Type.String({ maxLength: 64 })),
       start_hz: Type.Optional(Type.Integer({ minimum: 1 })),

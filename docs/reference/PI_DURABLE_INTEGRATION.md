@@ -32,8 +32,8 @@ model/thinking/instructions/tools并撤销旧请求执行资格。用户要求�
 
 ## 当前安装与离线维护
 
-Planner为 `planner/releases/pi-durable-1.4.0-20261027-r6`，通过 `planner/current` 选择；
-Controller及Web制品统一为 `releases/pi-durable-1.4.0-20261027-r8`，根均在
+Planner为 `planner/releases/pi-durable-1.4.0-20261027-r8`，通过 `planner/current` 选择；
+Controller及Web制品统一为 `releases/pi-durable-1.4.0-20261027-r11`，根均在
 `/home/jetson/.local/lib/sdrharness/`。前轮37个旧安装目录及随后替换的Planner/二进制r5包已删除，旧版回滚路径不再可用；
 应用结果、IQ和持久账本保留。精确路径、大小、SHA和清理见
 [最新版本验收](../validation/PI_DURABLE_CORE_2026-10-26.md#仅支持最新版与旧包删除2026-10-27)。
@@ -62,6 +62,27 @@ OpenCode Go当前选择为 `deepseek-v4.1-flash`，Base URL为
 重复点击在模型运行期间不会追加请求。缺少当前代次原任务时提示重新提交。
 原绝对期限不延长，旧版崩溃后记录的unknown仍保持未知。Controller r8替换的r7包已删除。见
 [过期后点击重新规划](../validation/PI_DURABLE_CORE_2026-10-26.md#过期后点击批准重新规划2026-10-27)。
+
+## 自然语言自动任务
+
+用户不必选择固定轮数/探索巡航两种入口，也不依赖特定句式解析。Planner理解自然语言目标后，
+通过同一个`submit_plan`提出`start_task`：`mission`、`target_sweeps`、`max_steps`、
+`max_seconds`、`max_iq_bytes`、`min_freq_hz`和`max_freq_hz`。
+Controller验证有限任务，等待本次模型生成结束、检查存储空间，再建立新安全代次。
+配置动作本身不采样；其账本completed只表示任务配置完成。
+
+`target_sweeps`为1–128时，只有完整扫频成功落盘且射频恢复通过才计数，到目标后停止；
+候选复查/采集消耗动作与字节预算，不计完整扫描。每轮仍由模型根据新观测自适应决策，
+不固定重放旧参数。正常空候选不会替代明确指定的完成次数，但错误、预算或安全条件仍可提前停止，
+此时报告未完成。`target_sweeps=0`用于语义目标、时间任务或扫描后还要复查的复合目标，
+模型根据观测选择继续或结束；此类探索仍保留既有空扫/局部访问进度门。
+
+任务频率围栏由Controller校验，原能力、每动作预算、期限、批准门保持有效。
+运行中的任务不能通过`start_task`追加预算；`/stop`优先取消，重启不恢复自动任务或旧批准。
+完成后的新请求清除旧任务执行状态。普通问题返回hold；关键范围不明时应解释或澄清，
+不承诺任意自然语言都能无歧义解释。显式`/auto`和人工批准命令仍用于调试及操作。
+当前r11/Planner r8的部署、旧包删除和实测边界见
+[统一任务验收](../validation/PI_DURABLE_CORE_2026-10-26.md#自然语言统一自动任务2026-10-27)。
 
 维护仅在两服务停机后执行；在线调用明确拒绝。以运行用户jetson执行：
 
