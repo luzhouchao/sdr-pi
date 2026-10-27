@@ -260,7 +260,7 @@ test('DeepSeek structured request preserves thinking with compatible automatic t
  const {planningUpstream}=await import('../test-support/planning-upstream.mjs');
  const {upstream,requests}=await planningUpstream();
  t.after(async()=>{upstream.closeAllConnections();await new Promise(r=>upstream.close(r));});
- const model=resolveModelProfile({provider:'opencode-go',model:'deepseek-v4.1-flash',api:'openai-completions',baseUrl:'https://opencode.ai/zen/go/v1',contextWindow:500000},4096);
+ const model=resolveModelProfile({provider:'opencode-go',model:'deepseek-v4.1-flash',api:'openai-completions',baseUrl:'https://opencode.ai/inference/go/v1',contextWindow:500000},4096);
  assert.equal(model.compat.thinkingFormat,'deepseek');model.baseUrl=`http://127.0.0.1:${upstream.address().port}/v1`;
  const models=createModels();models.setProvider(createProvider({id:model.provider,baseUrl:model.baseUrl,auth:{apiKey:{name:'test',resolve:async()=>({auth:{apiKey:'test-only'},source:'test'})}},models:[model],api:openAICompletionsApi()}));
  const f=await fixture(t,{models,thinkingLevel:"low",model:{provider:model.provider,modelId:model.id}});

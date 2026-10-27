@@ -55,7 +55,7 @@ test("accepts the Pi-inspired prompting command subset", () => {
     assert.equal(parsed.type, type);
     assert.equal(parsed.context.instruction, "查看当前状态");
   }
-  for (const type of ["open_session", "abort", "clear_queue", "get_state", "close_session"]) {
+  for (const type of ["abort", "clear_queue", "get_state", "close_session"]) {
     assert.equal(parseSessionCommand(JSON.stringify(command(type))).type, type);
   }
 });
@@ -80,7 +80,7 @@ test("rejects unknown commands and fields", () => {
 test("correlates responses and events", () => {
   const source = command("get_state");
   assert.deepEqual(makeSessionResponse(source, true, { active: false }), {
-    protocol_version: 1,
+    protocol_version: 2,
     command_id: 1,
     session_generation: 3,
     type: "response",
@@ -89,7 +89,7 @@ test("correlates responses and events", () => {
     data: { active: false },
   });
   assert.deepEqual(makeSessionEvent(3, "agent_start"), {
-    protocol_version: 1,
+    protocol_version: 2,
     session_generation: 3,
     type: "event",
     event: "agent_start",
@@ -101,4 +101,11 @@ test("bounds error text", () => {
   assert.equal(response.success, false);
   assert.equal(response.error.includes("\n"), false);
   assert.ok(Buffer.byteLength(response.error, "utf8") <= 512);
+});
+
+test("rejects old session v1 and requires durable identity", () => {
+  assert.throws(() => parseSessionCommand(JSON.stringify({...command("abort"), protocol_version:1})), /unsupported/);
+  assert.throws(() => parseSessionCommand(JSON.stringify(command("open_session"))), /missing/);
+  const open=command("open_session",{app_session_id:"current_app",controller_epoch:"current_epoch"});
+  assert.equal(parseSessionCommand(JSON.stringify(open)).app_session_id,"current_app");
 });

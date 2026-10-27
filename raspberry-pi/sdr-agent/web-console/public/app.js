@@ -432,9 +432,9 @@ async function clearProvider() {
 
 function presetOpenCode() {
   document.querySelector('#provider-api').value = 'openai-completions';
-  document.querySelector('#provider-base-url').value = 'https://opencode.ai/zen/go/v1';
+  document.querySelector('#provider-base-url').value = 'https://opencode.ai/inference/go/v1';
   document.querySelector('#provider-id').value = 'opencode-go';
-  document.querySelector('#provider-model').value = 'deepseek-v4-flash';
+  document.querySelector('#provider-model').value = 'deepseek-v4.1-flash';
   document.querySelector('#provider-context-window').value = '196608';
   document.querySelector('#provider-compression-threshold').value = '90';
   clearModelInventory();

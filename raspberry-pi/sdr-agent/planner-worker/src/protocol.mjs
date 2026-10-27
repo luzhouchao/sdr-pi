@@ -199,9 +199,6 @@ function validateObservation(observation) {
     "recognizer_available",
     "dropped_observations",
   ];
-  if (Object.hasOwn(observation.health, "fpga_available")) {
-    healthKeys.push("fpga_available");
-  }
   requireExactKeys(
     observation.health,
     healthKeys,
@@ -216,12 +213,6 @@ function validateObservation(observation) {
     if (typeof observation.health[field] !== "boolean") {
       throw new Error(`observation.health.${field} must be boolean`);
     }
-  }
-  if (Object.hasOwn(observation.health, "fpga_available")) {
-    if (observation.health.fpga_available !== false) {
-      throw new Error("observation.health.fpga_available is retired and must be false");
-    }
-    delete observation.health.fpga_available;
   }
   requireSafeInteger(
     observation.health.dropped_observations,

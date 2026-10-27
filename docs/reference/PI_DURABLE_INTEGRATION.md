@@ -1,6 +1,6 @@
 # pi-durable 接入与运维
 
-状态：P0—P3已实现并在AGX安装，保留思考；随后生产Web两点扫频与两轮有界自动巡航已验收。日期：2026-10-26。
+状态：P0—P3及最新版本收敛已在AGX安装，保留思考；会话仅支持durable v2，旧安装包已按用户要求删除。日期：2026-10-27。
 进展和边界见[隔离核心验证](../validation/PI_DURABLE_CORE_2026-10-26.md)。
 下文设计基线/讨论保留当时语境；当前安装与运维以上方状态及以下运维段为准。
 基线为 `490d83e9efda50c867ec16df124d0b805b7b486c`，分支 `codex/sdr-improvements`。
@@ -20,22 +20,27 @@
 
 巡航进度门源码/离线验收已完成：自动模式请求新增有界cruise摘要（人工模式省略），
 本轮局部访问最多3次、无候选后换段、连续3轮空候选停；细节见
-[规则验收](../validation/PI_DURABLE_CORE_2026-10-26.md#巡航规则离线修复2026-10-27)。当前安装尚未应用此改动。
+[规则验收](../validation/PI_DURABLE_CORE_2026-10-26.md#巡航规则离线修复2026-10-27)。当前r5已应用此改动；本轮以离线规则回放、真实hold和浏览器验收，未新增RF。
 
 ## 当前安装与离线维护
 
-Planner为 `planner/releases/pi-durable-1.4.0-20261026-r4`，通过 `planner/current` 选择；
-Controller制品为 `releases/pi-durable-1.4.0-20261026-r4`，Web保持 `releases/pi-durable-1.4.0-20261026`，根均在
-`/home/jetson/.local/lib/sdrharness/`。精确大小、SHA、回滚和清理见
-[部署验证](../validation/PI_DURABLE_CORE_2026-10-26.md#p3持久目录维护与实际部署)及[巡航修复](../validation/PI_DURABLE_CORE_2026-10-26.md#有界自动巡航与重试2026-10-26)。
+Planner为 `planner/releases/pi-durable-1.4.0-20261027-r5`，通过 `planner/current` 选择；
+Controller及Web制品统一为 `releases/pi-durable-1.4.0-20261027-r5`，根均在
+`/home/jetson/.local/lib/sdrharness/`。37个旧安装目录已删除，旧版回滚路径不再可用；
+应用结果、IQ和持久账本保留。精确路径、大小、SHA和清理见
+[最新版本验收](../validation/PI_DURABLE_CORE_2026-10-26.md#仅支持最新版与旧包删除2026-10-27)。
+OpenCode Go当前选择为 `deepseek-v4.1-flash`，Base URL为
+`https://opencode.ai/inference/go/v1`，API为 `openai-completions`；必须匹配当前Pi目录，
+旧Zen地址和旧模型别名不再回退。真实hold已通过，新key原地保留且未复制。
 
-- Planner unit设置 `SDR_DURABLE_STATE_DIR=/var/lib/sdrharness-planner`，0700；
+- Planner启动必须配置 `SDR_DURABLE_STATE_DIR`，unit设置 `SDR_DURABLE_STATE_DIR=/var/lib/sdrharness-planner`，0700；
   `service.sqlite` 的独占owner锁在触碰socket前取得。每业务会话独立
   `<app_session_id>/planner.sqlite`，0600，最多128个目录、每库64MiB业务门限。
   旧隔离开关 `SDR_DURABLE_DB` 会明确拒绝启动，不能静默退回v1。
 - Web给Controller传稳定 `SDR_DURABLE_APP_SESSION_ID`，账本根为
   `/var/lib/sdrharness/web-console/plan-ledger`。终端仍可用持久session路径生成稳定ID；
-  安装CLI独立使用时需显式设置账本根才启用v2，未设置仍兼容v1。
+  安装CLI始终使用v2，默认账本根为 `$XDG_STATE_HOME/sdrharness/plan-ledger`，
+  未设置XDG时为 `$HOME/.local/state/sdrharness/plan-ledger`；可用 `SDR_DURABLE_CONTROLLER_DIR` 覆盖。
 - SIGTERM停止新请求，等待session dispose和进行中的one-shot，再释放根锁。
   正常退出与SIGKILL均不赋予旧请求新的执行资格；新epoch不会恢复旧批准或自动重发未知提案。
 - DeepSeek保留原Planner的low思考级别，显式传给Harness及实际模型入口。
@@ -178,7 +183,7 @@ Durable 使用 Models/Provider；不能假设把旧 Agent 放进 Harness 就能�
 载荷钩子是否可等价接入尚未核实；这是首个技术验证项。
 不为绕过适配问题改掉用户 provider、模型、Base URL 或 key。
 
-当前保存配置为 opencode-go/deepseek-v4.1-flash、openai-completions，
+设计时保存配置为 opencode-go/deepseek-v4.1-flash、openai-completions，
 Base URL为 https://opencode.ai/zen/go/v1，context_window=500000，key已配置。
 这是2026-10-26非秘密字段核对结果，不代表旧地址的在线兼容性已验证。
 P0模拟测试通过后，以此用户选择做仅hold/文本的真实提供商验证。
@@ -247,7 +252,8 @@ Controller受理前后、ACK丢失、执行开始/完成前后、Worker/Controll
 
 回滚前停接新输入并使旧Controller代次失效，处理/冻结未决提案，关闭库后备份。
 关闭进程不是“所有任务已取消”，重开库仍可能恢复未决任务，必须有持久的暂停/代次门。
-原子切换 planner/current 回旧制品；旧版不读取或重写新库。
+以下是历史P3回滚设计；2026-10-27用户要求删除旧安装包后，旧制品已不存在。
+历史操作：原子切换 planner/current 回旧制品；旧版不读取或重写新库。
 保留隔离后的新库，旧版只可载入不含权限的摘要。再次升级先处理隔离的outbox。
 
 粗估 P0 1–2 人日、P1 2–4 人日、P2 3–5 人日、P3 1–2 人日。

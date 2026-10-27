@@ -366,3 +366,5 @@
 - [pi-durable既有8步决策复盘、反馈核对与定位/停止边界](PI_DURABLE_CRUISE_REVIEW_2026-10-27.json)
 
 - [巡航测量语义、进度硬门与记录回放离线验收](PI_DURABLE_CRUISE_POLICY_2026-10-27.json)
+
+- [2026-10-27 最新版本收敛/旧包删除](PI_DURABLE_LATEST_ONLY_2026-10-27.json)：durable v2、r5部署、真实hold、浏览器与精确清理；旧回滚目录已按用户要求删除。

@@ -1,0 +1,660 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "source_base_commit": "dbd999b",
+  "scope": "latest-only durable v2 deployment and explicit old software deletion; no RF",
+  "changes": [
+    "Deleted obsolete session-runtime.mjs and its v1 tests (747 lines)",
+    "Session v2 required with persistent state; standalone Controller defaults to XDG_STATE_HOME or HOME/.local/state/sdrharness/plan-ledger",
+    "OpenCode requires current Pi catalog model/API/endpoint; legacy aliases/fallback removed",
+    "Current PlanningContext rejects retired fpga_available; protected request migrated",
+    "r5 includes previously offline cruise policy; browser preset updated; Pi notices corrected"
+  ],
+  "contract_note": "one-shot planning and read-only health retain their current v1 contracts, distinct from removed session v1",
+  "tests": {
+    "controller_passed": 150,
+    "controller_ignored": 1,
+    "node_passed": 100,
+    "web_passed": 38,
+    "web_ignored": 2,
+    "rust_fmt": "passed",
+    "all_target_clippy_D_warnings": "passed",
+    "log_digests": [
+      {
+        "path": "/var/tmp/sdrharness-dev/l1027/controller-final.log",
+        "bytes": 14394,
+        "sha256": "f80756c29d765e14c58aae3479cbf09cc18a53753aa28be67b9e1eee2e2354c2"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/l1027/web-final.log",
+        "bytes": 4254,
+        "sha256": "feb7c2957803355aaced59c3f5ba044cc7fd9ecce86818bf4416d35f3282ec43"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/l1027/node-final.log",
+        "bytes": 20262,
+        "sha256": "f32e5945e1a043bb6f86bb3a818ff3103b5857691abd53151fd23ded4aec5615"
+      },
+      {
+        "path": "/var/tmp/sdrharness-dev/l1027/web-rebuild.log",
+        "bytes": 166,
+        "sha256": "4ba83c34104cde0b56aee3ffd8c573971f3bdb9349d1358a122117f84e9103b9"
+      }
+    ]
+  },
+  "corrections": [
+    "Migrated obsolete synchronous-response/get_state fixtures and endpoint fixture to current contracts; final suites pass",
+    "First binary asset gate rejected stale embedded Web JS before service/config changes; fresh release rebuild passed",
+    "Initial post-start verification raced Planner socket startup after atomic deployment; waited for ready socket and completed verification without a second restart"
+  ],
+  "deployment": {
+    "planner_manifest": {
+      "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r5/release-manifest.json",
+      "bytes": 3531451,
+      "sha256": "deaf77606b3295ef291f6a5de1703bc3cb489d9e4f9fea160d3f70f7d8c82a1e"
+    },
+    "binary_manifest": {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r5/release-manifest.json",
+      "bytes": 1116,
+      "sha256": "59f1c05f4e8fa932556a7cb8764d091adde523c9351cdde6880ebba5293fce8a"
+    },
+    "planner_health": {
+      "schema_version": 1,
+      "service": "planner",
+      "ready": true,
+      "recognizer_available": false,
+      "session_protocol": 2,
+      "durable": true,
+      "session_available": false
+    },
+    "web_health": {
+      "ready": true,
+      "recognizer_available": false,
+      "schema_version": 1,
+      "service": "web"
+    },
+    "unchanged_result_count": 26,
+    "endpoint": "https://opencode.ai/inference/go/v1",
+    "model": "deepseek-v4.1-flash",
+    "thinking": "low retained; model.reasoning true verified by local SDK test",
+    "config_edits": "endpoint plus retired false FPGA field only; keys preserved in place without backup",
+    "session_id": "session-1789273063753",
+    "rf_operations": 0
+  },
+  "browser": {
+    "page_errors": [],
+    "preset_base_url": "https://opencode.ai/inference/go/v1",
+    "preset_model": "deepseek-v4.1-flash",
+    "preset_saved": false,
+    "historic_result_point_count": 5,
+    "hold_event_metadata": [
+      {
+        "id": 299,
+        "kind": "operator"
+      },
+      {
+        "id": 300,
+        "kind": "prompt"
+      },
+      {
+        "id": 301,
+        "kind": "plan"
+      },
+      {
+        "id": 302,
+        "kind": "decision"
+      },
+      {
+        "id": 303,
+        "kind": "qwen"
+      },
+      {
+        "id": 304,
+        "kind": "system"
+      }
+    ],
+    "thinking_seen": false,
+    "new_rx_results": 0
+  },
+  "hold_ledger": {
+    "identity": {
+      "plan_id": "12adecc4-5bf6-4645-9ba4-c358b28c5788",
+      "hash": "4bacdfd8badb9177c9d9004c2c3d65db3e2132e468e66dfd79c6dc52ea963011",
+      "app_session_id": "session-1789273063753",
+      "controller_epoch": "4f213d7d3e00ecc56ce705b414683d73",
+      "session_generation": 1793068599703,
+      "request_id": 1,
+      "deadline_unix_ms": 1793068657057
+    },
+    "decision": "accepted",
+    "execution": "completed"
+  },
+  "final_planner_health": {
+    "schema_version": 1,
+    "service": "planner",
+    "ready": true,
+    "recognizer_available": false,
+    "session_protocol": 2,
+    "durable": true,
+    "session_available": false
+  },
+  "spectrum_phase": "paused",
+  "retained_releases": [
+    {
+      "root": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r5",
+      "purpose": "current installed release and reinstall artifact",
+      "manifest": {
+        "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r5/release-manifest.json",
+        "bytes": 3531451,
+        "sha256": "deaf77606b3295ef291f6a5de1703bc3cb489d9e4f9fea160d3f70f7d8c82a1e"
+      },
+      "files": 12681,
+      "bytes": 83256894,
+      "manual_delete": "Stop sdrharness-web.service and sdrharness-planner.service; remove this exact root only after uninstall/replacement. Do not delete application state/results."
+    },
+    {
+      "root": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r5",
+      "purpose": "current installed release and reinstall artifact",
+      "manifest": {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r5/release-manifest.json",
+        "bytes": 1116,
+        "sha256": "59f1c05f4e8fa932556a7cb8764d091adde523c9351cdde6880ebba5293fce8a"
+      },
+      "files": 5,
+      "bytes": 6013984,
+      "manual_delete": "Stop sdrharness-web.service and sdrharness-planner.service; remove this exact root only after uninstall/replacement. Do not delete application state/results."
+    }
+  ],
+  "installed_binary_identities": [
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r5/sdr-agent",
+      "bytes": 2675480,
+      "sha256": "cbb8255d0bcb552122358b7945d54c46e7ebc817c2ffb40719d85c32dc967de1"
+    },
+    {
+      "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r5/sdr-agent-web-console",
+      "bytes": 3335456,
+      "sha256": "956fc962c6a940f2f0138087ed6e1a479083557159efae696528498a34207202"
+    }
+  ],
+  "old_release_deletion": {
+    "authorization": "User explicitly requested latest version only and direct deletion of old versions.",
+    "retained_release_roots": [
+      "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r5",
+      "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r5"
+    ],
+    "removed": [
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-0.84.4-47c8a56",
+        "files": 10732,
+        "bytes": 63585740,
+        "symlinks": 3,
+        "former_manifest_sha256": "4edbd36d0be0fa35791dabe0ea1f742fffc316869fc38f394c384a009b6c132d",
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-1.4.0-20261026",
+        "files": 11942,
+        "bytes": 71960398,
+        "symlinks": 2,
+        "former_manifest_sha256": "3146e88fb8c10268684309fb8e04aeb5b3e784280503b6b448023e6160643bc2",
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026-r3",
+        "files": 12682,
+        "bytes": 82240168,
+        "symlinks": 2,
+        "former_manifest_sha256": "052c0670c656e4c0159f8a7c2e98bf690645fc66fc09591c89b73ed2b4ca2585",
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261026-r4",
+        "files": 12682,
+        "bytes": 82240371,
+        "symlinks": 2,
+        "former_manifest_sha256": "348ae635927d9253c9e02c73f86a081215177f6bbd3b55294a74342c2deb21e4",
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260901-initial-survey-v1",
+        "files": 2,
+        "bytes": 2430976,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260901-pre-agx-inline-results-v1",
+        "files": 2,
+        "bytes": 2684928,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260902-pre-model-radio-profile-v1",
+        "files": 3,
+        "bytes": 3959576,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260903-complete-loop-fault-v1",
+        "files": 1,
+        "bytes": 1110800,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "sdr-agent-controller",
+            "bytes": 1110800,
+            "sha256": "3cbad970165b9b86d8bc6441e74ddf0d8bf9740c15e54cfcd94e8786269d16c6"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260903-execution-metadata-v1",
+        "files": 3,
+        "bytes": 4143896,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260903-execution-metadata-v2-final",
+        "files": 3,
+        "bytes": 4143896,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "sdr-agent-controller",
+            "bytes": 1098512,
+            "sha256": "51094232ff74bd3158a124b08ffa7e5d7bfc076b8b294ba9e1889245041fdba2"
+          },
+          {
+            "path": "sdr-agent-web-console",
+            "bytes": 1996016,
+            "sha256": "c1ab5ad9d05351ebc8430d974688c8de92b1d2fee7bad568337125d2ea151402"
+          },
+          {
+            "path": "sdr-agent",
+            "bytes": 1049368,
+            "sha256": "02f13e83be32e0f6ae659a9474266b42308c8c1561aaee09f47fefc8d89fa34c"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260903-p201-host-key-persistence-v1",
+        "files": 3,
+        "bytes": 919926,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260903-pre-complete-loop-fault-v1",
+        "files": 1,
+        "bytes": 1110800,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260903-pre-execution-metadata-v1",
+        "files": 3,
+        "bytes": 4070168,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260903-pre-multi-session-v1",
+        "files": 2,
+        "bytes": 3082248,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260903-pre-oneshot-sweep-v1",
+        "files": 1,
+        "bytes": 1098512,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260903-pre-sdrd-recovery-v1",
+        "files": 1,
+        "bytes": 796,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260903-pre-terminal-resume-v1",
+        "files": 2,
+        "bytes": 3053576,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260903-pre-terminal-streaming-v1",
+        "files": 1,
+        "bytes": 1049368,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260903-sdrd-recovery-v1",
+        "files": 4,
+        "bytes": 5167,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260904-rx1-identity-v1",
+        "files": 4,
+        "bytes": 6201360,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "sdr-agent-web-console",
+            "bytes": 1991920,
+            "sha256": "35f406579d00d7cbc170e27a00ef861365a122456526b1797300fe597c7c81c3"
+          },
+          {
+            "path": "sdr-agent",
+            "bytes": 1127192,
+            "sha256": "d722990c69ebdedfa4dec957f5c7c0ade9989524dfb3f00727c34ccb81f2f702"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260905-p201-corpus-store-v1",
+        "files": 2,
+        "bytes": 3889176,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "sdr-agent-controller",
+            "bytes": 1553168,
+            "sha256": "6815166ebeec18f92e2a8e69b810bf49a514b61001e42727a383bcc615f2fc29"
+          },
+          {
+            "path": "sdr-agent-web-console",
+            "bytes": 2336008,
+            "sha256": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260905-pre-p201-corpus-store-v1",
+        "files": 1,
+        "bytes": 1991920,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "sdr-agent-web-console",
+            "bytes": 1991920,
+            "sha256": "35f406579d00d7cbc170e27a00ef861365a122456526b1797300fe597c7c81c3"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-recovery-health-v1",
+        "files": 2,
+        "bytes": 4056,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-unified-cli-v1",
+        "files": 5,
+        "bytes": 2770939,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "bin/sdr-agent-controller",
+            "bytes": 1110800,
+            "sha256": "3cbad970165b9b86d8bc6441e74ddf0d8bf9740c15e54cfcd94e8786269d16c6"
+          },
+          {
+            "path": "bin/sdr-agent-health",
+            "bytes": 529096,
+            "sha256": "13102e3016cc2a8244cbceb99ae54dca7a26f2f025445e50e938e45e0f17138b"
+          },
+          {
+            "path": "bin/sdr-agent",
+            "bytes": 1127192,
+            "sha256": "d722990c69ebdedfa4dec957f5c7c0ade9989524dfb3f00727c34ccb81f2f702"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-web-recovery-v1",
+        "files": 3,
+        "bytes": 2337353,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "sdr-agent-web-console",
+            "bytes": 2336008,
+            "sha256": "4e2a56ebe7e303c560046c5dde2bbcc169226201b9e01b19f9454b3472ff2834"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-before-web-ui-v1",
+        "files": 4,
+        "bytes": 3279800,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "sdr-agent-web-console",
+            "bytes": 3278112,
+            "sha256": "c2e19b171e30475a06e38a074ec55282bf55f0f3ffe5de6cf1a8a730b957a0fe"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-recovery-health-v1",
+        "files": 3,
+        "bytes": 533107,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "sdr-agent-health",
+            "bytes": 529096,
+            "sha256": "13102e3016cc2a8244cbceb99ae54dca7a26f2f025445e50e938e45e0f17138b"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-unified-cli-v1",
+        "files": 3,
+        "bytes": 2549001,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "bin/sdr-agent",
+            "bytes": 2544408,
+            "sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-recovery-v1",
+        "files": 3,
+        "bytes": 3279451,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "sdr-agent-web-console",
+            "bytes": 3278112,
+            "sha256": "c2e19b171e30475a06e38a074ec55282bf55f0f3ffe5de6cf1a8a730b957a0fe"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260907-web-ui-v2",
+        "files": 4,
+        "bytes": 3288160,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "sdr-agent-web-console",
+            "bytes": 3286304,
+            "sha256": "7c374774b006ca8633fb74589878bc8af073f4d738ec95f87982d61cc2b6acf4"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-daily-ui-v1",
+        "files": 3,
+        "bytes": 3286846,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "sdr-agent-web-console",
+            "bytes": 3286304,
+            "sha256": "7c374774b006ca8633fb74589878bc8af073f4d738ec95f87982d61cc2b6acf4"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-before-rx-operations-v1",
+        "files": 4,
+        "bytes": 4094,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-daily-ui-v2",
+        "files": 3,
+        "bytes": 3283430,
+        "symlinks": 0,
+        "binaries": [
+          {
+            "path": "sdr-agent-web-console",
+            "bytes": 3282208,
+            "sha256": "9095a1be2aedd57cb08d02b9d1e772ab8f17137e84160877194baf14b474449d"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/20260908-rx-operations-v1",
+        "files": 9,
+        "bytes": 16321,
+        "symlinks": 0,
+        "binaries": [],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261026",
+        "files": 5,
+        "bytes": 5980955,
+        "symlinks": 0,
+        "former_manifest_sha256": "e7d808d830d7171c2968a49dd98964d65d85230d399171d93343edc6d2245654",
+        "binaries": [
+          {
+            "path": "sdr-agent-web-console",
+            "bytes": 3323168,
+            "sha256": "ee89bea61154b3a274245e5cb99316dba890c82ea61cd385faad7b274592e601"
+          },
+          {
+            "path": "sdr-agent",
+            "bytes": 2655000,
+            "sha256": "0ff37a800499cdcc102a69eeee60a5734179b4887061a60b46183354246609cf"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261026-r4",
+        "files": 2,
+        "bytes": 2655380,
+        "symlinks": 0,
+        "former_manifest_sha256": "1676bce65976c0a60e4cd6eb3f4eaaa1cc77c7fc4ad395df5a3834763a354b52",
+        "binaries": [
+          {
+            "path": "sdr-agent",
+            "bytes": 2655000,
+            "sha256": "d8dd4bbdf001ccb655f02af99afa1757bff5f0cab2b86da7391f76f9e85f2ce8"
+          }
+        ],
+        "verified_absent": true
+      },
+      {
+        "path": "/home/jetson/.local/lib/sdrharness/releases/pre-durable-20261026",
+        "files": 6,
+        "bytes": 5870340,
+        "symlinks": 0,
+        "former_manifest_sha256": "54f2a0cd1a7e1a7429cf780c5353c5aa8334d79f759ce4a5bf0189b8cf0690d1",
+        "binaries": [
+          {
+            "path": "sdr-agent-web-console",
+            "bytes": 3323168,
+            "sha256": "a3668851bc9a4ff2504fddd26e17ff434388787b26466edcf96a7ca3e3c17527"
+          },
+          {
+            "path": "sdr-agent",
+            "bytes": 2544408,
+            "sha256": "24b8340dd5c56bcf643a44e1eadbd11450e3b5e528d2ec72dc26103e9f23e25f"
+          }
+        ],
+        "verified_absent": true
+      }
+    ],
+    "total_files": 48136,
+    "total_bytes": 384112999,
+    "total_symlinks": 9,
+    "remaining_roots": [
+      "/home/jetson/.local/lib/sdrharness/planner/releases/pi-durable-1.4.0-20261027-r5",
+      "/home/jetson/.local/lib/sdrharness/releases/pi-durable-1.4.0-20261027-r5"
+    ],
+    "application_results_deleted": 0,
+    "keys_copied": false
+  },
+  "cleanup": {
+    "root": "/var/tmp/sdrharness-dev/l1027",
+    "files": 13591,
+    "bytes": 2352324146,
+    "symlinks": 10,
+    "sockets": [],
+    "method": "rmtree of verified exact feature root; no link following",
+    "verified_absent": true
+  },
+  "boundaries": [
+    "Thinking low retained and SDK mock verifies enabled thinking; real hold produced no separate thinking event, so no claim of new streamed reasoning",
+    "No new sweep/RX/TX/training; 26 historical result summaries unchanged",
+    "No new RF verification of deployed cruise rules; existing policy replay tests passed",
+    "recognizer_available=false",
+    "Legacy rollback artifacts explicitly deleted at user request; sealed historical evidence remains unchanged",
+    "Application results, IQ, durable state and keys preserved; no key backup made"
+  ]
+}

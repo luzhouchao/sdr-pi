@@ -2169,9 +2169,7 @@ impl ConsoleApp {
             if frame.get("type").and_then(Value::as_str) == Some("response")
                 && frame.get("command_id").and_then(Value::as_u64) == Some(command_id)
             {
-                if self.ledger.is_some()
-                    && frame.get("protocol_version").and_then(Value::as_u64) != Some(2)
-                {
+                if frame.get("protocol_version").and_then(Value::as_u64) != Some(2) {
                     return Err(invalid_input("durable response requires protocol v2").into());
                 }
                 if frame.get("session_generation").and_then(Value::as_u64)
@@ -2197,7 +2195,7 @@ impl ConsoleApp {
     fn send_session_command(&mut self, kind: &str, context: Option<PlanRequest>) -> AppResult<u64> {
         let command_id = self.client.next_command_id();
         let mut command = json!({
-            "protocol_version": if self.ledger.is_some() {2} else {1},
+            "protocol_version": 2,
             "command_id": command_id,
             "session_generation": self.session_generation,
             "type": kind,
@@ -2216,8 +2214,7 @@ impl ConsoleApp {
     }
 
     fn handle_frame(&mut self, frame: Value) -> AppResult<()> {
-        if self.ledger.is_some() && frame.get("protocol_version").and_then(Value::as_u64) != Some(2)
-        {
+        if frame.get("protocol_version").and_then(Value::as_u64) != Some(2) {
             return Err(invalid_input("durable frame requires protocol v2").into());
         }
         match frame.get("type").and_then(Value::as_str) {
@@ -2809,10 +2806,18 @@ fn execution_sweep_id(kind: &str, request_id: u64) -> std::io::Result<String> {
 }
 
 fn open_console_ledger(session_path: Option<&Path>) -> AppResult<Option<PlanLedger>> {
-    let Some(root) = env::var_os("SDR_DURABLE_CONTROLLER_DIR") else {
-        return Ok(None);
+    let root = match env::var_os("SDR_DURABLE_CONTROLLER_DIR") {
+        Some(root) => PathBuf::from(root),
+        None => {
+            let state = env::var_os("XDG_STATE_HOME")
+                .map(PathBuf::from)
+                .or_else(|| {
+                    env::var_os("HOME").map(|home| PathBuf::from(home).join(".local/state"))
+                })
+                .ok_or_else(|| invalid_input("Controller requires a state directory"))?;
+            state.join("sdrharness/plan-ledger")
+        }
     };
-    let root = PathBuf::from(root);
     if root.as_os_str().is_empty() {
         return Err(invalid_input("empty durable Controller directory").into());
     }
@@ -3792,6 +3797,17 @@ mod tests {
     }
 
     #[test]
+    fn old_session_frames_are_rejected_before_any_state_change() {
+        let (mut app, _peer) = test_console();
+        assert!(app
+            .handle_frame(json!({"protocol_version":1,"type":"event",
+            "session_generation":1,"event":"agent_end"}))
+            .is_err());
+        assert_eq!(app.session_generation, 1);
+        assert!(app.pending.is_none() && app.active_sweep.is_none());
+    }
+
+    #[test]
     fn sweep_result_ids_are_unique_when_request_counters_restart() {
         let first = execution_sweep_id("request", 1).unwrap();
         let restarted = execution_sweep_id("request", 1).unwrap();
@@ -3897,7 +3913,7 @@ mod tests {
                 let mut line = String::new();
                 reader.read_line(&mut line).unwrap();
                 let q: Value = serde_json::from_str(&line).unwrap();
-                let reply = json!({"type":"response","command_id":q["command_id"],"session_generation":q["session_generation"],"success":true,"data":{}});
+                let reply = json!({"protocol_version":2,"type":"response","command_id":q["command_id"],"session_generation":q["session_generation"],"success":true,"data":{}});
                 writeln!(peer, "{}", reply).unwrap();
             }
         });

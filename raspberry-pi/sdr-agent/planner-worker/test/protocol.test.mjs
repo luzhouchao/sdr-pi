@@ -47,12 +47,11 @@ test("accepts a bounded request", () => {
   assert.deepEqual(parseRequest(JSON.stringify(request())), request());
 });
 
-test("drops the retired false FPGA field and rejects a true legacy claim", () => {
-  const legacy = request();
-  legacy.observation.health.fpga_available = false;
-  assert.deepEqual(parseRequest(JSON.stringify(legacy)), request());
-  legacy.observation.health.fpga_available = true;
-  assert.throws(() => parseRequest(JSON.stringify(legacy)), /retired and must be false/u);
+test("rejects retired FPGA fields in the current planning schema", () => {
+  for (const value of [false,true]) {
+    const req=request();req.observation.health.fpga_available=value;
+    assert.throws(() => parseRequest(JSON.stringify(req)), /unknown field/);
+  }
 });
 
 test("rejects unknown top-level fields", () => {
@@ -246,7 +245,7 @@ test('thinking Completions preserves reasoning and selects automatic tools witho
  assert.deepEqual(requireSubmitPlan({...payload,thinking:{type:'disabled'}}).tool_choice,{type:'function',function:{name:'submit_plan'}});
 });
 
-test("accepts optional bounded cruise progress without weakening legacy frames", () => {
+test("validates bounded cruise progress for automatic mode", () => {
   const value = request();
   value.cruise = {remaining_steps: 7, remaining_ms: 90000, remaining_iq_bytes: 999424,
     local_sweep_limit: 3, empty_sweep_limit: 3, consecutive_empty_sweeps: 0,

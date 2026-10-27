@@ -346,3 +346,30 @@ Pi SDK真实HTTP/SSE传输只连接本地模拟上游，验证摘要及观测进
 当前生产仍是r4；旧协议删除按用户后续明确要求另一个独立单元执行。临时构建/依赖缓存与测试目录删除数量见证据。
 本单元清理13037文件/2138743892字节及10个符号链接，feature新旧路径均不存在。
 保留规则证据7826字节，SHA-256 `487afdc9fd2bf02c4f313d75cc7b622bc1239aa2a8425a7dee843ccb2aa83bac`；无新应用数据。
+
+
+## 仅支持最新版与旧包删除2026-10-27
+
+按用户“只兼容最新”“旧的可以直接删”要求，已删除旧SessionRuntime及其测试，
+会话协议统一为v2；Planner强制持久目录，独立Controller默认使用XDG/HOME状态账本。
+当前one-shot及只读health的v1是不同合同，继续使用；PlanningContext拒绝退役FPGA字段，
+安装请求已迁移。OpenCode仅接受当前Pi目录的模型/API/地址，移除Zen地址及旧模型回退。
+第三方NOTICE同步标明已启用pi-durable，原版权保留。
+
+Planner/Controller/Web统一安装r5，包含前单元巡航进度门。实际使用
+`opencode-go/deepseek-v4.1-flash`、`https://opencode.ai/inference/go/v1`。
+新key原地保留，未复制或备份。两服务启动正常，v2/durable健康与recognizer=false通过。
+真实模型仅一次hold，Controller accepted/completed；浏览器预设和历史5点结果读回通过，
+页面异常0，26条历史结果摘要不变。思考low保留并有SDK载荷测试；本次hold没有独立思考事件，
+不据此声称新推理流已观察到。未启动新RX/TX，Spectrum仍paused；新版巡航RF行为尚未重验。
+
+Controller150通过/1忽略，Node100通过，Web38通过/2忽略，格式及all-target Clippy -D warnings通过。
+旧同步response/get_state和地址测试夹具迁移后全通过。首次Web制品门发现嵌入旧静态资源，
+在停服/改配置前拒绝，重新release构建后通过。原子安装后的第一次健康查询早于Planner socket创建，
+等待就绪后完成核验，无第二次重启或放宽门禁。
+
+按明确授权删除37个旧release目录，共48136文件、384112999字节；仅保留两套r5目录。
+旧回滚制品不再存在，历史封存记录不改写；应用结果、IQ和持久状态保留。
+本单元构建、测试缓存及脚本清理13591文件2352324146字节、10个链接，临时根确认不存在且无遗留测试socket。
+保留r5共12686文件89270878字节；manifest、SHA、人工删除方法见
+[最新版本证据](../evidence/PI_DURABLE_LATEST_ONLY_2026-10-27.json)。

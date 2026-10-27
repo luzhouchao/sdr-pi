@@ -13,7 +13,6 @@ import { validateRuntimeSocketPath } from "./runtime-path.mjs";
 import { RunLease } from "./run-lease.mjs";
 import { describeMissingPlan, formatUpstreamError } from "./planner-failure.mjs";
 import { DurableSessionRuntime } from "./durable-session-runtime.mjs";
-import { SessionRuntime } from "./session-runtime.mjs";
 import { startSessionServer } from "./session-server.mjs";
 import { createSparkJsonPlanningStream } from "./spark-stream.mjs";
 import { PLANNER_SYSTEM_PROMPT } from "./system-prompt.mjs";
@@ -30,9 +29,7 @@ import {
 import { parseSurveyRequest, validateSurveyParameters, surveyParametersSchema, surveyParametersPrompt } from "./survey-parameters.mjs";
 
 const config = loadConfig();
-const durableState = config.durableDirectory
-  ? await (await import('./durable-service-state.mjs')).openDurableServiceState(config.durableDirectory)
-  : undefined;
+const durableState = await (await import('./durable-service-state.mjs')).openDurableServiceState(config.durableDirectory);
 let shuttingDown = false;
 const pendingRequests = new Set();
 const defaultPlannerMeta = { provider: config.provider, model: config.model };
@@ -85,19 +82,7 @@ server.listen(config.socketPath, () => {
 
 const sessionServer = startSessionServer({
   socketPath: config.sessionSocketPath,
-  createRuntime: () => config.durableDirectory
-    ? new DurableSessionRuntime({createEngine:createDurablePlanningEngine,plannerMeta:defaultPlannerMeta})
-    : new SessionRuntime({
-      plannerMeta: defaultPlannerMeta,
-      runLease,
-      createAgent: ({ sessionGeneration, onPlan, onSearchEvent }) =>
-        createPlanningAgent({
-          sessionGeneration,
-          onPlan,
-          onSearchEvent,
-          terminateAfterPlan: true,
-        }),
-    }),
+  createRuntime: () => new DurableSessionRuntime({createEngine:createDurablePlanningEngine,plannerMeta:defaultPlannerMeta}),
   onError: (error) => process.stderr.write(`session_socket_error=${safeMessage(error)}\n`),
 });
 sessionServer.on("listening", () => {
@@ -110,7 +95,7 @@ async function shutdown() {
   try {
     await Promise.all([new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve())),sessionServer.shutdown()]);
     await Promise.allSettled([...pendingRequests]);
-    await durableState?.close();
+    await durableState.close();
     process.exitCode=0;
   }catch(error){process.stderr.write(`planner_shutdown_error=${safeMessage(error)}\n`);process.exitCode=1;}
 }
@@ -120,7 +105,7 @@ process.on('SIGINT',()=>void shutdown());
 async function handleFrame(frame) {
   // Read-only liveness; this never invokes a provider or changes a session.
   if (frame === '{"protocol_version":1,"operation":"health"}') {
-    return { schema_version: 1, service: "planner", ready: true, recognizer_available: false, session_protocol:config.durableDirectory?2:1, durable:!!config.durableDirectory, session_available:sessionServer.sessionAvailable() };
+    return { schema_version: 1, service: "planner", ready: true, recognizer_available: false, session_protocol:2, durable:true, session_available:sessionServer.sessionAvailable() };
   }
   if(shuttingDown)return makeErrorResponse(undefined,defaultPlannerMeta,"unavailable","Planner is shutting down");
   let request;
@@ -343,7 +328,7 @@ function loadConfig() {
       50,
       95,
     ),
-    durableDirectory:process.env.SDR_DURABLE_STATE_DIR || undefined,
+    durableDirectory:requiredEnv("SDR_DURABLE_STATE_DIR"),
     durableMaxTokens:boundedInteger("SDR_DURABLE_MAX_TOKENS",4096,128,8192),
     maxTokens: boundedInteger("SDR_PLANNER_MAX_TOKENS", 1_024, 128, 8_192),
     requestTimeoutMs: boundedInteger("SDR_PLANNER_TIMEOUT_MS", 30_000, 1_000, 120_000),

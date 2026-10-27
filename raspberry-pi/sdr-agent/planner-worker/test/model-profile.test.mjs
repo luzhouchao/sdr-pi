@@ -5,7 +5,7 @@ import { resolveModelProfile } from "../src/model-profile.mjs";
 test("preserves builtin OpenCode tool compatibility while honoring operator context", () => {
   const model = resolveModelProfile({
     api: "openai-responses",
-    baseUrl: "https://opencode.ai/zen/v1",
+    baseUrl: "https://opencode.ai/inference/v1",
     provider: "opencode",
     model: "gpt-5.6-sol",
     contextWindow: 196_608,
@@ -22,9 +22,9 @@ test("preserves builtin OpenCode tool compatibility while honoring operator cont
 test("preserves the OpenCode Go reasoning-content compatibility profile", () => {
   const model = resolveModelProfile({
     api: "openai-completions",
-    baseUrl: "https://opencode.ai/zen/go/v1",
+    baseUrl: "https://opencode.ai/inference/go/v1",
     provider: "opencode-go",
-    model: "deepseek-v4-flash",
+    model: "deepseek-v4.1-flash",
     contextWindow: 196_608,
   }, 1_024);
 
@@ -39,7 +39,7 @@ test("uses a conservative profile when endpoint or protocol does not match the c
   const model = resolveModelProfile({
     api: "openai-completions",
     baseUrl: "https://proxy.example/v1",
-    provider: "opencode",
+    provider: "custom-proxy",
     model: "gpt-5.6-sol",
     contextWindow: 65_536,
   }, 2_048);
@@ -64,14 +64,12 @@ test("uses the new catalog endpoint without rewriting the operator's selection",
   assert.equal(model.baseUrl, "https://opencode.ai/inference/go/v1/");
 });
 
-test("legacy compatibility does not apply to another host or protocol", () => {
-  for (const [baseUrl, api] of [
-    ["https://proxy.example/zen/go/v1", "openai-completions"],
-    ["https://opencode.ai/zen/go/v1", "openai-responses"],
+test("rejects retired OpenCode models and endpoints instead of disabling thinking", () => {
+  for (const [baseUrl, model] of [
+    ["https://opencode.ai/zen/go/v1", "deepseek-v4.1-flash"],
+    ["https://opencode.ai/inference/go/v1", "deepseek-v4-flash"],
   ]) {
-    const model = resolveModelProfile({ api, baseUrl, provider: "opencode-go",
-      model: "deepseek-v4-flash", contextWindow: 32_768 }, 1_024);
-    assert.equal(model.reasoning, false);
-    assert.equal(model.compat.requiresReasoningContentOnAssistantMessages, undefined);
+    assert.throws(() => resolveModelProfile({api:"openai-completions",baseUrl,
+      provider:"opencode-go",model,contextWindow:32768},1024), /current Pi model catalog/);
   }
 });

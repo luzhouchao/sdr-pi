@@ -223,6 +223,12 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
       旧轨迹第5步被拦，替代相邻探索及主动stop离线通过；Rust149/Node110/Web38及格式/Clippy通过。
       未部署、无真实提供商或RF调用，临时清理见[规则验收](validation/PI_DURABLE_CORE_2026-10-26.md#巡航规则离线修复2026-10-27)。
 
+- [x] 2026-10-27仅支持最新版并清理旧安装：删除v1会话实现，强制durable v2/账本；
+      OpenCode迁移inference/go/v1与最新目录匹配，巡航进度门随Planner/Controller/Web r5实际部署。
+      Controller150/Node100/Web38及格式/Clippy通过，真实hold账本completed、浏览器历史读回/页面0异常，
+      26条历史结果不变、Spectrum暂停，无新RF。删除37旧目录48136文件384112999字节，
+      本单元临时根清理与最新制品保留见[最新版本验收](validation/PI_DURABLE_CORE_2026-10-26.md#仅支持最新版与旧包删除2026-10-27)。
+
 - [x] 2026-10-26 Pi SDK 0.84.4→1.4.0兼容升级：Pi/TypeBox锁文件、
       系统消息内工具声明、压缩时规则保留、Spark JSON适配及旧OpenCode选择兼容；
       隔离真实SDK/模拟HTTP测试、AGX独立版本部署/健康检查和0.84.4切回通过。

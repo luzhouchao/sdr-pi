@@ -22,6 +22,7 @@ async function fixture(t, { api = "openai-completions", spark = false, hang = fa
   const {upstream,requests} = await planningUpstream({api,spark,hang});
   const child = spawn(process.execPath, [new URL("../src/main.mjs", import.meta.url).pathname], {
     env: { ...process.env,
+      SDR_DURABLE_STATE_DIR: join(root, "durable"),
       SDR_PLANNER_API: api, SDR_PLANNER_BASE_URL: `http://127.0.0.1:${upstream.address().port}/v1`,
       SDR_PLANNER_API_KEY: "sdk-test-key", SDR_PLANNER_API_KEY_FILE: "",
       SDR_PLANNER_PROVIDER: spark ? "spark-local" : "sdk-test", SDR_PLANNER_MODEL: "test-model",
@@ -55,6 +56,7 @@ async function client(path, t) {
   t.after(() => socket.destroy());
   await once(socket, "connect");
   const lines = createInterface({ input: socket })[Symbol.asyncIterator]();
+  let ackId = 1000;
   return {
     socket,
     send: (value) => socket.write(`${JSON.stringify(value)}\n`),
@@ -65,7 +67,12 @@ async function client(path, t) {
           timer = setTimeout(() => reject(new Error("Planner frame deadline")), 5000);
         })]);
         assert.equal(line.done, false);
-        return JSON.parse(line.value);
+        const frame = JSON.parse(line.value);
+        if (frame.event === "plan_proposed" && frame.delivery) {
+          socket.write(JSON.stringify({protocol_version:2,command_id:ackId++,session_generation:frame.session_generation,
+            type:"plan_ack",plan_id:frame.delivery.plan_id,hash:frame.delivery.hash,state:"accepted"})+"\n");
+        }
+        return frame;
       } finally { clearTimeout(timer); }
     },
   };
@@ -98,9 +105,9 @@ test("real Pi session emits a correlated plan and can close after settling", { t
   const f = await fixture(t, { spark: true });
   const c = await client(f.sessionPath, t);
   const send = (type, command_id, extra = {}) => c.send({
-    protocol_version: 1, command_id, session_generation: 1, type, ...extra,
+    protocol_version: 2, command_id, session_generation: 1, type, ...extra,
   });
-  send("open_session", 1);
+  send("open_session", 1, {app_session_id:"sdk_session",controller_epoch:"sdk_epoch"});
   assert.equal((await c.next()).success, true);
   send("prompt", 2, { context: f.context });
   const plans = [];
@@ -115,7 +122,7 @@ test("real Pi session emits a correlated plan and can close after settling", { t
   assert.equal(plans[0].session_generation, 1);
   assert.equal(plans[0].action.kind, "hold");
   send("close_session", 3);
-  do { frame = await c.next(); } while (frame.type !== "response");
+  do { frame = await c.next(); } while (frame.type !== "response" || frame.command_id !== 3);
   assert.equal(frame.success, true);
   assert.equal(frame.data.closed, true);
   assert.equal(f.requests.length, 1);
@@ -139,8 +146,8 @@ test("real Pi session abort and disconnect release ownership without a plan", { 
   const f = await fixture(t, { hang: true });
   const c = await client(f.sessionPath, t);
   let id = 0;
-  const send = (type, extra = {}) => c.send({ protocol_version: 1, command_id: ++id, session_generation: 1, type, ...extra });
-  send("open_session"); assert.equal((await c.next()).success, true);
+  const send = (type, extra = {}) => c.send({ protocol_version: 2, command_id: ++id, session_generation: 1, type, ...extra });
+  send("open_session",{app_session_id:"abort_session",controller_epoch:"abort_epoch"}); assert.equal((await c.next()).success, true);
   send("prompt", { context: f.context });
   let response;
   do { response = await c.next(); } while (response.type !== "response");

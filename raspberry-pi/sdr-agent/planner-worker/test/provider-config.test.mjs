@@ -12,13 +12,13 @@ import {
 test("accepts OpenCode through the Pi AI Responses protocol", () => {
   const selected = validateProviderSelection({
     api: "openai-responses",
-    base_url: "https://opencode.ai/zen/v1",
+    base_url: "https://opencode.ai/inference/v1",
     provider: "opencode",
     model: "gpt-5.6-sol",
     api_key: "test-key",
   });
   assert.equal(selected.api, "openai-responses");
-  assert.equal(selected.baseUrl, "https://opencode.ai/zen/v1");
+  assert.equal(selected.baseUrl, "https://opencode.ai/inference/v1");
   assert.equal(selected.apiKey, "test-key");
   assert.equal(selected.contextWindow, 196_608);
   assert.equal(selected.compressionThresholdPercent, 90);

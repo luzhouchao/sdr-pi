@@ -3,7 +3,7 @@
 ## Pi
 
 The interactive session command vocabulary and queue semantics in
-`src/session-protocol.mjs` and `src/session-runtime.mjs` are adapted from the
+`src/session-protocol.mjs` and the session adapters are adapted from the
 public interfaces of `earendil-works/pi`, pinned for design review at commit
 `853a80d26c90a14c1886f0ebb8ffaae133ca2185`.
 
@@ -14,7 +14,8 @@ copying their Agent loop.
 The deployed SDK dependencies are pinned to Pi **1.4.0** (release tag
 `v1.4.0`, https://github.com/earendil-works/pi/releases/tag/v1.4.0).
 The historical design-review commit above identifies the origin of the session
-vocabulary; it is not the installed SDK version. Pi-durable is not enabled.
+vocabulary; it is not the installed SDK version. The production session adapter
+uses `@earendil-works/pi-durable` 1.4.0 with Harness and SQLite.
 
 ```text
 MIT License

@@ -1,7 +1,7 @@
 import { boundedText, makeSessionResponse } from './session-protocol.mjs';
 import { formatUpstreamError } from './planner-failure.mjs';
 
-// Protocol v2 is explicit opt-in. The socket is the attachment lifetime; a
+// Protocol v2 is required. The socket is the attachment lifetime; a
 // disconnect revokes delivery, clears pending acknowledgements and joins abort.
 export class DurableSessionRuntime {
   constructor({ createEngine, plannerMeta, ackTimeoutMs = 5000 }) {

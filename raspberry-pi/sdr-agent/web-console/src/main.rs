@@ -3504,7 +3504,7 @@ mod tests {
     fn provider_config_accepts_responses_and_never_serializes_the_key() {
         let config = validate_provider_request(ProviderConfigRequest {
             api: "openai-responses".into(),
-            base_url: "https://opencode.ai/zen/v1".into(),
+            base_url: "https://opencode.ai/inference/v1".into(),
             provider: "opencode".into(),
             model: "gpt-5.6-sol".into(),
             api_key: "test-secret".into(),
@@ -3524,9 +3524,9 @@ mod tests {
     fn saved_key_can_be_reused_only_for_the_same_base_url() {
         let saved = validate_provider_request(ProviderConfigRequest {
             api: "openai-completions".into(),
-            base_url: "https://opencode.ai/zen/go/v1".into(),
+            base_url: "https://opencode.ai/inference/go/v1".into(),
             provider: "opencode-go".into(),
-            model: "deepseek-v4-flash".into(),
+            model: "deepseek-v4.1-flash".into(),
             api_key: "test-secret".into(),
             context_window: 196_608,
             compression_threshold_percent: 90,
@@ -3536,7 +3536,7 @@ mod tests {
         .unwrap();
         let mut request = ProviderConfigRequest {
             api: "openai-completions".into(),
-            base_url: "https://opencode.ai/zen/go/v1".into(),
+            base_url: "https://opencode.ai/inference/go/v1".into(),
             provider: "opencode-go".into(),
             model: "glm-5.2".into(),
             api_key: String::new(),

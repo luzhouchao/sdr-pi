@@ -54,7 +54,7 @@ test("permits only one interactive control connection", async (context) => {
     createRuntime: () => ({
       async dispatch(command) {
         return {
-          protocol_version: 1,
+          protocol_version: 2,
           command_id: command.command_id,
           session_generation: command.session_generation,
           type: "response",
@@ -105,7 +105,7 @@ test('disconnected owner retains socket reservation until disposal settles', {ti
   finishDispose();await disposal;await new Promise(r=>setImmediate(r));
   const replacement=await openSocket(socketPath);sockets.push(replacement);
   const response=readFrame(replacement);
-  replacement.write(JSON.stringify({protocol_version:1,command_id:1,session_generation:0,type:'get_state'})+'\n');
+  replacement.write(JSON.stringify({protocol_version:2,command_id:1,session_generation:0,type:'get_state'})+'\n');
   assert.equal((await response).success,true);assert.equal(created,2);
 });
 
