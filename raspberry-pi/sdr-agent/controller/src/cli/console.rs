@@ -289,6 +289,7 @@ struct AutonomousTask {
     completed_sweeps: u8,
     min_freq_hz: u64,
     max_freq_hz: u64,
+    monitor_interval_secs: u16,
 }
 
 impl AutonomousTask {
@@ -1465,6 +1466,19 @@ impl ConsoleApp {
         }
     }
 
+    fn schedule_after_sweep(&mut self) {
+        let interval = self
+            .task
+            .as_ref()
+            .map_or(0, |task| task.monitor_interval_secs);
+        self.next_auto_attempt = Instant::now() + Duration::from_secs(u64::from(interval));
+        if interval > 0 {
+            println!(
+                "下一次监测最早在 {interval} 秒后开始，等待时间计入任务期限；/stop 可随时停止。"
+            );
+        }
+    }
+
     fn enforce_sweep_progress(&mut self, plan: &ValidatedPlan) -> AppResult<bool> {
         if self.cruise.mode() == InteractionMode::AutomaticCruise {
             if let Err(reason) = self.check_auto_action(&plan.action) {
@@ -1604,7 +1618,7 @@ impl ConsoleApp {
                                     report.candidates.len(),
                                     maximum_bytes
                                 ));
-                                self.next_auto_attempt = Instant::now();
+                                self.schedule_after_sweep();
                             }
                             self.print_cruise_status();
                         }
@@ -2029,6 +2043,8 @@ impl ConsoleApp {
             max_iq_bytes,
             min_freq_hz,
             max_freq_hz,
+            monitor_threshold_db,
+            monitor_interval_secs,
         } = &plan.action
         else {
             return Ok(());
@@ -2071,7 +2087,12 @@ impl ConsoleApp {
             completed_sweeps: 0,
             min_freq_hz: *min_freq_hz,
             max_freq_hz: *max_freq_hz,
+            monitor_interval_secs: monitor_interval_secs.unwrap_or(0),
         });
+        if let Some(threshold) = monitor_threshold_db {
+            println!("MonitorConfig> {{\"threshold_db\":{threshold}}}");
+            println!("网页监测告警已设置：谱峰相对同窗噪声参考达到 {threshold} dB；观察统计可在网页查看。");
+        }
         println!("已按自然语言目标启动自动任务：{mission}；频率范围{min_freq_hz}–{max_freq_hz}Hz。根据每轮结果选择下一步；/stop 随时停止。");
         self.print_cruise_status();
         Ok(())
@@ -2850,6 +2871,14 @@ impl ConsoleApp {
                 "gain_db": self.survey_gain_db,
                 "noise_floor_dbfs": report.noise_floor_dbfs,
                 "points": points,
+                "point_analysis": report.points.iter().map(|point| json!({
+                    "center_hz": point.actual_center_hz,
+                    "sample_rate_hz": point.sample_rate_hz,
+                    "rf_bandwidth_hz": point.rf_bandwidth_hz,
+                    "captured_samples": point.captured_samples,
+                    "clipped_samples": point.clipped_samples,
+                    "spectral": point.spectral,
+                })).collect::<Vec<_>>(),
                 "candidates": report.candidates,
                 "dataset": report.dataset,
             }))?
@@ -3401,7 +3430,7 @@ fn describe_plan(plan: &ValidatedPlan) -> String {
         "；位于自动安全阈值内"
     };
     match &plan.action {
-        ProposedAction::StartTask { mission, target_sweeps, max_steps, max_seconds, max_iq_bytes, min_freq_hz, max_freq_hz } => format!("{mission}；目标扫描{target_sweeps}轮（0表示按目标结束），最多{max_steps}动作/{max_seconds}秒/{max_iq_bytes}字节IQ，范围{min_freq_hz}–{max_freq_hz}Hz"),
+        ProposedAction::StartTask { mission, target_sweeps, max_steps, max_seconds, max_iq_bytes, min_freq_hz, max_freq_hz, monitor_threshold_db, monitor_interval_secs } => format!("{mission}；目标扫描{target_sweeps}轮（0表示按目标结束），最多{max_steps}动作/{max_seconds}秒/{max_iq_bytes}字节IQ，范围{min_freq_hz}–{max_freq_hz}Hz{}{}", monitor_threshold_db.map_or_else(String::new, |v| format!("；监测阈值{v} dB")), monitor_interval_secs.map_or_else(String::new, |v| format!("；每轮完成后至少等待{v}秒"))),
         ProposedAction::Hold { reason } => format!("保持当前状态：{reason}"),
         ProposedAction::SurveyBand {
             start_hz,
@@ -4381,10 +4410,32 @@ mod tests {
             completed_sweeps: 4,
             min_freq_hz: 2445000000,
             max_freq_hz: 2465000000,
+            monitor_interval_secs: 0,
         });
         app.submit("新的自然语言任务".into()).unwrap();
         assert_eq!(app.cruise.mode(), InteractionMode::StepApproval);
         assert!(app.task.is_none() && app.agent_cycle_active);
+        assert!(!app.cruise.is_active());
+    }
+
+    #[test]
+    fn monitored_sweep_waits_without_blocking_stop() {
+        let (mut app, _peer) = test_console();
+        app.cruise.start(1000000, 4, 60, Instant::now()).unwrap();
+        app.task = Some(AutonomousTask {
+            target_sweeps: 2,
+            completed_sweeps: 1,
+            min_freq_hz: 2445000000,
+            max_freq_hz: 2465000000,
+            monitor_interval_secs: 5,
+        });
+        let before = Instant::now();
+        app.schedule_after_sweep();
+        assert!(app.next_auto_attempt >= before + Duration::from_secs(5));
+        app.advance_auto().unwrap();
+        assert!(!app.agent_cycle_active && app.active_sweep.is_none());
+        app.cruise.stop(CruiseStopReason::OperatorStopped);
+        app.advance_auto().unwrap();
         assert!(!app.cruise.is_active());
     }
 
@@ -4399,6 +4450,7 @@ mod tests {
             completed_sweeps: 0,
             min_freq_hz: 2_445_000_000,
             max_freq_hz: 2_465_000_000,
+            monitor_interval_secs: 0,
         });
         for round in 0..7 {
             let action = ProposedAction::SurveyBand {
@@ -4462,6 +4514,7 @@ mod tests {
             completed_sweeps: 2,
             min_freq_hz: 2_445_000_000,
             max_freq_hz: 2_465_000_000,
+            monitor_interval_secs: 0,
         });
         let worker = thread::spawn(|| Err(SweepError::new("test", "RX or persistence failure")));
         while !worker.is_finished() {

@@ -135,6 +135,10 @@ pub enum ProposedAction {
         max_iq_bytes: u64,
         min_freq_hz: u64,
         max_freq_hz: u64,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        monitor_threshold_db: Option<u8>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        monitor_interval_secs: Option<u16>,
     },
     Hold {
         reason: String,

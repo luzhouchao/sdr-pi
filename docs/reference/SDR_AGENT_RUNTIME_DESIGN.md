@@ -111,6 +111,33 @@ loop are implemented and isolated-validated; the installed older Web does not
 yet expose that production recognition deployment. See the
 [archive contract](RECOGNITION_ARCHIVE_S6A_INTERFACE.md).
 
+### Monitoring and offline spectral analysis
+
+The natural-language `start_task` may include `monitor_threshold_db` (1–60 dB)
+and `monitor_interval_secs` (1–300 seconds). The latter is a minimum wait after
+each completed scan, counted against the existing task deadline; it is not a
+fixed cadence or continuous acquisition. The normal receive budget, frequency
+fence, approval and stop rules still apply. Automatic tasks require IQ storage
+enabled for the session.
+
+The Web's `/monitoring` page and `/api/monitoring` derive the last 128 saved
+scans for the selected session. A threshold compares each point's spectral peak
+with its same-window noise reference; the first above-threshold observation and
+subsequent low-to-high transitions appear as alerts. History is derived from
+current source records and the selected threshold, not a separate immutable
+notification log. Observations are grouped only when frequency, sampling rate,
+RF bandwidth, gain, sample count, algorithm and FFT size match. The reported
+percentage is the fraction of observed windows above threshold, not time
+occupancy; missing/legacy data and truncated history are disclosed.
+
+`/api/results/{id}/spectrogram/{point}` uses the vendored BSD-licensed
+RFObserver CPU PSD on one validated ci16 SigMF capture segment, at most 65,536
+samples, one concurrent request and a 15-second deadline. The capture's tuning
+frequency and sample offsets must match the saved record; it does not join
+separate tuning windows into a continuous waveform. The PSD is uncalibrated
+dBFS/Hz and the time axis is relative to that window. IQ is not sent to Planner
+and no production recognizer is enabled. See the [validation](../validation/PI_DURABLE_CORE_2026-10-26.md#扫描频点分析数据归档前置2026-10-28).
+
 ### Recognition
 
 ```text

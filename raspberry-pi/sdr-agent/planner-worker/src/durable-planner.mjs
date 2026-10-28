@@ -72,6 +72,8 @@ export class DurablePlanner {
         action: Type.Union(["start_task", "hold", "survey_band", "inspect_candidate", "capture_bounded_iq", "run_local_recognition", "stop_session"].map((v) => Type.Literal(v))),
         mission: Type.Optional(Type.String({ maxLength: 700 })),
         target_sweeps: Type.Optional(Type.Integer({ minimum: 0, maximum: 128 })),
+        monitor_threshold_db: Type.Optional(Type.Integer({ minimum: 1, maximum: 60 })),
+        monitor_interval_secs: Type.Optional(Type.Integer({ minimum: 1, maximum: 300 })),
         ...Object.fromEntries(["max_steps", "max_seconds", "max_iq_bytes", "min_freq_hz", "max_freq_hz"].map(k => [k, Type.Optional(Type.Integer({ minimum: 1 }))])),
         reason: Type.Optional(Type.String({ maxLength: 256 })),
         candidate_id: Type.Optional(Type.String({ maxLength: 64 })),

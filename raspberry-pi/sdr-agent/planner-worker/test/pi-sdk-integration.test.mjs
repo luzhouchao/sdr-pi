@@ -10,7 +10,7 @@ import test from "node:test";
 
 // Exercise main.mjs with the installed Pi SDK and real HTTP/SSE transports.
 // The upstream is local and has no hardware or real provider credentials.
-async function fixture(t, { api = "openai-completions", spark = false, hang = false } = {}) {
+async function fixture(t, { api = "openai-completions", spark = false, hang = false, plan } = {}) {
   const tempRoot = process.env.TMPDIR || "/var/tmp/sdrharness-dev";
   mkdirSync(tempRoot, { recursive: true, mode: 0o700 });
   const root = mkdtempSync(join(tempRoot, "pi-sdk-"));
@@ -19,7 +19,7 @@ async function fixture(t, { api = "openai-completions", spark = false, hang = fa
   const suffix = root.split("/").at(-1);
   const plannerPath = `${socketRoot}/${suffix}-plan.sock`;
   const sessionPath = `${socketRoot}/${suffix}-session.sock`;
-  const {upstream,requests} = await planningUpstream({api,spark,hang});
+  const {upstream,requests} = await planningUpstream({api,spark,hang,...(plan ? {plan} : {})});
   const child = spawn(process.execPath, [new URL("../src/main.mjs", import.meta.url).pathname], {
     env: { ...process.env,
       SDR_DURABLE_STATE_DIR: join(root, "durable"),
@@ -50,6 +50,20 @@ async function fixture(t, { api = "openai-completions", spark = false, hang = fa
   const context = JSON.parse(readFileSync(new URL("../../../../jetson-agx/sdrharness/config/request.json", import.meta.url)));
   return { plannerPath, sessionPath, requests, context };
 }
+
+test("durable session carries the monitoring threshold from structured model output", { timeout: 10_000 }, async (t) => {
+  const plan={action:"start_task",mission:"监测两轮",target_sweeps:2,max_steps:2,max_seconds:60,max_iq_bytes:65536,min_freq_hz:2445000000,max_freq_hz:2465000000,monitor_threshold_db:15,monitor_interval_secs:5};
+  const f=await fixture(t,{plan});
+  const c=await client(f.sessionPath,t);
+  c.send({protocol_version:2,command_id:1,session_generation:1,type:"open_session",app_session_id:"monitor_test",controller_epoch:"monitor_epoch"});
+  assert.equal((await c.next()).success,true);
+  c.send({protocol_version:2,command_id:2,session_generation:1,type:"prompt",context:f.context});
+  let frame, proposal;
+  do { frame=await c.next(); if(frame.event==="plan_proposed") proposal=frame.data; assert.notEqual(frame.event,"agent_error",JSON.stringify(frame)); } while(frame.event!=="agent_end");
+  assert.equal(proposal.action.kind,"start_task");
+  assert.equal(proposal.action.monitor_threshold_db,15);
+  assert.equal(proposal.action.monitor_interval_secs,5);
+});
 
 async function client(path, t) {
   const socket = connect(path);

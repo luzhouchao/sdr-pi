@@ -7,6 +7,7 @@ use axum::{
     Json, Router,
 };
 mod corpus;
+mod monitoring;
 mod recognition_archive;
 
 use corpus::{
@@ -155,6 +156,8 @@ struct Session {
     decision_basis: Option<String>,
     #[serde(default)]
     save_iq: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    monitor_threshold_db: Option<u8>,
     events: VecDeque<TerminalEvent>,
 }
 
@@ -168,9 +171,22 @@ struct SweepPlot {
     gain_db: i16,
     noise_floor_dbfs: f32,
     points: Vec<(u64, f32)>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    point_analysis: Vec<SweepPointAnalysis>,
     candidates: Vec<SweepPlotCandidate>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     dataset: Option<SweepDatasetView>,
+}
+
+#[derive(Debug, Clone, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+struct SweepPointAnalysis {
+    center_hz: u64,
+    sample_rate_hz: u64,
+    rf_bandwidth_hz: u64,
+    captured_samples: u64,
+    clipped_samples: u64,
+    spectral: sdr_agent_controller::sweep::SpectralSummary,
 }
 
 #[derive(Debug, Clone, Deserialize, PartialEq, Serialize)]
@@ -417,6 +433,13 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             get(get_recognition_result).delete(delete_recognition_result),
         )
         .route("/api/results", get(list_capture_results))
+        .route("/monitoring", get(monitoring::page))
+        .route("/rfobserver-license", get(monitoring::license))
+        .route("/api/monitoring", get(monitoring::query))
+        .route(
+            "/api/results/{id}/spectrogram/{point}",
+            get(monitoring::spectrogram),
+        )
         .route(
             "/api/results/{id}",
             get(get_capture_result).delete(delete_capture_result),
@@ -504,8 +527,11 @@ fn env_path(name: &str, default: &str) -> PathBuf {
     PathBuf::from(env::var(name).unwrap_or_else(|_| default.into()))
 }
 
-async fn index() -> Html<&'static str> {
-    Html(include_str!("../public/index.html"))
+async fn index() -> Html<String> {
+    Html(include_str!("../public/index.html").replace(
+        "</body>",
+        "<a href=\"/monitoring\" style=\"position:fixed;right:16px;bottom:16px;z-index:90;background:#165f91;color:white;padding:9px 14px;border-radius:6px;text-decoration:none;font:14px system-ui,sans-serif;box-shadow:0 2px 8px #0003\">频谱监测与告警</a></body>",
+    ))
 }
 
 async fn app_js() -> impl IntoResponse {
@@ -927,6 +953,50 @@ fn validate_sweep_plot(plot: &SweepPlot, capture_root: &FsPath) -> ApiResult<()>
         }
         prior_frequency = Some(frequency);
     }
+    if !plot.point_analysis.is_empty()
+        && (plot.point_analysis.len() != plot.points.len()
+            || plot
+                .point_analysis
+                .iter()
+                .zip(&plot.points)
+                .any(|(analysis, point)| {
+                    let spectral = &analysis.spectral;
+                    let low = analysis
+                        .center_hz
+                        .saturating_sub(analysis.sample_rate_hz / 2);
+                    let high = analysis
+                        .center_hz
+                        .saturating_add(analysis.sample_rate_hz / 2);
+                    analysis.center_hz != point.0
+                        || analysis.sample_rate_hz == 0
+                        || analysis.rf_bandwidth_hz == 0
+                        || analysis.captured_samples == 0
+                        || analysis.clipped_samples > analysis.captured_samples
+                        || spectral.algorithm_id.is_empty()
+                        || spectral.algorithm_id.len() > 128
+                        || spectral.fft_size == 0
+                        || spectral.segment_count == 0
+                        || !spectral.bin_width_hz.is_finite()
+                        || spectral.bin_width_hz <= 0.0
+                        || !valid_dbfs(spectral.peak_power_dbfs)
+                        || !valid_dbfs(spectral.noise_floor_dbfs)
+                        || !spectral.measured_snr_db.is_finite()
+                        || spectral.measured_snr_db < 0.0
+                        || spectral.peak_frequency_hz < low
+                        || spectral.peak_frequency_hz > high
+                        || spectral.occupied_start_hz < low
+                        || spectral.occupied_stop_hz > high
+                        || spectral.occupied_start_hz > spectral.estimated_center_hz
+                        || spectral.estimated_center_hz > spectral.occupied_stop_hz
+                        || spectral.occupied_bandwidth_hz == 0
+                        || spectral.occupied_bandwidth_hz > analysis.sample_rate_hz
+                }))
+    {
+        return Err(ApiError(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "频点分析数据无效".into(),
+        ));
+    }
     let mut ids = HashSet::new();
     for candidate in &plot.candidates {
         if candidate.id.is_empty()
@@ -1249,6 +1319,7 @@ async fn create_session(
         thinking: None,
         decision_basis: None,
         save_iq,
+        monitor_threshold_db: None,
         events: VecDeque::new(),
     });
     inner.persisted.active_session_id = Some(id.clone());
@@ -1614,9 +1685,22 @@ async fn process_actor(
             .await;
             return;
         }
-        command
-            .arg("--sigmf-directory")
-            .arg(state.config.capture_root.join(&session_id));
+        let session_capture_root = state.config.capture_root.join(&session_id);
+        if let Err(error) =
+            initialize_capture_root(&session_capture_root).map_err(|e| e.to_string())
+        {
+            cleanup_runtime_request(temporary_request.as_deref());
+            record_process_output(
+                &state,
+                &session_id,
+                &token,
+                "error",
+                format!("无法准备当前会话采集目录：{error}"),
+            )
+            .await;
+            return;
+        }
+        command.arg("--sigmf-directory").arg(session_capture_root);
     }
     if let Some(survey) = initial_survey {
         command
@@ -1828,23 +1912,20 @@ async fn read_process_stream<R: AsyncRead + Unpin>(
     stderr: bool,
 ) {
     let mut chunk = [0_u8; 1024];
-    let mut pending = String::new();
+    let mut pending = Vec::new();
     loop {
         match reader.read(&mut chunk).await {
             Ok(0) => break,
             Ok(count) => {
-                pending.push_str(&String::from_utf8_lossy(&chunk[..count]));
-                while let Some(index) = pending.find('\n') {
-                    let line = pending[..index].trim_end_matches('\r').to_owned();
-                    pending.drain(..=index);
+                for line in process_output_lines(&mut pending, &chunk[..count]) {
                     if !line.is_empty() && !is_empty_agent_line(&line) {
-                        let kind = classify_output(&line, stderr);
+                        let kind = if line.ends_with("SDR Agent> ") {
+                            "prompt"
+                        } else {
+                            classify_output(&line, stderr)
+                        };
                         record_process_output(&state, &session_id, &token, kind, line).await;
                     }
-                }
-                if pending.ends_with("SDR Agent> ") {
-                    let prompt = std::mem::take(&mut pending);
-                    record_process_output(&state, &session_id, &token, "prompt", prompt).await;
                 }
             }
             Err(error) => {
@@ -1860,10 +1941,28 @@ async fn read_process_stream<R: AsyncRead + Unpin>(
             }
         }
     }
-    if !pending.trim().is_empty() && !is_empty_agent_line(&pending) {
-        let kind = classify_output(&pending, stderr);
-        record_process_output(&state, &session_id, &token, kind, pending).await;
+    let remaining = String::from_utf8_lossy(&pending).into_owned();
+    if !remaining.trim().is_empty() && !is_empty_agent_line(&remaining) {
+        let kind = classify_output(&remaining, stderr);
+        record_process_output(&state, &session_id, &token, kind, remaining).await;
     }
+}
+
+fn process_output_lines(pending: &mut Vec<u8>, chunk: &[u8]) -> Vec<String> {
+    pending.extend_from_slice(chunk);
+    let mut lines = Vec::new();
+    while let Some(index) = pending.iter().position(|byte| *byte == b'\n') {
+        let line = String::from_utf8_lossy(&pending[..index])
+            .trim_end_matches('\r')
+            .to_owned();
+        pending.drain(..=index);
+        lines.push(line);
+    }
+    if pending.ends_with(b"SDR Agent> ") {
+        lines.push(String::from_utf8_lossy(pending).into_owned());
+        pending.clear();
+    }
+    lines
 }
 
 fn is_empty_agent_line(line: &str) -> bool {
@@ -1913,6 +2012,24 @@ async fn record_process_output(
         return;
     }
     if let Some(session) = find_session_mut(&mut inner.persisted, session_id) {
+        if let Some(payload) = text.strip_prefix("MonitorConfig> ") {
+            #[derive(Deserialize)]
+            #[serde(deny_unknown_fields)]
+            struct MonitorConfig {
+                threshold_db: u8,
+            }
+            if let Ok(config) = serde_json::from_str::<MonitorConfig>(payload) {
+                if (1..=60).contains(&config.threshold_db) {
+                    session.monitor_threshold_db = Some(config.threshold_db);
+                    let _ = persist_locked(&state.config, &inner.persisted);
+                    drop(inner);
+                    publish_state(state);
+                    return;
+                }
+            }
+            let _ = push_event(session, "error", "监测阈值无效，未修改原设置。".into());
+            return;
+        }
         if let Some(payload) = text.strip_prefix("SweepPlot> ") {
             match serde_json::from_str::<SweepPlot>(payload)
                 .map_err(internal_error)
@@ -2978,6 +3095,21 @@ async fn begin_runtime_shutdown(state: &AppState) {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn process_output_preserves_utf8_across_read_boundaries_and_prompt() {
+        let bytes = "任务状态：已退出；原因：任务目标已完成。\nSDR Agent> ".as_bytes();
+        for split in 1..bytes.len() {
+            let mut pending = Vec::new();
+            let mut lines = process_output_lines(&mut pending, &bytes[..split]);
+            lines.extend(process_output_lines(&mut pending, &bytes[split..]));
+            assert_eq!(
+                lines,
+                ["任务状态：已退出；原因：任务目标已完成。", "SDR Agent> "]
+            );
+            assert!(pending.is_empty());
+        }
+    }
+
     #[tokio::test]
     async fn retired_runtime_cannot_mutate_reactivated_session_or_archive() {
         let root = env::temp_dir().join(format!(
@@ -3026,6 +3158,7 @@ mod tests {
             ),
             "模型输入> {\"session_generation\":999}".into(),
             "ThinkingStart> {\"request_id\":42}".into(),
+            "MonitorConfig> {\"threshold_db\":15}".into(),
             "初始扫频完成：late".into(),
         ] {
             record_process_output(&state, "session-1", &retired, "system", line).await;
@@ -3060,12 +3193,36 @@ mod tests {
             "session-1",
             &token,
             "system",
+            "MonitorConfig> {\"threshold_db\":15}".into(),
+        )
+        .await;
+        assert_eq!(
+            state.inner.lock().await.persisted.sessions[0].monitor_threshold_db,
+            Some(15)
+        );
+        record_process_output(
+            &state,
+            "session-1",
+            &token,
+            "system",
+            "MonitorConfig> {\"threshold_db\":99}".into(),
+        )
+        .await;
+        assert_eq!(
+            state.inner.lock().await.persisted.sessions[0].monitor_threshold_db,
+            Some(15)
+        );
+        record_process_output(
+            &state,
+            "session-1",
+            &token,
+            "system",
             "current output".into(),
         )
         .await;
         assert_eq!(
             state.inner.lock().await.persisted.sessions[0].events.len(),
-            1
+            2
         );
         assert!(claim_initial_survey(&state, "session-1", &token)
             .await
@@ -3181,6 +3338,7 @@ mod tests {
             gain_db: 20,
             noise_floor_dbfs: -53.0,
             points: vec![(100_000_000, -52.0), (108_000_000, -35.0)],
+            point_analysis: vec![],
             candidates: vec![SweepPlotCandidate {
                 id: "initial-1-1".into(),
                 start_hz: 103_000_000,
@@ -3193,6 +3351,55 @@ mod tests {
             }],
             dataset: None,
         }
+    }
+
+    #[test]
+    fn spectral_details_are_optional_for_history_and_correlated_with_points() {
+        let root = temporary_test_directory("spectral-details");
+        let mut plot = sweep_plot();
+        assert!(validate_sweep_plot(&plot, &root).is_ok());
+        let detail = SweepPointAnalysis {
+            center_hz: plot.points[0].0,
+            sample_rate_hz: 1_000_000,
+            rf_bandwidth_hz: 800_000,
+            captured_samples: 4096,
+            clipped_samples: 0,
+            spectral: sdr_agent_controller::sweep::SpectralSummary {
+                schema_version: 1,
+                algorithm_id: "test".into(),
+                fft_size: 1024,
+                segment_count: 4,
+                bin_width_hz: 976.5625,
+                peak_frequency_hz: 100_000_000,
+                peak_power_dbfs: -40.0,
+                noise_floor_dbfs: -60.0,
+                measured_snr_db: 20.0,
+                estimated_center_hz: 100_000_000,
+                occupied_start_hz: 99_999_500,
+                occupied_stop_hz: 100_000_500,
+                occupied_bandwidth_hz: 1953,
+            },
+        };
+        let mut second = detail.clone();
+        second.center_hz = plot.points[1].0;
+        second.spectral.peak_frequency_hz += 8_000_000;
+        second.spectral.estimated_center_hz += 8_000_000;
+        second.spectral.occupied_start_hz += 8_000_000;
+        second.spectral.occupied_stop_hz += 8_000_000;
+        plot.point_analysis = vec![detail, second];
+        assert!(validate_sweep_plot(&plot, &root).is_ok());
+        let round_trip: SweepPlot =
+            serde_json::from_slice(&serde_json::to_vec(&plot).unwrap()).unwrap();
+        assert_eq!(round_trip, plot);
+        std::fs::create_dir_all(&root).unwrap();
+        let database = root.join("results.sqlite3");
+        initialize_result_database(&database).unwrap();
+        persist_capture_result(&database, "session-test", &plot).unwrap();
+        let id = load_capture_result_summaries(&database).unwrap()[0].id;
+        assert_eq!(load_capture_result(&database, id).unwrap().sweep_plot, plot);
+        std::fs::remove_dir_all(&root).unwrap();
+        plot.point_analysis[1].center_hz += 1;
+        assert!(validate_sweep_plot(&plot, &root).is_err());
     }
 
     fn session(id: &str, last_used_at_ms: u64) -> Session {
@@ -3216,6 +3423,7 @@ mod tests {
             thinking: None,
             decision_basis: None,
             save_iq: false,
+            monitor_threshold_db: None,
             events: VecDeque::new(),
         }
     }

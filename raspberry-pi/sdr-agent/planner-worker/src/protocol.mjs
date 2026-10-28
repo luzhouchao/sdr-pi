@@ -94,14 +94,21 @@ export function normalizeAction(params) {
     throw new Error("submit_plan.action is required");
   }
   switch (params.action) {
-    case "start_task":
+    case "start_task": {
+      const threshold = params.monitor_threshold_db === undefined ? undefined : requireInteger(params.monitor_threshold_db, "monitor_threshold_db");
+      if (threshold !== undefined && threshold > 60) throw new Error("monitor_threshold_db exceeds 60 dB");
+      const interval = params.monitor_interval_secs === undefined ? undefined : requireInteger(params.monitor_interval_secs, "monitor_interval_secs");
+      if (interval !== undefined && (interval > 300 || threshold === undefined)) throw new Error("monitor interval requires threshold and must not exceed 300 seconds");
       return {kind: "start_task", mission: requireText(params.mission, "mission", 700),
         target_sweeps: requireSafeInteger(params.target_sweeps, "target_sweeps", 0),
         max_steps: requireInteger(params.max_steps, "max_steps"),
         max_seconds: requireInteger(params.max_seconds, "max_seconds"),
         max_iq_bytes: requireInteger(params.max_iq_bytes, "max_iq_bytes"),
         min_freq_hz: requireInteger(params.min_freq_hz, "min_freq_hz"),
-        max_freq_hz: requireInteger(params.max_freq_hz, "max_freq_hz")};
+        max_freq_hz: requireInteger(params.max_freq_hz, "max_freq_hz"),
+        ...(threshold === undefined ? {} : {monitor_threshold_db: threshold}),
+        ...(interval === undefined ? {} : {monitor_interval_secs: interval})};
+    }
     case "hold":
       return { kind: "hold", reason: normalizeReason(params.reason) };
     case "stop_session":

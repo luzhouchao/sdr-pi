@@ -274,4 +274,11 @@ test("task intent carries model-selected goals and bounds without a fixed phrase
     assert.equal(action.kind,"start_task");assert.equal(action.target_sweeps,target);
   }
   assert.throws(()=>normalizeAction({action:"start_task",mission:"missing budgets"}));
+  const monitored={action:"start_task",mission:"监测",target_sweeps:2,max_steps:2,max_seconds:60,max_iq_bytes:65536,min_freq_hz:2445000000,max_freq_hz:2465000000};
+  assert.equal(normalizeAction({...monitored,monitor_threshold_db:15}).monitor_threshold_db,15);
+  assert.throws(()=>normalizeAction({...monitored,monitor_threshold_db:0}));
+  assert.throws(()=>normalizeAction({...monitored,monitor_threshold_db:61}));
+  assert.equal(normalizeAction({...monitored,monitor_threshold_db:15,monitor_interval_secs:5}).monitor_interval_secs,5);
+  assert.throws(()=>normalizeAction({...monitored,monitor_interval_secs:5}));
+  assert.throws(()=>normalizeAction({...monitored,monitor_threshold_db:15,monitor_interval_secs:301}));
 });

@@ -580,3 +580,25 @@ Controller/Web r12与Planner r9已安装，服务健康；本单元无新增RF�
 开发根`/var/tmp/sdrharness-dev/f1027`删除81文件917523字节、无socket，路径不存在；
 仅保留应用自有新结果及Git内摘要证据，不复制IQ、不删除旧结果。精确路径、身份、SHA、
 人工删除方法和实际事件见[本轮证据](../evidence/PI_DURABLE_UNIFIED_ENTRY_LIVE_2026-10-27.json)。
+
+## 扫描频点分析数据归档前置2026-10-28
+
+用户要求自然语言监测告警、占用统计和深入分析，告警选择网页内。Controller 原有每点频谱摘要过去未随 SweepPlot 归档；本源码单元为新结果附加采样率、射频带宽、样本与削顶计数及原始频谱摘要。Web 对新增字段做数量、频率与有限值校验，旧结果无该字段仍可读。频谱带宽是算法估计，不是独立标定的发射带宽；旧结果不会凭空获得新字段。不同参数及不连续观测不得直接解释为时间占用率。
+
+隔离 Web 测试 39 通过、2 忽略；Controller 首次测试两个 Unix socket 因临时路径过长失败，缩短路径重跑后 157 通过、1 忽略；两者 all-target Clippy 通过。此单元尚未部署，未执行浏览器或实机 RF 验收，也没有实现网页告警、占用统计或自然语言监测。Controller 与 Web 协议需配套升级；不能将新 Controller 单独接到不接受新字段的旧 Web。
+
+按用户要求先调研开源：RFObserver（BSD-3-Clause，https://github.com/NSFCUSWIFTPASS/RFObserver ，源码 `12a7836c71db06eb04a0827c01e1dfae145b062e`）提供独立PSD网格和突发检测、Web与SigMF回放；AGX隔离虚拟环境中其 spectral/burst 上游测试24项通过。首次运行缺 `pydantic-settings`，隔离安装后通过；未操作硬件、安装到生产环境或复制IQ。其设备入口是独立接收器，不可取代本项目Controller；其SigMF reader仅读取首个capture中心，而本项目扫频每个capture可有不同中心，不能直接整文件回放。每频点有界分段、时轴/采样缺口、资源预算、结果归档和安全取消仍需适配验证；相对噪声的突发检测也不能证明持续信号不存在或将稀疏扫描解释为连续占用。NTIA SCOS提供传感器任务API，NoctisRF具备占用图表但仓库未发现许可证且绑定HackRF/RTL输入；均未直接引入。以上为候选评估，不宣称监测/告警功能完成。
+
+2026-10-28 后续源码实现：自然语言任务可设置有限间隔和谱峰相对同窗噪声阈值；按接收参数分组计算观察次数/超阈值次数，网页展示派生告警及 RFObserver 原版 CPU Hann PSD 单窗口时频图。每次只读取已校验 SigMF 的一个频点，最多65536复数样本、单并发、15秒；不让上游接收器控制P201。旧结果缺逐点分析字段时单列排除；观察占比不是连续时间占用率，噪声/带宽均为估计。网页显示告警是按当前阈值从最近128个结果派生，删除源结果后会消失；不是独立事件库或后台通知。Web会话无采集目录时先安全创建目录；修复终端流跨字节块导致中文损坏的问题。
+
+隔离测试：Controller 158通过/1忽略，Web 41通过/2忽略，Planner 103通过；两套 Rust all-target Clippy 和格式通过。RFObserver 上游 spectral/burst 24项通过，合成两频点分别定位 ±125kHz，错误的 SigMF 分段被拒；最终发布版浏览器验收通过。隔离有限 P201 测试用确定性模拟模型规划两轮、每轮2455/2456MHz两点、10MHz采样/带宽、20dB增益、20ms settle、每点4096样本、250ms点超时，限90秒/2动作/65536字节，轮间至少1秒；共4点65536字节，阈值15dB、两组各2次、2条派生告警和单点时频图通过。19项状态恢复、P201两临时路径不存在、原网页和Planner服务恢复。第一次尝试在采集目录缺失时失败且无RF，已修复；第二次2轮成功但中文跨块损坏导致脚本未识别结束，已修复并重新通过。模拟模型实机通过不等于真实模型已验证。
+
+真实模型检查最初被自动审批拒绝，原因是向未经该审批确认的模型端点发送 SDR 能力和预算相关内容；用户随后明确允许。由 [检查脚本](../../jetson-agx/sdrharness/scripts/validate-monitor-real-planner.py) 使用当前已配置 `opencode-go / deepseek-v4.1-flash` 的 `https://opencode.ai/inference/go/v1`，发送现有 Planner 系统提示和工具 schema、[固定请求模板](../../jetson-agx/sdrharness/config/request.json)（把健康字段设置为模拟可用）及指令“在2455到2456 MHz监测两轮，每轮结束等待1秒，谱峰高于噪声15 dB时网页告警。总预算最多2个动作、90秒和65536字节。”；真实模型返回 `start_task`、目标2轮、阈值15dB、间隔1秒、2动作/90秒/65536字节，Controller 验证通过。该检查只请求规划，未连接SDR，未发送IQ或实际射频测量，未复制或显示密钥。隔离 Planner 暂存 `/var/tmp/sdrharness-dev/monitor-real-1028` 2文件122880字节。
+
+候选 Controller/Web及当前实际二进制的回滚副本已准备在 `/home/jetson/.local/lib/sdrharness/releases/monitor-rx-20261028-r1`（6文件14314892字节，manifest SHA-256 `bac5539416b30f3e9e232effde240c13850a75302436afdadd13c2969631385d`）；新 Planner 为 `/home/jetson/.local/lib/sdrharness/planner/releases/monitor-rx-20261028-r1`（12681文件79736872字节、2链接，manifest SHA-256 `80a1b449048c7f9f42ab87c6906e3527cbf4df5d6222039a9d038cfe5f3470b8`）。包内 manifest 记录各二进制/源码/依赖身份和精确删除方法。生产切换及新→旧→新回滚测试被自动审批拒绝，理由是需要用户明确授权停止 Web/Planner、替换实际二进制和 Planner 指针及测试回滚；命令未执行，原服务及 P201 健康、原哈希和 Planner 指针未改变。实际生产安装、回滚测试和按用户要求的完成后清理仍待执行。
+
+中断期间暂存（非交付保留）：`/var/tmp/sdrharness-dev/monitor-1028` 构建6458文件3177814772字节，候选 Controller SHA-256 `560bd8eedeb9ce6fb7514f0d38096d7cab34e6999a8ccf75e404b6eafedc5ebe`、Web `87fddf410b5edddb3986e62a77c6bc8521e014d1a95a33c0b01a925595084066`；`rf-open-source-20261028` 为开源源码和隔离依赖5907文件268856327字节。`monitor-synth-1028`、`monitor-synth-b-1028`、`monitor-synth-c-1028`、`monitor-synth-final-1028` 为合成IQ/浏览器暂存，各5文件；`monitor-live-1028` 为首次无RF失败暂存10文件328814字节。`monitor-live-b-1028` 和 `monitor-live-c-1028` 分别14文件421597/421736字节，各含两份32768字节实际IQ及元数据，分别为 session `monitor-live` generation `1793199818016` 和 `1793200339918`、request 2/3、无模型推理。两轮 data SHA 按 request 2/3 分别为 `cf04a11c35164b6c066453bfd1f6cdb00733874601826ccb3d98763ad9e1151f` / `9a3e32040e8e9ffef17a0f57b7aeee2f5d556af93763233fb46869dff79826c6`，`4ec6978b9bed05533557848043593d2e544dd5cecebe62cc7cdaf5a04375390f` / `0eed699a6833e07f33661507b748298be0061e1e61f642b1b33daa7e277f7689`。这些路径供本单元验收/恢复继续使用，待单元完成后逐个核对并删除，不能将其称为已清理；不属于应用结果或旧封存证据。
+
+用户随后明确允许部署和新→旧→新回滚测试。实际 Controller/Web `monitor-rx-20261028-r1` 与 Planner 同名版本已安装；切换三阶段均服务健康、两会话保留，结果/语料/识别归档列表哈希不变，P201单实例且19项状态一致、无额外RF。实际浏览器通过工作台入口打开 `/monitoring`，两会话可选、页面错误0；当前会话11次历史扫描缺逐点分析数据，被明确排除。当前 Web MemoryCurrent 1769472字节、MemoryMax 100663296字节为瞬时值而非峰值；单独最大65536样本的 CPU PSD 进程峰值RSS 46728 KiB，不宣称整个生产服务的峰值已测。新包、原Planner及精确回滚二进制按上段 manifest 保留。部署前工作区已有用户Web源码改动，与当时安装网页字节一致，本单元未纳入提交；发布清单记录界面SHA，干净Git检出不包含这些既有界面改动。
+
+本单元完成后的精确清理：删除上段列出的10个 `/var/tmp/sdrharness-dev/` 特征根及本次导入生成的单个 `jetson-agx/sdrharness/scripts/__pycache__/validate-monitor-live.cpython-310.pyc`，共12501文件3450003914字节、4链接；10个根及该pyc均核验不存在，测试进程和专用socket已退出/不存在。四份实测临时IQ共131072字节随对应开发根删除，未删除用户结果、既有实验或回滚包。真实模型规划只用模拟观测；实际实收反馈发送到外部模型后的完整自动闭环仍未验收，不能把分开的两项验证合并为这一证据。

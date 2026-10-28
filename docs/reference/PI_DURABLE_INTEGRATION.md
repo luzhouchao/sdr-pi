@@ -32,11 +32,12 @@ model/thinking/instructions/tools并撤销旧请求执行资格。用户要求�
 
 ## 当前安装与离线维护
 
-Planner为 `planner/releases/pi-durable-1.4.0-20261027-r9`，通过 `planner/current` 选择；
-Controller及Web制品统一为 `releases/pi-durable-1.4.0-20261027-r12`，根均在
-`/home/jetson/.local/lib/sdrharness/`。前轮37个旧安装目录及随后替换的Planner/二进制r5包已删除，旧版回滚路径不再可用；
+Planner为 `planner/releases/monitor-rx-20261028-r1`，通过 `planner/current` 选择；
+Controller及Web制品统一为 `releases/monitor-rx-20261028-r1`，根均在
+`/home/jetson/.local/lib/sdrharness/`。前轮37个旧安装目录及随后替换的Planner/二进制r5包已删除，相应旧版回滚路径不再可用；
 应用结果、IQ和持久账本保留。精确路径、大小、SHA和清理见
 [最新版本验收](../validation/PI_DURABLE_CORE_2026-10-26.md#仅支持最新版与旧包删除2026-10-27)。
+当前监测版本及实际原版回滚二进制身份见[监测验收](../validation/PI_DURABLE_CORE_2026-10-26.md#扫描频点分析数据归档前置2026-10-28)，原 Planner r9 用于回滚；回滚前必须停止 Web 和 Planner，不自动恢复旧任务。
 OpenCode Go当前选择为 `deepseek-v4.1-flash`，Base URL为
 `https://opencode.ai/inference/go/v1`，API为 `openai-completions`；必须匹配当前Pi目录，
 旧Zen地址和旧模型别名不再回退。真实hold已通过，新key原地保留且未复制。

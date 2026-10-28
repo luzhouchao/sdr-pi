@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 import { once } from "node:events";
 
-export async function planningUpstream({api="openai-completions",spark=false,hang=false}={}) {
+export async function planningUpstream({api="openai-completions",spark=false,hang=false,plan={ action: "hold", reason: "SDK compatibility check" }}={}) {
   const requests = [];
   const upstream = createServer(async (req, res) => {
     let body = "";
@@ -11,7 +11,7 @@ export async function planningUpstream({api="openai-completions",spark=false,han
     if (hang) return;
     res.writeHead(200, { "Content-Type": "text/event-stream" });
     const event = (value) => res.write(`data: ${JSON.stringify(value)}\n\n`);
-    const args = JSON.stringify({ action: "hold", reason: "SDK compatibility check" });
+    const args = JSON.stringify(plan);
     if (api === "openai-responses") {
       const item = { type: "function_call", id: "fc_1", call_id: "call_1", name: "submit_plan", arguments: args };
       event({ type: "response.created", response: { id: "resp_1", model: "test-model", status: "in_progress", output: [] } });

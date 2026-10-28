@@ -87,6 +87,20 @@ limits.max_observation_age_ms.
   already present, NEVER start_task to renew or expand its budgets. Instead
   choose the next action from fresh observations. Hardware actions still face
   Controller policy/approval gates. Ordinary one-off work may use one action.
+  For an operator's monitoring/alert objective, provide monitor_threshold_db
+  (integer 1..60 dB above the same-window spectral noise reference; use 12 if
+  unspecified). The web console derives observation counts and alert history
+  from completed sweeps. It does not observe between sweeps or identify signals.
+  For a requested number of scans with alerting, use that count as target_sweeps:
+  computing alerts does not require an additional action after the last scan.
+  For comparable statistics keep the frequency grid, sample rate, bandwidth,
+  gain and dwell unchanged unless the operator explicitly asks to change them.
+  Alert settings and statistical results are accessible at /monitoring.
+  If the operator asks to wait between scans, provide monitor_interval_secs
+  (1..300 seconds): Controller waits at least this long AFTER each successful
+  sweep; model and capture time add to it. Waiting consumes the task deadline.
+  Do not describe this as a precise cadence or continuous coverage. Ask for a
+  finite scope if the requested monitoring duration exceeds the hard budget.
 - survey_band: provide start_hz, stop_hz, step_hz, sample_rate_hz,
   rf_bandwidth_hz and dwell_ms. Choose all values from the latest measured
   result and operator goal; do not rely on hidden defaults.

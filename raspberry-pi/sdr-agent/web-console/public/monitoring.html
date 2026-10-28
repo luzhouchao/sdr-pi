@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>频谱监测 · SDR Harness</title>
+  <style>
+    :root { color-scheme:light; font-family:system-ui,-apple-system,"Noto Sans SC",sans-serif; color:#15253a; background:#edf3f9; }
+    * { box-sizing:border-box; } body { margin:0; } a { color:#165f91; }
+    header { background:#f9fcff; border-bottom:1px solid #cbd9e5; padding:18px max(20px,calc((100% - 1200px)/2)); display:flex; gap:20px; align-items:center; }
+    header strong { flex:1; } main { max-width:1200px; margin:auto; padding:30px 20px 60px; }
+    h1 { margin:0; font-size:28px; } h2 { font-size:18px; margin:0 0 15px; } p { line-height:1.6; }
+    .lede { color:#526b82; max-width:75ch; } .controls { display:flex; gap:14px; align-items:end; flex-wrap:wrap; margin:25px 0; }
+    label { display:grid; gap:6px; font-size:13px; color:#425c73; } select,input,button { font:inherit; padding:8px 10px; border:1px solid #b6cadb; border-radius:6px; background:white; color:#15253a; }
+    button { cursor:pointer; background:#165f91; color:white; border-color:#165f91; } button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible { outline:3px solid #d97839; outline-offset:2px; }
+    .summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:12px; margin-bottom:18px; }
+    .card,section { background:white; border:1px solid #d0deea; border-radius:10px; padding:18px; }
+    .card strong { display:block; font-size:24px; color:#135b87; } .card span { color:#526b82; font-size:13px; }
+    section { margin-top:16px; overflow-x:auto; } table { width:100%; border-collapse:collapse; font-size:13px; min-width:760px; }
+    th,td { text-align:left; padding:10px 9px; border-bottom:1px solid #e4edf4; white-space:nowrap; } th { color:#526b82; font-weight:600; }
+    td.num { font-variant-numeric:tabular-nums; } .empty { color:#64798c; } #status { color:#526b82; min-height:1.5em; } #status.error { color:#a43d28; }
+    .notice { font-size:13px; color:#526b82; } @media(max-width:600px) { main { padding-top:20px; } header { padding:16px 20px; } }
+  </style>
+</head>
+<body>
+<header><strong>SDR Harness / 频谱监测</strong><a href="/">返回工作台</a></header>
+<main>
+  <h1>频谱监测</h1>
+  <p class="lede">汇总会话中已完成的扫描。告警表示接收窗口的谱峰高于同窗频谱噪声参考；未扫描的时间不计入统计。</p>
+  <div class="controls">
+    <label>会话 <select id="session" aria-label="会话"></select></label>
+    <label>谱峰高于噪声参考的阈值（dB） <input id="threshold" type="number" min="1" max="60" step="1" value="12"></label>
+    <button id="refresh" type="button">刷新</button>
+  </div>
+  <p id="status" role="status" aria-live="polite">正在读取…</p>
+  <div class="summary">
+    <div class="card"><strong id="sweeps">—</strong><span>已读取扫描</span></div>
+    <div class="card"><strong id="groups">—</strong><span>可比较的频点配置</span></div>
+    <div class="card"><strong id="alerts">—</strong><span>告警记录</span></div>
+  </div>
+  <section><h2>告警历史</h2><p class="notice">首次观察已超阈值或低于阈值后再次超阈值时记录。结果按当前阈值重新计算，删除源扫描后对应记录也会移除。</p>
+    <table><thead><tr><th>保存时间</th><th>中心频率</th><th>功率</th><th>本轮参考</th><th>增益</th><th>来源</th></tr></thead><tbody id="alert-rows"></tbody></table>
+    <p class="empty" id="alert-empty">没有告警。</p>
+  </section>
+  <section><h2>频点统计与最近一次分析</h2><p class="notice">占比＝超阈值的有效观察次数 ÷ 有效观察次数，不是连续时间占用率。频率、采样率、带宽、增益、样本数及算法一致时才合并。</p>
+    <table><thead><tr><th>调谐频率</th><th>超阈值次数 / 观察次数</th><th>观察占比</th><th>最近功率</th><th>估计峰值频率</th><th>估计带宽</th><th>谱峰相对噪声</th><th>采样率 / RF 带宽</th><th>增益</th><th>分析</th></tr></thead><tbody id="stat-rows"></tbody></table>
+    <p class="empty" id="stat-empty">尚无带频谱分析数据的扫描。</p>
+    <p class="notice">频谱峰值、带宽与相对噪声均为软件估计；宽带信号或持续噪声变化可能影响噪声参考和告警灵敏度。</p>
+  </section>
+  <section><h2>单次接收的时频图</h2><p class="notice">选择频点后，分析最近一次保存的单个 IQ 窗口；图中时间从该窗口开始计算。数值为未标定 dBFS/Hz。中心直流及滤波边缘可能包含接收机伪影。</p>
+    <p id="analysis-status" role="status">请选择一个频点。</p>
+    <canvas id="waterfall" width="768" height="240" style="max-width:100%;height:auto;border:1px solid #cbd9e5" aria-label="选定接收窗口的时频功率图"></canvas>
+    <p id="analysis-axis" class="notice"></p><p class="notice">时频计算使用 RFObserver 的开源算法（<a href="/rfobserver-license">许可和版权</a>）。</p>
+  </section>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const fmt = x => Number(x).toFixed(3);
+  const db = x => Number(x).toFixed(1) + ' dB';
+  const freq = x => fmt(Number(x) / 1e6) + ' MHz';
+  const cell = (row, text) => { const td = document.createElement('td'); td.className = 'num'; td.textContent = text; row.append(td); };
+  let seq = 0, busy = false, previousSession = '', previousConfigured = null, manualThreshold = false;
+  let analysisSeq = 0;
+  async function read(url) { const response = await fetch(url, {signal:AbortSignal.timeout(10000)}); if (!response.ok) throw new Error('HTTP ' + response.status); return response.json(); }
+  async function analyze(resultId, pointIndex) {
+    const ticket=++analysisSeq; $('analysis-status').textContent='正在分析单个已保存的 IQ 窗口…';
+    try {
+      const response=await fetch(`/api/results/${encodeURIComponent(resultId)}/spectrogram/${encodeURIComponent(pointIndex)}`, {signal:AbortSignal.timeout(20000)});
+      if (!response.ok) { const body=await response.json(); throw new Error(body.error || `HTTP ${response.status}`); }
+      const data=await response.json(); if(ticket!==analysisSeq)return;
+      const grid=data.grid_db, flat=grid.flat(); if(!grid.length||!flat.length)throw new Error('空频谱数据');
+      const sorted=flat.slice().sort((a,b)=>a-b), lo=sorted[Math.floor(sorted.length*.05)], hi=sorted[Math.floor(sorted.length*.99)], span=Math.max(hi-lo,1);
+      const canvas=$('waterfall'),ctx=canvas.getContext('2d'),tmp=document.createElement('canvas'); tmp.width=grid[0].length;tmp.height=grid.length;
+      const image=tmp.getContext('2d').createImageData(tmp.width,tmp.height);
+      grid.forEach((row,y)=>row.forEach((v,x)=>{const t=Math.min(1,Math.max(0,(v-lo)/span)),i=(y*tmp.width+x)*4;image.data[i]=Math.round(20+220*t);image.data[i+1]=Math.round(35+155*Math.sqrt(t));image.data[i+2]=Math.round(80+110*(1-t));image.data[i+3]=255;}));
+      tmp.getContext('2d').putImageData(image,0,0);ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(tmp,0,0,canvas.width,canvas.height);
+      $('analysis-status').textContent=`中心 ${freq(data.center_hz)} · ${data.samples.toLocaleString()} 样本 · RFObserver Hann PSD`;
+      $('analysis-axis').textContent=`横轴 ${freq(data.center_hz+data.frequency_offsets_hz[0])} 至 ${freq(data.center_hz+data.frequency_offsets_hz.at(-1))}；纵轴为窗口内时间 ${data.time_axis_ms[0].toFixed(3)}–${data.time_axis_ms.at(-1).toFixed(3)} ms；颜色范围 ${lo.toFixed(1)} 至 ${hi.toFixed(1)} dBFS/Hz。`;
+    } catch(error) { if(ticket===analysisSeq)$('analysis-status').textContent='分析未完成：'+error.message; }
+  }
+  async function refresh() {
+    if (busy) return; busy = true; const ticket = ++seq;
+    try {
+      const state = await read('/api/state');
+      const selected = $('session').value || state.active_session_id || '';
+      $('session').replaceChildren();
+      for (const session of state.sessions) { const option = document.createElement('option'); option.value = session.id; option.textContent = session.title || session.id; $('session').append(option); }
+      $('session').value = state.sessions.some(s => s.id === selected) ? selected : (state.active_session_id || state.sessions[0]?.id || '');
+      if (!$('session').value) { $('status').textContent = '暂无会话。请先返回工作台创建会话。'; return; }
+      const configured = state.sessions.find(s => s.id === $('session').value)?.monitor_threshold_db ?? 12;
+      if (previousSession !== $('session').value || previousConfigured !== configured) { manualThreshold = false; }
+      if (!manualThreshold) $('threshold').value = configured;
+      previousSession = $('session').value; previousConfigured = configured;
+      const threshold = Number($('threshold').value);
+      if (!Number.isFinite(threshold) || threshold < 1 || threshold > 60) throw new Error('阈值须为 1–60 dB');
+      const report = await read('/api/monitoring?' + new URLSearchParams({session_id:$('session').value,threshold_db:String(threshold)}));
+      if (ticket !== seq) return;
+      $('sweeps').textContent = report.sweeps_considered; $('groups').textContent = report.groups.length; $('alerts').textContent = report.alerts.length;
+      const flags = []; if (report.legacy_sweeps_excluded) flags.push(report.legacy_sweeps_excluded + ' 次旧扫描缺少分析数据'); if (report.clipped_points_excluded) flags.push(report.clipped_points_excluded + ' 个无效或削顶点未计'); if (report.truncated_sweeps || report.truncated_groups || report.alerts_truncated) flags.push('结果受数量上限截断');
+      $('status').className = ''; $('status').textContent = '已更新 ' + new Date().toLocaleTimeString('zh-CN') + (flags.length ? ' · ' + flags.join(' · ') : '');
+      $('alert-rows').replaceChildren(); for (const a of report.alerts) { const tr=document.createElement('tr'); [new Date(a.saved_at_ms).toLocaleString('zh-CN'),freq(a.center_hz),db(a.power_dbfs)+'FS',db(a.reference_dbfs)+'FS',db(a.gain_db),a.first_observation?'首次观察超阈值':'再次超阈值'].forEach(x=>cell(tr,x)); $('alert-rows').append(tr); }
+      $('alert-empty').hidden = report.alerts.length > 0;
+      $('stat-rows').replaceChildren(); for (const g of report.groups) { const tr=document.createElement('tr'), p=g.profile, s=g.spectral; [freq(p.center_hz),`${g.above_threshold} / ${g.observations}`,`${(100*g.above_threshold/g.observations).toFixed(1)}%`,db(g.last_power_dbfs)+'FS',freq(s.peak_frequency_hz),freq(s.occupied_bandwidth_hz),db(s.measured_snr_db),`${freq(p.sample_rate_hz)} / ${freq(p.rf_bandwidth_hz)}`,db(p.gain_db)].forEach(x=>cell(tr,x)); const td=document.createElement('td'),button=document.createElement('button');button.type='button';button.textContent='查看时频图';button.addEventListener('click',()=>analyze(g.result_id,g.point_index));td.append(button);tr.append(td);$('stat-rows').append(tr); }
+      $('stat-empty').hidden = report.groups.length > 0;
+    } catch(error) { $('status').className='error'; $('status').textContent='未能刷新：' + error.message + '；显示的数据可能已过期。'; }
+    finally { busy = false; }
+  }
+  $('refresh').addEventListener('click',refresh); $('session').addEventListener('change',refresh); $('threshold').addEventListener('change',()=>{manualThreshold=true;refresh();});
+  refresh(); setInterval(refresh,5000);
+})();
+</script>
+</body></html>

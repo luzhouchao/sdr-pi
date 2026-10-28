@@ -288,8 +288,24 @@ fn validate_action_mode(
             max_iq_bytes,
             min_freq_hz,
             max_freq_hz,
+            monitor_threshold_db,
+            monitor_interval_secs,
         } => {
             require_sdr_capability(request, true, false)?;
+            require(
+                monitor_threshold_db.map_or(true, |v| (1..=60).contains(&v)),
+                "monitor_threshold",
+                "monitor threshold must be 1–60 dB",
+            )?;
+            require(
+                monitor_interval_secs.map_or(true, |v| {
+                    (1..=300).contains(&v)
+                        && monitor_threshold_db.is_some()
+                        && u64::from(v) * u64::from(target_sweeps.saturating_sub(1)) < *max_seconds
+                }),
+                "monitor_interval",
+                "monitor interval must fit the finite task budget",
+            )?;
             require(
                 !mission.trim().is_empty()
                     && mission.len() <= 700
@@ -660,8 +676,41 @@ mod tests {
             max_iq_bytes: 1_000_000,
             min_freq_hz: 2_445_000_000,
             max_freq_hz: 2_465_000_000,
+            monitor_threshold_db: None,
+            monitor_interval_secs: None,
         };
         assert!(!validate_action_mode(&req, &action, false).unwrap());
+        for threshold in [0, 61] {
+            let mut invalid = action.clone();
+            if let ProposedAction::StartTask {
+                monitor_threshold_db,
+                ..
+            } = &mut invalid
+            {
+                *monitor_threshold_db = Some(threshold);
+            }
+            assert!(validate_action_mode(&req, &invalid, false).is_err());
+        }
+        for (threshold, interval, target) in [
+            (None, 1, 2),
+            (Some(12), 0, 2),
+            (Some(12), 301, 2),
+            (Some(12), 200, 3),
+        ] {
+            let mut invalid = action.clone();
+            if let ProposedAction::StartTask {
+                monitor_threshold_db,
+                monitor_interval_secs,
+                target_sweeps,
+                ..
+            } = &mut invalid
+            {
+                *monitor_threshold_db = threshold;
+                *monitor_interval_secs = Some(interval);
+                *target_sweeps = target;
+            }
+            assert!(validate_action_mode(&req, &invalid, false).is_err());
+        }
         for (target, steps, seconds, low, high) in [
             (13, 12, 300, 2_445_000_000, 2_465_000_000),
             (0, 0, 300, 2_445_000_000, 2_465_000_000),
@@ -678,7 +727,9 @@ mod tests {
                     max_seconds: seconds,
                     max_iq_bytes: 1_000_000,
                     min_freq_hz: low,
-                    max_freq_hz: high
+                    max_freq_hz: high,
+                    monitor_threshold_db: None,
+                    monitor_interval_secs: None
                 },
                 false
             )
