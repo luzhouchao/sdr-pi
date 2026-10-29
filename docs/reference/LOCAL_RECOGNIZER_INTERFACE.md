@@ -1,5 +1,7 @@
 # Local recognizer interface
 
+2026-10-29：独立C++/Python识别Worker已退役。本文保留Controller/Web仍使用的协议与安全边界，不表示有可部署模型后端。
+
 Date: 2026-08-31; status updated 2026-09-06
 
 > Current status: the backend-neutral Controller seam and an experimental

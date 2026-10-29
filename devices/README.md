@@ -8,6 +8,6 @@
 | `p201/` | 既有Controller健康入口、sdrd源码和AGX配置入口 | 192.168.1.10:43110；RX1/RX0/A_BALANCED |
 
 论文数据与模型已迁出，本目录不提供数据集链接。
-`programs/` 中的链接分别指向 `src/` 的共享实现与 `deploy/agx/` 的设备脚本。
+P201 `programs/` 链接指向 `src/` 与 `deploy/agx/`；B210保留本地设备工具，旧实验快捷链接已删除。
 B210二进制/固件在Git外的`local-assets/devices/b210/`，与P201的`/sd/sdr-agent/`发布目录无关。
 历史实验只从[验证索引](../docs/validation/README.md)按需读取，原IQ与哈希不迁移或改写。

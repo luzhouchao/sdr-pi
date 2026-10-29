@@ -274,6 +274,6 @@ misuse, provisional-name escalation, P201 identity, frozen cleanup and
 train/test lineage leakage.
 
 Full split and cross-package lineage auditing is provided by
-[`audit-amc-split-isolation.py`](../../deploy/agx/scripts/audit-amc-split-isolation.py),
+[`audit-amc-split-isolation.py`](https://github.com/luzhouchao/sdr-pi/blob/be88802/deploy/agx/scripts/audit-amc-split-isolation.py),
 with focused collision/derivation tests in
-[`test_amc_split_isolation.py`](../../deploy/agx/tests/test_amc_split_isolation.py).
+[`test_amc_split_isolation.py`](https://github.com/luzhouchao/sdr-pi/blob/be88802/deploy/agx/tests/test_amc_split_isolation.py).

@@ -38,7 +38,7 @@ AGX 安装布局与命令见[部署入口](../../deploy/agx/README.md)，开发�
 | 仓库介绍与构建起点 | [根 README](../../README.md) |
 | AGX 构建、安装与服务 | [AGX 操作入口](../../deploy/agx/README.md) |
 | 共享 Controller、Planner、Web | [Agent 组件](../../src/agent/README.md) |
-| Recognizer 接口组件 | [Worker 文档](../../src/agent/recognizer-worker/README.md) |
+| Recognizer 接口组件 | [Worker 文档](https://github.com/luzhouchao/sdr-pi/blob/be88802/src/agent/recognizer-worker/README.md) |
 | Web 浏览器验证方法 | [测试入口](../../src/agent/web-console/tests/README.md) |
 | P201 系统职责 | [系统入口](../../deploy/p201/README.md) |
 | SDRD 协议与构建 | [sdrd 文档](../../src/sdrd/README.md) |

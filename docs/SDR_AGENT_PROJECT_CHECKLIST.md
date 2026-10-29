@@ -14,6 +14,8 @@ this file retains the detailed delivery and evidence ledger.
 
 ## 当前交付状态速览（2026-09-10）
 
+- [x] 2026-10-29 当前组件源码精简：旧RF/模型实验、独立C++识别Worker及停用模板227文件退役（本轮新增删除177）；保留依赖闭包、19测试与实际服务健康通过，未部署/RF/推理。见[清理记录](validation/DOCS_CONSOLIDATION_2026-09-07.md#当前组件源码精简2026-10-29)。
+
 - [x] 2026-10-29 目录迁移后实际服务检查：已安装Web/Planner健康与真实浏览器、4.39秒真实模型hold、P201只读健康/RX1身份均通过；服务/会话/6条结果未变，未RF或重新部署。见[实机检查](validation/DOCS_CONSOLIDATION_2026-09-07.md#目录整理后实际服务检查2026-10-29)。
 
 - [x] 2026-10-29 源码/部署按职责迁至 `src/` 与 `deploy/`，旧 Pi 独立采集/网络配置及服务模板17文件退役；路径、冻结身份、Rust/Node/C/C++和文档链接验证通过，当前服务未改动。见[目录整理](validation/DOCS_CONSOLIDATION_2026-09-07.md#源码目录分类与旧-pi-退役2026-10-29)。

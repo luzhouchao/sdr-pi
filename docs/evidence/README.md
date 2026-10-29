@@ -380,3 +380,5 @@
 - [2026-10-27 旧模式入口删除](PI_DURABLE_LEGACY_MODES_REMOVAL_2026-10-27.json)：统一自然语言入口、r12/Planner r9、浏览器真实hold、无新RF及精确清理。
 
 - [2026-10-27 统一入口两轮实机](PI_DURABLE_UNIFIED_ENTRY_LIVE_2026-10-27.json)：r12/Planner r9自然语言自动两轮7点、按反馈换段、目标停止、19项恢复及结果哈希/清理。
+
+- [2026-10-29 当前组件源码精简清单](COMPONENT_SOURCE_PRUNE_2026-10-29.json)：227个退役源码/测试/模板与Git恢复依据，实际服务不变。

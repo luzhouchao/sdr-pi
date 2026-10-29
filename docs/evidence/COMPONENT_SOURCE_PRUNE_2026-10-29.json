@@ -1,0 +1,1713 @@
+{
+  "schema_version": 1,
+  "source_commit": "be88802",
+  "purpose": "User-requested pruning to current SDR service components; no runtime deployment",
+  "retired_tracked_files": [
+    {
+      "path": "deploy/agx/scripts/amc-mamba-worker.py",
+      "present_before": true,
+      "bytes": 41745,
+      "sha256": "3eb69fc455435712c3da53a386210fdf333afea4151f3fa75f936ca9fb04f265",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/amc-rf-v1-runtime.py",
+      "present_before": true,
+      "bytes": 2210,
+      "sha256": "f6a96aca046214d7be2d32ebad76527f5631c80ed0745753c8256a5618adc22e",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/amc-worker-supervisor.py",
+      "present_before": true,
+      "bytes": 32167,
+      "sha256": "d19ef085728b741bf83d247c480abe4c04c438230a81a1432436a24ab6574375",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/amc_dataset_contract.py",
+      "present_before": true,
+      "bytes": 9584,
+      "sha256": "c33ecae5a49d08b947dd226e0f4a802495a75f93c28bd0fdfb55557a2c563e84",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/amc_rrc_transport.py",
+      "present_before": true,
+      "bytes": 20376,
+      "sha256": "1a6155168d8e168fcd1ace97232b5c54723b80969c775b36546133929c7a1ab8",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/amc_transport_probe.py",
+      "present_before": false,
+      "bytes": 3379,
+      "sha256": "6d23e8285c834d49e50efdd66983bbd2961e16c124e7f220ff03f33f297e44fb",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/analyze-b210-3500-tone.py",
+      "present_before": true,
+      "bytes": 6648,
+      "sha256": "687fb4cbfae6bcfe36e20684cf5eede5895d90a095393c22e1266a91b9a9757d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/analyze-b210-p201-link.py",
+      "present_before": true,
+      "bytes": 2971,
+      "sha256": "75db7c1c80ae50e83cceea2cfe9a99f298febeaca0b49da754a5d275fab1908b",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/analyze-b210-source-match.py",
+      "present_before": true,
+      "bytes": 22474,
+      "sha256": "60e544c41875e126b0594b6a370dc72c9c331fb0a3545c8289e62b8cf71e4309",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/audit-amc-split-isolation.py",
+      "present_before": true,
+      "bytes": 30675,
+      "sha256": "ce26e764b8700d77ac963132177da3585ae5960f9a3f9b57cbaceb52253d519d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/b210-finite-train-tx.py",
+      "present_before": true,
+      "bytes": 7073,
+      "sha256": "3643fc0d01fd2c77a7dcbe92357b33644e855f7777e50e14f79bf6eb4dc6d31d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/b210_multiclass_contract.py",
+      "present_before": true,
+      "bytes": 2323,
+      "sha256": "b31fd1aab0a11fd05bf829c9c5c685e35524ec56e461e82f0ebfbfa1f13a16a9",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/benchmark-rml2018a-gpu.py",
+      "present_before": true,
+      "bytes": 9959,
+      "sha256": "7040ad24ff737d81ce77baf620883ca61af89f6a2a5c3b0e90436e6040304612",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/check-rml2018a-models.sh",
+      "present_before": true,
+      "bytes": 3437,
+      "sha256": "1b9ac973ef30440a30adeb136be119c82e9f650ebe7a6a38508da66266c71029",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/compare-b210-source-received.py",
+      "present_before": true,
+      "bytes": 7542,
+      "sha256": "ac54807c3914cef6befce82b785aa329258e2d386124bbffa6dda57c7b4d162d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/compare-historical-background.py",
+      "present_before": true,
+      "bytes": 6805,
+      "sha256": "424047d1e862a399697f01bb8da5cea26e863e5b850daf5f8d8f34d454381aaf",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/compare-rml2018a-pilot-timing.py",
+      "present_before": true,
+      "bytes": 18940,
+      "sha256": "de2932c50f995f2e02252f65bdafec95bef3bdcdff74175208bc81d6a9120dae",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/compare-rml2018a-wideband.py",
+      "present_before": true,
+      "bytes": 10389,
+      "sha256": "11cac6442d5afa12a4cacfd103a54388505dc1b77f496cc6709af6834f1bd91b",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-b210-1024-pointwise.py",
+      "present_before": true,
+      "bytes": 18858,
+      "sha256": "1b043c2c390e9d4ce9b62fb8ef6db9294a6009eedaf8441f07a9fadca271b504",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-b210-background.py",
+      "present_before": true,
+      "bytes": 15998,
+      "sha256": "e4b1bdfb8476eacf9bea97b908b830b72976a0e1a8bd13aef00c53d188f863a1",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-b210-failure-decomposition.py",
+      "present_before": true,
+      "bytes": 9714,
+      "sha256": "17a595139050c13d3e2579cbac729dc244ce0dc822a594ec5e80af8176473b57",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-b210-lo-offset.py",
+      "present_before": true,
+      "bytes": 10920,
+      "sha256": "179c897fde0df3f2fd1dd736f5d3592fc1a94591ef16f11bb42b5fdfd3327a52",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-b210-multiclass-residual.py",
+      "present_before": true,
+      "bytes": 14316,
+      "sha256": "906b91b9db4d897b3e65ada70446077132535ee1d33d8b760c9b0b249fb436da",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-b210-rx-affine.py",
+      "present_before": true,
+      "bytes": 15296,
+      "sha256": "01bf779ed6499f734e3dfe5d5e21a3e2f819cb7cc73e3a4e733c341258330f2f",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-b210-rx-bytes.py",
+      "present_before": true,
+      "bytes": 7133,
+      "sha256": "37193da116025252db84f63801156abbe9d8202e2d77fca94a99f120d2770314",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-b210-rx-fidelity.py",
+      "present_before": true,
+      "bytes": 16251,
+      "sha256": "5ab74d3745c09acaee89c55ab1f1a2cb71b8fceb58bf39ebb2c222fa4a5117fc",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-b210-source-sensitivity.py",
+      "present_before": true,
+      "bytes": 9125,
+      "sha256": "f5f53f893a8f08429735e3a9d5bc9f48c536edc2bd3b72f6f197bdbc84eb6033",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-rml2018a-am-metrics.py",
+      "present_before": true,
+      "bytes": 11403,
+      "sha256": "cf031812e7936503beb2e22e6197e3f44e0ad7708aabcdae0f95e7b13d045f39",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-rml2018a-campaign-filter.py",
+      "present_before": true,
+      "bytes": 19474,
+      "sha256": "e01354a0c8bf67a172288de74e36e698f4c14f870ef149dc4e95af0ce018c482",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-rml2018a-guard-anomaly.py",
+      "present_before": true,
+      "bytes": 15073,
+      "sha256": "069bb4122205cfe2af585b95f63fa47e570c60398ac71570cd73e15d2ffc2877",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-rml2018a-link-quality.py",
+      "present_before": true,
+      "bytes": 18167,
+      "sha256": "a877b4a9469b2739e49e213d56a8699525acb3e094ca31a36ff6d92a3af911de",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-rml2018a-link-residual.py",
+      "present_before": true,
+      "bytes": 10557,
+      "sha256": "c61ec95fd13eb8e4a58610e1f6a94f9beaf97d827be98521bd0b25b9850aef1e",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/diagnose-rml2018a-lo-cancellation.py",
+      "present_before": true,
+      "bytes": 12729,
+      "sha256": "612817c6201f1ce904d4d9e6a25a3c47f4671c6af6b34637302f94c85900734b",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/evaluate-amc-mamba.py",
+      "present_before": true,
+      "bytes": 37585,
+      "sha256": "e59baa7272c2c985bc40b883d1c0a0c51b5432e1d911da917f57879da6476347",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/gpu_lease.py",
+      "present_before": true,
+      "bytes": 3678,
+      "sha256": "cbc8038a375f1c44cf4c16d68c94d19ae146b8b9b496a340603be62340c1e1c7",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/import-rf-v1-corpus.py",
+      "present_before": true,
+      "bytes": 3259,
+      "sha256": "970cee2daf560e5a3c4637cb1269e28865bc8d69636225ffcf5f706b5b277993",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/map-p201-background.py",
+      "present_before": true,
+      "bytes": 14871,
+      "sha256": "e39789d93178d79eb12b77915789ae69ae2c4778c86b845201eb9e62c831ae2d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/plot-b210-residual.py",
+      "present_before": true,
+      "bytes": 2810,
+      "sha256": "03c638d60457698b48d50efd0ce4763ad50c31f27dd48b896642e0d3e93c44a7",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/plot-historical-background.py",
+      "present_before": true,
+      "bytes": 4509,
+      "sha256": "99d9fb094770e27ffcb29924180e6d18c42fd9ccf415084c760dd0a0450d23b9",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/prepare-b210-rml-train.py",
+      "present_before": true,
+      "bytes": 4601,
+      "sha256": "a1b9173bfcbb2a17a78a3158bf053ca2edaf72c21503259419ec049c4f56731b",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/recognition-results.py",
+      "present_before": true,
+      "bytes": 3868,
+      "sha256": "845f46b2ac4552b9f432000aca9add7251a4d967752ec2a8ea4fabba7ae80a11",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/repair-b210-lo-leakage.py",
+      "present_before": true,
+      "bytes": 14480,
+      "sha256": "bcf4f0fc524669c0c1a15bc103a67ac1990e4faf0fd155879a1e3fa12d64bf10",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a-continuous-pilot.py",
+      "present_before": false,
+      "bytes": 24964,
+      "sha256": "19f5f7810d035b617130f3dff03e2866ba8147d2fc70d923c602b73eceed794f",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a-event-retest.py",
+      "present_before": true,
+      "bytes": 21584,
+      "sha256": "ca0325f0f0a871f7e3aea899c3a44e871cf7e4a7afcbc5eb8246acbf6fb26cfe",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a-nx-tx.py",
+      "present_before": true,
+      "bytes": 5001,
+      "sha256": "d33c28d442e923173964d9a3511401a62f8ad2ae312439be8a16167cae54b52f",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a-progress.sh",
+      "present_before": true,
+      "bytes": 3531,
+      "sha256": "c52a6ff7a3f17b07a73d987a0d0e1834bb1a729ecd714afcb6c50a53ae129ca8",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a-rf-campaign.py",
+      "present_before": true,
+      "bytes": 43156,
+      "sha256": "769a784186e12b8b24667a78f0de1e5e159f894bea746e285cf402af18fa0d68",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a-snr-campaign-service.py",
+      "present_before": false,
+      "bytes": 11075,
+      "sha256": "f0bb108da31b4ff26e131b6638c601c324102a6af8477dd175a6ca24fb9a1593",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a-snr-stream.py",
+      "present_before": false,
+      "bytes": 1142,
+      "sha256": "0ccee987caf1ce28ebb97e5cd256190eea4abb9fc7906b451caa6af74298af4c",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_buffer_pool.py",
+      "present_before": false,
+      "bytes": 3331,
+      "sha256": "e9d60f19af97f4018b4e97f6714676446c7622fbedfbc7ff46c47a4136f13274",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_campaign.py",
+      "present_before": true,
+      "bytes": 24377,
+      "sha256": "589fd37c7e47bfbc376080663b90506d3633a8b148a8252c13b7ab03a51749ad",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_campaign_coverage.py",
+      "present_before": true,
+      "bytes": 6648,
+      "sha256": "882c73ac4c30fbfc48e04e0ff44ca421d71d57049f8f4a7dd5e5b4f047dcf906",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_campaign_events.py",
+      "present_before": true,
+      "bytes": 26705,
+      "sha256": "0936d3528e1df1f3933047297e538a281256703191e6a0acab8d51c6b0e3c22f",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_campaign_gpu.py",
+      "present_before": true,
+      "bytes": 7157,
+      "sha256": "080454e24eac07e794f3b28c2e5e6bc1b8496efee004509bfddb1cbff63a8fd5",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_campaign_ledger.py",
+      "present_before": true,
+      "bytes": 17652,
+      "sha256": "a1c473175f424f25cc30e2adf6e538a38a7d38877e8215d8a24c5376367cdad2",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_campaign_resident.py",
+      "present_before": true,
+      "bytes": 17172,
+      "sha256": "20cb10175e8b0dbd22cbd8d0afaa13e8e8cb3263d23d62978c218fc8b849c60d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_campaign_store.py",
+      "present_before": true,
+      "bytes": 22413,
+      "sha256": "caedefc9fccbe451bdb8dbcd7f3bd38b621f3b02f7f0fe30d793d5e1400c9b9a",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_collection_plots.py",
+      "present_before": false,
+      "bytes": 4254,
+      "sha256": "095bfa3fecb707c99dd3389946da01408a780c5cc7b5d9f52ddfb21028ef388f",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_current_model_plots.py",
+      "present_before": false,
+      "bytes": 4803,
+      "sha256": "c0c95ed522bb218836fb933f5ab9e4c087d923426f1957f139438e0c0661e41a",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_alpha25_common.py",
+      "present_before": false,
+      "bytes": 11124,
+      "sha256": "8eb87d4773db10f778980cd3ed541952d8fa3ac7d1eecc1b5d365cdbba1afa77",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_alpha25_report.py",
+      "present_before": false,
+      "bytes": 5775,
+      "sha256": "62a61d0eb9d07ac84f601075e15a308268424affe924d91cb6be22d72c03e7b5",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_common.py",
+      "present_before": false,
+      "bytes": 8211,
+      "sha256": "16df462bc37be6b8f5d7bef54aa831fc179eb3c8308e43bb880bdca368773a22",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_common_report.py",
+      "present_before": false,
+      "bytes": 5339,
+      "sha256": "0d10d5dbc8052a4e42eea772e346d3b73de58ee4e7777cbb3bf3779dd82033fb",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_common_verify.py",
+      "present_before": false,
+      "bytes": 2542,
+      "sha256": "5efd7d7b332006129b2bed5090b3e32a4bd50484b6fec7274fd29613c0e7c002",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_factorial.py",
+      "present_before": false,
+      "bytes": 11572,
+      "sha256": "b3fa25667c87aa8d822c22032ae4ff29cdb4cdf37f2ac17907e6f5f16ad0982e",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_partial.py",
+      "present_before": false,
+      "bytes": 11641,
+      "sha256": "4fe78063ff53da768b46d97a17b1bdecfbb75ee2db7458a7b3513b402e25bf68",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_partial_report.py",
+      "present_before": false,
+      "bytes": 5049,
+      "sha256": "781091c0fb3154e033a6ed46c427afc109298978e624c7a8f64e964d3edc1b5c",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_payload_features.py",
+      "present_before": false,
+      "bytes": 7533,
+      "sha256": "f44b576a89b21e7e6f054c5c0a022e217e8a60d1f7dce6fd77038f8b6d0befe6",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_power_match.py",
+      "present_before": false,
+      "bytes": 13022,
+      "sha256": "a43fb2ee3e49ea43ddb4f9f574c90972a9ae8471d82591f253cf2624b45ccb3a",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_replay.py",
+      "present_before": false,
+      "bytes": 8719,
+      "sha256": "750aed2ad3a153254656efc02a8634da1f3ec1dc1949c1a32087da16f83e7009",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_rx_selector.py",
+      "present_before": false,
+      "bytes": 9184,
+      "sha256": "5ebb25e6ea40204c9390d55f330c65610088e60d14bcf287f6a5729da79ce3fd",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_rx_selector_extend.py",
+      "present_before": false,
+      "bytes": 5929,
+      "sha256": "a8ff8e6c98e2d4aa7f90c28ff7950da5a6b3bad4f9c27e965d2574a9e0f572b6",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_synthetic.py",
+      "present_before": false,
+      "bytes": 11350,
+      "sha256": "bddc2aa4640d23f0e4e4e77cb18da45fe920a7424147d14b6a36e6aff360ba89",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_synthetic_parameters.py",
+      "present_before": false,
+      "bytes": 6360,
+      "sha256": "dc62dc27f747e54f55a81cc2cb3ba68e0ff8f69bbc9df4c3e60254f40a20bfe7",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_synthetic_randomized.py",
+      "present_before": false,
+      "bytes": 7692,
+      "sha256": "9b8fcfbed58f8fd463ae4b14b1a463e1cd5cce17b4be83aa8c9e08e55e150db5",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_d10_tone_controls.py",
+      "present_before": false,
+      "bytes": 12675,
+      "sha256": "5acc342993823c9c83342bedb6e7d46578b18f49f236896399e20a3820075437",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_event_archive.py",
+      "present_before": true,
+      "bytes": 6430,
+      "sha256": "0b6bb64b40b4a62dc39dfe3eee00edc3aff6b83240ba4cac33b1951f08ec6f15",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_four_window.py",
+      "present_before": true,
+      "bytes": 8287,
+      "sha256": "adb605629f8edd0241944419f78c4877d1887ac5c750a8164094e1b0bd8f3939",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_guard_gpu.py",
+      "present_before": true,
+      "bytes": 3340,
+      "sha256": "14f189f2e4be1ab50b3d531c132c46e8de15bf2c5d3ea558ee755f91e8149dfa",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_guard_leading.py",
+      "present_before": false,
+      "bytes": 1540,
+      "sha256": "2c1406575c3d82542737015332f4e07458790b3e0ce8cf7c66fb21a568afc85d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_guard_tone.py",
+      "present_before": true,
+      "bytes": 5674,
+      "sha256": "93856137bb8fc44415e8e7ccbe3ffc6360ff46a9a33984ce5e3f28246838ee2d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_infer_batch.py",
+      "present_before": true,
+      "bytes": 4355,
+      "sha256": "0ca5560ed43146f5cc42e61afd0152ceb933945336517299264448a22978a5eb",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_interleaved_schedule.py",
+      "present_before": false,
+      "bytes": 3091,
+      "sha256": "9c54f71a882f663cf7e4d1e36cbaa155586006c32899c4e3ab58b3c2b0396407",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_leading_guard_diagnostic.py",
+      "present_before": false,
+      "bytes": 16616,
+      "sha256": "8636ba5a4ab4ed7b66d0490bb052bd5ef022c57fed374cf51513a12fc05b76b6",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_link_diagnostics.py",
+      "present_before": true,
+      "bytes": 8656,
+      "sha256": "6778caee8ccb9eecd3b1594355533c9de55c83a626a0f58777fdfff81ba7657e",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_lo_cancellation.py",
+      "present_before": true,
+      "bytes": 9341,
+      "sha256": "fe5cdc7e9374d41498ea0372d7c6c89dc3ac1b945a38eb4686777ff213e8a569",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_lo_temporal_diagnostic.py",
+      "present_before": false,
+      "bytes": 10599,
+      "sha256": "ed2f69bf6b2fe7042bd44b5622a577994e2783aa4d9d4d4d3d11f10c1ad7d191",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_low_snr_association.py",
+      "present_before": false,
+      "bytes": 12409,
+      "sha256": "2598150d75884297574a08d3fc636792882fd1c5ee63a9ac0c2e9c7b6cdc347d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_model_collection_eval.py",
+      "present_before": false,
+      "bytes": 40217,
+      "sha256": "6251e0578369b59fa8ed0a3e27eaec174591cb2bc7afe42a3f2bfb82b9cfda0c",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_offline_baseline.py",
+      "present_before": false,
+      "bytes": 19396,
+      "sha256": "cab8618b323621278474b0ae2df27d9632a35facc234ddf90c1443e9afd82022",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_pilot_timing.py",
+      "present_before": true,
+      "bytes": 5608,
+      "sha256": "5d7545215022c99fe8c3641ebf966856165af80a405c536de2ceab708f57ce76",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_qpsk_cancellation_pair.py",
+      "present_before": false,
+      "bytes": 7793,
+      "sha256": "42a53e6c469aa693443f651b3706d916c123c43005a8506e0f4a8b47777f2dfb",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_receive_class_sinr.py",
+      "present_before": false,
+      "bytes": 5573,
+      "sha256": "02ebd402d2b25c5f8df84b19a120e2d9a31709e2fcd285ae0284eedd924da64c",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_shared_raw_rms.py",
+      "present_before": false,
+      "bytes": 9193,
+      "sha256": "4462e5efcfcef2fdecf6ce5c6e02f826e5a431eb0aa2fc6e991ef59ca6e6d99b",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_sinr_stratification.py",
+      "present_before": false,
+      "bytes": 8926,
+      "sha256": "9a81b6e83e496924cf529e71e26d6ea0d5682a6ff52ccf1ae6a689c9d72ffa7f",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_snr_infer.py",
+      "present_before": true,
+      "bytes": 27933,
+      "sha256": "a262d11923a868d26e3509269340f7bd77fe483f416dd3c2b0763b0510fff647",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_snr_stream.py",
+      "present_before": false,
+      "bytes": 46915,
+      "sha256": "19cceab16fa62a64fb61b0026f14551a1665c7b65a674c0b292e0250cf884d21",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_source_peak_control.py",
+      "present_before": false,
+      "bytes": 9549,
+      "sha256": "be5378d08cdb8bfa01c930961a02f4c4390b14f8a79249f0063c3af63875ffc5",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_spectrum_diagnostic.py",
+      "present_before": false,
+      "bytes": 11158,
+      "sha256": "83f930fcef99496bf9e2cfcbb748115ddd9699e33118d2643df24e2885658f35",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_stream_dsp.py",
+      "present_before": true,
+      "bytes": 14664,
+      "sha256": "b4345c3a61be321953fcf67c283a8c70d78d82397a79dfb42ef71d8c5bbbadee",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_stream_frames.py",
+      "present_before": true,
+      "bytes": 994,
+      "sha256": "9f1d0b0552543422cfbb24693216c7a40318a8a9523b88e22a1487d24b3e36ab",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_synthetic_physical.py",
+      "present_before": false,
+      "bytes": 5911,
+      "sha256": "47a20bf61f56118074f91ae53639bf525d62c6c6c8b71f906d2db746e2cf5856",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/rml2018a_synthetic_reference.py",
+      "present_before": false,
+      "bytes": 4946,
+      "sha256": "0fb9d0b0caa32767137b890578e2722ca56d9397faf38d988937968c2d216bb8",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/select-rf-preprocess-validation.py",
+      "present_before": true,
+      "bytes": 56002,
+      "sha256": "f44ce69c3bf1a274c627096fe40a7ddf68b6f3402216f628d6d2705ef4e3b938",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/select-rf-v1-precision.py",
+      "present_before": true,
+      "bytes": 24609,
+      "sha256": "195e1176ef020163abcf6533e22540fcb64bca29a090fbf2d63dd4da8758ce04",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/spark-gpu-gateway.py",
+      "present_before": true,
+      "bytes": 16967,
+      "sha256": "88a3fad6f7571a45919782e11db12951b5296d43e3c3cb051edd952662578ce1",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/summarize-b210-multiclass.py",
+      "present_before": true,
+      "bytes": 7292,
+      "sha256": "95405faf945e94558730231320a7bdb470398b97850b947b4a8bbc6debcfb3e9",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/summarize-rf-v1-evidence.py",
+      "present_before": true,
+      "bytes": 2750,
+      "sha256": "6592587ef43cc785b22afb7b5625199618804fce22f667a1289bab3e8598aae7",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/test-gpu-resources.py",
+      "present_before": true,
+      "bytes": 2919,
+      "sha256": "f77269a268cedf565eeea1a91a31f496cf4a1cc3b334c8001e129fa7a30a6b05",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-b210-2455-margin.py",
+      "present_before": true,
+      "bytes": 11774,
+      "sha256": "907a115e71b785dbacda9d5614e80c90ee1779d91eeb7eab4c828e111cda153b",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-b210-cable-lo.py",
+      "present_before": true,
+      "bytes": 20916,
+      "sha256": "0be66ced761c1feb1009b809aba54bcdb3f79692c54cfdc0b4fc14022ae7c555",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-b210-event-controls.py",
+      "present_before": true,
+      "bytes": 17449,
+      "sha256": "2b9a720ab895fadab938a337f8724dc270b8860f9a5f124260708b1a2de180c9",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-b210-multiclass.py",
+      "present_before": true,
+      "bytes": 24688,
+      "sha256": "24ead5615b094a7df47ce0f76fb09810350e02075da458a3a2e6b428fd45d5b7",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-b210-new-antenna.py",
+      "present_before": true,
+      "bytes": 8333,
+      "sha256": "61f1242976a32f29137e4a2375942095c902abbfa20f6d170dc20416d66715e7",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-b210-p201-link.py",
+      "present_before": true,
+      "bytes": 18034,
+      "sha256": "9454da8cdc70aadff2aba96a23c4c0a5284c15d53854b996c55ee24778955686",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-b210-rf-v1-pilot.py",
+      "present_before": true,
+      "bytes": 19144,
+      "sha256": "a624681102de314730fde974e787923faae66a80c644d4590d12585695402629",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-b210-tone-events.py",
+      "present_before": true,
+      "bytes": 7524,
+      "sha256": "17a58caf28b7a166e82ad02c330f139c694a071ff0161a738c78b0b5c8a33527",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-b210-v4-affine.py",
+      "present_before": true,
+      "bytes": 14757,
+      "sha256": "677d1fabe5ce9207d05f0342883fe750b5362e12de97ba9f58ad58349742134b",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-closed-loop-results.py",
+      "present_before": true,
+      "bytes": 20621,
+      "sha256": "fa8ab7076d3ba5763269cf711503f67914a2713e9383988ff9e6e95d77aaf479",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-daily-rx-use.py",
+      "present_before": true,
+      "bytes": 19389,
+      "sha256": "b5546efada5560825a6491b70255a7d56b7c72db906b972bfc95c5db873158b6",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-gpu-lease.py",
+      "present_before": true,
+      "bytes": 13213,
+      "sha256": "9ef0b90160a93e57809e1e930b2e783717ca0f21162511a1a24b44e2e242cfaa",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-gpu-resources.py",
+      "present_before": true,
+      "bytes": 16140,
+      "sha256": "e2b916a7faefb749d69ad35818aad50b7e8038e1f3607a0c6fe04f3be7cc187d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-installed-rx-clients.py",
+      "present_before": true,
+      "bytes": 25320,
+      "sha256": "77de7931919c9c199628d9959ac30042752c73a0dc3599dcc98986aaa1218087",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-operations.py",
+      "present_before": true,
+      "bytes": 10142,
+      "sha256": "1c0a348a29fe3fbca9d77a100b99e95c4c455faac14a1da4661a86eb2bdccdd2",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-p201-continuous-rx.py",
+      "present_before": true,
+      "bytes": 6091,
+      "sha256": "c5a280b1e7c70e2652bbcdfd78393672e78e7816b058a6446b8028a504738187",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-p201-termination-background.py",
+      "present_before": true,
+      "bytes": 18477,
+      "sha256": "93cdbda08043a45eeff632d6e2d81f9f63d8ce9e61a457e7f790e7e5475594dd",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-recognition-archive.py",
+      "present_before": true,
+      "bytes": 9149,
+      "sha256": "7b0ffd1862fb991b2d02a2338073cc1873683bc7769793c91d0f5c1146472004",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-recognizer-admission.py",
+      "present_before": true,
+      "bytes": 6825,
+      "sha256": "0571aed21f42c0c747989c7188856af3e09b89e953d90e6f3db643a0deb1e1ae",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-rf-aligned-checkpoint.py",
+      "present_before": true,
+      "bytes": 23544,
+      "sha256": "2120bc1490eeaccc00b2f55bb3c112fba985f4c6663441a019aa5bcd9f774919",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-rf-v1-runtime-live.py",
+      "present_before": true,
+      "bytes": 12089,
+      "sha256": "3791029352b28761829786c6e98492023ab9a59312f8078ea76cec432709f534",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-rml2018a-four-window.py",
+      "present_before": true,
+      "bytes": 6359,
+      "sha256": "4f60f406e27fa4e169b5af946b4b994f22a4a971525e5efddf1c3260a5d25906",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-rml2018a-infer-batch.py",
+      "present_before": true,
+      "bytes": 6868,
+      "sha256": "97d59223ec374ef4682346ebc04686b563d47560ecc048d783a4250779e7c688",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-rml2018a-store.py",
+      "present_before": true,
+      "bytes": 5141,
+      "sha256": "3e72b4a28972940c1a2db8849afd6362e8710f136949b7fbf8c6f32cea3d9e1f",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-runner-recognition.py",
+      "present_before": true,
+      "bytes": 28566,
+      "sha256": "c96e660a952c5aaef9e83304bb74390722336b15abfed04100feb9659071815f",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-sdrd-rx-ports.py",
+      "present_before": true,
+      "bytes": 13226,
+      "sha256": "b644706574f0c469f58a712469a0ee2a110ac4150eadece3f027216adfce11d3",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate-worker-supervisor.py",
+      "present_before": true,
+      "bytes": 10937,
+      "sha256": "27fd73a76464731dee6314f362df10af08e4b2c604bb14533bd279d07fb2311f",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/scripts/validate_amc_rrc.py",
+      "present_before": true,
+      "bytes": 7164,
+      "sha256": "b0fb4b1e1e769ec95c879dd15aba5f2b8f5bf75fa102702f7b30d7d190970ef5",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/systemd/sdrharness-amc-mamba-experimental.service",
+      "present_before": true,
+      "bytes": 1787,
+      "sha256": "8734bba400c09c3472d0d19a71190fdd52aac7b247dfd2b83fee3da79dda6e83",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/systemd/sdrharness-amc-supervisor.candidate.service",
+      "present_before": true,
+      "bytes": 1502,
+      "sha256": "d0e7ef208b66ed01b174a1bab4213c1168a2ea8a97325f06b56f117feac0d9b9",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/systemd/spark-x25.service",
+      "present_before": true,
+      "bytes": 1284,
+      "sha256": "326d286c858e474967d437569d8276e1550d76dea32e674debdc8e4b8cc1346f",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_amc_dataset_contract.py",
+      "present_before": true,
+      "bytes": 7851,
+      "sha256": "2fbdd8b83c0433baaa863aad17c9adf7770f5478a1cf6b1925291a172dbda950",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_amc_mamba_worker.py",
+      "present_before": true,
+      "bytes": 3512,
+      "sha256": "86e8af83e4631bcc2f15065355077c95283d55a574833af189a7be65184eb39c",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_amc_native_windows.py",
+      "present_before": true,
+      "bytes": 10600,
+      "sha256": "873a0a9f6bc6b7231f35d46d5a8d70f2efbe4e1ebcf5be5c30879cfabcf9cf31",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_amc_rf_v1_runtime.py",
+      "present_before": true,
+      "bytes": 9429,
+      "sha256": "9fefb5f8a947aa56113e18a39f138a966585c4b4e7896a29c62f255f38027ba1",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_amc_rrc_transport.py",
+      "present_before": true,
+      "bytes": 8562,
+      "sha256": "d6a3a882d0b252601c90f4b6d5a87c256b76b5fbbba2da6def616314a880310c",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_amc_split_isolation.py",
+      "present_before": true,
+      "bytes": 9314,
+      "sha256": "94cac485d32054b1a9d4943fb75015ca42ec17dd59878487eaeb66427f27a6af",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_amc_worker_supervisor.py",
+      "present_before": true,
+      "bytes": 16016,
+      "sha256": "cc1935bc6a31ee04dbab21b76ee7981b300848aef509cd9d6d6eeffddf186144",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_affine.py",
+      "present_before": true,
+      "bytes": 4817,
+      "sha256": "79a5abad12df8f4544e076f39ebbd9d73790f957f3a79dd7b5fcf9dd11b03140",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_background.py",
+      "present_before": true,
+      "bytes": 5483,
+      "sha256": "d0968fcba3dec88d06ba82e1f2a5f80ec875ebc9b290669cdaeafa101b153a5e",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_cable_lo.py",
+      "present_before": true,
+      "bytes": 7042,
+      "sha256": "cd24c27ce015f9bb82c6e19f2b408252d62bd913d72ba1503eab41482e2f6010",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_centered_source.py",
+      "present_before": true,
+      "bytes": 8573,
+      "sha256": "a27c114858fe8de01f77332cdc8ec695e1979a6e64bf05ec3a9a4a9040c2a904",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_event_controls.py",
+      "present_before": true,
+      "bytes": 3140,
+      "sha256": "68b492ec95bd3660180bf85f2d8a6521947c9c9375acf0f70c3bcce2060b0e8f",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_failure_decomposition.py",
+      "present_before": true,
+      "bytes": 3631,
+      "sha256": "905b20deb974120825c97bdf21c3b9149bc96f696ee32fb2b7dec55d07774c8d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_fidelity.py",
+      "present_before": true,
+      "bytes": 4569,
+      "sha256": "850432988ea66132c18f2e565da1d792e40bf5f3f6864538c4ea8fbc9d5ba915",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_finite_tx.py",
+      "present_before": true,
+      "bytes": 8000,
+      "sha256": "0dfcdb8b301da9164129620d60f2a74ea67f98990b726bf07f53445848d79d3a",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_lo_offset.py",
+      "present_before": true,
+      "bytes": 2765,
+      "sha256": "1e191ab4a03c6ba06ab76d8ea7f98d174ac36ac486953974a497006fe2fd6564",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_lo_rejection.py",
+      "present_before": true,
+      "bytes": 4779,
+      "sha256": "a94514ece6bf93f2e142da23859642fff20bae42c630f5a762339165b450b131",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_margin.py",
+      "present_before": true,
+      "bytes": 3699,
+      "sha256": "0d6505ed03cc2e2947ddc03c2375b587f1ad7737d2a26c514ecad67824005048",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_multiclass.py",
+      "present_before": true,
+      "bytes": 10956,
+      "sha256": "639d82812218d298f6edee338c07b4e54b691abd220ff5375d00070d6d39ceae",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_multiclass_residual.py",
+      "present_before": true,
+      "bytes": 4081,
+      "sha256": "70c52f59f48464a466fdb3123a78ea8446669ca671e00a1a053fe1fdc2ecd07a",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_paired.py",
+      "present_before": true,
+      "bytes": 5465,
+      "sha256": "7743cb542f4b4e0af500782df25eaa1d2e0fb3410e1926fcf959e86d4b29b97d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_pointwise.py",
+      "present_before": true,
+      "bytes": 5490,
+      "sha256": "ef8b721bf94762d0587cd8b4c8c9d37b1fc72b6736f91761ce4cf4a931d96cd9",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_rx_bytes.py",
+      "present_before": true,
+      "bytes": 3724,
+      "sha256": "86af3d8a2ba0bbb6f06ded2cf62dd6d88b13d58eafd06641aff1c24e396593be",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_sensitivity.py",
+      "present_before": true,
+      "bytes": 3691,
+      "sha256": "3744f750ba11a61df2f978234400d1afcf4912c27ad9e40c5c4be2fb8d327485",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_source_match.py",
+      "present_before": true,
+      "bytes": 4042,
+      "sha256": "45499768a425f1632484a22071293c754daa761f1213e477a652d72da8af374e",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_source_v3.py",
+      "present_before": true,
+      "bytes": 7998,
+      "sha256": "57a322aa8bc5c60a24d66e0c22d6eda53781e85739fa9e4f3263616c6fd1ff27",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_source_v4.py",
+      "present_before": true,
+      "bytes": 8075,
+      "sha256": "9b350a47a674721f307bb448f9c403168ecce78029cc365caa803d3a464953ec",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_tone_events.py",
+      "present_before": true,
+      "bytes": 2671,
+      "sha256": "a61f33a08816f34ad17f4564e50a6bfdb3b32223b09abdf1a4655a702ec8d63d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_b210_v4_live.py",
+      "present_before": true,
+      "bytes": 6106,
+      "sha256": "168cd178879f99348143dbbd42a7c8effbf6d8f6b9c1e0af92a7cf590320d043",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_evaluate_amc_mamba.py",
+      "present_before": true,
+      "bytes": 2328,
+      "sha256": "eef7421bc77444de54cef801b612a565f6bfd092e2d44a7337598432ceba8c88",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_gpu_lease.py",
+      "present_before": true,
+      "bytes": 11539,
+      "sha256": "e10e9001d92ed6868951c052afb3f7ad2ffde279a19d91f9a5ebd973f901179c",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_operations_fuzz.py",
+      "present_before": true,
+      "bytes": 2944,
+      "sha256": "eca24f9658971780a487431002c90f628612696ecd6752023fe5ff221baf19c5",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_p201_restoration.py",
+      "present_before": true,
+      "bytes": 2654,
+      "sha256": "ae6345e9c29a92014495a9a447281e78bd071d0284277e8ef6bdb55a9358c0a2",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rf_aligned_checkpoint_validation.py",
+      "present_before": true,
+      "bytes": 3986,
+      "sha256": "5eec0d0300e2f665d45c1d475da064c8d8a297d2ec51c038901e9deef82410f4",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rf_preprocess_validation_selection.py",
+      "present_before": true,
+      "bytes": 9354,
+      "sha256": "79dcb4897bb97a85442f9e2a7d1dd52998e7d88cf735d397b0efb419e5ad89ba",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rf_v1_evidence_client.py",
+      "present_before": true,
+      "bytes": 2828,
+      "sha256": "88e44f15a97adbdf35aa45acbbd01eca1720886ea48562cfa3e57f2626a82921",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rf_v1_precision_selection.py",
+      "present_before": true,
+      "bytes": 6541,
+      "sha256": "dc66a481da9d3c3bc3c258bf9ef48548f93b7f5e9a2f47e6670a7c2a2731886b",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_am_metrics.py",
+      "present_before": true,
+      "bytes": 2079,
+      "sha256": "7dffb0ea35aae28892623eb3388857daf173b729e819a67896c9873c9d6b3c4e",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_buffer_pool.py",
+      "present_before": false,
+      "bytes": 2482,
+      "sha256": "1fd2178783e665639e557acc81ea66b53fde95248bc07d70c05f60eae9f6e4ed",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_campaign.py",
+      "present_before": true,
+      "bytes": 22661,
+      "sha256": "64cb0900616c82e2dfdd0d4ffdabe6dd6e60419acc7f3b7a8dcab5c9f9f8b356",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_campaign_events.py",
+      "present_before": true,
+      "bytes": 12585,
+      "sha256": "9da2312541bc10f52a69645bd1a4c7ab5d32cb67ddacccfa42af90f80d1dcfbd",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_coverage.py",
+      "present_before": true,
+      "bytes": 4782,
+      "sha256": "94ffbf56f43627ace6dcb2b9fbd155f0b51fec2a4ec90427345db26db6bbc4a9",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_d10_synthetic.py",
+      "present_before": false,
+      "bytes": 1852,
+      "sha256": "f89caf3936a56448f8bfe7a1fa83d0960f01a8486b847c3245a7889df9ed6d73",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_event_archive.py",
+      "present_before": true,
+      "bytes": 4835,
+      "sha256": "dc254a12a66ac85e7fc50711c6a92092d93ad1264c566b69b4fefe2a7ec6f2df",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_event_retest.py",
+      "present_before": true,
+      "bytes": 9535,
+      "sha256": "011d9115cd5720bc9b0f25700b06b44ed1b343644151410665cdfe9277aa8e3e",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_filter.py",
+      "present_before": true,
+      "bytes": 6721,
+      "sha256": "e37ba3b047023ba055226fb4734025c97bbbc08ee8bcb840460ba8ac39105f22",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_four_window.py",
+      "present_before": true,
+      "bytes": 3909,
+      "sha256": "d55ab896ba122b051bb9e76c1ef1ad82c432418528140cab9db8c49b3a3c1ba4",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_gpu.py",
+      "present_before": true,
+      "bytes": 4208,
+      "sha256": "e333aff5789a92997733847e194225cb20ca7754d01b3fcb6f719ad22acb00dc",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_guard_anomaly.py",
+      "present_before": true,
+      "bytes": 3661,
+      "sha256": "a3084261e2d372728b203ae92e75917800b142385fc6e26988148e0b678261d9",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_guard_gpu.py",
+      "present_before": true,
+      "bytes": 3913,
+      "sha256": "b8e549014418ab5ebba95086c8d6f06ea87a142723d9229f98c57e6e2f4e54c7",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_guard_leading.py",
+      "present_before": false,
+      "bytes": 2825,
+      "sha256": "95212dfc0ce5aed1c68df70de1ef46055af94f8bb00b83f2d9e7ed05d222152a",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_guard_tone.py",
+      "present_before": true,
+      "bytes": 3183,
+      "sha256": "d6928081f943e6f8dfe69d267adf7a3be359c7b1fb52a8a7faf6210a65d8aa2a",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_interleaved_schedule.py",
+      "present_before": false,
+      "bytes": 2903,
+      "sha256": "d711c6bf45cb26f1dac5c4b68fd1dee8ae09fbf864e63e24a469255ccd98ab64",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_ledger.py",
+      "present_before": true,
+      "bytes": 5230,
+      "sha256": "a3da8974dcc71bce525cfa77f875a730ce6ca00ecd89844ed771fe248d080af2",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_link_diagnostics.py",
+      "present_before": true,
+      "bytes": 4047,
+      "sha256": "fc17707f3bf9dbb1cef167fd589904c0751535f98f21ed5fc4658dcefbd20947",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_lo_cancellation.py",
+      "present_before": true,
+      "bytes": 4671,
+      "sha256": "e79660837cd90930f2c8ff71e3fa21f295400fd4825b7d15b40df72b9de6a247",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_lo_temporal_diagnostic.py",
+      "present_before": false,
+      "bytes": 2192,
+      "sha256": "bf1d436517cc657ecd5a63c6368ec01430cad52ddbd36a72d7eb60de174eb99e",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_low_snr_association.py",
+      "present_before": false,
+      "bytes": 1793,
+      "sha256": "f77eee9a3183b5d52ac10337f9f336b3816df013113008d7285e9b9f90ba0c93",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_model_collection_eval.py",
+      "present_before": false,
+      "bytes": 16634,
+      "sha256": "f160452a168a2ecf1709f666963226f6ef29475bad01e6c65496177c37a6fb19",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_pilot_timing.py",
+      "present_before": true,
+      "bytes": 3813,
+      "sha256": "65aca5ce8a9266010eac4a58e4a4be8c06f04c1c1d90b55b75bdc06b5a853004",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_remaining.py",
+      "present_before": true,
+      "bytes": 2513,
+      "sha256": "5dcd4bc560be05ad3dbaeae54c48733da42efbef09a302451c7f9d8edcef3ed7",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_resident.py",
+      "present_before": true,
+      "bytes": 8134,
+      "sha256": "7f8d3a196bc2745cf3bf29baf2dc36fd647783e0e78a989fbde9ee6df2cddca7",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_rx_gain.py",
+      "present_before": true,
+      "bytes": 2591,
+      "sha256": "5001ae3bfe25589b997f15604147d9dfed03cad302a598b948583e452d417615",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_sinr.py",
+      "present_before": true,
+      "bytes": 5800,
+      "sha256": "d47199418453d2a1c3b60738a4caa9b4ba3a12abee26c544ae08c12e4ba58ebe",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_snr_infer.py",
+      "present_before": true,
+      "bytes": 6543,
+      "sha256": "d10a2adc8c47fcaf200964d0c7843669344d99cb3294a2da16308ebe1ce5c70e",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_snr_stream.py",
+      "present_before": false,
+      "bytes": 12447,
+      "sha256": "8ce49261dd2d0ce380c90abddd6aade99bb7cf775def46043e311e9385db31dd",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_spectrum.py",
+      "present_before": false,
+      "bytes": 1787,
+      "sha256": "1701207748719fa6c8c7a034505bcf7194187b6feb44b7e2545cfc0d8909e316",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_store.py",
+      "present_before": true,
+      "bytes": 10640,
+      "sha256": "e9a9d21c11cb4b01bd7f55e00fd733f67d7c55955aa2d144ea66bd2f17ec451f",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_stream.py",
+      "present_before": true,
+      "bytes": 2981,
+      "sha256": "11a9a845755c2ae3a450b2ec6bc3aebe2a255479e047b7fd19e6e2f1db2ffea8",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_synthetic_randomized.py",
+      "present_before": false,
+      "bytes": 1789,
+      "sha256": "1226ff7b1c81bc5dbdb99101e6d9f790d6bf21096d4daef5921bae0e484957ea",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_transport.py",
+      "present_before": true,
+      "bytes": 5761,
+      "sha256": "9be3c973b75b3147256b4dd9f760c3c1a63e621cd7df2eb824e1eb1a71fa1e20",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml2018a_wideband.py",
+      "present_before": true,
+      "bytes": 1787,
+      "sha256": "b3f22862c75139b2a394d532e6a5861a6a041d5b9581f5abe58b3c87a982fa40",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "deploy/agx/tests/test_rml_band_survey.py",
+      "present_before": true,
+      "bytes": 2558,
+      "sha256": "422a2e6b064aa32baf59a956060cab686bafdab1c9e19f5e12a5308d58c79959",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "devices/b210/programs/campaign.py",
+      "present_before": true,
+      "bytes": 51,
+      "sha256": "f88a681338d32b42b92dddc413b1976628906240ad0e809bf65dd1bbca662bc3",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "devices/b210/programs/rml2018a-tx.py",
+      "present_before": true,
+      "bytes": 45,
+      "sha256": "c4b1a83576848183186a157a5c4d8af676a452a811d30852d9a0a115d3ced68b",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "devices/b210/programs/rml2018a_campaign.py",
+      "present_before": true,
+      "bytes": 48,
+      "sha256": "2401c3d8bd17458af4cc136584e13f73aa0279d0bcabc24044eace860079188d",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "src/agent/recognizer-worker/.gitignore",
+      "present_before": true,
+      "bytes": 7,
+      "sha256": "181314065df2f2fdaf920b1a8b5311daa216a2d6489a06ada5b49cc514d89417",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "src/agent/recognizer-worker/Makefile",
+      "present_before": true,
+      "bytes": 1017,
+      "sha256": "b38e74940318f229078e7150ded6d4d04edaebe2cf13433ad9f52bd96b326b69",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "src/agent/recognizer-worker/README.md",
+      "present_before": true,
+      "bytes": 1612,
+      "sha256": "a733d1a16fd038042f73e6d54a514776f6cce6dfd08a36643009a49cc84189e5",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "src/agent/recognizer-worker/config/model.manifest.example",
+      "present_before": true,
+      "bytes": 484,
+      "sha256": "c52ae50843878c8b0949f39d7182bd24a5f0078200c1c99dc8763a8c659af12b",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "src/agent/recognizer-worker/include/sdr/recognizer/backend.hpp",
+      "present_before": true,
+      "bytes": 2181,
+      "sha256": "b9eb1c7bfefd43e7c2d173fc9ce393a6f72ccd203b281753a1e7049a9c334c79",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "src/agent/recognizer-worker/include/sdr/recognizer/model_loader.hpp",
+      "present_before": true,
+      "bytes": 1774,
+      "sha256": "7a387d8fed446f8f1e2f13b077ebea0824ab276ce467471cdd74071a29b17f59",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "src/agent/recognizer-worker/src/backend.cpp",
+      "present_before": true,
+      "bytes": 6074,
+      "sha256": "db1ed6dc57b47840a93d72e60e50b4152ace54594668c9ad29dc508e8c86f8f2",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "src/agent/recognizer-worker/src/model_inspect.cpp",
+      "present_before": true,
+      "bytes": 1204,
+      "sha256": "e21b7c0a52e1d5c4888394a6652c1d2e93ea10a34d8fd505f89db5bd736fb4cb",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "src/agent/recognizer-worker/src/model_loader.cpp",
+      "present_before": true,
+      "bytes": 16416,
+      "sha256": "6aff06a6a28ff636953dffc407e78f3934df044e321bc11ddc483587d4d3d9cd",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "src/agent/recognizer-worker/tests/backend_test.cpp",
+      "present_before": true,
+      "bytes": 2702,
+      "sha256": "3b7f3168410fc7c55c44b8edc4d915f10fb359087c937ae9e2dbde60f5212efa",
+      "recover_from": "be88802"
+    },
+    {
+      "path": "src/agent/recognizer-worker/tests/model_loader_test.cpp",
+      "present_before": true,
+      "bytes": 2955,
+      "sha256": "96880404150ab9e791d57be8baa989a8a4f4b51625e8bdf7508eb2e7fc961062",
+      "recover_from": "be88802"
+    }
+  ],
+  "present_deleted_files": 177,
+  "present_deleted_bytes": 1749629,
+  "preexisting_absences": 50,
+  "orphan_bytecode_removed": [
+    {
+      "path": "deploy/agx/scripts/__pycache__/amc-mamba-worker.cpython-310.pyc",
+      "bytes": 23918
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/validate-rf-aligned-checkpoint.cpython-310.pyc",
+      "bytes": 18704
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/rml2018a_campaign.cpython-310.pyc",
+      "bytes": 21266
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/rml2018a_lo_cancellation.cpython-310.pyc",
+      "bytes": 8720
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/rml2018a_guard_tone.cpython-310.pyc",
+      "bytes": 5439
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/rml2018a_campaign_gpu.cpython-310.pyc",
+      "bytes": 6541
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/amc_dataset_contract.cpython-310.pyc",
+      "bytes": 9005
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/amc-worker-supervisor.cpython-310.pyc",
+      "bytes": 27195
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/rml2018a_campaign_store.cpython-310.pyc",
+      "bytes": 21010
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/amc_rrc_transport.cpython-310.pyc",
+      "bytes": 16447
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/select-rf-preprocess-validation.cpython-310.pyc",
+      "bytes": 44530
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/rml2018a_stream_dsp.cpython-310.pyc",
+      "bytes": 11367
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/evaluate-amc-mamba.cpython-310.pyc",
+      "bytes": 26198
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/gpu_lease.cpython-310.pyc",
+      "bytes": 3773
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/select-rf-v1-precision.cpython-310.pyc",
+      "bytes": 18799
+    },
+    {
+      "path": "deploy/agx/scripts/__pycache__/audit-amc-split-isolation.cpython-310.pyc",
+      "bytes": 23360
+    },
+    {
+      "path": "deploy/agx/tests/__pycache__/test_amc_split_isolation.cpython-310.pyc",
+      "bytes": 7803
+    },
+    {
+      "path": "deploy/agx/tests/__pycache__/test_rf_v1_precision_selection.cpython-310.pyc",
+      "bytes": 5880
+    },
+    {
+      "path": "deploy/agx/tests/__pycache__/test_amc_dataset_contract.cpython-310.pyc",
+      "bytes": 9514
+    },
+    {
+      "path": "deploy/agx/tests/__pycache__/test_rf_aligned_checkpoint_validation.cpython-310.pyc",
+      "bytes": 4399
+    },
+    {
+      "path": "deploy/agx/tests/__pycache__/test_amc_dataset_contract.cpython-310-pytest-6.2.5.pyc",
+      "bytes": 9623
+    },
+    {
+      "path": "deploy/agx/tests/__pycache__/test_amc_mamba_worker.cpython-310.pyc",
+      "bytes": 4024
+    },
+    {
+      "path": "deploy/agx/tests/__pycache__/test_rf_preprocess_validation_selection.cpython-310.pyc",
+      "bytes": 9666
+    }
+  ],
+  "validation": {
+    "python_tests_passed": 19,
+    "rust_embedded_resources_present": true,
+    "device_links_valid": true,
+    "web_ready": true,
+    "planner_active": true,
+    "web_active": true,
+    "service_restarts": 0,
+    "result_count": 6,
+    "rf_operations": 0,
+    "model_inference": 0
+  },
+  "recovery": "git show be88802:<retired path>",
+  "retained_data": "Existing frozen evidence/configs and user results unchanged; no new IQ or model assets",
+  "temporary_cleanup": {
+    "path": "/var/tmp/sdrharness-dev/prune-components-20261029",
+    "files": 7,
+    "bytes": 632654,
+    "verified_absent": true
+  }
+}

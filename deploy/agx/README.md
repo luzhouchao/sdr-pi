@@ -1,290 +1,55 @@
 # AGX 构建、配置与运维
 
-当前状态和实验选择见[项目入口](../../docs/README.md)。本文是组件操作参考；[历史验证](../../docs/validation/README.md)按需打开，不把旧模型实验结果视为当前启用状态。
-
-This directory is the deployment-facing entry for cloning the repository to
-`/home/jetson/sdrharness` on the Jetson AGX Orin. It reuses the tested Rust
-Controller, Planner Worker and Web Console implementations; it does not fork or
-copy those implementations into a second tree.
-
-## 目录导航
+当前运行组件为 Rust Controller、Planner 和 Web；P201 接收服务源码在 [src/sdrd](../../src/sdrd/README.md)。
+当前部署状态以 [checklist](../../docs/SDR_AGENT_PROJECT_CHECKLIST.md) 和 [验证记录](../../docs/validation/README.md) 为准。
 
 | 目录 | 用途 |
 | --- | --- |
-| [config](config) | 当前配置模板；`amc/` 内含保留原字节的冻结实验合同 |
-| [scripts](scripts/README.md) | 按用途列出的构建、运维、验证与诊断脚本 |
-| [systemd](systemd) | 安装服务模板，非运行状态副本 |
-| [tests](tests) | 对应脚本的离线测试 |
+| [config](config) | 当前配置模板、语料规范与保留的冻结合同 |
+| [scripts](scripts/README.md) | 构建、健康、恢复、发布校验和当前监测验证 |
+| [systemd](systemd) | Web、Planner、健康与P201恢复服务模板 |
+| [tests](tests) | 语料合同与运维工具离线测试 |
 
-`amc/` 历史合同内的旧路径不因本次迁移而改写，不能据其存在推定模型或语料仍可用。
-
-## Runtime ownership
-
-- AGX owns the Agent, Rust Controller, terminal, Web Console, sweep orchestration
-  and the production-disabled experimental CUDA/Mamba recognition Worker.
-- P201 Pro owns the radio through `sdrd` at `192.168.1.10:43110`.
-- Raspberry Pi remains a stopped/standby rollback target after cutover.
-- The Planner defaults to the local Spark-X2.5-4B BF16 endpoint. Pi Agent's
-  Web-managed OpenAI-compatible Completions/Responses seam remains available
-  for an explicit operator switch; there is no automatic cloud failover.
-- Model and RF experiment outcomes are historical evidence, indexed under
-  [validation](../../docs/validation/README.md#数据预处理与模型历史). Current admission and
-  deployment state come from the [project checklist](../../docs/SDR_AGENT_PROJECT_CHECKLIST.md).
-
-The external recognizer seam remains the bounded request/response contract.
-The experimental Worker uses PyTorch/CUDA/Mamba internally without exposing
-runtime objects or model operators through the Controller interface.
-
-## Clone and offline verification
+## 构建与检查
 
 ```bash
-git clone https://github.com/luzhouchao/sdr-pi.git /home/jetson/sdrharness
-cd /home/jetson/sdrharness
 bash deploy/agx/scripts/verify-checkout.sh
-```
-
-The verification script is read-only. It does not contact the SDR or start a
-service.
-
-## Build
-
-The user will provision the native AGX toolchain. Recommended baseline: Rust
-1.98 (the Controller declares a minimum of 1.75), Node.js 22, npm, Git and a
-C/C++20 toolchain. CUDA/PyTorch/Mamba packages are deliberately not prerequisites
-for the framework build.
-
-Check the installed toolchain, then build against the checked-in lock files:
-
-```bash
 bash deploy/agx/scripts/check-toolchain.sh
 bash deploy/agx/scripts/build-agent-runtime.sh
 ```
 
-Artifacts are staged under `.artifacts/sdrharness/bin/`, which is ignored by
-Git. The build script runs the Controller, Planner, Web Console, and
-dependency-free C++ recognizer-seam tests before copying binaries. The C++
-check uses only replay/model-admission interfaces; it does not install or load
-an inference runtime or model.
+构建入口对 Controller/Web 执行格式、测试、Clippy和release构建，并运行Planner测试。
+它不启动服务或采集；发布文件暂存于 `.artifacts/sdrharness/`，不入Git。
+开发构建和临时目录遵守 [AGENTS.md](../../AGENTS.md)，不要对生产Planner的node_modules链接执行npm ci。
+不再构建独立C++识别Worker，不需要Torch、Mamba、h5py或论文环境。
 
-The validated no-sudo AGX toolchain layout uses rustup under
-`/home/jetson/.cargo` and the official Node.js aarch64 archive under
-`/home/jetson/.local/lib`, with command links in `/home/jetson/.local/bin`.
-The Planner systemd template deliberately uses
-`/home/jetson/.local/bin/node`; review that path if Node is provisioned another
-way.
+## 实际服务
 
-The AGX Planner now runs from the credential-free release selected by
-`/home/jetson/.local/lib/sdrharness/planner/current`, rather than directly from
-the checkout. Each directory under `planner/releases/` contains `src/`,
-`package.json`, `package-lock.json`, `THIRD_PARTY_NOTICES.md`, and its locked
-`node_modules/`. Prepare dependencies with `npm ci --ignore-scripts`, using a
-feature directory under `/var/tmp/sdrharness-dev/` for `TMPDIR` and npm's cache;
-test the candidate before installing a release. The checkout's existing ignored
-`node_modules` entry links to `planner/current/node_modules` on this AGX.
+当前安装与运行目录独立于源码树：
 
-For a version switch, stop Web gracefully, stop Planner, atomically replace
-`planner/current` with a symlink to the validated release, then start Planner
-and Web. Rollback follows the same sequence with the retained prior release.
-Never put provider configuration or credentials inside releases. The
-[Pi 1.4 upgrade validation](../../docs/validation/PI_SDK_UPGRADE_2026-10-26.md)
-records the installed versions, rollback check, and the pending new-key gate.
+- Controller/Web：`/home/jetson/.local/lib/sdrharness/bin/`。
+- Planner：`/home/jetson/.local/lib/sdrharness/planner/current/`。
+- 服务配置：`/etc/sdrharness/runtime.env` 与 `request.json`。
+- Web状态和provider配置：`/var/lib/sdrharness/web-console/`，不要复制或输出其中凭证。
+- Web入口：AGX的8787端口，仅用于受信任网络。
+- P201：`192.168.1.10:43110`，由唯一`sdrd`拥有Linux/IIO接收。
 
-## Configuration and deployment gate
-
-Do not install services from an unverified clone. After the AGX is online:
-
-1. record JetPack/CUDA/TensorRT, memory, disk, interfaces and current services;
-2. verify `192.168.1.20` can reach SDR `192.168.1.10` read-only;
-3. confirm no existing collector owns the SDR;
-4. copy `config/runtime.env.example` to `/etc/sdrharness/runtime.env`; its
-   user-authorized `0.0.0.0` bind follows LAN address changes but also listens
-   on every AGX IPv4 interface, so never port-forward it to the Internet;
-5. install `config/request.json` as `/etc/sdrharness/request.json`;
-6. install binaries under `/home/jetson/.local/lib/sdrharness/bin/`;
-7. install the systemd templates only after reviewing their paths and user;
-8. optionally install the P201 recovery oneshot/timer after strict SSH identity
-   and the `/sd/sdr-agent/current` release are verified;
-9. start Planner and Web, then perform read-only SDR observation.
-
-Installing a unit file does not authorize enabling or starting it. Keep both
-units disabled until the private environment, binary hashes, LAN exposure and
-SDR ownership gate have been reviewed. The deployed private selection already
-points to local Spark. To make an explicit provider change for a new
-conversation, use the Web `MODEL UPLINK` panel to configure API protocol, Base
-URL, Provider ID, Model ID and API Key. OpenCode Go is provided as a quick-fill
-preset, while all fields remain editable for other providers.
-
-Use `查询上游模型` after entering the Base URL and API Key to request the
-provider's standard `{Base URL}/models` inventory. If the same Base URL was
-already saved, the Web service reuses the private stored key without returning
-it to the browser. Select a returned model to fill Model ID, or keep typing a
-manual ID when a provider does not expose a compatible model-list endpoint.
-The same panel accepts the model context window (8,192–1,000,000 tokens) and an
-automatic compaction threshold (50–95%, default 90%). When `/models` returns a
-bounded `context_window`, `context_length`, `max_context_length`, `max_model_len`
-or common nested equivalent, selecting that model fills the context field;
-otherwise the manual value remains authoritative.
-Discovery is serialized and bounded to one request, 8 seconds, 512 KiB and 512
-model IDs. Redirects are rejected. The key is sent to the bounded `curl`
-process through stdin rather than its command line or environment.
-
-The Web service therefore requires `curl` at runtime; the AGX toolchain check
-verifies it. AGX now uses the shared canonical `/run/sdr-agent/` directory for
-Planner and session sockets. The exact `/run/sdrharness/` name remains accepted
-only for migration from the first installed template; other, nested and
-traversal paths remain rejected.
-
-The Web service atomically stores the upstream in
-`/var/lib/sdrharness/web-console/provider.json` with mode `0600`. The key is
-never returned by the API or included in Web state. The Planner reloads this
-file for each new one-shot or interactive Agent; an active conversation keeps
-its original provider. Non-loopback endpoints require HTTPS, and invalid,
-oversized, loosely permissioned or unknown-field configurations fail closed.
-For the same saved Base URL, a blank API Key preserves the private stored key,
-so the operator can change only the model, context window or 90% compression
-setting without making the service return the secret.
-
-Tailscale was not installed on the 2026-09-01 AGX baseline, so the units do not
-declare a dependency on `tailscaled.service`. The all-interface LAN bind was
-explicitly requested after testing both `192.168.50.75` and `192.168.1.20`.
-This is plain HTTP: submit real provider credentials only from a trusted LAN.
-
-The 2026-09-01 AGX loopback validation passed. The persistent receive-only
-`sdrd` was subsequently restored under explicit authorization after confirming
-that neither the process nor TCP port 43110 was already active; the AGX
-read-only Controller observation then passed. This does not authorize starting
-a collector or changing radio state. Evidence is in
-[`../../docs/AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](../../docs/validation/AGX_FRAMEWORK_VALIDATION_2026-09-01.md).
-
-## P201 SDRD recovery
-
-`systemd/sdrharness-p201-sdrd-recovery.service` and its timer run the bounded
-AGX-side recovery path. They never start a collector. The script requires the
-mode-`0600` password file and strict pinned host key, serializes itself with a
-runtime flock, accepts only one expected daemon/listener or a fully stopped
-zero/zero state, and uses the retained `/sd/sdr-agent/current/S60sdrd` entry.
-The Web unit wants this oneshot so an AGX/Web restart performs the same check.
-
-Install the single `bin/sdr-agent` from the native build alongside the recovery
-script. Its `--mode health` path reuses the Controller's strict SDRD Adapter
-and sends only HELLO/CAPABILITIES/HEALTH/QUIT. It requires a verified RX1 identity,
-healthy flags and receive capabilities; a parsed unhealthy response exits
-nonzero. The recovery script gives it a six-second outer deadline and the unit
-has a 45-second startup budget. It neither opens an interactive session nor
-enables recognition. The former `sdr-agent-controller` and `sdr-agent-health`
-executables are merged into this entry; keep old artifacts only in the named
-rollback release. Web still has its HTTP server, which launches this same
-`sdr-agent` in interactive mode. See
-[`../../docs/P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md`](../../docs/validation/P201_RECOVERY_HEALTH_VALIDATION_2026-09-07.md).
-
-The explicitly authorized persistent-host-key setup and real reboot validation
-were completed on 2026-09-03. Strict host-key checking remains required; a future
-unexpected change must fail closed pending identity verification. Do not repeat
-the NVM initialization or disable checking. See
-[`../../docs/SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md`](../../docs/validation/SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md).
-
-## Local Spark Planner
-
-The live AGX deployment uses the official Spark-X2.5-4B BF16 GGUF without
-quantization. Model weights, the XHToken llama.cpp runtime and the private API
-key remain outside this repository under `/home/jetson/Spark/`. The checked-in
-`systemd/spark-x25.service` exposes only `127.0.0.1:8010`, uses a 32,768-token
-context, F16 KV cache and full CUDA layer offload. Qwen is stopped and disabled;
-Spark is the saved Web provider with a 90% context-compaction threshold.
-
-A bounded 2026-09-04 benchmark confirmed that Spark BF16 and seed44 Mamba fit
-in AGX memory together. Deliberately overlapping active inference reduced both
-throughputs by approximately half, so the production data dependency remains
-`Spark plan -> RX/capture -> Mamba -> next Spark turn` while both models may
-stay resident. Community Q8 improved token generation but failed more of the
-small Planner smoke set; MTP was unavailable in both GGUFs and n-gram
-speculation had no stable median gain. BF16 therefore remains the default. See
-[`../../docs/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](../../docs/validation/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md).
-
-Spark's llama.cpp chat template can emit unbounded assistant prose before a
-required native tool call. The Planner therefore asks this provider for one
-JSON-Schema-constrained adapter action. It converts a final plan object into Pi
-Agent's sole `submit_plan` tool event. When explicitly enabled, the other
-adapter action can only submit a text query to the fixed loopback SearXNG
-service; the host returns bounded, untrusted snippets and then asks Spark for
-the final plan. The model cannot choose the search endpoint, fetch an arbitrary
-result URL, follow redirects, or use search results to override the system
-prompt, measured SDR state, hardware limits or Rust policy.
-
-The AGX template enables at most two searches per planning turn, eight sources
-per search, a 15-second search timeout and a 512 KiB response ceiling. Search
-queries and source URLs are visible in the Web terminal under `网络搜索`. The
-model still has no shell, file, unrestricted network, SDR, IIO or FPGA
-authority, and the existing Rust policy and manual approval gates remain
-authoritative. Other providers retain their native Pi Agent tool-call path and
-do not receive this Spark-specific host adapter.
-
-The 2026-09-02 live test covered Web configuration, a normal greeting, model
-selection of all sweep parameters, Rust validation, manual approval, real P201
-execution, AGX aggregation, zero clipping and verified radio restoration. See
-[`../../docs/SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md`](../../docs/validation/SPARK_X25_AGX_INTEGRATION_VALIDATION_2026-09-02.md).
-The bounded local web-search deployment and real browser/model validation are
-recorded in
-[`../../docs/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md`](../../docs/validation/SPARK_X25_WEB_SEARCH_VALIDATION_2026-09-02.md).
-
-## Experimental CUDA/Mamba validation and deferred production recognizer
-
-This migration does not install the earlier 1 MiB DS-CNN ONNX model. The
-experimental Adapter targets CUDA and the user's trained AMC-Mamba D8 model;
-it remains explicitly outside production admission.
-
-The AGX-local, Git-ignored `local-assets/amc-eval/` directory now contains the
-verified RML2018A/HisarMod2019 datasets, selected seed44/seed43 checkpoints,
-fixed split files, minimum frozen model source, Python 3.10 `venv`, locally
-compiled ARM64/sm_87 wheels and complete FP32 evaluation artifacts. Re-run a
-bounded deterministic smoke subset with:
+`systemd/`是安装模板，改源码不自动修改已安装服务。部署及切回需验证独立发布目录、
+单实例与健康，按[工作规则](../../AGENTS.md)执行。日常只读检查使用已安装CLI：
 
 ```bash
-local-assets/amc-eval/runtime/venv/bin/python \
-  deploy/agx/scripts/evaluate-amc-mamba.py \
-  --dataset rml2018a --precision fp32 --batch-size 256 --limit 512
+/home/jetson/.local/lib/sdrharness/bin/sdr-agent --mode health --sdrd 192.168.1.10:43110
 ```
 
-This tool reads only the pinned offline corpus and does not contact an SDR.
-Complete accuracy, logits parity, latency, memory and thermal evidence is in
-[`../../docs/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md).
+接收忙时不能另开普通状态连接。健康/恢复脚本不构成新的RF采集授权。
+Planner由Web管理provider配置，不预设本地Spark必须运行。
 
-Chapter 5 corpus metadata now uses the strict
-[`amc_corpus_manifest_v1`](../../docs/reference/AMC_CORPUS_MANIFEST_V1.md) contract. It
-keeps the compact manifest separate from a content-hashed streaming JSONL
-window index and permits only dataset ground truth, independently evidenced
-annotations or explicit unknown labels. Validate a package without loading the
-Mamba runtime:
+## Python与历史合同
 
-```bash
-python3 deploy/agx/scripts/validate-amc-corpus-manifest.py \
-  --manifest /path/to/corpus/manifest.json \
-  --asset-root /path/to/corpus \
-  --verify-assets
-```
+当前网页单窗PSD使用NumPy/SciPy；其第三方源码说明见
+[RFObserver](../../src/agent/web-console/vendor/rfobserver/README.md)。
+这些轻量依赖与论文推理环境分开；本轮没有变更已安装服务的Python选择。
 
-This command validates metadata and optionally hashes assets; it does not
-capture IQ, transmit, train or infer.
-
-The strict experimental Worker can be checked without an SDR using:
-
-```bash
-local-assets/amc-eval/runtime/venv/bin/python -B \
-  deploy/agx/scripts/amc-mamba-worker.py --self-test
-```
-
-The Controller also exposes an explicit engineering-only `--mode
-recognize-live` path using
-`src/agent/controller/config/live-recognition.experimental.example.json`.
-Its one real P201 RX1 capture, preprocessing limitation, result, radio
-restoration and cleanup are recorded in
-[`../../docs/P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md`](../../docs/validation/P201_AGX_MAMBA_EXPERIMENTAL_E2E_VALIDATION_2026-09-04.md).
-
-The systemd template
-`systemd/sdrharness-amc-mamba-experimental.service` has no `[Install]` section
-and must not be enabled. Trusted labels, an RF-to-training preprocessing and
-retraining contract, precision, rejection, concurrency and sustained thermal
-gates are still pending, so the runtime capability remains false.
-The current checked Chapter 1–6 order and exact remaining integration gates are
-in
-[`../../docs/CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md`](../../docs/CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md).
+`config/amc/`仍有历史身份、标签和预处理合同，其中一部分被Controller/Web的历史记录解析直接引用。
+它们保持冻结字节，不代表模型、数据或生产识别可用；`recognizer_available=false`。
+旧独立识别服务、Spark模板、RF/模型实验脚本和配套测试已退役，历史记录通过文档索引查询。

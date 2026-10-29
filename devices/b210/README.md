@@ -1,42 +1,20 @@
-# N210（国产B210兼容设备）：AGX USB设备
+# 国产 N210（USB B210兼容）设备入口
 
-[设备技能](../../.codex/skills/n210-sdr-workflow/SKILL.md) · [设备总入口](../README.md) · [当前实验配置与复现](../../docs/reference/RML2018A_RF_REPRODUCTION.md)
+用户设备名称为国产N210，UHD枚举为B210，serial `2508504`，A7-100T；不使用NI网口N210流程。
 
-用户的设备名为N210，UHD通过B200/B210 USB驱动枚举；不是NI的网口N210。
-现有`devices/b210/`路径和运行时名称沿用其兼容驱动身份，不更名或复制。
-
-- `b210.py status`：校验专用运行时并查看USB状态，无发射/接收流。
-- `b210.py probe --output /var/tmp/sdrharness-dev/b210-agx-<唯一标识>`：有界加载FX3与A7-100T运行时镜像、检查serial2508504、USB3及两次寄存器回环，无RF流。
-- `runtime/`：从NX迁来的UHD4.1.0.5-3程序及专用镜像；manifest逐文件校验。系统libuhd与NX同版本同哈希，直接复用，不覆盖全局库/镜像目录。
-- `programs/campaign.py`：统一收发工程编排入口，P201接收继续由既有Controller负责。
-- `programs/rml2018a-tx.py`：既有有限TX helper的链接，历史文件名仍含nx；现在支持AGX本机或NX。没有精确GO不会发送数据。
-- `dataset/`：共享RadioML2018A目录的链接。
-- `tx-events.cpp`：新增固定参数/精确GO/4秒有限发送与UHD异步时间记录实验源码；未替换原运行时，构建及七动作控制计划见[事件入口](../../docs/reference/RML2018A_FULL_RF_CAMPAIGN.md#有限b210事件记录与控制源)。
+- `b210.py`：本机身份、运行时校验及有界probe入口。
+- `transport.py`：设备所有权与有界子进程传输辅助。
+- `tx-events.cpp`：有限发送及事件记录源码，使用前须登记计划；不会由Agent自动启动。
+- `runtime-manifest.json` 与 `runtime/`：既有专用UHD运行时身份和Git外资源入口。
 
 ```bash
 python3 -B devices/b210/b210.py status
-local-assets/amc-eval/runtime/venv/bin/python -B devices/b210/programs/campaign.py --help
 ```
 
-新campaign默认`--tx-host agx`、TX0/RX20；创建计划时才可指定host或增益，执行使用固定计划。
-`--tx-host nx`保留旧主机路径，默认值不等于已验证射频参数。源码/运行时改变必须新campaign。
-AGX后端本机暂存/启动/回收外部B210，不再SSH到NX；P201仍是唯一生产受控接收设备。
-用户2026-09-13最新确认已从独立负载接回RF A TX/RX经原20dB衰减器及15cm同轴到P201 RX1，
-停发返测已完成，B210仍停发；接线确认持续有效，后续发射仍需新有限计划。
-[有线收发与停止验证](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12同轴衰减接收幅度与主动停止)已完成，波形质量仍待改善。
-[20dB匹配增益对照](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-1220db衰减与匹配增益对照)另有记录，不据小批准确率确定最佳衰减或增益。
-[干净单音LO对照](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12干净单音与lo跟随分量)已定位LO跟随强分量；
-独立入口及固定预算见[说明](../../docs/reference/RML2018A_FULL_RF_CAMPAIGN.md#独立有线lo参考诊断)。该单音诊断不改变数据集发射参数，也不启用校准/滤波。
-该入口的`plan --experiment gain-pair`已完成[两次单音幅度/增益配对](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12数字幅度与硬件增益配对)，
-LO分量下降约7.3dB且有效信号相近；该单音结果不代替调制波形验证。
-随后已完成[OOK/QPSK调制波形配对](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-12radioml调制波形的幅度增益配对)，
-新`gain-pair-pilot`只允许AGX TX60/RX40、峰值0.632455532和原批次4267/22016；
-标准全库profile峰值仍为0.2，24类及低源SNR仍待验证，详见[使用范围](../../docs/reference/RML2018A_FULL_RF_CAMPAIGN.md#有限radioml幅度增益配对)。
-增益只能在新有限计划中登记，改变衰减前先停发。
-迁移后的[首次天线48条实测](../../docs/validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11agx本机b210天线收发48条)
-已完成显式80/40的有限发射/接收/识别；它不改变新plan默认值或完成有线、全库验收。
+状态查询不证明USB所有权或进行RF测试；初始化/probe按
+[N210工作流](../../.codex/skills/n210-sdr-workflow/SKILL.md)执行。
+只使用经验证的A7-100T与FX3镜像，不写EEPROM/flash，不将其与P201 FPGA/BOOT路线混用。
 
-本板只能加载`ee03a9e3…fcf9b`的A7-100T镜像，不能加载A7-200T或普通B210镜像。
-这些是B210 USB运行时镜像，不是P201 FPGA聚合或BOOT文件；不写EEPROM/flash。
-`runtime/nx-reference/`仅保留迁移来源；旧激活脚本使用NX绝对路径及全局镜像安装，不在AGX直接执行。
-NX原目录和其历史数据不删除；AGX只复用现有一份RML2018A，不复制NX的数据集或系统修复备份。
+旧RadioML campaign快捷链接和实验脚本已退役；论文实验由独立论文项目维护。
+当前B210是独立外部信号源，P201仍是唯一生产受控接收设备。既有接法和授权见
+[AGENTS.md](../../AGENTS.md)，每次发送仍需有限计划和停止/恢复验证。

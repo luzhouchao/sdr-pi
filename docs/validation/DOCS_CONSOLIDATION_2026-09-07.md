@@ -191,3 +191,31 @@ online=true、healthy=true、health_flags=0，RX1/RX0/A_BALANCED身份verified=t
 
 临时目录 `/var/tmp/sdrharness-dev/service-check-20261029/` 已清除：8文件、5351字节，
 目录不存在复核通过。未保留浏览器截图、原始IQ或测试会话；最小验证事实仅记录于本节。
+
+## 当前组件源码精简（2026-10-29）
+
+用户要求只保留必要组件，删除无现用依赖代码。基线 `be88802`；先核查实际服务，
+实验AMC服务无安装单元、Spark服务inactive，Web/Planner使用独立安装目录。
+首次批量删除被自动审批以依赖证据不足拦截，未执行；补齐Git逐字节恢复依据、保留代码
+零文件名依赖检查，并先修正构建引用后执行。没有通过删除安全检查来使测试通过。
+
+退役227个Git跟踪文件，其中177个现存文件本轮删除，共1,749,629字节；另50个为此前
+工作区已删除的同类实验代码，本轮一并落实到Git。范围为旧RF/模型实验脚本及配套测试、
+独立C++识别Worker、两份未安装AMC服务模板、停用Spark模板及三个campaign快捷链接。
+清理对应23个孤立字节码缓存，共337,181字节。逐路径大小/SHA与恢复提交见
+[精确清单](../evidence/COMPONENT_SOURCE_PRUNE_2026-10-29.json)。
+
+保留Controller、Planner、Web、P201 sdrd、B210设备身份/有限发送工具，以及10份AGX
+构建/运维/监测/语料校验脚本和2份配套测试。Rust中的历史结果解析、识别安全门、
+固定协议及其冻结配置仍由Web/Controller使用，不能因模型未启用而删除。
+已修正构建和checkout入口，当前导航不再推荐独立模型Worker或旧实验脚本。
+
+验证：保留的Python测试19项通过；Rust include资源存在、Python/bash语法、设备链接和
+当前文档链接检查通过。没有修改Rust/Node实现，也没有重新部署；上轮对应核心测试
+仍是同源码依据。本轮实际Web健康ready=true、Web/Planner均active且重启计数0，
+6条结果仍可读取，recognizer_available=false。未进行RF、推理或生产环境修改。
+
+原有未提交前端和其他文档迁移改动保留。最小删除证据为上述JSON，属于版本化源码清理
+审计；历史实验数据、冻结附件和Git外资源不清理。
+
+本轮临时目录 `/var/tmp/sdrharness-dev/prune-components-20261029/` 已删除：7文件、632654字节，目录不存在复核通过。

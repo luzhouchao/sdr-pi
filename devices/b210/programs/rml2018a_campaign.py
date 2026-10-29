@@ -1,1 +1,0 @@
-../../../deploy/agx/scripts/rml2018a_campaign.py

@@ -1,7 +1,7 @@
 # AGX Agent 共享运行组件
 
 当前运行目标为 Jetson AGX；`Pi Agent` 是 Planner 框架名称。
-Controller、Planner、Web 与实验识别接口均在此维护。部署使用
+Controller、Planner、Web 在此维护；独立实验识别 Worker 已退役。部署使用
 [AGX 入口](../../deploy/agx/README.md)，完成状态见[项目文档](../../docs/README.md)。
 旧 Pi 独立采集程序和网络配置已退役，历史结果保留在验证索引。
 
@@ -406,3 +406,5 @@ cargo run -- --mode plan \
 当前服务模板与配置集中于 [deploy/agx](../../deploy/agx/README.md)，旧 Pi 的服务模板和 provider 示例已删除。
 历史 Pi 部署、失败和回滚事实仍见 [Pi 历史合订记录](../../docs/validation/PI_BASELINE_HISTORY.md)。
 当前完成状态和生产准入以 [checklist](../../docs/SDR_AGENT_PROJECT_CHECKLIST.md) 为准。
+
+独立 C++ 识别 Worker 和 Python 模型推理脚本已于2026-10-29退役，相关旧命令仅属于历史合同。当前构建只包含 Controller、Planner 和 Web，P201 服务单独构建。
