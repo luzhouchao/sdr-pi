@@ -49,15 +49,15 @@ DeepSeek思考保持开启，命名工具兼容改为自动选择，真实隔离
 
 2026-09-26用户取消近期自生成及后续诊断，确认删除8个结果目录，并退役AGX独立D8。已删除20个目录、2061个文件、1,369,327,545字节，路径缺失复核通过；原RML2018A源数据、实收IQ、raw/guard及D10结果保留。D10依赖的d8命名源码与混合模型历史审计保留。删除前逐文件大小/SHA及精确路径见[删除清单](evidence/EXPERIMENT_CLEANUP_D8_RETIREMENT_2026-09-26.json)。历史记录中的“保留”是当时状态，清单所列外部结果现已删除，不能再宣称可读回。
 
-四套统一方案已完成夜间有限实收：共同2048原生载荷、4倍RRC及65536点P201缓冲，2272窗全部同步；2016A/B按冻结训练约定在模型入口做Σ|IQ|=1适配。见[夜间统一RF实测](validation/AMC_UNIFORM_RF_2026-09-26.md)。用户9月27日已授权四套完整seed42验证集顺序收发：2016A→2016B→2018A→Hisar；713385行、517个有界批次。必须完成当前整套的接收、原始IQ/raw/guard同步落盘、SHA及源行覆盖封存，才启动下一套；中断停当前批次，不跳过。当前任务不加载模型，收发结果与旧2018A历史基线分开。
+四套统一方案已完成夜间有限实收：共同2048原生载荷、4倍RRC及65536点P201缓冲，2272窗全部同步；2016A/B按冻结训练约定在模型入口做Σ|IQ|=1适配。见[夜间统一RF实测](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md)。用户9月27日已授权四套完整seed42验证集顺序收发：2016A→2016B→2018A→Hisar；713385行、517个有界批次。必须完成当前整套的接收、原始IQ/raw/guard同步落盘、SHA及源行覆盖封存，才启动下一套；中断停当前批次，不跳过。当前任务不加载模型，收发结果与旧2018A历史基线分开。
 
-9月27日整轮完成：四套713385行/517批原始IQ、raw/guard全部封存，严格逐套完成后切换；最后设备空闲/恢复及临时目录清理通过。2018A第30批FFT边界故障保留原审计并从同ADC恢复，其余批次正常完成。收发监测结束；完整验证集模型推理和条件SINR报告尚未执行，下一阶段复用已封存数据，不重采RF。见[最终证据](evidence/AMC_VALIDATION_COMPLETE_2026-09-27.json)。见[修复记录](validation/AMC_UNIFORM_RF_2026-09-26.md#fft导频搜索边界故障修复2026-09-27)。
+9月27日整轮完成：四套713385行/517批原始IQ、raw/guard全部封存，严格逐套完成后切换；最后设备空闲/恢复及临时目录清理通过。2018A第30批FFT边界故障保留原审计并从同ADC恢复，其余批次正常完成。收发监测结束；完整验证集模型推理和条件SINR报告尚未执行，下一阶段复用已封存数据，不重采RF。见[最终证据](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_VALIDATION_COMPLETE_2026-09-27.json)。见[修复记录](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#fft导频搜索边界故障修复2026-09-27)。
 
-用户9月27日随后授权识别并追加原source验证集：4套×8模型×source/raw/guard共96组；按单数据集驻留内存、8模型顺序共享，结束后释放再切换。9月28日复核96组、17121240预测全部完成，逐套驻留及顺序共享生效，读回核验/缓存清理完成。总体及条件SINR分层已完成：4ASK主回退集中raw参考0–10dB，原source/RX输入尺度存在差异。固定两类原val的source仅RMS干预已完成：D10/MCFormer两类成绩均接近guard（差<0.30pp），输入尺度兼容性问题已有干预证据。历史复核确认9月15/22日已验证源域RMS敏感性，旧新208重合成员预测相同；9月28日属于扩样复核。用户随后要求的幅度链审计＋匹配预处理基线已完成：四套×八模型5707080条覆盖、全量读回及清理封存通过。2018A匹配source与guard总体仅差0.079～0.561pp；Hisar仍有411条8PSK异常不能用幅度规范解释。见[审计](evidence/AMC_MATCHED_SOURCE_BASELINE_2026-09-28.json)。本单元收束，下一步可整理四路对照用于论文，未解决退化明确披露；不自动新增补偿/调参/训练或重采，不重复旧导频幅度或共用raw分母候选；保留原成绩，不用source真值幅度回填，不自动训练或重采RF；见[最终审计](evidence/AMC_VALIDATION_INFERENCE_COMPLETE_2026-09-28.json)。既有同轮raw/guard预测不重算，不重采RF、不训练。
+用户9月27日随后授权识别并追加原source验证集：4套×8模型×source/raw/guard共96组；按单数据集驻留内存、8模型顺序共享，结束后释放再切换。9月28日复核96组、17121240预测全部完成，逐套驻留及顺序共享生效，读回核验/缓存清理完成。总体及条件SINR分层已完成：4ASK主回退集中raw参考0–10dB，原source/RX输入尺度存在差异。固定两类原val的source仅RMS干预已完成：D10/MCFormer两类成绩均接近guard（差<0.30pp），输入尺度兼容性问题已有干预证据。历史复核确认9月15/22日已验证源域RMS敏感性，旧新208重合成员预测相同；9月28日属于扩样复核。用户随后要求的幅度链审计＋匹配预处理基线已完成：四套×八模型5707080条覆盖、全量读回及清理封存通过。2018A匹配source与guard总体仅差0.079～0.561pp；Hisar仍有411条8PSK异常不能用幅度规范解释。见[审计](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_MATCHED_SOURCE_BASELINE_2026-09-28.json)。本单元收束，下一步可整理四路对照用于论文，未解决退化明确披露；不自动新增补偿/调参/训练或重采，不重复旧导频幅度或共用raw分母候选；保留原成绩，不用source真值幅度回填，不自动训练或重采RF；见[最终审计](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_VALIDATION_INFERENCE_COMPLETE_2026-09-28.json)。既有同轮raw/guard预测不重算，不重采RF、不训练。
 
-用户进一步要求的Hisar 411条专项核查已完成：当前源文件中的近零中段/端部集能形态与这411条完全重合；491 ADC重建无误，导频QPSK及有/无导频对照不支持直接污染。D10纯LO也全判8PSK，1% RMS噪声使异常source全退化，跨类归零均转8PSK；明确模型非稳健响应，不把raw全对当成有效调制识别证据。见[专项核查](validation/AMC_UNIFORM_RF_2026-09-26.md#hisar-411条8psk异常核查2026-09-28)。该单元收束，保留原主成绩并单列质量/鲁棒性限制；不部署归零/回添LO，不自动训练、筛除成员或新RF；其他Hisar差距和上游生成问题仍保留边界。
+用户进一步要求的Hisar 411条专项核查已完成：当前源文件中的近零中段/端部集能形态与这411条完全重合；491 ADC重建无误，导频QPSK及有/无导频对照不支持直接污染。D10纯LO也全判8PSK，1% RMS噪声使异常source全退化，跨类归零均转8PSK；明确模型非稳健响应，不把raw全对当成有效调制识别证据。见[专项核查](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#hisar-411条8psk异常核查2026-09-28)。该单元收束，保留原主成绩并单列质量/鲁棒性限制；不部署归零/回添LO，不自动训练、筛除成员或新RF；其他Hisar差距和上游生成问题仍保留边界。
 
-9月29日论文协作请求的有界收尾已完成：32组四路整数/配对计数、RF/硬件参数和D10四套batch1/128两scope计时已核验封存。当前50W配置不回填历史模式；FP32只承诺张量/AMP与PyTorch flags，Mamba/Triton含TF32指令的边界已登记。见[论文证据](validation/AMC_UNIFORM_RF_2026-09-26.md#论文硬件参数与有界计时收尾2026-09-29)。按用户篇幅要求只补紧凑证据及计时说明，不扩展实验，Hisar2FSK等保留局限；硬件部分仅离线同轴链路验证，无生产/实时准入。
+9月29日论文协作请求的有界收尾已完成：32组四路整数/配对计数、RF/硬件参数和D10四套batch1/128两scope计时已核验封存。当前50W配置不回填历史模式；FP32只承诺张量/AMP与PyTorch flags，Mamba/Triton含TF32指令的边界已登记。见[论文证据](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#论文硬件参数与有界计时收尾2026-09-29)。按用户篇幅要求只补紧凑证据及计时说明，不扩展实验，Hisar2FSK等保留局限；硬件部分仅离线同轴链路验证，无生产/实时准入。
 
 用户最新授权D10补跑369497共同验证成员的raw/guard，沿用FP32/真实Mamba2及单窗RMS；本轮两路738994预测及8模型SINR表图已完成，D10总体50.45%→55.09%，低SINR退化仍存在。原机制诊断保持收束，无source、训练、RF或生产切换。
 
@@ -403,9 +403,9 @@ S4b 的 GPU 温度缺失按明确豁免保持未测，不再用它阻塞已通�
 
 
 ### 2026-10-20 测试集重跑
-- [x] 四套测试集713387行同轴回放、封存及八模型三路评估完成；32组/96路/17121288预测逐块读回通过。见evidence/AMC_TEST_COMPLETE_2026-10-21.json。
+- [x] 四套测试集713387行同轴回放、封存及八模型三路评估完成；32组/96路/17121288预测逐块读回通过。见[测试集证据](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_TEST_COMPLETE_2026-10-21.json)。
 
-2026-10-21：测试回放在507912行封存后因batch-00288恢复检查失败停止；已复核设备并启动断点续跑，失败证据保留，全量与推理仍未完成。见validation/AMC_UNIFORM_RF_2026-09-26.md本日记录。
+2026-10-21：测试回放在507912行封存后因batch-00288恢复检查失败停止；已复核设备并启动断点续跑，失败证据保留，全量与推理仍未完成。见[统一RF记录](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md)本日记录。
 
 2026-10-21恢复修正：确认空闲AGC瞬时增益逐字比较误判，7项回归与实机快照复核通过；保持采集manual/50 dB，已登记软件修订并从513032行续跑，完整采集/推理未完成。详见同日validation记录。
 
@@ -413,4 +413,4 @@ S4b 的 GPU 温度缺失按明确豁免保持未测，不再用它阻塞已通�
 
 2026-10-21 13:15检查：Hisar batch-00061两帧导频门失败，658851行已封存；保留失败证据并按原参数启动同批重采，不跳过成员。见validation本日记录。
 
-2026-10-21最终状态：四套测试回放与32组八模型三路推理全部完成，逐块核验通过，运行缓存已清理。历史中断条目保留为过程记录。证据：evidence/AMC_TEST_COMPLETE_2026-10-21.json。
+2026-10-21最终状态：四套测试回放与32组八模型三路推理全部完成，逐块核验通过，运行缓存已清理。历史中断条目保留为过程记录。证据：[测试集证据](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_TEST_COMPLETE_2026-10-21.json)。

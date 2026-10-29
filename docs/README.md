@@ -1,5 +1,7 @@
 # 项目文档入口
 
+论文专属收尾代码与证据已迁至 [paper1sdr](https://github.com/luzhouchao/paper1sdr)；本项目继续维护 SDR 控制和使用说明。论文数据本机存放于 `/home/jetson/lzcpaper1/local-assets/amc-eval/`，旧数据路径保留兼容链接。
+
 默认阅读范围：
 
 2026-10-29 按用户要求删除网页历史 IQ；用户随后明确保留论文实验数据。旧 P201 语料已删除，冻结选择计划对其 manifest 的引用不再可用；其他原有封存实验数据和证据未因本次操作删除。删除范围及结果见[清单](evidence/IQ_CLEANUP_2026-10-29.json)。
@@ -22,17 +24,17 @@
 
 2026-09-26用户取消近期自生成及后续诊断，确认删除8个结果目录，并退役AGX独立D8。已删除20个目录、2061个文件、1,369,327,545字节，路径缺失复核通过；原RML2018A源数据、实收IQ、raw/guard及D10结果保留。D10依赖的d8命名源码与混合模型历史审计保留。删除前逐文件大小/SHA及精确路径见[删除清单](evidence/EXPERIMENT_CLEANUP_D8_RETIREMENT_2026-09-26.json)。历史记录中的“保留”是当时状态，清单所列外部结果现已删除，不能再宣称可读回。
 
-四数据集×八模型32份seed42权重已导入。夜间统一RRC短帧实收2272/2272窗同步，P201缓冲4096→65536消除本次先导的大时间跳变；2016A/B模型入口恢复原Σ|IQ|=1约定，四套D10相消后89.32%～95.43%。见[夜间统一RF实测](validation/AMC_UNIFORM_RF_2026-09-26.md)；仍为有限工程验证，不宣称低SINR问题已解决或全量/生产准入。
+四数据集×八模型32份seed42权重已导入。夜间统一RRC短帧实收2272/2272窗同步，P201缓冲4096→65536消除本次先导的大时间跳变；2016A/B模型入口恢复原Σ|IQ|=1约定，四套D10相消后89.32%～95.43%。见[夜间统一RF实测](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md)；仍为有限工程验证，不宣称低SINR问题已解决或全量/生产准入。
 
-9月27日用户已授权推进四套**完整seed42验证集**：2016A→2016B→2018A→Hisar，共713385行；当前套完整接收、落盘/SHA封存后才启动下一套。713385行/517批收发和raw/guard处理现已全部完成封存，逐套屏障及设备最终恢复通过，后台正常退出。后续模型识别与条件SINR分层状态见下段；见[最终证据](evidence/AMC_VALIDATION_COMPLETE_2026-09-27.json)及[当前执行选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#当前执行选择)。
+9月27日用户已授权推进四套**完整seed42验证集**：2016A→2016B→2018A→Hisar，共713385行；当前套完整接收、落盘/SHA封存后才启动下一套。713385行/517批收发和raw/guard处理现已全部完成封存，逐套屏障及设备最终恢复通过，后台正常退出。后续模型识别与条件SINR分层状态见下段；见[最终证据](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_VALIDATION_COMPLETE_2026-09-27.json)及[当前执行选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#当前执行选择)。
 
-四套×八模型×source/raw/guard共96组、17121240预测已于9月27日晚完成，9月28日全量读回/权重身份核验及运行缓存清理通过。四套均单套驻留并顺序跑完八模型；D10整体raw→guard为58.22%→62.15%、61.35%→64.44%、49.53%→58.26%、24.14%→59.68%。条件SINR分层已完成，4ASK主要回退集中raw参考0–10dB，源域仅RMS干预已在两类重现退化，见[尺度对照](validation/AMC_UNIFORM_RF_2026-09-26.md#原source仅rms归一化干预2026-09-28)；见[分层结果](validation/AMC_UNIFORM_RF_2026-09-26.md#四套完整验证集条件sinr分层2026-09-28)及[最终结果](validation/AMC_UNIFORM_RF_2026-09-26.md#四套三路八模型识别完成2026-09-28复核)。
+四套×八模型×source/raw/guard共96组、17121240预测已于9月27日晚完成，9月28日全量读回/权重身份核验及运行缓存清理通过。四套均单套驻留并顺序跑完八模型；D10整体raw→guard为58.22%→62.15%、61.35%→64.44%、49.53%→58.26%、24.14%→59.68%。条件SINR分层已完成，4ASK主要回退集中raw参考0–10dB，源域仅RMS干预已在两类重现退化，见[尺度对照](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#原source仅rms归一化干预2026-09-28)；见[分层结果](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#四套完整验证集条件sinr分层2026-09-28)及[最终结果](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#四套三路八模型识别完成2026-09-28复核)。
 
-幅度链审计及四套×八模型匹配预处理基线已完成，5707080条覆盖、全量核验/清理封存通过。原幅度在TX逐窗峰值缩放时已消去；2018A匹配source与guard总体接近，Hisar仍有未解释异常。原96组成绩保留，见[四路基线与边界](validation/AMC_UNIFORM_RF_2026-09-26.md#幅度链审计与匹配预处理源域基线2026-09-28)。
+幅度链审计及四套×八模型匹配预处理基线已完成，5707080条覆盖、全量核验/清理封存通过。原幅度在TX逐窗峰值缩放时已消去；2018A匹配source与guard总体接近，Hisar仍有未解释异常。原96组成绩保留，见[四路基线与边界](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#幅度链审计与匹配预处理源域基线2026-09-28)。
 
-Hisar 411条8PSK专项核查已完成：原source具有近零中段、端部集能形态；491原ADC重建无误，实际导频为QPSK。纯LO即可使D10全判8PSK，噪声/跨类形态干预支持非稳健响应；原成绩与异常成员保留，不启用诊断“修复”，见[核查证据与范围](validation/AMC_UNIFORM_RF_2026-09-26.md#hisar-411条8psk异常核查2026-09-28)。
+Hisar 411条8PSK专项核查已完成：原source具有近零中段、端部集能形态；491原ADC重建无误，实际导频为QPSK。纯LO即可使D10全判8PSK，噪声/跨类形态干预支持非稳健响应；原成绩与异常成员保留，不启用诊断“修复”，见[核查证据与范围](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#hisar-411条8psk异常核查2026-09-28)。
 
-9月29日论文收尾完成：[32组四路整数/配对计数](evidence/AMC_PAPER_DEPLOYMENT_COUNTS_2026-09-29.csv)、[16组D10计时](evidence/AMC_PAPER_D10_TIMING_2026-09-29.csv)、当前平台/RF参数及历史未记录项见[收尾审计](evidence/AMC_PAPER_DEPLOYMENT_CLOSEOUT_2026-09-29.json)。仅离线同轴链路验证；当前50W模式不回填历史，Mamba/Triton精度不由PyTorch TF32 flags单独保证。
+9月29日论文收尾完成：[32组四路整数/配对计数](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_PAPER_DEPLOYMENT_COUNTS_2026-09-29.csv)、[16组D10计时](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_PAPER_D10_TIMING_2026-09-29.csv)、当前平台/RF参数及历史未记录项见[收尾审计](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_PAPER_DEPLOYMENT_CLOSEOUT_2026-09-29.json)。仅离线同轴链路验证；当前50W模式不回填历史，Mamba/Triton精度不由PyTorch TF32 flags单独保证。
 
 历史实测报告：D10已补齐369497共同验证成员，当前8模型仅raw/guard；按接收端条件估计SINR分层。
 D10总体50.45%→55.09%，低SINR相消退化仍存在；见[大样本结果](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#d10补齐369497共同验证成员2026-09-22)。

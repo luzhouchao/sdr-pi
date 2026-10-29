@@ -379,12 +379,12 @@ AM含载波输入不被统一去均值；漂移/非整bin泄漏下guard拒绝和
 旧2018A组帧逐字节相同，默认SINR身份/门限不变。原生长度测试含非零均值载波与payload在泄漏频率附近的分量，验证相消不使用payload训练。
 
 本单元尚未接入跨数据集存储schema、源数据adapter、冻结划分交集、实际源FFT频谱门和24份新增模型CUDA前向；没有射频执行入口或实收成绩。
-验证详情和清理见[原生窗口DSP审计](../evidence/AMC_NATIVE_WINDOWS_2026-09-26.json)。
+验证详情和清理见[原生窗口DSP审计](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_NATIVE_WINDOWS_2026-09-26.json)。
 
 
 ### 6.9 源数据、存储与频谱前置检查（2026-09-26）
 
-[审计与复算输入](../evidence/AMC_SOURCE_STORE_2026-09-26.json)保存源SHA、固定行号、标签、划分、24份模型身份、逐窗频谱及清理记录。
+[审计与复算输入](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_SOURCE_STORE_2026-09-26.json)保存源SHA、固定行号、标签、划分、24份模型身份、逐窗频谱及清理记录。
 2016A/B原始HDF5和三份seed42划分已在AGX，Hisar复用原件；文件通过原4090、沙盘及AGX身份核对。
 `amc_dataset_contract.py`读取实际Y/Z/classes，Hisar原始标签为不连续整数，按训练代码的全体标签排序映射为0–25，保留raw_label_values。
 全库32份当前模型均seed42；新增三数据集24模型的FP32/TF32-off、严格加载及批量/逐条CUDA检查通过（rtol=atol=1e-4、top-1一致）。
@@ -448,7 +448,7 @@ RX仅接收run/frame身份和窗口形状，不接收源IQ、类别或Z用于同
 - 流式分块不重置滤波器：有限ADC缓冲保留每窗完整129抽头上下文。每窗原始ADC支持区间长度为`4*(L-1)+129`（637/4221点），首个恢复采样中心在支持起点+64、步长4；相邻支持区间允许重叠。SnrStore核对新合同及区间，旧native合同仍要求L点。
 - 记录各路逐窗RMS；SINR显式null/not_measured，方法名为RRC conditional-pending，不能伪装旧未滤波SINR。源Z语义、匹配滤波后残差和独立性假设尚待验证，当前不生成SINR分层结果。
 
-[完整审计](../evidence/AMC_RRC_CHAIN_2026-09-26.json)冻结三套原成员及2018A原FFT检查的Z30每类32条，共2272个seed42验证成员；不按模型预测选样。2018A原结果、原权重、旧划分及封存字节保持。
+[完整审计](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_RRC_CHAIN_2026-09-26.json)冻结三套原成员及2018A原FFT检查的Z30每类32条，共2272个seed42验证成员；不按模型预测选样。2018A原结果、原权重、旧划分及封存字节保持。
 使用真实源IQ，通过纯软件信道添加1373Hz CFO、0.08幅度LO（偏置另加1.37Hz）、每分量标准差0.0002噪声及ci16量化，实际调用新同步/guard/匹配抽取/归一化前端。**这些不是实测ADC或识别准确率。**
 
 | 数据集 | 固定源窗 | 同步/guard通过帧 | 最大归一化逐窗RMS误差 |
@@ -498,4 +498,4 @@ RX仅接收run/frame身份和窗口形状，不接收源IQ、类别或Z用于同
 
 ### 6.13 夜间实测选定的共同短帧（2026-09-26）
 
-用户已允许修改参数。6.12的16384点是当时待测候选；实机长帧相消失败后，四套共同选2048原生载荷/14336 RF点，4倍RRC、2.1MS/s、1.5MHz、2455MHz。P201接收缓冲已从4096改65536，四套2272窗全部同步。2016A/B模型入口按原训练数据Σ|IQ|=1，其他两套复RMS=1；这属于冻结模型输入适配，不改变共同RF合同。详见[实测、失败、SINR和部署边界](../validation/AMC_UNIFORM_RF_2026-09-26.md)。
+用户已允许修改参数。6.12的16384点是当时待测候选；实机长帧相消失败后，四套共同选2048原生载荷/14336 RF点，4倍RRC、2.1MS/s、1.5MHz、2455MHz。P201接收缓冲已从4096改65536，四套2272窗全部同步。2016A/B模型入口按原训练数据Σ|IQ|=1，其他两套复RMS=1；这属于冻结模型输入适配，不改变共同RF合同。详见[实测、失败、SINR和部署边界](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md)。

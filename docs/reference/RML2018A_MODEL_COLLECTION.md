@@ -11,7 +11,7 @@
 用户2026-09-26随后明确四套D10全部固定seed42：已从沙盘4090取回正式best.pt，四份严格加载通过，新三套CUDA批量/逐条数值门及top-1一致通过；2018A权重SHA未变。当前32模型全部seed42，旧非42三包移至`/home/jetson/models/archive/d10-before-seed42-20260926`作替换回滚，旧seed别名指向旧包，不冒充seed42。见[seed42导入审计](../evidence/D10_ALL_SEED42_IMPORT_2026-09-26.json)。此前不同seed的选样与D10数值记录已被本次选择覆盖。
 2016A/B保留128点，2018A/Hisar保留1024点。各数据集标签顺序见统一库class-order.json。
 独立D8包已经按用户要求删除，下面导入表仅是2026-09-14历史事实，不代表D8仍可用；D10内部d8命名依赖不能删除。
-本次统一库验证和保留清单见[导入审计](../evidence/AMC_32_MODEL_COLLECTION_2026-09-26.json)。新三套D10 CUDA数值门通过，实收识别尚未验证，生产recognizer_available=false。
+本次统一库验证和保留清单见[导入审计](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_32_MODEL_COLLECTION_2026-09-26.json)。新三套D10 CUDA数值门通过，实收识别尚未验证，生产recognizer_available=false。
 
 ## 历史导入（2026-09-14）
 

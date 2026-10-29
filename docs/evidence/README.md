@@ -4,9 +4,9 @@
 
 [沙盘4090连接技能与D10来源](SHAPAN4090_CONNECTION_SKILL_2026-09-26.json)：两别名身份、个人技能哈希及四份源权重匹配；训练来源按用户明确说明记录。
 
-[原生128/1024点DSP审计](AMC_NATIVE_WINDOWS_2026-09-26.json)：44项CPU/CUDA检查、源码身份、失败修正和临时清理；无新RF或模型推理。
+[原生128/1024点DSP审计](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_NATIVE_WINDOWS_2026-09-26.json)：44项CPU/CUDA检查、源码身份、失败修正和临时清理；无新RF或模型推理。
 
-[四数据集×八模型统一库审计](AMC_32_MODEL_COLLECTION_2026-09-26.json)：32份权重身份、CPU严格加载、迁移链接、保留及清理清单；不代表新RF/CUDA验证。
+[四数据集×八模型统一库审计](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_32_MODEL_COLLECTION_2026-09-26.json)：32份权重身份、CPU严格加载、迁移链接、保留及清理清单；不代表新RF/CUDA验证。
 
 2026-09-26用户授权删除近期8个诊断结果根、独立D8权重及专属结果。当前可用性以[删除覆盖清单](EXPERIMENT_CLEANUP_D8_RETIREMENT_2026-09-26.json)为准；旧审计中的保留路径可能已不存在，旧文件字节不改写。
 
@@ -325,37 +325,37 @@
 
 - [2026-09-26 实测类别×SINR配对分解](RML2018A_RECEIVE_CLASS_SINR_2026-09-26.json)：两模型共同成员、528单元、低SINR类别贡献及回退去向，只读。
 
-- [2026-09-26 三数据集source/store前置](AMC_SOURCE_STORE_2026-09-26.json)：原件与seed42划分、Hisar标签映射、29项回归、24模型CUDA、原生频谱及2018A对照、四倍RRC理想往返、保留和清理。
+- [2026-09-26 三数据集source/store前置](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_SOURCE_STORE_2026-09-26.json)：原件与seed42划分、Hisar标签映射、29项回归、24模型CUDA、原生频谱及2018A对照、四倍RRC理想往返、保留和清理。
 
-- [2026-09-26 四套RRC候选链路](AMC_RRC_CHAIN_2026-09-26.json)：2272固定源窗的软件CFO/LO/量化检查、长帧频率歧义修正、48通过/1 CUDA跳过、新ADC血缘与预算草案；未RF，原2018A基线保持。
+- [2026-09-26 四套RRC候选链路](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_RRC_CHAIN_2026-09-26.json)：2272固定源窗的软件CFO/LO/量化检查、长帧频率歧义修正、48通过/1 CUDA跳过、新ADC血缘与预算草案；未RF，原2018A基线保持。
 
-- [2026-09-26夜间四数据集统一RF先导](../validation/AMC_UNIFORM_RF_2026-09-26.md)：真实收发、缓冲修正、模型尺度适配及条件SINR。
+- [2026-09-26夜间四数据集统一RF先导](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md)：真实收发、缓冲修正、模型尺度适配及条件SINR。
 
-- [完整seed42验证集顺序任务启动](AMC_VALIDATION_CAMPAIGN_2026-09-27.json)：冻结预算/源划分/代码SHA、STOP启动撤销、首批8192行封存；整轮状态另见应用进度，未冒充完成。
+- [完整seed42验证集顺序任务启动](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_VALIDATION_CAMPAIGN_2026-09-27.json)：冻结预算/源划分/代码SHA、STOP启动撤销、首批8192行封存；整轮状态另见应用进度，未冒充完成。
 
-- [完整验证集FFT边界同步修复](AMC_VALIDATION_SYNC_RECOVERY_2026-09-27.json)：同ADC恢复1024行、15项测试、显式软件修订及顺序续跑；原失败和已完成封存保留。
+- [完整验证集FFT边界同步修复](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_VALIDATION_SYNC_RECOVERY_2026-09-27.json)：同ADC恢复1024行、15项测试、显式软件修订及顺序续跑；原失败和已完成封存保留。
 
-- [完整seed42验证集2018A封存及Hisar切换](AMC_VALIDATION_RML2018A_COMPLETE_2026-09-27.json)：383385行/375批、receipt/VDS/成员独立复核及严格顺序切换；尚未全验证集推理。
+- [完整seed42验证集2018A封存及Hisar切换](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_VALIDATION_RML2018A_COMPLETE_2026-09-27.json)：383385行/375批、receipt/VDS/成员独立复核及严格顺序切换；尚未全验证集推理。
 
-- [四套完整seed42验证集收发与处理完成](AMC_VALIDATION_COMPLETE_2026-09-27.json)：713385行/517批、严格顺序封存、raw/guard与相消回退计数、最终设备恢复和临时清理、精确保留清单；尚无完整验证集识别或SINR成绩。
+- [四套完整seed42验证集收发与处理完成](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_VALIDATION_COMPLETE_2026-09-27.json)：713385行/517批、严格顺序封存、raw/guard与相消回退计数、最终设备恢复和临时清理、精确保留清单；尚无完整验证集识别或SINR成绩。
 
-- [完整验证集三路八模型识别启动](AMC_VALIDATION_INFERENCE_START_2026-09-27.json)：用户追加source、单套内存驻留、32份seed42、初次温度读取失败、6测试和2016A三路首套读回；整轮仍运行。
+- [完整验证集三路八模型识别启动](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_VALIDATION_INFERENCE_START_2026-09-27.json)：用户追加source、单套内存驻留、32份seed42、初次温度读取失败、6测试和2016A三路首套读回；整轮仍运行。
 
-- [四套三路八模型识别完成](AMC_VALIDATION_INFERENCE_COMPLETE_2026-09-28.json)：96组/17121240预测全量读回、32权重身份、总体准确率CSV、驻留内存执行及最终缓存清理；条件SINR分层待生成。
+- [四套三路八模型识别完成](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_VALIDATION_INFERENCE_COMPLETE_2026-09-28.json)：96组/17121240预测全量读回、32权重身份、总体准确率CSV、驻留内存执行及最终缓存清理；条件SINR分层待生成。
 
-- [完整验证集总体与同成员分析](AMC_VALIDATION_COMPARISON_2026-09-28.json)：32组合总体收益、逐成员纠正/回退、D10类别瓶颈、2018A server-v1标签身份；无新预测或源Z分层。
+- [完整验证集总体与同成员分析](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_VALIDATION_COMPARISON_2026-09-28.json)：32组合总体收益、逐成员纠正/回退、D10类别瓶颈、2018A server-v1标签身份；无新预测或源Z分层。
 
-- [四套完整验证集条件SINR分层](AMC_VALIDATION_CONDITIONAL_SINR_2026-09-28.json)：713385行、5400模型/类/箱记录、9测试及独立读回、7图和无效组、原输入尺度线索；无新推理/RF。
+- [四套完整验证集条件SINR分层](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_VALIDATION_CONDITIONAL_SINR_2026-09-28.json)：713385行、5400模型/类/箱记录、9测试及独立读回、7图和无效组、原输入尺度线索；无新推理/RF。
 
-- [2018A原source仅RMS干预](AMC_SOURCE_RMS_CONTROL_2026-09-28.json)：两类31768成员、D10/MCFormer、63808有界forward，原source重现/归一化门及独立SHA读回，复现source→guard落差；不自动归因全部raw→guard机制。
+- [2018A原source仅RMS干预](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_SOURCE_RMS_CONTROL_2026-09-28.json)：两类31768成员、D10/MCFormer、63808有界forward，原source重现/归一化门及独立SHA读回，复现source→guard落差；不自动归因全部raw→guard机制。
 
-- [RMS历史实验复核](AMC_RMS_HISTORY_REVIEW_2026-09-28.json)：9月15/22日既有源域对照、同权重208重合成员两路top1零变化，区分源域损失与旧相消/尺度四路结论；无新模型实验。
+- [RMS历史实验复核](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_RMS_HISTORY_REVIEW_2026-09-28.json)：9月15/22日既有源域对照、同权重208重合成员两路top1零变化，区分源域损失与旧相消/尺度四路结论；无新模型实验。
 
-- [幅度链审计与四套八模型匹配基线](AMC_MATCHED_SOURCE_BASELINE_2026-09-28.json)：5707080条覆盖、32组全量读回、517批缩放/不可辨识证明、四路总体及同raw参考SINR图；保留原source成绩和Hisar未解异常，完成缓存清理，无新RF/训练。
+- [幅度链审计与四套八模型匹配基线](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_MATCHED_SOURCE_BASELINE_2026-09-28.json)：5707080条覆盖、32组全量读回、517批缩放/不可辨识证明、四路总体及同raw参考SINR图；保留原source成绩和Hisar未解异常，完成缓存清理，无新RF/训练。
 
-- [Hisar 411条8PSK异常专项核查](HISAR_8PSK_DIAGNOSTIC_2026-09-28.json)：117000源成员扫描、491 ADC重建、5349次有界干预，排查QPSK导频并定位近零形态/LO敏感性；保留原成绩，非部署修复，完成清理封存。
+- [Hisar 411条8PSK异常专项核查](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/HISAR_8PSK_DIAGNOSTIC_2026-09-28.json)：117000源成员扫描、491 ADC重建、5349次有界干预，排查QPSK导频并定位近零形态/LO敏感性；保留原成绩，非部署修复，完成清理封存。
 
-- [论文部署证据收尾](AMC_PAPER_DEPLOYMENT_CLOSEOUT_2026-09-29.json)：当前AGX/运行时及RF参数、历史功率模式未记录、精度边界与清理封存；[32组整数/配对CSV](AMC_PAPER_DEPLOYMENT_COUNTS_2026-09-29.csv)、[16组D10计时CSV](AMC_PAPER_D10_TIMING_2026-09-29.csv)，原始时延序列另存结果根，无新RF/训练。
+- [论文部署证据收尾](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_PAPER_DEPLOYMENT_CLOSEOUT_2026-09-29.json)：当前AGX/运行时及RF参数、历史功率模式未记录、精度边界与清理封存；[32组整数/配对CSV](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_PAPER_DEPLOYMENT_COUNTS_2026-09-29.csv)、[16组D10计时CSV](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_PAPER_D10_TIMING_2026-09-29.csv)，原始时延序列另存结果根，无新RF/训练。
 
 - [pi-durable实际部署、思考兼容、回滚与清理](PI_DURABLE_DEPLOYMENT_2026-10-26.json)
 
