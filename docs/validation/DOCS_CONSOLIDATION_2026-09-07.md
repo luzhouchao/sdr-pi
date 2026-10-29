@@ -168,3 +168,26 @@ Python旧数据合同/传输测试曾因系统环境缺h5py失败，未作为本
 单窗合成PSD在系统Python和新venv输出16×256，最大差1.53e-5 dB（门限1e-4），无实收数据访问。
 
 本轮构建、日志、差异基线与临时索引目录 `/var/tmp/sdrharness-dev/layout-20261029/` 已完整清除：4724普通文件、2,255,869,985字节、0链接；目录不存在复核通过。未清理其他任务的缓存或证据。
+
+## 目录整理后实际服务检查（2026-10-29）
+
+源码基线 `198cedd`。检查实际已安装服务，未以源码测试代替部署事实。
+Web PID 1251209、Planner PID 1221149均active/running，前后PID不变、重启计数0；
+健康与P201恢复timer均active/waiting，Web与Planner健康接口ready=true。
+已安装Controller SHA-256 `560bd8eedeb9ce6fb7514f0d38096d7cab34e6999a8ccf75e404b6eafedc5ebe`，
+Web SHA-256 `87fddf410b5edddb3986e62a77c6bc8521e014d1a95a33c0b01a925595084066`，检查前后不变。
+
+真实浏览器访问工作台、记录、语料和监测页，JS异常0、HTTP失败0。
+页面标题当前为“SDR Harness · 预览”；本轮核验现有已安装页面，不发布工作区未提交前端。
+首次等待networkidle因SSE持续连接超时，改为等待状态接口及DOM就绪后通过。
+浏览器全程只读，非GET写操作0；两份原有会话及选中会话、状态和6条结果数量保持。
+
+已安装CLI `--mode plan` 调用实际Planner与opencode-go/deepseek-v4.1-flash，
+使用人工构造的空观测，4.39秒返回hold、退出0；只规划不执行，没有发送实测数据。
+空观测中sdr_online=false是测试输入，不是P201检查结果。
+P201 SSH确认单一sdrd PID 1318且没有活动控制连接，随后已安装CLI只读health返回
+online=true、healthy=true、health_flags=0，RX1/RX0/A_BALANCED身份verified=true。
+未采集、发射、调谐、重启或重新部署；本次不声称完成新的RF收发验收。
+
+临时目录 `/var/tmp/sdrharness-dev/service-check-20261029/` 已清除：8文件、5351字节，
+目录不存在复核通过。未保留浏览器截图、原始IQ或测试会话；最小验证事实仅记录于本节。
