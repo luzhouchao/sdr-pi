@@ -14,6 +14,8 @@ this file retains the detailed delivery and evidence ledger.
 
 ## 当前交付状态速览（2026-09-10）
 
+- [x] 2026-10-29 首页重复实验摘要清理、两份旧批次独立离线脚本退役；引用/链接/原始字节与删除检查通过，无运行时或部署变更。见[整理记录](validation/DOCS_CONSOLIDATION_2026-09-07.md#论文拆分后的入口收敛2026-10-29)。
+
 - [x] 论文专属四数据集收发、评估脚本及测试和论文收尾证据迁至 [paper1sdr](https://github.com/luzhouchao/paper1sdr)，原项目保留 SDR 控制；本机实验数据与模型逐文件 SHA-256 校验后迁至 `/home/jetson/lzcpaper1/`，原位置由兼容链接指向新位置。共享的 SDR 控制、接收传输与旧实验工具继续保留；验证与路径边界见[拆分记录](validation/PAPER_REPOSITORY_SPLIT_2026-10-29.md)。
 
 - [ ] 2026-10-29 用户先授权清除历史 IQ，后明确保留论文实验数据；网页中46条带 IQ 的扫描、一条旧 P201 语料及两份孤立单点 IQ 已删除。旧语料被冻结的 RF 预处理选择计划引用，相关路径不再可用；不得将历史记录视为仍可重放。其余历史临时数据需区分论文数据后再处理，见[删除清单](evidence/IQ_CLEANUP_2026-10-29.json)。

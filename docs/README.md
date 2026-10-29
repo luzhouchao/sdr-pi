@@ -22,32 +22,6 @@
 | [validation/](validation/README.md) | 按主题索引的已执行验证、部署和回滚记录 |
 | [evidence/](evidence/README.md) | 原始审计 JSON、保留证据清单、预登记计划和图表 |
 
-2026-09-26用户取消近期自生成及后续诊断，确认删除8个结果目录，并退役AGX独立D8。已删除20个目录、2061个文件、1,369,327,545字节，路径缺失复核通过；原RML2018A源数据、实收IQ、raw/guard及D10结果保留。D10依赖的d8命名源码与混合模型历史审计保留。删除前逐文件大小/SHA及精确路径见[删除清单](evidence/EXPERIMENT_CLEANUP_D8_RETIREMENT_2026-09-26.json)。历史记录中的“保留”是当时状态，清单所列外部结果现已删除，不能再宣称可读回。
-
-四数据集×八模型32份seed42权重已导入。夜间统一RRC短帧实收2272/2272窗同步，P201缓冲4096→65536消除本次先导的大时间跳变；2016A/B模型入口恢复原Σ|IQ|=1约定，四套D10相消后89.32%～95.43%。见[夜间统一RF实测](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md)；仍为有限工程验证，不宣称低SINR问题已解决或全量/生产准入。
-
-9月27日用户已授权推进四套**完整seed42验证集**：2016A→2016B→2018A→Hisar，共713385行；当前套完整接收、落盘/SHA封存后才启动下一套。713385行/517批收发和raw/guard处理现已全部完成封存，逐套屏障及设备最终恢复通过，后台正常退出。后续模型识别与条件SINR分层状态见下段；见[最终证据](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_VALIDATION_COMPLETE_2026-09-27.json)及[当前执行选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#当前执行选择)。
-
-四套×八模型×source/raw/guard共96组、17121240预测已于9月27日晚完成，9月28日全量读回/权重身份核验及运行缓存清理通过。四套均单套驻留并顺序跑完八模型；D10整体raw→guard为58.22%→62.15%、61.35%→64.44%、49.53%→58.26%、24.14%→59.68%。条件SINR分层已完成，4ASK主要回退集中raw参考0–10dB，源域仅RMS干预已在两类重现退化，见[尺度对照](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#原source仅rms归一化干预2026-09-28)；见[分层结果](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#四套完整验证集条件sinr分层2026-09-28)及[最终结果](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#四套三路八模型识别完成2026-09-28复核)。
-
-幅度链审计及四套×八模型匹配预处理基线已完成，5707080条覆盖、全量核验/清理封存通过。原幅度在TX逐窗峰值缩放时已消去；2018A匹配source与guard总体接近，Hisar仍有未解释异常。原96组成绩保留，见[四路基线与边界](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#幅度链审计与匹配预处理源域基线2026-09-28)。
-
-Hisar 411条8PSK专项核查已完成：原source具有近零中段、端部集能形态；491原ADC重建无误，实际导频为QPSK。纯LO即可使D10全判8PSK，噪声/跨类形态干预支持非稳健响应；原成绩与异常成员保留，不启用诊断“修复”，见[核查证据与范围](https://github.com/luzhouchao/paper1sdr/blob/main/docs/validation/AMC_UNIFORM_RF_2026-09-26.md#hisar-411条8psk异常核查2026-09-28)。
-
-9月29日论文收尾完成：[32组四路整数/配对计数](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_PAPER_DEPLOYMENT_COUNTS_2026-09-29.csv)、[16组D10计时](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_PAPER_D10_TIMING_2026-09-29.csv)、当前平台/RF参数及历史未记录项见[收尾审计](https://github.com/luzhouchao/paper1sdr/blob/main/docs/evidence/AMC_PAPER_DEPLOYMENT_CLOSEOUT_2026-09-29.json)。仅离线同轴链路验证；当前50W模式不回填历史，Mamba/Triton精度不由PyTorch TF32 flags单独保证。
-
-历史实测报告：D10已补齐369497共同验证成员，当前8模型仅raw/guard；按接收端条件估计SINR分层。
-D10总体50.45%→55.09%，低SINR相消退化仍存在；见[大样本结果](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#d10补齐369497共同验证成员2026-09-22)。
-2026-09-26接收端RMS比值选择规则完成：主评估采集的172218剩余成员49.11%→50.70%，
-但四份采集退化、低SINR仍不及raw，保留候选不部署；见[规则及复核](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#接收端指标选择相消强度2026-09-26)。
-现有条件SINR仅用于离线分层，不作为规则输入；未训练、新推理或收发。
-
-2026-09-26新会话交错试验的源行映射/离线排程准备完成，尚未收发或推理；见[准备与剩余边界](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#新会话交错试验映射准备2026-09-26)。
-
-当前实验选择：频段保持 **2455 MHz**；用户2026-09-13最新确认已接回 **B210 RF A TX/RX→20dB衰减器及15cm同轴→P201 RX1**，当前B210停发。参考参数见
-[后续实验选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。既有ADC离线诊断后，LO历史/资料及TX校准路径审计已完成，获准镜像重载恢复USB3；用户后续授权有限设备调试，单音功率及事件时间复测完成，频谱检查亦完成，前置保护区相消对照未改善、候选不启用，固定频率幅相诊断已发现相干相位时变结构，用户随后优先低源SNR回退，106条逐行关联未确立相位误差归因，后续D10载荷特征及干预结果见上方最新记录；不微调；完成结果见[离线报告](validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md)。
-实验历史仅提供[索引链接](validation/README.md#近期射频排查2026-09-09至10)，需要时再读。
-
 其他资料入口（按需）：
 
 - [9月8—14日实验阶段报告（离线HTML）](reports/SDR_EXPERIMENT_REPORT_2026-09-08_2026-09-14.html)
@@ -67,15 +41,6 @@ D10总体50.45%→55.09%，低SINR相消退化仍存在；见[大样本结果](v
 
 实际完成和部署状态以 checklist 对应条目为准，入口不重复维护历史结果。
 
-历史文档中的“下一步”“未完成”和旧命令只描述当时状态，不是新任务指令。
-早期 Pi 验证已合入[历史合订记录](validation/PI_BASELINE_HISTORY.md)。旧 ROADMAP、
-第4—6章独立排期、迁移待办与重复工作流已移除；原因及替代位置见
-[整理记录](validation/DOCS_CONSOLIDATION_2026-09-07.md)。原文件可从 `7115b50` 的
-Git 树取回，不需要恢复到当前工作目录。
-
-审计/预登记/图表保留原始字节；其内部记录的旧 `docs/<文件>` 路径不改写，
-通常位于 `docs/evidence/<同名文件>`。其中三份被冻结配置直接引用的审计 JSON
-保留在原根目录，避免改变 profile/选择计划的路径合同；不额外复制。历史源码哈希仍对应当时提交。不要为
-使旧记录看起来“最新”而修改失败结果、哈希、准入状态或原始 IQ 清单。
-
-2026-10-20 按用户要求删除旧 RML2018A 全量接收语料（9月14日 raw/guard 及其13组原始采集目录），共2915文件、125366229013字节。原始数据集、9月27日验证集及本次测试集回放保留；历史旧全量路径不可再用。清单见 [删除记录](evidence/RML2018A_FULL_RX_DELETE_20261020.json)。
+历史文档中的“下一步”、旧命令和待批准操作只描述当时状态，不构成当前施工指令。
+历史成绩、清理清单与封存数据状态以 checklist、validation 和 evidence 为准，首页不重复维护。
+本仓库仍被配置引用的冻结审计保持原路径和字节；迁出的论文资料通过上述索引查阅。
