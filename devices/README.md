@@ -7,7 +7,7 @@
 | `b210/` | B210状态/初始化入口、有限TX程序、专用UHD运行时 | USB；serial2508504；A7-100T |
 | `p201/` | 既有Controller健康入口、sdrd源码和AGX配置入口 | 192.168.1.10:43110；RX1/RX0/A_BALANCED |
 
-两个`dataset/`链接指向同一个`local-assets/amc-eval/datasets/rml2018a/`，没有再复制21.45GB数据。
-原始数据、模型、共享帧/识别实现保持唯一；程序目录中的符号链接指向其现有源码，避免分叉。
+论文数据与模型已迁出，本目录不提供数据集链接。
+`programs/` 中的链接分别指向 `src/` 的共享实现与 `deploy/agx/` 的设备脚本。
 B210二进制/固件在Git外的`local-assets/devices/b210/`，与P201的`/sd/sdr-agent/`发布目录无关。
 历史实验只从[验证索引](../docs/validation/README.md)按需读取，原IQ与哈希不迁移或改写。

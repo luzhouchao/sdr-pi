@@ -21,7 +21,7 @@ The bounded machine record is
 ## Frozen inputs and method
 
 The comparison used the preregistered plan
-[`rf-v1-precision-selection-plan.json`](../../jetson-agx/sdrharness/config/amc/rf-v1-precision-selection-plan.json),
+[`rf-v1-precision-selection-plan.json`](../../deploy/agx/config/amc/rf-v1-precision-selection-plan.json),
 SHA-256
 `552c2a16505bf9ced2d8ab1190fe2cb1b9b8d104cee2b94d9b8c8f108d287306`.
 The selection implementation SHA-256 was
@@ -91,7 +91,7 @@ pool did not shrink, but peak allocated CUDA memory was lower than FP32.
 ## Frozen candidate and cleanup
 
 The selected fail-closed candidate is
-[`rml2018a-d8-rf-v1-fp16.candidate.json`](../../jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1-fp16.candidate.json),
+[`rml2018a-d8-rf-v1-fp16.candidate.json`](../../deploy/agx/config/amc/rml2018a-d8-rf-v1-fp16.candidate.json),
 SHA-256
 `35ff99719ab845f33dc7ca2d0e7b666e4f40721ca64a6dd615a671ec6c084f40`.
 It specifies FP32 resident weights, CUDA FP16 autocast, FP32 input/returned

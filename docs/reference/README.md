@@ -26,7 +26,7 @@
 | FPGA 退役边界 | [决策](FPGA_RETIREMENT_DECISION_2026-09-02.md) |
 | 暂缓的模型域适配建议 | [决策与后续条件](RF_DOMAIN_ADAPTATION_DEFERRED_2026-09-07.md) |
 
-AGX 安装布局与命令见[部署入口](../../jetson-agx/sdrharness/README.md)，开发流程见
+AGX 安装布局与命令见[部署入口](../../deploy/agx/README.md)，开发流程见
 [AGENTS.md](../../AGENTS.md)。不再维护独立迁移待办或另一份迭代规则。
 
 ## 组件操作文档
@@ -36,15 +36,15 @@ AGX 安装布局与命令见[部署入口](../../jetson-agx/sdrharness/README.md
 | 主题 | 入口 |
 | --- | --- |
 | 仓库介绍与构建起点 | [根 README](../../README.md) |
-| AGX 构建、安装与服务 | [AGX 操作入口](../../jetson-agx/sdrharness/README.md) |
-| 共享 Controller、Planner、Web | [Agent 组件](../../raspberry-pi/sdr-agent/README.md) |
-| Recognizer 接口组件 | [Worker 文档](../../raspberry-pi/sdr-agent/recognizer-worker/README.md) |
-| Web 浏览器验证方法 | [测试入口](../../raspberry-pi/sdr-agent/web-console/tests/README.md) |
-| P201 系统职责 | [系统入口](../../sdr-system/README.md) |
-| SDRD 协议与构建 | [sdrd 文档](../../sdr-system/sdrd/README.md) |
-| SDRD 控制平面设计 | [接口设计](../../sdr-system/docs/SDRD_CONTROL_PLANE_DESIGN.md) |
-| 历史树莓派布局 | [Pi 入口](../../raspberry-pi/README.md) |
-| 历史直接 IIOD 工具 | [Rust/libiio 参考](../../raspberry-pi/p201pro-rust/README.md) |
+| AGX 构建、安装与服务 | [AGX 操作入口](../../deploy/agx/README.md) |
+| 共享 Controller、Planner、Web | [Agent 组件](../../src/agent/README.md) |
+| Recognizer 接口组件 | [Worker 文档](../../src/agent/recognizer-worker/README.md) |
+| Web 浏览器验证方法 | [测试入口](../../src/agent/web-console/tests/README.md) |
+| P201 系统职责 | [系统入口](../../deploy/p201/README.md) |
+| SDRD 协议与构建 | [sdrd 文档](../../src/sdrd/README.md) |
+| SDRD 控制平面设计 | [接口设计](../validation/../reference/P201_SDRD_CONTROL_PLANE_DESIGN.md) |
+| 历史树莓派布局 | [Pi 入口](https://github.com/luzhouchao/sdr-pi/blob/eac1d8c/raspberry-pi/README.md) |
+| 历史直接 IIOD 工具 | [Rust/libiio 参考](https://github.com/luzhouchao/sdr-pi/blob/eac1d8c/raspberry-pi/p201pro-rust/README.md) |
 
 ## 访问、凭证与许可
 
@@ -53,8 +53,8 @@ AGX 安装布局与命令见[部署入口](../../jetson-agx/sdrharness/README.md
 | 项目协作与按需读取规则 | [AGENTS](../../AGENTS.md) |
 | P201 硬件访问流程 | [工作流技能](../../.codex/skills/p201-sdr-workflow/SKILL.md)、[访问与部署细则](../../.codex/skills/p201-sdr-workflow/references/access-and-deploy.md) |
 | 安全报告 | [SECURITY](../../SECURITY.md) |
-| 私有目录约定（不含凭证） | [private README](../../sdr-system/private/README.md) |
-| Planner 第三方许可 | [Third-party notices](../../raspberry-pi/sdr-agent/planner-worker/THIRD_PARTY_NOTICES.md) |
+| 私有目录约定（不含凭证） | [private README](../../deploy/p201/private/README.md) |
+| Planner 第三方许可 | [Third-party notices](../../src/agent/planner-worker/THIRD_PARTY_NOTICES.md) |
 
 历史系统与Pi实验结果从[验证索引](../validation/README.md#组件目录中的历史实验)进入。
 

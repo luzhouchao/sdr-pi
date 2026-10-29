@@ -47,7 +47,7 @@ Runner `JsonlAuditAdapter` 保留 current 与 `.1/.2/.3`，每段最多 8 MiB；
 审计保留时先制定归档策略；不通过放宽现场磁盘限额或禁用 audit 临时绕过。
 
 候选 stdout/stderr 的
-[`journald-sdrharness.conf.example`](../../jetson-agx/sdrharness/config/operations/journald-sdrharness.conf.example)
+[`journald-sdrharness.conf.example`](../../deploy/agx/config/operations/journald-sdrharness.conf.example)
 定义独立 `sdrharness` journal namespace：persistent 总量 128 MiB、runtime 32 MiB、
 单文件 8 MiB、14 天、30 秒 1000 条速率限制。示例 drop-in 将 stdout/stderr 送入
 该 namespace，并给 Web 联合 shutdown 50 秒预算（S6b 内部最多 42 秒）。限额达到

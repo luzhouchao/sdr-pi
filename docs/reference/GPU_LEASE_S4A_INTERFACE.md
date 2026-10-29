@@ -122,14 +122,14 @@ Example candidate invocations (create the unique feature parent first and choose
 unused loopback ports; key file is an explicitly prepared private file):
 
 ```bash
-python3 jetson-agx/sdrharness/scripts/spark-gpu-gateway.py \
+python3 deploy/agx/scripts/spark-gpu-gateway.py \
   --runtime-root /var/tmp/sdrharness-dev/FEATURE/spark \
   --gpu-lease-root /var/tmp/sdrharness-dev/FEATURE/gate \
   --port 18016 --backend-port 18017 \
   --api-key-file /var/tmp/sdrharness-dev/FEATURE/gateway-key.txt \
   --max-requests 32 --lifetime-seconds 600
 
-python3 jetson-agx/sdrharness/scripts/amc-worker-supervisor.py \
+python3 deploy/agx/scripts/amc-worker-supervisor.py \
   --runtime-root /var/tmp/sdrharness-dev/FEATURE/mamba \
   --gpu-lease-root /var/tmp/sdrharness-dev/FEATURE/gate \
   --max-batches 128 --max-restarts 4 --lifetime-seconds 600

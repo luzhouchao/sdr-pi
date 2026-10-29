@@ -48,7 +48,7 @@ The first verified build path uses the Windows/Xilinx SDK 2019.1 toolchain:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File `
-  sdr-system/sdrd/scripts/build-armhf-xilinx.ps1
+  src/sdrd/scripts/build-armhf-xilinx.ps1
 ```
 
 Default toolchain directory in that script:
@@ -65,7 +65,7 @@ p201_cc="$P201_ARMHF_TOOLCHAIN_BIN/arm-linux-gnueabihf-gcc"
 p201_strip="$P201_ARMHF_TOOLCHAIN_BIN/arm-linux-gnueabihf-strip"
 p201_readelf="$P201_ARMHF_TOOLCHAIN_BIN/arm-linux-gnueabihf-readelf"
 test -x "$p201_cc" -a -x "$p201_strip" -a -x "$p201_readelf"
-make -C sdr-system/sdrd clean all \
+make -C src/sdrd clean all \
   CC="$p201_cc" BUILD_DIR=<AGX-feature-directory>/sdrd-build
 "$p201_strip" <AGX-feature-directory>/sdrd-build/sdrd
 file <AGX-feature-directory>/sdrd-build/sdrd

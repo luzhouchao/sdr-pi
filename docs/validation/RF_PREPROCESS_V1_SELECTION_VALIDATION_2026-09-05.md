@@ -20,7 +20,7 @@ P201 RX1 / RX0 / A_BALANCED
 ```
 
 The frozen machine contract is
-[`rf-preprocess-v1.json`](../../jetson-agx/sdrharness/config/amc/rf-preprocess-v1.json),
+[`rf-preprocess-v1.json`](../../deploy/agx/config/amc/rf-preprocess-v1.json),
 SHA-256
 `18428d72beb8c0e7e83d24d57a02d5f6b68f3428cb3f096a219a87b67dbc900f`.
 It is deliberately `frozen_for_retraining` with `production_enabled=false` and

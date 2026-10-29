@@ -9,10 +9,10 @@
 3. deterministic golden vectors used for preprocessing/parity checks.
 
 The machine-readable source is
-[`amc-corpus-manifest-v1.schema.json`](../../jetson-agx/sdrharness/config/amc/amc-corpus-manifest-v1.schema.json).
+[`amc-corpus-manifest-v1.schema.json`](../../deploy/agx/config/amc/amc-corpus-manifest-v1.schema.json).
 The schema contains both the top-level manifest and `$defs.record`, the schema
 for every JSONL row. The dependency-free reference validator is
-[`validate-amc-corpus-manifest.py`](../../jetson-agx/sdrharness/scripts/validate-amc-corpus-manifest.py).
+[`validate-amc-corpus-manifest.py`](../../deploy/agx/scripts/validate-amc-corpus-manifest.py).
 
 This contract governs metadata and lineage. It does not enable the production
 Recognizer, choose `rf_preprocess_v1`, resolve the RML2018A display-name order,
@@ -256,7 +256,7 @@ of traversing an untrusted directory.
 ## Validator
 
 ```bash
-python3 jetson-agx/sdrharness/scripts/validate-amc-corpus-manifest.py \
+python3 deploy/agx/scripts/validate-amc-corpus-manifest.py \
   --manifest /path/to/corpus/manifest.json \
   --asset-root /path/to/corpus \
   --verify-assets
@@ -268,12 +268,12 @@ not print IQ, labels row by row or model output. On failure it exits nonzero as
 `contract_error=<code>: <field>: <reason>`.
 
 The focused tests are in
-[`test_amc_corpus_manifest.py`](../../jetson-agx/sdrharness/tests/test_amc_corpus_manifest.py).
+[`test_amc_corpus_manifest.py`](../../deploy/agx/tests/test_amc_corpus_manifest.py).
 They cover all three provenance variants plus hash/path tampering, label/source
 misuse, provisional-name escalation, P201 identity, frozen cleanup and
 train/test lineage leakage.
 
 Full split and cross-package lineage auditing is provided by
-[`audit-amc-split-isolation.py`](../../jetson-agx/sdrharness/scripts/audit-amc-split-isolation.py),
+[`audit-amc-split-isolation.py`](../../deploy/agx/scripts/audit-amc-split-isolation.py),
 with focused collision/derivation tests in
-[`test_amc_split_isolation.py`](../../jetson-agx/sdrharness/tests/test_amc_split_isolation.py).
+[`test_amc_split_isolation.py`](../../deploy/agx/tests/test_amc_split_isolation.py).

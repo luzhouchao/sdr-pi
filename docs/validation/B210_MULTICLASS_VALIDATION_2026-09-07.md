@@ -73,7 +73,7 @@ FIR 标称不一致的 5 条中，`r0c20` 原始源已为 ID19；另外四条为
 ## 预注册、身份与执行证据
 
 - [预注册](../evidence/B210_MULTICLASS_PLAN_2026-09-07.md)；
-  [固定 72 行清单](../../jetson-agx/sdrharness/config/amc/b210-multiclass-907u.json)，
+  [固定 72 行清单](../../deploy/agx/config/amc/b210-multiclass-907u.json)，
   SHA256 `8d873847234bb48d4235348a6f3ae543d3f881c61ba2390ca018e6da7e5d7d32`。
   只解压 train.npy 并验证既有 train hash；只读取选中的 X/Y/Z 行并严格验证
   one-hot ID、+30 dB、形状及有限值。整库 hash 引用既有资产登记，核验尺寸；

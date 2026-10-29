@@ -123,7 +123,7 @@ raw已同步并校正CFO/相位，guard包含保护间隔LO相消；其区别不
 查看进度仍运行原脚本，默认已切到上方Mamba追加重跑：
 
 ```bash
-/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-progress.sh
+/home/jetson/sdrharness/deploy/agx/scripts/rml2018a-progress.sh
 ```
 
 加`--once`只显示一次；加`--root <历史根>`可查看已完成8模型任务。进度区分计算/落盘、验证集大小、

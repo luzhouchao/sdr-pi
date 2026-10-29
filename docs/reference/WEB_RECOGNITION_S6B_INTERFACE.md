@@ -38,7 +38,7 @@ Web 退出发送优先 `/stop` 后关闭 stdin，让终端完成联合回收；�
 
 ## 验证入口
 
-`jetson-agx/sdrharness/scripts/validate-closed-loop-results.py` 是有限验收脚本，
+`deploy/agx/scripts/validate-closed-loop-results.py` 是有限验收脚本，
 复用 S5 helpers，要求专用 `/var/tmp/sdrharness-dev/s6b-906a/`、本次构建三种原生
 binary、S6a 导出的明确合成 fixtures、既有冻结模型资产及 Python Playwright。
 脚本不是安装入口；运行前必须完成 AGENTS 的计划/空间/停止检查。

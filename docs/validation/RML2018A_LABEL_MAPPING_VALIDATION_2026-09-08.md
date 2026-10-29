@@ -6,7 +6,7 @@
 基线 `21c14d8`，用户明确要求“2018的数字标签就这么映射”，并提供 24 类截图。
 项目后续数字 ID→名称解释采用下表，不再自行换回旧 classes.txt 的排列。
 机器可读唯一新映射为
-[`rml2018a-labels.operator-v1.json`](../../jetson-agx/sdrharness/config/amc/rml2018a-labels.operator-v1.json)，
+[`rml2018a-labels.operator-v1.json`](../../deploy/agx/config/amc/rml2018a-labels.operator-v1.json)，
 SHA-256 `3ca235c692b37cea23675625a102a91602cf0a573c2ffac3949b61857d4a893f`。
 数组索引就是原 one-hot Y 的 argmax，数字 ID、logits 顺序、权重和标签数组不重排。
 
@@ -90,7 +90,7 @@ Adapter 源码明确 `raw_id = argmax(one_hot)`、`raw_label = RADIOML2018A_RAW_
 本项目采用原始 24 类 ID；不能用这套 12 类编号去解释当前 24-logit checkpoint。
 
 当前机器映射改用
-[`rml2018a-labels.server-v1.json`](../../jetson-agx/sdrharness/config/amc/rml2018a-labels.server-v1.json)，
+[`rml2018a-labels.server-v1.json`](../../deploy/agx/config/amc/rml2018a-labels.server-v1.json)，
 SHA-256 `859f74d4776bb58dd5dd54106e168b47f5c4053c5170b13275ed59b15a30bac3`。
 它记录服务器路径、commit、四份哈希、Adapter 语义及 operator-v1 父级引用；中文
 说明仍来自用户截图。后续名称读取默认值指向 server-v1。operator-v1 和旧

@@ -112,7 +112,7 @@ AGX最终清理708个cache/lock/冗余packet文件，共40,492,354字节，三�
 ## 2026-09-10：按用户要求复查2.4GHz历史识别方法
 
 本次只读历史文档/源码及已保留IQ，**新增RF采集0、模型推理0**。上一节0/72及旧审计保持。
-基线8c51c0d；[离线复核脚本](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-campaign-filter.py)
+基线8c51c0d；[离线复核脚本](../../deploy/agx/scripts/diagnose-rml2018a-campaign-filter.py)
 输出[版本化逐行统计](../evidence/RML2018A_HISTORICAL_FILTER_COMPARISON_2026-09-10.json)。
 
 先前“波形失真”描述过于笼统：现已量化一个主要问题是**额外窄带分量进入模型输入**。
@@ -241,7 +241,7 @@ PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 \
 保留IQ后做固定±25kHz的离线诊断，第一批发现CFO约3368.49Hz，原门限下marker可达0.68820。
 修正按原433.920MHz相对频偏容限缩放：2455MHz搜索±14.5kHz、500Hz步长，细化后上限17kHz；
 初始0.55/最终0.65门限不改。新计划记录范围，旧计划的软件哈希不重写。
-[离线复核脚本](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-campaign-sinr.py)使用最终固定范围，
+[离线复核脚本](../../deploy/agx/scripts/diagnose-rml2018a-campaign-sinr.py)使用最终固定范围，
 检查旧audit/IQ/源行及Z/重建TX帧哈希，输出独立`sinr-recheck-v1.json`，不改变初次失败状态。
 第一次复查得到6条条件估计、18条invalid、24条未同步；这是事后派生结果，未冒充新采集通过。
 其中第一批由尾部marker定位前一重复payload，前一marker得分仅0.03924，解释仍受干扰及连续性限制。
@@ -291,7 +291,7 @@ NX删除28份暂存文件929,524字节；AGX随批删除4份可重建源packet�
 
 用户要求检查“只有4条估计通过”是否因为没收到或SINR低。基线`104887b`，本单元先复核
 此前49份封存证据，再补停发接收；没有新增发射、模型推理、生产部署或修改campaign估计门限。
-脚本为[链路诊断](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-link-quality.py)，
+脚本为[链路诊断](../../deploy/agx/scripts/diagnose-rml2018a-link-quality.py)，
 [逐段统计](../evidence/RML2018A_LINK_QUALITY_DIAGNOSIS_2026-09-11.json)记录原始父级哈希及固定方法。
 
 ### 已确认的现象
@@ -367,7 +367,7 @@ JSON/AST/本地链接/diff、原生采集检查及图表视觉检查通过；此
 
 基线`ede5878`。用户“继续”沿用先比较2.4GHz背景、再独立确认候选的单元；
 外部SDR始终停发，P201 RX40、2.1MS/s、BW1.5MHz、RX1/RX0/A_BALANCED。
-在既有[链路诊断脚本](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-link-quality.py)增加
+在既有[链路诊断脚本](../../deploy/agx/scripts/diagnose-rml2018a-link-quality.py)增加
 `survey`，复用原生Controller/背景元数据校验/统计，不新增collector或生产TX能力。
 旧诊断入口与证据保留；之前源码身份可由`ede5878`复原，不改写旧附件哈希。
 
@@ -1800,7 +1800,7 @@ sdrd PID5909和制品哈希不变，B210仍无USB持有者，P201瞬时目录不
 ## 2026-09-13四类新源行带事件复测
 
 用户同意后，在已确认的B210 RF A TX/RX→20dB50Ω/DC–8GHz/2W衰减器＋15cm同轴→P201 RX1接法上执行。
-新增严格`event-retest-pilot`及[独立入口](../../jetson-agx/sdrharness/scripts/rml2018a-event-retest.py)，
+新增严格`event-retest-pilot`及[独立入口](../../deploy/agx/scripts/rml2018a-event-retest.py)，
 复用已验证事件TX执行器、Controller原生RX和冻结模型source/raw/guard推理；无新滤波、时序、门限调整或增益/衰减变化。
 计划封存于`/var/tmp/sdrharness-dev/b210-rml-event-retest-20260913/plan.json`，SHA
 `54fed61a914149c8999789b107d698f7432997d2769f04673ccc0bedd5ec4297`，基于HEAD`531fbbc12dd75680b30c40f39848d96e6940acbc`及计划中的源码SHA。
@@ -1861,7 +1861,7 @@ P201六个瞬时路径、四份TX包、本单元owner.lock、scratch和测试暂
 计划`/var/tmp/sdrharness-dev/rml-am-metrics-20260913/plan.json`，SHA
 `41b0eef695eb77b4ecc7fd8673437a8be6cb71739f37a9dcae4d04c2b0b441f9`；180秒期限、2MiB报告上限、16MiB空间余量，
 实际空间值和完整软件身份见计划。原HDF5沿用父完整SHA，核对大小/mtime及所选行哈希，本轮未再遍历整个文件。
-[复核脚本](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-am-metrics.py)只调用离线解析和DSP，无硬件连接或模型实例。
+[复核脚本](../../deploy/agx/scripts/diagnose-rml2018a-am-metrics.py)只调用离线解析和DSP，无硬件连接或模型实例。
 使用既有venv Python `-B`，临时路径指向本单元；依次`plan --root <新根>`、`analyze --root <该根>`，再次analyze核对确定性，根前缀为`rml-am-metrics-`。
 
 | 类别 | 源/原始/LO正确数（各24） | LO后有效SINR | 有效子集中位/dB | 理想y=X有效数 | 源窗均值功率占比中位 |
@@ -2692,7 +2692,7 @@ P201清理1个暂存制品50,904字节并验证目录不存在。保留127个文
 起点`1d0ee1661e213ec31f4f091dcb459ef6862957f0`已推送；用户进一步要求发挥GPU并行能力。
 原有RMS/SINR已经按1024行在CUDA执行，本单元把保护区频率拟合扩成多帧CUDA任务，
 [操作合同](../reference/RML2018A_FULL_RF_CAMPAIGN.md#多帧gpu保护区拟合2026-09-13)与新模块
-[rml2018a_guard_gpu.py](../../jetson-agx/sdrharness/scripts/rml2018a_guard_gpu.py)对应。
+[rml2018a_guard_gpu.py](../../deploy/agx/scripts/rml2018a_guard_gpu.py)对应。
 只对训练保护区拟合，CPU继续原留出/幅相/独立导频门；结果绑定训练IQ/位置SHA和CFO先验，
 不能拿另一帧或旧先验的GPU结果绕过验证。普通CPU调用保持原搜索/返回行为；无训练或模型推理。
 

@@ -35,15 +35,15 @@
 
 生产数据路径固定为 **P201 Linux/IIO 有界 RX 与传输 → AGX 软件处理**。
 AGX 负责 Agent、控制、原始 IQ 存储、聚合、功率/噪声估计、候选合并、预处理和
-模型推理；不得仅为减少传输而把聚合搬回 P201。树莓派只保留历史/回滚基线。
+模型推理；不得仅为减少传输而把聚合搬回 P201。树莓派只保留历史验证记录；旧独立采集程序、网络配置与部署模板已退役删除。
 
 | 代码位置 | 职责 |
 | --- | --- |
-| `raspberry-pi/sdr-agent/controller/` | AGX 复用的 Rust Controller；唯一硬件执行、策略、能力、预算和批准权威 |
-| `raspberry-pi/sdr-agent/planner-worker/` | Pi Agent 框架的 Planner；只提出结构化计划，没有 shell/SSH/文件/IIO 权限 |
-| `raspberry-pi/sdr-agent/web-console/` | Web、会话和应用结果管理，复用 Controller |
-| `jetson-agx/sdrharness/` | AGX 配置、部署入口、工具、Worker 与验证脚本 |
-| `sdr-system/sdrd/` | P201 的接收、传输、取消及射频状态恢复 |
+| `src/agent/controller/` | AGX 复用的 Rust Controller；唯一硬件执行、策略、能力、预算和批准权威 |
+| `src/agent/planner-worker/` | Pi Agent 框架的 Planner；只提出结构化计划，没有 shell/SSH/文件/IIO 权限 |
+| `src/agent/web-console/` | Web、会话和应用结果管理，复用 Controller |
+| `deploy/agx/` | AGX 配置、部署入口、工具、Worker 与验证脚本 |
+| `src/sdrd/` | P201 的接收、传输、取消及射频状态恢复 |
 
 只有一个 Controller CLI：`sdr-agent`。默认进入交互入口，脚本使用显式 `--mode`，
 恢复使用严格只读的 `--mode health`。Web HTTP 服务 `sdr-agent-web-console` 调用
@@ -71,7 +71,7 @@ Cargo 包/库名 `sdr-agent-controller` 无需改名；不要另建重复实现�
 
 - 历史 RF 工程结果使用 epoch-10、FP16 autocast + FP32 权重和 RF-v1。用户于2026-09-14
   明确删除 AGX 四窗微调 epoch-010 权重；不得自动恢复或将旧冻结配置指向其他模型。
-  新导入的4090模型见[权重集合](docs/reference/RML2018A_MODEL_COLLECTION.md)，传输、推理适配和批次完成状态以checklist为准，
+  新导入的4090模型见[权重集合](https://github.com/luzhouchao/paper1sdr/blob/main/docs/reference/RML2018A_MODEL_COLLECTION.md)，传输、推理适配和批次完成状态以checklist为准，
   不因导入或工程推理通过而视为生产准入。不自行训练、不重跑完整精度实验或独立 locked-test 准入；
   当前全量RF工程源访问按本节明确授权例外执行。
 - 保持 `recognizer_available=false`。未来能力必须来自负责的 Adapter/Worker
@@ -79,7 +79,7 @@ Cargo 包/库名 `sdr-agent-controller` 无需改名；不要另建重复实现�
 - 独立 known-RF/OOD 证据不足时，不冻结生产温度或拒识阈值。数字 ID 可信，
   文本名称生产证据仍须独立验收。用户已于 2026-09-08 明确指定 RML2018A 名称顺序，
   后续解释以 4090 的 `RADIOML2018A_RAW_LABELS` 为准，采用已核对的
-  [server-v1 映射](jetson-agx/sdrharness/config/amc/rml2018a-labels.server-v1.json)（原始 24 类 ID，
+  [server-v1 映射](deploy/agx/config/amc/rml2018a-labels.server-v1.json)（原始 24 类 ID，
   不使用另一套 common12 canonical_index）；
   不自行改回旧 classes.txt 顺序，也不追溯改写冻结映射/归档。用户指定不等同于
   独立 RF 标签或生产 name_status=verified，未准入运行结果仍保持 provisional。

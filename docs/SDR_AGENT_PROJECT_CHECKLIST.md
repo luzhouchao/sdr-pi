@@ -14,6 +14,8 @@ this file retains the detailed delivery and evidence ledger.
 
 ## 当前交付状态速览（2026-09-10）
 
+- [x] 2026-10-29 源码/部署按职责迁至 `src/` 与 `deploy/`，旧 Pi 独立采集/网络配置及服务模板17文件退役；路径、冻结身份、Rust/Node/C/C++和文档链接验证通过，当前服务未改动。见[目录整理](validation/DOCS_CONSOLIDATION_2026-09-07.md#源码目录分类与旧-pi-退役2026-10-29)。
+
 - [x] 2026-10-29 首页重复实验摘要清理、两份旧批次独立离线脚本退役；引用/链接/原始字节与删除检查通过，无运行时或部署变更。见[整理记录](validation/DOCS_CONSOLIDATION_2026-09-07.md#论文拆分后的入口收敛2026-10-29)。
 
 - [x] 论文专属四数据集收发、评估脚本及测试和论文收尾证据迁至 [paper1sdr](https://github.com/luzhouchao/paper1sdr)，原项目保留 SDR 控制；本机实验数据与模型逐文件 SHA-256 校验后迁至 `/home/jetson/lzcpaper1/`，原位置由兼容链接指向新位置。共享的 SDR 控制、接收传输与旧实验工具继续保留；验证与路径边界见[拆分记录](validation/PAPER_REPOSITORY_SPLIT_2026-10-29.md)。
@@ -472,7 +474,7 @@ S1/S2/V1a/S3/S4a/S6a/S5/S6b/S4b/O1a 源码、适用隔离实机验收及清理�
 
 Evidence:
 
-- [`AGX_SDRHARNESS_MIGRATION.md`](../jetson-agx/sdrharness/README.md)
+- [`AGX_SDRHARNESS_MIGRATION.md`](../deploy/agx/README.md)
 - [`AGX_FRAMEWORK_VALIDATION_2026-09-01.md`](validation/AGX_FRAMEWORK_VALIDATION_2026-09-01.md)
 - [`SDR_AGENT_RUNTIME_DESIGN.md`](reference/SDR_AGENT_RUNTIME_DESIGN.md)
 - [`SDR_AGENT_TERMINAL_DEPLOYMENT_2026-08-31.md`](validation/PI_BASELINE_HISTORY.md#pi-3)
@@ -730,11 +732,11 @@ Evidence:
 
 Evidence:
 
-- [`../sdr-system/docs/BASELINE_2026-08-31.md`](../sdr-system/docs/BASELINE_2026-08-31.md)
-- [`../sdr-system/docs/SDRD_SHADOW_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_SHADOW_VALIDATION_2026-08-31.md)
-- [`../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md)
-- [`../sdr-system/docs/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md`](../sdr-system/docs/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md)
-- [`../sdr-system/docs/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md`](../sdr-system/docs/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md)
+- [`../docs/validation/p201-system/BASELINE_2026-08-31.md`](validation/p201-system/BASELINE_2026-08-31.md)
+- [`../docs/validation/p201-system/SDRD_SHADOW_VALIDATION_2026-08-31.md`](validation/p201-system/SDRD_SHADOW_VALIDATION_2026-08-31.md)
+- [`../docs/validation/p201-system/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md`](validation/p201-system/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md)
+- [`../docs/validation/p201-system/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md`](validation/p201-system/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md)
+- [`../docs/validation/p201-system/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md`](validation/p201-system/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md)
 - [`SDR_AGENT_SDRD_OBSERVE_VALIDATION_2026-08-31.md`](validation/PI_BASELINE_HISTORY.md#pi-4)
 - [`SDR_AGENT_CANCEL_VALIDATION_2026-09-01.md`](validation/PI_BASELINE_HISTORY.md#pi-6)
 - [`SDR_AGENT_RUNNER_DEPLOYMENT_2026-09-01.md`](validation/PI_BASELINE_HISTORY.md#pi-8)
@@ -1164,7 +1166,7 @@ aggregation, result persistence and model-facing summaries.
 Evidence:
 
 - [`SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md`](reference/SDR_PREPROCESSING_SWEEP_ARCHITECTURE.md)
-- [`../raspberry-pi/p201pro-rust/TEST_RESULTS.md`](../raspberry-pi/p201pro-rust/TEST_RESULTS.md)
+- [`../docs/validation/PI_LIBIIO_TEST_RESULTS.md`](validation/PI_LIBIIO_TEST_RESULTS.md)
 - [`PI_SOFTWARE_SWEEP_FALLBACK_2026-09-01.md`](validation/PI_BASELINE_HISTORY.md#pi-9)
 - [`SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md`](validation/SDR_AGENT_INITIAL_SURVEY_SETTINGS_VALIDATION_2026-09-01.md)
 - [`NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md`](validation/NX_B210_P201_RX1_LINK_VALIDATION_2026-09-04.md)
@@ -1431,7 +1433,7 @@ Evidence:
 Evidence:
 
 - [`LOCAL_RECOGNIZER_INTERFACE.md`](reference/LOCAL_RECOGNIZER_INTERFACE.md)
-- [`AGX_SDRHARNESS_MIGRATION.md`](../jetson-agx/sdrharness/README.md)
+- [`AGX_SDRHARNESS_MIGRATION.md`](../deploy/agx/README.md)
 - [`NX_B210_MAMBA_D8_ASSET_HANDOFF.md`](validation/NX_B210_MAMBA_D8_ASSET_HANDOFF.md)
 - [`AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md`](validation/AGX_AMC_MAMBA_D8_OFFLINE_VALIDATION_2026-09-04.md)
 - [`AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md`](validation/AGX_SPARK_MAMBA_PLANNER_PERFORMANCE_VALIDATION_2026-09-04.md)

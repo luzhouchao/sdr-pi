@@ -203,7 +203,7 @@ exception. The production deployment remains a separate gate. See the
 
 ## Configuration boundaries
 
-Non-secret runtime templates live under `jetson-agx/sdrharness/`. Provider keys,
+Non-secret runtime templates live under `deploy/agx/`. Provider keys,
 SSH credentials, model weights, runtime state, result databases and captures
 remain outside Git with restrictive permissions. New conversations reload the
 saved provider settings; an active conversation retains the provider snapshot

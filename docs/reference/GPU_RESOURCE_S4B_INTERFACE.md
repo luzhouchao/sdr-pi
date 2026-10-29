@@ -5,7 +5,7 @@ Worker wire contract、生产服务或准入配置。完成状态以权威 check
 
 ## 工具
 
-`jetson-agx/sdrharness/scripts/validate-gpu-resources.py` 接受显式参数
+`deploy/agx/scripts/validate-gpu-resources.py` 接受显式参数
 `--feature-directory /var/tmp/sdrharness-dev/s4b-906a`。要求 root 已存在、resolved
 路径一致、无旧 live-summary、至少 4 GiB 空间，以及当前源码构建的原生 Controller
 和 S3 fixture exporter 生成的 model.f32/replay.json。每个后续实测须审阅并更新
@@ -46,7 +46,7 @@ CV 节点及 power-gated GPU 直接节点可能返回 EAGAIN，改用 tegrastats
 
 ## 验证 reducer
 
-`PYTHONDONTWRITEBYTECODE=1 python3 jetson-agx/sdrharness/scripts/test-gpu-resources.py`
+`PYTHONDONTWRITEBYTECODE=1 python3 deploy/agx/scripts/test-gpu-resources.py`
 只使用内存内合成遥测，覆盖合法完成、时长/样本缺失、资源超限/持续增长、温度
 未稳定、时延超限与后半段退化。它证明门槛计算，不替代真实候选测量。
 

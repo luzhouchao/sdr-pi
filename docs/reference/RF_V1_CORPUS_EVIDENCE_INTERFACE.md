@@ -25,7 +25,7 @@ label                           tagged object described below
 The receive-free client validates framing and submits to an explicit loopback IP:
 
 ```bash
-python3 jetson-agx/sdrharness/scripts/import-rf-v1-corpus.py \
+python3 deploy/agx/scripts/import-rf-v1-corpus.py \
   --endpoint http://127.0.0.1:8787 \
   --parent-result PARENT_ID --request /path/to/reviewed-derivation.json
 ```
@@ -118,10 +118,10 @@ that shared disk blocks were released. Unknown files/symlinks still block deleti
 ## Validation and coverage tools
 
 ```bash
-python3 jetson-agx/sdrharness/scripts/validate-amc-corpus-manifest.py \
+python3 deploy/agx/scripts/validate-amc-corpus-manifest.py \
   --manifest /path/to/package/manifest.json --asset-root /path/to/package --verify-assets
 
-python3 jetson-agx/sdrharness/scripts/summarize-rf-v1-evidence.py \
+python3 deploy/agx/scripts/summarize-rf-v1-evidence.py \
   --corpus-root /path/to/application/p201-corpus
 ```
 

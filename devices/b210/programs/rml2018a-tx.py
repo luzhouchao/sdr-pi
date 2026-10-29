@@ -1,1 +1,1 @@
-../../../jetson-agx/sdrharness/scripts/rml2018a-nx-tx.py
+../../../deploy/agx/scripts/rml2018a-nx-tx.py

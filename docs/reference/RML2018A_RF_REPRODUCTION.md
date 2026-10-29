@@ -111,7 +111,7 @@ RF-v1身份内`window_count=4`描述另一条四窗/mean-logit接口；**本实�
 ```bash
 PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 \
 local-assets/amc-eval/runtime/venv/bin/python -B \
-jetson-agx/sdrharness/scripts/compare-rml2018a-pilot-timing.py verify \
+deploy/agx/scripts/compare-rml2018a-pilot-timing.py verify \
   --root /var/tmp/sdrharness-dev/b210-rml2018a-remaining-20260912 \
   --output /var/tmp/sdrharness-dev/rml-timing-multiclass-remaining-20260912
 ```

@@ -316,21 +316,21 @@ FP16 四窗推理”的工程链路，下一阶段是生产准入、识别结果
 
 ## 第1—3章审计依据
 
-- [`protocol.rs`](../raspberry-pi/sdr-agent/controller/src/protocol.rs) 的
+- [`protocol.rs`](../src/agent/controller/src/protocol.rs) 的
   `RecognitionSummary` 已在 S2 替换为独立的四状态 `RecognitionObservation`，
   Rust/Node 同步严格校验；S5 已完成真实 Spark 回灌，生产部署留在 A1。
-- [`runner.rs`](../raspberry-pi/sdr-agent/controller/src/runner.rs) 已通过 S1 实时探测
+- [`runner.rs`](../src/agent/controller/src/runner.rs) 已通过 S1 实时探测
   生成 `recognizer_available`；S5 显式工程入口已实际执行，普通生产路径仍因
   未准入而拒绝，未配置工程执行器时不伪装执行成功。
-- [`policy.rs`](../raspberry-pi/sdr-agent/controller/src/policy.rs) 已对
+- [`policy.rs`](../src/agent/controller/src/policy.rs) 已对
   `RunLocalRecognition` 要求人工批准，覆盖 step/automatic 两种模式。
-- [`sdr-agent.rs`](../raspberry-pi/sdr-agent/controller/src/cli/console.rs) 的交互/
+- [`sdr-agent.rs`](../src/agent/controller/src/cli/console.rs) 的交互/
   巡航路径已接 S5 工程执行器、批准/预算和联合 stop；
-  [`app.js`](../raspberry-pi/sdr-agent/web-console/public/app.js) 已有 S6a 归档结果
+  [`app.js`](../src/agent/web-console/public/app.js) 已有 S6a 归档结果
   渲染和删除，S5/S6b 已完成原生自动回灌和实际浏览器隔离闭环；未部署。
-- [`sdrd_iio.c`](../sdr-system/sdrd/src/sdrd_iio.c) 固定启用
+- [`sdrd_iio.c`](../src/sdrd/src/sdrd_iio.c) 固定启用
   `voltage0,1` scan pair，并只读验证 `voltage0` 的 `rf_port_select=A_BALANCED`；
-  [`sdr.rs`](../raspberry-pi/sdr-agent/controller/src/sdr.rs) 对完整 RX1 身份失败关闭。
+  [`sdr.rs`](../src/agent/controller/src/sdr.rs) 对完整 RX1 身份失败关闭。
 
 O1a 已完成故障/fuzz、审计轮转、只读健康/本地告警及升级回滚的源码/隔离验证，
 生产配置未安装；见 [O1a 验证](validation/OPERATIONS_O1A_VALIDATION_2026-09-06.md)。

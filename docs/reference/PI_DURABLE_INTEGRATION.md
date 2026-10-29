@@ -147,7 +147,7 @@ Web / terminal
 | 上游配置 | 用户已接入 OpenCode Go DeepSeek V4.1 Flash；已核对保存的provider/model及key存在，未读取或输出key内容 |
 | 上游验收 | 上一升级单元有71项测试；本次未调用真实提供商，成功hold对话仍需独立验证，不能由健康检查推定 |
 
-源码位于 `raspberry-pi/sdr-agent/`。Planner 服务实际运行安装制品，修改 checkout 不等于部署。
+源码位于 `src/agent/`。Planner 服务实际运行安装制品，修改 checkout 不等于部署。
 实现前重查 HEAD、依赖、服务和工作区，保留原有未跟踪文件。
 
 ## 上游保证与限制

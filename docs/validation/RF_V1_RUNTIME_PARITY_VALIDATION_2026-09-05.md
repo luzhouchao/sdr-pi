@@ -8,7 +8,7 @@ implements runtime parity; it does not admit production recognition.
 
 The audit is [RF_V1_RUNTIME_PARITY_AUDIT_2026-09-05.json](../evidence/RF_V1_RUNTIME_PARITY_AUDIT_2026-09-05.json).
 The runtime profile is
-[`rml2018a-d8-rf-v1.runtime-profile.json`](../../jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1.runtime-profile.json).
+[`rml2018a-d8-rf-v1.runtime-profile.json`](../../deploy/agx/config/amc/rml2018a-d8-rf-v1.runtime-profile.json).
 The frozen precision candidate and offline specification were not edited.
 
 ## Audited changes

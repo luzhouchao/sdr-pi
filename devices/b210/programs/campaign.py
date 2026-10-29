@@ -1,1 +1,1 @@
-../../../jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py
+../../../deploy/agx/scripts/rml2018a-rf-campaign.py

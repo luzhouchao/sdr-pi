@@ -22,7 +22,7 @@ evidence 分类，并有主题索引。docs 总文件数由 **190 减为 180**�
 | `ROADMAP.md` | 删除。它仍把已完成语料/预处理/Worker/O1a 列作下一步；顺序统一到 [DELIVERY_ORDER](../SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md) |
 | `CHAPTER_4_6_INTEGRATION_PLAN.md` | 删除。该文件已明确被取代，仍包含 seed44、重新训练和旧 A–H 排期；当前范围用 [第1—6章规划](../CHAPTER_1_6_RX_ONLY_IMPLEMENTATION_PLAN.md)，输入及数据治理已有独立合同 |
 | `ITERATION_WORKFLOW.md` | 删除。分支规则和流程过时且与 [AGENTS.md](../../AGENTS.md) 重复；保留 AGENTS 为唯一开发规则入口 |
-| `AGX_SDRHARNESS_MIGRATION.md` | 删除。迁移已完成，旧“仍需低精度/队列”等待办失效；当前布局用 [AGX README](../../jetson-agx/sdrharness/README.md)，历史实机证据仍在 AGX framework / RX ownership 验证 |
+| `AGX_SDRHARNESS_MIGRATION.md` | 删除。迁移已完成，旧“仍需低精度/队列”等待办失效；当前布局用 [AGX README](../../deploy/agx/README.md)，历史实机证据仍在 AGX framework / RX ownership 验证 |
 | 九份早期 Pi MVP/安装/终端/observe/executor/cancel/Web/Runner/软件扫频记录 | 完整合入 [Pi 历史合订记录](PI_BASELINE_HISTORY.md)，原单文件删除；每份正文有独立锚点、原文件名和原始 SHA-256 |
 | `RECOGNITION_RESULT_S2_WEB_CORRECTION_2026-09-06.md` | 完整并入 [S2 验证附录](RECOGNITION_RESULT_S2_VALIDATION_2026-09-06.md#web-build-correction)，保留曾遗漏 Web 构建的失败事实 |
 | `SDR_AGENT_P201_HOST_KEY_PERSISTENCE_INVESTIGATION_2026-09-03.md` | 完整并入 [持久化验证附录](SDR_AGENT_P201_PERSISTENT_HOST_KEY_VALIDATION_2026-09-03.md#historical-investigation)，明确其中待批准/待实施步骤已属历史，不得重做格式化 |
@@ -123,3 +123,48 @@ checklist、validation、evidence 维护。移除两个只用于旧批次的独�
 验证：跟踪文件引用检查、首页本地链接、删除后路径缺失及 diff 检查。
 本轮无 RF、推理、部署或临时制品，临时/新增保留制品均为0。
 原有论文迁出与前端改动保持；除首页收敛外不纳入本轮提交。
+
+## 源码目录分类与旧 Pi 退役（2026-10-29）
+
+基线 `eac1d8c`。用户明确选择实际重排源码，并删除旧 Pi 代码，以当前 AGX 为准。
+当前工作区移动356个原有文件/链接；未提交的论文迁出与前端改动随相应目录保留，
+提交中隔离这些既有改动。目录入口统一到仓库 README；AGX 脚本增加按用途的完整索引。
+
+| 原位置 | 新位置/处理 |
+| --- | --- |
+| `raspberry-pi/sdr-agent/` | `src/agent/`：仍用于 AGX 的 Controller、Planner、Web、识别接口 |
+| `jetson-agx/sdrharness/` | `deploy/agx/`：构建、配置、服务模板、运维及测试 |
+| `sdr-system/sdrd/` | `src/sdrd/`：P201 C11 服务 |
+| `sdr-system/docs/` | 架构放 `docs/reference/`，历史验证放 `docs/validation/p201-system/` |
+| `sdr-system/private/` | `deploy/p201/private/`，仅凭证存放规则，未迁移秘密 |
+| `raspberry-pi/p201pro-rust/`、`raspberry-pi/config/` | 删除旧独立 libiio 采集、Pi 网络配置；独有测试记录另存验证目录 |
+| Pi Planner/Web systemd 模板及旧 provider 示例 | 删除；当前 AGX 模板由 `deploy/agx/systemd/` 维护 |
+
+合计退役17文件、82,826字节，原内容可从 `eac1d8c` 查询。
+独有历史测试保留于 `PI_LIBIIO_TEST_RESULTS.md`、`PI_FFT_BENCH_RESULTS.md`；
+封存审计 JSON、图表、冻结预处理规范及原始 profile 均保持原字节。
+
+路径迁移导致两个运行 profile 的 `preprocess.spec_path` 失效；新增 `.layout-v2.json`
+派生版本，仅改变路径。RF-v1 分别固定原始与派生身份，篡改哈希仍拒绝；历史记录读取
+继续使用原始嵌入 profile，未改写旧结果哈希或放宽数值/准入门。新版规范与派生说明见
+[配置说明](../../deploy/agx/config/amc/README.md)。
+
+验证：checkout、169份Python语法、JSON/bash语法、当前文档链接及设备源码链接检查通过；
+Controller 159测试通过/1忽略，Web 41通过/2忽略，Rust格式与Clippy通过；
+Planner 102通过/1跳过，P201 C测试及两份C++识别接口测试通过。
+首次 Controller 测试13项路径失败、后续原/新profile身份冲突均已修正，最终原门通过。
+Python旧数据合同/传输测试曾因系统环境缺h5py失败，未作为本轮通过项。
+用户随后要求专注目录整理，不追加论文测试依赖或模型运行。
+
+只读核对系统服务：AGX Planner/Web均active，ExecStart/WorkingDirectory不引用旧源码路径。
+本轮无服务重启、硬件操作、模型推理或生产部署。
+
+用户曾要求新建venv，现仅保留NumPy 2.2.6、SciPy 1.15.3及基础pip/setuptools，
+已撤销额外h5py/pytest等依赖；论文环境未删除。保留目录
+`/home/jetson/sdrharness/local-assets/python/venv`，5172普通文件、208,866,695字节；
+逐文件SHA清单 `local-assets/python/venv-files.sha256` 的SHA-256为
+`4bc3933dd93d096014203ffd37213a87f85f4e58903a70de3785abd722cc0e71`，用途与删除方法见同目录上级 `ENVIRONMENT.json`。
+人工删除为 `rm -rf -- /home/jetson/sdrharness/local-assets/python`。该环境未切换生产服务。
+单窗合成PSD在系统Python和新venv输出16×256，最大差1.53e-5 dB（门限1e-4），无实收数据访问。
+
+本轮构建、日志、差异基线与临时索引目录 `/var/tmp/sdrharness-dev/layout-20261029/` 已完整清除：4724普通文件、2,255,869,985字节、0链接；目录不存在复核通过。未清理其他任务的缓存或证据。

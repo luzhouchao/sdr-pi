@@ -32,7 +32,7 @@
 - 固定数据预览在 `192.168.50.75:8798` 独立运行；没有 API 转发、Controller、
   上游请求、RF 或生产存储访问，CSP 限制同源。固定数据与状态选择条明显标识。
   POST/PUT/DELETE 只修改内存测试记录，删除验证仅针对测试结果 9001。
-  可复用入口见 [tests/README](../../raspberry-pi/sdr-agent/web-console/tests/README.md)。
+  可复用入口见 [tests/README](../../src/agent/web-console/tests/README.md)。
 - 实际 Chromium 验证 1440×900、1280×800、390×844：四页导航、折叠配置、模型查询、
   保存、扫描预算、取消/放弃未保存编辑、会话创建/切换、流式消息、SSE、快捷控制、
   Ctrl+Enter、停止、空/加载/错误/断连/恢复、迟到详情及确认删除均检查。

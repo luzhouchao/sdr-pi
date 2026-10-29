@@ -94,11 +94,11 @@ No IQ paths, tensors or full logits are rendered.
 The local terminal client uses the same HTTP store:
 
 ```bash
-python3 jetson-agx/sdrharness/scripts/recognition-results.py \
+python3 deploy/agx/scripts/recognition-results.py \
   --endpoint http://127.0.0.1:8787 import /absolute/path/recognition-import.json
-python3 jetson-agx/sdrharness/scripts/recognition-results.py list
-python3 jetson-agx/sdrharness/scripts/recognition-results.py show 1
-python3 jetson-agx/sdrharness/scripts/recognition-results.py delete 1
+python3 deploy/agx/scripts/recognition-results.py list
+python3 deploy/agx/scripts/recognition-results.py show 1
+python3 deploy/agx/scripts/recognition-results.py delete 1
 ```
 
 `--json` before the subcommand returns the same bounded public DTO. `list

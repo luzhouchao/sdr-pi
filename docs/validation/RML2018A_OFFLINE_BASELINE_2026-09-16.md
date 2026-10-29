@@ -15,7 +15,7 @@ source仅做逐窗RMS，正确数1578→1425；guard相对raw总体净增109条�
 导频增益幅度候选明显降分，不启用。本轮是验证集诊断，不是独立最终测试或生产准入。
 未训练/微调、TX/RX、部署或改变现有任务；未恢复epoch-010，recognizer_available=false保持。
 
-[执行脚本](../../jetson-agx/sdrharness/scripts/rml2018a_offline_baseline.py) ·
+[执行脚本](../../deploy/agx/scripts/rml2018a_offline_baseline.py) ·
 [封存证据/清理/保留清单](../evidence/RML2018A_OFFLINE_BASELINE_2026-09-16.json)。
 
 ## 数据链与身份
@@ -220,7 +220,7 @@ source与source_rms亦与9月15日预测top-1完全一致。图表人工检查�
 用户“继续”沿用上节唯一建议，固定同一2496条原validation、D8 seed42和FP32/关闭TF32，
 仅新增2496次source_tx_peak预测。旧六种输入的预测从已核验父证据只读复用，不重跑RX、模型基线或RF。
 初始HEAD为7bfd9ca952b556530526fc11c45af13f9d1c5864，工作区干净。
-[执行脚本](../../jetson-agx/sdrharness/scripts/rml2018a_source_peak_control.py) ·
+[执行脚本](../../deploy/agx/scripts/rml2018a_source_peak_control.py) ·
 [派生证据及保留清单](../evidence/RML2018A_SOURCE_PEAK_CONTROL_2026-09-16.json)。
 
 ### 实现身份与预检失败
@@ -303,7 +303,7 @@ source_tx_peak与guard_pilot准确率仅差8条，但逐条top-1只1546/2496=61.
 
 用户确认上一节单一建议。初始HEAD为7ec0e6e1be7a4c51d06a5a9c8776aa2617bfa94a，工作区干净。
 同一2496条原validation、同原D8 seed42/FP32/关闭TF32、batch1024，仅新增2496次预测。
-[执行脚本](../../jetson-agx/sdrharness/scripts/rml2018a_shared_raw_rms.py) ·
+[执行脚本](../../deploy/agx/scripts/rml2018a_shared_raw_rms.py) ·
 [派生证据、血缘与保留清单](../evidence/RML2018A_SHARED_RAW_RMS_2026-09-16.json)。
 
 ### 因素和验收

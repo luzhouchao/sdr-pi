@@ -7,9 +7,9 @@
 
 [文档入口](../README.md) · [实机验证](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md) · [当前配置与论文范围](RML2018A_RF_REPRODUCTION.md)
 
-入口为 [AGX runner](../../jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py)，
+入口为 [AGX runner](../../deploy/agx/scripts/rml2018a-rf-campaign.py)，
 它按原 HDF5 行号读取全部 **2,555,904** 条 X/Y/Z，按计划在AGX USB（当前默认）或NX上调用
-[有限 TX helper](../../jetson-agx/sdrharness/scripts/rml2018a-nx-tx.py)（历史文件名保留），再由既有
+[有限 TX helper](../../deploy/agx/scripts/rml2018a-nx-tx.py)（历史文件名保留），再由既有
 `sdr-agent --mode sweep` 控制 P201 接收，AGX 冻结模型分别识别源样本和实收样本。
 设备为国产N210（USB B210兼容），UHD使用B200/B210驱动，serial `2508504`，现已迁到AGX USB。
 两个主机复用已核对的UHD文件发射程序，NX仍不需要h5py/PyTorch。
@@ -54,7 +54,7 @@ SNR档内持续同时发收，1024条只是处理/写盘块，不在块间重新
 全26档持续流、完整分阶段总账与跨会话恢复尚未完成，不直接扩大发射常量跑全库。
 保持2.1MS/s；所有26档全部落盘才加载模型的全局门仍需接入总控，先导没有模型加载路径。
 
-[有限先导入口](../../jetson-agx/sdrharness/scripts/rml2018a-continuous-pilot.py)创建不可重用的
+[有限先导入口](../../deploy/agx/scripts/rml2018a-continuous-pilot.py)创建不可重用的
 `plan.json`，冻结源/软件/二进制哈希、2048条原Z30行、实际TX样点与最大RX字节、180秒总截止、
 512MiB空间预留；只发128个不同导频帧一次，不重复每24行4秒。
 使用同一个`sdr-agent --mode stream-rx`及P201新增`CAPTURE_IQ_STREAM`，协议为：
@@ -69,7 +69,7 @@ ci16二进制，最后`rx_end`包含字节/分段数、错误和恢复状态。�
 P201不写原始IQ临时文件；发射GO在AGX收到第一段真实IQ后才发送，不能仅凭创建buffer就宣布收到。
 旧sweep/`CAPTURE_IQ_INLINE`路径继续存在，生产Controller尚未安装stream-rx版本。
 
-原2048行先导的[缓冲所有权](../../jetson-agx/sdrharness/scripts/rml2018a_buffer_pool.py)计划上限16个4MiB块；
+原2048行先导的[缓冲所有权](../../deploy/agx/scripts/rml2018a_buffer_pool.py)计划上限16个4MiB块；
 raw写入与GPU直接共享不可变数组，无GPU磁盘回读。跨1024行边界保留后续导频/保护区仍需的样点，
 每次释放记录原始fsync、GPU完成、处理结果提交和释放时间。接收线程不等待GPU/写盘腾位置，
 满池有限停止而不覆盖；异常未提交IQ另存并标记失败，未完成消费者不伪报正常释放。
@@ -89,7 +89,7 @@ GPU是原生CUDA/cuFFT；C++负责B210，C负责P201，Rust负责Controller，
 50轮细搜索；固定搜索范围/步骤保持。GPU上下文及频率网格跨块复用，所有候选在设备端比较，
 每批一次返回频率。首次大范围导频搜索也使用CUDA `gather`，避免CUDA标量索引
 隐式同步时持有Python GIL、阻塞接收/写盘线程；计算完成后的等待仍保留CUDA正常同步语义。只传训练保护区，源X/Y/Z不参与拟合；源数据只在后续SINR工程估计中使用。
-[实现](../../jetson-agx/sdrharness/scripts/rml2018a_guard_gpu.py)支持1–128帧的有界批次，
+[实现](../../deploy/agx/scripts/rml2018a_guard_gpu.py)支持1–128帧的有界批次，
 流水线采用64帧以匹配1024条处理/写盘块，导频跟踪仍按时序在CPU进行。
 
 每个频率结果绑定训练IQ SHA、采样位置SHA和频偏先验；复用到其他保护区或先验会拒绝。
@@ -105,7 +105,7 @@ CUDA与NumPy的归约/超越函数存在浮点差异，校正后输入不保证�
 ### 一整档与两档连续实验（2026-09-14）
 
 用户授权先完成一个完整源SNR档，通过后再做两档连续发送。新增
-[整档入口](../../jetson-agx/sdrharness/scripts/rml2018a-snr-stream.py)，复用同一Controller、
+[整档入口](../../deploy/agx/scripts/rml2018a-snr-stream.py)，复用同一Controller、
 N210/B210 C++ TX、CUDA处理与SnrStore。当前有限范围固定先`--snrs 30`，
 再`--snrs 30 28 --after <已通过首档根>`；没有隐式执行所有26档或加载模型。
 第二阶段核对首档的通过状态、原计划身份及全部封存文件SHA，缺失/改变时拒绝。
@@ -151,7 +151,7 @@ Controller通过独立只读`STREAM_LIMITS`核对流预算，再创建一个IIO�
 ### 26档后台调度与恢复（2026-09-14）
 
 用户已批准每两档连续收发、处理排空后进入下一组，并要求由脚本后台执行。
-[同一整档CLI](../../jetson-agx/sdrharness/scripts/rml2018a-snr-stream.py)新增
+[同一整档CLI](../../deploy/agx/scripts/rml2018a-snr-stream.py)新增
 `full-plan/full-run/status/recover`；底层仍为已有Controller、TX helper和SnrStore。
 `full-plan --root <新全库根> --backend <已核验制品根> --after <首档通过根> --import-pair <两档通过根>`
 登记26个原Z档、13对互斥源范围。+30/+28通过完整SHA验证只读导入，其余24档在新会话采集。
@@ -173,7 +173,7 @@ Controller通过独立只读`STREAM_LIMITS`核对流预算，再创建一个IIO�
 只追加尚未提交块。原失败execution保持，新recovery单独记录；新TX/RX次数均0。
 这是停止RF后的恢复操作；实时接收阶段仍没有磁盘回读。严重文件损坏、未提交HDF5尾部及真实断电自动修复仍拒绝。
 
-[后台服务脚本](../../jetson-agx/sdrharness/scripts/rml2018a-snr-campaign-service.py)按顺序执行：
+[后台服务脚本](../../deploy/agx/scripts/rml2018a-snr-campaign-service.py)按顺序执行：
 有限联合停止→完整RX后的处理停止→缓存恢复→重复执行跳过→其余全库。
 每一步核对实际记录，失败就停，不放宽质量门；初始脚本/总账哈希写入`service-plan.json`。
 脚本只能启动一次，异常后先检查记录，通过独立CLI显式恢复，不配置自动重启或无限重试。
@@ -187,7 +187,7 @@ SIGINT/SIGTERM或全库根`STOP`传给当前子任务；自动验证只删除自
 
 ### 每个SNR档的文件格式与质量字段
 
-[SnrStore](../../jetson-agx/sdrharness/scripts/rml2018a_campaign_store.py)是campaign存储模块，
+[SnrStore](../../deploy/agx/scripts/rml2018a_campaign_store.py)是campaign存储模块，
 没有独立射频/模型入口。由既有总控在应用语料目录中为session/SNR建立独立目录，不复制源数据集。
 
 | 文件 | 内容 |
@@ -221,7 +221,7 @@ SigMF派生注释可从已提交索引重建。未提交raw/HDF5尾部、`.pendi
 
 ## 26档封存语料离线识别（2026-09-14）
 
-入口：[rml2018a_snr_infer.py](../../jetson-agx/sdrharness/scripts/rml2018a_snr_infer.py)。
+入口：[rml2018a_snr_infer.py](../../deploy/agx/scripts/rml2018a_snr_infer.py)。
 `plan --campaign <26档采集根> --root <新推理根>`登记全部26档；`run --root <推理根>`
 核对采集完成凭据、每对封存凭据、冻结profile/标签和代码哈希，要求Spark已经停止。
 使用现有模型venv，不加载源数据集副本、不进行RF操作或训练。
@@ -263,7 +263,7 @@ SINR invalid不排除模型识别；未同步等缺失输入保留NaN logits和f
 也可直接运行只读查看脚本（无需模型venv）：
 
 ```bash
-/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-progress.sh
+/home/jetson/sdrharness/deploy/agx/scripts/rml2018a-progress.sh
 ```
 
 默认每5秒刷新，显示已完成/未完成、百分比、完整档数和当前源SNR；Ctrl+C只退出查看。
@@ -283,7 +283,7 @@ SINR invalid不排除模型识别；未同步等缺失输入保留NaN logits和f
 两个CPU线程分别预读/校验下一组与提交上一组结果，GPU在主线程运行；最多当前GPU组、一个预读组及一个写盘组。
 结果仍按原1024行块原子封存，缺失输入/质量状态/完整分母不变。
 
-[批推理适配器](../../jetson-agx/sdrharness/scripts/rml2018a_infer_batch.py)复用冻结模型，
+[批推理适配器](../../deploy/agx/scripts/rml2018a_infer_batch.py)复用冻结模型，
 静态CUDA Graph减少重复Python提交。对FP16舍入敏感或top2近似相等的输入，用16路独立batch1 CUDA流复核，
 复核也在GPU上并行；不依据标签或正确率选行，不改变模型权重、FP16 autocast或输入归一化。
 常规8192图与16路复核图各预热2次并捕获1次，另有原Backend的2次单窗预热。
@@ -311,7 +311,7 @@ CUDA保留峰值≤40GiB及至少2倍加速；旧1e−5严格logit门仍单独�
 没有在接收过程中运行模型，也没有将整个数据集堆入内存；原始IQ仍在原采集目录保留。
 
 同一campaign CLI新增入口，实现在
-[resident模块](../../jetson-agx/sdrharness/scripts/rml2018a_campaign_resident.py)：
+[resident模块](../../deploy/agx/scripts/rml2018a_campaign_resident.py)：
 
 ```text
 # 先创建当前软件身份下的有限event-chunk子计划（可由ledger-reserve创建）
@@ -347,7 +347,7 @@ rml2018a-rf-campaign.py resident-run --root <同一会话根>
 ## 跨块总控与可重建进度（2026-09-13）
 
 同一个campaign CLI新增`ledger-*`命令，由
-[总控模块](../../jetson-agx/sdrharness/scripts/rml2018a_campaign_ledger.py)管理原分块目录的登记和完成凭据。
+[总控模块](../../deploy/agx/scripts/rml2018a_campaign_ledger.py)管理原分块目录的登记和完成凭据。
 不另建IQ/模型存储，导入只引用原文件；`entries/*.entry.json`及`*.complete.json`是依据，
 `state.json`只是可重建进度视图。导入、新登记、已采集、已推理、已完整提交及未登记源行分别计数，
 按原类别ID/源Z汇总；已完成子计划的缓存会在模型退出后清理，删除清单留在子计划中。
@@ -392,7 +392,7 @@ rml2018a-rf-campaign.py resident-run --root <同一会话根>
 ## 完整覆盖与历史源重放（2026-09-13）
 
 新总计划可显式指定`--coverage-policy standardized-replay-v1`，由
-[覆盖模块](../../jetson-agx/sdrharness/scripts/rml2018a_campaign_coverage.py)冻结
+[覆盖模块](../../deploy/agx/scripts/rml2018a_campaign_coverage.py)冻结
 `coverage-policy.json`及其SHA。它覆盖原始行号`[0,2555904)`、批次`[0,106496)`，
 每批是连续24行；跨类别/Z边界不拆错标签，实际采集仍核对各行原Y/Z。
 覆盖规则本身不登记待发成员，也不扩大TX预算或自动执行。
@@ -440,7 +440,7 @@ rml2018a-rf-campaign.py run --root <同一根> --batch-indices <本次选中的�
 原先`acquire/infer`分阶段操作仍可用；暂停凭据同时记录当时的推理完成状态，推荐使用`run`作为可重复的分块入口。
 
 发送器仍先生成严格小于16,000,000字节的原始事件JSONL。成功且恢复完成的新采集使用
-[无损归档模块](../../jetson-agx/sdrharness/scripts/rml2018a_event_archive.py)，以gzip level6/mtime0归档，
+[无损归档模块](../../deploy/agx/scripts/rml2018a_event_archive.py)，以gzip level6/mtime0归档，
 每份压缩结果最多2MiB；解压逐字节比较及原SHA-256通过后才移除本次原JSONL。
 `event-storage.json`保留原路径/字节/哈希、压缩路径/字节/哈希及`records_removed=0`，
 采集完成凭据同时绑定该归档收据。旧实验日志不压缩、不移动、不重写。
@@ -506,7 +506,7 @@ RX≤2,097,120字节；日志/暂存预留256MiB。分片推理每源批次最�
 
 ```bash
 local-assets/amc-eval/runtime/venv/bin/python -B \
-  jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py verify \
+  deploy/agx/scripts/rml2018a-rf-campaign.py verify \
   --root /var/tmp/sdrharness-dev/b210-rml2018a-boundaries-20260913 \
   --analysis-revision --batch-indices 170 4266 4437 62122
 ```
@@ -566,7 +566,7 @@ Z仅为原始数据集的标称SNR，不是当前空口接收SNR/SINR。
 
 ## 独立有线LO参考诊断
 
-[validate-b210-cable-lo.py](../../jetson-agx/sdrharness/scripts/validate-b210-cable-lo.py)
+[validate-b210-cable-lo.py](../../deploy/agx/scripts/validate-b210-cable-lo.py)
 提供`plan/acquire/analyze --root /var/tmp/sdrharness-dev/b210-cablelo-<唯一标识>`，使用AGX模型venv的Python运行。
 它复用既有B210有限TX helper、AGX USB运行时和P201 Controller，不读取数据集或运行模型。
 新根先生成计划，核对当前接法、软件和预算后才能`acquire`；`started.json`阻止同根重复发射，失败须保留记录。
@@ -618,14 +618,14 @@ OOK/QPSK/8PSK/16QAM/64QAM/256QAM/AM-DSB-SC/GMSK，各24行Z30，
 上限8批/192行/32秒TX/2,097,120字节RX。它不扩写旧两批profile，也不改变普通全库峰值。
 采集仍使用原campaign的有界Controller/有限TX/取消/恢复路径，原始audit和SINR保持。
 
-八类对照入口为[compare-rml2018a-pilot-timing.py](../../jetson-agx/sdrharness/scripts/compare-rml2018a-pilot-timing.py)：
+八类对照入口为[compare-rml2018a-pilot-timing.py](../../deploy/agx/scripts/compare-rml2018a-pilot-timing.py)：
 `prepare/infer/verify --root <八类campaign> --output /var/tmp/sdrharness-dev/rml-timing-multiclass-<唯一标识>`。
 它从已完成的新采集生成source/raw/lo/timing四组工程输入，最多768个实验模型窗口及2个warmup，
 明确保留每类24行、未同步、SINR无效、LO/时序拒绝及识别失败。拒绝校正时该变体使用上一阶段原样输入，
 未同步时三组实收均没有预测，源预测仍保留。模型保持冻结epoch10 FP16 autocast/FP32权重，
 不按识别结果挑选校正参数。源X只在接收DSP完成后用于质量/识别对照，不进入相消或时序拟合。
 
-[导频时序模块](../../jetson-agx/sdrharness/scripts/rml2018a_pilot_timing.py)使用每个已知导频
+[导频时序模块](../../deploy/agx/scripts/rml2018a_pilot_timing.py)使用每个已知导频
 前半段[64:448]拟合延迟及随采样时间的漂移，后半段[576:960]独立验证，不重新拟合；
 至少2个导频，延迟≤0.6点、漂移≤10ppm、拟合RMS≤0.04点、验证误差≤0.08点，
 导频残差比例≤0.03且正交导数比≤0.08，否则保留LO相消输出和跳过原因。
@@ -638,8 +638,8 @@ OOK/QPSK/8PSK/16QAM/64QAM/256QAM/AM-DSB-SC/GMSK，各24行Z30，
 
 ## 保护间隔辅助LO相消（离线实验）
 
-[相消模块](../../jetson-agx/sdrharness/scripts/rml2018a_lo_cancellation.py)与
-[有界回放入口](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-lo-cancellation.py)
+[相消模块](../../deploy/agx/scripts/rml2018a_lo_cancellation.py)与
+[有界回放入口](../../deploy/agx/scripts/diagnose-rml2018a-lo-cancellation.py)
 独立于现有campaign接收默认值。入口提供`analyze/infer/verify --root <原配对计划>
 --output /var/tmp/sdrharness-dev/rml-lo-cancel-<唯一标识>`，用既有模型venv的Python运行；
 `infer`须先有通过质量检查的`prepared.json`，只接纳原配对两批4267/22016，
@@ -666,8 +666,8 @@ OOK/QPSK/8PSK/16QAM/64QAM/256QAM/AM-DSB-SC/GMSK，各24行Z30，
 
 ## 相消后的剩余误差归因（离线实验）
 
-[诊断模块](../../jetson-agx/sdrharness/scripts/rml2018a_link_diagnostics.py)与
-[只读入口](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-link-residual.py)提供
+[诊断模块](../../deploy/agx/scripts/rml2018a_link_diagnostics.py)与
+[只读入口](../../deploy/agx/scripts/diagnose-rml2018a-link-residual.py)提供
 `analyze/verify --parent <原配对计划> --cancellation <已封存相消结果>
 --output /var/tmp/sdrharness-dev/rml-link-residual-<唯一标识>`，使用既有模型venv的Python。
 只接纳原两批48行Z30，先校验父库存、IQ、同步、相消输出及原质量；180秒、结果16MiB上限，
@@ -774,7 +774,7 @@ TX60、峰值0.632455532、AGX，允许RX40或RX50；旧增益/八类/保护间�
 实收相对X的误差仅反映新增链路误差，不能单独称为总SINR。本版本在明确假设下组合两者，
 输出`rx_sinr_status=estimated`的**条件有效SINR**，不称为独立测得的总RF SINR。
 
-估计器见[receive_quality](../../jetson-agx/sdrharness/scripts/rml2018a_campaign.py)。
+估计器见[receive_quality](../../deploy/agx/scripts/rml2018a_campaign.py)。
 对pilot固定对齐后的每个1024点窗口，以前512点拟合复数标量增益、在后512点评估，再交换。
 拟合时对X/Y中心化以免额外DC被吸入增益；评估用完整X/Y，保留有效信号DC，也将额外DC计入误差。
 不寻找更有利的窗口，不用真实类别/模型预测，不对模型输入额外滤波或均衡。
@@ -813,7 +813,7 @@ E包含新增干扰、接收噪声、未建模的信道/硬件失真及有限样
 
 ## 在AGX执行
 
-已封存实收的固定滤波对照使用[离线诊断脚本](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-campaign-filter.py)。
+已封存实收的固定滤波对照使用[离线诊断脚本](../../deploy/agx/scripts/diagnose-rml2018a-campaign-filter.py)。
 默认只输出保真JSON，无射频/模型操作；`--batches`显式限定1–3个不重复的完整批次。
 指定`--infer-output`才在新派生根执行原始源、滤波源、原始实收、滤波实收四组工程推理：
 所有登记源行均须满足功率保留≥99%及失真≤1%，否则整组跳过模型，不选择有利行。
@@ -824,7 +824,7 @@ E包含新增干扰、接收噪声、未建模的信道/硬件失真及有限样
 ```bash
 PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 \
   local-assets/amc-eval/runtime/venv/bin/python -B \
-  jetson-agx/sdrharness/scripts/diagnose-rml2018a-campaign-filter.py \
+  deploy/agx/scripts/diagnose-rml2018a-campaign-filter.py \
   --root /var/tmp/sdrharness-dev/b210-rml2018a-tx80rx40-20260911 \
   --batches 4267 22016
 ```
@@ -843,7 +843,7 @@ CFO诊断固定8个128点仿射拟合，按源能量加权拟合相位斜率，�
 不搜索模型正确率。实际两轮48条诊断没有发现可直接修复回退的简单校正，
 结论及限制见[回退排查](../validation/RML2018A_FULL_RF_CAMPAIGN_2026-09-10.md#2026-09-11滤波误判的有限归因诊断)。
 
-背景选频使用[链路诊断脚本](../../jetson-agx/sdrharness/scripts/diagnose-rml2018a-link-quality.py)的
+背景选频使用[链路诊断脚本](../../deploy/agx/scripts/diagnose-rml2018a-link-quality.py)的
 `survey`子命令：固定8个2.4GHz频点三轮比较、选定候选后与2455MHz交替确认，共最多30次接收，
 RX40、2.1MS/s、BW1.5MHz、每点65535复数，总IQ预算7,864,200字节，无TX/模型。
 按三轮最差175kHz FIR峰值排名，同时保留原始带宽结果；削顶点不参与候选排名。
@@ -858,7 +858,7 @@ RX40、2.1MS/s、BW1.5MHz、每点65535复数，总IQ预算7,864,200字节，无
 cd /home/jetson/sdrharness
 export PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1
 RML_PY=/home/jetson/sdrharness/local-assets/amc-eval/runtime/venv/bin/python
-RML_RUNNER=/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-rf-campaign.py
+RML_RUNNER=/home/jetson/sdrharness/deploy/agx/scripts/rml2018a-rf-campaign.py
 RML_ROOT=/var/tmp/sdrharness-dev/b210-rml2018a-2455-20260911
 "$RML_PY" -B "$RML_RUNNER" plan --root "$RML_ROOT" --tx-host agx --tx-gain-db 0 --rx-gain-db 20
 "$RML_PY" -B "$RML_RUNNER" run --root "$RML_ROOT" --start-batch 0 --max-batches 32 --deadline-seconds 1800
@@ -929,7 +929,7 @@ run-plan保存源文件、软件和模型/profile/标签身份；TX包在成功�
 实测范围及原恢复失败见[时间复测](../validation/RML2018A_OFFLINE_BASELINE_2026-09-16.md#固定tx60单音的发送事件时间复测2026-09-16)。
 
 2026-09-13新增[tx-events.cpp](../../devices/b210/tx-events.cpp)与
-[validate-b210-event-controls.py](../../jetson-agx/sdrharness/scripts/validate-b210-event-controls.py)。
+[validate-b210-event-controls.py](../../deploy/agx/scripts/validate-b210-event-controls.py)。
 它们是独立实验入口，不替换普通campaign helper、系统UHD或生产Controller。
 固定B210 serial2508504/channel0/A:A/TX-RX、2455MHz、TX60、2.1MS/s、BW1.5MHz、LO+250kHz，
 包峰值≤0.632456、26,112点×321，要求精确GO后发送，首次设备时间安排为当前设备时刻+0.2秒。
@@ -968,7 +968,7 @@ UHD设备时间缺失时为null；各次USRP初始化后的设备时间不假定
 
 ## 四类RadioML带时间事件复测
 
-[rml2018a-event-retest.py](../../jetson-agx/sdrharness/scripts/rml2018a-event-retest.py)为本次独立有限入口，
+[rml2018a-event-retest.py](../../deploy/agx/scripts/rml2018a-event-retest.py)为本次独立有限入口，
 复用事件控制的收发执行器和既有冻结模型推理/复核代码；普通campaign CLI/default不替换。
 `event-retest-pilot`只接纳batch17680/35430/62054/97552，依次BPSK/32PSK/32QAM/FM，
 每类24行、源Z30；本次与95份旧campaign源记录的1032个唯一行无重叠。
@@ -1030,7 +1030,7 @@ NPZ保留逐窗logits及group_source_rows/group_class_id/group_logits_*/group_va
 直接运行进度脚本（默认指向这轮四窗）：
 
 ```bash
-/home/jetson/sdrharness/jetson-agx/sdrharness/scripts/rml2018a-progress.sh
+/home/jetson/sdrharness/deploy/agx/scripts/rml2018a-progress.sh
 ```
 
 查看旧单窗可加`--root /var/tmp/sdrharness-dev/rml2018a-all26-infer-b1024-20260914`。
@@ -1041,7 +1041,7 @@ NPZ保留逐窗logits及group_source_rows/group_class_id/group_logits_*/group_va
 
 ## 统一24类RX50有限确认
 
-同一[rml2018a-event-retest.py](../../jetson-agx/sdrharness/scripts/rml2018a-event-retest.py)新增独立
+同一[rml2018a-event-retest.py](../../deploy/agx/scripts/rml2018a-event-retest.py)新增独立
 `uniform24-high-snr-pilot`，旧四类profile仍只允许原四批。新profile按原始ID0–23顺序，每类固定24条Z30，
 batch为`ceil((class_id*106496+102400+3072)/24)`，总576条；实际X/Y/Z和源行/包SHA由新plan核验。
 检查既有campaign源记录及带事件实验plan中的行号交集，拒绝复用旧源行；不根据源模型预测筛选行。

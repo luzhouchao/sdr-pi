@@ -140,13 +140,13 @@
 
 保留原目录以维持源码引用与历史命令的上下文；这些是当时记录，不是当前部署或待办。
 
-- [P201 系统基线](../../sdr-system/docs/BASELINE_2026-08-31.md)
-- [SDRD shadow 验证](../../sdr-system/docs/SDRD_SHADOW_VALIDATION_2026-08-31.md)
-- [SDRD controlled 接口验证](../../sdr-system/docs/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md)
-- [SDRD IIO Adapter 验证](../../sdr-system/docs/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md)
-- [早期个人部署记录](../../sdr-system/docs/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md)
-- [Pi Rust/libiio 测试结果](../../raspberry-pi/p201pro-rust/TEST_RESULTS.md)
-- [Pi FFT 测试结果](../../raspberry-pi/p201pro-rust/FFT_BENCH_RESULTS.md)
+- [P201 系统基线](p201-system/BASELINE_2026-08-31.md)
+- [SDRD shadow 验证](p201-system/SDRD_SHADOW_VALIDATION_2026-08-31.md)
+- [SDRD controlled 接口验证](p201-system/SDRD_CONTROLLED_INTERFACE_VALIDATION_2026-08-31.md)
+- [SDRD IIO Adapter 验证](p201-system/SDRD_IIO_ADAPTER_VALIDATION_2026-08-31.md)
+- [早期个人部署记录](p201-system/SDRD_PERSONAL_DEPLOYMENT_2026-09-01.md)
+- [Pi Rust/libiio 测试结果](PI_LIBIIO_TEST_RESULTS.md)
+- [Pi FFT 测试结果](PI_FFT_BENCH_RESULTS.md)
 
 ## 维护记录
 

@@ -48,12 +48,12 @@ docker run --rm --platform linux/amd64 \
   -v "${output_dir}:/out" \
   "${builder_image}" \
   /toolchain/bin/arm-linux-gnueabihf-gcc \
-    -I/src/sdr-system/sdrd/include \
+    -I/src/src/sdrd/include \
     -std=c11 -O2 -Wall -Wextra -Wpedantic -Werror \
     -o /out/sdrd \
-    /src/sdr-system/sdrd/src/main.c \
-    /src/sdr-system/sdrd/src/sdrd.c \
-    /src/sdr-system/sdrd/src/sdrd_iio.c \
+    /src/src/sdrd/src/main.c \
+    /src/src/sdrd/src/sdrd.c \
+    /src/src/sdrd/src/sdrd_iio.c \
     -ldl -pthread
 
 nm_output="$(docker run --rm --platform linux/amd64 \

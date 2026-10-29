@@ -58,7 +58,7 @@ The directory contains only the selected epoch, not the other 16 training
 epochs. Its 11 retained files total 1,791,823 bytes. Every downloaded file was
 rehashed on AGX and matched the 4090 completion/provenance manifests. The tracked
 fail-closed candidate contract is
-[`rml2018a-d8-rf-v1-ft-batched-seed44.candidate.json`](../../jetson-agx/sdrharness/config/amc/rml2018a-d8-rf-v1-ft-batched-seed44.candidate.json),
+[`rml2018a-d8-rf-v1-ft-batched-seed44.candidate.json`](../../deploy/agx/config/amc/rml2018a-d8-rf-v1-ft-batched-seed44.candidate.json),
 SHA-256
 `a937fc5eba72cc9cb596eb8d86d87917110a2fedf130436b399ceb513779eeb4`.
 
@@ -82,7 +82,7 @@ The AGX validator required all of the following before inference:
   access and did not open any test-result path.
 
 The validator is
-[`validate-rf-aligned-checkpoint.py`](../../jetson-agx/sdrharness/scripts/validate-rf-aligned-checkpoint.py),
+[`validate-rf-aligned-checkpoint.py`](../../deploy/agx/scripts/validate-rf-aligned-checkpoint.py),
 SHA-256
 `de17bc4fa301b8aea94f4f2076fe9b0b0f738e48430e005ffc4440a49facdb95`.
 

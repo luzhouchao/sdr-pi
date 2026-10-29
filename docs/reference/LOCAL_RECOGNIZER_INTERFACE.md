@@ -159,7 +159,7 @@ file-only request cannot silently acquire hardware:
 ```bash
 sdr-agent-controller \
   --mode recognize-live \
-  --request raspberry-pi/sdr-agent/controller/config/live-recognition.experimental.example.json \
+  --request src/agent/controller/config/live-recognition.experimental.example.json \
   --sdrd 192.168.1.10:43110 \
   --sdrd-timeout-ms 5000 \
   --recognizer-socket /run/sdr-agent/recognizer.sock \
@@ -180,7 +180,7 @@ sdr-agent-controller --mode derive-recognition-target --request target-input.jso
 
 sdr-agent-controller \
   --mode recognize-batch-live \
-  --recognition-profile jetson-agx/sdrharness/config/amc/rml2018a-d8-current.integration-profile.json \
+  --recognition-profile deploy/agx/config/amc/rml2018a-d8-current.integration-profile.json \
   --recognition-target target.json \
   --repository-root /home/jetson/sdrharness \
   --request-id 44002 \
@@ -197,7 +197,7 @@ reports `production_recognizer_available=false`; see
 [`P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md`](../validation/P201_AGX_MAMBA_SEED44_MULTIWINDOW_INTEGRATION_VALIDATION_2026-09-04.md).
 
 The Worker template is
-`jetson-agx/sdrharness/systemd/sdrharness-amc-mamba-experimental.service`; it
+`deploy/agx/systemd/sdrharness-amc-mamba-experimental.service`; it
 has no `[Install]` section and must not be enabled while production admission
 is false.
 

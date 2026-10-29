@@ -1,6 +1,6 @@
 # 项目文档入口
 
-论文专属收尾代码与证据已迁至 [paper1sdr](https://github.com/luzhouchao/paper1sdr)；本项目继续维护 SDR 控制和使用说明。论文数据本机存放于 `/home/jetson/lzcpaper1/local-assets/amc-eval/`，旧数据路径保留兼容链接。
+论文专属收尾代码与证据已迁至 [paper1sdr](https://github.com/luzhouchao/paper1sdr)；本项目继续维护 SDR 控制和使用说明。论文数据独立维护，本项目目录布局见[仓库首页](../README.md)。
 
 默认阅读范围：
 

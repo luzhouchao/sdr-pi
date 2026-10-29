@@ -12,7 +12,7 @@ Run the supervisor with a new dedicated mode-0700 runtime root, never the shared
 legacy spool or a corpus/result directory:
 
 ```bash
-python3 jetson-agx/sdrharness/scripts/amc-worker-supervisor.py \
+python3 deploy/agx/scripts/amc-worker-supervisor.py \
   --runtime-root /absolute/private/recognizer-runtime \
   --max-batches 128 --max-restarts 4 --lifetime-seconds 600
 ```

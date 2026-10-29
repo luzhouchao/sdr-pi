@@ -1,0 +1,408 @@
+# AGX Agent 共享运行组件
+
+当前运行目标为 Jetson AGX；`Pi Agent` 是 Planner 框架名称。
+Controller、Planner、Web 与实验识别接口均在此维护。部署使用
+[AGX 入口](../../deploy/agx/README.md)，完成状态见[项目文档](../../docs/README.md)。
+旧 Pi 独立采集程序和网络配置已退役，历史结果保留在验证索引。
+
+The runtime is one logical agent split into two processes:
+
+```text
+operator / automatic observation
+             |
+             v
+Rust Controller -- JSONL over Unix socket --> Pi Agent Planner Worker
+      |                                      |
+      |                                      v
+      |                              local or remote model API
+      v
+SDRD/1 adapter -> SDR Linux C sdrd -> Linux/IIO RX
+      |
+      +-> LocalRecognizer adapter -> future C++ inference worker
+```
+
+The Planner Worker proposes one action. The Rust Controller is the only module
+that validates and later executes it. The worker has no shell, filesystem,
+SSH, IIO, FPGA-register or SDR tools.
+
+## Current implementation
+
+- `controller/`: pure-Rust protocol and policy validation, Unix-socket Planner
+  Adapter, read-only `SdrEngine`, and bounded-IQ `SdrActionExecutor`. Observation
+  accepts consistent shadow or controlled SDRD/1 endpoints; execution has replay
+  and production SDRD Adapters. It has no libiio or Node dependency and builds
+  as a static ARM64 binary.
+- `planner-worker/`: headless `pi-agent-core` worker using one `submit_plan`
+  tool and a Web-managed third-party OpenAI-compatible endpoint.
+  Its deployed `SessionRuntime` reuses Pi Agent's public
+  prompt/steer/follow-up/abort/event interface for the thin terminal while
+  retaining the one-shot Planner as a stateless fallback.
+- `controller/src/recognizer.rs`: bounded local-recognition protocol with replay
+  and Unix-socket Adapters. The production C++ worker and model are not yet
+  deployed, so availability remains false.
+- `recognizer-worker/`: dependency-free C++20 model-backend interface and replay
+  validation. Socket framing and ONNX/ncnn backends remain intentionally
+  disabled until their dependencies and model artifacts are pinned.
+- `web-console/`: static ARM64 Rust HTTP/SSE service with an embedded responsive
+  frontend. It owns at most one live `sdr-agent` child, retains at most two
+  logical conversations, and persists bounded terminal events plus compressed
+  context without duplicating Controller policy or SDR access.
+
+
+FPGA aggregation was retired from the project on 2026-09-02 and remains
+disabled. The controlled `sdrd` can retune and perform bounded Linux/IIO IQ
+capture without FPGA support.
+Rust accepts execution only from live controlled capabilities or an explicitly
+validated development envelope.
+
+The stateless `--mode run-once` path executes validated bounded IQ,
+`survey_band` and current `inspect_candidate` actions through the existing
+SDRD/1 and AGX software-sweep Adapters.  `--sweep-point-timeout-ms` controls the
+per-point hardware deadline (default 250 ms, hard range 1–5,000 ms).  Planner
+and SDRD transport deadlines remain independently bounded by `--timeout-ms` and
+`--sdrd-timeout-ms`.
+
+Safe live health observation:
+
+`sdr-agent` is the sole Controller executable. Without `--mode`, it starts the
+interactive terminal session also used by Web. Script callers must specify
+`--mode plan`, `observe`, `sweep`, `execute`, `cancel`, or `run-once` (existing
+recognition modes keep their admission gates). The old `sdr-agent-controller`
+default-plan invocation becomes `sdr-agent --mode plan`. Recovery uses
+`sdr-agent --mode health --sdrd HOST:PORT`; this checks RX1 health and exits
+nonzero on an unhealthy device without starting a session. `--help` prints the
+entry choices. The Cargo package/library name remains `sdr-agent-controller`.
+
+```bash
+sdr-agent \
+  --mode observe \
+  --sdrd 192.168.1.10:43110 \
+  --sdrd-timeout-ms 5000
+```
+
+Adding `--sdrd 192.168.1.10:43110` to plan mode replaces template health with
+the live shadow or controlled snapshot before the request reaches the Planner. Connection,
+schema or correlation failure aborts the plan instead of falling back.
+
+## Protocol
+
+One connection carries one request and one response, each a JSON object ending
+in `\n`. Frames are limited to 32 KiB. Every response must echo
+`request_id` and `session_generation`. A stale or malformed response fails
+closed.
+
+The Planner Worker can return only:
+
+- `hold`;
+- `survey_band`;
+- `inspect_candidate`;
+- `capture_bounded_iq`;
+- `run_local_recognition`;
+- `stop_session`.
+
+Rust validates current capabilities, state, observation age, candidate
+identity, frequency, sample rate, RF bandwidth, sweep coverage, dwell time and
+IQ byte count. `survey_band` requires the Planner to provide start/stop/step,
+sample rate, RF bandwidth and dwell; `inspect_candidate` requires candidate,
+center, sample rate, RF bandwidth and dwell. There are no hidden 10-MHz radio
+profile defaults in those model-selected actions. Large but bounded
+IQ requests are marked `approval_required`. The Rust `SdrActionExecutor` can
+execute an approved `capture_bounded_iq` plan through a controlled SDRD/1
+endpoint; the one-shot Runner dispatches validated surveys and candidate
+inspection through `SweepEngine`, while unsupported action kinds fail closed.
+The same Adapter exposes a generation-correlated cancel operation on an
+independent SDRD/1 connection.
+
+`SweepEngine.run(plan)` validates a bounded range or explicit center list. The
+production AGX Adapter requests bounded inline IQ from one SDRD ownership
+session, performs software power/noise/candidate aggregation on AGX, and
+converts compact candidates to the existing Planner observation. The retired
+FPGA Adapter has been removed; only false/zero SDRD/1 wire fields remain for
+older-client parsing.
+
+## Development checks
+
+Planner protocol tests do not call a model:
+
+```bash
+cd src/agent/planner-worker
+npm test
+```
+
+These tests also cover the Pi-inspired session command subset, persistent
+Agent Adapter, queue bound, abort, stale-generation behavior, one global
+inference lease and explicit missing-next-plan events.
+
+Rust checks:
+
+```bash
+cd src/agent/controller
+cargo fmt -- --check
+cargo test --all-targets
+```
+
+After deployment, an operator starts the lightweight terminal with no flags:
+
+```bash
+sdr-agent
+```
+
+One-shot input is also supported:
+
+```bash
+sdr-agent "查看当前 SDR 状态"
+```
+
+The terminal connects to `/run/sdr-agent/session.sock`; the existing
+`planner.sock` remains the stateless fallback. `/pause`, `/resume` and `/stop`
+advance the Controller session generation so prior proposals become stale.
+`/approve` executes a pending bounded-IQ, `survey_band` or
+`inspect_candidate` plan only when the terminal was started with an explicit
+controlled endpoint:
+
+```bash
+sdr-agent --sdrd 192.168.1.10:43110
+```
+
+Without `--sdrd`, approval is recorded but no hardware command is sent. An
+execution failure advances the session generation and puts the terminal into
+`faulted` state so the stale approval cannot be retried accidentally.
+With `--sdrd`, `/approve` moves execution to a bounded background worker so the
+line interface remains available. `/stop` sends cancellation directly without
+calling the model, waits for the owner response that confirms restoration, and then
+advances the session generation. It retries only the bounded startup window in
+which `START_SESSION` has not yet completed.
+
+Describe the receive task directly in natural language, for example:
+
+```text
+在2445至2465MHz内根据每轮结果调整扫描，完成四轮后停止。
+寻找候选，有候选就复查一次，没有就结束。
+```
+
+The Planner proposes one finite `start_task` goal. Rust validates its frequency
+fence, action/time/IQ budgets and storage before automatic execution. Successful
+complete sweeps count toward an explicit scan target; inspections do not. A
+qualitative goal uses fresh observations to decide whether to continue or stop.
+The old cruise form and `/auto`/`/mode` command routes have been removed.
+`/status`, `/stop`, `/approve` and `/reject` remain available. Hardware actions
+that require approval still wait at the approval gate.
+
+Actions are limited to 1–128 and duration to 10–1,800 seconds. Each task carries
+an explicit finite byte budget. Consecutive SDR-unavailable and missing-upstream
+action failures are counted independently; each retries at 10-second intervals
+and the fifth failure exits. `/stop` remains immediately available.
+`survey_band` uses the fixed RX gain saved on the settings page and passes
+bounded measured results to the next Planner turn. Automatic tasks require IQ
+storage so successful saved/restored sweeps can be counted reliably.
+`inspect_candidate` revisits one current candidate for at most 1,000 ms using
+the same fixed gain and one 4,096-sample inline-IQ window aggregated on AGX. It
+processes at most 16 KiB, persists no IQ, updates the selected candidate for the
+next Planner turn, and counts against task action/byte budgets. Rust
+passes the validated center/sample-rate/RF-bandwidth profile to SDRD/1
+`APPLY_PROFILE` and verifies exact readback before capture.
+
+Every model proposal is rendered as a visible `Agent>` reply only after Rust
+has validated its structured action. Greetings, status questions and
+explanations use a validated `hold.reason` in the operator's language. When a plan needs approval, an executable `survey_band`, `inspect_candidate` or
+bounded-IQ reply explicitly asks the operator to click approve or enter
+`/approve`; sending the natural-language request alone does not bypass that
+gate. SDRD capability parsing remains strict while accepting the declared
+`software_summary` field shared by the sweep and bounded-IQ production paths.
+
+The Planner system prompt explains every live `observation` and hard `limits`
+field, the complete measured sweep, the tested P201/AGX fixed profile and its
+non-sustained 30.72-MHz ceiling, current candidate signals, the overall tunable
+band, maximum single-survey span and per-action bandwidth. The private provider
+configuration
+can set an 8,192–1,000,000-token context window or adopt compatible metadata
+from `/models`. Old planning turns are automatically removed at the configured
+50–95% threshold (90% by default); the newest complete Rust-validated context is
+retained instead of asking a summarizer to invent radio facts.
+
+For the AGX-local `spark-local` provider, the Planner uses llama.cpp's JSON
+Schema constrained output because this Spark template may otherwise emit prose
+until the output limit before entering a required native tool call. The bounded
+JSON action is wrapped back into the same sole Pi Agent `submit_plan` event, so
+normal action normalization, Rust validation, approval and audit behavior do
+not change. Pure greetings and executable plans were live-validated through
+the deployed Web console and real P201 on 2026-09-02.
+
+## Web console
+
+The current Rust web console is deployed on the AGX and listens on trusted-LAN
+interfaces at port 8787. The earlier Pi Tailnet deployment remains a rollback
+baseline.
+
+```text
+http://192.168.50.75:8787/
+```
+
+The AGX template binds `0.0.0.0`; it is unauthenticated plain HTTP and must not
+be port-forwarded to the Internet. The page shows the raw terminal stream,
+including operator input, upstream-model messages, Rust-validated plans,
+execution results, sweep-related lines and errors. `/stop`,
+`/approve`, `/reject`, `/pause`, `/resume` and `/status` are buttons, but each
+click still appears as `Operator> <command>` before the Controller response.
+
+Only one logical conversation is active because `session.sock` permits one
+interactive owner. One additional conversation may be stored. A third evicts
+the least-recently-used inactive conversation. Switching stops the old terminal
+safely and summarizes its bounded event history; histories are also compacted
+at 160 new events, keep 48 recent visible events, and cap carried context at 6
+KiB. The UI labels this as `已压缩 N 次`; it is not a model version. Processed
+scan results are stored on AGX; raw IQ is retained only when the operator has
+enabled the per-scan SigMF switch.
+
+The top bar also exposes a separate `接收语料` archive for Chapter 5. Each row
+is one immutable `amc_corpus_manifest_v1` P201 RX-only package under
+`/var/lib/sdrharness/web-console/p201-corpus/<result-id>/`; SQLite keeps the
+bounded manifest/record index and searchable summary, while `raw.iq` remains
+outside Git. The detail page shows the fixed `RX1 / RX0 / voltage0,1 /
+A_BALANCED` identity, RF profile, session/day, sequence, content hash and
+quality. Field captures without independent evidence are always `unknown` and
+are never presented as accuracy ground truth.
+
+`GET /api/corpus` and `GET /api/corpus/{result-id}` feed that visible archive.
+`DELETE /api/corpus/{result-id}` is the operator-facing delete path and removes
+both the SQLite row and the exact seven-file managed package after a
+symlink/unknown-file guard. `POST /api/corpus` is intentionally restricted to
+an AGX loopback peer. It accepts at most 384 KiB and only the current bounded
+single-point integration profile (2.1 MS/s, 1.5 MHz, 50 dB, 4,096 complex
+samples); it independently reproduces IQ power, spectrum and clipping before
+an atomic package commit, and requires recorded SDR restoration plus completed
+P201/AGX temporary-data cleanup. LAN clients cannot manufacture receive
+evidence through that write endpoint.
+
+The top bar places a gear-shaped `设置` entry directly beside the LAN live
+connection indicator. It opens a separate settings page instead of expanding
+configuration inside the run console. Model/API selection, upstream model
+inventory, the 8,192–1,000,000-token context boundary, the default 90% context
+compaction threshold and the first-conversation survey profile are edited
+together. Changes remain local form state until the operator presses
+`保存设置`; an unsaved marker and leave confirmation prevent accidental loss.
+The atomic mode-`0600` private file update affects only the next new
+conversation and does not restart the active one.
+
+A new conversation defaults to one receive-only 70 MHz–6 GHz initial survey
+with an 8 MHz step, 5 ms settle time and one fixed 20 dB manual RX gain for the
+whole sweep. The settings page can select a custom
+bounded range or disable the survey and previews points, conservative duration
+and maximum received sample bytes before saving. Gain remains editable in
+full-band mode over the bounded 0–60 dB range. Each session snapshots this
+choice and persists `pending`, `running`, `complete`, `failed` or `skipped`, so
+switching conversations and restarting the Web service never repeats a survey.
+The terminal accepts the equivalent explicit options:
+
+```text
+sdr-agent --sdrd 192.168.1.10:43110 \
+  --initial-survey-start-hz 70000000 \
+  --initial-survey-stop-hz 6000000000 \
+  --initial-survey-step-hz 8000000 \
+  --initial-survey-dwell-ms 5 \
+  --initial-survey-gain-db 20
+```
+
+The software summary path returns only scalar power, clipping, sequence and
+timing data; it does not create raw-IQ files. `/stop` cancels the active point
+and verifies SDRD restoration. Every point must read back the requested manual
+gain; any mismatch or clipped sample invalidates the run and tells the operator
+to lower gain. Fixed-gain dBFS is comparable only while gain, bandwidth, sample
+rate, antenna and environment remain unchanged; it is not calibrated dBm.
+Wide contiguous active regions remain visible
+in the sweep report, while the peak-centered candidate window passed to the
+Planner is capped at the configured 10 MHz policy boundary.
+
+The Planner acknowledges a model run before generation begins, so the terminal
+continues to consume input. `/stop` can abort an active upstream run and can
+also cancel a hardware action directly through an independent SDRD connection.
+
+Development checks and the static Pi build are:
+
+```bash
+cd src/agent/web-console
+cargo test --all-targets
+cargo clippy --all-targets -- -D warnings
+cargo build --locked --release --target aarch64-unknown-linux-musl
+```
+
+For a bounded local corpus/import validation, controller `sweep` mode accepts
+an absolute `--sigmf-directory`. The same validated finite plan controls the
+file size, the Adapter still restores the radio before returning, and an
+incomplete writer removes its partial pair. Treat that directory as
+development staging: move bytes into the application store through the
+loopback-only corpus admission path, then verify and remove the staging pair.
+
+The one-shot Runner performs one live
+observe-plan-validate-approve-execute-observe cycle and appends a root-only
+JSONL audit trail:
+
+```bash
+sdr-agent \
+  --mode run-once \
+  --request controller/config/runner.development.example.json \
+  --socket /run/sdr-agent/planner.sock \
+  --sdrd 192.168.1.10:43110 \
+  --approval operator \
+  --audit-log /var/lib/sdr-agent/audit.jsonl
+```
+
+Use `--approval pending` to stop at the manual gate or `automatic` only for a
+plan below the existing automatic threshold. The production Runner executes
+bounded IQ capture plus `survey_band` and `inspect_candidate`. The latter two
+reuse the AGX software `SweepEngine`, default to fixed 20 dB receive gain (set
+explicitly with `--survey-gain-db`), return the aggregate and fresh Planner
+observation, and re-observe restored SDR health. Hold, stop and unavailable
+recognition actions remain explicitly non-executing rather than being reported
+as hardware work.
+
+For a deterministic development or recovery check, `execute` mode accepts an
+envelope containing the original `PlanRequest` and `PlanResponse`, reruns Rust
+policy validation, then requires explicit operator approval when needed:
+
+```bash
+sdr-agent \
+  --mode execute \
+  --request controller/config/execution.development.example.json \
+  --sdrd 192.168.1.10:43110 \
+  --approval operator
+```
+
+Recovery tooling can request the same generation-correlated cancellation
+without a Planner call:
+
+```bash
+sdr-agent \
+  --mode cancel \
+  --session-generation 77 \
+  --sdrd 192.168.1.10:43110
+```
+
+The AGX software-aggregate sweep entry point uses the same validated plan file
+in tests and operations:
+
+```bash
+sdr-agent \
+  --mode sweep \
+  --request controller/config/sweep.software-aggregate.example.json \
+  --sdrd 192.168.1.10:43110
+```
+
+The recognition interface and its fixed IQ contract are documented in
+[`../../docs/LOCAL_RECOGNIZER_INTERFACE.md`](../../docs/reference/LOCAL_RECOGNIZER_INTERFACE.md).
+
+For a development smoke test, a natural-language instruction can replace the
+instruction in a bounded context file without changing its health or limits:
+
+```bash
+cargo run -- --mode plan \
+  --socket /run/user/$(id -u)/sdr-agent/planner.sock \
+  --request config/request.example.json \
+  --instruction "保持当前状态并说明原因"
+```
+
+## 部署与历史
+
+当前服务模板与配置集中于 [deploy/agx](../../deploy/agx/README.md)，旧 Pi 的服务模板和 provider 示例已删除。
+历史 Pi 部署、失败和回滚事实仍见 [Pi 历史合订记录](../../docs/validation/PI_BASELINE_HISTORY.md)。
+当前完成状态和生产准入以 [checklist](../../docs/SDR_AGENT_PROJECT_CHECKLIST.md) 为准。
