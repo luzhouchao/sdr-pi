@@ -2,6 +2,8 @@
 
 默认阅读范围：
 
+2026-10-29 按用户要求删除网页历史 IQ；用户随后明确保留论文实验数据。旧 P201 语料已删除，冻结选择计划对其 manifest 的引用不再可用；其他原有封存实验数据和证据未因本次操作删除。删除范围及结果见[清单](evidence/IQ_CLEANUP_2026-10-29.json)。
+
 1. [AGENTS.md](../AGENTS.md)：工作规则与读取边界。
 2. [当前执行选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#当前执行选择)及[后续实验选择](SDR_AGENT_ACTUAL_DELIVERY_ORDER_2026-09-06.md#后续实验选择)。
 3. [checklist 状态速览](SDR_AGENT_PROJECT_CHECKLIST.md#当前交付状态速览2026-09-10)；具体条目按任务定位。

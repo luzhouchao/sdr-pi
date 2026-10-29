@@ -1,0 +1,598 @@
+{
+  "scope": "user-authorized historical IQ removal",
+  "web_results_planned": [
+    {
+      "id": 66,
+      "iq_bytes": 65536
+    },
+    {
+      "id": 65,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 64,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 63,
+      "iq_bytes": 65536
+    },
+    {
+      "id": 62,
+      "iq_bytes": 98304
+    },
+    {
+      "id": 61,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 60,
+      "iq_bytes": 65536
+    },
+    {
+      "id": 59,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 58,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 57,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 56,
+      "iq_bytes": 294912
+    },
+    {
+      "id": 55,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 54,
+      "iq_bytes": 32768
+    },
+    {
+      "id": 53,
+      "iq_bytes": 32768
+    },
+    {
+      "id": 52,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 51,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 50,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 49,
+      "iq_bytes": 32768
+    },
+    {
+      "id": 48,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 47,
+      "iq_bytes": 294912
+    },
+    {
+      "id": 46,
+      "iq_bytes": 294912
+    },
+    {
+      "id": 45,
+      "iq_bytes": 32768
+    },
+    {
+      "id": 44,
+      "iq_bytes": 32768
+    },
+    {
+      "id": 43,
+      "iq_bytes": 49152
+    },
+    {
+      "id": 42,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 41,
+      "iq_bytes": 49152
+    },
+    {
+      "id": 40,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 36,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 34,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 37,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 38,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 39,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 35,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 33,
+      "iq_bytes": 49152
+    },
+    {
+      "id": 24,
+      "iq_bytes": 65536
+    },
+    {
+      "id": 23,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 22,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 21,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 20,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 19,
+      "iq_bytes": 65536
+    },
+    {
+      "id": 18,
+      "iq_bytes": 81920
+    },
+    {
+      "id": 17,
+      "iq_bytes": 49152
+    },
+    {
+      "id": 16,
+      "iq_bytes": 32768
+    },
+    {
+      "id": 15,
+      "iq_bytes": 294912
+    },
+    {
+      "id": 14,
+      "iq_bytes": 3293184
+    },
+    {
+      "id": 13,
+      "iq_bytes": 294912
+    }
+  ],
+  "corpus_planned": [
+    {
+      "id": "p201-p201-corpus-20260905-rx1-433m-147",
+      "iq_bytes": 16384,
+      "iq_sha256": "19b9b543188e1a3092e29eeed1232da5586a8c10fe9cd2fa21318d6365993ccb"
+    }
+  ],
+  "deleted": [
+    {
+      "endpoint": "/api/results/66",
+      "response": {
+        "bytes_deleted": 66608,
+        "deleted": 66,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/65",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 65,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/64",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 64,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/63",
+      "response": {
+        "bytes_deleted": 66608,
+        "deleted": 63,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/62",
+      "response": {
+        "bytes_deleted": 99766,
+        "deleted": 62,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/61",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 61,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/60",
+      "response": {
+        "bytes_deleted": 66608,
+        "deleted": 60,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/59",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 59,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/58",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 58,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/57",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 57,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/56",
+      "response": {
+        "bytes_deleted": 298722,
+        "deleted": 56,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/55",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 55,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/54",
+      "response": {
+        "bytes_deleted": 33451,
+        "deleted": 54,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/53",
+      "response": {
+        "bytes_deleted": 33451,
+        "deleted": 53,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/52",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 52,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/51",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 51,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/50",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 50,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/49",
+      "response": {
+        "bytes_deleted": 33451,
+        "deleted": 49,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/48",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 48,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/47",
+      "response": {
+        "bytes_deleted": 298722,
+        "deleted": 47,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/46",
+      "response": {
+        "bytes_deleted": 298722,
+        "deleted": 46,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/45",
+      "response": {
+        "bytes_deleted": 33451,
+        "deleted": 45,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/44",
+      "response": {
+        "bytes_deleted": 33451,
+        "deleted": 44,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/43",
+      "response": {
+        "bytes_deleted": 50029,
+        "deleted": 43,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/42",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 42,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/41",
+      "response": {
+        "bytes_deleted": 50029,
+        "deleted": 41,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/40",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 40,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/36",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 36,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/34",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 34,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/37",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 37,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/38",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 38,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/39",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 39,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/35",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 35,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/33",
+      "response": {
+        "bytes_deleted": 50029,
+        "deleted": 33,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/24",
+      "response": {
+        "bytes_deleted": 66608,
+        "deleted": 24,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/23",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 23,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/22",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 22,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/21",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 21,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/20",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 20,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/19",
+      "response": {
+        "bytes_deleted": 66608,
+        "deleted": 19,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/18",
+      "response": {
+        "bytes_deleted": 83187,
+        "deleted": 18,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/17",
+      "response": {
+        "bytes_deleted": 50029,
+        "deleted": 17,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/16",
+      "response": {
+        "bytes_deleted": 33451,
+        "deleted": 16,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/15",
+      "response": {
+        "bytes_deleted": 298722,
+        "deleted": 15,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/14",
+      "response": {
+        "bytes_deleted": 3333139,
+        "deleted": 14,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/results/13",
+      "response": {
+        "bytes_deleted": 298722,
+        "deleted": 13,
+        "files_deleted": 2
+      }
+    },
+    {
+      "endpoint": "/api/corpus/p201-p201-corpus-20260905-rx1-433m-147",
+      "response": {
+        "deleted": "p201-p201-corpus-20260905-rx1-433m-147",
+        "files_deleted": 7,
+        "bytes_deleted": 26091
+      }
+    }
+  ],
+  "errors": [],
+  "orphan_inspection_files": [
+    {
+      "path": "/var/lib/sdrharness/web-console/captures/session-1788875331003/inspect-1-1788875331014-1788875385700759275.sigmf-data",
+      "size": 16384,
+      "sha256": "d7d8190bce2118b080f0638d545bb1b68fe1b77ae3fa234fb00a7eed3f6ca119"
+    },
+    {
+      "path": "/var/lib/sdrharness/web-console/captures/session-1788875331003/inspect-1-1788875331014-1788875385700759275.sigmf-meta",
+      "size": 489,
+      "sha256": "ad6c17544b6af2701c8ecc62527133956f314591f0ca2b9c9e767b678b0495f5"
+    },
+    {
+      "path": "/var/lib/sdrharness/web-console/captures/session-1793071197684/inspect-2c6f4225c2ebb746b68e55137867e3ea-1-1793071197723-1793071268264217621.sigmf-data",
+      "size": 16384,
+      "sha256": "ebb7ac929b0fc09d8d4ada26efab5827c8f7eb64e5f8d22f999967217f7cc30e"
+    },
+    {
+      "path": "/var/lib/sdrharness/web-console/captures/session-1793071197684/inspect-2c6f4225c2ebb746b68e55137867e3ea-1-1793071197723-1793071268264217621.sigmf-meta",
+      "size": 489,
+      "sha256": "86aa5a0f5fd7a2d6db96b4919fd0886ba2bd6ac0c197b83c0fa7db917c36e4c4"
+    }
+  ],
+  "orphan_cleanup": "deleted"
+}
